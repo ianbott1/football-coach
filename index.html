@@ -1,0 +1,3744 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Football Coach — build a program, win it all</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#10131C;--panel:#191E2C;--panel2:#141928;--line:#2A3145;--bone:#E9E5DA;
+ --muted:#7F89A0;--sodium:#F4A63A;--flag:#E45B4E;--turf:#46B583;--vote:#8B9FE8;
+ --cond:'Barlow Condensed',Impact,sans-serif;--body:'Barlow',system-ui,sans-serif;
+ --mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);
+ -webkit-font-smoothing:antialiased;padding-bottom:176px}
+#app{max-width:760px;margin:0 auto}
+.mast{padding:26px 16px 16px;border-bottom:1px solid var(--line)}
+.kicker{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+ color:var(--sodium)}
+.mast h1{font-family:var(--cond);font-weight:700;font-size:40px;line-height:.92;
+ margin-top:8px;text-transform:uppercase}
+.mast p{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5}
+.stick{position:sticky;top:0;z-index:20;background:rgba(16,19,28,.97);
+ backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:11px 16px 9px}
+.tb-yr{font-family:var(--mono);font-size:11px;color:var(--sodium);letter-spacing:.14em}
+.tb-team{font-family:var(--cond);font-size:21px;font-weight:700;text-transform:uppercase;
+ margin-left:9px;letter-spacing:.01em}
+.tb-right{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.tb-rk{color:var(--sodium);margin-left:6px}
+.tabs{display:flex;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;background:none;border:none;border-bottom:2px solid transparent;
+ color:var(--muted);font-family:var(--cond);font-weight:600;font-size:13.5px;
+ letter-spacing:.045em;text-transform:uppercase;padding:11px 9px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--bone);border-bottom-color:var(--sodium)}
+.tab:focus-visible,.pick:focus-visible,.advance:focus-visible{outline:2px solid var(--sodium);
+ outline-offset:2px}
+.actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;
+ background:linear-gradient(180deg,transparent,rgba(16,19,28,.95) 32%)}
+.advance{display:block;width:100%;max-width:728px;margin:0 auto;background:var(--sodium);
+ color:#10131C;border:none;font-family:var(--cond);font-weight:700;font-size:19px;
+ letter-spacing:.08em;text-transform:uppercase;padding:15px;cursor:pointer;border-radius:2px}
+.advance:active{transform:translateY(1px)}
+.skip{display:block;width:100%;max-width:728px;margin:0 auto 7px;background:none;
+ border:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:10.5px;
+ letter-spacing:.08em;text-transform:uppercase;padding:9px;cursor:pointer;border-radius:2px}
+.skip:hover{border-color:var(--sodium);color:var(--sodium)}
+.digest{margin:12px 0 4px}
+.drow{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:12.5px}
+.dwk{font-family:var(--mono);font-size:10px;color:var(--muted);flex:0 0 58px}
+.dres{font-family:var(--mono);font-size:12px;flex:0 0 66px}
+.dres.w{color:var(--turf)}.dres.l{color:var(--flag)}.dres.bye{color:var(--muted)}
+.dopp{font-family:var(--cond);font-size:15px;flex:1;white-space:nowrap;overflow:hidden;
+ text-overflow:ellipsis}
+.advance.gold{background:var(--bone)}
+.dateline{display:flex;justify-content:space-between;align-items:baseline;padding:16px 16px 8px}
+.dateline h2{font-family:var(--cond);font-size:25px;font-weight:700;text-transform:uppercase}
+.dateline span{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.1em}
+.grouphead{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+ color:var(--muted);padding:18px 16px 7px;border-top:1px solid var(--line);margin-top:8px}
+.note{color:var(--muted);font-size:12.5px;padding:18px 16px;line-height:1.5}
+.hero{margin:16px;padding:20px;border:1px solid var(--line);text-align:center;
+ animation:pop .32s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.hero.half{border-color:var(--vote);
+ background:linear-gradient(180deg,rgba(139,159,232,.12),transparent)}
+.hero.half .hlabel{color:var(--vote)}
+.planbox{margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}
+.planlab{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--muted);
+ text-transform:uppercase}
+.plans{display:flex;gap:5px;margin-top:7px}
+.planbtn{flex:1;font-family:var(--cond);font-size:13px;font-weight:600;padding:8px 3px;
+ border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;
+ letter-spacing:.02em}
+.planbtn[aria-pressed="true"]{border-color:var(--sodium);color:var(--sodium);
+ background:rgba(244,166,58,.1)}
+.planbtn:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
+.pland{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.4}
+.hero.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.13),transparent)}
+.hero.loss{border-color:var(--flag);background:linear-gradient(180deg,rgba(228,91,78,.11),transparent)}
+.hlabel{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+ color:var(--muted)}
+.hero.win .hlabel{color:var(--turf)}.hero.loss .hlabel{color:var(--flag)}
+.hscore{font-family:var(--cond);font-size:52px;font-weight:700;line-height:1;margin:6px 0 2px}
+.hscore span{color:var(--muted);margin:0 8px;font-weight:500}
+.hopp{font-family:var(--cond);font-size:19px;font-weight:500;color:var(--muted);
+ text-transform:uppercase;letter-spacing:.04em}
+.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--vote);
+ margin-right:7px;vertical-align:middle;animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.hfoot{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+ color:var(--vote);margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
+.lgbtns{padding:4px 16px 10px;display:flex;flex-direction:column;gap:7px}
+.lgbtns .advance{margin:0}
+.lgmsg{font-family:var(--mono);font-size:10.5px;color:var(--sodium);padding:0 16px 10px;
+ letter-spacing:.08em}
+.hmove{font-family:var(--mono);font-size:11px;margin-top:9px;padding-top:9px;
+ border-top:1px solid var(--line);letter-spacing:.06em}
+.hmove.up{color:var(--turf)}.hmove.dn{color:var(--flag)}.hmove.flat{color:var(--muted)}
+.byerow .steam{color:var(--muted);font-style:italic}
+.srow.up .steam{color:var(--muted)}
+.srow.up .sall{width:56px;flex:0 0 56px;white-space:nowrap}
+.srow.up .spos{color:var(--sodium)}
+.srow.post{background:rgba(244,166,58,.07)}
+.rivmark{font-family:var(--mono);font-size:8.5px;font-style:normal;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--flag);margin-left:5px}
+.rivmark.sod{color:var(--sodium)}
+.byelbl{font-size:11px;color:var(--muted);white-space:nowrap}
+.idcard{margin:16px;padding:16px;border:1px solid var(--line);background:var(--panel2)}
+.idcard{padding-left:14px}
+.iname{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;line-height:1}
+.imeta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.08em}
+.stats{display:flex;gap:8px;margin-top:14px}
+.stats>div{flex:1;text-align:center;border:1px solid var(--line);padding:9px 4px}
+.stats b{display:block;font-family:var(--cond);font-size:25px;font-weight:700}
+.stats span{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.12em;
+ text-transform:uppercase}
+.injrow{display:flex;gap:10px;align-items:center;padding:8px 16px;
+ border-bottom:1px solid rgba(42,49,69,.55)}
+.ipos{font-family:var(--cond);font-size:17px;font-weight:600;flex:0 0 52px;color:var(--flag)}
+.iwk{flex:1;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.imag{font-family:var(--mono);font-size:12px;color:var(--flag)}
+.nextcard{margin:8px 16px 0;padding:14px;border:1px solid var(--sodium);
+ background:linear-gradient(180deg,rgba(244,166,58,.09),transparent)}
+.nextcard.riv{border-color:var(--flag);
+ background:linear-gradient(180deg,rgba(228,91,78,.12),transparent)}
+.nextcard.riv .nlabel{color:var(--flag)}
+.odds{display:flex;align-items:center;gap:8px;margin-top:13px;padding-top:12px;
+ border-top:1px solid var(--line)}
+.obar{flex:1;height:6px;background:var(--line);display:block}
+.obar i{display:block;height:100%;background:var(--sodium)}
+.opct{font-family:var(--mono);font-size:13px;color:var(--sodium);flex:0 0 auto}
+.olab{font-family:var(--mono);font-size:8.5px;color:var(--muted);letter-spacing:.12em;
+ text-transform:uppercase;flex:0 0 auto}
+.stake{margin-top:11px;display:flex;gap:8px;align-items:flex-start}
+.stag{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--sodium);
+ border:1px solid var(--sodium);padding:2px 5px;flex:0 0 auto;margin-top:1px}
+.sline{font-size:12.5px;color:var(--bone);line-height:1.45;flex:1}
+.chip.riv{border-color:var(--flag);color:var(--flag)}
+.nextcard.bye{border-color:var(--line);background:none}
+.nextcard.bye .nlabel{color:var(--muted)}
+.nextcard.bye .nopp{color:var(--muted)}
+.nlabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--sodium)}
+.nopp{font-family:var(--cond);font-size:26px;font-weight:700;margin-top:3px;text-transform:uppercase;
+ display:flex;align-items:baseline;gap:6px}
+.nopp .rk{font-size:12px;margin-right:0}
+.nrec{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px}
+.game{display:flex;border-bottom:1px solid rgba(42,49,69,.55);background:var(--panel2)}
+.edge{width:3px;flex:0 0 3px;background:transparent}
+.game.marquee .edge{background:var(--sodium)}
+.game.upset .edge{background:var(--flag)}
+.game.mine{background:rgba(244,166,58,.09)}
+.game.mine .edge{background:var(--bone)}
+.gbody{flex:1;padding:9px 14px 9px 11px;min-width:0}
+.side{display:flex;align-items:center;gap:7px;padding:2px 0}
+.side .nm{font-family:var(--cond);font-size:17px;font-weight:600;flex:1;color:var(--muted);min-width:0;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side.w .nm{color:var(--bone)}
+.side .sc{font-family:var(--mono);font-size:15px;color:var(--muted);min-width:26px;text-align:right}
+.side.w .sc{color:var(--bone);font-weight:600}
+.rk{font-family:var(--mono);font-size:10px;color:var(--sodium);flex:0 0 auto;margin-right:5px}
+.sdchip{font-family:var(--mono);font-size:10px;color:var(--sodium);border:1px solid var(--sodium);
+ padding:1px 4px;min-width:20px;text-align:center;flex:0 0 auto;margin-right:2px}
+.side.w .sdchip{background:var(--sodium);color:#10131C;font-weight:600}
+.grec{font-family:var(--mono);font-size:10.5px;color:#98A1B4;flex:0 0 42px;width:42px;
+ text-align:right;margin-right:6px}
+.csd.r{text-align:right}
+.mv{font-family:var(--mono);font-size:10px;width:34px;text-align:right;flex:0 0 34px}
+.mv.up{color:var(--turf)}.mv.dn{color:var(--flag)}.mv.flat{color:var(--muted)}
+.prow{border-left:3px solid var(--tc);padding-left:13px}
+.cbar{display:none}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px;display:inline-block}
+.findbox{font-family:var(--body);font-size:15px;letter-spacing:0}
+.pick{display:flex;align-items:center;gap:8px}
+.pick .pn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick .pr{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.meta{display:flex;gap:7px;margin-top:5px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+ padding:2px 5px;border:1px solid var(--line);color:var(--muted)}
+.chip.up{border-color:var(--flag);color:var(--flag)}
+.chip.ttl{border-color:var(--sodium);color:var(--sodium)}
+.prow{display:flex;align-items:center;gap:10px;padding:9px 16px;
+ border-bottom:1px solid rgba(42,49,69,.55)}
+.prow.mine,.srow.mine,.frow.mine{background:rgba(244,166,58,.1)}
+.pnum{font-family:var(--mono);font-size:13px;color:var(--sodium);width:22px;text-align:right;
+ flex:0 0 22px}
+.pmain{flex:1;min-width:0}
+.pname{font-family:var(--cond);font-size:18px;font-weight:600;line-height:1.1}
+.psub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:1px}
+.cbox{border-top:1px solid var(--line);margin-top:10px}
+.chead{font-family:var(--cond);font-size:17px;font-weight:700;letter-spacing:.05em;
+ text-transform:uppercase;padding:12px 16px 5px}
+.srow{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13px}
+.srow:nth-child(odd){background:rgba(25,30,44,.5)}
+.spos{font-family:var(--mono);font-size:12.5px;color:#B4BCCB;width:22px;flex:0 0 22px;
+ text-align:right}
+.spos.qual{color:var(--sodium);font-weight:600}
+.wl-w{color:var(--turf)!important;font-weight:600}.wl-l{color:var(--flag)!important;font-weight:600}
+.steam{flex:1;font-family:var(--cond);font-size:16px;font-weight:500;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis}
+.sconf{font-family:var(--mono);font-size:13px;width:46px;text-align:right;flex:0 0 46px;color:var(--bone)}
+.sconf.up{color:var(--turf)}.sconf.dn{color:var(--flag)}
+.sall{font-family:var(--mono);font-size:13px;color:#B4BCCB;width:46px;text-align:right;
+ flex:0 0 46px}
+.shead{background:none!important;border-bottom:1px solid var(--line);padding-bottom:6px}
+.shead .steam,.shead .sconf,.shead .sall{font-family:var(--mono);font-size:9px;
+ letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.divider{height:1px;background:var(--line);margin:2px 16px}
+.rnd{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+ color:var(--sodium);padding:20px 16px 8px;border-top:1px solid var(--line);margin-top:10px}
+.rnd small{display:block;color:var(--muted);letter-spacing:.09em;margin-top:4px;font-size:9.5px}
+.frow{display:flex;align-items:center;gap:9px;padding:8px 16px;
+ border-bottom:1px solid rgba(42,49,69,.55)}
+.sd{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);
+ padding:1px 5px;min-width:22px;text-align:center;flex:0 0 auto}
+.fmain{flex:1;min-width:0}
+.fname{font-family:var(--cond);font-size:18px;font-weight:600}
+.fnote{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;
+ letter-spacing:.05em;margin-top:1px}
+.fcfp{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.byebadge{font-family:var(--mono);font-size:9px;color:var(--sodium);border:1px solid var(--sodium);
+ padding:1px 4px}
+.title-card{background:linear-gradient(180deg,rgba(244,166,58,.14),transparent);
+ border:1px solid var(--sodium);margin:16px;padding:18px;animation:pop .4s ease-out}
+.crown{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+ color:var(--sodium)}
+.champ{font-family:var(--cond);font-size:40px;font-weight:700;line-height:1;
+ text-transform:uppercase;margin:8px 0 2px}
+.title-card .sub{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.banner{margin:16px;padding:18px;border:1px solid var(--vote);
+ background:linear-gradient(180deg,rgba(139,159,232,.12),transparent);animation:pop .35s ease-out}
+.bkick{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+ color:var(--vote)}
+.btitle{font-family:var(--cond);font-size:28px;font-weight:700;text-transform:uppercase;
+ margin:6px 0 5px;line-height:1.05}
+.bsub{color:var(--muted);font-size:12.5px;line-height:1.5}
+.yrow{display:flex;align-items:center;gap:10px;padding:10px 16px;
+ border-bottom:1px solid rgba(42,49,69,.55)}
+.yrow.gold{background:rgba(244,166,58,.1)}
+.yr{font-family:var(--mono);font-size:12px;color:var(--sodium);flex:0 0 38px}
+.ymain{flex:1;min-width:0}
+.yrec{font-family:var(--cond);font-size:18px;font-weight:600}
+.yres{font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:1px;
+ text-transform:uppercase;letter-spacing:.05em}
+.ywin{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:right;flex:0 0 88px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seedrow{padding:4px 16px 12px}
+.seedbox{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--bone);
+ font-family:var(--mono);font-size:17px;padding:11px;letter-spacing:.14em}
+.seedhint{display:block;color:var(--muted);font-size:11.5px;margin-top:7px;line-height:1.45}
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:6px;
+ padding:6px 16px 14px}
+.pick{background:var(--panel2);border:1px solid var(--line);color:var(--bone);
+ font-family:var(--cond);font-size:16px;font-weight:500;padding:10px 8px;cursor:pointer;
+ text-align:left}
+.pick:hover{border-color:var(--sodium);color:var(--sodium)}
+.reset{background:none;border:1px solid var(--line);color:var(--muted);font-size:14px;
+ line-height:1;padding:3px 7px;margin-left:9px;cursor:pointer;border-radius:2px}
+.reset:hover{color:var(--sodium);border-color:var(--sodium)}
+.seedshow{color:var(--sodium);text-align:center}
+.subtabs{display:flex;gap:6px;padding:4px 16px 12px}
+.subtab{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.07em;
+ text-transform:uppercase;padding:8px 4px;border:1px solid var(--line);background:none;
+ color:var(--muted);cursor:pointer}
+.subtab[aria-pressed="true"]{border-color:var(--sodium);color:var(--sodium)}
+.subtab:focus-visible,.tpick:focus-visible,.backbtn:focus-visible{outline:2px solid var(--sodium);
+ outline-offset:2px}
+.tpick{cursor:pointer}
+.tlink{cursor:pointer;border-bottom:1px dotted rgba(127,137,160,.5)}
+.tlink:hover{color:var(--sodium);border-bottom-color:var(--sodium)}
+.subtab em{font-style:normal;opacity:.6}
+.cand,.opt{margin:0 16px 7px;padding:12px 14px;border:1px solid var(--line);
+ background:var(--panel2);cursor:pointer}
+.cand.on,.opt.on{border-color:var(--sodium);background:rgba(244,166,58,.09)}
+.cand:hover,.opt:hover{border-color:#3C455C}
+.candtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.cgrade{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--sodium);border:1px solid var(--sodium);padding:2px 6px;flex:0 0 auto}
+.cdesc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+.advance:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.collapsed{border-left:2px solid var(--line);margin:0 16px}
+.crow{display:flex;align-items:center;gap:8px;padding:6px 12px;font-size:12.5px}
+.crow.mine{background:rgba(244,166,58,.1)}
+.csd{font-family:var(--mono);font-size:10px;color:var(--muted);width:16px;flex:0 0 16px}
+.cw{font-family:var(--cond);font-size:15px;font-weight:600;flex:1;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis}
+.cs{font-family:var(--mono);font-size:11.5px;color:#B4BCCB;flex:0 0 auto}
+.cl{font-family:var(--cond);font-size:14px;color:var(--muted);flex:1;text-align:right;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tstat{display:flex;flex-direction:column;align-items:flex-end;flex:0 0 auto}
+.trec{font-family:var(--mono);font-size:12.5px;color:#B4BCCB}
+.trk{font-family:var(--mono);font-size:9.5px;color:var(--sodium)}
+.coachtag{color:var(--vote)}
+.expbar{display:flex;gap:9px;align-items:flex-start;margin-top:12px;padding-top:11px;
+ border-top:1px solid var(--line)}
+.etag{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--vote);
+ border:1px solid var(--vote);padding:2px 5px;flex:0 0 auto;margin-top:1px}
+.eline{font-size:11.5px;color:var(--muted);line-height:1.4;flex:1}
+.gradebox{display:flex;align-items:center;gap:14px;margin:8px 0 4px}
+.grade{font-family:var(--cond);font-size:52px;font-weight:700;line-height:.9;
+ color:var(--sodium);flex:0 0 auto}
+.gradeline{font-size:12.5px;color:var(--muted);margin-top:3px}
+.logo{width:72px;height:72px;display:block}
+.titlewrap .logo,.setupwrap .logo{width:112px;height:112px}
+@media(min-width:1024px){.titlewrap .logo{width:128px;height:128px}}
+.titlewrap{max-width:520px;margin:0 auto;padding:0 24px;min-height:100vh;display:flex;
+ flex-direction:column;justify-content:center;align-items:flex-start}
+.wordmark{font-family:var(--cond);font-size:clamp(48px,15vw,108px);font-weight:700;line-height:.86;
+ text-transform:uppercase;letter-spacing:-.012em;margin:20px 0 0}
+.tagline{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+ color:var(--muted);margin-top:12px}
+.wm-a{color:var(--sodium)}
+.wm-b{color:var(--bone)}
+.titlebtns{width:100%;margin-top:40px;display:flex;flex-direction:column;gap:9px}
+.titlebtns .advance{margin:0}
+.advance.ghost{background:none;border:1px solid var(--line);color:var(--bone)}
+.advance.ghost:hover{border-color:var(--sodium);color:var(--sodium)}
+.introskip.wide{width:100%;text-align:center}
+.titlefoot{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+ color:var(--muted);margin-top:30px;opacity:.7}
+.setupwrap{max-width:520px;margin:0 auto;padding:52px 24px 40px}
+.setupwrap .introh{font-size:34px;margin:10px 0 6px}
+.namebox{font-family:var(--body);font-size:19px;letter-spacing:0;margin-bottom:9px}
+.setupwrap .seedbox{width:100%}
+
+.introwrap{max-width:600px;margin:0 auto;padding:56px 24px 40px;min-height:100vh;
+ display:flex;flex-direction:column;justify-content:center}
+.introh{font-family:var(--cond);font-size:42px;font-weight:700;line-height:1.02;
+ text-transform:uppercase;margin:12px 0 16px}
+.introb{font-size:15.5px;color:var(--muted);line-height:1.62}
+.introb b{color:var(--bone);font-weight:600}
+.intronav{display:flex;gap:10px;align-items:center;margin-top:32px}
+.intronav .advance{flex:1;margin:0}
+.introskip{background:none;border:1px solid var(--line);color:var(--muted);
+ font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+ padding:14px 16px;cursor:pointer;border-radius:2px}
+.introskip:hover{color:var(--bone);border-color:#3C455C}
+.dots{display:flex;gap:6px;justify-content:center;margin-top:24px}
+.dots i{width:22px;height:2px;background:var(--line);display:block}
+.dots i.on{background:var(--sodium)}
+.ptier{display:block;font-style:normal;font-family:var(--mono);font-size:8px;
+ letter-spacing:.1em;text-transform:uppercase;margin-top:2px;opacity:.85}
+.ptier.flag{color:var(--flag)}.ptier.sod{color:var(--sodium)}.ptier.turf{color:var(--turf)}
+.ptier.vote{color:var(--vote)}.ptier.muted{color:var(--muted)}
+.tierkey{display:flex;flex-wrap:wrap;gap:12px;padding:0 16px 14px;font-family:var(--mono);
+ font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.tierkey .flag{color:var(--flag)}.tierkey .sod{color:var(--sodium)}
+.tierkey .turf{color:var(--turf)}.tierkey .vote{color:var(--vote)}.tierkey .muted{color:var(--muted)}
+.seedhint b.turf{color:var(--turf)}
+.mark{margin:0 16px 8px;padding:10px 12px;border:1px solid var(--vote);
+ background:rgba(139,159,232,.11);font-size:12px;line-height:1.45;color:var(--bone);
+ cursor:pointer;position:relative}
+.mark b{color:var(--vote)}
+.markx{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+ text-transform:uppercase;color:var(--vote);margin-top:7px}
+.helpwrap{max-width:760px;margin:0 auto;padding-bottom:40px}
+.helpcard{margin:0 16px 8px;padding:13px 15px;border:1px solid var(--line);background:var(--panel2)}
+.closebtn{background:none;border:1px solid var(--line);color:var(--muted);
+ font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+ padding:7px 12px;cursor:pointer}
+.closebtn:hover{color:var(--sodium);border-color:var(--sodium)}
+.bud{margin:0 16px 8px;padding:12px 14px;border:1px solid var(--line);background:var(--panel2)}
+.budtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.budctl{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.budbtn{width:30px;height:30px;border:1px solid var(--line);background:none;color:var(--bone);
+ font-size:17px;line-height:1;cursor:pointer;border-radius:2px}
+.budbtn:hover:not(:disabled){border-color:var(--sodium);color:var(--sodium)}
+.budbtn:disabled{opacity:.3;cursor:not-allowed}
+.budval{font-family:var(--mono);font-size:16px;width:20px;text-align:center;color:var(--sodium)}
+.budbar{height:4px;background:var(--line);margin-top:9px}
+.budbar i{display:block;height:100%;background:var(--sodium)}
+.budgetleft{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--sodium);padding:0 16px 10px}
+.budgetleft.done{color:var(--turf)}
+.prow2.feat{background:rgba(139,159,232,.12)}
+.feattag{color:var(--vote)}
+.firedbox{margin:16px;padding:18px;border:1px solid var(--flag);
+ background:linear-gradient(180deg,rgba(228,91,78,.15),transparent)}
+.firedbox .bkick{color:var(--flag)}
+.careercard{border-left:4px solid var(--vote)}
+.careercard .iname{color:var(--vote)}
+.stop{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:13px;
+ border-top:1px solid rgba(42,49,69,.6)}
+.stopteam{font-family:var(--cond);font-size:16px;font-weight:600;flex:1}
+.stopyr{font-family:var(--mono);font-size:10.5px;color:var(--muted);flex:0 0 auto}
+.stoprec{font-family:var(--mono);font-size:12px;color:#B4BCCB;flex:0 0 62px;text-align:right}
+.ygrade{font-family:var(--cond);font-size:17px;font-weight:700;color:var(--sodium);
+ flex:0 0 26px;text-align:center}
+.news{padding:11px 16px;border-bottom:1px solid rgba(42,49,69,.55);
+ border-left:3px solid var(--line)}
+.news.flag{border-left-color:var(--flag)}
+.news.gold{border-left-color:var(--sodium);background:rgba(244,166,58,.06)}
+.news.muted{border-left-color:var(--line)}
+.nh{font-family:var(--cond);font-size:19px;font-weight:600;line-height:1.15}
+.nb{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+.prow2{display:flex;align-items:center;gap:10px;padding:9px 16px;
+ border-bottom:1px solid rgba(42,49,69,.55)}
+.prow2.out{background:rgba(228,91,78,.09)}
+.ppos{font-family:var(--mono);font-size:10px;color:var(--sodium);width:38px;flex:0 0 38px;
+ letter-spacing:.06em}
+.prow2 .pmain{flex:1;min-width:0}
+.rbar{width:52px;height:4px;background:var(--line);flex:0 0 52px;display:block}
+.rbar i{display:block;height:100%;background:var(--sodium)}
+.prow2.out .rbar i{background:var(--flag)}
+.prate{font-family:var(--mono);font-size:13px;width:24px;text-align:right;flex:0 0 24px}
+.outtag{color:var(--flag)}
+.iwho{flex:1;min-width:0}
+.pp{font-family:var(--mono);font-size:10px;color:var(--sodium);margin-left:5px}
+.coachbar{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;
+ border-top:1px solid var(--line)}
+.coachbar.plain{border-top:1px solid var(--line);margin-top:12px;padding-top:11px}
+.cleft{flex:1;min-width:0}
+.cname{font-family:var(--cond);font-size:18px;font-weight:600}
+.cmeta{font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:1px;
+ letter-spacing:.05em;text-transform:uppercase}
+.seat{font-family:var(--mono);font-size:9px;letter-spacing:.12em;padding:3px 6px;
+ border:1px solid;flex:0 0 auto}
+.seat.hot{color:var(--flag);border-color:var(--flag)}
+.seat.warm{color:var(--sodium);border-color:var(--sodium)}
+.seat.cool{color:var(--muted);border-color:var(--line)}
+.bnews{font-size:12.5px;color:var(--bone);margin-top:10px;padding-top:10px;
+ border-top:1px solid rgba(139,159,232,.3);line-height:1.45}
+.bnews.flag b{color:var(--sodium)}
+.bnews.small{font-size:11.5px;color:var(--muted);border-top:none;padding-top:0;margin-top:5px}
+.tpick:hover{background:rgba(244,166,58,.07)}
+.backbtn{background:none;border:none;color:var(--sodium);font-family:var(--mono);
+ font-size:11px;letter-spacing:.08em;padding:14px 16px 4px;cursor:pointer}
+.youtag{font-family:var(--mono);font-size:8.5px;color:var(--sodium);border:1px solid var(--sodium);
+ padding:1px 4px;vertical-align:middle;margin-left:5px}
+.yrank{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:7px;font-weight:400}
+.progline{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:12px;
+ padding-top:11px;border-top:1px solid var(--line)}
+.progline b{font-size:13px}
+.progline .up{color:var(--turf)}.progline .dn{color:var(--flag)}
+.stats>div{min-width:0}
+
+/* ---------- desktop ---------- */
+@media(min-width:1024px){
+  body{padding-bottom:0}
+  body.offseason{padding-bottom:120px}
+  body.offseason .cols{grid-template-columns:minmax(0,1fr)}
+  body.offseason #view{max-width:820px;margin:0 auto}
+  #app{max-width:1340px}
+  .cols{display:grid;grid-template-columns:390px minmax(0,1fr);align-items:start}
+  #side{border-right:1px solid var(--line);
+    position:sticky;top:92px;max-height:calc(100vh - 92px);overflow-y:auto;
+    display:flex;flex-direction:column;
+    scrollbar-width:thin;padding-bottom:14px}
+  #side::-webkit-scrollbar{width:7px}
+  #side::-webkit-scrollbar-thumb{background:var(--line)}
+  .actionbar.hideWide{display:none}
+  .sidebtn{padding:12px 16px 14px;position:sticky;bottom:0;
+    background:linear-gradient(180deg,transparent,var(--ink) 26%);margin-top:6px}
+  .sidebtn .advance{font-size:17px;padding:13px}
+  .sidebtn .skip{margin-top:8px}
+  #view{min-height:calc(100vh - 96px)}
+  .mast{padding:44px 32px 26px}
+  .mast h1{font-size:60px}
+  .mast p{font-size:15px;max-width:640px}
+  .topbar{padding:14px 24px 11px}
+  .tb-team{font-size:25px}
+  .tabs{padding-left:8px}
+  .tab{flex:0 0 auto;font-size:15px;padding:12px 20px}
+  .dateline{padding:20px 24px 10px}
+  .dateline h2{font-size:29px}
+  .grouphead{padding:20px 24px 8px}
+  .news,.prow,.frow,.srow,.prow2,.injrow,.trow,.yrow,.game .gbody,.rnd,.note,.legend,
+  .key,.sortbar,.subtabs,.seedrow,.chead,.crow,.digest{padding-left:24px;padding-right:24px}
+  .cbar,.prow{border-left-width:3px}
+  .idcard,.hero,.nextcard,.title-card,.banner,.cand,.opt{margin-left:16px;margin-right:16px}
+  #side .idcard,#side .hero,#side .nextcard{margin-left:14px;margin-right:14px}
+  #side .grouphead,#side .injrow{padding-left:18px;padding-right:18px}
+  /* two-up game and standings grids */
+  .gamegrid{display:grid;grid-template-columns:1fr 1fr;gap:0 1px;background:var(--line)}
+  .gamegrid .game{background:var(--panel2)}
+  .standgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+  .pickgrid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));padding:6px 24px 16px}
+  .cand,.opt{cursor:pointer}
+  .cand:hover,.opt:hover,.tpick:hover{background:rgba(244,166,58,.07)}
+  .hint{display:block}
+}
+@media(max-width:1023px){ .hint{display:none} }
+.hint{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.1em;
+ text-transform:uppercase;padding:10px 24px 0}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body><div id="app"></div>
+<script>
+const TEAMS=[
+["Georgia",1995,"SEC"],
+["Texas",1970,"SEC"],
+["Texas A&M",1920,"SEC"],
+["Ole Miss",1905,"SEC"],
+["Oklahoma",1895,"SEC"],
+["LSU",1885,"SEC"],
+["Alabama",1870,"SEC"],
+["Tennessee",1790,"SEC"],
+["Missouri",1740,"SEC"],
+["Florida",1700,"SEC"],
+["Auburn",1665,"SEC"],
+["South Carolina",1660,"SEC"],
+["Vanderbilt",1650,"SEC"],
+["Arkansas",1580,"SEC"],
+["Kentucky",1545,"SEC"],
+["Mississippi St",1500,"SEC"],
+["Ohio State",2035,"B1G"],
+["Oregon",2005,"B1G"],
+["Indiana",1965,"B1G"],
+["USC",1845,"B1G"],
+["Michigan",1835,"B1G"],
+["Washington",1820,"B1G"],
+["Penn State",1810,"B1G"],
+["Iowa",1770,"B1G"],
+["Illinois",1655,"B1G"],
+["Minnesota",1640,"B1G"],
+["Nebraska",1610,"B1G"],
+["Michigan State",1580,"B1G"],
+["UCLA",1560,"B1G"],
+["Wisconsin",1555,"B1G"],
+["Rutgers",1500,"B1G"],
+["Maryland",1470,"B1G"],
+["Northwestern",1450,"B1G"],
+["Purdue",1380,"B1G"],
+["Texas Tech",1875,"B12"],
+["BYU",1845,"B12"],
+["Utah",1780,"B12"],
+["Houston",1760,"B12"],
+["Arizona",1680,"B12"],
+["TCU",1665,"B12"],
+["Oklahoma State",1620,"B12"],
+["Iowa State",1610,"B12"],
+["Kansas",1595,"B12"],
+["Kansas State",1585,"B12"],
+["Baylor",1575,"B12"],
+["Cincinnati",1570,"B12"],
+["Arizona State",1560,"B12"],
+["UCF",1510,"B12"],
+["Colorado",1480,"B12"],
+["West Virginia",1450,"B12"],
+["Miami",1940,"ACC"],
+["SMU",1795,"ACC"],
+["Louisville",1750,"ACC"],
+["Clemson",1735,"ACC"],
+["Georgia Tech",1640,"ACC"],
+["Pittsburgh",1645,"ACC"],
+["Virginia",1625,"ACC"],
+["Virginia Tech",1620,"ACC"],
+["Duke",1570,"ACC"],
+["NC State",1545,"ACC"],
+["Florida State",1540,"ACC"],
+["North Carolina",1520,"ACC"],
+["California",1590,"ACC"],
+["Syracuse",1490,"ACC"],
+["Boston College",1440,"ACC"],
+["Wake Forest",1425,"ACC"],
+["Stanford",1370,"ACC"],
+["Notre Dame",1980,"IND"],
+["Boise State",1690,"P12"],
+["Texas State",1520,"P12"],
+["San Diego St",1470,"P12"],
+["Colorado State",1460,"P12"],
+["Fresno State",1450,"P12"],
+["Utah State",1420,"P12"],
+["Oregon State",1415,"P12"],
+["Washington St",1400,"P12"],
+["Navy",1655,"AAC"],
+["Tulane",1620,"AAC"],
+["Memphis",1610,"AAC"],
+["Army",1545,"AAC"],
+["UTSA",1500,"AAC"],
+["South Florida",1495,"AAC"],
+["North Texas",1480,"AAC"],
+["East Carolina",1440,"AAC"],
+["Tulsa",1330,"AAC"],
+["Charlotte",1300,"AAC"],
+["Rice",1310,"AAC"],
+["Temple",1270,"AAC"],
+["FAU",1300,"AAC"],
+["UAB",1290,"AAC"],
+["UNLV",1610,"MW"],
+["New Mexico",1595,"MW"],
+["Northern Ill",1440,"MW"],
+["Air Force",1435,"MW"],
+["San Jose State",1400,"MW"],
+["Nevada",1330,"MW"],
+["Wyoming",1355,"MW"],
+["Hawaii",1340,"MW"],
+["UTEP",1250,"MW"],
+["James Madison",1640,"SBC"],
+["Louisiana",1600,"SBC"],
+["South Alabama",1470,"SBC"],
+["Marshall",1420,"SBC"],
+["App State",1410,"SBC"],
+["Georgia South",1390,"SBC"],
+["Old Dominion",1380,"SBC"],
+["Arkansas State",1350,"SBC"],
+["Coastal Car",1330,"SBC"],
+["Troy",1370,"SBC"],
+["Ga State",1250,"SBC"],
+["Western Mich",1470,"MAC"],
+["Toledo",1470,"MAC"],
+["Ohio",1450,"MAC"],
+["Miami (OH)",1420,"MAC"],
+["Buffalo",1360,"MAC"],
+["Bowling Green",1350,"MAC"],
+["Central Mich",1300,"MAC"],
+["Eastern Mich",1280,"MAC"],
+["Ball State",1240,"MAC"],
+["Akron",1200,"MAC"],
+["Kent State",1180,"MAC"],
+["Liberty",1560,"CUSA"],
+["Jacksonville St",1420,"CUSA"],
+["Western Ky",1400,"CUSA"],
+["Sam Houston",1350,"CUSA"],
+["Louisiana Tech",1330,"CUSA"],
+["Middle Tenn",1290,"CUSA"],
+["New Mexico St",1270,"CUSA"],
+["FIU",1250,"CUSA"],
+["Kennesaw State",1210,"CUSA"],
+["Delaware",1230,"CUSA"],
+["Missouri State",1180,"CUSA"]
+];
+const COLORS={"Alabama":"#9E1B32","Arkansas":"#9D2235","Auburn":"#0C2340","Florida":"#0021A5","Georgia":"#BA0C2F","Kentucky":"#0033A0","LSU":"#461D7C","Ole Miss":"#14213D","Mississippi St":"#660000","Missouri":"#F1B82D","Oklahoma":"#841617","South Carolina":"#73000A","Tennessee":"#FF8200","Texas":"#BF5700","Texas A&M":"#500000","Vanderbilt":"#866D4B","Illinois":"#E84A27","Indiana":"#990000","Iowa":"#FFCD00","Maryland":"#E03A3E","Michigan":"#FFCB05","Michigan State":"#18453B","Minnesota":"#7A0019","Nebraska":"#E41C38","Northwestern":"#4E2A84","Ohio State":"#BB0000","Oregon":"#154733","Penn State":"#041E42","Purdue":"#CEB888","Rutgers":"#CC0033","UCLA":"#2D68C4","USC":"#990000","Washington":"#4B2E83","Wisconsin":"#C5050C","Arizona":"#AB0520","Arizona State":"#8C1D40","Baylor":"#154734","BYU":"#002E5D","Cincinnati":"#E00122","Colorado":"#CFB87C","Houston":"#C8102E","Iowa State":"#C8102E","Kansas":"#0051BA","Kansas State":"#512888","Oklahoma State":"#FF7300","TCU":"#4D1979","Texas Tech":"#CC0000","UCF":"#BA9B37","Utah":"#CC0000","West Virginia":"#EAAA00","Boston College":"#98002E","California":"#003262","Clemson":"#F66733","Duke":"#00539B","Florida State":"#782F40","Georgia Tech":"#B3A369","Louisville":"#AD0000","Miami":"#F47321","NC State":"#CC0000","North Carolina":"#4B9CD3","Pittsburgh":"#FFB81C","SMU":"#354CA1","Stanford":"#8C1515","Syracuse":"#F76900","Virginia":"#232D4B","Virginia Tech":"#630031","Wake Forest":"#9E7E38","Notre Dame":"#0C2340","Boise State":"#0033A0","Colorado State":"#1E4D2B","Fresno State":"#DB0032","Oregon State":"#DC4405","San Diego St":"#A6192E","Texas State":"#501214","Utah State":"#00263A","Washington St":"#981E32","Army":"#D4BF91","Charlotte":"#046A38","East Carolina":"#592A8A","FAU":"#CC0000","Memphis":"#003087","Navy":"#00205B","North Texas":"#00853E","Rice":"#00205B","South Florida":"#006747","Temple":"#9D2235","Tulane":"#006747","Tulsa":"#002D72","UAB":"#1E6B52","UTSA":"#F15A22","Air Force":"#003087","Hawaii":"#024731","Nevada":"#003831","New Mexico":"#BA0C2F","Northern Ill":"#BA0C2F","San Jose State":"#0055A8","UNLV":"#B10202","UTEP":"#FF8200","Wyoming":"#492F24","App State":"#222222","Arkansas State":"#CC092F","Coastal Car":"#006F71","Ga State":"#0039A6","Georgia South":"#041E42","James Madison":"#450084","Louisiana":"#CE181E","Marshall":"#00B140","Old Dominion":"#003057","South Alabama":"#00205B","Troy":"#8A2432","Akron":"#041E42","Ball State":"#BA0C2F","Bowling Green":"#FE5000","Buffalo":"#005BBB","Central Mich":"#6A0032","Eastern Mich":"#046A38","Kent State":"#002664","Miami (OH)":"#C41230","Ohio":"#00694E","Toledo":"#00265D","Western Mich":"#6C4023","Delaware":"#00539F","FIU":"#081E3F","Jacksonville St":"#CC0000","Kennesaw State":"#FDBB30","Louisiana Tech":"#002F8B","Middle Tenn":"#0066CC","Missouri State":"#5E0009","New Mexico St":"#8C0B42","Sam Houston":"#F56600","Western Ky":"#B01E24","Liberty":"#002D62"};
+/* ============ players ============ */
+/* A star core of ten rated starters per program. Team strength is DERIVED from
+   these ratings rather than floating free, so injuries, graduation and recruiting
+   all move the needle through actual people. */
+
+const PNAMES_F=["Marcus","Jalen","Trevor","DeAndre","Caleb","Xavier","Bryce","Amari",
+"Cooper","Isaiah","Rashaun","Tanner","Malik","Grayson","Devonte","Hunter","Elijah",
+"Braxton","Josiah","Keenan","Dontae","Landon","Zaire","Kyler","Rocco","Jaxon","Omari",
+"Tre","Bo","Nico","Quinn","Deshaun","Cade","Ronan","Tyreek","Micah","Damari","Jett",
+"Kobe","Silas","Emory","Roman","Kade","Anwar","Diego","Kamari","Beau","Jamir","Tomas",
+"Ezra","Khalil","Brock","Nnamdi","Sione","Tua","Leilani","Makai","Dax","Colt","Rhett"];
+const PNAMES_L=["Whitfield","Okonkwo","Barrera","Sanders","Colquitt","Adeyemi","Reyes",
+"Traylor","Mbeki","Vandenberg","Hollis","Guillory","Achebe","Kirkpatrick","Solano",
+"Nwosu","Bettencourt","Ratliff","Fuamatu","Delacroix","Ivory","Sinclair","Ogunleye",
+"Castillo","Thibodeaux","Marchetti","Ude","Bramlett","Espinoza","Kealoha","Vann",
+"Duckworth","Asante","Rios","Pettigrew","Oyelaran","Steadman","Cifuentes","Igwe",
+"Balogun","Tremblay","Norwood","Sarkisian","Faletau","Mensah","Quintero","Ashworth",
+"Diallo","Buchanan","Lefevre","Odom","Tagovailoa","Kponeh","Vasquez","Randle"];
+
+/* position, share of team strength, backup dropoff, award weight */
+/* hz = share of injuries that land on this spot */
+const POS=[
+  {p:"QB",  w:0.27, drop:21, aw:1.58, hz:0.14},
+  {p:"RB",  w:0.07, drop:10, aw:1.46, hz:0.13},
+  {p:"WR",  w:0.09, drop:11, aw:1.36, hz:0.11},
+  {p:"WR2", w:0.06, drop:9,  aw:0.7, hz:0.09},
+  {p:"OT",  w:0.12, drop:12, aw:0.47, hz:0.13},
+  {p:"EDGE",w:0.11, drop:13, aw:1.0, hz:0.10},
+  {p:"DT",  w:0.08, drop:10, aw:0.62, hz:0.09},
+  {p:"LB",  w:0.08, drop:10, aw:0.85, hz:0.08},
+  {p:"CB",  w:0.07, drop:11, aw:0.78, hz:0.08},
+  {p:"S",   w:0.05, drop:9,  aw:0.5, hz:0.05},
+];
+function pickInjuredPos(rng){
+  let x=rng.r(), acc=0;
+  for(let i=0;i<POS.length;i++){acc+=POS[i].hz; if(x<acc)return i}
+  return POS.length-1;
+}
+const CLASSES=["Fr","So","Jr","Sr"];
+
+/* rating <-> Elo: teamRating 45 -> 1150, 82 -> 2050 */
+const R_SLOPE=24.3, R_INT=56;
+const ratingToElo=r=>R_INT+R_SLOPE*r;
+const eloToRating=e=>(e-R_INT)/R_SLOPE;
+
+function playerName(rng){return rng.pick(PNAMES_F)+" "+rng.pick(PNAMES_L)}
+
+function makePlayer(rng,target,cls,posIdx){
+  // upperclassmen are closer to their ceiling; freshmen start lower with room to grow
+  const clsAdj=[-7,-2,2,4][cls];   // centred so a normal class mix averages the target
+  const r=Math.round(Math.max(30,Math.min(99,rng.gauss(target+clsAdj,5.5))));
+  const pot=Math.round(Math.max(r,Math.min(99,r+rng.gauss(10-cls*2.5,5))));
+  return {n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:cls,r:r,pot:pot,
+          hz:0,prod:0,st:0};
+}
+
+function makeRoster(rng,programElo){
+  const target=eloToRating(programElo);
+  const classPlan=[3,3,2,2];               // Sr, Jr, So, Fr among ten starters
+  const bag=[];
+  classPlan.forEach((n,k)=>{for(let i=0;i<n;i++)bag.push(3-k)});
+  rng.shuffle(bag);
+  return POS.map((_,i)=>makePlayer(rng,target,bag[i],i));
+}
+
+function teamRating(roster){
+  let s=0; POS.forEach((P,i)=>{s+=P.w*roster[i].r});
+  return s;
+}
+function rosterElo(roster){return ratingToElo(teamRating(roster))}
+
+/* Elo cost of losing a given starter for a game */
+function injuryCost(roster,idx){
+  const P=POS[idx];
+  return -P.w*P.drop*R_SLOPE;
+}
+
+/* ---- offseason roster churn ---- */
+function developRoster(u,t,rng,focus,devMod,bud,featured){
+  focus=focus||{pos:null,r:0,pot:0}; devMod=devMod||0; bud=bud||null;
+  const cls=(u.classAvg&&u.classAvg[t]!==undefined)?u.classAvg[t]:null;
+  const coach=u.coach[t];
+  const base=eloToRating(u.program[t]);
+  const target=(u.classAvg&&u.classAvg[t]!==undefined)
+    ? base*0.68+u.classAvg[t]*0.32     // recent classes feed the pipeline
+    : base;
+  const leaving=[], arriving=[];
+  const roster=u.roster[t];
+  for(let i=0;i<roster.length;i++){
+    const pl=roster[i];
+    if(pl.c>=3){                                   // senior graduates
+      leaving.push({n:pl.n,p:pl.p,r:pl.r});
+      // next man up: a developed backup, or a true freshman
+      const roll=rng.r();
+      const cls=roll<0.34?0:roll<0.70?1:2;
+      const bonus=(!focus.pos||focus.pos.indexOf(POS[i].p)>=0)?focus.r:0;
+      const np=makePlayer(rng,target+(coach.q*0.045)+bonus+(coach.rec||0)*0.5
+        +(bud?bud.recruitBonus:0),cls,i);
+      if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
+      if(focus.dev)np.up=focus.dev;
+      if(cls===0)np.rec=true;
+      roster[i]=np; arriving.push(np);
+    }else{
+      // development: biggest jumps early, capped by potential, nudged by coaching
+      const base=[6.2,4.0,2.2][pl.c];
+      const feat=(featured!==undefined&&featured!==null&&featured===i)?3.8:0;
+      let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat,3.0);
+      pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
+      pl.c++;
+      // stars leave early for the draft
+      const keepOdds=bud?Math.max(0,1-bud.retention):1;
+      if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
+        leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true});
+        const roll=rng.r();
+        const cls=roll<0.40?0:roll<0.74?1:2;
+        const bonus=(!focus.pos||focus.pos.indexOf(POS[i].p)>=0)?focus.r:0;
+        const np=makePlayer(rng,target+(coach.q*0.045)+bonus,cls,i);
+        if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
+        if(focus.dev)np.up=focus.dev;
+        if(cls===0)np.rec=true;
+        roster[i]=np; arriving.push(np);
+      }
+    }
+  }
+  return {leaving:leaving,arriving:arriving};
+}
+
+function classLabel(rank,total){
+  const pct=rank/total;
+  if(rank<=10)return "Top-10 class";
+  if(pct<=0.20)return "Top-25 class";
+  if(pct<=0.45)return "Above average";
+  if(pct<=0.75)return "Middling";
+  return "Thin class";
+}
+
+/* ============ RNG ============ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+class RNG{
+  constructor(seed){this.f=mulberry32(seed);this.sp=null}
+  r(){return this.f()}
+  int(n){return Math.floor(this.f()*n)}
+  range(a,b){return a+this.f()*(b-a)}
+  pick(a){return a[this.int(a.length)]}
+  gauss(m,s){
+    if(this.sp!==null){const v=this.sp;this.sp=null;return m+s*v}
+    let u=0,v=0;while(u===0)u=this.f();while(v===0)v=this.f();
+    const R=Math.sqrt(-2*Math.log(u));this.sp=R*Math.sin(2*Math.PI*v);
+    return m+s*R*Math.cos(2*Math.PI*v)}
+  shuffle(a){for(let i=a.length-1;i>0;i--){const j=this.int(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+}
+
+/* ============ team identity ============ */
+function _hx(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+function _lum(c){const [r,g,b]=c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});
+  return .2126*r+.7152*g+.0722*b}
+function _mix(c,t,p){return c.map((v,i)=>Math.round(v+(t[i]-v)*p))}
+const _READ={};
+function teamColor(t){                    // raw brand color
+  return COLORS[t]||"#F4A63A";
+}
+function teamInk(t){                      // brand color, lightened until legible on dark
+  if(_READ[t])return _READ[t];
+  let c=_hx(COLORS[t]||"#F4A63A"), p=0;
+  while(_lum(c)<0.30&&p<0.85){p+=0.08;c=_mix(_hx(COLORS[t]||"#F4A63A"),[255,255,255],p)}
+  const out="#"+c.map(v=>v.toString(16).padStart(2,"0")).join("");
+  _READ[t]=out; return out;
+}
+
+/* ============ constants ============ */
+const ELO_PT=21, HFA=62, GAME_SD=14, K=32, NW=14;
+const CONF_NAMES={SEC:"SEC",B1G:"Big Ten",B12:"Big 12",ACC:"ACC",P12:"Pac-12",
+  AAC:"American",MW:"Mountain West",SBC:"Sun Belt",MAC:"MAC",CUSA:"Conference USA",IND:"Independent"};
+const CONF_ORDER=["SEC","B1G","B12","ACC","P12","AAC","MW","SBC","MAC","CUSA"];
+const G6=["AAC","CUSA","MAC","MW","P12","SBC"];
+const DATES=["Sep 5","Sep 12","Sep 19","Sep 26","Oct 3","Oct 10","Oct 17","Oct 24",
+  "Oct 31","Nov 7","Nov 14","Nov 21","Nov 28","Dec 5"];
+const NAMES=TEAMS.map(t=>t[0]);
+const CONF=Object.fromEntries(TEAMS.map(t=>[t[0],t[2]]));
+
+/* ============ schedule ============ */
+/* d-regular circulant: every team gets EXACTLY d conference games.
+   Valid whenever d <= n-1 and (n*d) is even. */
+function confGraph(members,d,rng){
+  const idx=rng.shuffle(members.slice()), n=idx.length, out=[];
+  d=Math.min(d,n-1);
+  if((n*d)%2!==0)d-=1;
+  const half=Math.floor(d/2);
+  for(let o=1;o<=half;o++)
+    for(let i=0;i<n;i++)out.push([idx[i],idx[(i+o)%n]]);
+  if(d%2===1)for(let i=0;i<n/2;i++)out.push([idx[i],idx[i+n/2]]);
+  return out;
+}
+
+function rrRounds(list){
+  const t=list.slice(); if(t.length%2)t.push(null);
+  const n=t.length, out=[];
+  for(let k=0;k<n-1;k++){
+    const p=[];
+    for(let i=0;i<n/2;i++){const a=t[i],b=t[n-1-i];if(a&&b)p.push([a,b])}
+    out.push(p); t.splice(1,0,t.pop());
+  }
+  return out;
+}
+
+function buildSchedule(rng,R){
+  const byConf={};
+  NAMES.forEach(t=>{(byConf[CONF[t]]=byConf[CONF[t]]||[]).push(t)});
+  const games=[], nGames={B1G:9,B12:9};
+  for(const c in byConf){
+    if(c==="IND")continue;
+    confGraph(byConf[c], nGames[c]||8, rng).forEach(([a,b])=>{
+      if(rng.r()<0.5)games.push([b,a,true,false]); else games.push([a,b,true,false]);
+    });
+  }
+  const played={}; NAMES.forEach(t=>played[t]=0);
+  games.forEach(g=>{played[g[0]]++;played[g[1]]++});
+  const RR=Object.assign({},R);
+  NAMES.forEach(t=>{if(CONF[t]==="IND")RR[t]=RR[t]+130});
+  const seen=new Set(games.map(g=>[g[0],g[1]].sort().join("|")));
+  let pool=[];
+  NAMES.forEach(t=>{for(let i=0;i<Math.max(0,12-played[t]);i++)pool.push(t)});
+  rng.shuffle(pool);
+  let tries=0;
+  while(pool.length>=2 && tries<80000){
+    tries++;
+    const i=rng.int(pool.length), a=pool[i];
+    const target=RR[a]+(rng.r()<0.24?rng.gauss(0,120):-rng.range(300,750));
+    let bj=null,best=null;
+    for(let s=0;s<8;s++){
+      const k=rng.int(pool.length); if(k===i)continue;
+      const d=Math.abs(RR[pool[k]]-target);
+      if(best===null||d<best){best=d;bj=k}
+    }
+    if(bj===null)continue;
+    const b=pool[bj];
+    if(a===b||CONF[a]===CONF[b])continue;
+    const key=[a,b].sort().join("|"); if(seen.has(key))continue;
+    seen.add(key);
+    let home;
+    if(Math.abs(RR[a]-RR[b])>200) home=RR[a]>RR[b]?a:b;
+    else home=rng.r()<0.5?a:b;
+    games.push([home===a?b:a, home, false, false]);
+    const idx=[i,bj].sort((x,y)=>y-x);
+    idx.forEach(x=>pool.splice(x,1));
+  }
+  // pairing repair: pair leftovers directly, or steal an opponent from an
+  // existing non-conference game and push the displaced team back into the pool.
+  const kOf=(x,y)=>[x,y].sort().join("|");
+  let guard=0;
+  while(pool.length>0 && guard++<20000){
+    const a=pool[0];
+    let partner=-1;
+    for(let k=1;k<pool.length;k++){
+      const b=pool[k];
+      if(a===b||CONF[a]===CONF[b])continue;
+      if(seen.has(kOf(a,b)))continue;
+      partner=k;break;
+    }
+    if(partner>=0){
+      const b=pool[partner];
+      seen.add(kOf(a,b));
+      const home=rng.r()<0.5?a:b;
+      games.push([home===a?b:a,home,false,false]);
+      pool.splice(partner,1);pool.splice(0,1);
+      continue;
+    }
+    // steal: replace non-conf game (p,q) with (a,p); q re-enters the pool
+    let stole=false;
+    const order=rng.shuffle(games.map((g,i)=>i).filter(i=>!games[i][2]));
+    for(const gi of order){
+      const g=games[gi], x=g[0], y=g[1];
+      for(const [p,q] of [[x,y],[y,x]]){
+        if(p===a||CONF[a]===CONF[p])continue;
+        if(seen.has(kOf(a,p)))continue;
+        seen.delete(kOf(x,y));
+        seen.add(kOf(a,p));
+        games.splice(gi,1);
+        const home=rng.r()<0.5?a:p;
+        games.push([home===a?p:a,home,false,false]);
+        pool.splice(0,1);
+        pool.push(q);
+        stole=true;break;
+      }
+      if(stole)break;
+    }
+    if(!stole){pool.splice(0,1)}
+  }
+
+  enforceRivalries(games,rng);
+
+  /* Balance home and away. A coin flip per game leaves teams with ten road
+     trips; real slates are close to six and six. */
+  (function balanceHome(){
+    const homeCt={}; NAMES.forEach(t=>homeCt[t]=0);
+    games.forEach(g=>homeCt[g[1]]++);
+    const tgt={}; NAMES.forEach(t=>tgt[t]=0);
+    games.forEach(g=>{tgt[g[0]]+=0.5;tgt[g[1]]+=0.5});
+    const dev=t=>homeCt[t]-tgt[t];
+    const idx=games.map((g,i)=>i);
+    for(let pass=0;pass<400;pass++){
+      let moved=false;
+      rng.shuffle(idx);
+      for(const i of idx){
+        const g=games[i]; if(g[3])continue;      // leave neutral sites alone
+        const away=g[0], home=g[1];
+        if(dev(home)-dev(away)>=1){              // strictly reduces the spread
+          g[0]=home; g[1]=away;
+          homeCt[home]--; homeCt[away]++;
+          moved=true;
+        }
+      }
+      if(!moved)break;
+    }
+  })();
+
+  // week assignment — retried until every team has a full slate
+  let bestSched=null, bestShort=1e9;
+  for(let attempt=0; attempt<6; attempt++){
+  rng.shuffle(games); games.sort((x,y)=>(x[2]?1:0)-(y[2]?1:0));
+  const busy={}; NAMES.forEach(t=>busy[t]=new Set());
+  const sched=[], unplaced=[];
+  games.forEach(([a,h,isC,neu])=>{
+    const order=isC?[...Array(NW).keys()].slice(3).concat([0,1,2])
+                   :[...Array(NW).keys()];
+    let ok=false;
+    for(const w of order){
+      if(!busy[a].has(w)&&!busy[h].has(w)){
+        busy[a].add(w);busy[h].add(w);
+        sched.push({week:w,away:a,home:h,conf:isC,neutral:neu});ok=true;break}
+    }
+    if(!ok)unplaced.push([a,h,isC,neu]);
+  });
+  const place=(a,h,isC,neu)=>{
+    for(let w=0;w<NW;w++){
+      if(!busy[a].has(w)&&!busy[h].has(w)){
+        busy[a].add(w);busy[h].add(w);
+        sched.push({week:w,away:a,home:h,conf:isC,neutral:neu});return true}
+    }
+    return false;
+  };
+  const move=(g,depth)=>{               // try to relocate game g to a free week
+    const A=g.home,B=g.away,cur=g.week;
+    for(let w=0;w<NW;w++){
+      if(w===cur)continue;
+      if(!busy[A].has(w)&&!busy[B].has(w)){
+        busy[A].delete(cur);busy[B].delete(cur);
+        busy[A].add(w);busy[B].add(w);g.week=w;return true}
+    }
+    if(depth<=0)return false;
+    for(let w=0;w<NW;w++){
+      if(w===cur)continue;
+      const block=sched.filter(x=>x!==g&&x.week===w&&
+        (x.home===A||x.away===A||x.home===B||x.away===B));
+      if(block.length!==1)continue;
+      if(move(block[0],depth-1)){
+        if(!busy[A].has(w)&&!busy[B].has(w)){
+          busy[A].delete(cur);busy[B].delete(cur);
+          busy[A].add(w);busy[B].add(w);g.week=w;return true}
+      }
+    }
+    return false;
+  };
+  const stillOut=[];
+  unplaced.forEach(([a,h,isC,neu])=>{
+    if(place(a,h,isC,neu))return;
+    let ok=false;
+    for(let w=0;w<NW&&!ok;w++){
+      const block=sched.filter(x=>x.week===w&&
+        (x.home===a||x.away===a||x.home===h||x.away===h));
+      if(block.length!==1)continue;
+      if(move(block[0],2)&&!busy[a].has(w)&&!busy[h].has(w)){
+        busy[a].add(w);busy[h].add(w);
+        sched.push({week:w,away:a,home:h,conf:isC,neutral:neu});ok=true}
+    }
+    if(!ok)stillOut.push([a,h,isC,neu]);
+  });
+  stillOut.forEach(([a,h,isC,neu])=>{ place(a,h,isC,neu) });
+  lateenRivalries(sched,busy);
+  fillEarlyByes(sched,busy);
+  const tally={}; NAMES.forEach(t=>tally[t]=0);
+  sched.forEach(g=>{tally[g.home]++;tally[g.away]++});
+  const shortfall=games.length-sched.length;
+  if(shortfall<bestShort){bestShort=shortfall;bestSched=sched}
+  if(shortfall===0)return sched;
+  }
+  return bestSched;
+}
+
+/* ============ game sim ============ */
+function simGame(rng,tH,tA,neutral,sdMult,edgeAdj){
+  const edge=tH-tA+(neutral?0:HFA)+(edgeAdj||0);
+  let m=Math.round(rng.gauss(edge/ELO_PT,GAME_SD*(sdMult||1)));
+  if(m===0)m=rng.r()<0.5?-3:3;
+  let total=rng.gauss(52,9.5)+Math.abs(m)*0.18;
+  total=Math.max(20,Math.min(95,total));
+  let lo=Math.max(0,Math.round((total-Math.abs(m))/2));
+  let hi=lo+Math.abs(m);
+  // 1 is not a reachable football score
+  if(lo===1)lo=(rng.r()<0.5?0:2);
+  if(hi===1)hi=2;
+  if(hi<=lo)hi=lo+1;
+  if(hi===1)hi=2;
+  m=(m>0?1:-1)*(hi-lo);
+  return m>0?[hi,lo,m]:[lo,hi,m];
+}
+function eloUpdate(eW,eL,mAbs,winHome,neutral){
+  const hfa=neutral?0:HFA;
+  const diff=winHome?(eW+hfa-eL):(eW-eL-hfa);
+  const exp=1/(1+Math.pow(10,-diff/400));
+  const mov=Math.log(mAbs+1)*(2.2/(0.001*diff+2.2));
+  return K*mov*(1-exp);
+}
+
+/* ============ talent ============ */
+const INJ_HAZARD=0.085,QB_SHARE=0.18,DEV_SD=4.2,AR_SD=5,AR_DECAY=0.8,
+      COLLAPSE_P=0.018,BREAKOUT_P=0.018;
+const BODY=["OL","WR1","RB1","EDGE","CB1","LB","TE","S"];
+function iscale(r){return 0.70+0.45*Math.max(0,Math.min(1,(r-1150)/900))}
+
+class Talent{
+  constructor(rng,base,roster){
+    this.rng=rng;this.base=Object.assign({},base);
+    this.roster=roster||null;
+    this.slope={};this.ar={};this.inj={};this.log={};
+    NAMES.forEach(t=>{this.slope[t]=rng.gauss(0,DEV_SD);this.ar[t]=0;
+      this.inj[t]=[];this.log[t]=[]});
+  }
+  eff(t,w){
+    let s=0; this.inj[t].forEach(e=>{if(e.w>0)s+=e.m});
+    return this.base[t]+this.slope[t]*w+this.ar[t]+s;
+  }
+  active(t){return this.inj[t].filter(e=>e.w>0)}
+  advance(w){
+    const r=this.rng;
+    NAMES.forEach(t=>{
+      this.inj[t].forEach(e=>e.w--);
+      this.inj[t].filter(e=>e.w<=0).forEach(e=>
+        this.log[t].push({wk:w,kind:"back",what:e.k,mag:0}));
+      this.inj[t]=this.inj[t].filter(e=>e.w>0);
+      const sc=iscale(this.base[t]);
+      if(r.r()<INJ_HAZARD){
+        if(this.roster){
+          // pick a starter, weighted toward the positions that take hits
+          const idx=pickInjuredPos(r);
+          const pl=this.roster[t][idx];
+          if(!this.inj[t].some(e=>e.idx===idx)){
+            const sev=r.r();
+            const wk=sev<0.12?14:r.pick([1,2,2,3,4,5,6]);
+            const m=injuryCost(this.roster[t],idx)*r.range(1.05,2.1);
+            this.inj[t].push({m:m,w:wk,k:pl.p,idx:idx,who:pl.n,rating:pl.r});
+            this.log[t].push({wk:w,kind:"injury",what:pl.p,who:pl.n,
+                              mag:Math.round(m),weeks:wk});
+          }
+        }else{
+          let m,wk,k;
+          if(r.r()<QB_SHARE){m=-r.range(85,190)*sc;wk=r.pick([2,3,4,5,6,14]);k="QB1"}
+          else{m=-r.range(20,75)*sc;wk=r.pick([1,2,2,3,4,6]);k=r.pick(BODY)}
+          this.inj[t].push({m:m,w:wk,k:k});
+          this.log[t].push({wk:w,kind:"injury",what:k,mag:Math.round(m),weeks:wk});
+        }
+      }
+      if(r.r()<COLLAPSE_P){const d=-r.range(40,110)*sc;this.base[t]+=d;
+        this.log[t].push({wk:w,kind:"collapse",what:"locker room",mag:Math.round(d)})}
+      else if(r.r()<BREAKOUT_P){const d=r.range(35,95)*sc;this.base[t]+=d;
+        this.log[t].push({wk:w,kind:"breakout",what:"scheme unlock",mag:Math.round(d)})}
+      this.ar[t]=this.ar[t]*AR_DECAY+r.gauss(0,AR_SD);
+    });
+  }
+}
+
+/* ============ poll ============ */
+const INERTIA=0.82,ELO_PULL=0.18,L_UNR=-138,L_RNK=-58,L_T10=-24,
+      W_T10=48,W_RNK=26,W_UNR=4,BLOWOUT=10,IDLE=-3;
+class Poll{
+  constructor(pre){this.s=Object.assign({},pre)}
+  order(){return NAMES.slice().sort((a,b)=>this.s[b]-this.s[a])}
+  rankMap(){const o=this.order(),m={};o.forEach((t,i)=>m[t]=i+1);return m}
+  update(res,elo){
+    const prev=this.rankMap(), played=new Set(), d={};
+    NAMES.forEach(t=>d[t]=0);
+    res.forEach(r=>{
+      const w=r.winner,l=r.loser,m=r.margin;
+      played.add(w);played.add(l);
+      const lr=prev[l]||999, wr=prev[w]||999;
+      if(wr<=25||lr<=25){
+        d[w]+= lr<=10?W_T10 : lr<=25?W_RNK : W_UNR;
+        if(m>=21&&lr<=25)d[w]+=BLOWOUT;
+      } else d[w]+=W_UNR;
+      d[l]+= wr<=10?L_T10 : wr<=25?L_RNK : L_UNR;
+      if(m>=21)d[l]-=19;
+    });
+    NAMES.forEach(t=>{
+      this.s[t]=this.s[t]*INERTIA+(1-INERTIA)*this.s[t]
+                +ELO_PULL*(elo[t]-this.s[t])+d[t]+(played.has(t)?0:IDLE);
+    });
+    const winners=new Set(res.map(r=>r.winner));
+    const nr=this.rankMap();
+    winners.forEach(t=>{
+      if((prev[t]||999)<=25 && (nr[t]||999)>prev[t]){
+        const o=this.order(), ref=o[prev[t]-1];
+        if(ref)this.s[t]=this.s[ref]+0.5;
+      }
+    });
+    return this.rankMap();
+  }
+}
+
+/* ============ coaches ============ */
+const FIRST=["Mike","Dave","Chris","Brian","Kevin","Jim","Tom","Matt","Scott","Ryan",
+"Marcus","Jalen","Andre","Terrance","Luis","Miguel","Sean","Pat","Dan","Greg","Curt",
+"Lance","Wes","Hakeem","Devon","Rashad","Trent","Cole","Brady","Nate","Emmanuel","Kirk",
+"Josh","Barry","Hugh","Lincoln","Deion","Willie","Herman","Vance","Bronco","Kalani"];
+const LAST=["Whitaker","Bowden","Delgado","Okafor","Hargrove","Castellano","Boone","Mueller",
+"Sandoval","Petrino","Kiffin","Vasquez","Ferrell","Njoku","Sutherland","Barclay","Rossi",
+"Hollins","Amaya","Kowalski","Reeves","Chatman","Okoye","Vandiver","Prescott","Blackmon",
+"Mahoney","Salazar","Tuiasosopo","Ferentz","Lindgren","Abara","Doucet","Yarborough",
+"Ellsworth","Cormier","Nkemdiche","Stallings","Renfro","Pelini","Cristobal","Satterfield"];
+
+function newCoach(rng,prestige){
+  // better programs attract better coaches
+  const tier=Math.max(0,Math.min(1,(prestige-1150)/900));
+  const q=rng.gauss(-24+tier*52, 26);
+  return {n:rng.pick(FIRST)+" "+rng.pick(LAST), q:Math.round(Math.max(-58,Math.min(68,q))), t:0, hired:true};
+}
+
+function coachGrade(q){
+  if(q>=38)return "elite";
+  if(q>=18)return "strong";
+  if(q>=-5)return "solid";
+  if(q>=-25)return "shaky";
+  return "overmatched";
+}
+
+/* ============ decisions ============ */
+const ARCHETYPES=[
+ {k:"proven", l:"Proven winner",  bump:16, sd:16,
+  d:"Has won at this level before. Expensive, and the expectations arrive with him."},
+ {k:"riser",  l:"Rising coordinator", bump:2, sd:36,
+  d:"Hottest name on the market. Could be the next great one, could be a coordinator forever."},
+ {k:"builder",l:"Program builder", bump:-4, sd:19, rec:9,
+  d:"Wins on the recruiting trail before he wins on Saturdays. Slow burn, high floor."},
+ {k:"retread",l:"Veteran retread", bump:-7, sd:11,
+  d:"Been fired twice. Knows exactly what he is, and so does everyone else."}
+];
+
+function coachCandidates(rng,prestige){
+  const tier=Math.max(0,Math.min(1,(prestige-1150)/900));
+  const pool=rng.shuffle(ARCHETYPES.slice()).slice(0,3);
+  return pool.map(A=>{
+    const q=Math.round(Math.max(-58,Math.min(68,
+      rng.gauss(-24+tier*52+A.bump, A.sd))));
+    // scouting is imperfect: you see a noisy read, not the number
+    const seen=q+rng.gauss(0,13);
+    return {n:rng.pick(FIRST)+" "+rng.pick(LAST), q:q, arch:A.k, al:A.l, d:A.d,
+            rec:A.rec||0, grade:coachGrade(seen)};
+  });
+}
+
+const RECRUIT_FOCUS={
+  balanced:{l:"Best available", d:"Take the best player on the board at every spot.",
+            pos:null, r:0, pot:0},
+  trenches:{l:"Win the trenches", d:"Load up on the lines. Slower payoff, sturdier teams.",
+            pos:["OT","EDGE","DT"], r:8, pot:0},
+  skill:   {l:"Skill players",   d:"Quarterbacks and playmakers. Explosive, and streakier.",
+            pos:["QB","RB","WR","WR2"], r:5, pot:0},
+  upside:  {l:"Chase upside",    d:"Raw prospects with ceilings. Rough now, dangerous in two years.",
+            pos:null, r:-5, pot:14, dev:3.4}
+};
+
+const PHILOSOPHY={
+  win_now: {l:"Win now",  d:"Veterans get every rep. Better this year, thinner next.",
+            elo:44, dev:-3.0},
+  balanced:{l:"Balanced", d:"Play the best guy at every spot.", elo:0, dev:0},
+  build:   {l:"Build",    d:"Young players play through mistakes. Costs you this year.",
+            elo:-38, dev:3.2}
+};
+
+/* ============ program budget ============ */
+/* A fixed pool each offseason. Everything you fund is something you didn't. */
+const BUCKETS=[
+ {k:"recruit",  l:"Recruiting",   d:"Better players sign. Pays off in two or three years."},
+ {k:"develop",  l:"Development",  d:"Strength staff and position coaches. Your current roster grows faster."},
+ {k:"facility", l:"Facilities",   d:"Permanent. Compounds quietly for as long as you're here."},
+ {k:"retention",l:"Retention/NIL",d:"Keep your stars from leaving early for the draft."}
+];
+
+function budgetPool(u,t,wins){
+  const base=6+Math.round((u.program[t]-1150)/150);
+  const success=wins>=11?3:wins>=9?2:wins>=7?1:0;
+  const fac=Math.floor((u.facility&&u.facility[t]?u.facility[t]:0)/22);
+  return Math.max(6,Math.min(20,base+success+fac));
+}
+
+function applyBudgetRead(alloc){
+  return {recruitBonus:(alloc.recruit||0)*0.30,
+          devBonus:(alloc.develop||0)*0.46,
+          retention:Math.min(0.62,(alloc.retention||0)*0.055)};
+}
+
+function applyBudget(u,t,alloc){
+  u.facility=u.facility||{};
+  u.facility[t]=(u.facility[t]||0)+(alloc.facility||0)*2.4;
+  return {
+    recruitBonus:(alloc.recruit||0)*0.30,
+    devBonus:(alloc.develop||0)*0.46,
+    retention:Math.min(0.62,(alloc.retention||0)*0.055),
+    facility:Math.min(520,u.facility[t])
+  };
+}
+
+/* ============ your coaching career ============ */
+/* You are the head coach, not the athletic director. You get hired, you get
+   fired, and your record follows you to the next job. */
+function repGrade(r){
+  if(r>=46)return "a national name";
+  if(r>=26)return "a hot commodity";
+  if(r>=8)return "well regarded";
+  if(r>=-10)return "unproven";
+  if(r>=-28)return "a hard sell";
+  return "radioactive";
+}
+
+/* Which jobs would take you, given what you've done. */
+function jobMarket(u,rng,rep,openings,current){
+  const ceiling=1300+Math.max(0,rep+40)*10;      // reputation opens bigger doors
+  const floor=Math.max(1120,ceiling-620);
+  const opts=openings.filter(t=>t!==current)
+    .filter(t=>u.program[t]<=ceiling&&u.program[t]>=floor)
+    .sort((a,b)=>u.program[b]-u.program[a]);
+  const picked=[];
+  if(opts.length)picked.push(opts[0]);
+  if(opts.length>2)picked.push(opts[Math.floor(opts.length/2)]);
+  if(opts.length>1)picked.push(opts[opts.length-1]);
+  return [...new Set(picked)].slice(0,3);
+}
+
+/* Bigger programs come calling when you overperform at a small one. */
+function poachOffers(u,rng,rep,openings,current){
+  if(rep<18)return [];
+  const mine=u.program[current];
+  return openings.filter(t=>t!==current&&u.program[t]>mine+150
+    &&u.program[t]<=1240+Math.max(0,rep+30)*12)
+    .sort((a,b)=>u.program[b]-u.program[a]).slice(0,2);
+}
+
+function repDelta(wins,losses,expWins,program,titles){
+  const wp=wins/Math.max(1,wins+losses);
+  let d=(wins-expWins)*1.7;
+  if(titles.natl)d+=22;
+  else if(titles.playoff)d+=8;
+  else if(titles.conf)d+=6;
+  if(wp<0.34&&wins<expWins)d-=6;   // only if you also missed the mark
+  // winning at a small program counts for more
+  d*= program<1500?1.25 : program>1850?0.82 : 1.0;
+  return d;
+}
+
+/* ============ program continuity ============ */
+const COACH_ONFIELD=0.55,  // how much coach quality shows up on the field
+      COACH_BUILD=0.34,    // how much it compounds into the program each year
+      ROOKIE_DIP=-22;
+const ROSTER_NOISE=48;
+const CARRY=0.45,CHURN_SD=95,RECRUIT=0.16,PROG_NOISE=22,
+      P_FLOOR=1120,P_CEIL=2010,HOT_SEAT=0.42,COACH_SD=62,COACH_DIP=-18,PERCEPT_N=34;
+
+function newUniverse(seed){
+  const rng=new RNG(seed);
+  const u={seed:seed,year:2026,program:{},perceived:{},trueBase:{},
+           tenure:{},bad:{},history:[],rng:seed};
+  u.coach={}; u.roster={};
+  TEAMS.forEach(([n,e])=>{
+    u.program[n]=e; u.perceived[n]=e;
+    u.roster[n]=makeRoster(rng,e);
+    u.trueBase[n]=rosterElo(u.roster[n])+rng.gauss(0,26);
+    u.tenure[n]=1+rng.int(6); u.bad[n]=0;
+    const c=newCoach(rng,e); c.t=u.tenure[n]; c.hired=false;
+    u.coach[n]=c;
+  });
+  u._rngState=seed*7919+13;
+  return u;
+}
+
+function seatHeat(u,rec,elo,t){
+  // expectation is the program's own baseline; heat is falling short of it repeatedly
+  const w=rec[t][0], l=rec[t][1], wp=w/Math.max(1,w+l);
+    const shortfall=(u.program[t]-elo[t])/45;
+  let heat=u.bad[t]*1.4 + Math.max(0,shortfall) + (wp<HOT_SEAT?1.2:0);
+  if(u.coach[t]&&u.coach[t].t<=1)heat-=1.6;         // rookies get a grace year
+  if(u.coach[t]&&u.coach[t].q>=30)heat-=0.6;
+  return heat;
+}
+
+/* Offseason runs in two acts so the player can decide in between.
+   Act 1: the coaching carousel. Act 2: rosters, recruiting, development. */
+function offseasonCoaching(u,rng,rec,elo,userTeam){
+  const fired=[],hires=[],poached=[];
+  if(!u.coach){u.coach={};NAMES.forEach(t=>{u.coach[t]=newCoach(rng,u.program[t]);u.coach[t].hired=false})}
+
+  NAMES.forEach(t=>{
+    const wp=rec[t][0]/Math.max(1,rec[t][0]+rec[t][1]);
+    u.bad[t]= wp<HOT_SEAT ? u.bad[t]+1 : 0;
+    const heat=seatHeat(u,rec,elo,t);
+    const change=(heat>=4.6)||(wp<0.25&&u.coach[t].t>=2);
+    if(change&&rng.r()<0.82){fired.push(t);u.bad[t]=0}
+  });
+
+  const openings=fired.slice().sort((a,b)=>u.program[b]-u.program[a]);
+  openings.forEach(job=>{
+    if(rng.r()>0.42)return;
+    const cands=NAMES.filter(t=>fired.indexOf(t)<0 && u.coach[t].q>=22
+      && u.program[t] < u.program[job]-140 && u.coach[t].t>=2
+      && rec[t][0]>=rec[t][1]);
+    if(!cands.length)return;
+    cands.sort((a,b)=>u.coach[b].q-u.coach[a].q);
+    const from=cands[0], c=u.coach[from];
+    poached.push({to:job,from:from,name:c.n,q:c.q});
+    u.coach[job]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0};
+    u.coach[from]=newCoach(rng,u.program[from]);
+    hires.push({team:from,name:u.coach[from].n,q:u.coach[from].q,reason:"replacing "+c.n});
+    fired.splice(fired.indexOf(job),1);
+    if(fired.indexOf(from)<0)fired.push(from);
+  });
+
+  const userOpen=fired.indexOf(userTeam)>=0;
+  const openJobs=fired.slice();
+  const candidates=userOpen?coachCandidates(rng,u.program[userTeam]):null;
+
+  fired.forEach(t=>{
+    if(t===userTeam)return;                       // that's your job, not an AI hire
+    if(u.coach[t].hired&&u.coach[t].t===0)return;
+    const old=u.coach[t].n;
+    u.coach[t]=newCoach(rng,u.program[t]);
+    hires.push({team:t,name:u.coach[t].n,q:u.coach[t].q,reason:"replacing "+old});
+  });
+
+  return {fired:fired,hires:hires,poached:poached,userOpen:userOpen,
+          candidates:candidates,openJobs:openJobs};
+}
+
+function offseasonRosters(u,rng,healthy,elo,rec,choices){
+  choices=choices||{};
+  const risers=[],fallers=[],churn={};
+  const ut=choices.userTeam;
+
+  if(ut&&choices.coach){
+    const c=choices.coach;
+    u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0};
+  }
+
+  NAMES.forEach(t=>{
+    const before=u.program[t];
+    const c=u.coach[t];
+    u.program[t]+=RECRUIT*(elo[t]-u.program[t])
+                 +c.q*COACH_BUILD
+                 +rng.gauss(0,PROG_NOISE*iscale(u.program[t]));
+    u.program[t]=Math.max(P_FLOOR,Math.min(P_CEIL,u.program[t]));
+    c.t++;
+    const focus=(t===ut&&choices.recruit)?choices.recruit:"balanced";
+    let devMod=(t===ut&&u.phil&&PHILOSOPHY[u.phil])?PHILOSOPHY[u.phil].dev:0;
+    let bud=null;
+    if(t===ut&&choices.budget){
+      bud=applyBudget(u,t,choices.budget);
+      devMod+=bud.devBonus;
+      u.program[t]+=bud.facility*0.20;      // facilities lift the program itself
+    }
+    churn[t]=developRoster(u,t,rng,RECRUIT_FOCUS[focus],devMod,bud,choices.featured);
+    u.trueBase[t]=rosterElo(u.roster[t])
+                 +(c.t<=1?ROOKIE_DIP:0)
+                 +rng.gauss(0,ROSTER_NOISE);
+    u.perceived[t]=0.58*elo[t]+0.42*u.program[t]+rng.gauss(0,PERCEPT_N);
+    const d=u.program[t]-before;
+    if(d>35)risers.push([t,Math.round(d)]);
+    if(d<-35)fallers.push([t,Math.round(d)]);
+  });
+
+  /* Every program signs a class each year, whether or not a freshman starts.
+     Quality tracks program pull, the coach's recruiting, and your stated focus. */
+  u.classAvg=u.classAvg||{};
+  const incoming=[];
+  NAMES.forEach(t=>{
+    const c=u.coach[t];
+    const focus=(t===ut&&choices.recruit)?RECRUIT_FOCUS[choices.recruit]:RECRUIT_FOCUS.balanced;
+    const q=eloToRating(u.program[t])
+           +c.q*0.055 +(c.rec||0)*0.55
+           +(focus.r||0)*0.45 +(focus.pot||0)*0.12
+           +((t===ut&&choices.budget)?applyBudgetRead(choices.budget).recruitBonus*0.6:0)
+           +rng.gauss(0,2.6);
+    const signed=6+Math.round(rng.range(0,3));
+    incoming.push([t,q,signed]);
+    // classes compound: what you sign now shapes who is available later
+    const prev=u.classAvg[t]!==undefined?u.classAvg[t]:q;
+    u.classAvg[t]=prev*0.62+q*0.38;
+  });
+  incoming.sort((a,b)=>b[1]-a[1]);
+  const classes={};
+  incoming.forEach(([t,av,n],i)=>{
+    classes[t]={avg:Math.round(av),n:n,rank:i+1,of:incoming.length,
+                l:classLabel(i+1,incoming.length)};
+  });
+  const early={};
+  NAMES.forEach(t=>{const x=churn[t].leaving.filter(y=>y.early); if(x.length)early[t]=x});
+
+  if(ut&&choices.phil)u.phil=choices.phil;
+  u.year++;
+  risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
+  return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
+          churn:churn,classes:classes,early:early};
+}
+
+/* ============ rivalries ============ */
+/* Annual games with something on the line. These are forced into every schedule
+   and pushed as late in the year as the calendar allows. */
+const RIVALS=[
+["Michigan","Ohio State","The Game"],
+["Alabama","Auburn","the Iron Bowl"],
+["Texas","Oklahoma","the Red River Rivalry"],
+["Army","Navy","the Army-Navy Game"],
+["Florida","Georgia","the World's Largest Outdoor Cocktail Party"],
+["USC","UCLA","the Victory Bell"],
+["Washington","Washington St","the Apple Cup"],
+["Clemson","South Carolina","the Palmetto Bowl"],
+["Florida State","Miami","the Sunshine Showdown"],
+["Notre Dame","USC","the Jeweled Shillelagh"],
+["Iowa","Iowa State","the Cy-Hawk Trophy"],
+["Minnesota","Wisconsin","Paul Bunyan's Axe"],
+["Michigan","Michigan State","the Paul Bunyan Trophy"],
+["Indiana","Purdue","the Old Oaken Bucket"],
+["Illinois","Northwestern","the Land of Lincoln Trophy"],
+["Kansas","Kansas State","the Sunflower Showdown"],
+["Texas","Texas A&M","the Lone Star Showdown"],
+["Ole Miss","Mississippi St","the Egg Bowl"],
+["LSU","Ole Miss","the Magnolia Bowl"],
+["Georgia","Georgia Tech","Clean Old-Fashioned Hate"],
+["Tennessee","Vanderbilt","the Beer Barrel"],
+["Kentucky","Louisville","the Governor's Cup"],
+["Auburn","Georgia","the Deep South's Oldest Rivalry"],
+["Missouri","Arkansas","the Battle Line Rivalry"],
+["Utah","BYU","the Holy War"],
+["Arizona","Arizona State","the Territorial Cup"],
+["Colorado","Colorado State","the Rocky Mountain Showdown"],
+["Pittsburgh","West Virginia","the Backyard Brawl"],
+["Virginia","Virginia Tech","the Commonwealth Cup"],
+["North Carolina","Duke","the Victory Bell"],
+["NC State","North Carolina","the Textile Bowl"],
+["Air Force","Navy","the Commander-in-Chief's Trophy"],
+["Nevada","UNLV","the Fremont Cannon"],
+["Toledo","Bowling Green","the Battle of I-75"],
+["Miami (OH)","Cincinnati","the Victory Bell"],
+["Baylor","TCU","the Revivalry"],
+["Oklahoma State","Oklahoma","Bedlam"],
+["Iowa","Nebraska","the Heroes Trophy"],
+["Penn State","Pittsburgh","the Keystone Classic"],
+["Stanford","California","the Big Game"],
+["SMU","TCU","the Iron Skillet"],
+["Houston","Rice","the Bayou Bucket"],
+["UTEP","New Mexico St","the Battle of I-10"],
+["Wyoming","Colorado State","the Border War"],
+["App State","Georgia South","the Deeper South"],
+["Troy","South Alabama","the Battle for the Belt"],
+["Fresno State","San Jose State","the Valley Trophy"],
+["Boise State","Utah State","the Milk Can"],
+["Marshall","Old Dominion","the Coastal Clash"],
+["Memphis","Tulane","the Bell Game"],
+];
+
+/* the ones that traditionally close the season */
+const MARQUEE=new Set(["The Game","the Iron Bowl","the Egg Bowl","the Apple Cup",
+"the Palmetto Bowl","Clean Old-Fashioned Hate","the Backyard Brawl","the Big Game",
+"the Territorial Cup","the Commonwealth Cup","the Victory Bell","the Civil War",
+"the Lone Star Showdown","Bedlam","the Holy War","the Army-Navy Game",
+"the Old Oaken Bucket","Paul Bunyan's Axe","the Governor's Cup","the Sunflower Showdown"]);
+
+const RIVAL_OF={};
+RIVALS.forEach(([a,b,n])=>{
+  (RIVAL_OF[a]=RIVAL_OF[a]||[]).push({o:b,n:n});
+  (RIVAL_OF[b]=RIVAL_OF[b]||[]).push({o:a,n:n});
+});
+function rivalryName(a,b){
+  const l=RIVAL_OF[a]||[];
+  const hit=l.find(x=>x.o===b);
+  return hit?hit.n:null;
+}
+
+/* Force every rivalry onto the schedule by swapping opponents, then drag those
+   games as late in the season as both teams are free. */
+function enforceRivalries(games,rng){
+  const key=(x,y)=>[x,y].sort().join("|");
+  const has=new Set(games.map(g=>key(g[0],g[1])));
+  RIVALS.forEach(([a,b])=>{
+    if(!NAMES.includes(a)||!NAMES.includes(b))return;
+    if(has.has(key(a,b)))return;
+    const sameConf=CONF[a]===CONF[b];
+    // find one game for each that can be re-paired
+    const ga=games.map((g,i)=>i).filter(i=>
+      (games[i][0]===a||games[i][1]===a) && games[i][2]===sameConf);
+    const gb=games.map((g,i)=>i).filter(i=>
+      (games[i][0]===b||games[i][1]===b) && games[i][2]===sameConf);
+    rng.shuffle(ga); rng.shuffle(gb);
+    for(const ia of ga){
+      const pa=games[ia][0]===a?games[ia][1]:games[ia][0];
+      if(pa===b)break;
+      let done=false;
+      for(const ib of gb){
+        if(ib===ia)continue;
+        const pb=games[ib][0]===b?games[ib][1]:games[ib][0];
+        if(pb===a||pb===pa)continue;
+        // leftovers must be a legal pairing too
+        const legal=sameConf?(CONF[pa]===CONF[pb]):(CONF[pa]!==CONF[pb]);
+        if(!legal)continue;
+        if(has.has(key(pa,pb)))continue;
+        has.delete(key(a,pa)); has.delete(key(b,pb));
+        has.add(key(a,b)); has.add(key(pa,pb));
+        const keep=[ia,ib].sort((x,y)=>y-x);
+        keep.forEach(i=>games.splice(i,1));
+        games.push([rng.r()<0.5?a:b, rng.r()<0.5?b:a, sameConf, false]);
+        const last=games[games.length-1];
+        if(last[0]===last[1]){last[0]=a;last[1]=b}
+        games.push([pa,pb,sameConf,false]);
+        done=true;break;
+      }
+      if(done)break;
+    }
+  });
+  return games;
+}
+
+/* Nobody opens the year with two byes. Pull a later game forward to fill them. */
+function fillEarlyByes(sched,busy){
+  for(let w=0;w<3;w++){
+    NAMES.forEach(t=>{
+      if(busy[t].has(w))return;
+      const cand=sched.filter(g=>(g.home===t||g.away===t)&&g.week>w+2
+        &&!rivalryName(g.home,g.away));
+      for(const g of cand){
+        const other=g.home===t?g.away:g.home;
+        if(busy[other].has(w))continue;
+        const from=g.week;
+        busy[t].delete(from); busy[other].delete(from);
+        busy[t].add(w); busy[other].add(w);
+        g.week=w; return;
+      }
+    });
+  }
+  return sched;
+}
+
+function lateenRivalries(sched,busy){
+  // drag rivalry games toward the end of the year, displacing ordinary games if needed
+  const late=[13,12,11,10,9];
+  const riv=sched.filter(g=>rivalryName(g.home,g.away)).sort((a,b)=>{
+    const ma=MARQUEE.has(rivalryName(a.home,a.away))?0:1;
+    const mb=MARQUEE.has(rivalryName(b.home,b.away))?0:1;
+    return ma-mb || a.week-b.week;
+  });
+  riv.forEach(g=>{
+    for(const w of late){
+      if(w<=g.week)break;
+      const A=g.home,B=g.away,from=g.week;
+      if(!busy[A].has(w)&&!busy[B].has(w)){
+        busy[A].delete(from);busy[B].delete(from);
+        busy[A].add(w);busy[B].add(w);g.week=w;return;
+      }
+      // try to bump the ordinary games sitting in that week
+      const block=sched.filter(x=>x!==g&&x.week===w&&
+        (x.home===A||x.away===A||x.home===B||x.away===B));
+      if(block.length>2||block.some(x=>rivalryName(x.home,x.away)))continue;
+      const ok=block.every(x=>!busy[x.home].has(from)&&!busy[x.away].has(from)
+        ||x.home===A||x.away===A||x.home===B||x.away===B);
+      if(!ok)continue;
+      let moved=true;
+      block.forEach(x=>{
+        const others=[x.home,x.away].filter(t=>t!==A&&t!==B);
+        if(others.some(t=>busy[t].has(from))){moved=false;return}
+      });
+      if(!moved)continue;
+      busy[A].delete(from);busy[B].delete(from);
+      block.forEach(x=>{
+        [x.home,x.away].forEach(t=>{busy[t].delete(w);busy[t].add(from)});
+        x.week=from;
+      });
+      busy[A].add(w);busy[B].add(w);g.week=w;return;
+    }
+  });
+  return sched;
+}
+
+/* Gameplan. Variance is the real lever: an underdog wants chaos, a favourite
+   wants the game to be boring. Aggression buys variance at a small cost in
+   expected margin; playing safe does the reverse. */
+const PLANS={
+  safe:      {sd:0.76, edge:-14, l:"Play it safe",  d:"Shorten the game. Fewer swings either way."},
+  balanced:  {sd:1.00, edge:0,   l:"Balanced",      d:"Play your game."},
+  aggressive:{sd:1.38, edge:-8,  l:"Take risks",    d:"Open it up. Higher ceiling, lower floor."}
+};
+
+const BOWLS=["Citrus Bowl","ReliaQuest Bowl","Alamo Bowl","Gator Bowl","Holiday Bowl",
+"Duke's Mayo Bowl","Las Vegas Bowl","Pinstripe Bowl","Music City Bowl","Texas Bowl",
+"Liberty Bowl","Sun Bowl","Pop-Tarts Bowl","Rate Bowl","Military Bowl","Independence Bowl",
+"Birmingham Bowl","Armed Forces Bowl","Gasparilla Bowl","First Responder Bowl","Fenway Bowl",
+"LA Bowl","New Mexico Bowl","Boca Raton Bowl","Cure Bowl","Camellia Bowl","New Orleans Bowl",
+"Myrtle Beach Bowl","Frisco Bowl","Idaho Potato Bowl","Hawaii Bowl","Bahamas Bowl",
+"Salute to Veterans Bowl","68 Ventures Bowl","Arizona Bowl"];
+
+/* ============ Season state machine ============ */
+class Season{
+  constructor(u,seed){
+    this.rng=new RNG(seed);
+    this.year=u.year;
+    this.elo=Object.assign({},u.perceived);
+    this.preseason=Object.assign({},u.perceived);
+    this.roster=u.roster?JSON.parse(JSON.stringify(u.roster)):null;
+    const ph=(u.phil&&PHILOSOPHY[u.phil])?PHILOSOPHY[u.phil].elo:0;
+    const tb=Object.assign({},u.trueBase);
+    if(u.userTeam&&ph)tb[u.userTeam]=(tb[u.userTeam]||0)+ph;
+    this.featCost=0;
+    this.talent=new Talent(this.rng,tb,this.roster);
+    this.poll=new Poll(Object.assign({},u.perceived));
+    this.sched=buildSchedule(this.rng,u.perceived);
+    this.rec={};this.confrec={};
+    NAMES.forEach(t=>{this.rec[t]=[0,0];this.confrec[t]=[0,0]});
+    this.step=0; this.weeks=[]; this.champs={}; this.titles=[];
+    this.field=[]; this.seeds={}; this.selRec={}; this.notes={};
+    this.rounds={r1:[],qf:[],sf:[],fin:[]}; this.champion=null; this.firstOut=[];
+    this.bowls=[]; this.userTeam=null; this.plan="balanced"; this.planLog={};
+  }
+  get phase(){
+    if(this.step<NW)return "week";
+    if(this.step===NW)return "titles";
+    if(this.step===NW+1)return "selection";
+    if(this.step===NW+2)return "bowls";
+    if(this.step===NW+3)return "r1";
+    if(this.step===NW+4)return "qf";
+    if(this.step===NW+5)return "sf";
+    if(this.step===NW+6)return "final";
+    return "done";
+  }
+  buttonLabel(){
+    switch(this.phase){
+      case "week":return `Play Week ${this.step+1}`;
+      case "titles":return "Play Conference Championships";
+      case "selection":return "Selection Show";
+      case "bowls":return "Play Bowl Season";
+      case "r1":return "Play First Round";
+      case "qf":return "Play Quarterfinals";
+      case "sf":return "Play Semifinals";
+      case "final":return "Play National Championship";
+      default:return "Enter the offseason";
+    }
+  }
+  rankMap(){return this.poll.rankMap()}
+  _resolve(a,b,neutral,extra){
+    let sd=1, edge=0;
+    if(this.userTeam===a||this.userTeam===b){
+      const P=PLANS[this.plan]||PLANS.balanced;
+      sd=P.sd;
+      edge=(this.userTeam===a?1:-1)*P.edge;
+      this.planLog[this.step]=this.plan;
+    }
+    const [hp,ap,m]=simGame(this.rng,this.talent.eff(a,Math.min(this.step,NW)),
+                            this.talent.eff(b,Math.min(this.step,NW)),neutral,sd,edge);
+    const win=m>0?a:b, lose=m>0?b:a;
+    const sh=eloUpdate(this.elo[win],this.elo[lose],Math.abs(m),(win===a)&&!neutral,neutral);
+    this.elo[win]+=sh;this.elo[lose]-=sh;
+    this.rec[win][0]++;this.rec[lose][1]++;
+    const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+hp+ap)%11)/34))));
+    return Object.assign({home:a,away:b,hp:hp,ap:ap,
+      hh:hf(hp,ap),ah:hf(ap,hp),neutral:neutral,
+      winner:win,loser:lose,margin:Math.abs(m),shift:Math.round(sh)},extra||{});
+  }
+  advance(){
+    this.prevRank=this.rankMap();
+    const p=this.phase;
+    if(p==="week")this._week();
+    else if(p==="titles")this._titles();
+    else if(p==="selection")this._select();
+    else if(p==="bowls")this._bowls();
+    else if(p==="r1")this._r1();
+    else if(p==="qf")this._qf();
+    else if(p==="sf")this._sf();
+    else if(p==="final")this._final();
+    this.step++;
+  }
+  _week(){
+    const w=this.step, prev=this.rankMap(), out=[];
+    this.sched.filter(g=>g.week===w).forEach(g=>{
+      const r=this._resolve(g.home,g.away,g.neutral,{conf:g.conf});
+      if(g.conf){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
+      r.hrank=prev[g.home];r.arank=prev[g.away];
+      r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];
+      r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+      out.push(r);
+    });
+    this.poll.update(out,this.elo);
+    this._award(w,out);
+    this.talent.advance(w+1);
+    out.sort((a,b)=>Math.min(a.hrank,a.arank)-Math.min(b.hrank,b.arank));
+    this.weeks.push({label:`Week ${w+1}`,date:DATES[w],games:out,
+      poll:this.top25(prev),standings:this.standings(prev)});
+  }
+  _titles(){
+    const prev=this.rankMap();
+    CONF_ORDER.forEach(c=>{
+      const mem=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
+        const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
+        const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
+        return py-px || this.confrec[y][0]-this.confrec[x][0] || this.elo[y]-this.elo[x];
+      });
+      const r=this._resolve(mem[0],mem[1],true,{conf:true,title:CONF_NAMES[c]+" Championship"});
+      r.hrank=prev[mem[0]];r.arank=prev[mem[1]];
+      r.hrec=this.rec[mem[0]][0]+"-"+this.rec[mem[0]][1];
+      r.arec=this.rec[mem[1]][0]+"-"+this.rec[mem[1]][1];
+      this.champs[c]=r.winner; this.titles.push(r);
+    });
+    this.poll.update(this.titles,this.elo);
+    this.weeks.push({label:"Championship Week",date:"Dec 5",games:this.titles,
+      poll:this.top25(prev),standings:this.weeks[this.weeks.length-1].standings});
+  }
+  _select(){
+    const order=this.poll.order(), rk={};order.forEach((t,i)=>rk[t]=i+1);
+    const f=[];
+    ["SEC","B1G","B12","ACC"].forEach(c=>{f.push(this.champs[c]);
+      this.notes[this.champs[c]]=CONF_NAMES[c]+" champion"});
+    const g6=G6.map(c=>this.champs[c]).sort((a,b)=>rk[a]-rk[b])[0];
+    f.push(g6); this.notes[g6]=CONF_NAMES[CONF[g6]]+" champion";
+    if(rk["Notre Dame"]<=12&&f.indexOf("Notre Dame")<0){
+      f.push("Notre Dame");this.notes["Notre Dame"]="Independent, top-12 bid"}
+    for(const t of order){if(f.length>=12)break;
+      if(f.indexOf(t)<0){f.push(t);if(!this.notes[t])this.notes[t]="At-large"}}
+    f.sort((a,b)=>rk[a]-rk[b]);
+    this.field=f; f.forEach((t,i)=>this.seeds[t]=i+1);
+    this.cfpRank=rk;
+    NAMES.forEach(t=>this.selRec[t]=this.rec[t][0]+"-"+this.rec[t][1]);
+    this.firstOut=order.filter(t=>f.indexOf(t)<0).slice(0,4);
+  }
+  _award(w,games){
+    if(!this.roster)return;
+    const won={};
+    games.forEach(g=>{won[g.winner]=1;won[g.loser]=0});
+    NAMES.forEach(t=>{
+      if(won[t]===undefined)return;                    // bye week
+      const hurt=new Set(this.talent.active(t).map(e=>e.idx));
+      this.roster[t].forEach((pl,i)=>{
+        if(hurt.has(i)){pl.st=(pl.st||0);return}
+        pl.st=(pl.st||0)+1;
+        const teamBoost=won[t]?1.16:0.90;
+        pl.prod=(pl.prod||0)+POS[i].aw*Math.pow(Math.max(0,pl.r-52)/10,1.30)
+                *teamBoost*this.rng.range(0.72,1.28);
+      });
+    });
+  }
+  heisman(n){
+    if(!this.roster)return [];
+    const all=[];
+    NAMES.forEach(t=>this.roster[t].forEach((pl,i)=>{
+      if((pl.st||0)>=6)all.push({t:t,n:pl.n,p:pl.p,r:pl.r,c:pl.c,
+        prod:pl.prod||0,rec:this.rec[t][0]+"-"+this.rec[t][1]});
+    }));
+    all.sort((a,b)=>b.prod-a.prod);
+    return all.slice(0,n||10);
+  }
+  allConference(conf){
+    if(!this.roster)return [];
+    const out=[];
+    POS.forEach((P,i)=>{
+      const best=NAMES.filter(t=>CONF[t]===conf)
+        .map(t=>({t:t,pl:this.roster[t][i]}))
+        .sort((a,b)=>(b.pl.prod||0)-(a.pl.prod||0))[0];
+      if(best)out.push({pos:P.p,team:best.t,n:best.pl.n,r:best.pl.r,c:best.pl.c});
+    });
+    return out;
+  }
+  _bowls(){
+    const rk=this.poll.rankMap();
+    const pool=NAMES.filter(t=>this.rec[t][0]>=6 && this.field.indexOf(t)<0)
+                    .sort((a,b)=>rk[a]-rk[b]);
+    let bi=0;
+    while(pool.length>=2 && bi<BOWLS.length){
+      const a=pool.shift();
+      let j=0;
+      for(let k=0;k<Math.min(6,pool.length);k++){
+        if(CONF[pool[k]]!==CONF[a]){j=k;break}
+      }
+      const b=pool.splice(j,1)[0];
+      const g=this._resolve(a,b,true,{title:BOWLS[bi++],bowl:true});
+      g.hrank=rk[a];g.arank=rk[b];
+      g.hrec=this.rec[a][0]+"-"+this.rec[a][1];
+      g.arec=this.rec[b][0]+"-"+this.rec[b][1];
+      this.bowls.push(g);
+    }
+    this.snubbed=pool.slice();
+    this.poll.update(this.bowls,this.elo);
+  }
+  myBowl(team){return this.bowls.find(g=>g.home===team||g.away===team)||null}
+  _br(a,b,neutral,site){
+    const r=this._resolve(a,b,neutral,{site:site});
+    r.hseed=this.seeds[a];r.aseed=this.seeds[b];
+    r.hrec=this.rec[a][0]+"-"+this.rec[a][1];
+    r.arec=this.rec[b][0]+"-"+this.rec[b][1];
+    return r;
+  }
+  _r1(){
+    [[5,12],[6,11],[7,10],[8,9]].forEach(([h,l])=>
+      this.rounds.r1.push(this._br(this.field[h-1],this.field[l-1],false,
+        "at "+this.field[h-1])));
+    this.poll.update(this.rounds.r1,this.elo);
+  }
+  _qf(){
+    const w={};this.rounds.r1.forEach(g=>{w[Math.min(g.hseed,g.aseed)]=g.winner});
+    [["Rose Bowl",1,8],["Sugar Bowl",2,7],["Fiesta Bowl",3,6],["Peach Bowl",4,5]]
+      .forEach(([bowl,top,key])=>{
+        this.rounds.qf.push(this._br(this.field[top-1],w[key],true,bowl))});
+    this.poll.update(this.rounds.qf,this.elo);
+  }
+  _sf(){
+    const q=this.rounds.qf.map(g=>g.winner);
+    const s=q.slice().sort((a,b)=>this.seeds[a]-this.seeds[b]);
+    this.rounds.sf.push(this._br(s[0],s[3],true,"Cotton Bowl"));
+    this.rounds.sf.push(this._br(s[1],s[2],true,"Orange Bowl"));
+    this.poll.update(this.rounds.sf,this.elo);
+  }
+  _final(){
+    const f=this.rounds.sf.map(g=>g.winner)
+      .sort((a,b)=>this.seeds[a]-this.seeds[b]);
+    const g=this._br(f[0],f[1],true,"Allegiant Stadium, Las Vegas");
+    this.rounds.fin.push(g); this.champion=g.winner;
+    this.poll.update([g],this.elo);
+  }
+  top25(prev){
+    return this.poll.order().slice(0,25).map((t,i)=>({
+      rank:i+1,team:t,conf:CONF[t],rec:this.rec[t][0]+"-"+this.rec[t][1],
+      prev:prev?prev[t]:0,delta:prev&&prev[t]?prev[t]-(i+1):null}));
+  }
+  standings(prev){
+    const out={};
+    CONF_ORDER.forEach(c=>{
+      out[c]=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
+        const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
+        const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
+        return py-px||this.confrec[y][0]-this.confrec[x][0]||this.elo[y]-this.elo[x];
+      }).map(t=>({team:t,cr:this.confrec[t][0]+"-"+this.confrec[t][1],
+                  rec:this.rec[t][0]+"-"+this.rec[t][1],rank:prev?prev[t]:0}));
+    });
+    return out;
+  }
+  healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*NW);return h}
+  myGame(team,wk){
+    const W=this.weeks[wk]; if(!W)return null;
+    return W.games.find(g=>g.home===team||g.away===team)||null;
+  }
+  nextGame(team){
+    const g=this.sched.find(g=>g.week===this.step&&(g.home===team||g.away===team));
+    return g||null;
+  }
+  /* What the user's team faces next once the regular season is over. */
+  postNext(team){
+    const p=this.phase;
+    if(p==="titles"){
+      const c=CONF[team]; if(c==="IND")return null;
+      const mem=NAMES.filter(x=>CONF[x]===c).sort((x,y)=>{
+        const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
+        const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
+        return py-px||this.confrec[y][0]-this.confrec[x][0]||this.elo[y]-this.elo[x];
+      });
+      if(mem[0]===team||mem[1]===team)
+        return {label:CONF_NAMES[c]+" Championship",
+                opp:mem[0]===team?mem[1]:mem[0],neutral:true};
+      return null;
+    }
+    if(p==="bowls"){
+      if(this.field.indexOf(team)>=0)return null;
+      if(this.rec[team][0]<6)return null;
+      return {label:"Bowl season",opp:null,neutral:true};
+    }
+    const alive=(gs)=>gs.some(g=>g.winner===team);
+    if(p==="r1"){
+      const sd=this.seeds[team];
+      if(!sd||sd<=4)return null;
+      const foe=this.field[[5,12,6,11,7,10,8,9].reduce((acc,v,i,arr)=>{
+        if(i%2===0&&(arr[i]===sd||arr[i+1]===sd))acc=(arr[i]===sd?arr[i+1]:arr[i]);return acc},0)-1];
+      return {label:"First Round",opp:foe,neutral:false};
+    }
+    if(p==="qf"){
+      if(this.seeds[team]<=4)return {label:"Quarterfinal",opp:null,neutral:true};
+      if(alive(this.rounds.r1))return {label:"Quarterfinal",opp:null,neutral:true};
+      return null;
+    }
+    if(p==="sf"&&alive(this.rounds.qf))return {label:"Semifinal",opp:null,neutral:true};
+    if(p==="final"&&alive(this.rounds.sf))
+      return {label:"National Championship",opp:null,neutral:true};
+    return null;
+  }
+}
+
+/* ============ state ============ */
+const KEY="cfb-dynasty-v1";
+let S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,plans:{}};
+let plan="balanced", reveal=null, revealTimer=null;
+let wide=false;
+function isWide(){try{return window.innerWidth>=1024}catch(e){return false}}
+let U=null, SEA=null, view="team", flash=null;
+
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const el=id=>document.getElementById(id);
+
+function snap(u){return JSON.parse(JSON.stringify(u))}
+
+function rebuild(){
+  U=snap(S.uStart);
+  U.userTeam=S.myTeam;
+  SEA=new Season(U,S.seasonSeed);
+  SEA.userTeam=S.myTeam;
+  for(let i=0;i<S.steps;i++){
+    SEA.plan=(S.plans&&S.plans[i])||"balanced";
+    SEA.advance();
+  }
+  SEA.plan=plan;
+}
+
+async function save(){
+  try{await window.storage.set(KEY,JSON.stringify(S))}catch(e){}
+}
+async function load(){
+  try{const r=await window.storage.get(KEY);return r?JSON.parse(r.value):null}catch(e){return null}
+}
+
+const COACH_FIRST=["Ray","Mack","Dabo","Kirby","Lane","Deion","Marcus","Hugh","Bronco",
+"Kalani","Sonny","Jimbo","Willie","Herm","Brent","Curt","Vic","Sherrone","Fran","Bo"];
+function newDynasty(team,seed,coachName){
+  const rng0=new RNG(seed^0x5f3a);
+  S={myTeam:team,seed:seed,uStart:null,seasonSeed:0,steps:0,history:[],origProgram:null,
+     career:{name:coachName||(rng0.pick(COACH_FIRST)+" "+rng0.pick(LAST)),
+             rep:0,w:0,l:0,titles:0,confs:0,fired:0,
+             stops:[{team:team,from:2026,w:0,l:0,titles:0}]}};
+  const u=newUniverse(seed);
+  u.coach[team]={n:S.career.name,q:0,t:0,hired:true,you:true};
+  S.uStart=snap(u); S.origProgram=snap(u.program);
+  S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
+  rebuild(); S.expNow=expectations(); save(); view="team"; render();
+}
+
+/* ============ advance ============ */
+function doAdvance(){
+  if(SEA.phase==="done"){ openOffseason(); return; }
+  const before=SEA.step;
+  const ph=SEA.phase;
+  S.plans=S.plans||{}; S.plans[before]=plan;
+  SEA.plan=plan;
+  SEA.advance(); S.steps++;
+  plan="balanced";
+  if(ph==="selection")postTab="field";
+  else if(ph==="bowls")postTab="bowls";
+  else if(ph==="r1"||ph==="qf"||ph==="sf"||ph==="final")postTab="bracket";
+  flash={type:SEA.phase==="week"||before<NW?"week":"post",step:before};
+  const g=heroGame();
+  if(g&&!prefersReduced()){
+    reveal="half";
+    if(revealTimer)clearTimeout(revealTimer);
+    revealTimer=setTimeout(()=>{reveal="final";render()},1500);
+  }else reveal=null;
+  save(); render();
+}
+
+function openOffseason(){
+  if(SEA.phase!=="done")return;
+  const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
+  const A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,S.myTeam);
+  const my=S.myTeam, C=S.career;
+  const exp=S.expNow||expectations();
+  const titles={natl:SEA.champion===my,playoff:SEA.field.indexOf(my)>=0,
+                conf:Object.keys(SEA.champs).some(c=>SEA.champs[c]===my)};
+  C.rep=C.rep*0.94;                       // reputations fade, good and bad
+  C.rep+=repDelta(SEA.rec[my][0],SEA.rec[my][1],exp.w,U.program[my],titles);
+  C.rep=Math.max(-48,Math.min(80,C.rep));
+  C.w+=SEA.rec[my][0]; C.l+=SEA.rec[my][1];
+  if(titles.natl)C.titles++; if(titles.conf)C.confs++;
+  const st=C.stops[C.stops.length-1];
+  st.w+=SEA.rec[my][0]; st.l+=SEA.rec[my][1];
+  if(titles.natl)st.titles++;
+  st.to=SEA.year;
+  const jobs=A.userOpen?jobMarket(U,rng,C.rep,A.openJobs,my):[];
+  const poach=A.userOpen?[]:poachOffers(U,rng,C.rep,A.openJobs,my);
+  const pool=budgetPool(U,my,SEA.rec[my][0]);
+  S.off={act:A,jobs:jobs,poach:poach,move:null,pool:pool,
+    picks:{recruit:"balanced",phil:(U.phil||"balanced"),
+      budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
+              facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}},
+    rngA:[rng.a,rng.sp]};
+  flash=null; save(); render();
+}
+
+function budgetLeft(){
+  if(!S.off)return 0;
+  const B=S.off.picks.budget;
+  return S.off.pool-BUCKETS.reduce((s,b)=>s+(B[b.k]||0),0);
+}
+
+function commitOffseason(){
+  const P=S.off.picks, A=S.off.act, C=S.career;
+  if(A.userOpen&&S.off.move===null)return;
+  if(budgetLeft()!==0)return;
+  const rng=new RNG(0); rng.a=S.off.rngA[0]; rng.sp=S.off.rngA[1];
+  const oldTeam=S.myTeam;
+  let dest=S.off.move;
+  if(dest==="retire"){S.retired=true;save();render();return}
+  if(dest&&dest!==oldTeam){
+    // the program you leave hires someone else; you take the new job
+    U.coach[oldTeam]=newCoach(rng,U.program[oldTeam]);
+    C.fired+=(A.userOpen?1:0);
+    C.stops.push({team:dest,from:SEA.year+1,w:0,l:0,titles:0});
+    S.myTeam=dest; U.userTeam=dest; U.phil="balanced";
+    U.coach[dest]={n:C.name,q:0,t:0,hired:true,you:true};
+  }
+  endSeason(rng,{userTeam:S.myTeam,coach:null,
+    recruit:P.recruit, phil:P.phil, budget:P.budget,
+    featured:(S.featured!==undefined?S.featured:null)}, A);
+  S.featured=null;
+}
+
+function endSeason(rng,choices,act){
+  if(SEA.phase!=="done"||!rng||!act)return;
+  const my=S.myTeam, rk=SEA.poll.rankMap();
+  const made=SEA.field.indexOf(my)>=0;
+  let result="Missed the playoff";
+  const bowl=SEA.myBowl(my);
+  if(bowl)result=(bowl.winner===my?"Won the ":"Lost the ")+bowl.title;
+  else if(SEA.field.indexOf(my)<0)result=SEA.rec[my][0]>=6?"Bowl snub":"No bowl game";
+  if(SEA.champion===my)result="NATIONAL CHAMPIONS";
+  else if(made){
+    const lost=[].concat(SEA.rounds.fin,SEA.rounds.sf,SEA.rounds.qf,SEA.rounds.r1)
+      .find(g=>g.loser===my);
+    const R={"National Championship":"Lost the national title game"};
+    result=lost?("Eliminated in the "+(SEA.rounds.fin.indexOf(lost)>=0?"national title game":
+      SEA.rounds.sf.indexOf(lost)>=0?"semifinals":
+      SEA.rounds.qf.indexOf(lost)>=0?"quarterfinals":"first round")):"Made the playoff";
+  }
+  const teamRows={};
+  NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
+  const confChamps={}; Object.keys(SEA.champs).forEach(c=>confChamps[c]=SEA.champs[c]);
+  const bowlOf={}; SEA.bowls.forEach(g=>{
+    bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
+  const post={}, pnote={};
+  const bump=(t,won)=>{post[t]=post[t]||[0,0]; post[t][won?0:1]++};
+  SEA.bowls.forEach(g=>{
+    bump(g.winner,true); bump(g.loser,false);
+    pnote[g.winner]="Won the "+g.title; pnote[g.loser]="Lost the "+g.title;});
+  [["first round",SEA.rounds.r1],["quarterfinals",SEA.rounds.qf],
+   ["semifinals",SEA.rounds.sf],["national title game",SEA.rounds.fin]]
+   .forEach(([nm,gs])=>gs.forEach(g=>{
+     bump(g.winner,true); bump(g.loser,false);
+     pnote[g.loser]="Playoff \u2014 lost in the "+nm;}));
+  if(SEA.champion)pnote[SEA.champion]="National champions";
+  const cfpOf={}; SEA.field.forEach(t=>cfpOf[t]=SEA.seeds[t]);
+  if(U.coach[S.myTeam])U.coach[S.myTeam].q=Math.round(Math.max(-40,Math.min(60,S.career.rep*0.62)));
+  const B=offseasonRosters(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
+  const off=Object.assign({},act,B);
+  const exp=S.expNow||expectations();
+  const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);
+  const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my]);
+  S.history.push({grade:gr.g,gradeLine:gr.l,miles:miles,exp:exp.t,
+    year:SEA.year,rec:SEA.rec[my][0]+"-"+SEA.rec[my][1],
+    rank:rk[my],champion:SEA.champion,result:result,
+    program:Math.round(U.program[my]),
+    fired:off.fired.indexOf(my)>=0, firedList:off.fired,
+    confChamp:Object.keys(SEA.champs).some(c=>SEA.champs[c]===my),
+    nFired:off.fired.length,
+    teams:teamRows, confChamps:confChamps, bowls:bowlOf, cfp:cfpOf,
+    post:post, pnote:pnote,
+    heis:(SEA.heisman(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c})),
+    classes:off.classes||{}, early:off.early||{},
+    coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null,
+    hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
+    top10:SEA.poll.order().slice(0,10)});
+  S.uStart=snap(U); S.off=null; S.plans={};
+  S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
+  S.steps=0; rebuild(); S.expNow=expectations();
+  flash={type:"offseason"}; view="team"; save(); render();
+}
+
+/* ============ rendering ============ */
+function rkTag(r){return r&&r<=25?`<span class="rk">${r}</span>`:""}
+
+function gameLine(g,mine){
+  const hw=g.winner===g.home;
+  const best=Math.min(g.hrank||999,g.arank||999);
+  const ups=g.hrank&&g.arank?(hw?g.hrank>g.arank:g.arank>g.hrank):false;
+  const cls="game"+(best<=25?" marquee":"")+(ups&&best<=25?" upset":"")+(mine?" mine":"");
+  const side=(t,s,r,w,seed,rec)=>`<div class="side ${w?'w':''}">${
+    seed?`<span class="sdchip">${seed}</span>`:rkTag(r)}
+    <span class="nm">${TL(t)}</span>${rec?`<span class="grec">${rec}</span>`:""}
+    <span class="sc">${s}</span></div>`;
+  const chips=[];
+  if(g.title)chips.push(`<span class="chip ttl">${esc(g.title)}</span>`);
+  if(g.site)chips.push(`<span class="chip ttl">${esc(g.site)}</span>`);
+  if(ups&&best<=25)chips.push(`<span class="chip up">Upset</span>`);
+  if(g.neutral&&!g.site&&!g.title)chips.push(`<span class="chip">Neutral</span>`);
+  if(g.margin<=3)chips.push(`<span class="chip">One score</span>`);
+  const rv=rivalryName(g.home,g.away);
+  if(rv)chips.push(`<span class="chip riv">${esc(rv)}</span>`);
+  return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
+    ${side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)}${side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
+    ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}</div></article>`;
+}
+
+function prefersReduced(){
+  try{return window.matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}
+}
+
+function liveRec(team){
+  const w=SEA.rec[team][0], l=SEA.rec[team][1];
+  if(reveal!=="half")return [w,l];
+  const g=heroGame();
+  if(!g||(g.home!==team&&g.away!==team))return [w,l];
+  return g.winner===team?[w-1,l]:[w,l-1];
+}
+
+function liveConf(team){
+  const w=SEA.confrec[team][0], l=SEA.confrec[team][1];
+  if(reveal!=="half")return [w,l];
+  const g=heroGame();
+  if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l];
+  return g.winner===team?[w-1,l]:[w,l-1];
+}
+
+function heroGame(){
+  const my=S.myTeam;
+  if(flash&&flash.type==="week"){
+    const W=SEA.weeks[flash.step];
+    if(W)return W.games.find(x=>x.home===my||x.away===my)||null;
+  }else if(flash&&flash.type==="post"){
+    const pools=[SEA.rounds.fin,SEA.rounds.sf,SEA.rounds.qf,SEA.rounds.r1,SEA.bowls,SEA.titles];
+    for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f)return f}
+  }
+  return null;
+}
+
+function heroResult(){
+  const my=S.myTeam;
+  let g=null,label="";
+  if(flash&&flash.type==="week"){
+    const W=SEA.weeks[flash.step];
+    if(W){g=W.games.find(x=>x.home===my||x.away===my);label=W.label}
+  }else if(flash&&flash.type==="post"){
+    const pools=[SEA.rounds.fin,SEA.rounds.sf,SEA.rounds.qf,SEA.rounds.r1,SEA.bowls,SEA.titles];
+    for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f){g=f;break}}
+  }
+  if(!g)return "";
+  const won=g.winner===my;
+  const opp=g.home===my?g.away:g.home;
+  const half=(reveal==="half"&&g.hh!==undefined);
+  const ms=half?(g.home===my?g.hh:g.ah):(g.home===my?g.hp:g.ap);
+  const os=half?(g.home===my?g.ah:g.hh):(g.home===my?g.ap:g.hp);
+  const cur=SEA.poll.rankMap(), pv=SEA.prevRank;
+  let move="";
+  if(pv&&pv[my]){
+    const d=pv[my]-cur[my];
+    if(cur[my]<=25&&pv[my]>25)move=`<div class="hmove up">Entered the poll at #${cur[my]}</div>`;
+    else if(cur[my]>25&&pv[my]<=25)move=`<div class="hmove dn">Dropped out of the poll</div>`;
+    else if(cur[my]<=25&&d>0)move=`<div class="hmove up">&#9650; Up ${d} to #${cur[my]}</div>`;
+    else if(cur[my]<=25&&d<0)move=`<div class="hmove dn">&#9660; Down ${-d} to #${cur[my]}</div>`;
+    else if(cur[my]<=25)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
+  }
+  if(half)return `<div class="hero half">
+    <div class="hlabel"><span class="live"></span>HALFTIME${label?" &middot; "+esc(label):""}</div>
+    <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
+    <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>
+    <div class="hfoot">Second half under way&hellip;</div></div>`;
+  return `<div class="hero ${won?'win':'loss'}" style="--tc:${teamInk(my)}">
+    <div class="hlabel">FINAL &middot; ${won?"WIN":"LOSS"}${label?" &middot; "+esc(label):""}</div>
+    <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
+    <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>${move}</div>`;
+}
+
+
+/* ============ what's at stake ============ */
+function winProb(me,opp,atHome,neutral){
+  const hfa=neutral?0:(atHome?HFA:-HFA);
+  return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa-SEA.elo[opp])/400)));
+}
+
+function confPosition(t){
+  const c=CONF[t];
+  if(c==="IND")return null;
+  const mem=NAMES.filter(x=>CONF[x]===c).sort((x,y)=>{
+    const px=SEA.confrec[x][0]/Math.max(1,SEA.confrec[x][0]+SEA.confrec[x][1]);
+    const py=SEA.confrec[y][0]/Math.max(1,SEA.confrec[y][0]+SEA.confrec[y][1]);
+    return py-px||SEA.confrec[y][0]-SEA.confrec[x][0]||SEA.elo[y]-SEA.elo[x];
+  });
+  return {pos:mem.indexOf(t)+1,of:mem.length,conf:CONF_NAMES[c]};
+}
+
+function projectedField(){
+  const rk=SEA.poll.rankMap(), order=SEA.poll.order(), leaders={};
+  CONF_ORDER.forEach(c=>{
+    const mem=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
+      const px=SEA.confrec[x][0]/Math.max(1,SEA.confrec[x][0]+SEA.confrec[x][1]);
+      const py=SEA.confrec[y][0]/Math.max(1,SEA.confrec[y][0]+SEA.confrec[y][1]);
+      return py-px||SEA.elo[y]-SEA.elo[x];
+    });
+    leaders[c]=mem[0];
+  });
+  const f=["SEC","B1G","B12","ACC"].map(c=>leaders[c]);
+  f.push(G6.map(c=>leaders[c]).sort((x,y)=>rk[x]-rk[y])[0]);
+  if(rk["Notre Dame"]<=12&&f.indexOf("Notre Dame")<0)f.push("Notre Dame");
+  for(const t of order){if(f.length>=12)break; if(f.indexOf(t)<0)f.push(t)}
+  return f.sort((x,y)=>rk[x]-rk[y]);
+}
+
+function streakOf(t){
+  let n=0,won=null;
+  for(let i=SEA.weeks.length-1;i>=0;i--){
+    const g=SEA.weeks[i].games.find(x=>x.home===t||x.away===t);
+    if(!g)continue;
+    const w=g.winner===t;
+    if(won===null)won=w;
+    if(w!==won)break;
+    n++;
+  }
+  return {n:n,won:won};
+}
+
+/* Returns the single most interesting thing riding on this game. */
+function stakesFor(ng){
+  const my=S.myTeam, opp=ng.home===my?ng.away:ng.home;
+  const rk=SEA.poll.rankMap();
+  const wk=SEA.step, left=NW-wk;
+  const rec=SEA.rec[my], w=rec[0], l=rec[1];
+  const cp=confPosition(my);
+  const riv=rivalryName(my,opp);
+  const out=[];
+
+  if(riv)out.push({p:100,tag:"RIVALRY",
+    l:`${riv[0].toUpperCase()+riv.slice(1)} is on the line.`});
+
+  if(l===0&&w>=4)out.push({p:90,tag:"UNBEATEN",
+    l:`${w}-0 and counting. A perfect season is still live.`});
+
+  if(wk>=8&&cp){
+    if(cp.pos<=2&&left<=4)out.push({p:88,tag:"TITLE RACE",
+      l:`You sit ${cp.pos===1?"first":"second"} in the ${cp.conf} with ${left} to play &mdash; the championship game is right there.`});
+    else if(cp.pos===3&&left<=4)out.push({p:80,tag:"TITLE RACE",
+      l:`Third in the ${cp.conf}, one spot out of the championship game.`});
+  }
+
+  if(wk>=7){
+    const f=projectedField();
+    const idx=f.indexOf(my);
+    if(idx>=0)out.push({p:85,tag:"PLAYOFF",
+      l:`You'd be the No. ${idx+1} seed if the season ended today.${idx<4?" That's a first-round bye.":""}`});
+    else{
+      const order=SEA.poll.order();
+      const outs=order.filter(t=>f.indexOf(t)<0);
+      const spot=outs.indexOf(my);
+      if(spot>=0&&spot<6)out.push({p:86,tag:"BUBBLE",
+        l:`${spot===0?"First team out":"Number "+(spot+1)+" out"} of the projected field. You need this one.`});
+    }
+  }
+
+  if(rk[opp]<=10)out.push({p:78,tag:"MARQUEE",
+    l:`A win over No. ${rk[opp]} ${opp} is the kind of result that decides seeding.`});
+  else if(rk[opp]<=25)out.push({p:62,tag:"RANKED",
+    l:`No. ${rk[opp]} ${opp} is a résumé game either way.`});
+
+  const st=streakOf(my);
+  if(!st.won&&st.n>=3)out.push({p:74,tag:"SLIDE",
+    l:`${st.n} straight losses. The seat under your coach is getting warm.`});
+  else if(st.won&&st.n>=5)out.push({p:58,tag:"STREAK",
+    l:`${st.n} in a row. Nobody wants to be the one who ends it.`});
+
+  if(w===5&&left<=5)out.push({p:70,tag:"BOWL",
+    l:`Win and you're bowl eligible.`});
+  if(l>=6)out.push({p:40,tag:"SPOILER",
+    l:`Nothing left but pride and a chance to wreck somebody's season.`});
+
+  if(!out.length)out.push({p:0,tag:"WEEK "+(wk+1),
+    l:`${ng.home===my?"Home":"On the road"} against ${opp}. Take care of business.`});
+
+  out.sort((x,y)=>y.p-x.p);
+  return out.slice(0,2);
+}
+
+function seatBadge(){
+  const my=S.myTeam;
+  if(!U||!U.coach)return "";
+  const w=SEA.rec[my][0], l=SEA.rec[my][1];
+  if(w+l<4)return `<span class="seat cool">Settled</span>`;
+  const wp=w/(w+l);
+  const short=(U.program[my]-SEA.elo[my])/45;
+  let heat=(U.bad[my]||0)*1.4+Math.max(0,short)+(wp<0.42?1.2:0);
+  if(U.coach[my].t<=1)heat-=1.6;
+  if(U.coach[my].q>=30)heat-=0.6;
+  if(heat>=3.6)return `<span class="seat hot">HOT SEAT</span>`;
+  if(heat>=2.2)return `<span class="seat warm">Under pressure</span>`;
+  return `<span class="seat cool">Secure</span>`;
+}
+
+let teamTab="overview";
+
+function starBar(r){
+  const pct=Math.max(0,Math.min(100,(r-38)/(99-38)*100));
+  return `<span class="rbar"><i style="width:${pct}%"></i></span>`;
+}
+
+function rosterOf(t){
+  if(!SEA.roster||!SEA.roster[t])return "";
+  const hurt={}; SEA.talent.active(t).forEach(e=>hurt[e.idx]=e);
+  const R=SEA.roster[t];
+  const avg=Math.round(R.reduce((s,p)=>s+p.r,0)/R.length);
+  return `<div class="grouphead">Starters &middot; average rating ${avg}</div>`+
+    R.map((p,i)=>{const inj=hurt[i];
+      return `<div class="prow2 ${inj?'out':''}">
+        <span class="ppos">${esc(p.p)}</span>
+        <div class="pmain"><div class="pname">${esc(p.n)}</div>
+          <div class="psub">${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
+            inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
+        ${starBar(p.r)}<span class="prate">${p.r}</span></div>`}).join("");
+}
+
+function rosterView(){
+  const my=S.myTeam;
+  if(!SEA.roster)return `<div class="note">No roster data in this save.</div>`;
+  const hurt={}; SEA.talent.active(my).forEach(e=>hurt[e.idx]=e);
+  const R=SEA.roster[my];
+  const avg=Math.round(R.reduce((s,p)=>s+p.r,0)/R.length);
+  let h=`<div class="grouphead">Starters &middot; average rating ${avg}</div>`;
+  h+=coachMark("roster","Featuring a young player with a high ceiling is how you build. Featuring a senior mostly wastes it.");
+  h+=`<div class="note">Tap a player to feature him. He develops faster this year;
+    if he isn't ready, the team pays for it on Saturdays.</div>`;
+  h+=R.map((p,i)=>{
+    const inj=hurt[i];
+    const feat=S.featured===i;
+    return `<div class="prow2 ${inj?'out':''} ${feat?'feat':''}" data-feat="${i}">
+      <span class="ppos">${esc(p.p)}</span>
+      <div class="pmain"><div class="pname">${esc(p.n)}</div>
+        <div class="psub">${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
+          inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}${
+          feat?` &middot; <span class="feattag">FEATURED</span>`:""}</div></div>
+      ${starBar(p.r)}<span class="prate">${p.r}</span></div>`;
+  }).join("");
+  const hz=SEA.heisman(25).filter(x=>x.t===my);
+  if(hz.length){
+    h+=`<div class="grouphead">In the Heisman conversation</div>`;
+    h+=hz.map(x=>`<div class="srow"><span class="spos"></span>
+      <span class="steam">${esc(x.n)} <span class="pp">${esc(x.p)}</span></span></div>`).join("");
+  }
+  return h;
+}
+
+function teamPanel(){
+  const my=S.myTeam, rk=SEA.poll.rankMap();
+  const inj=SEA.talent.active(my);
+  const co=U&&U.coach?U.coach[my]:null;
+  let h=heroResult();
+  h+=teamCardHTML(my,rk,co);
+  if(reveal==="half")return h;
+  h+=injuryHTML(inj);
+  h+=nextUpHTML(my,rk);
+  return h;
+}
+
+function myTeamView(){
+  const my=S.myTeam, rk=SEA.poll.rankMap();
+  const inj=SEA.talent.active(my);
+  let h=wide?"":heroResult();
+  const co=U&&U.coach?U.coach[my]:null;
+  h+=`<div class="subtabs">${[["overview","Overview"],["roster","Roster"]].map(([k,l])=>
+    `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
+  if(teamTab==="roster")return h+rosterView();
+  if(!wide){h+=teamCardHTML(my,rk,co)+injuryHTML(inj)+
+    (reveal==="half"?"":nextUpHTML(my,rk))}
+  h+=(reveal==="half"?"":seasonLogHTML(my));
+  return h;
+}
+
+function teamCardHTML(my,rk,co){
+  let h=`<div class="idcard" style="--tc:${teamInk(my)};border-left:4px solid ${teamInk(my)}">
+    <div class="iname" style="color:${teamInk(my)}">${esc(my)}</div>
+    <div class="imeta">${esc(CONF_NAMES[CONF[my]])} &middot; ${SEA.year} season</div>
+    <div class="stats">
+      <div><b>${(()=>{const r=liveRec(my);return r[0]+"-"+r[1]})()}</b><span>Record</span></div>
+      <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>Conference</span></div>
+      <div><b>${reveal==="half"?"&mdash;":(rk[my]<=25?"#"+rk[my]:"NR")}</b><span>Poll</span></div>
+    </div>${co?`<div class="coachbar">
+      <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
+        <div class="cmeta">Head coach &middot; ${co.t<=0?"first season":"year "+(co.t+1)}
+        &middot; ${coachGrade(co.q)}</div></div>
+      ${seatBadge()}</div>`:""}
+    ${(()=>{const e=S.expNow||expectations();
+      const w=SEA.rec[my][0],l=SEA.rec[my][1],left=12-(w+l);
+      const need=Math.max(0,e.w-w);
+      return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
+        <span class="eline">${w+l===0?esc(e.l)
+          :need===0?`Target of ${e.w} wins already met.`
+          :need>left?`${e.w} wins is out of reach now.`
+          :`${need} more win${need===1?"":"s"} from the ${e.w} expected.`}</span></div>`})()}
+    </div>`;
+  return h;
+}
+
+function injuryHTML(inj){
+  let h="";
+  if(inj.length){
+    h+=`<div class="grouphead">Injury report</div>`;
+    h+=inj.map(e=>`<div class="injrow"><span class="ipos">${esc(e.k)}</span>
+      <div class="iwho"><div class="pname">${esc(e.who||e.k)}</div>
+      <div class="psub">out ${e.w} more week${e.w===1?"":"s"}${
+        e.rating?" &middot; rated "+e.rating:""}</div></div>
+      <span class="imag">${Math.round(e.m)}</span></div>`).join("");
+  }
+  return h;
+}
+
+function coachMark(key,text){
+  S.seen=S.seen||{};
+  if(S.seen[key])return "";
+  return `<div class="mark" data-mark="${key}"><b>New:</b> ${text}
+    <span class="markx">Got it</span></div>`;
+}
+
+function planPickerHTML(wp){
+  return `${coachMark("plan","This choice is real. Safe protects a lead, risks give an underdog a puncher's chance. It resets to Balanced each week.")}
+  <div class="planbox"><div class="planlab">Your gameplan</div>
+    <div class="plans">${Object.keys(PLANS).map(k=>
+      `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
+        ${esc(PLANS[k].l)}</button>`).join("")}</div>
+    <div class="pland">${esc(PLANS[plan].d)}${
+      wp!==null&&wp<0.35&&plan!=="aggressive"?" &mdash; as a big underdog, chaos is your friend.":
+      wp!==null&&wp>0.75&&plan!=="safe"?" &mdash; you're the favourite; variance is your enemy.":""}</div>
+  </div>`;
+}
+
+function nextUpHTML(my,rk){
+  let h="";
+  if(SEA.phase!=="week"&&SEA.phase!=="done"){
+    const pn=SEA.postNext(my);
+    if(pn){
+      const wp=pn.opp?winProb(my,pn.opp,false,true):null;
+      h+=`<div class="grouphead">Next up</div>
+        <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
+        <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+esc(pn.opp):"Opponent TBD"}</div>
+        <div class="nrec">${pn.opp?SEA.rec[pn.opp][0]+"-"+SEA.rec[pn.opp][1]
+          :"Matchup set when the round is played"}</div>
+        ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
+          <span class="opct">${Math.round(wp*100)}%</span>
+          <span class="olab">win probability</span></div>`:""}
+        ${planPickerHTML(wp)}</div>`;
+    }
+    return h;
+  }
+  const ng=SEA.nextGame(my);
+  if(!ng&&SEA.phase==="week"){
+    h+=`<div class="grouphead">Next up &mdash; ${esc(DATES[SEA.step]||"")}</div>
+      <div class="nextcard bye"><div class="nlabel">OPEN DATE</div>
+      <div class="nopp">Bye week</div>
+      <div class="nrec">No game &mdash; everyone else plays on</div></div>`;
+  }
+  if(ng){
+    const opp=ng.home===my?ng.away:ng.home;
+    const wp=winProb(my,opp,ng.home===my,ng.neutral);
+    const st=stakesFor(ng);
+    const riv=rivalryName(my,opp);
+    h+=`<div class="grouphead">Next up &mdash; ${esc(DATES[SEA.step]||"")}</div>
+      <div class="nextcard ${riv?'riv':''}">
+      <div class="nlabel">${ng.home===my?"HOME vs":"AWAY at"}</div>
+      <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
+      <div class="nrec">${SEA.rec[opp][0]}-${SEA.rec[opp][1]} &middot; ${esc(CONF_NAMES[CONF[opp]])}</div>
+      <div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
+        <span class="opct">${Math.round(wp*100)}%</span>
+        <span class="olab">win probability</span></div>
+      ${st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
+        <span class="sline">${x.l}</span></div>`).join("")}
+      ${planPickerHTML(wp)}</div>`;
+  }
+  return h;
+}
+
+/* Whole slate: results where played, fixtures where not. */
+function scheduleHTML(team,compact){
+  const rows=[];
+  for(let w=0;w<NW;w++){
+    const W=SEA.weeks[w];
+    const played=!!W;
+    const g=played?W.games.find(x=>x.home===team||x.away===team)
+                  :SEA.sched.find(x=>x.week===w&&(x.home===team||x.away===team));
+    const label=`Wk ${w+1}`;
+    if(!g){rows.push(`<div class="srow byerow"><span class="spos">&ndash;</span>
+      <span class="steam">Bye week</span><span class="sconf byelbl">${label}</span></div>`);continue}
+    const opp=g.home===team?g.away:g.home;
+    const rk=SEA.poll.rankMap()[opp];
+    const riv=rivalryName(team,opp);
+    if(played){
+      const won=g.winner===team;
+      const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
+      rows.push(`<div class="srow"><span class="spos ${won?'wl-w':'wl-l'}">${won?"W":"L"}</span>
+        <span class="steam">${g.home===team?"vs":"at"} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
+          riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
+        <span class="sconf">${ms}-${os}</span></div>`);
+    }else{
+      rows.push(`<div class="srow up"><span class="spos">${label.replace("Wk ","")}</span>
+        <span class="steam">${g.home===team?"vs":"at"} ${rkTag(rk)}${TL(opp)}${
+          riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
+        <span class="sall">${esc(DATES[w]||"")}</span></div>`);
+    }
+  }
+  // postseason
+  const post=[];
+  SEA.titles.forEach(g=>{if(g.home===team||g.away===team)post.push([g,g.title])});
+  SEA.bowls.forEach(g=>{if(g.home===team||g.away===team)post.push([g,g.title])});
+  [["First Round",SEA.rounds.r1],["Quarterfinal",SEA.rounds.qf],
+   ["Semifinal",SEA.rounds.sf],["National Championship",SEA.rounds.fin]]
+   .forEach(([n,gs])=>gs.forEach(g=>{if(g.home===team||g.away===team)post.push([g,n])}));
+  post.forEach(([g,n])=>{
+    const won=g.winner===team, opp=g.home===team?g.away:g.home;
+    const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
+    rows.push(`<div class="srow post"><span class="spos ${won?'wl-w':'wl-l'}">${won?"W":"L"}</span>
+      <span class="steam">${esc(opp)} <em class="rivmark sod">${esc(n)}</em></span>
+      <span class="sconf">${ms}-${os}</span></div>`);
+  });
+  return rows.join("");
+}
+
+function seasonLogHTML(my){
+  return `<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(my);
+}
+
+function seasonLogHTMLOld(my){
+  let h=`<div class="grouphead">Season so far</div>`;
+  const rows=[];
+  SEA.weeks.forEach(W=>{
+    const g=W.games.find(x=>x.home===my||x.away===my);
+    if(!g){rows.push(`<div class="srow byerow"><span class="spos">&ndash;</span>
+      <span class="steam">Bye week</span>
+      <span class="sconf byelbl">${esc(W.label.replace("Week ","Wk "))}</span></div>`);return}
+    const won=g.winner===my, opp=g.home===my?g.away:g.home;
+    const ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
+    rows.push(`<div class="srow"><span class="spos ${won?'wl-w':'wl-l'}">${won?"W":"L"}</span>
+      <span class="steam">${g.home===my?"vs":"at"} ${esc(opp)}</span>
+      <span class="sconf">${ms}-${os}</span></div>`);
+  });
+  return h+(rows.join("")||`<div class="note">No games played yet.</div>`);
+}
+
+
+
+/* ============ expectations, grades, milestones ============ */
+function expectations(){
+  const my=S.myTeam, p=U?U.program[my]:1500;
+  const last=S.history.length?S.history[S.history.length-1]:null;
+  if(p>=1860)return {w:11,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
+  if(p>=1700)return {w:9,l:"Nine wins and a New Year's bowl. Contend in the conference.",t:"CONTEND"};
+  if(p>=1540)return {w:8,l:"Eight wins and a decent bowl. Beat someone you shouldn't.",t:"PUSH FORWARD"};
+  if(p>=1400)return {w:6,l:"Get to a bowl game. Six wins keeps everyone happy.",t:"BOWL ELIGIBLE"};
+  return {w:4,l:"Show progress. Four wins would be real movement here.",t:"BUILD SOMETHING"};
+}
+
+function seasonGrade(wins,losses,result,exp){
+  let s=(wins-exp.w)*1.0;
+  if(/NATIONAL/i.test(result))s+=5;
+  else if(/title game/i.test(result))s+=3;
+  else if(/semifinal/i.test(result))s+=2.4;
+  else if(/quarterfinal/i.test(result))s+=1.8;
+  else if(/first round|Playoff/i.test(result))s+=1.4;
+  else if(/^Won the/.test(result))s+=0.8;
+  else if(/^Lost the/.test(result))s+=0.2;
+  else if(/No bowl|Losing season/.test(result))s-=(exp.w>=6?1.0:0.2);
+  const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
+          s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
+  const l=s>=2.6?"Far beyond what anyone expected.":
+          s>=0.9?"Ahead of schedule.":
+          s>=-0.6?"About what was expected.":
+          s>=-2.2?"Short of the mark.":
+          "A bad year, and everyone knows it.";
+  return {g:g,l:l};
+}
+
+function milestones(wins,losses,result,rank){
+  const my=S.myTeam, out=[], H=S.history;
+  const mine=H.map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
+  if(!mine.length){
+    if(wins>=11)out.push(`${wins} wins in your first season in charge.`);
+    return out;
+  }
+  const bestW=Math.max(...mine.map(r=>r[0]));
+  const bestR=Math.min(...mine.map(r=>r[2]));
+  if(wins>bestW)out.push(`Best season of your tenure &mdash; ${wins} wins, past the old high of ${bestW}.`);
+  if(rank<bestR&&rank<=25)out.push(`Highest finish yet at No. ${rank}.`);
+  if(/NATIONAL/i.test(result)&&!H.some(h=>h.champion===my))
+    out.push(`First national title of your tenure.`);
+  let streak=0;
+  for(let i=mine.length-1;i>=0;i--){if(mine[i][0]>mine[i][1])streak++;else break}
+  if(wins>losses&&streak+1>=5)out.push(`${streak+1} straight winning seasons.`);
+  if(losses>=9&&wins<=3)out.push(`Worst season in ${mine.length+1} years. That will be remembered.`);
+  return out;
+}
+
+/* ============ weekly news desk ============ */
+function loserRank(g){return g.winner===g.home?g.arank:g.hrank}
+function winnerRank(g){return g.winner===g.home?g.hrank:g.arank}
+function scoreOf(g,t){return g.home===t?g.hp:g.ap}
+function oppOf(g,t){return g.home===t?g.away:g.home}
+
+function weekNews(W){
+  const my=S.myTeam, items=[];
+  const gs=W.games;
+  const rankTxt=r=>r&&r<=25?"No. "+r+" ":"";
+
+  // headline: the best ranked team to go down
+  const ups=gs.filter(g=>loserRank(g)<=25&&winnerRank(g)>loserRank(g))
+              .sort((a,b)=>loserRank(a)-loserRank(b));
+  if(ups.length){
+    const g=ups[0], L=g.loser, Wn=g.winner;
+    const lr=loserRank(g), wr=winnerRank(g);
+    const verb=g.margin>=21?"routed":g.margin<=3?"edged":"beat";
+    items.push({k:"upset",tone:"flag",
+      h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
+      b: lr<=5 ? `A top-five team is down. ${L} won't drop out, but the margin for error is gone.`
+        : wr>25 ? `${Wn} came in unranked. ${L} will pay for this one in the poll.`
+        : `${Wn} moves up; ${L} slides.`});
+  }
+  // other ranked casualties
+  const more=ups.slice(1,3);
+  if(more.length)items.push({k:"also",tone:"muted",
+    h:`Also down: ${more.map(g=>rankTxt(loserRank(g))+g.loser).join(", ")}`,
+    b:`${more.length===1?"That's":"Those are"} more cracks in the top 25.`});
+
+  // your team, framed
+  const mg=gs.find(g=>g.home===my||g.away===my);
+  if(mg){
+    const won=mg.winner===my, opp=oppOf(mg,my);
+    const ms=scoreOf(mg,my), os=scoreOf(mg,opp);
+    const oppR=mg.home===my?mg.arank:mg.hrank;
+    let b;
+    if(won&&oppR<=25)b=`A ranked scalp. That plays well with voters.`;
+    else if(won&&mg.margin>=28)b=`Never in doubt.`;
+    else if(won&&mg.margin<=3)b=`Survived. They won't all look like that.`;
+    else if(won)b=`Business handled.`;
+    else if(oppR<=10)b=`No shame in it, but the résumé takes a hit.`;
+    else if(oppR>25)b=`That is the kind of loss that follows you into December.`;
+    else b=`A setback.`;
+    items.push({k:"you",tone:"gold",
+      h:`${my} ${won?"beat":"lost to"} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
+  }else{
+    items.push({k:"you",tone:"muted",h:`${my} was idle`,
+      b:`An open date. Everyone else kept playing.`});
+  }
+
+  // who's left unbeaten
+  const unb=NAMES.filter(t=>SEA.rec[t][1]===0&&SEA.rec[t][0]>0);
+  if(unb.length&&SEA.step>=4){
+    unb.sort((x,y)=>SEA.poll.rankMap()[x]-SEA.poll.rankMap()[y]);
+    items.push({k:"unbeaten",tone:"muted",
+      h:unb.length===1?`${unb[0]} stands alone at ${SEA.rec[unb[0]][0]}-0`
+        :`${unb.length} teams still unbeaten`,
+      b:unb.slice(0,6).join(", ")+(unb.length>6?" and others":"")+"."});
+  }
+
+  // biggest beating
+  const blow=gs.slice().sort((a,b)=>b.margin-a.margin)[0];
+  if(blow&&blow.margin>=38)items.push({k:"blowout",tone:"muted",
+    h:`${blow.winner} ${Math.max(blow.hp,blow.ap)}, ${blow.loser} ${Math.min(blow.hp,blow.ap)}`,
+    b:`The week's worst mismatch.`});
+
+  // injury desk
+  if(SEA.roster){
+    const hurt=[];
+    NAMES.forEach(t=>{
+      const rk=SEA.poll.rankMap()[t];
+      if(rk>30)return;
+      SEA.talent.log[t].forEach(x=>{
+        if(x.kind==="injury"&&x.wk===SEA.step&&x.who)
+          hurt.push({t:t,rk:rk,who:x.who,p:x.what,w:x.weeks});
+      });
+    });
+    hurt.sort((a,b)=>a.rk-b.rk);
+    if(hurt.length){const x=hurt[0];
+      items.push({k:"inj",tone:"flag",
+        h:`${rankTxt(x.rk)}${x.t} loses ${x.who} (${x.p})`,
+        b:`Out ${x.w>=14?"for the season":"about "+x.w+" week"+(x.w===1?"":"s")}.`+
+          (hurt.length>1?` ${hurt.length-1} other ranked team${hurt.length>2?"s":""} took a hit too.`:"")});
+    }
+  }
+
+  // heisman watch
+  if(SEA.step>=6&&SEA.roster){
+    const hz=SEA.heisman(2);
+    if(hz.length)items.push({k:"heis",tone:"muted",
+      h:`Heisman watch: ${hz[0].n}, ${CLASSES[hz[0].c]} ${hz[0].p}, ${hz[0].t}`,
+      b:`${hz[1]?hz[1].n+" ("+hz[1].t+") is the closest challenger.":""}`});
+  }
+  return items;
+}
+
+function newsBlock(){
+  const W=SEA.weeks[SEA.weeks.length-1];
+  if(!W||!W.games.length)return "";
+  const items=weekNews(W).slice(0,6);
+  if(!items.length)return "";
+  return `<div class="grouphead">The week that was</div>`+
+    items.map(x=>`<div class="news ${x.tone}">
+      <div class="nh">${esc(x.h)}</div>${x.b?`<div class="nb">${esc(x.b)}</div>`:""}
+    </div>`).join("");
+}
+
+/* ============ playoff picture ============ */
+function playoffPicture(){
+  const rk=SEA.poll.rankMap(), order=SEA.poll.order();
+  const leaders={};
+  CONF_ORDER.forEach(c=>{
+    const mem=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
+      const px=SEA.confrec[x][0]/Math.max(1,SEA.confrec[x][0]+SEA.confrec[x][1]);
+      const py=SEA.confrec[y][0]/Math.max(1,SEA.confrec[y][0]+SEA.confrec[y][1]);
+      return py-px||SEA.confrec[y][0]-SEA.confrec[x][0]||SEA.elo[y]-SEA.elo[x];
+    });
+    leaders[c]=mem[0];
+  });
+  const field=[], note={};
+  ["SEC","B1G","B12","ACC"].forEach(c=>{field.push(leaders[c]);
+    note[leaders[c]]=CONF_NAMES[c]+" leader"});
+  const g6=G6.map(c=>leaders[c]).sort((a,b)=>rk[a]-rk[b])[0];
+  field.push(g6); note[g6]=CONF_NAMES[CONF[g6]]+" leader";
+  if(rk["Notre Dame"]<=12&&field.indexOf("Notre Dame")<0){
+    field.push("Notre Dame");note["Notre Dame"]="Independent"}
+  for(const t of order){if(field.length>=12)break;
+    if(field.indexOf(t)<0){field.push(t);note[t]="At-large"}}
+  field.sort((a,b)=>rk[a]-rk[b]);
+  const out=order.filter(t=>field.indexOf(t)<0).slice(0,4);
+  const my=S.myTeam;
+  let h=`<div class="grouphead">If the season ended today</div>`;
+  h+=field.map((t,i)=>`<div class="frow ${t===my?'mine':''}">
+    <span class="sd">${i+1}</span>
+    <span class="dot" style="background:${teamColor(t)}"></span>
+    <div class="fmain"><div class="fname">${esc(t)}</div>
+    <div class="fnote">${esc(note[t])}</div></div>
+    <span class="fcfp">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
+    ${i<4?'<span class="byebadge">Bye</span>':''}</div>`).join("");
+  h+=`<div class="grouphead">First four out</div>`;
+  h+=out.map(t=>`<div class="frow ${t===my?'mine':''}"><span class="sd">&mdash;</span>
+    <span class="dot" style="background:${teamColor(t)}"></span>
+    <div class="fmain"><div class="fname">${esc(t)}</div></div>
+    <span class="fcfp">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span></div>`).join("");
+  if(field.indexOf(my)<0)h+=`<div class="note">${esc(my)} is currently outside the field
+    at ${rk[my]<=25?"No. "+rk[my]:rk[my]+"th"}.</div>`;
+  return h;
+}
+
+function scoresView(){
+  if(!SEA.weeks.length&&!SEA.field.length)
+    return `<div class="note">The season hasn't started. Hit the button below to play Week 1.</div>`;
+  if(SEA.phase!=="week"&&(SEA.field.length||SEA.rounds.r1.length))return bracketView();
+  const W=SEA.weeks[SEA.weeks.length-1];
+  if(!W)return `<div class="note">No games yet.</div>`;
+  const marq=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)<=25);
+  const rest=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)>25);
+  let h=`<div class="dateline"><h2>${esc(W.label)}</h2><span>${esc(W.date||"")}</span></div>`;
+  h+=newsBlock();
+  if(marq.length)h+=`<div class="grouphead">Ranked teams</div>`+
+    marq.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("");
+  if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${rest.length} games</div>`+
+    `<div class="${wide?'gamegrid':''}">`+
+    rest.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("")+`</div>`;
+  return h;
+}
+
+let postTab="bracket";
+
+function bracketView(){
+  const my=S.myTeam;
+  const inField=SEA.field.indexOf(my)>=0;
+  let h=`<div class="dateline"><h2>Postseason</h2><span>${SEA.year}</span></div>`;
+  h+=`<div class="subtabs">${[["bracket","Playoff"],["bowls","Bowls"],["field","The field"]]
+    .map(([k,l])=>{
+      const n=k==="bowls"?SEA.bowls.length:k==="field"?SEA.field.length:"";
+      return `<button class="subtab" data-p="${k}" aria-pressed="${postTab===k}">${l}${
+        n?` <em>${n}</em>`:""}</button>`}).join("")}</div>`;
+
+  if(postTab==="bowls"){
+    if(!SEA.bowls.length)return h+`<div class="note">Bowl season hasn't been played yet.</div>`;
+    const mine=SEA.bowls.find(g=>g.home===my||g.away===my);
+    if(mine){h+=`<div class="grouphead">Your bowl</div>`+gameLine(mine,true)}
+    h+=`<div class="grouphead">${SEA.bowls.length} bowl games &middot; six wins to qualify</div>`;
+    h+=SEA.bowls.filter(g=>g!==mine).map(g=>gameLine(g,false)).join("");
+    if(SEA.snubbed&&SEA.snubbed.length)
+      h+=`<div class="note">Eligible but left without a slot:
+        ${SEA.snubbed.map(esc).join(", ")}.</div>`;
+    return h;
+  }
+
+  if(postTab==="field"){
+    if(!SEA.field.length)return h+`<div class="note">The field hasn't been announced yet.</div>`;
+    h+=`<div class="grouphead">Seeds 1&ndash;4 receive a first-round bye</div>`;
+    h+=SEA.field.map(t=>`<div class="frow ${t===my?'mine':''}">
+      <span class="sd">${SEA.seeds[t]}</span>
+      <span class="dot" style="background:${teamColor(t)}"></span>
+      <div class="fmain"><div class="fname">${esc(t)}</div>
+      <div class="fnote">${esc(SEA.notes[t]||"")}</div></div>
+      <span class="fcfp">${esc(SEA.selRec[t]||"")}</span>
+      ${SEA.seeds[t]<=4?'<span class="byebadge">Bye</span>':''}</div>`).join("");
+    h+=`<div class="grouphead">First four out</div>`;
+    h+=SEA.firstOut.map(t=>`<div class="frow"><span class="sd">&mdash;</span>
+      <span class="dot" style="background:${teamColor(t)}"></span>
+      <div class="fmain"><div class="fname">${esc(t)}</div></div>
+      <span class="fcfp">${esc(SEA.selRec[t]||"")}</span></div>`).join("");
+    return h;
+  }
+
+  // bracket: only the most recent round expanded, earlier rounds collapsed
+  const R=[["First Round","Dec 18-19 &middot; campus sites",SEA.rounds.r1],
+           ["Quarterfinals","Dec 30 &amp; Jan 1",SEA.rounds.qf],
+           ["Semifinals","Jan 14-15",SEA.rounds.sf],
+           ["National Championship","Jan 25 &middot; Las Vegas",SEA.rounds.fin]];
+  const played=R.filter(r=>r[2].length);
+  if(!played.length){
+    h+=`<div class="note">The bracket fills in as each round is played.
+      ${inField?`<b>${esc(my)}</b> is in at the No. ${SEA.seeds[my]} seed.`
+        :`${esc(my)} did not make the field.`}</div>`;
+    return h;
+  }
+  played.forEach(([n,sub,gs],i)=>{
+    const latest=i===played.length-1;
+    const mine=gs.find(g=>g.home===my||g.away===my);
+    h+=`<div class="rnd">${n}<small>${sub}</small></div>`;
+    if(latest){
+      if(mine)h+=gameLine(mine,true);
+      h+=gs.filter(g=>g!==mine).map(g=>gameLine(g,false)).join("");
+    }else{
+      h+=`<div class="collapsed">${gs.map(g=>{
+        const w=g.winner,l=g.loser;
+        const ws=Math.max(g.hp,g.ap), ls=Math.min(g.hp,g.ap);
+        return `<div class="crow ${w===my||l===my?'mine':''}">
+          <span class="csd">${SEA.seeds[w]||""}</span>
+          <span class="cw">${esc(w)}</span>
+          <span class="cs">${ws}&ndash;${ls}</span>
+          <span class="cl">${esc(l)}</span>
+          <span class="csd r">${SEA.seeds[l]||""}</span></div>`}).join("")}</div>`;
+    }
+  });
+  if(SEA.champion)h+=`<div class="title-card"><div class="crown">${SEA.year} National Champions</div>
+    <div class="champ" style="color:${teamInk(SEA.champion)}">${esc(SEA.champion)}</div>
+    <div class="sub">${SEA.rec[SEA.champion][0]}-${SEA.rec[SEA.champion][1]}
+    &middot; entered as the No. ${SEA.seeds[SEA.champion]} seed</div></div>`;
+  return h;
+}
+
+let pollTab="poll";
+
+function pollView(){
+  const prev=SEA.prevRank, cur=SEA.poll.rankMap();
+  if(SEA.step>=6&&SEA.phase==="week"){
+    const bar=`<div class="dateline"><h2>Rankings</h2><span>${SEA.year}</span></div>
+      <div class="subtabs">${[["poll","Top 25"],["cfp","Playoff picture"]].map(([k,l])=>
+      `<button class="subtab" data-k="${k}" aria-pressed="${pollTab===k}">${l}</button>`).join("")}</div>`;
+    if(pollTab==="cfp")return bar+playoffPicture();
+    return bar+pollRows(prev,cur);
+  }
+  return `<div class="dateline"><h2>Top 25</h2><span>${SEA.year}</span></div>`+pollRows(prev,cur);
+}
+
+function pollRows(prev,cur){
+  const rows=SEA.top25(null);
+  let h="";
+  const mv=t=>{
+    if(!prev||!prev[t])return `<span class="mv flat">&ndash;</span>`;
+    const d=prev[t]-cur[t];
+    if(prev[t]>25&&cur[t]<=25)return `<span class="mv up">NEW</span>`;
+    if(d>0)return `<span class="mv up">&#9650;${d}</span>`;
+    if(d<0)return `<span class="mv dn">&#9660;${-d}</span>`;
+    return `<span class="mv flat">&ndash;</span>`;
+  };
+  h+=rows.map(p=>`<div class="prow ${p.team===S.myTeam?'mine':''}"
+      style="--tc:${teamInk(p.team)}">
+      <span class="cbar"></span>
+      <div class="pnum">${p.rank}</div>
+      <div class="pmain"><div class="pname">${TL(p.team)}</div>
+      <div class="psub">${p.rec} &middot; ${esc(CONF_NAMES[p.conf])}</div></div>
+      ${mv(p.team)}</div>`).join("");
+  if(cur[S.myTeam]>25){
+    h+=`<div class="grouphead">Your program</div>
+      <div class="prow mine" style="--tc:${teamInk(S.myTeam)}"><span class="cbar"></span>
+      <div class="pnum">${cur[S.myTeam]}</div>
+      <div class="pmain"><div class="pname">${esc(S.myTeam)}</div>
+      <div class="psub">${SEA.rec[S.myTeam][0]}-${SEA.rec[S.myTeam][1]} &middot; outside the top 25</div>
+      </div>${mv(S.myTeam)}</div>`;
+  }
+  return h;
+}
+
+function standingsView(){
+  const st=SEA.weeks.length?SEA.weeks[SEA.weeks.length-1].standings:SEA.standings(null);
+  let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
+  const mine=CONF[S.myTeam];
+  const order=CONF_ORDER.filter(c=>c===mine).concat(CONF_ORDER.filter(c=>c!==mine));
+  if(wide)h+=`<div class="standgrid">`;
+  order.forEach(c=>{
+    h+=`<div class="cbox"><div class="chead">${esc(CONF_NAMES[c])}</div>
+      <div class="srow shead"><span class="spos">#</span><span class="dot" style="opacity:0"></span>
+      <span class="steam">Team</span><span class="sconf">Conf</span>
+      <span class="sall">Overall</span></div>`;
+    h+=st[c].map((r,i)=>`<div class="srow ${r.team===S.myTeam?'mine':''}">
+      <span class="spos ${i<2?'qual':''}">${i+1}</span>
+      <span class="dot" style="background:${teamColor(r.team)}"></span>
+      <span class="steam">${rkTag(r.rank)}${TL(r.team)}</span>
+      <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span></div>`
+      +(i===1?`<div class="divider"></div>`:"")).join("");
+    h+=`</div>`;
+  });
+  if(wide)h+=`</div>`;
+  h+=`<div class="note">Conference record, then overall. The line marks the two teams
+    currently in the championship game.</div>`;
+  return h;
+}
+
+let dynTab="program", dynTeam=null, dynQ="", league=null, leagueMsg="";
+
+function openTeam(t){
+  if(!t||!CONF[t])return;
+  view="dyn"; dynTab="teams"; dynTeam=t; flash=null; save(); render();
+  window.scrollTo({top:0});
+}
+const TL=t=>`<span class="tlink" data-team="${esc(t)}">${esc(t)}</span>`;
+
+function sanitizeKey(s){return String(s).replace(/[^A-Za-z0-9_-]/g,"").slice(0,24)||"coach"}
+
+async function postSeason(){
+  const C=S.career, last=S.history[S.history.length-1];
+  if(!last){leagueMsg="Finish a season first.";render();return}
+  const key="lg-"+S.seed+"-"+sanitizeKey(C.name);
+  const row={coach:C.name,team:S.myTeam,seed:S.seed,year:last.year,rec:last.rec,
+    rank:last.rank,result:last.result,grade:last.grade,
+    titles:C.titles,cw:C.w,cl:C.l,rep:Math.round(C.rep),at:Date.now()};
+  try{
+    await window.storage.set(key,JSON.stringify(row),true);
+    leagueMsg="Posted "+last.year+".";
+    await loadLeague();
+  }catch(e){leagueMsg="Couldn't post right now.";render()}
+}
+
+async function loadLeague(){
+  try{
+    const r=await window.storage.list("lg-",true);
+    const keys=(r&&r.keys)?r.keys:[];
+    const rows=[];
+    for(const k of keys.slice(0,80)){
+      try{const v=await window.storage.get(k,true); if(v&&v.value)rows.push(JSON.parse(v.value))}
+      catch(e){}
+    }
+    league=rows;
+  }catch(e){league=[]; leagueMsg="Shared table unavailable here."}
+  render();
+}
+
+function leagueView(){
+  const my=S.myTeam;
+  let h=`<div class="note">Post your season to a table everyone using this game can see.
+    Friends on the <b>same world seed</b> are playing the identical universe, so those rows
+    are directly comparable. <b>Anything you post is public.</b></div>`;
+  h+=`<div class="lgbtns"><button class="advance" id="lgpost">Post ${
+    S.history.length?S.history[S.history.length-1].year:"season"}</button>
+    <button class="introskip wide" id="lgload">Refresh table</button></div>`;
+  if(leagueMsg)h+=`<div class="lgmsg">${esc(leagueMsg)}</div>`;
+  if(league===null)return h+`<div class="note">Tap refresh to load.</div>`;
+  if(!league.length)return h+`<div class="note">Nothing posted yet.</div>`;
+  const mine=league.filter(r=>r.seed===S.seed);
+  const other=league.filter(r=>r.seed!==S.seed);
+  const row=r=>`<div class="frow ${r.coach===S.career.name&&r.team===my?'mine':''}">
+    <span class="dot" style="background:${teamColor(r.team)}"></span>
+    <div class="fmain"><div class="fname">${esc(r.coach)}</div>
+    <div class="fnote">${esc(r.team)} &middot; ${r.year} &middot; ${esc(r.result||"")}</div></div>
+    <div class="tstat"><span class="trec">${esc(r.rec)}</span>
+    <span class="trk">${r.grade||""}${r.titles?" \u00b7 "+r.titles+"\u00d7":""}</span></div></div>`;
+  const sortf=(a,b)=>(b.titles-a.titles)||(parseInt(b.rec)-parseInt(a.rec));
+  if(mine.length){h+=`<div class="grouphead">Your world &mdash; seed ${S.seed}</div>`;
+    h+=mine.sort(sortf).map(row).join("")}
+  if(other.length){h+=`<div class="grouphead">Other worlds</div>`;
+    h+=other.sort(sortf).slice(0,25).map(row).join("")}
+  return h;
+}
+
+function allTime(t){
+  let w=0,l=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
+  S.history.forEach(h=>{
+    const r=h.teams[t]; if(!r)return;
+    w+=r[0]; l+=r[1]; if(r[2]<best)best=r[2];
+    if(h.champion===t)titles++;
+    if(h.confChamps&&Object.values(h.confChamps).indexOf(t)>=0)confs++;
+    if(h.cfp&&h.cfp[t])cfp++;
+    if(h.post&&h.post[t]){pw+=h.post[t][0]; pl+=h.post[t][1]}
+    else if(h.bowls&&h.bowls[t]){h.bowls[t][0]==="W"?pw++:pl++}
+    if(h.firedList&&h.firedList.indexOf(t)>=0)coach++;
+  });
+  const rk=SEA?SEA.poll.rankMap()[t]:999;
+  return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
+          post:pw+"-"+pl,postGames:pw+pl,coach:coach,now:rk,
+          pct:(w+l)?(w/(w+l)):null,seasons:S.history.length};
+}
+
+function seasonRowsFor(t){
+  return S.history.map(h=>{
+    const r=h.teams[t]||[0,0,999];
+    const seed=h.cfp?h.cfp[t]:null;
+    const bw=h.bowls?h.bowls[t]:null;
+    let res;
+    if(h.pnote&&h.pnote[t])res=h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
+    else if(h.champion===t)res="National champions";
+    else if(seed)res="Playoff, No. "+seed+" seed";
+    else if(bw)res=(bw[0]==="W"?"Won the ":"Lost the ")+bw[1];
+    else res=r[0]>=6?"No bowl":"Losing season";
+    const cc=h.confChamps?Object.keys(h.confChamps).find(c=>h.confChamps[c]===t):null;
+    return {year:h.year,rec:r[0]+"-"+r[1],rank:r[2],res:res,grade:(t===S.myTeam?h.grade:null),
+            champ:h.champion===t,conf:cc?CONF_NAMES[cc]:null,
+            coach:!!(h.firedList&&h.firedList.indexOf(t)>=0)};
+  }).reverse();
+}
+
+function teamCard(t){
+  const rows=seasonRowsFor(t);
+  const A=allTime(t);
+  const orig=S.origProgram?Math.round(S.origProgram[t]):null;
+  const now=U?Math.round(U.program[t]):null;
+  const d=(orig!==null&&now!==null)?now-orig:0;
+  const base=S.history.length?S.history[0].year:SEA.year;
+  let h=`<div class="idcard" style="border-left:4px solid ${teamInk(t)}">
+    <div class="iname" style="color:${teamInk(t)}">${esc(t)}</div>
+    <div class="imeta">${esc(CONF_NAMES[CONF[t]])} &middot; currently
+      ${A.now<=25?"ranked #"+A.now:"unranked ("+A.now+"th)"}</div>
+    <div class="stats">
+      <div><b>${A.w}-${A.l}</b><span>All-time</span></div>
+      <div><b>${A.pct!==null?A.pct.toFixed(3).replace(/^0/,""):"\u2013"}</b><span>Win %</span></div>
+      <div><b>${A.best?"#"+A.best:"\u2013"}</b><span>Best finish</span></div>
+    </div>
+    <div class="stats">
+      <div><b>${A.titles}</b><span>Titles</span></div>
+      <div><b>${A.confs}</b><span>Conf</span></div>
+      <div><b>${A.cfp}</b><span>Playoffs</span></div>
+      <div><b>${A.post}</b><span>Postseason</span></div>
+    </div>
+    ${U&&U.coach&&U.coach[t]?`<div class="coachbar plain">
+      <div class="cleft"><div class="cname">${esc(U.coach[t].n)}</div>
+      <div class="cmeta">Head coach &middot; ${U.coach[t].t<=0?"first season":"year "+(U.coach[t].t+1)}
+      &middot; ${coachGrade(U.coach[t].q)}</div></div></div>`:""}
+    <div class="progline">Program strength since ${base}:
+      <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b>
+      ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
+  h+=rosterOf(t);
+  h+=`<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(t);
+  if(!rows.length)return h+`<div class="note">No completed seasons yet.</div>`;
+  h+=`<div class="grouphead">Season by season</div>`;
+  h+=rows.map(r=>`<div class="yrow ${r.champ?'gold':''}">
+    <span class="yr">${r.year}</span>
+    ${r.grade?`<span class="ygrade">${esc(r.grade)}</span>`:""}
+    <div class="ymain"><div class="yrec">${r.rec}
+      <span class="yrank">${r.rank<=25?"final #"+r.rank:"unranked"}</span></div>
+    <div class="yres">${esc(r.res)}${r.conf?" &middot; "+esc(r.conf)+" champion":""}${
+      r.coach?' &middot; <span class="coachtag">new coach hired</span>':""}</div></div>
+    </div>`).join("");
+  return h;
+}
+
+function dynastyView(){
+  const my=S.myTeam;
+  let h=`<div class="dateline"><h2>Dynasty</h2>
+    <span>${S.history.length} season${S.history.length===1?"":"s"}</span></div>`;
+  h+=`<div class="subtabs">${[["program","Career"],["teams","Find a team"],
+    ["league","History"],["shared","League"]].map(([k,l])=>
+    `<button class="subtab" data-d="${k}" aria-pressed="${dynTab===k}">${l}</button>`).join("")}</div>`;
+
+  if(dynTab==="program"){
+    const C=S.career;
+    h+=`<div class="idcard careercard">
+      <div class="iname">${esc(C.name)}</div>
+      <div class="imeta">You &middot; head coach &middot; ${esc(repGrade(C.rep))}</div>
+      <div class="stats">
+        <div><b>${C.w}-${C.l}</b><span>Career</span></div>
+        <div><b>${C.titles}</b><span>Titles</span></div>
+        <div><b>${C.confs}</b><span>Conf</span></div>
+        <div><b>${C.fired}</b><span>Fired</span></div>
+      </div>
+      <div class="grouphead" style="padding:14px 0 6px;border:none">Coaching stops</div>
+      ${C.stops.map(s=>`<div class="stop">
+        <span class="dot" style="background:${teamColor(s.team)}"></span>
+        <span class="stopteam">${esc(s.team)}</span>
+        <span class="stopyr">${s.from}${s.to&&s.to>s.from?"\u2013"+s.to:s.to?"":"\u2013"}</span>
+        <span class="stoprec">${s.w}-${s.l}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
+      </div>`).join("")}</div>`;
+    h+=teamCard(my);
+    h+=`<div class="seedrow"><div class="seedbox seedshow">SEED ${S.seed}</div>
+      <span class="seedhint">Anyone starting with this seed gets the identical universe.
+      Pick a different team and you live the same seasons from another sideline.</span></div>`;
+    return h;
+  }
+
+  if(dynTab==="teams"){
+    if(dynTeam)return h+`<button class="backbtn" id="dback">&larr; All teams</button>`+teamCard(dynTeam);
+    h+=`<div class="seedrow"><input id="dfind" class="seedbox findbox"
+      placeholder="Search any of 132 programs..." value="${esc(dynQ)}"></div>`;
+    const ql=dynQ.trim().toLowerCase();
+    const list=NAMES.filter(t=>!ql||t.toLowerCase().includes(ql));
+    const cur=SEA?SEA.poll.rankMap():{};
+    list.sort((x,y)=>(cur[x]||999)-(cur[y]||999));
+    if(!list.length)return h+`<div class="note">No team matches that.</div>`;
+    h+=`<div class="note">Tap any program for its roster, schedule and history. You can also
+      tap a team name anywhere in the game &mdash; scores, standings, the poll.</div>`;
+    h+=`<div class="grouphead">${list.length} programs &middot; ordered by current ranking</div>`;
+    h+=list.map(t=>{
+      const A=allTime(t);
+      const bits=[esc(CONF_NAMES[CONF[t]])];
+      if(A.titles)bits.push(A.titles+" title"+(A.titles>1?"s":""));
+      if(A.best)bits.push("best #"+A.best);
+      return `<div class="frow tpick" data-t="${esc(t)}">
+        <span class="dot" style="background:${teamColor(t)}"></span>
+        <div class="fmain"><div class="fname">${esc(t)}${t===my?' <span class="youtag">YOU</span>':''}</div>
+        <div class="fnote">${bits.join(" &middot; ")}</div></div>
+        <div class="tstat"><span class="trec">${A.w}-${A.l}</span>
+        <span class="trk">${A.now<=25?"#"+A.now:"NR"}</span></div></div>`;
+    }).join("");
+    return h;
+  }
+
+  if(dynTab==="shared")return h+leagueView();
+
+  // league history
+  if(!S.history.length)return h+`<div class="note">Finish a season and league history builds here.</div>`;
+  // live race, once enough of the current season has been played
+  if(SEA&&SEA.step>=6&&SEA.roster){
+    const hz=SEA.heisman(5);
+    if(hz.length){
+      h+=`<div class="grouphead">Heisman race &mdash; ${SEA.year}, week ${Math.min(SEA.step,NW)}</div>`;
+      h+=hz.map((x,i)=>`<div class="frow ${x.t===my?'mine':''}">
+        <span class="sd">${i+1}</span>
+        <span class="dot" style="background:${teamColor(x.t)}"></span>
+        <div class="fmain"><div class="fname">${esc(x.n)}</div>
+        <div class="fnote">${CLASSES[x.c]} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div></div>
+        <span class="fcfp">${x.r}</span></div>`).join("");
+    }
+  }
+  const hw=S.history.filter(x=>x.heis&&x.heis.length);
+  if(hw.length){
+    h+=`<div class="grouphead">Heisman winners</div>`;
+    h+=hw.slice().reverse().map(x=>{const w=x.heis[0];
+      return `<div class="frow ${w.t===my?'mine':''}">
+        <span class="sd">${x.year}</span>
+        <span class="dot" style="background:${teamColor(w.t)}"></span>
+        <div class="fmain"><div class="fname">${esc(w.n)}</div>
+        <div class="fnote">${CLASSES[w.c]} ${esc(w.p)} &middot; ${esc(w.t)}</div></div>
+        <span class="fcfp">${w.r}</span></div>`}).join("");
+  }
+  h+=`<div class="grouphead">National champions</div>`;
+  h+=S.history.slice().reverse().map(x=>{
+    const r=x.teams[x.champion];
+    return `<div class="yrow ${x.champion===my?'gold':''}"
+      style="border-left:3px solid ${teamInk(x.champion)}">
+      <span class="yr">${x.year}</span>
+      <div class="ymain"><div class="yrec">${esc(x.champion)}</div>
+      <div class="yres">${r?r[0]+"-"+r[1]:""}${x.confChamps?" &middot; "+
+        (Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)
+          ?CONF_NAMES[Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)]+" champion"
+          :"at-large"):""}</div></div></div>`;
+  }).join("");
+  const last=S.history[S.history.length-1];
+  h+=`<div class="grouphead">Final top 10 &mdash; ${last.year}</div>`;
+  h+=last.top10.map((t,i)=>{const r=last.teams[t];
+    return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
+      <span class="dot" style="background:${teamColor(t)}"></span>
+      <span class="steam">${esc(t)}</span>
+      <span class="sall">${r[0]}-${r[1]}</span></div>`}).join("");
+  if(S.origProgram&&U){
+    const base=S.history[0].year;
+    const d=NAMES.map(t=>[t,Math.round(U.program[t]-S.origProgram[t])])
+                 .sort((x,y)=>y[1]-x[1]);
+    h+=`<div class="grouphead">Risen most since ${base}</div>`;
+    h+=d.slice(0,8).map(([t,v])=>`<div class="srow"><span class="spos"></span>
+      <span class="dot" style="background:${teamColor(t)}"></span>
+      <span class="steam">${esc(t)}</span><span class="sconf up">+${v}</span></div>`).join("");
+    h+=`<div class="grouphead">Fallen most since ${base}</div>`;
+    h+=d.slice(-8).reverse().map(([t,v])=>`<div class="srow"><span class="spos"></span>
+      <span class="dot" style="background:${teamColor(t)}"></span>
+      <span class="steam">${esc(t)}</span><span class="sconf dn">${v}</span></div>`).join("");
+    h+=`<div class="note">Program strength is the slow-moving baseline &mdash; recruiting,
+      resources, coaching. Measured against where each program stood in ${base}.</div>`;
+  }
+  return h;
+}
+
+function offseasonBanner(){
+  const last=S.history[S.history.length-1];
+  if(!last)return "";
+  const my=S.myTeam;
+  const myHire=(last.hires||[]).find(x=>x.team===my);
+  const myPoach=(last.poached||[]).find(x=>x.from===my);
+  let news="";
+  if(myPoach)news=`<div class="bnews flag"><b>${esc(myPoach.name)} left for
+    ${esc(myPoach.to)}.</b> ${myHire?esc(myHire.name)+" takes over.":""}</div>`;
+  else if(last.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
+    ${esc(myHire.name)} is your new head coach.</div>`;
+  else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
+  const cls=last.classes?last.classes[my]:null;
+  const early=last.early?last.early[my]:null;
+  let rec="";
+  if(cls)rec=`<div class="bnews"><b>Recruiting:</b> ${esc(cls.l)} &mdash;
+    ranked ${cls.rank} of ${cls.of} nationally.</div>`;
+  if(early)rec+=`<div class="bnews small">${early.map(p=>esc(p.n)+" ("+esc(p.p)+")").join(", ")}
+    declared early for the draft.</div>`;
+  const hz=last.heis&&last.heis[0]?`<div class="bnews small">${esc(last.heis[0].n)}
+    (${esc(last.heis[0].p)}, ${esc(last.heis[0].t)}) won the Heisman.</div>`:"";
+  const bigMoves=(last.poached||[]).slice(0,3).map(p=>
+    `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
+  return `<div class="banner"><div class="bkick">${last.year} in the books</div>
+    <div class="btitle">${esc(last.result)}</div>
+    <div class="bsub">${esc(last.champion)} won the national title.
+      ${(last.hires||[]).length} programs hired a new head coach.</div>
+    ${news}${rec}${hz}${bigMoves}</div>`;
+}
+
+/* ============ week compression ============ */
+/* Weeks where nothing is on the line shouldn't cost a tap each. */
+function weekWeight(w){
+  const my=S.myTeam;
+  const g=SEA.sched.find(x=>x.week===w&&(x.home===my||x.away===my));
+  if(!g)return 0;
+  const opp=g.home===my?g.away:g.home;
+  if(rivalryName(my,opp))return 3;
+  const rk=SEA.poll.rankMap()[opp];
+  if(rk<=25)return 3;
+  if(w>=NW-3)return 2;
+  const wp=winProb(my,opp,g.home===my,g.neutral);
+  if(wp>0.30&&wp<0.70)return 2;
+  return 1;
+}
+
+function nextBigWeek(){
+  for(let w=SEA.step+1;w<NW;w++)if(weekWeight(w)>=2)return w;
+  return NW;
+}
+
+function canSkip(){
+  if(SEA.phase!=="week")return null;
+  const target=nextBigWeek();
+  if(target-SEA.step<2)return null;
+  if(weekWeight(SEA.step)>=2)return null;
+  const g=SEA.sched.find(x=>x.week===target&&(x.home===S.myTeam||x.away===S.myTeam));
+  const opp=g?(g.home===S.myTeam?g.away:g.home):null;
+  return {to:target,n:target-SEA.step,opp:opp};
+}
+
+function simAhead(){
+  const sk=canSkip(); if(!sk)return;
+  const from=SEA.step;
+  S.plans=S.plans||{};
+  while(SEA.step<sk.to&&SEA.phase==="week"){
+    S.plans[SEA.step]="balanced"; SEA.plan="balanced";
+    SEA.advance(); S.steps++;
+  }
+  flash={type:"digest",from:from,to:SEA.step};
+  reveal=null; save(); render();
+}
+
+function digestBlock(){
+  const my=S.myTeam;
+  let h=`<div class="banner"><div class="bkick">Weeks ${flash.from+1}&ndash;${flash.to} simulated</div>`;
+  const rows=[];
+  for(let i=flash.from;i<flash.to;i++){
+    const W=SEA.weeks[i]; if(!W)continue;
+    const g=W.games.find(x=>x.home===my||x.away===my);
+    if(!g){rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
+      <span class="dres bye">Bye</span></div>`);continue}
+    const won=g.winner===my, opp=g.home===my?g.away:g.home;
+    const ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
+    rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
+      <span class="dres ${won?'w':'l'}">${won?"W":"L"} ${ms}-${os}</span>
+      <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`);
+  }
+  h+=`<div class="digest">${rows.join("")}</div>`;
+  const rk=SEA.poll.rankMap();
+  h+=`<div class="bsub">Now ${SEA.rec[my][0]}-${SEA.rec[my][1]}${
+    rk[my]<=25?", ranked No. "+rk[my]:", unranked"}.</div></div>`;
+  return h;
+}
+
+function offseasonScreen(){
+  const A=S.off.act, P=S.off.picks, my=S.myTeam;
+  const last=SEA;
+  let h=`<div class="dateline"><h2>Offseason</h2><span>${last.year} &rarr; ${last.year+1}</span></div>`;
+  const exp=S.expNow||expectations();
+  const res=(()=>{const b=last.myBowl?last.myBowl(my):null;return ""})();
+  const gr=seasonGrade(last.rec[my][0],last.rec[my][1],
+    last.champion===my?"NATIONAL":(last.field.indexOf(my)>=0?"Playoff":
+      (last.myBowl(my)?(last.myBowl(my).winner===my?"Won the ":"Lost the ")+last.myBowl(my).title
+       :last.rec[my][0]>=6?"No bowl":"Losing season")),exp);
+  const miles=milestones(last.rec[my][0],last.rec[my][1],
+    last.champion===my?"NATIONAL":"",last.poll.rankMap()[my]);
+  h+=`<div class="banner"><div class="bkick">${last.year} final</div>
+    <div class="gradebox"><span class="grade">${gr.g}</span>
+      <div><div class="btitle" style="margin:0">${last.rec[my][0]}-${last.rec[my][1]}</div>
+      <div class="gradeline">${esc(gr.l)}</div></div></div>
+    ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
+    <div class="bsub">${esc(last.champion)} won the national title.
+    ${A.hires.length} programs changed coaches.</div>
+    ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
+      ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
+
+  const C=S.career;
+  const jobRow=(t,tag)=>`<div class="cand ${S.off.move===t?'on':''}" data-job="${esc(t)}">
+    <div class="candtop"><div>
+      <div class="fname" style="color:${teamInk(t)}">${esc(t)}</div>
+      <div class="fnote">${esc(CONF_NAMES[CONF[t]])} &middot; ${
+        U.program[t]>=1850?"blue blood":U.program[t]>=1650?"solid job":
+        U.program[t]>=1450?"middling job":"rebuild"}</div></div>
+      <span class="cgrade">${esc(tag)}</span></div>
+    <div class="cdesc">Last season ${last.rec[t]?last.rec[t][0]+"-"+last.rec[t][1]:"&mdash;"}.
+      ${U.program[t]>U.program[my]?"A step up.":U.program[t]<U.program[my]-120?"A step down.":"A lateral move."}</div></div>`;
+
+  if(A.userOpen){
+    h+=`<div class="firedbox"><div class="bkick">You have been let go</div>
+      <div class="btitle">${esc(my)} has fired you.</div>
+      <div class="bsub">Career ${C.w}-${C.l} &middot; you are ${esc(repGrade(C.rep))}.
+      ${S.off.jobs.length?"These programs will take you.":"Nobody is calling."}</div></div>`;
+    h+=`<div class="grouphead">1. Where do you go next?</div>`;
+    h+=S.off.jobs.map(t=>jobRow(t,U.program[t]>U.program[my]?"step up":"opening")).join("");
+    h+=`<div class="cand ${S.off.move==="retire"?'on':''}" data-job="retire">
+      <div class="candtop"><div><div class="fname">Retire</div>
+      <div class="fnote">End your career here</div></div></div>
+      <div class="cdesc">Walk away with a ${C.w}-${C.l} record and ${C.titles}
+        national title${C.titles===1?"":"s"}.</div></div>`;
+  }else if(S.off.poach.length){
+    h+=`<div class="grouphead">1. You have offers</div>`;
+    h+=`<div class="note">${esc(repGrade(C.rep))[0].toUpperCase()+esc(repGrade(C.rep)).slice(1)}
+      &mdash; bigger programs have come calling. You can stay or you can go.</div>`;
+    h+=`<div class="cand ${!S.off.move?'on':''}" data-job="${esc(my)}">
+      <div class="candtop"><div><div class="fname" style="color:${teamInk(my)}">Stay at ${esc(my)}</div>
+      <div class="fnote">Year ${(U.coach[my]?U.coach[my].t:0)+1}</div></div>
+      <span class="cgrade">loyalty</span></div>
+      <div class="cdesc">Finish what you started.</div></div>`;
+    h+=S.off.poach.map(t=>jobRow(t,"step up")).join("");
+  }else{
+    h+=`<div class="grouphead">Your job</div>
+      <div class="coachbar plain" style="padding:12px 16px">
+      <div class="cleft"><div class="cname">${esc(C.name)} <span class="youtag">YOU</span></div>
+      <div class="cmeta">Year ${(U.coach[my]?U.coach[my].t:0)+1} at ${esc(my)}
+        &middot; career ${C.w}-${C.l} &middot; ${esc(repGrade(C.rep))}</div></div></div>`;
+  }
+
+  const step=(A.userOpen||S.off.poach.length)?1:0;
+  const B=P.budget, used=BUCKETS.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
+  h+=`<div class="grouphead">${step?"2":"1"}. Budget &mdash; ${S.off.pool} to spend</div>`;
+  h+=coachMark("budget","You must spend every point. Facilities compound for years but only if you keep the job; retention and development pay off right away.");
+  h+=`<div class="note">Every point you put somewhere is a point you didn't put
+    somewhere else. Bigger programs and better seasons earn a bigger pool.</div>`;
+  h+=`<div class="budgetleft ${left===0?'done':''}">${left>0?left+" unspent":
+      left<0?Math.abs(left)+" over budget":"Fully allocated"}</div>`;
+  h+=BUCKETS.map(bk=>`<div class="bud">
+    <div class="budtop"><div><div class="fname">${esc(bk.l)}</div>
+      <div class="cdesc" style="margin-top:3px">${esc(bk.d)}</div></div>
+      <div class="budctl">
+        <button class="budbtn" data-bud="${bk.k}" data-dir="-1">&minus;</button>
+        <span class="budval">${B[bk.k]||0}</span>
+        <button class="budbtn" data-bud="${bk.k}" data-dir="1" ${left<=0?'disabled':''}>+</button>
+      </div></div>
+    <div class="budbar"><i style="width:${((B[bk.k]||0)/S.off.pool*100).toFixed(0)}%"></i></div>
+  </div>`).join("");
+  h+=`<div class="grouphead">${step?"3":"2"}. Recruiting focus</div>`;
+  h+=Object.keys(RECRUIT_FOCUS).map(k=>`<div class="opt ${P.recruit===k?'on':''}" data-rec="${k}">
+    <div class="fname">${esc(RECRUIT_FOCUS[k].l)}</div>
+    <div class="cdesc">${esc(RECRUIT_FOCUS[k].d)}</div></div>`).join("");
+
+  h+=`<div class="grouphead">${step?"4":"3"}. Team philosophy</div>`;
+  h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
+    <div class="fname">${esc(PHILOSOPHY[k].l)}</div>
+    <div class="cdesc">${esc(PHILOSOPHY[k].d)}</div></div>`).join("");
+  return h;
+}
+
+/* ============ shell ============ */
+const TABS=[["team","Team"],["scores","Scores"],["poll","Poll"],
+            ["stand","Standings"],["dyn","Dynasty"]];
+
+function render(){
+  if(S.title){renderTitle();return}
+  if(S.introStep!==null&&S.introStep!==undefined&&!S.myTeam){renderIntro();return}
+  if(!S.myTeam&&S.setup&&!S.setup.ready){renderSetup();return}
+  if(!S.myTeam){renderStart();return}
+  if(S.help){
+    el("app").innerHTML=`<div class="stick"><div class="topbar">
+      <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
+      <span class="tb-team" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
+      </div></div>${helpPanel()}`;
+    const c=el("hclose"); if(c)c.onclick=()=>{S.help=false;render()};
+    return;
+  }
+  if(S.retired){
+    const C=S.career;
+    el("app").innerHTML=`<header class="mast">
+      <div class="kicker">Career complete</div>
+      <h1>${esc(C.name)}</h1>
+      <p>${C.w}-${C.l} across ${C.stops.length} program${C.stops.length===1?"":"s"},
+      ${C.titles} national title${C.titles===1?"":"s"}, ${C.confs} conference title${C.confs===1?"":"s"}.
+      ${C.fired?`Fired ${C.fired} time${C.fired===1?"":"s"} along the way.`:"Never fired."}</p></header>
+      <div class="grouphead">Coaching stops</div>
+      ${C.stops.map(s=>`<div class="stop" style="padding:10px 16px">
+        <span class="dot" style="background:${teamColor(s.team)}"></span>
+        <span class="stopteam">${esc(s.team)}</span>
+        <span class="stopyr">${s.from}\u2013${s.to||s.from}</span>
+        <span class="stoprec">${s.w}-${s.l}</span></div>`).join("")}
+      <div class="actionbar"><button class="advance gold" id="reset2">New career</button></div>`;
+    const r=el("reset2"); if(r)r.onclick=async()=>{
+      try{await window.storage.delete(KEY)}catch(e){}
+      S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
+      U=null;SEA=null;renderStart();};
+    return;
+  }
+  const rk=SEA.poll.rankMap(), my=S.myTeam;
+  const done=SEA.phase==="done";
+  const inOff=!!S.off;
+  wide=isWide();
+  try{document.body.classList.toggle("offseason",!!S.off)}catch(e){}
+  el("app").innerHTML=`
+    <div class="stick">
+      <div class="topbar">
+        <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
+          <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
+        <div class="tb-right">${(()=>{const r=liveRec(my);return r[0]+"-"+r[1]})()}
+          ${reveal==="half"?"":(rk[my]<=25?`<span class="tb-rk">#${rk[my]}</span>`:"")}
+          <button class="reset" id="ttl" title="Title screen">&#9632;</button>
+          <button class="reset" id="hlp" title="How it works">?</button>
+          <button class="reset" id="rst" title="Start over">&#8635;</button></div>
+      </div>
+      ${inOff?"":`<div class="tabs">${TABS.map(([k,l])=>
+        `<button class="tab" data-v="${k}" aria-selected="${view===k}">${l}</button>`).join("")}</div>`}
+    </div>
+    ${inOff?"":`<div class="hint">Space or Enter advances &middot; keys 1&ndash;5 switch views</div>`}
+    <div class="cols">
+    ${wide&&!inOff?`<aside id="side">${teamPanel()}
+      <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
+        SEA.buttonLabel()}</button>${(()=>{const sk=canSkip();return sk?
+        `<button class="skip" id="skip2">Sim ${sk.n} weeks &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
+      </div></aside>`:""}
+    <main id="view">${inOff?offseasonScreen():
+      (flash&&flash.type==="offseason"?offseasonBanner():
+       flash&&flash.type==="digest"?digestBlock():"")+
+      (view==="team"?myTeamView():view==="scores"?scoresView():
+       view==="poll"?pollView():view==="stand"?standingsView():dynastyView())}</main>
+    </div>
+    <div class="actionbar${wide&&!inOff?" hideWide":""}">
+      ${(()=>{const sk=canSkip();return sk?`<button class="skip" id="skip">Sim ${sk.n} weeks
+        &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
+      <button class="advance ${done||inOff?'gold':''}" id="adv" ${
+        inOff&&((S.off.act.userOpen&&S.off.move===null)||budgetLeft()!==0)?'disabled':''}>${
+        inOff?(S.off.act.userOpen&&S.off.move===null?"Choose your next job"
+              :budgetLeft()>0?"Allocate "+budgetLeft()+" more"
+              :budgetLeft()<0?"Over budget":
+              S.off.move==="retire"?"Retire"
+              :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
+              :"Begin "+(SEA.year+1)+" season"):SEA.buttonLabel()}</button>
+    </div>`;
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;render()});
+  document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
+    if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null}
+    else if(b.dataset.p){postTab=b.dataset.p}
+    else if(b.dataset.m){teamTab=b.dataset.m}
+    else if(b.dataset.k){pollTab=b.dataset.k}
+    render()});
+  document.querySelectorAll(".tpick").forEach(b=>b.onclick=()=>{dynTeam=b.dataset.t;render()});
+  const db=el("dback"); if(db)db.onclick=()=>{dynTeam=null;render()};
+  const lp=el("lgpost"); if(lp)lp.onclick=()=>{postSeason()};
+  const ll=el("lgload"); if(ll)ll.onclick=()=>{leagueMsg="";loadLeague()};
+  const df=el("dfind"); if(df)df.oninput=()=>{dynQ=df.value;
+    const p=df.selectionStart; render();
+    const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
+  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
+  const sb=el("skip"); if(sb)sb.onclick=()=>{simAhead();window.scrollTo({top:0})};
+  const tb2=el("ttl"); if(tb2)tb2.onclick=()=>{S.title=true;save();render()};
+  const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
+  const rb=el("rst"); if(rb)rb.onclick=async()=>{
+    if(confirm("Abandon this dynasty and start a new one?")){
+      try{await window.storage.delete(KEY)}catch(e){}
+      S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
+      U=null;SEA=null;flash=null;renderStart();}};
+  const advance=()=>{
+    if(S.off){commitOffseason();window.scrollTo({top:0});return}
+    if(SEA.phase!=="week"&&view==="team"&&!wide)view="scores";
+    doAdvance();
+    if(!wide)window.scrollTo({top:0,behavior:"auto"});
+  };
+  const a2=el("adv2"); if(a2)a2.onclick=advance;
+  const s2=el("skip2"); if(s2)s2.onclick=()=>simAhead();
+  el("adv").onclick=()=>{
+    if(S.off){commitOffseason();window.scrollTo({top:0});return}
+    if(SEA.phase!=="week"&&view==="team")view="scores";
+    doAdvance();
+    window.scrollTo({top:0,behavior:"auto"});
+  };
+  document.querySelectorAll("[data-team]").forEach(b=>b.onclick=(ev)=>{
+    ev.stopPropagation(); openTeam(b.dataset.team);});
+  document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
+    S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
+  document.querySelectorAll("[data-bud]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.bud, d=+b.dataset.dir, B=S.off.picks.budget;
+    const nv=(B[k]||0)+d;
+    if(nv<0)return;
+    if(d>0&&budgetLeft()<=0)return;
+    B[k]=nv; save(); render();});
+  document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.feat;
+    S.featured=(S.featured===i?null:i); save(); render();});
+  document.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{
+    S.off.move=(b.dataset.job===S.myTeam?null:b.dataset.job);save();render()});
+  document.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{
+    S.off.picks.recruit=b.dataset.rec;save();render()});
+  document.querySelectorAll("[data-phil]").forEach(b=>b.onclick=()=>{
+    S.off.picks.phil=b.dataset.phil;save();render()});
+}
+
+const TIERS=[
+ {max:15, l:"Blue blood",   d:"A playoff berth is the expectation. Miss twice and you're gone.",
+  c:"flag"},
+ {max:42, l:"Contender",    d:"Nine wins and a conference push keeps everyone happy.",c:"sod"},
+ {max:78, l:"Middle of the pack",d:"Get to a bowl. Beat someone you shouldn't. Good place to learn.",
+  c:"turf",rec:true},
+ {max:106,l:"Tough job",    d:"Six wins here is a genuine achievement.",c:"vote"},
+ {max:999,l:"Rebuild",      d:"Hard mode. Four wins would be real movement.",c:"muted"}
+];
+function tierOf(rank){return TIERS.find(t=>rank<=t.max)}
+
+const LOGO=`<svg class="logo" viewBox="0 0 72 72" aria-hidden="true">
+  <g fill="none" stroke="var(--sodium)" stroke-width="5.5" stroke-linecap="square">
+    <path d="M13 13 V40"/><path d="M59 13 V40"/><path d="M13 40 H59"/><path d="M36 40 V58"/>
+  </g>
+  <ellipse cx="36" cy="62" rx="14" ry="4" fill="none" stroke="var(--line)" stroke-width="3"/>
+  <g>
+    <path d="M27.5 22 L29.5 14.5 L33.5 20.5 Z" fill="var(--bone)"/>
+    <path d="M44.5 22 L42.5 14.5 L38.5 20.5 Z" fill="var(--bone)"/>
+    <path d="M36 16.5 C46.5 16.5 49.5 24.5 49.5 31 C49.5 37 43.5 39.6 36 39.6
+             C28.5 39.6 22.5 37 22.5 31 C22.5 24.5 25.5 16.5 36 16.5 Z" fill="var(--bone)"/>
+    <circle cx="30.6" cy="27" r="5.1" fill="var(--ink)"/>
+    <circle cx="41.4" cy="27" r="5.1" fill="var(--ink)"/>
+    <circle cx="32.2" cy="25.4" r="1.8" fill="var(--bone)"/>
+    <circle cx="43" cy="25.4" r="1.8" fill="var(--bone)"/>
+    <path d="M36 29.6 L33.3 32.8 L38.7 32.8 Z" fill="var(--sodium)"/>
+    <path d="M28.5 33.5 C25.5 33.5 24 31 24 29" fill="none" stroke="var(--line)" stroke-width="1.6"/>
+    <path d="M43.5 33.5 C46.5 33.5 48 31 48 29" fill="none" stroke="var(--line)" stroke-width="1.6"/>
+    <g stroke="var(--sodium)" stroke-width="2.4" stroke-linecap="round">
+      <path d="M32 39.6 V43"/><path d="M40 39.6 V43"/>
+    </g>
+  </g>
+</svg>`;
+
+const INTRO=[
+ {h:"The job is yours until it isn't",
+  b:"You have a record, a program, and a seat that gets warm. Miss expectations two years "+
+    "running and you're fired \u2014 then you pick from whatever will still take you."},
+ {h:"Two decisions that matter",
+  b:"<b>Every week</b> you set a gameplan. Playing it safe protects a lead; taking risks is "+
+    "how an underdog steals a game it has no business winning. "+
+    "<b>Every offseason</b> you spend a budget across recruiting, development, facilities and "+
+    "retention \u2014 and you can't fund everything."},
+ {h:"Everything carries over",
+  b:"Players graduate and develop. Recruiting classes compound. Facilities you build outlast "+
+    "the season. Programs rise and fall across decades. Your career record follows you "+
+    "wherever you go next."}
+];
+
+const GLOSSARY=[
+ ["Program strength","The slow-moving baseline of a school \u2014 resources, recruiting pull, "+
+  "reputation. It moves over years, not weeks, and sets what's expected of you."],
+ ["Rating (player)","0\u201399 scale. A starter's rating drives how much he's worth to the team. "+
+  "Quarterbacks matter far more than safeties."],
+ ["Ceiling","How good a player can still become. Freshmen have room; seniors usually don't."],
+ ["Win probability","Derived from the rating gap plus home field. Your gameplan shifts the "+
+  "spread of outcomes around it, not the average."],
+ ["Hot seat","Measured against your program's own expectations, not raw wins. A bad year at a "+
+  "blue blood burns hotter than a bad year at a rebuild."],
+ ["Poll vs. reality","Voters are sticky and punish losses out of proportion. The poll can be "+
+  "wrong about you for weeks, and the playoff field is picked from it."],
+ ["Reputation","What other programs think of you. Built by beating expectations, worth more at "+
+  "a small school than a big one. It decides which jobs open up when you're fired."]
+];
+
+const PRE_RANK=(()=>{const o=TEAMS.slice().sort((a,b)=>b[1]-a[1]);
+  const m={};o.forEach((t,i)=>m[t[0]]=i+1);return m})();
+
+function pickList(q){
+  const byConf={};NAMES.forEach(t=>{(byConf[CONF[t]]=byConf[CONF[t]]||[]).push(t)});
+  const ql=q.trim().toLowerCase();
+  return ["SEC","B1G","B12","ACC","IND","P12","AAC","MW","SBC","MAC","CUSA"]
+    .filter(c=>byConf[c]).map(c=>{
+      const list=byConf[c].filter(t=>!ql||t.toLowerCase().includes(ql)).sort();
+      if(!list.length)return "";
+      return `<div class="cbox"><div class="chead">${CONF_NAMES[c]}</div>
+      <div class="pickgrid">${list.map(t=>{
+        const ti=tierOf(PRE_RANK[t]);
+        return `<button class="pick" data-t="${esc(t)}" title="${esc(ti.l)}">
+          <span class="dot" style="background:${teamColor(t)}"></span>
+          <span class="pn">${esc(t)}<em class="ptier ${ti.c}">${esc(ti.l)}</em></span>
+          <span class="pr">${PRE_RANK[t]}</span></button>`}).join("")}</div></div>`;
+    }).join("")||`<div class="note">No team matches that.</div>`;
+}
+
+function bindPicks(){
+  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>{
+    newDynasty(b.dataset.t,(S.setup.seed)>>>0,S.setup.name);
+  });
+}
+
+function renderTitle(){
+  const hasSave=!!(S&&S.myTeam);
+  el("app").innerHTML=`<div class="titlewrap">
+    ${LOGO}
+    <h1 class="wordmark"><span class="wm-a">Football</span><br><span class="wm-b">Coach</span></h1>
+    <div class="tagline">Build a program. Win it all.</div>
+    <div class="titlebtns">
+      ${hasSave?`<button class="advance" id="tcont">Continue \u2014 ${esc(S.myTeam)}
+        ${SEA?SEA.year:""}</button>`:""}
+      <button class="advance ${hasSave?'ghost':''}" id="tnew">New career</button>
+      <button class="introskip wide" id="thow">How to play</button>
+    </div>
+  </div>`;
+  const c=el("tcont"); if(c)c.onclick=()=>{S.title=false;render()};
+  el("tnew").onclick=()=>{S.title=false;S.setup={name:"",seed:Math.floor(Math.random()*899999+100000)};render()};
+  el("thow").onclick=()=>{S.title=false;S.introStep=0;render()};
+}
+
+function renderSetup(){
+  const rng=new RNG(Date.now()&0xffff);
+  el("app").innerHTML=`<div class="setupwrap">
+    ${LOGO}
+    <div class="kicker">New career</div>
+    <h2 class="introh">Who are you?</h2>
+    <div class="grouphead" style="border:none;padding-left:0">Your name</div>
+    <input id="cname" class="seedbox namebox" maxlength="26"
+      placeholder="Coach name" value="${esc(S.setup.name)}">
+    <button class="introskip" id="crand">Suggest one</button>
+    <div class="grouphead" style="border:none;padding-left:0">World seed</div>
+    <input id="cseed" class="seedbox" value="${S.setup.seed}">
+    <span class="seedhint">Share this number and a friend gets the identical universe &mdash;
+      same schedules, same injuries, same upsets.</span>
+    <div class="titlebtns"><button class="advance" id="cgo">Choose your program</button></div>
+  </div>`;
+  el("crand").onclick=()=>{S.setup.name=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
+  el("cgo").onclick=()=>{
+    S.setup.name=(el("cname").value||"").trim()||rng.pick(COACH_FIRST)+" "+rng.pick(LAST);
+    S.setup.seed=parseInt(el("cseed").value,10)||123456;
+    S.setup.ready=true; render();
+  };
+}
+
+function renderIntro(){
+  const i=S.introStep||0;
+  const card=INTRO[i];
+  el("app").innerHTML=`<div class="introwrap">
+    <div class="kicker">How this works &middot; ${i+1} of ${INTRO.length}</div>
+    <h2 class="introh">${card.h}</h2>
+    <p class="introb">${card.b}</p>
+    <div class="intronav">
+      <button class="introskip" id="iskip">Skip</button>
+      <button class="advance" id="inext">${i===INTRO.length-1?"Pick your program":"Next"}</button>
+    </div>
+    <div class="dots">${INTRO.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join("")}</div>
+  </div>`;
+  el("inext").onclick=()=>{
+    if(i===INTRO.length-1){S.introStep=null;S.introDone=true;S.title=true;save();render()}
+    else{S.introStep=i+1;render()}
+  };
+  el("iskip").onclick=()=>{S.introStep=null;S.introDone=true;S.title=true;save();render()};
+}
+
+function helpPanel(){
+  return `<div class="helpwrap"><div class="dateline"><h2>How it works</h2>
+    <button class="closebtn" id="hclose">Close</button></div>
+    ${INTRO.map(c=>`<div class="helpcard"><div class="fname">${c.h}</div>
+      <div class="cdesc">${c.b}</div></div>`).join("")}
+    <div class="grouphead">Glossary</div>
+    ${GLOSSARY.map(([t,d])=>`<div class="helpcard"><div class="fname">${esc(t)}</div>
+      <div class="cdesc">${esc(d)}</div></div>`).join("")}
+    <div class="grouphead">Controls</div>
+    <div class="helpcard"><div class="cdesc">Space or Enter advances. Keys 1&ndash;5 switch views.
+      The circular button in the header abandons the current career.</div></div>
+    <div style="height:30px"></div></div>`;
+}
+
+function renderStart(){
+  const byConf={};NAMES.forEach(t=>{(byConf[CONF[t]]=byConf[CONF[t]]||[]).push(t)});
+  el("app").innerHTML=`
+    <header class="mast">
+      <div class="kicker">${esc(S.setup&&S.setup.name?S.setup.name:"New career")}</div>
+      <h1>Where do you<br>want to coach?</h1>
+      <p>Every program is a different job with different expectations. Win at a blue blood and
+        it's what they pay you for; win at a rebuild and you'll have your pick of the country.</p>
+    </header>
+    <div class="grouphead">Your program</div>
+    <div class="seedrow"><input id="find" class="seedbox findbox" placeholder="Search 132 teams...">
+      <span class="seedhint">The number is the preseason rating rank. Lower means a stronger
+      program &mdash; and higher expectations to go with it.</span></div>
+    <div class="tierkey">${TIERS.map(t=>`<span class="${t.c}">${esc(t.l)}</span>`).join("")}</div>
+    <div id="picks">${pickList("")}</div>
+    <div style="height:40px"></div>`;
+  bindPicks();
+  const f=el("find");
+  if(f)f.oninput=()=>{el("picks").innerHTML=pickList(f.value);bindPicks()};
+}
+
+window.addEventListener("resize",()=>{
+  const w=isWide();
+  if(w!==wide&&S.myTeam)render();
+});
+window.addEventListener("keydown",e=>{
+  if(!S.myTeam)return;
+  const tag=(e.target&&e.target.tagName)||"";
+  if(tag==="INPUT"||tag==="TEXTAREA")return;
+  if(e.key===" "||e.key==="Enter"){e.preventDefault();
+    const b=el("adv2")||el("adv"); if(b&&!b.disabled)b.click();}
+  const keys={"1":"team","2":"scores","3":"poll","4":"stand","5":"dyn"};
+  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;render()}
+});
+
+(async function(){
+  const saved=await load();
+  if(saved&&saved.myTeam){S=saved;rebuild();S.expNow=S.expNow||expectations();S.title=true;render()}
+  else {S.title=true;render()}
+})();
+
+</script></body></html>
