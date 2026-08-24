@@ -95,6 +95,45 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .lgbtns .advance{margin:0}
 .lgmsg{font-family:var(--mono);font-size:10.5px;color:var(--sodium);padding:0 16px 10px;
  letter-spacing:.08em}
+.setrow{display:flex;gap:6px;padding:0 16px 10px;flex-wrap:wrap}
+.setbtn{flex:1;min-width:110px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;
+ text-transform:uppercase;padding:9px 6px;border:1px solid var(--line);background:none;
+ color:var(--muted);cursor:pointer}
+.setbtn[aria-pressed="true"]{border-color:var(--sodium);color:var(--sodium);
+ background:rgba(244,166,58,.1)}
+.watchwrap{max-width:640px;margin:0 auto;padding-bottom:96px}
+.wtop{margin:16px;padding:18px 16px;border:1px solid var(--vote);
+ background:linear-gradient(180deg,rgba(139,159,232,.13),transparent)}
+.wtop.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.14),transparent)}
+.wtop.loss{border-color:var(--flag);background:linear-gradient(180deg,rgba(228,91,78,.12),transparent)}
+.wlabel{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+ color:var(--vote);text-align:center}
+.wtop.win .wlabel{color:var(--turf)}.wtop.loss .wlabel{color:var(--flag)}
+.wscore{display:flex;gap:14px;margin-top:14px}
+.wside{flex:1;text-align:center;padding:10px 4px;border:1px solid var(--line)}
+.wside.lead{border-color:var(--sodium)}
+.wt{display:block;font-family:var(--cond);font-size:17px;font-weight:600;color:var(--muted);
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wside.lead .wt{color:var(--bone)}
+.wn{display:block;font-family:var(--cond);font-size:44px;font-weight:700;line-height:1}
+.field{display:block;width:calc(100% - 32px);margin:0 16px;height:auto}
+.fpos{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;
+ padding:8px 16px 2px;letter-spacing:.05em}
+.dtag{font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:var(--muted);
+ border:1px solid var(--line);padding:1px 4px;margin-left:6px;white-space:nowrap}
+.dtag.sc{color:var(--sodium);border-color:var(--sodium)}
+.plays{padding-bottom:10px}
+.play{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;
+ border-bottom:1px solid rgba(42,49,69,.55);animation:pop .3s ease-out}
+.play.mine{background:rgba(244,166,58,.09)}
+.pq{font-family:var(--mono);font-size:9.5px;color:var(--muted);flex:0 0 58px;padding-top:2px}
+.ptxt{flex:1;font-size:13px;line-height:1.4}
+.ptxt b{font-family:var(--cond);font-size:15px;font-weight:600}
+.pscore{font-family:var(--mono);font-size:12px;color:#B4BCCB;flex:0 0 46px;text-align:right}
+.rewatch{margin-top:11px;background:none;border:1px solid var(--line);color:var(--muted);
+ font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+ padding:7px 11px;cursor:pointer}
+.rewatch:hover{border-color:var(--sodium);color:var(--sodium)}
 .hmove{font-family:var(--mono);font-size:11px;margin-top:9px;padding-top:9px;
  border-top:1px solid var(--line);letter-spacing:.06em}
 .hmove.up{color:var(--turf)}.hmove.dn{color:var(--flag)}.hmove.flat{color:var(--muted)}
@@ -392,6 +431,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .budgetleft.done{color:var(--turf)}
 .prow2.feat{background:rgba(139,159,232,.12)}
 .feattag{color:var(--vote)}
+.venue{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:9px;
+ padding-top:9px;border-top:1px solid var(--line);line-height:1.5;letter-spacing:.03em}
 .series{font-family:var(--mono);font-size:10.5px;color:var(--flag);margin-top:9px;
  padding-top:9px;border-top:1px solid var(--line);line-height:1.5}
 .series b{font-size:13px}
@@ -949,6 +990,35 @@ class RNG{
     const R=Math.sqrt(-2*Math.log(u));this.sp=R*Math.sin(2*Math.PI*v);
     return m+s*R*Math.cos(2*Math.PI*v)}
   shuffle(a){for(let i=a.length-1;i>0;i--){const j=this.int(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+}
+
+/* ============ home fields ============ */
+/* Not every stadium is the same place. A handful are genuinely miserable to
+   visit; most are ordinary; some are half empty in November. */
+const CATHEDRAL={
+"LSU":26,"Penn State":24,"Ohio State":21,"Alabama":20,"Texas A&M":22,"Oregon":19,
+"Clemson":18,"Wisconsin":17,"Tennessee":20,"Florida":16,"Georgia":18,"Michigan":19,
+"Oklahoma":15,"Notre Dame":16,"Auburn":16,"Iowa":15,"Washington":15,"Utah":14,
+"Virginia Tech":15,"West Virginia":13,"Mississippi St":12,"Ole Miss":12,"Texas":15,
+"USC":11,"Nebraska":13,"BYU":12,"Boise State":14,"Air Force":10,"Hawaii":12,
+"Kansas State":12,"Arkansas":12,"South Carolina":13,"Missouri":10,"Louisville":10,
+"Miami":8,"Duke":4,"Northwestern":3,"Rutgers":5,"Purdue":5,"Vanderbilt":4,
+"Wake Forest":5,"Boston College":6,"Stanford":4,"California":5,"Kent State":2,
+"Akron":2,"Charlotte":3,"UTEP":3,"Temple":3,"FIU":2,"Ga State":2
+};
+
+function homeField(u,t){
+  const prog=(u&&u.program&&u.program[t])!==undefined?u.program[t]:1500;
+  const base=39+Math.max(0,Math.min(1,(prog-1150)/900))*30;
+  return Math.round(base+(CATHEDRAL[t]||8));
+}
+
+function venueLabel(v){
+  if(v>=88)return "one of the hardest places to play in the country";
+  if(v>=76)return "a genuinely hostile road trip";
+  if(v>=64)return "a real home-field edge";
+  if(v>=52)return "a normal road game";
+  return "not a difficult place to visit";
 }
 
 /* ============ team identity ============ */
@@ -1864,6 +1934,166 @@ function lateenRivalries(sched,busy){
   return sched;
 }
 
+/* ============ watching a game ============ */
+/* Reconstructs a full drive chart that adds up to the real final score, using
+   the actual players on both rosters. Seeded from the game itself, so it never
+   touches the season's RNG. */
+
+function scoreParts(P,rng){
+  const out=[]; let left=P, guard=0;
+  while(left>0&&guard++<40){
+    if(left===1){ if(out.length){out[out.length-1]+=1} else out.push(2); break }
+    if(left===2){ out.push(2); break }
+    if(left===4){ out.push(2); out.push(2); break }   // two safeties: rare but legal
+    if(left===5){ out.push(2); out.push(3); break }
+    if(left>=7&&(left%3!==0||rng.r()<0.72)){ out.push(rng.r()<0.06?8:7); left-=out[out.length-1]; continue }
+    if(left>=6&&rng.r()<0.10){ out.push(6); left-=6; continue }
+    if(left>=3){ out.push(3); left-=3; continue }
+    out.push(left); left=0;
+  }
+  let sum=out.reduce((a,b)=>a+b,0);
+  while(sum>P&&out.length){ const i=out.indexOf(8); if(i<0)break; out[i]=7; sum--; }
+  return out;
+}
+
+const PUNT_LINES=["three and out","forced to punt","stalls out, punt",
+  "goes backwards, punt","can't move it, punt"];
+
+function scoreText(rng,off,def,pts){
+  const nm=i=>off&&off[i]?off[i].n:"the offense";
+  const dn=i=>def&&def[i]?def[i].n:"the defense";
+  if(pts===3)return `${Math.round(rng.range(19,52))}-yd field goal`;
+  if(pts===2)return rng.r()<0.5?`safety, ${dn(5)} in the end zone`
+    :`safety, snap sails out of the end zone`;
+  if(pts===6&&rng.r()<0.5)return `${dn(8)} ${Math.round(rng.range(18,88))}-yd pick six`;
+  const yds=Math.round(rng.range(2,64));
+  const two=pts===8?", two-point conversion good":"";
+  if(rng.r()<0.56)return `${nm(0)} ${yds}-yd TD pass to ${nm(rng.r()<0.62?2:3)}${two}`;
+  if(rng.r()<0.82)return `${nm(1)} ${yds}-yd TD run${two}`;
+  return `${nm(0)} ${Math.round(rng.range(1,14))}-yd TD run${two}`;
+}
+
+/* Every drive, scoring or not. start/end are yards from the offense's own goal. */
+function gameScript(g,rosterHome,rosterAway,seed){
+  const rng=new RNG((seed>>>0)||1);
+  const hsc=scoreParts(g.hp,rng), asc=scoreParts(g.ap,rng);
+  // both teams get the same number of possessions, so the game trades properly
+  const target=Math.max(hsc.length,asc.length,Math.round(rng.range(10,13)));
+  const items=[];
+  hsc.forEach(p=>items.push({side:"home",pts:p}));
+  asc.forEach(p=>items.push({side:"away",pts:p}));
+  for(let i=hsc.length;i<target;i++)items.push({side:"home",pts:0});
+  for(let i=asc.length;i<target;i++)items.push({side:"away",pts:0});
+
+  // teams trade possession; scoring drives fall wherever they fall
+  const hq=rng.shuffle(items.filter(d=>d.side==="home"));
+  const aq=rng.shuffle(items.filter(d=>d.side==="away"));
+  const seq=[]; let turn=rng.r()<0.5?"home":"away";
+  while(hq.length||aq.length){
+    const q=turn==="home"?hq:aq;
+    if(q.length)seq.push(q.shift());
+    else seq.push((turn==="home"?aq:hq).shift());
+    turn = turn==="home"?"away":"home";
+  }
+  // lay them across four quarters with a clock that runs down
+  const per=Math.ceil(seq.length/4);
+  seq.forEach((d,i)=>{
+    d.q=Math.min(4,Math.floor(i/per)+1);
+    const within=i-(d.q-1)*per;
+    d.sec=Math.max(8,Math.round(895-(within+1)*(880/(per+1))-rng.range(0,40)));
+  });
+
+  let H=0,A=0;
+  return seq.map((d,idx)=>{
+    const off=d.side==="home"?rosterHome:rosterAway;
+    const def=d.side==="home"?rosterAway:rosterHome;
+    const start=Math.round(Math.max(3,Math.min(78,rng.gauss(27,13))));
+    let end,outcome,text;
+    if(d.pts>0){
+      if(d.side==="home")H+=d.pts; else A+=d.pts;
+      outcome = d.pts===2?"SAF" : d.pts===3?"FG" : "TD";
+      end = d.pts===2?0:100;
+      text = scoreText(rng,off,def,d.pts);
+    }else{
+      const roll=rng.r();
+      if(roll<0.52){outcome="PUNT"; end=Math.min(92,start+Math.round(rng.range(-2,34)));
+        text=rng.pick(PUNT_LINES);}
+      else if(roll<0.64){outcome="DOWNS"; end=Math.min(95,start+Math.round(rng.range(8,48)));
+        text="turned over on downs";}
+      else if(roll<0.75){outcome="MISS"; end=Math.min(88,start+Math.round(rng.range(20,55)));
+        text=`${Math.round(rng.range(38,56))}-yd attempt is no good`;}
+      else if(roll<0.87){outcome="INT"; end=Math.min(96,start+Math.round(rng.range(0,45)));
+        text=`intercepted by ${def&&def[8]?def[8].n:"the defense"}`;}
+      else if(roll<0.95){outcome="FUM"; end=Math.min(96,start+Math.round(rng.range(0,42)));
+        text=`fumble, recovered by ${def&&def[7]?def[7].n:"the defense"}`;}
+      else {outcome=d.q===2?"HALF":"END"; end=Math.min(90,start+Math.round(rng.range(0,38)));
+        text=d.q===2?"runs out the half":"runs out the clock";}
+    }
+    const mm=Math.floor(d.sec/60), ss=d.sec%60;
+    return {
+      n:idx+1, q:d.q, clock:mm+":"+(ss<10?"0":"")+ss, sec:d.sec,
+      team:d.side==="home"?g.home:g.away, side:d.side,
+      pts:d.pts, outcome:outcome, text:text, start:start, end:end,
+      yards:Math.max(0,end-start),
+      ball: d.side==="home" ? 100-end : end,   // 0 = away end zone, 100 = home end zone
+      h:H, a:A
+    };
+  });
+}
+
+/* ---- the field ---- */
+function abbrev(t){
+  const w=String(t).replace(/[^A-Za-z ]/g,"").split(" ").filter(Boolean);
+  if(w.length===1)return w[0].slice(0,4).toUpperCase();
+  return w.map(x=>x[0]).join("").slice(0,4).toUpperCase();
+}
+
+function fieldSVG(g,drive,homeColor,awayColor,venue){
+  const x=v=>17+(v/100)*166;
+  const ball=drive?Math.max(0,Math.min(100,drive.ball)):50;
+  const marks=[];
+  for(let y=10;y<=90;y+=10)marks.push(`<line x1="${x(y)}" y1="9" x2="${x(y)}" y2="95"
+    stroke="rgba(233,229,218,.26)" stroke-width="0.7"/>`);
+  for(let y=5;y<=95;y+=5)marks.push(`<line x1="${x(y)}" y1="49" x2="${x(y)}" y2="55"
+    stroke="rgba(233,229,218,.30)" stroke-width="0.6"/>`);
+  const nums=[];
+  [10,20,30,40,60,70,80,90].forEach(y=>{
+    nums.push(`<text x="${x(y)}" y="26" fill="rgba(233,229,218,.24)" font-size="6.5"
+      font-family="monospace" text-anchor="middle">${Math.min(y,100-y)}</text>`);
+    nums.push(`<text x="${x(y)}" y="90" fill="rgba(233,229,218,.24)" font-size="6.5"
+      font-family="monospace" text-anchor="middle">${Math.min(y,100-y)}</text>`);
+  });
+  return `<svg class="field" viewBox="0 0 200 104" xmlns="http://www.w3.org/2000/svg"
+      role="img" aria-label="field position">
+    <rect x="17" y="9" width="166" height="86" fill="rgba(70,181,131,.10)"/>
+    <rect x="1" y="9" width="16" height="86" fill="${awayColor}" opacity="0.85"/>
+    <rect x="183" y="9" width="16" height="86" fill="${homeColor}" opacity="0.85"/>
+    <text x="9" y="52" fill="#F2EFE7" font-size="7.5" font-family="monospace" font-weight="600"
+      text-anchor="middle" transform="rotate(-90 9 52)">${abbrev(g.away)}</text>
+    <text x="191" y="52" fill="#F2EFE7" font-size="7.5" font-family="monospace" font-weight="600"
+      text-anchor="middle" transform="rotate(90 191 52)">${abbrev(g.home)}</text>
+    ${marks.join("")}${nums.join("")}
+    <text x="100" y="60" fill="rgba(233,229,218,.26)" font-size="15"
+      font-family="'Barlow Condensed',Impact,sans-serif" font-weight="700"
+      text-anchor="middle" letter-spacing="1.5">${String(venue).toUpperCase()}</text>
+    <rect x="17" y="9" width="166" height="86" fill="none"
+      stroke="rgba(233,229,218,.38)" stroke-width="1"/>
+    ${drive?`<line x1="${x(ball)}" y1="9" x2="${x(ball)}" y2="95"
+        stroke="var(--sodium)" stroke-width="1.5" opacity=".9"/>
+      <ellipse cx="${x(ball)}" cy="52" rx="5" ry="3.2" fill="var(--sodium)"/>`:""}
+  </svg>`;
+}
+
+function isBigGame(g,team,seaRankMap,rivalName){
+  if(!g)return false;
+  if(rivalName)return true;
+  if(g.title||g.site)return true;
+  const opp=g.home===team?g.away:g.home;
+  if((seaRankMap[opp]||999)<=25)return true;
+  if(g.margin<=7)return true;
+  return false;
+}
+
 /* Gameplan. Variance is the real lever: an underdog wants chaos, a favourite
    wants the game to be boring. Aggression buys variance at a small cost in
    expected margin; playing safe does the reverse. */
@@ -1903,7 +2133,8 @@ class Season{
     this.step=0; this.weeks=[]; this.champs={}; this.titles=[];
     this.field=[]; this.seeds={}; this.selRec={}; this.notes={};
     this.rounds={r1:[],qf:[],sf:[],fin:[]}; this.champion=null; this.firstOut=[];
-    this.bowls=[]; this.bowlPairs=null; this.userTeam=null; this.featured=null; this.plan="balanced"; this.planLog={};
+    this.bowls=[]; this.bowlPairs=null; this.userTeam=null; this.featured=null;
+    this.hfa={}; NAMES.forEach(t=>this.hfa[t]=homeField(u,t)); this.plan="balanced"; this.planLog={};
   }
   get phase(){
     if(this.step<NW)return "week";
@@ -1944,8 +2175,9 @@ class Season{
         if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
       }
     }
+    const venue=neutral?0:((this.hfa&&this.hfa[a])||HFA)-HFA;
     const [hp,ap,m]=simGame(this.rng,this.talent.eff(a,Math.min(this.step,NW)),
-                            this.talent.eff(b,Math.min(this.step,NW)),neutral,sd,edge);
+                            this.talent.eff(b,Math.min(this.step,NW)),neutral,sd,edge+venue);
     const win=m>0?a:b, lose=m>0?b:a;
     const sh=eloUpdate(this.elo[win],this.elo[lose],Math.abs(m),(win===a)&&!neutral,neutral);
     this.elo[win]+=sh;this.elo[lose]-=sh;
@@ -2376,7 +2608,12 @@ function doAdvance(){
   else if(ph==="r1"||ph==="qf"||ph==="sf"||ph==="final")postTab="bracket";
   flash={type:SEA.phase==="week"||before<NW?"week":"post",step:before};
   const g=heroGame();
-  if(g&&!prefersReduced()){
+  const rk=SEA.poll.rankMap();
+  const mode=S.watchMode||"all";
+  const wantWatch = SEA.roster && !prefersReduced() && mode!=="never" &&
+    (mode==="all" || isBigGame(g,S.myTeam,rk,rivalryName(g&&g.home,g&&g.away)));
+  if(g&&wantWatch){ save(); startWatch(g); return; }   // played out, score unknown
+  if(g&&!prefersReduced()&&mode==="never"){
     reveal="half";
     if(revealTimer)clearTimeout(revealTimer);
     revealTimer=setTimeout(()=>{reveal="final";render()},1500);
@@ -2527,6 +2764,74 @@ function gameLine(g,mine){
     ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}</div></article>`;
 }
 
+/* ---- watching a game ---- */
+let watch=null;   // {g, script, i, timer}
+
+function watchSeed(g){
+  return (g.hp*7919 + g.ap*104729 + (g.week||0)*131 + (g.home.length*17) + g.away.length)>>>0;
+}
+
+function startWatch(g){
+  if(!g||!SEA.roster)return;
+  watch={g:g, script:gameScript(g,SEA.roster[g.home],SEA.roster[g.away],watchSeed(g)), i:-1};
+  reveal=null;
+  tickWatch();
+}
+function tickWatch(){
+  if(!watch)return;
+  render();
+  if(watch.i<watch.script.length){
+    const n=Math.max(1,watch.script.length);
+    const gap=Math.max(430,Math.min(950,Math.round(7200/n)));
+    watch.timer=setTimeout(()=>{watch.i++;tickWatch()},watch.i<0?700:gap);
+  }
+}
+function stopWatch(finish){
+  if(watch&&watch.timer)clearTimeout(watch.timer);
+  if(finish&&watch){watch.i=watch.script.length;watch.timer=null;render();return}
+  watch=null; render();
+}
+
+function watchView(){
+  const g=watch.g, my=S.myTeam;
+  const upto=watch.script.slice(0,Math.max(0,Math.min(watch.i+1,watch.script.length)));
+  const cur=upto[upto.length-1]||null;
+  const H=cur?cur.h:0, A=cur?cur.a:0;
+  const done=watch.i>=watch.script.length;
+  const kick=watch.i<0;
+  const mine=(g.home===my)?H:A, theirs=(g.home===my)?A:H;
+  const q=cur?cur.q:1;
+  const venue=g.neutral?(g.site||"neutral site"):g.home;
+  const OUT={TD:"TD",FG:"FG",SAF:"SAFETY",PUNT:"PUNT",DOWNS:"DOWNS",MISS:"NO GOOD",
+             INT:"INT",FUM:"FUMBLE",HALF:"HALF",END:"END"};
+  return `<div class="watchwrap">
+    <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
+      <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
+        :kick?`<span class="live"></span>KICKOFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
+        :`<span class="live"></span>Q${q} ${esc(cur.clock)} &middot; drive ${cur.n}`}</div>
+      <div class="wscore">
+        <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
+          <span class="wn">${A}</span></div>
+        <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span>
+          <span class="wn">${H}</span></div>
+      </div>
+    </div>
+    ${fieldSVG(g,cur,teamColor(g.home),teamColor(g.away),venue)}
+    ${cur?`<div class="fpos">${esc(cur.team)} ball &middot; started own ${cur.start}
+      &middot; ${cur.yards} yards</div>`
+      :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
+    <div class="grouphead">Drive chart</div>
+    <div class="plays">${upto.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''}">
+      <span class="pq">Q${e.q} ${e.clock}</span>
+      <div class="ptxt"><b>${esc(e.team)}</b> ${esc(e.text)}
+        <span class="dtag ${e.pts?'sc':''}">${OUT[e.outcome]||e.outcome}</span></div>
+      <span class="pscore">${e.a}&ndash;${e.h}</span></div>`).join("")
+      ||`<div class="note">Waiting for the opening drive&hellip;</div>`}</div>
+    <div class="actionbar">
+      <button class="advance" id="wdone">${done?"Back to the season":"Skip to the final"}</button>
+    </div></div>`;
+}
+
 function prefersReduced(){
   try{return window.matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}
 }
@@ -2593,13 +2898,15 @@ function heroResult(){
   return `<div class="hero ${won?'win':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL &middot; ${won?"WIN":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>${move}</div>`;
+    <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>${move}
+    ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 
 
 /* ============ what's at stake ============ */
 function winProb(me,opp,atHome,neutral){
-  const hfa=neutral?0:(atHome?HFA:-HFA);
+  const v=t=>(SEA.hfa&&SEA.hfa[t])||HFA;
+  const hfa=neutral?0:(atHome?v(me):-v(opp));
   return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa-SEA.elo[opp])/400)));
 }
 
@@ -2914,6 +3221,8 @@ function nextUpHTML(my,rk){
       <div class="nlabel">${ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${SEA.rec[opp][0]}-${SEA.rec[opp][1]} &middot; ${esc(CONF_NAMES[CONF[opp]])}</div>
+      ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
+        ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||HFA))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}</b> in the series${
         ser.streak&&ser.streak.n>1?` &middot; ${ser.streak.team===my
           ? "you've won "+ser.streak.n+" straight"
@@ -3869,6 +4178,12 @@ const TABS=[["team","Team"],["scores","Scores"],["poll","Poll"],
             ["stand","Standings"],["dyn","Dynasty"]];
 
 function render(){
+  if(watch&&S.myTeam){
+    el("app").innerHTML=watchView();
+    const b=el("wdone");
+    if(b)b.onclick=()=>{ (watch.i>=watch.script.length) ? stopWatch(false) : stopWatch(true) };
+    return;
+  }
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
@@ -3884,6 +4199,8 @@ function render(){
       <span class="tb-team" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
       </div></div>${helpPanel()}`;
     const c=el("hclose"); if(c)c.onclick=()=>{S.help=false;render()};
+    document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{
+      S.watchMode=b.dataset.watch; save(); render();});
     return;
   }
   if(S.retired){
@@ -3998,6 +4315,8 @@ function render(){
     if(nv<0)return;
     if(d>0&&budgetLeft()<=0)return;
     B[k]=nv; save(); render();});
+  const rw=document.querySelector("[data-rewatch]");
+  if(rw)rw.onclick=()=>{const g=heroGame(); if(g)startWatch(g)};
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
@@ -4191,6 +4510,13 @@ function helpPanel(){
     <div class="grouphead">Glossary</div>
     ${GLOSSARY.map(([t,d])=>`<div class="helpcard"><div class="fname">${esc(t)}</div>
       <div class="cdesc">${esc(d)}</div></div>`).join("")}
+    <div class="grouphead">Watching your games</div>
+    <div class="setrow">${[["all","Every game"],["big","Only the big ones"],["never","Never \u2014 just the result"]]
+      .map(([k,l])=>`<button class="setbtn" data-watch="${k}"
+        aria-pressed="${(S.watchMode||"all")===k}">${l}</button>`).join("")}</div>
+    <div class="helpcard"><div class="cdesc">Your games play out score by score without
+      revealing the final. You can skip to the result at any point, or rewatch afterwards
+      from the result card.</div></div>
     <div class="grouphead">Controls</div>
     <div class="helpcard"><div class="cdesc">Space or Enter advances. Keys 1&ndash;5 switch views.
       The circular button in the header abandons the current career.</div></div>
