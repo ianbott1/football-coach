@@ -103,6 +103,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .srow.up .sall{width:56px;flex:0 0 56px;white-space:nowrap}
 .srow.up .spos{color:var(--sodium)}
 .srow.post{background:rgba(244,166,58,.07)}
+.vs{font-family:var(--mono);font-size:10px;color:var(--muted);margin:0 4px}
 .rivmark{font-family:var(--mono);font-size:8.5px;font-style:normal;letter-spacing:.08em;
  text-transform:uppercase;color:var(--flag);margin-left:5px}
 .rivmark.sod{color:var(--sodium)}
@@ -375,6 +376,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .budgetleft.done{color:var(--turf)}
 .prow2.feat{background:rgba(139,159,232,.12)}
 .feattag{color:var(--vote)}
+.gradtag{color:var(--muted)}
+.draftag{color:var(--sodium)}
 .firedbox{margin:16px;padding:18px;border:1px solid var(--flag);
  background:linear-gradient(180deg,rgba(228,91,78,.15),transparent)}
 .firedbox .bkick{color:var(--flag)}
@@ -732,9 +735,12 @@ function developRoster(u,t,rng,focus,devMod,bud,featured){
       pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
       pl.c++;
       // stars leave early for the draft
-      const keepOdds=bud?Math.max(0,1-bud.retention):1;
+      let keepOdds=bud?Math.max(0,1-bud.retention):1;
+      if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
       if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
-        leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true});
+        const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
+        leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured});
+        if(wasFeatured)u.pipeline=(u.pipeline||0)+1;
         const roll=rng.r();
         const cls=roll<0.40?0:roll<0.74?1:2;
         const bonus=(!focus.pos||focus.pos.indexOf(POS[i].p)>=0)?focus.r:0;
@@ -1095,17 +1101,22 @@ class Talent{
 }
 
 /* ============ poll ============ */
-const INERTIA=0.82,ELO_PULL=0.18,L_UNR=-138,L_RNK=-58,L_T10=-24,
+const INERTIA=0.82,ELO_PULL=0.18,L_UNR=-52,L_RNK=-22,L_T10=-9,
       W_T10=48,W_RNK=26,W_UNR=4,BLOWOUT=10,IDLE=-3;
+/* Losses are the first thing voters sort on. A two-loss team has to be a great
+   deal better regarded to stay ahead of an unbeaten one. */
+const LOSS_TIER=100;
 class Poll{
-  constructor(pre){this.s=Object.assign({},pre)}
-  order(){return NAMES.slice().sort((a,b)=>this.s[b]-this.s[a])}
+  constructor(pre){this.s=Object.assign({},pre);this.L={};NAMES.forEach(t=>this.L[t]=0)}
+  eff(t){return this.s[t]-(this.L[t]||0)*LOSS_TIER}
+  order(){return NAMES.slice().sort((a,b)=>this.eff(b)-this.eff(a))}
   rankMap(){const o=this.order(),m={};o.forEach((t,i)=>m[t]=i+1);return m}
   update(res,elo){
     const prev=this.rankMap(), played=new Set(), d={};
     NAMES.forEach(t=>d[t]=0);
     res.forEach(r=>{
       const w=r.winner,l=r.loser,m=r.margin;
+      this.L[l]=(this.L[l]||0)+1;
       played.add(w);played.add(l);
       const lr=prev[l]||999, wr=prev[w]||999;
       if(wr<=25||lr<=25){
@@ -1113,7 +1124,7 @@ class Poll{
         if(m>=21&&lr<=25)d[w]+=BLOWOUT;
       } else d[w]+=W_UNR;
       d[l]+= wr<=10?L_T10 : wr<=25?L_RNK : L_UNR;
-      if(m>=21)d[l]-=19;
+      if(m>=21)d[l]-=8;
     });
     NAMES.forEach(t=>{
       this.s[t]=this.s[t]*INERTIA+(1-INERTIA)*this.s[t]
@@ -1124,7 +1135,7 @@ class Poll{
     winners.forEach(t=>{
       if((prev[t]||999)<=25 && (nr[t]||999)>prev[t]){
         const o=this.order(), ref=o[prev[t]-1];
-        if(ref)this.s[t]=this.s[ref]+0.5;
+        if(ref&&ref!==t)this.s[t]=this.eff(ref)+(this.L[t]||0)*LOSS_TIER+0.5;
       }
     });
     return this.rankMap();
@@ -1410,6 +1421,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
            +c.q*0.055 +(c.rec||0)*0.55
            +(focus.r||0)*0.45 +(focus.pot||0)*0.12
            +((t===ut&&choices.budget)?applyBudgetRead(choices.budget).recruitBonus*0.6:0)
+           +((t===ut&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
            +rng.gauss(0,2.6);
     const signed=6+Math.round(rng.range(0,3));
     incoming.push([t,q,signed]);
@@ -1613,6 +1625,8 @@ function lateenRivalries(sched,busy){
 /* Gameplan. Variance is the real lever: an underdog wants chaos, a favourite
    wants the game to be boring. Aggression buys variance at a small cost in
    expected margin; playing safe does the reverse. */
+const FEATURE_EDGE=16;   // Elo, roughly 0.75 of a point of spread
+
 const PLANS={
   safe:      {sd:0.76, edge:-14, l:"Play it safe",  d:"Shorten the game. Fewer swings either way."},
   balanced:  {sd:1.00, edge:0,   l:"Balanced",      d:"Play your game."},
@@ -1647,7 +1661,7 @@ class Season{
     this.step=0; this.weeks=[]; this.champs={}; this.titles=[];
     this.field=[]; this.seeds={}; this.selRec={}; this.notes={};
     this.rounds={r1:[],qf:[],sf:[],fin:[]}; this.champion=null; this.firstOut=[];
-    this.bowls=[]; this.userTeam=null; this.plan="balanced"; this.planLog={};
+    this.bowls=[]; this.bowlPairs=null; this.userTeam=null; this.featured=null; this.plan="balanced"; this.planLog={};
   }
   get phase(){
     if(this.step<NW)return "week";
@@ -1681,6 +1695,12 @@ class Season{
       sd=P.sd;
       edge=(this.userTeam===a?1:-1)*P.edge;
       this.planLog[this.step]=this.plan;
+      // a featured player gets the ball more, and it shows on Saturdays
+      if(this.featured!==null&&this.featured!==undefined&&this.roster){
+        const pl=this.roster[this.userTeam][this.featured];
+        const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
+        if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
+      }
     }
     const [hp,ap,m]=simGame(this.rng,this.talent.eff(a,Math.min(this.step,NW)),
                             this.talent.eff(b,Math.min(this.step,NW)),neutral,sd,edge);
@@ -1757,6 +1777,7 @@ class Season{
     this.cfpRank=rk;
     NAMES.forEach(t=>this.selRec[t]=this.rec[t][0]+"-"+this.rec[t][1]);
     this.firstOut=order.filter(t=>f.indexOf(t)<0).slice(0,4);
+    this.pairBowls();
   }
   _award(w,games){
     if(!this.roster)return;
@@ -1795,11 +1816,12 @@ class Season{
     });
     return out;
   }
-  _bowls(){
+  /* Matchups are announced on Selection Day; the games come later. */
+  pairBowls(){
     const rk=this.poll.rankMap();
     const pool=NAMES.filter(t=>this.rec[t][0]>=6 && this.field.indexOf(t)<0)
                     .sort((a,b)=>rk[a]-rk[b]);
-    let bi=0;
+    const pairs=[]; let bi=0;
     while(pool.length>=2 && bi<BOWLS.length){
       const a=pool.shift();
       let j=0;
@@ -1807,15 +1829,24 @@ class Season{
         if(CONF[pool[k]]!==CONF[a]){j=k;break}
       }
       const b=pool.splice(j,1)[0];
-      const g=this._resolve(a,b,true,{title:BOWLS[bi++],bowl:true});
-      g.hrank=rk[a];g.arank=rk[b];
-      g.hrec=this.rec[a][0]+"-"+this.rec[a][1];
-      g.arec=this.rec[b][0]+"-"+this.rec[b][1];
-      this.bowls.push(g);
+      pairs.push({name:BOWLS[bi++],a:a,b:b,
+                  ra:this.rec[a][0]+"-"+this.rec[a][1],
+                  rb:this.rec[b][0]+"-"+this.rec[b][1],
+                  rka:rk[a],rkb:rk[b]});
     }
+    this.bowlPairs=pairs;
     this.snubbed=pool.slice();
+  }
+
+  _bowls(){
+    (this.bowlPairs||[]).forEach(p=>{
+      const g=this._resolve(p.a,p.b,true,{title:p.name,bowl:true});
+      g.hrank=p.rka;g.arank=p.rkb;g.hrec=p.ra;g.arec=p.rb;
+      this.bowls.push(g);
+    });
     this.poll.update(this.bowls,this.elo);
   }
+
   myBowl(team){return this.bowls.find(g=>g.home===team||g.away===team)||null}
   _br(a,b,neutral,site){
     const r=this._resolve(a,b,neutral,{site:site});
@@ -1877,7 +1908,8 @@ class Season{
     const g=this.sched.find(g=>g.week===this.step&&(g.home===team||g.away===team));
     return g||null;
   }
-  /* What the user's team faces next once the regular season is over. */
+  /* What the user's team faces next once the regular season is over.
+     Every one of these is determined the moment the previous round ends. */
   postNext(team){
     const p=this.phase;
     if(p==="titles"){
@@ -1893,28 +1925,106 @@ class Season{
       return null;
     }
     if(p==="bowls"){
-      if(this.field.indexOf(team)>=0)return null;
-      if(this.rec[team][0]<6)return null;
-      return {label:"Bowl season",opp:null,neutral:true};
+      const pr=(this.bowlPairs||[]).find(x=>x.a===team||x.b===team);
+      if(!pr)return null;
+      return {label:pr.name,opp:pr.a===team?pr.b:pr.a,neutral:true};
     }
-    const alive=(gs)=>gs.some(g=>g.winner===team);
+    const sd=this.seeds[team];
+    if(!sd)return null;
     if(p==="r1"){
-      const sd=this.seeds[team];
-      if(!sd||sd<=4)return null;
-      const foe=this.field[[5,12,6,11,7,10,8,9].reduce((acc,v,i,arr)=>{
-        if(i%2===0&&(arr[i]===sd||arr[i+1]===sd))acc=(arr[i]===sd?arr[i+1]:arr[i]);return acc},0)-1];
-      return {label:"First Round",opp:foe,neutral:false};
+      if(sd<=4)return null;
+      const opp={5:12,12:5,6:11,11:6,7:10,10:7,8:9,9:8}[sd];
+      return {label:"First Round",opp:this.field[opp-1],
+              neutral:false,home:sd<opp};
     }
     if(p==="qf"){
-      if(this.seeds[team]<=4)return {label:"Quarterfinal",opp:null,neutral:true};
-      if(alive(this.rounds.r1))return {label:"Quarterfinal",opp:null,neutral:true};
+      const w={}; this.rounds.r1.forEach(g=>w[Math.min(g.hseed,g.aseed)]=g.winner);
+      const map=[[1,8,"Rose Bowl"],[2,7,"Sugar Bowl"],[3,6,"Fiesta Bowl"],[4,5,"Peach Bowl"]];
+      for(const m of map){
+        const a=this.field[m[0]-1], b=w[m[1]];
+        if(a===team&&b)return {label:m[2],opp:b,neutral:true};
+        if(b===team)return {label:m[2],opp:a,neutral:true};
+      }
       return null;
     }
-    if(p==="sf"&&alive(this.rounds.qf))return {label:"Semifinal",opp:null,neutral:true};
-    if(p==="final"&&alive(this.rounds.sf))
-      return {label:"National Championship",opp:null,neutral:true};
+    if(p==="sf"){
+      const q=this.rounds.qf.map(g=>g.winner);
+      if(q.indexOf(team)<0)return null;
+      const o=q.slice().sort((a,b)=>this.seeds[a]-this.seeds[b]);
+      if(team===o[0])return {label:"Cotton Bowl",opp:o[3],neutral:true};
+      if(team===o[3])return {label:"Cotton Bowl",opp:o[0],neutral:true};
+      if(team===o[1])return {label:"Orange Bowl",opp:o[2],neutral:true};
+      if(team===o[2])return {label:"Orange Bowl",opp:o[1],neutral:true};
+      return null;
+    }
+    if(p==="final"){
+      const f=this.rounds.sf.map(g=>g.winner);
+      if(f.indexOf(team)<0)return null;
+      return {label:"National Championship",opp:f.find(x=>x!==team),neutral:true};
+    }
     return null;
   }
+  _br(a,b,neutral,site){
+    const r=this._resolve(a,b,neutral,{site:site});
+    r.hseed=this.seeds[a];r.aseed=this.seeds[b];
+    r.hrec=this.rec[a][0]+"-"+this.rec[a][1];
+    r.arec=this.rec[b][0]+"-"+this.rec[b][1];
+    return r;
+  }
+  _r1(){
+    [[5,12],[6,11],[7,10],[8,9]].forEach(([h,l])=>
+      this.rounds.r1.push(this._br(this.field[h-1],this.field[l-1],false,
+        "at "+this.field[h-1])));
+    this.poll.update(this.rounds.r1,this.elo);
+  }
+  _qf(){
+    const w={};this.rounds.r1.forEach(g=>{w[Math.min(g.hseed,g.aseed)]=g.winner});
+    [["Rose Bowl",1,8],["Sugar Bowl",2,7],["Fiesta Bowl",3,6],["Peach Bowl",4,5]]
+      .forEach(([bowl,top,key])=>{
+        this.rounds.qf.push(this._br(this.field[top-1],w[key],true,bowl))});
+    this.poll.update(this.rounds.qf,this.elo);
+  }
+  _sf(){
+    const q=this.rounds.qf.map(g=>g.winner);
+    const s=q.slice().sort((a,b)=>this.seeds[a]-this.seeds[b]);
+    this.rounds.sf.push(this._br(s[0],s[3],true,"Cotton Bowl"));
+    this.rounds.sf.push(this._br(s[1],s[2],true,"Orange Bowl"));
+    this.poll.update(this.rounds.sf,this.elo);
+  }
+  _final(){
+    const f=this.rounds.sf.map(g=>g.winner)
+      .sort((a,b)=>this.seeds[a]-this.seeds[b]);
+    const g=this._br(f[0],f[1],true,"Allegiant Stadium, Las Vegas");
+    this.rounds.fin.push(g); this.champion=g.winner;
+    this.poll.update([g],this.elo);
+  }
+  top25(prev){
+    return this.poll.order().slice(0,25).map((t,i)=>({
+      rank:i+1,team:t,conf:CONF[t],rec:this.rec[t][0]+"-"+this.rec[t][1],
+      prev:prev?prev[t]:0,delta:prev&&prev[t]?prev[t]-(i+1):null}));
+  }
+  standings(prev){
+    const out={};
+    CONF_ORDER.forEach(c=>{
+      out[c]=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
+        const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
+        const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
+        return py-px||this.confrec[y][0]-this.confrec[x][0]||this.elo[y]-this.elo[x];
+      }).map(t=>({team:t,cr:this.confrec[t][0]+"-"+this.confrec[t][1],
+                  rec:this.rec[t][0]+"-"+this.rec[t][1],rank:prev?prev[t]:0}));
+    });
+    return out;
+  }
+  healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*NW);return h}
+  myGame(team,wk){
+    const W=this.weeks[wk]; if(!W)return null;
+    return W.games.find(g=>g.home===team||g.away===team)||null;
+  }
+  nextGame(team){
+    const g=this.sched.find(g=>g.week===this.step&&(g.home===team||g.away===team));
+    return g||null;
+  }
+  /* What the user's team faces next once the regular season is over. */
 }
 
 /* ============ state ============ */
@@ -1935,6 +2045,7 @@ function rebuild(){
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
+  SEA.featured=(S.featured===undefined?null:S.featured);
   for(let i=0;i<S.steps;i++){
     SEA.plan=(S.plans&&S.plans[i])||"balanced";
     SEA.advance();
@@ -2348,9 +2459,14 @@ function rosterView(){
   const R=SEA.roster[my];
   const avg=Math.round(R.reduce((s,p)=>s+p.r,0)/R.length);
   let h=`<div class="grouphead">Starters &middot; average rating ${avg}</div>`;
-  h+=coachMark("roster","Featuring a young player with a high ceiling is how you build. Featuring a senior mostly wastes it.");
-  h+=`<div class="note">Tap a player to feature him. He develops faster this year;
-    if he isn't ready, the team pays for it on Saturdays.</div>`;
+  h+=coachMark("roster","Featuring gives a player the ball more \u2014 worth about a point of spread every week \u2014 and he develops faster in the offseason. Seniors give you the on-field boost but graduate before the development lands.");
+  const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
+  h+=`<div class="note">Tap a player to feature him: more usage now, faster development later.
+    ${F?`Featuring <b>${esc(F.n)}</b>${F.c>=3
+      ? " &mdash; a senior, so you get the on-field boost but he graduates before the development pays."
+      : F.pot-F.r<4 ? " &mdash; he's near his ceiling, so there isn't much development left to gain."
+      : " &mdash; room to grow, and he's far likelier to stay rather than declare early."}`
+      :"Nobody featured."}</div>`;
   h+=R.map((p,i)=>{
     const inj=hurt[i];
     const feat=S.featured===i;
@@ -2358,6 +2474,8 @@ function rosterView(){
       <span class="ppos">${esc(p.p)}</span>
       <div class="pmain"><div class="pname">${esc(p.n)}</div>
         <div class="psub">${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
+          p.c>=3?` &middot; <span class="gradtag">graduates</span>`
+            :(p.c>=2&&p.r>=76?` &middot; <span class="draftag">draft risk</span>`:"")}${
           inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}${
           feat?` &middot; <span class="feattag">FEATURED</span>`:""}</div></div>
       ${starBar(p.r)}<span class="prate">${p.r}</span></div>`;
@@ -2462,8 +2580,9 @@ function nextUpHTML(my,rk){
       const wp=pn.opp?winProb(my,pn.opp,false,true):null;
       h+=`<div class="grouphead">Next up</div>
         <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
-        <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+esc(pn.opp):"Opponent TBD"}</div>
+        <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>
         <div class="nrec">${pn.opp?SEA.rec[pn.opp][0]+"-"+SEA.rec[pn.opp][1]
+          +" &middot; "+esc(CONF_NAMES[CONF[pn.opp]])
           :"Matchup set when the round is played"}</div>
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
           <span class="opct">${Math.round(wp*100)}%</span>
@@ -2799,7 +2918,24 @@ function bracketView(){
         n?` <em>${n}</em>`:""}</button>`}).join("")}</div>`;
 
   if(postTab==="bowls"){
-    if(!SEA.bowls.length)return h+`<div class="note">Bowl season hasn't been played yet.</div>`;
+    if(!SEA.bowls.length){
+      const pr=SEA.bowlPairs||[];
+      if(!pr.length)return h+`<div class="note">Bowl matchups are announced at the
+        Selection Show.</div>`;
+      const rk=SEA.poll.rankMap();
+      const mine=pr.find(x=>x.a===my||x.b===my);
+      let o=`<div class="grouphead">${pr.length} bowl matchups &middot; announced, not yet played</div>`;
+      const rowFor=p=>`<div class="frow ${p.a===my||p.b===my?'mine':''}">
+        <div class="fmain"><div class="fname">${rkTag(p.rka)}${TL(p.a)}
+          <span class="vs">vs</span> ${rkTag(p.rkb)}${TL(p.b)}</div>
+        <div class="fnote">${esc(p.name)} &middot; ${p.ra} vs ${p.rb}</div></div></div>`;
+      if(mine)o+=rowFor(mine);
+      o+=pr.filter(p=>p!==mine).map(rowFor).join("");
+      if(SEA.snubbed&&SEA.snubbed.length)
+        o+=`<div class="note">Eligible but left without a slot:
+          ${SEA.snubbed.map(esc).join(", ")}.</div>`;
+      return h+o;
+    }
     const mine=SEA.bowls.find(g=>g.home===my||g.away===my);
     if(mine){h+=`<div class="grouphead">Your bowl</div>`+gameLine(mine,true)}
     h+=`<div class="grouphead">${SEA.bowls.length} bowl games &middot; six wins to qualify</div>`;
@@ -3222,8 +3358,13 @@ function offseasonBanner(){
   let rec="";
   if(cls)rec=`<div class="bnews"><b>Recruiting:</b> ${esc(cls.l)} &mdash;
     ranked ${cls.rank} of ${cls.of} nationally.</div>`;
-  if(early)rec+=`<div class="bnews small">${early.map(p=>esc(p.n)+" ("+esc(p.p)+")").join(", ")}
-    declared early for the draft.</div>`;
+  if(early){
+    rec+=`<div class="bnews small">${early.map(p=>esc(p.n)+" ("+esc(p.p)+")").join(", ")}
+      declared early for the draft.</div>`;
+    if(early.some(p=>p.featured))
+      rec+=`<div class="bnews"><b>NFL pipeline.</b> Sending a player you built to the draft
+        is a recruiting pitch &mdash; future classes take note.</div>`;
+  }
   const hz=last.heis&&last.heis[0]?`<div class="bnews small">${esc(last.heis[0].n)}
     (${esc(last.heis[0].p)}, ${esc(last.heis[0].t)}) won the Heisman.</div>`:"";
   const bigMoves=(last.poached||[]).slice(0,3).map(p=>
@@ -3524,7 +3665,9 @@ function render(){
     B[k]=nv; save(); render();});
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.feat;
-    S.featured=(S.featured===i?null:i); save(); render();});
+    S.featured=(S.featured===i?null:i);
+    if(SEA)SEA.featured=S.featured;
+    save(); render();});
   document.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{
     S.off.move=(b.dataset.job===S.myTeam?null:b.dataset.job);save();render()});
   document.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{
