@@ -2749,6 +2749,18 @@ function rosterOf(t){
         ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`}).join("");
 }
 
+function teamPanel(){
+  const my=S.myTeam, rk=SEA.poll.rankMap();
+  const inj=SEA.talent.active(my);
+  const co=U&&U.coach?U.coach[my]:null;
+  let h=heroResult();
+  h+=teamCardHTML(my,rk,co);
+  if(reveal==="half")return h;
+  h+=injuryHTML(inj);
+  h+=nextUpHTML(my,rk);
+  return h;
+}
+
 function rosterView(){
   const my=S.myTeam;
   if(!SEA.roster)return `<div class="note">No roster data in this save.</div>`;
