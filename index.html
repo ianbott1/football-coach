@@ -115,7 +115,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  background:var(--sodium);color:var(--ink);border:none;border-radius:2px;
  font-family:var(--cond);font-size:17px;font-weight:700;letter-spacing:.06em;
  text-transform:uppercase;cursor:pointer}
-.staffroom{padding:4px 16px 2px}
+.staffhead{padding-top:16px}
+.staffroom{padding:0 16px 2px}
 .say{display:flex;gap:10px;align-items:flex-start;padding:9px 0;
  border-bottom:1px solid rgba(42,49,69,.5)}
 .say:last-child{border-bottom:none}
@@ -6875,6 +6876,7 @@ function liveCallView(){
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.b)}</div>
     </div>
+    <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
@@ -6897,6 +6899,7 @@ function callView(){
     <div class="wtop"><div class="wlabel"><span class="live"></span>Your call</div>
       <div class="calltitle">${esc(dp.h)}</div>
       <div class="callsub">${esc(dp.b)}</div></div>
+    <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
