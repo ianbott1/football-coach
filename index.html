@@ -313,6 +313,22 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--muted);margin-top:12px}
 .wm-a{color:var(--sodium)}
 .wm-b{color:var(--bone)}
+.slots{width:100%;margin-top:34px;display:flex;flex-direction:column;gap:8px}
+.slot{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+ background:var(--panel2);border:1px solid var(--line);padding:14px 16px;cursor:pointer;
+ text-align:left;width:100%}
+.slot:hover{border-color:var(--sodium)}
+.slot.empty{background:none}
+.slotn{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--muted)}
+.slotmain{font-family:var(--cond);font-size:23px;font-weight:700;text-transform:uppercase;
+ line-height:1.05;color:var(--bone)}
+.slot.empty .slotmain{font-size:16px;font-weight:500;color:var(--muted);text-transform:none}
+.slotsub{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.04em}
+.slotdel{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:8.5px;
+ letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);
+ padding:3px 6px}
+.slotdel:hover{color:var(--flag);border-color:var(--flag)}
 .titlebtns{width:100%;margin-top:40px;display:flex;flex-direction:column;gap:9px}
 .titlebtns .advance{margin:0}
 .advance.ghost{background:none;border:1px solid var(--line);color:var(--bone)}
@@ -376,6 +392,13 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .budgetleft.done{color:var(--turf)}
 .prow2.feat{background:rgba(139,159,232,.12)}
 .feattag{color:var(--vote)}
+.series{font-family:var(--mono);font-size:10.5px;color:var(--flag);margin-top:9px;
+ padding-top:9px;border-top:1px solid var(--line);line-height:1.5}
+.series b{font-size:13px}
+.fcfp.up{color:var(--turf)}.fcfp.dn{color:var(--flag)}
+.sline2{font-family:var(--mono);font-size:10.5px;color:#98A1B4;padding:0 16px 8px 14px;
+ border-bottom:1px solid rgba(42,49,69,.55);margin-top:-1px;letter-spacing:.01em}
+.sline2.inrow{padding:3px 0 0 0;border:none;color:var(--muted)}
 .gradtag{color:var(--muted)}
 .draftag{color:var(--sodium)}
 .firedbox{margin:16px;padding:18px;border:1px solid var(--flag);
@@ -397,6 +420,20 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .news.muted{border-left-color:var(--line)}
 .nh{font-family:var(--cond);font-size:19px;font-weight:600;line-height:1.15}
 .nb{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+.depth{display:flex;border-bottom:1px solid var(--line)}
+.depth.out{background:rgba(228,91,78,.06)}
+.dpos{font-family:var(--mono);font-size:10px;color:var(--sodium);width:46px;flex:0 0 46px;
+ padding:12px 0 0 16px;letter-spacing:.06em}
+.dbody{flex:1;min-width:0}
+.prow2.bk{border-bottom:none;padding-top:4px;opacity:.78}
+.prow2.bk .pname.sm{font-size:15px;font-weight:500}
+.prate.sm{font-size:11.5px;color:var(--muted)}
+.startag{font-family:var(--mono);font-size:8px;color:var(--turf);border:1px solid var(--turf);
+ padding:1px 3px;margin-left:5px;vertical-align:middle}
+.promo{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+ background:none;border:1px solid var(--line);color:var(--muted);padding:5px 7px;cursor:pointer;
+ flex:0 0 auto;margin-right:8px}
+.promo:hover{border-color:var(--sodium);color:var(--sodium)}
 .prow2{display:flex;align-items:center;gap:10px;padding:9px 16px;
  border-bottom:1px solid rgba(42,49,69,.55)}
 .prow2.out{background:rgba(228,91,78,.09)}
@@ -647,12 +684,12 @@ const PNAMES_L=["Whitfield","Okonkwo","Barrera","Sanders","Colquitt","Adeyemi","
 /* position, share of team strength, backup dropoff, award weight */
 /* hz = share of injuries that land on this spot */
 const POS=[
-  {p:"QB",  w:0.27, drop:21, aw:1.58, hz:0.14},
-  {p:"RB",  w:0.07, drop:10, aw:1.46, hz:0.13},
-  {p:"WR",  w:0.09, drop:11, aw:1.36, hz:0.11},
+  {p:"QB",  w:0.27, drop:21, aw:1.14, hz:0.14},
+  {p:"RB",  w:0.07, drop:10, aw:1.68, hz:0.13},
+  {p:"WR",  w:0.09, drop:11, aw:1.68, hz:0.11},
   {p:"WR2", w:0.06, drop:9,  aw:0.7, hz:0.09},
   {p:"OT",  w:0.12, drop:12, aw:0.47, hz:0.13},
-  {p:"EDGE",w:0.11, drop:13, aw:1.0, hz:0.10},
+  {p:"EDGE",w:0.11, drop:13, aw:1.02, hz:0.10},
   {p:"DT",  w:0.08, drop:10, aw:0.62, hz:0.09},
   {p:"LB",  w:0.08, drop:10, aw:0.85, hz:0.08},
   {p:"CB",  w:0.07, drop:11, aw:0.78, hz:0.08},
@@ -681,25 +718,37 @@ function makePlayer(rng,target,cls,posIdx){
           hz:0,prod:0,st:0};
 }
 
+/* Twenty players: indices 0-9 start, 10-19 are the backup at the same spot. */
+const BK=i=>i+POS.length;
+
 function makeRoster(rng,programElo){
   const target=eloToRating(programElo);
-  const classPlan=[3,3,2,2];               // Sr, Jr, So, Fr among ten starters
-  const bag=[];
-  classPlan.forEach((n,k)=>{for(let i=0;i<n;i++)bag.push(3-k)});
+  const bag=[]; [3,3,2,2].forEach((n,k)=>{for(let i=0;i<n;i++)bag.push(3-k)});
   rng.shuffle(bag);
-  return POS.map((_,i)=>makePlayer(rng,target,bag[i],i));
+  const r=POS.map((_,i)=>makePlayer(rng,target,bag[i],i));
+  // backups are younger and a clear step down, but the gap varies a lot
+  const bbag=[]; [1,2,3,4].forEach((n,k)=>{for(let i=0;i<n;i++)bbag.push(3-k)});
+  rng.shuffle(bbag);
+  POS.forEach((_,i)=>{
+    const b=makePlayer(rng,target-rng.range(6,17),bbag[i],i);
+    b.r=Math.min(b.r,r[i].r);            // never better than the starter on day one
+    r.push(b);
+  });
+  return r;
 }
 
 function teamRating(roster){
   let s=0; POS.forEach((P,i)=>{s+=P.w*roster[i].r});
-  return s;
+  return s;                                 // starters only
 }
 function rosterElo(roster){return ratingToElo(teamRating(roster))}
 
-/* Elo cost of losing a given starter for a game */
+/* Elo cost of losing a starter: the actual drop-off to his backup. */
 function injuryCost(roster,idx){
   const P=POS[idx];
-  return -P.w*P.drop*R_SLOPE;
+  if(!roster||!roster[BK(idx)])return -P.w*P.drop*R_SLOPE;
+  const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
+  return -P.w*gap*R_SLOPE;
 }
 
 /* ---- offseason roster churn ---- */
@@ -713,20 +762,37 @@ function developRoster(u,t,rng,focus,devMod,bud,featured){
     : base;
   const leaving=[], arriving=[];
   const roster=u.roster[t];
+  if(roster.length<POS.length*2){          // older save: give it a two-deep
+    POS.forEach((_,i)=>{
+      if(!roster[BK(i)]){
+        const b=makePlayer(rng,target-rng.range(6,17),rng.int(3),i);
+        b.r=Math.min(b.r,roster[i].r); roster[BK(i)]=b;
+      }
+    });
+  }
+  const newcomer=(i)=>{
+    const cls=rng.r()<0.62?0:1;
+    const bonus=(!focus.pos||focus.pos.indexOf(POS[i%POS.length].p)>=0)?focus.r:0;
+    const np=makePlayer(rng,target-rng.range(4,14)+(coach.q*0.045)+bonus
+      +(coach.rec||0)*0.5+(bud?bud.recruitBonus:0),cls,i%POS.length);
+    if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
+    if(focus.dev)np.up=focus.dev;
+    if(cls===0)np.rec=true;
+    return np;
+  };
   for(let i=0;i<roster.length;i++){
     const pl=roster[i];
+    if(!pl)continue;
     if(pl.c>=3){                                   // senior graduates
-      leaving.push({n:pl.n,p:pl.p,r:pl.r});
-      // next man up: a developed backup, or a true freshman
-      const roll=rng.r();
-      const cls=roll<0.34?0:roll<0.70?1:2;
-      const bonus=(!focus.pos||focus.pos.indexOf(POS[i].p)>=0)?focus.r:0;
-      const np=makePlayer(rng,target+(coach.q*0.045)+bonus+(coach.rec||0)*0.5
-        +(bud?bud.recruitBonus:0),cls,i);
-      if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
-      if(focus.dev)np.up=focus.dev;
-      if(cls===0)np.rec=true;
-      roster[i]=np; arriving.push(np);
+      leaving.push({n:pl.n,p:pl.p,r:pl.r,starter:i<POS.length});
+      if(i<POS.length){
+        // the backup steps up, and a new man arrives behind him
+        roster[i]=roster[BK(i)];
+        roster[BK(i)]=newcomer(i);
+        arriving.push(roster[BK(i)]);
+      }else{
+        roster[i]=newcomer(i); arriving.push(roster[i]);
+      }
     }else{
       // development: biggest jumps early, capped by potential, nudged by coaching
       const base=[6.2,4.0,2.2][pl.c];
@@ -739,19 +805,21 @@ function developRoster(u,t,rng,focus,devMod,bud,featured){
       if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
       if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
         const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
-        leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured});
+        leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured,
+                      starter:i<POS.length});
         if(wasFeatured)u.pipeline=(u.pipeline||0)+1;
-        const roll=rng.r();
-        const cls=roll<0.40?0:roll<0.74?1:2;
-        const bonus=(!focus.pos||focus.pos.indexOf(POS[i].p)>=0)?focus.r:0;
-        const np=makePlayer(rng,target+(coach.q*0.045)+bonus,cls,i);
-        if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
-        if(focus.dev)np.up=focus.dev;
-        if(cls===0)np.rec=true;
-        roster[i]=np; arriving.push(np);
+        if(i<POS.length){
+          roster[i]=roster[BK(i)];
+          roster[BK(i)]=newcomer(i);
+          arriving.push(roster[BK(i)]);
+        }else{ roster[i]=newcomer(i); arriving.push(roster[i]) }
       }
     }
   }
+  POS.forEach((_,i)=>{
+    const s=roster[i], b=roster[BK(i)];
+    if(s&&b&&b.r>s.r+2){roster[i]=b;roster[BK(i)]=s}   // clear upgrade wins the job
+  });
   return {leaving:leaving,arriving:arriving};
 }
 
@@ -762,6 +830,108 @@ function classLabel(rank,total){
   if(pct<=0.45)return "Above average";
   if(pct<=0.75)return "Middling";
   return "Thin class";
+}
+
+/* ============ box scores ============ */
+/* Stat lines are derived from rating, game flow and scoring, so the numbers a
+   player puts up are consistent with how good he is and how the game went. */
+
+const STAT_KEYS={
+  QB  :["cmp","att","pyd","ptd","int"],
+  RB  :["car","ryd","rtd"],
+  WR  :["rec","cyd","ctd"],
+  WR2 :["rec","cyd","ctd"],
+  OT  :["pan","ska"],
+  EDGE:["tkl","sck","tfl"],
+  DT  :["tkl","sck","tfl"],
+  LB  :["tkl","tfl","pd"],
+  CB  :["tkl","pd","ints"],
+  S   :["tkl","pd","ints"]
+};
+
+function blankStats(pos){
+  const o={g:0};
+  (STAT_KEYS[pos]||[]).forEach(k=>o[k]=0);
+  return o;
+}
+
+/* One game's production for one starter. */
+function gameStats(rng,pl,posIdx,forPts,oppPts,won){
+  const pos=POS[posIdx].p;
+  const q=(pl.r-58)/22;                 // roughly -1.3 (poor) .. +1.8 (elite)
+  const s={};
+  const R=(a,b)=>a+rng.r()*(b-a);
+  const pass=forPts*0.60, run=forPts*0.40;
+
+  if(pos==="QB"){
+    s.att=Math.max(8,Math.round(R(24,38)+(won?-2:4)));
+    const pct=Math.max(0.38,Math.min(0.78,0.545+q*0.055+rng.gauss(0,0.05)));
+    s.cmp=Math.round(s.att*pct);
+    s.pyd=Math.max(0,Math.round(s.cmp*(10.4+q*1.5+rng.gauss(0,1.4))));
+    s.ptd=Math.max(0,Math.round(pass/7*R(0.55,1.0)+ (q>1?rng.r():0)));
+    s.int=Math.max(0,Math.round(R(0,1.9)-q*0.55+(won?-0.2:0.35)));
+  } else if(pos==="RB"){
+    s.car=Math.max(4,Math.round(R(13,23)+(won?4:-3)));
+    s.ryd=Math.max(-5,Math.round(s.car*(3.9+q*0.85+rng.gauss(0,0.9))));
+    s.rtd=Math.max(0,Math.round(run/7*R(0.45,0.95)));
+  } else if(pos==="WR"||pos==="WR2"){
+    const share=pos==="WR"?R(0.26,0.38):R(0.15,0.24);
+    s.rec=Math.max(0,Math.round(R(3,9)*(0.8+q*0.22)));
+    s.cyd=Math.max(0,Math.round(s.rec*(12.8+q*2.4+rng.gauss(0,2))));
+    s.ctd=Math.max(0,Math.round(pass/7*share*R(0.8,1.6)));
+  } else if(pos==="OT"){
+    s.pan=Math.max(0,Math.round(R(2,7)+q*2));
+    s.ska=Math.max(0,Math.round(R(0,2.2)-q*0.6));
+  } else if(pos==="EDGE"){
+    s.tkl=Math.max(0,Math.round(R(2,5.5)+q*0.7));
+    s.sck=(rng.r()<0.34+q*0.15?1:0)+(rng.r()<0.09+q*0.06?1:0);
+    s.tfl=s.sck+(rng.r()<0.30+q*0.12?1:0);
+  } else if(pos==="DT"){
+    s.tkl=Math.max(0,Math.round(R(2,5)+q*0.6));
+    s.sck=(rng.r()<0.20+q*0.09?1:0);
+    s.tfl=s.sck+(rng.r()<0.24+q*0.10?1:0);
+  } else if(pos==="LB"){
+    s.tkl=Math.max(1,Math.round(R(5,11)+q*1.3));
+    s.tfl=(rng.r()<0.42+q*0.15?1:0)+(rng.r()<0.10+q*0.05?1:0);
+    s.pd=(rng.r()<0.28+q*0.09?1:0);
+  } else {                                   // CB, S
+    s.tkl=Math.max(0,Math.round(R(2,6)+q*0.6));
+    s.pd=(rng.r()<0.42+q*0.14?1:0)+(rng.r()<0.14+q*0.07?1:0);
+    s.ints=(rng.r()<0.155+q*0.055?1:0);
+  }
+  return s;
+}
+
+function addStats(dst,src){
+  dst.g=(dst.g||0)+1;
+  Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k]);
+}
+
+/* Human-readable season line. */
+function statLine(pos,s){
+  if(!s||!s.g)return "";
+  const n=x=>x.toLocaleString();
+  if(pos==="QB")return `${n(s.pyd)} yds, ${s.ptd} TD, ${s.int} INT (${s.cmp}/${s.att})`;
+  if(pos==="RB")return `${n(s.ryd)} yds, ${s.rtd} TD (${s.car} car)`;
+  if(pos==="WR"||pos==="WR2")return `${s.rec} rec, ${n(s.cyd)} yds, ${s.ctd} TD`;
+  if(pos==="OT")return `${s.pan} pancakes, ${s.ska} sacks allowed`;
+  if(pos==="EDGE"||pos==="DT")return `${s.tkl} tkl, ${s.sck} sacks, ${s.tfl} TFL`;
+  if(pos==="LB")return `${s.tkl} tkl, ${s.tfl} TFL, ${s.pd} PD`;
+  return `${s.tkl} tkl, ${s.ints} INT, ${s.pd} PD`;
+}
+
+/* Heisman weight, now built from what a player actually did. */
+function statProd(pos,s){
+  if(!s||!s.g)return 0;
+  if(pos==="QB")  return s.pyd*0.042 + s.ptd*4.4 - s.int*3.0;
+  if(pos==="RB")  return s.ryd*0.062 + s.rtd*4.6;
+  if(pos==="WR")  return s.cyd*0.060 + s.ctd*4.6 + s.rec*0.32;
+  if(pos==="WR2") return s.cyd*0.046 + s.ctd*3.4;
+  if(pos==="OT")  return s.pan*0.55 - s.ska*0.9;
+  if(pos==="EDGE")return s.sck*5.2 + s.tfl*1.9 + s.tkl*0.30;
+  if(pos==="DT")  return s.sck*4.6 + s.tfl*1.7 + s.tkl*0.28;
+  if(pos==="LB")  return s.tkl*0.55 + s.tfl*2.1 + s.pd*1.1;
+  return s.ints*7.2 + s.pd*1.7 + s.tkl*0.38;
 }
 
 /* ============ RNG ============ */
@@ -807,7 +977,41 @@ const G6=["AAC","CUSA","MAC","MW","P12","SBC"];
 const DATES=["Sep 5","Sep 12","Sep 19","Sep 26","Oct 3","Oct 10","Oct 17","Oct 24",
   "Oct 31","Nov 7","Nov 14","Nov 21","Nov 28","Dec 5"];
 const NAMES=TEAMS.map(t=>t[0]);
-const CONF=Object.fromEntries(TEAMS.map(t=>[t[0],t[2]]));
+let CONF=Object.fromEntries(TEAMS.map(t=>[t[0],t[2]]));
+function syncConf(u){
+  if(u&&u.conf)NAMES.forEach(t=>{if(u.conf[t])CONF[t]=u.conf[t]});
+  else if(u){u.conf={};NAMES.forEach(t=>u.conf[t]=CONF[t])}
+}
+
+/* ---- realignment ---- */
+/* Money moves programs. Every few years the strongest independents-in-waiting
+   get poached upward and the weakest P4 members get left behind. */
+function realign(u,rng,year){
+  if(!u.conf)syncConf(u);
+  const size=c=>NAMES.filter(t=>u.conf[t]===c).length;
+  const moves=[];
+  const P4L=["SEC","B1G","B12","ACC"];
+  const G6L=["AAC","MW","P12","SBC","MAC","CUSA"];
+  const n=1+rng.int(3);
+  for(let k=0;k<n;k++){
+    // a strong Group of 6 program gets the call up
+    const cands=NAMES.filter(t=>G6L.indexOf(u.conf[t])>=0 && u.program[t]>=1600)
+      .sort((a,b)=>u.program[b]-u.program[a]).slice(0,8);
+    if(!cands.length)break;
+    const mover=rng.pick(cands);
+    const dest=P4L.filter(c=>size(c)<20).sort((a,b)=>{
+      const pa=NAMES.filter(t=>u.conf[t]===a).reduce((s,t)=>s+u.program[t],0)/Math.max(1,size(a));
+      const pb=NAMES.filter(t=>u.conf[t]===b).reduce((s,t)=>s+u.program[t],0)/Math.max(1,size(b));
+      return pa-pb;
+    })[0];
+    if(!dest||size(u.conf[mover])<=8)continue;
+    moves.push({team:mover,from:u.conf[mover],to:dest});
+    u.conf[mover]=dest;
+  }
+  syncConf(u);
+  if(moves.length){u.realignLog=u.realignLog||[];u.realignLog.push({year:year,moves:moves})}
+  return moves;
+}
 
 /* ============ schedule ============ */
 /* d-regular circulant: every team gets EXACTLY d conference games.
@@ -1304,7 +1508,8 @@ function newUniverse(seed){
   const rng=new RNG(seed);
   const u={seed:seed,year:2026,program:{},perceived:{},trueBase:{},
            tenure:{},bad:{},history:[],rng:seed};
-  u.coach={}; u.roster={};
+  u.coach={}; u.roster={}; u.conf={}; u.nextRealign=2026+4+rng.int(4);
+  TEAMS.forEach(t=>u.conf[t[0]]=t[2]);
   TEAMS.forEach(([n,e])=>{
     u.program[n]=e; u.perceived[n]=e;
     u.roster[n]=makeRoster(rng,e);
@@ -1440,9 +1645,14 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
 
   if(ut&&choices.phil)u.phil=choices.phil;
   u.year++;
+  let realigned=[];
+  if(u.nextRealign&&u.year>=u.nextRealign){
+    realigned=realign(u,rng,u.year);
+    u.nextRealign=u.year+4+rng.int(4);
+  }
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
-          churn:churn,classes:classes,early:early};
+          churn:churn,classes:classes,early:early,realigned:realigned};
 }
 
 /* ============ rivalries ============ */
@@ -1517,6 +1727,38 @@ function rivalryName(a,b){
   const l=RIVAL_OF[a]||[];
   const hit=l.find(x=>x.o===b);
   return hit?hit.n:null;
+}
+
+/* ---- series history, kept across seasons ---- */
+function seriesKey(a,b){return [a,b].sort().join("~")}
+
+function recordRivalries(u,season){
+  u.series=u.series||{};
+  const all=[].concat(...season.weeks.map(w=>w.games),season.titles||[],
+                      season.bowls||[],season.rounds?[].concat(
+                      season.rounds.r1,season.rounds.qf,season.rounds.sf,season.rounds.fin):[]);
+  all.forEach(g=>{
+    const nm=rivalryName(g.home,g.away); if(!nm)return;
+    const k=seriesKey(g.home,g.away);
+    const s=u.series[k]||(u.series[k]={n:nm,w:{},streak:null,games:[]});
+    s.w[g.winner]=(s.w[g.winner]||0)+1;
+    if(s.streak&&s.streak.t===g.winner)s.streak.n++;
+    else s.streak={t:g.winner,n:1};
+    s.games.push({y:season.year,w:g.winner,l:g.loser,
+                  s:Math.max(g.hp,g.ap)+"-"+Math.min(g.hp,g.ap)});
+    if(s.games.length>25)s.games.shift();
+  });
+}
+
+/* What the series looks like from one side. */
+function seriesFor(u,a,b){
+  if(!u||!u.series)return null;
+  const s=u.series[seriesKey(a,b)];
+  if(!s)return null;
+  const mine=s.w[a]||0, theirs=s.w[b]||0;
+  return {name:s.n,w:mine,l:theirs,
+          streak:s.streak?{team:s.streak.t,n:s.streak.n}:null,
+          games:s.games.slice().reverse()};
 }
 
 /* Force every rivalry onto the schedule by swapping opponents, then drag those
@@ -1708,6 +1950,19 @@ class Season{
     const sh=eloUpdate(this.elo[win],this.elo[lose],Math.abs(m),(win===a)&&!neutral,neutral);
     this.elo[win]+=sh;this.elo[lose]-=sh;
     this.rec[win][0]++;this.rec[lose][1]++;
+    if(this.roster){
+      [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
+        const tm=pair[0], pf=pair[1], pa=pair[2];
+        const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+        POS.forEach((P,i)=>{
+          // an injured starter's snaps go to his backup
+          const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
+          if(!pl)return;
+          if(!pl.st2)pl.st2=blankStats(P.p);
+          addStats(pl.st2,gameStats(this.rng,pl,i,pf,pa,pf>pa));
+        });
+      });
+    }
     const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+hp+ap)%11)/34))));
     return Object.assign({home:a,away:b,hp:hp,ap:ap,
       hh:hf(hp,ap),ah:hf(ap,hp),neutral:neutral,
@@ -1785,13 +2040,13 @@ class Season{
     games.forEach(g=>{won[g.winner]=1;won[g.loser]=0});
     NAMES.forEach(t=>{
       if(won[t]===undefined)return;                    // bye week
-      const hurt=new Set(this.talent.active(t).map(e=>e.idx));
+      const wp=this.rec[t][0]/Math.max(1,this.rec[t][0]+this.rec[t][1]);
       this.roster[t].forEach((pl,i)=>{
-        if(hurt.has(i)){pl.st=(pl.st||0);return}
-        pl.st=(pl.st||0)+1;
-        const teamBoost=won[t]?1.16:0.90;
-        pl.prod=(pl.prod||0)+POS[i].aw*Math.pow(Math.max(0,pl.r-52)/10,1.30)
-                *teamBoost*this.rng.range(0.72,1.28);
+        if(!pl||!pl.st2||!pl.st2.g)return;
+        const P=POS[i%POS.length];
+        pl.st=pl.st2.g;
+        // voters reward production, and reward it more on a winning team
+        pl.prod=statProd(P.p,pl.st2)*P.aw*(0.72+wp*0.52);
       });
     });
   }
@@ -1799,8 +2054,9 @@ class Season{
     if(!this.roster)return [];
     const all=[];
     NAMES.forEach(t=>this.roster[t].forEach((pl,i)=>{
-      if((pl.st||0)>=6)all.push({t:t,n:pl.n,p:pl.p,r:pl.r,c:pl.c,
-        prod:pl.prod||0,rec:this.rec[t][0]+"-"+this.rec[t][1]});
+      if(pl&&(pl.st||0)>=6)all.push({t:t,n:pl.n,p:pl.p,r:pl.r,c:pl.c,
+        prod:pl.prod||0,line:statLine(pl.p,pl.st2),
+        rec:this.rec[t][0]+"-"+this.rec[t][1]});
     }));
     all.sort((a,b)=>b.prod-a.prod);
     return all.slice(0,n||10);
@@ -2028,7 +2284,10 @@ class Season{
 }
 
 /* ============ state ============ */
-const KEY="cfb-dynasty-v1";
+const KEYBASE="fbcoach-v2";
+const NSLOTS=3;
+let slot=1;
+const KEYFOR=n=>KEYBASE+"-slot"+n;
 let S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,plans:{}};
 let plan="balanced", reveal=null, revealTimer=null;
 let wide=false;
@@ -2040,13 +2299,31 @@ const el=id=>document.getElementById(id);
 
 function snap(u){return JSON.parse(JSON.stringify(u))}
 
+function swapDepth(sea,i){
+  const R=sea.roster&&sea.roster[S.myTeam];
+  if(!R||!R[i]||!R[BK(i)])return;
+  const t=R[i]; R[i]=R[BK(i)]; R[BK(i)]=t;
+  sea.talent.base[S.myTeam]=rosterElo(R);
+}
+
+function promote(i){
+  S.promos=S.promos||{};
+  const k=SEA.step;
+  S.promos[k]=S.promos[k]||[];
+  S.promos[k].push(i);
+  swapDepth(SEA,i);
+  save(); render();
+}
+
 function rebuild(){
   U=snap(S.uStart);
+  syncConf(U);
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
   SEA.featured=(S.featured===undefined?null:S.featured);
   for(let i=0;i<S.steps;i++){
+    if(S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
     SEA.plan=(S.plans&&S.plans[i])||"balanced";
     SEA.advance();
   }
@@ -2054,10 +2331,20 @@ function rebuild(){
 }
 
 async function save(){
-  try{await window.storage.set(KEY,JSON.stringify(S))}catch(e){}
+  try{await window.storage.set(KEYFOR(slot),JSON.stringify(S))}catch(e){}
 }
-async function load(){
-  try{const r=await window.storage.get(KEY);return r?JSON.parse(r.value):null}catch(e){return null}
+async function loadSlot(n){
+  try{const r=await window.storage.get(KEYFOR(n));return r?JSON.parse(r.value):null}catch(e){return null}
+}
+async function allSlots(){
+  const out=[];
+  for(let n=1;n<=NSLOTS;n++){
+    const d=await loadSlot(n);
+    out.push(d&&d.myTeam?{n:n,team:d.myTeam,year:(d.uStart&&d.uStart.year)||2026,
+      coach:(d.career&&d.career.name)||"",seasons:(d.history||[]).length,
+      rec:d.career?d.career.w+"-"+d.career.l:"",titles:d.career?d.career.titles:0}:{n:n,empty:true});
+  }
+  return out;
 }
 
 const COACH_FIRST=["Ray","Mack","Dabo","Kirby","Lane","Deion","Marcus","Hugh","Bronco",
@@ -2068,7 +2355,7 @@ function newDynasty(team,seed,coachName){
      career:{name:coachName||(rng0.pick(COACH_FIRST)+" "+rng0.pick(LAST)),
              rep:0,w:0,l:0,titles:0,confs:0,fired:0,
              stops:[{team:team,from:2026,w:0,l:0,titles:0}]}};
-  const u=newUniverse(seed);
+  const u=newUniverse(seed); syncConf(u);
   u.coach[team]={n:S.career.name,q:0,t:0,hired:true,you:true};
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
@@ -2187,6 +2474,7 @@ function endSeason(rng,choices,act){
      pnote[g.loser]="Playoff \u2014 lost in the "+nm;}));
   if(SEA.champion)pnote[SEA.champion]="National champions";
   const cfpOf={}; SEA.field.forEach(t=>cfpOf[t]=SEA.seeds[t]);
+  recordRivalries(U,SEA);
   if(U.coach[S.myTeam])U.coach[S.myTeam].q=Math.round(Math.max(-40,Math.min(60,S.career.rep*0.62)));
   const B=offseasonRosters(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
@@ -2201,8 +2489,9 @@ function endSeason(rng,choices,act){
     confChamp:Object.keys(SEA.champs).some(c=>SEA.champs[c]===my),
     nFired:off.fired.length,
     teams:teamRows, confChamps:confChamps, bowls:bowlOf, cfp:cfpOf,
+    realigned:off.realigned||[],
     post:post, pnote:pnote,
-    heis:(SEA.heisman(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c})),
+    heis:(SEA.heisman(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
     classes:off.classes||{}, early:off.early||{},
     coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null,
     hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
@@ -2365,8 +2654,15 @@ function stakesFor(ng){
   const riv=rivalryName(my,opp);
   const out=[];
 
-  if(riv)out.push({p:100,tag:"RIVALRY",
-    l:`${riv[0].toUpperCase()+riv.slice(1)} is on the line.`});
+  if(riv){
+    const ser=seriesFor(U,my,opp);
+    let extra="";
+    if(ser&&ser.streak&&ser.streak.n>=2)
+      extra=ser.streak.team===my?` You've won ${ser.streak.n} in a row.`
+                             :` They've won ${ser.streak.n} in a row.`;
+    out.push({p:100,tag:"RIVALRY",
+      l:`${riv[0].toUpperCase()+riv.slice(1)} is on the line.${extra}`});
+  }
 
   if(l===0&&w>=4)out.push({p:90,tag:"UNBEATEN",
     l:`${w}-0 and counting. A perfect season is still live.`});
@@ -2449,7 +2745,8 @@ function rosterOf(t){
         <div class="pmain"><div class="pname">${esc(p.n)}</div>
           <div class="psub">${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
-        ${starBar(p.r)}<span class="prate">${p.r}</span></div>`}).join("");
+        ${starBar(p.r)}<span class="prate">${p.r}</span></div>
+        ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`}).join("");
 }
 
 function rosterView(){
@@ -2457,47 +2754,43 @@ function rosterView(){
   if(!SEA.roster)return `<div class="note">No roster data in this save.</div>`;
   const hurt={}; SEA.talent.active(my).forEach(e=>hurt[e.idx]=e);
   const R=SEA.roster[my];
-  const avg=Math.round(R.reduce((s,p)=>s+p.r,0)/R.length);
-  let h=`<div class="grouphead">Starters &middot; average rating ${avg}</div>`;
-  h+=coachMark("roster","Featuring gives a player the ball more \u2014 worth about a point of spread every week \u2014 and he develops faster in the offseason. Seniors give you the on-field boost but graduate before the development lands.");
+  const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
+  let h=coachMark("roster","Each position shows your starter and the man behind him. Featuring gives a player the ball more and speeds his development. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.");
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
-  h+=`<div class="note">Tap a player to feature him: more usage now, faster development later.
-    ${F?`Featuring <b>${esc(F.n)}</b>${F.c>=3
-      ? " &mdash; a senior, so you get the on-field boost but he graduates before the development pays."
-      : F.pot-F.r<4 ? " &mdash; he's near his ceiling, so there isn't much development left to gain."
-      : " &mdash; room to grow, and he's far likelier to stay rather than declare early."}`
-      :"Nobody featured."}</div>`;
-  h+=R.map((p,i)=>{
-    const inj=hurt[i];
+  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${F.c>=3
+      ? " \u2014 a senior, so you get the boost but he graduates before the development lands."
+      : F.pot-F.r<4 ? " \u2014 he's near his ceiling, so there's little development left."
+      : " \u2014 room to grow, and far likelier to stay than declare early."}`
+      :"Nobody featured. Tap a starter to feature him."}</div>`;
+  h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
+  h+=POS.map((P,i)=>{
+    const s=R[i], b=R[BK(i)], inj=hurt[i];
     const feat=S.featured===i;
-    return `<div class="prow2 ${inj?'out':''} ${feat?'feat':''}" data-feat="${i}">
-      <span class="ppos">${esc(p.p)}</span>
-      <div class="pmain"><div class="pname">${esc(p.n)}</div>
-        <div class="psub">${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
-          p.c>=3?` &middot; <span class="gradtag">graduates</span>`
-            :(p.c>=2&&p.r>=76?` &middot; <span class="draftag">draft risk</span>`:"")}${
-          inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}${
-          feat?` &middot; <span class="feattag">FEATURED</span>`:""}</div></div>
-      ${starBar(p.r)}<span class="prate">${p.r}</span></div>`;
+    const tag=p=>`${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
+    return `<div class="depth ${inj?'out':''}">
+      <div class="dpos">${esc(P.p)}</div>
+      <div class="dbody">
+        <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
+          <div class="pmain"><div class="pname">${esc(s.n)}
+            ${inj?`<span class="outtag">OUT ${inj.w}w</span>`:`<span class="startag">STARTER</span>`}
+            ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
+            <div class="psub">${tag(s)}${s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
+              (s.c>=2&&s.r>=76?" &middot; <span class='draftag'>draft risk</span>":"")}</div></div>
+          ${starBar(s.r)}<span class="prate">${s.r}</span></div>
+        ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
+        <div class="prow2 bk">
+          <div class="pmain"><div class="pname sm">${esc(b.n)}</div>
+            <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
+          <button class="promo" data-promo="${i}">Start him</button>
+          <span class="prate sm">${b.r}</span></div>
+      </div></div>`;
   }).join("");
-  const hz=SEA.heisman(25).filter(x=>x.t===my);
+  const hz=SEA.heisman(30).filter(x=>x.t===my);
   if(hz.length){
     h+=`<div class="grouphead">In the Heisman conversation</div>`;
-    h+=hz.map(x=>`<div class="srow"><span class="spos"></span>
-      <span class="steam">${esc(x.n)} <span class="pp">${esc(x.p)}</span></span></div>`).join("");
+    h+=hz.map(x=>`<div class="frow"><div class="fmain"><div class="fname">${esc(x.n)}</div>
+      <div class="fnote">${esc(x.p)} &middot; ${esc(x.line||"")}</div></div></div>`).join("");
   }
-  return h;
-}
-
-function teamPanel(){
-  const my=S.myTeam, rk=SEA.poll.rankMap();
-  const inj=SEA.talent.active(my);
-  const co=U&&U.coach?U.coach[my]:null;
-  let h=heroResult();
-  h+=teamCardHTML(my,rk,co);
-  if(reveal==="half")return h;
-  h+=injuryHTML(inj);
-  h+=nextUpHTML(my,rk);
   return h;
 }
 
@@ -2603,11 +2896,18 @@ function nextUpHTML(my,rk){
     const wp=winProb(my,opp,ng.home===my,ng.neutral);
     const st=stakesFor(ng);
     const riv=rivalryName(my,opp);
+    const ser=riv?seriesFor(U,my,opp):null;
     h+=`<div class="grouphead">Next up &mdash; ${esc(DATES[SEA.step]||"")}</div>
       <div class="nextcard ${riv?'riv':''}">
       <div class="nlabel">${ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${SEA.rec[opp][0]}-${SEA.rec[opp][1]} &middot; ${esc(CONF_NAMES[CONF[opp]])}</div>
+      ${ser?`<div class="series"><b>${ser.w}-${ser.l}</b> in the series${
+        ser.streak&&ser.streak.n>1?` &middot; ${ser.streak.team===my
+          ? "you've won "+ser.streak.n+" straight"
+          : esc(ser.streak.team)+" has won "+ser.streak.n+" straight"}`:""}
+        ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
+      </div>`:""}
       <div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
         <span class="opct">${Math.round(wp*100)}%</span>
         <span class="olab">win probability</span></div>
@@ -2829,7 +3129,7 @@ function weekNews(W){
     const hz=SEA.heisman(2);
     if(hz.length)items.push({k:"heis",tone:"muted",
       h:`Heisman watch: ${hz[0].n}, ${CLASSES[hz[0].c]} ${hz[0].p}, ${hz[0].t}`,
-      b:`${hz[1]?hz[1].n+" ("+hz[1].t+") is the closest challenger.":""}`});
+      b:`${hz[0].line||""}${hz[1]?" \u00b7 "+hz[1].n+" ("+hz[1].t+") is closest.":""}`});
   }
   return items;
 }
@@ -3201,6 +3501,19 @@ function teamCard(t){
     <div class="progline">Program strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
+  if(U&&U.series&&RIVAL_OF[t]){
+    const rows=RIVAL_OF[t].map(x=>seriesFor(U,t,x.o)?{o:x.o,s:seriesFor(U,t,x.o)}:null)
+                          .filter(Boolean);
+    if(rows.length){
+      h+=`<div class="grouphead">Rivalries</div>`;
+      h+=rows.map(r=>`<div class="frow">
+        <span class="dot" style="background:${teamColor(r.o)}"></span>
+        <div class="fmain"><div class="fname">vs ${TL(r.o)}</div>
+        <div class="fnote">${esc(r.s.name)}${r.s.streak&&r.s.streak.n>1
+          ?" &middot; "+esc(r.s.streak.team)+" has won "+r.s.streak.n+" straight":""}</div></div>
+        <span class="fcfp ${r.s.w>r.s.l?'up':r.s.w<r.s.l?'dn':''}">${r.s.w}-${r.s.l}</span></div>`).join("");
+    }
+  }
   h+=rosterOf(t);
   h+=`<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(t);
   if(!rows.length)return h+`<div class="note">No completed seasons yet.</div>`;
@@ -3289,7 +3602,8 @@ function dynastyView(){
         <span class="sd">${i+1}</span>
         <span class="dot" style="background:${teamColor(x.t)}"></span>
         <div class="fmain"><div class="fname">${esc(x.n)}</div>
-        <div class="fnote">${CLASSES[x.c]} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div></div>
+        <div class="fnote">${CLASSES[x.c]} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div>
+        ${x.line?`<div class="sline2 inrow">${esc(x.line)}</div>`:""}</div>
         <span class="fcfp">${x.r}</span></div>`).join("");
     }
   }
@@ -3301,7 +3615,8 @@ function dynastyView(){
         <span class="sd">${x.year}</span>
         <span class="dot" style="background:${teamColor(w.t)}"></span>
         <div class="fmain"><div class="fname">${esc(w.n)}</div>
-        <div class="fnote">${CLASSES[w.c]} ${esc(w.p)} &middot; ${esc(w.t)}</div></div>
+        <div class="fnote">${CLASSES[w.c]} ${esc(w.p)} &middot; ${esc(w.t)}</div>
+        ${w.line?`<div class="sline2 inrow">${esc(w.line)}</div>`:""}</div>
         <span class="fcfp">${w.r}</span></div>`}).join("");
   }
   h+=`<div class="grouphead">National champions</div>`;
@@ -3365,6 +3680,9 @@ function offseasonBanner(){
       rec+=`<div class="bnews"><b>NFL pipeline.</b> Sending a player you built to the draft
         is a recruiting pitch &mdash; future classes take note.</div>`;
   }
+  const ra=(last.realigned||[]).length?`<div class="bnews"><b>Realignment.</b> ${
+    last.realigned.map(m=>esc(m.team)+" leaves the "+esc(CONF_NAMES[m.from]||m.from)+
+      " for the "+esc(CONF_NAMES[m.to]||m.to)).join("; ")}.</div>`:"";
   const hz=last.heis&&last.heis[0]?`<div class="bnews small">${esc(last.heis[0].n)}
     (${esc(last.heis[0].p)}, ${esc(last.heis[0].t)}) won the Heisman.</div>`:"";
   const bigMoves=(last.poached||[]).slice(0,3).map(p=>
@@ -3373,7 +3691,7 @@ function offseasonBanner(){
     <div class="btitle">${esc(last.result)}</div>
     <div class="bsub">${esc(last.champion)} won the national title.
       ${(last.hires||[]).length} programs hired a new head coach.</div>
-    ${news}${rec}${hz}${bigMoves}</div>`;
+    ${news}${ra}${rec}${hz}${bigMoves}</div>`;
 }
 
 /* ============ week compression ============ */
@@ -3539,7 +3857,12 @@ const TABS=[["team","Team"],["scores","Scores"],["poll","Poll"],
             ["stand","Standings"],["dyn","Dynasty"]];
 
 function render(){
-  if(S.title){renderTitle();return}
+  if(S.title){
+    if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
+      el("app").innerHTML=`<div class="titlewrap">${LOGO}
+        <h1 class="wordmark"><span class="wm-a">Football</span><br>
+        <span class="wm-b">Coach</span></h1></div>`;return}
+    renderTitle();return}
   if(S.introStep!==null&&S.introStep!==undefined&&!S.myTeam){renderIntro();return}
   if(!S.myTeam&&S.setup&&!S.setup.ready){renderSetup();return}
   if(!S.myTeam){renderStart();return}
@@ -3632,7 +3955,7 @@ function render(){
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
   document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
   const sb=el("skip"); if(sb)sb.onclick=()=>{simAhead();window.scrollTo({top:0})};
-  const tb2=el("ttl"); if(tb2)tb2.onclick=()=>{S.title=true;save();render()};
+  const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{save();S.title=true;S._slots=await allSlots();render()};
   const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
   const rb=el("rst"); if(rb)rb.onclick=async()=>{
     if(confirm("Abandon this dynasty and start a new one?")){
@@ -3663,6 +3986,8 @@ function render(){
     if(nv<0)return;
     if(d>0&&budgetLeft()<=0)return;
     B[k]=nv; save(); render();});
+  document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
+    ev.stopPropagation(); promote(+b.dataset.promo);});
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.feat;
     S.featured=(S.featured===i?null:i);
@@ -3768,20 +4093,37 @@ function bindPicks(){
 }
 
 function renderTitle(){
-  const hasSave=!!(S&&S.myTeam);
+  const slots=S._slots||[];
   el("app").innerHTML=`<div class="titlewrap">
     ${LOGO}
     <h1 class="wordmark"><span class="wm-a">Football</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">Build a program. Win it all.</div>
-    <div class="titlebtns">
-      ${hasSave?`<button class="advance" id="tcont">Continue \u2014 ${esc(S.myTeam)}
-        ${SEA?SEA.year:""}</button>`:""}
-      <button class="advance ${hasSave?'ghost':''}" id="tnew">New career</button>
-      <button class="introskip wide" id="thow">How to play</button>
-    </div>
+    <div class="slots">${slots.map(s=>s.empty
+      ? `<button class="slot empty" data-slot="${s.n}">
+           <span class="slotn">Slot ${s.n}</span>
+           <span class="slotmain">Empty &mdash; start a career</span></button>`
+      : `<button class="slot" data-slot="${s.n}">
+           <span class="slotn">Slot ${s.n}</span>
+           <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
+           <span class="slotsub">${esc(s.coach)} &middot; ${s.year} &middot; ${s.seasons}
+             season${s.seasons===1?"":"s"} &middot; ${s.rec}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
+           <span class="slotdel" data-del="${s.n}">Erase</span></button>`).join("")}</div>
+    <button class="introskip wide" id="thow">How to play</button>
   </div>`;
-  const c=el("tcont"); if(c)c.onclick=()=>{S.title=false;render()};
-  el("tnew").onclick=()=>{S.title=false;S.setup={name:"",seed:Math.floor(Math.random()*899999+100000)};render()};
+  document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
+    if(ev.target&&ev.target.dataset.del){
+      if(!confirm("Erase this career permanently?"))return;
+      try{await window.storage.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
+      S._slots=await allSlots(); render(); return;
+    }
+    const n=+b.dataset.slot;
+    slot=n;
+    const d=await loadSlot(n);
+    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();render()}
+    else {S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,
+             setup:{name:"",seed:Math.floor(Math.random()*899999+100000)}};
+          S.title=false;render()}
+  });
   el("thow").onclick=()=>{S.title=false;S.introStep=0;render()};
 }
 
@@ -3879,9 +4221,9 @@ window.addEventListener("keydown",e=>{
 });
 
 (async function(){
-  const saved=await load();
-  if(saved&&saved.myTeam){S=saved;rebuild();S.expNow=S.expNow||expectations();S.title=true;render()}
-  else {S.title=true;render()}
+  S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true};
+  S._slots=await allSlots();
+  render();
 })();
 
 </script></body></html>
