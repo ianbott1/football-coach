@@ -23,7 +23,7 @@ function load(file) {
     setAttribute(){}, scrollIntoView(){}, classList:{toggle(){},add(){},remove(){}},
     focus(){}, setSelectionRange(){} });
   const node = id => (typeof id === 'string' ? (nodes[id] = nodes[id] || mk()) : mk());
-  global.__nodes = nodes;
+  global.__nodes = nodes; 
   global.document = { getElementById: node, querySelector: node, querySelectorAll: () => [],
     createElement: () => mk(), body:{classList:{toggle(){}}}, addEventListener(){} };
   // live getters: U, SEA, S, live are reassigned with `let`, so capture by closure
@@ -31,6 +31,17 @@ function load(file) {
     return { newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
       NAMES,
+      // draw every tab and sub-tab, so a broken view can't hide off-screen
+      allViews(){ const out=[]; const V=[view,teamTab,dynTab,pollTab,postTab];
+        const set=(a,b,c,d,e)=>{view=a;teamTab=b;dynTab=c;pollTab=d;postTab=e;flash=null;render();
+          out.push(__nodes.app?__nodes.app.innerHTML:'')};
+        ['overview','roster'].forEach(t=>set('team',t,dynTab,pollTab,postTab));
+        set('scores',teamTab,dynTab,pollTab,postTab);
+        ['poll','cfp'].forEach(t=>set('poll',teamTab,dynTab,t,postTab));
+        ['bracket','field','bowls'].forEach(t=>set('scores',teamTab,dynTab,pollTab,t));   // the bracket lives under Scores once the season ends
+        set('stand',teamTab,dynTab,pollTab,postTab);
+        ['program','teams','coaches','shared'].forEach(t=>set('dyn',teamTab,t,pollTab,postTab));
+        [view,teamTab,dynTab,pollTab,postTab]=V; flash=null; render(); return out; },
       schedule(seed){ const u=newUniverse(seed*7919+13); syncConf(u);
         return new Season(u,(seed*2654435761)>>>0).sched.map(g=>[g.week,g.home,g.away,!!g.neutral,g.site||'']); } };`)();
 }
@@ -46,6 +57,7 @@ function career(file, team, seed, seasons) {
     let guard = 0;
     while (api.SEA.phase !== 'done' && guard++ < 80) {
       api.doAdvance(); grab();
+      if (api.SEA.step === 7) screens.push(...api.allViews());
       let g = 0;
       while (api.live && !api.live.done && g++ < 800) {
         const L = api.live;
@@ -61,6 +73,7 @@ function career(file, team, seed, seasons) {
       year: SEA.year, games: h(games), post: h(post), champion: SEA.champion,
       rec: h(SEA.rec), poll: h(SEA.poll.order()), heis: h(((SEA.mvpRace||SEA.heisman).call(SEA,10)||[]).map(x=>[x.n,x.t,x.p])),
     };
+    screens.push(...api.allViews());
     api.openOffseason();
     const S = api.S;
     if (S.off && S.off.act.userOpen && S.off.move === null)

@@ -1,5 +1,5 @@
 {
- "fp": "92fb09906aea2130",
+ "fp": "535dcaa1d6892664",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -14,6 +14,11 @@
    "fp": "92fb09906aea2130",
    "from": "2dfd39ef596b3623",
    "note": "Fix double-booking in pinRealWeeks: it moved blocking games before knowing all of them fit and patched busy[] by hand, so a team could get two games in one week (69 in 200 seasons). Only the 60-schedule fingerprint changes; the four careers never hit it. Checked: 0 double bookings in 200 seasons; 792 regular-season games/season and real-2026 fidelity (97.0% present, 92.5% in real week) unchanged; calibration within targets."
+  },
+  {
+   "fp": "535dcaa1d6892664",
+   "from": "92fb09906aea2130",
+   "note": "golden now also draws every tab and sub-tab (13 screens) mid-season and at season end; recorded on 9cb4058 (after the double-booking fix, before the split)"
   }
  ],
  "result": {
@@ -28,7 +33,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "c56350a5c5370c99",
     "universe": "30444fd05b9c7c85",
-    "screens": "e3244bc75dc27cf2"
+    "screens": "92df8efb9cdd3f89"
    },
    {
     "year": 2027,
@@ -40,7 +45,7 @@
     "heis": "647b43600053d258",
     "history": "03c8405fbcf138bd",
     "universe": "eeeea97c006cb123",
-    "screens": "ef770c15b54a3be1"
+    "screens": "090e4608c3caa339"
    },
    {
     "year": 2028,
@@ -52,7 +57,7 @@
     "heis": "1b4004c213bac2a3",
     "history": "d61034b791a2e0a3",
     "universe": "0353593895611441",
-    "screens": "ba0208dd6a9338ce"
+    "screens": "de740139f640abb0"
    },
    {
     "year": 2029,
@@ -64,7 +69,7 @@
     "heis": "0018170dd06ef53d",
     "history": "418cc8fb7931e9c2",
     "universe": "eff25a2247064b8a",
-    "screens": "071a6eb7311064bd"
+    "screens": "4ef3f032ae563d46"
    }
   ],
   "Rice#2024": [
@@ -78,7 +83,7 @@
     "heis": "62c67774006ebb20",
     "history": "a15b06e0111c2523",
     "universe": "ff03bc9d76877853",
-    "screens": "2587a581c3e71dc3"
+    "screens": "560f31a27f1cf128"
    },
    {
     "year": 2027,
@@ -90,7 +95,7 @@
     "heis": "7451222cd507b5b8",
     "history": "8d20ea282516d7c7",
     "universe": "dcce9cac9832036f",
-    "screens": "7860dd7b1c687fc6"
+    "screens": "d5262d05ae205927"
    },
    {
     "year": 2028,
@@ -102,7 +107,7 @@
     "heis": "bdc6fbf8638fa62d",
     "history": "c3fa03b370393a7f",
     "universe": "36f4076373d27d15",
-    "screens": "d4ce601664917e5e"
+    "screens": "ea511c73f3a8aed5"
    },
    {
     "year": 2029,
@@ -114,7 +119,7 @@
     "heis": "823516a6499c0628",
     "history": "cb208714fb77998a",
     "universe": "699f10b7d6a7eb9d",
-    "screens": "0a36c86c78bf212a"
+    "screens": "9d5fec4cad77cad9"
    }
   ],
   "Oregon#777": [
@@ -128,7 +133,7 @@
     "heis": "e322cdbd03e4abfa",
     "history": "6a7ded5c532484da",
     "universe": "071bf8a4582fdd04",
-    "screens": "6820551f7b80a24a"
+    "screens": "381a7d37d0e14fbf"
    },
    {
     "year": 2027,
@@ -140,7 +145,7 @@
     "heis": "163ca91d3775b170",
     "history": "7d77f6b289d22601",
     "universe": "9f695559688bb954",
-    "screens": "fe352af94adfaeb6"
+    "screens": "98303de48a95c084"
    },
    {
     "year": 2028,
@@ -152,7 +157,7 @@
     "heis": "4186b4812676696d",
     "history": "f1bbeaeeeea225c3",
     "universe": "a436c9051ac75692",
-    "screens": "f0d9910c21023a52"
+    "screens": "53d6401c8c08c9e4"
    }
   ],
   "Kent State#31337": [
@@ -166,7 +171,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "c7037c14cef8325d",
     "universe": "7a6a0871d29561d8",
-    "screens": "e673340f49607f0d"
+    "screens": "aee0bc6fae92b8b2"
    },
    {
     "year": 2027,
@@ -178,7 +183,7 @@
     "heis": "8ae0e8d313c33b06",
     "history": "26f2d412b807bc48",
     "universe": "dd611a4cde1b95db",
-    "screens": "5ea0115e2c700982"
+    "screens": "0fc62be6bc24c04f"
    },
    {
     "year": 2028,
@@ -190,7 +195,7 @@
     "heis": "efc1fe877bf238c6",
     "history": "da7497f273347191",
     "universe": "cd5d2d38e3bba675",
-    "screens": "5b3bad533de17b4c"
+    "screens": "8aa3d9fcd3a846cd"
    }
   ],
   "schedules#60": [
