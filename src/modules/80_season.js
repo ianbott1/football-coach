@@ -13,7 +13,7 @@ class Season{
     this.featCost=0;
     this.talent=new Talent(this.rng,tb,this.roster);
     this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
-    this.sched=buildSchedule(this.rng,u.perceived,u.year);
+    this.sched=LEAGUE.buildSchedule(this.rng,u.perceived,u.year);
     this.rec={};this.confrec={};
     NAMES.forEach(t=>{this.rec[t]=[0,0];this.confrec[t]=[0,0]});
     this.step=0; this.weeks=[]; this.champion=null;
