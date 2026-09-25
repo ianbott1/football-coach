@@ -305,14 +305,5 @@ extendSeason({
     return {natl:this.champion===team,playoff:this.field.indexOf(team)>=0,
             conf:Object.keys(this.champs).some(c=>this.champs[c]===team)};
   },
-  confChampions(){return this.champs},
-  /* The result line the offseason screen grades on. KNOWN BUG, kept so the
-     split changes nothing: it differs from seasonResult (every playoff team is
-     just "Playoff"), so the grade shown here can differ from the grade the
-     history book records. */
-  screenResult(my){
-    return this.champion===my?"NATIONAL":(this.field.indexOf(my)>=0?"Playoff":
-      (this.myBowl(my)?(this.myBowl(my).winner===my?"Won the ":"Lost the ")+this.myBowl(my).title
-       :this.rec[my][0]>=6?"No bowl":"Losing season"));
-  }
+  confChampions(){return this.champs}
 });

@@ -77,7 +77,7 @@ function offseasonScreen(){
   const last=SEA;
   let h=`<div class="dateline"><h2>Offseason</h2><span>${last.year} &rarr; ${last.year+1}</span></div>`;
   const exp=S.expNow||expectations();
-  const gr=seasonGrade(last.rec[my][0],last.rec[my][1],last.screenResult(my),exp);
+  const gr=seasonGrade(last.rec[my][0],last.rec[my][1],last.seasonResult(my),exp);
   const miles=milestones(last.rec[my][0],last.rec[my][1],
     last.champion===my?"NATIONAL":"",last.poll.rankMap()[my]);
   h+=`<div class="banner"><div class="bkick">${last.year} final</div>

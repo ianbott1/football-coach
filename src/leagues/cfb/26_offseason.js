@@ -297,7 +297,7 @@ LEAGUE.offseason={
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the
-   result line (seasonResult or screenResult). */
+   result line from seasonResult. */
 LEAGUE.goals={
   /* what the job demands, by program strength */
   expectations(p){

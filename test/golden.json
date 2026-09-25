@@ -1,5 +1,5 @@
 {
- "fp": "6023e9cb091d21ed",
+ "fp": "fa9d679c4fca0dd8",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -24,6 +24,11 @@
    "fp": "6023e9cb091d21ed",
    "from": "535dcaa1d6892664",
    "note": "golden now also fingerprints the offseason screen itself (before, only the banner after it); recorded on 3d9b122, before the grading fixes"
+  },
+  {
+   "fp": "fa9d679c4fca0dd8",
+   "from": "6023e9cb091d21ed",
+   "note": "Grading fix 1: the offseason screen graded on its own result line, in which every playoff team was just 'Playoff', so it showed a lower grade than the history book recorded (5 of 24 seasons in grades.js; Oregon 2026 and 2028 among golden careers). It now grades on seasonResult. Only offseason-screen fingerprints change. grades.js: AGREE 24 of 24."
   }
  ],
  "result": {
@@ -38,7 +43,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "c56350a5c5370c99",
     "universe": "30444fd05b9c7c85",
-    "screens": "cfee543e4996e689"
+    "screens": "e7480a8699310782"
    },
    {
     "year": 2027,
@@ -138,7 +143,7 @@
     "heis": "e322cdbd03e4abfa",
     "history": "6a7ded5c532484da",
     "universe": "071bf8a4582fdd04",
-    "screens": "f0f318e24c14a712"
+    "screens": "7909b66eaa12c2d8"
    },
    {
     "year": 2027,
@@ -162,7 +167,7 @@
     "heis": "4186b4812676696d",
     "history": "f1bbeaeeeea225c3",
     "universe": "a436c9051ac75692",
-    "screens": "681987c6349d905a"
+    "screens": "f3899f5b6b1b599b"
    }
   ],
   "Kent State#31337": [
