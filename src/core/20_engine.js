@@ -51,7 +51,7 @@ function teamInk(t){                      // brand color, lightened until legibl
 }
 
 /* ============ constants ============ */
-const ELO_PT=21, GAME_SD=14, K=32;
+const K=32;                  // Elo update factor
 
 function divisionOf(u,t){
   const c=(u&&u.conf&&u.conf[t])||CONF[t];
