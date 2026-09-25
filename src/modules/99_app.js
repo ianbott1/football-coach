@@ -410,7 +410,7 @@ function endSeason(rng,choices,act){
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
     S.calls=keep; }
   if(U.coach[S.myTeam])U.coach[S.myTeam].q=Math.round(Math.max(-40,Math.min(60,S.career.rep*0.62)));
-  const B=offseasonRosters(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
+  const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
   const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);

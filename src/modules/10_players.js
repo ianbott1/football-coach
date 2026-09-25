@@ -45,33 +45,8 @@ const eloToRating=e=>(e-R_INT)/R_SLOPE;
 
 function playerName(rng){return rng.pick(PNAMES_F)+" "+rng.pick(PNAMES_L)}
 
-function makePlayer(rng,target,cls,posIdx){
-  // upperclassmen are closer to their ceiling; freshmen start lower with room to grow
-  const clsAdj=[-7,-2,2,4][cls];   // centred so a normal class mix averages the target
-  const r=Math.round(Math.max(30,Math.min(99,rng.gauss(target+clsAdj,5.5))));
-  const pot=Math.round(Math.max(r,Math.min(99,r+rng.gauss(10-cls*2.5,5))));
-  return {n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:cls,r:r,pot:pot,
-          hz:0,prod:0,st:0};
-}
-
 /* Twenty players: indices 0-9 start, 10-19 are the backup at the same spot. */
 const BK=i=>i+POS.length;
-
-function makeRoster(rng,programElo){
-  const target=eloToRating(programElo);
-  const bag=[]; [3,3,2,2].forEach((n,k)=>{for(let i=0;i<n;i++)bag.push(3-k)});
-  rng.shuffle(bag);
-  const r=POS.map((_,i)=>makePlayer(rng,target,bag[i],i));
-  // backups are younger and a clear step down, but the gap varies a lot
-  const bbag=[]; [1,2,3,4].forEach((n,k)=>{for(let i=0;i<n;i++)bbag.push(3-k)});
-  rng.shuffle(bbag);
-  POS.forEach((_,i)=>{
-    const b=makePlayer(rng,target-rng.range(6,17),bbag[i],i);
-    b.r=Math.min(b.r,r[i].r);            // never better than the starter on day one
-    r.push(b);
-  });
-  return r;
-}
 
 function teamRating(roster){
   let s=0; POS.forEach((P,i)=>{s+=P.w*roster[i].r});
@@ -85,92 +60,6 @@ function injuryCost(roster,idx){
   if(!roster||!roster[BK(idx)])return -P.w*P.drop*R_SLOPE;
   const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
   return -P.w*gap*R_SLOPE;
-}
-
-/* ---- offseason roster churn ---- */
-function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
-  focus=focus||{pos:null,r:0,pot:0}; devMod=devMod||0; bud=bud||null;
-  const cls=(u.classAvg&&u.classAvg[t]!==undefined)?u.classAvg[t]:null;
-  const coach=u.coach[t];
-  const base=eloToRating(u.program[t]);
-  const target=(u.classAvg&&u.classAvg[t]!==undefined)
-    ? base*0.68+u.classAvg[t]*0.32     // recent classes feed the pipeline
-    : base;
-  const leaving=[], arriving=[];
-  const roster=u.roster[t];
-  if(roster.length<POS.length*2){          // older save: give it a two-deep
-    POS.forEach((_,i)=>{
-      if(!roster[BK(i)]){
-        const b=makePlayer(rng,target-rng.range(6,17),rng.int(3),i);
-        b.r=Math.min(b.r,roster[i].r); roster[BK(i)]=b;
-      }
-    });
-  }
-  const newcomer=(i)=>{
-    const cls=rng.r()<0.62?0:1;
-    const bonus=(!focus.pos||focus.pos.indexOf(POS[i%POS.length].p)>=0)?focus.r:0;
-    const np=makePlayer(rng,target-rng.range(4,14)+(coach.q*0.045)+bonus
-      +(coach.rec||0)*0.5+(bud?bud.recruitBonus:0),cls,i%POS.length);
-    if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
-    if(focus.dev)np.up=focus.dev;
-    if(cls===0)np.rec=true;
-    return np;
-  };
-  for(let i=0;i<roster.length;i++){
-    const pl=roster[i];
-    if(!pl)continue;
-    if(pl.c>=3){                                   // senior graduates
-      leaving.push({n:pl.n,p:pl.p,r:pl.r,starter:i<POS.length,
-                    car:pl.car||null, from:pl.from||null, peak:pl.peak||pl.r,
-                    idx:i%POS.length});
-      if(i<POS.length){
-        // the backup steps up, and a new man arrives behind him
-        roster[i]=roster[BK(i)];
-        roster[BK(i)]=newcomer(i);
-        arriving.push(roster[BK(i)]);
-      }else{
-        roster[i]=newcomer(i); arriving.push(roster[i]);
-      }
-    }else{
-      // development: biggest jumps early, capped by potential, nudged by coaching
-      const base=[6.2,4.0,2.2][pl.c];
-      const feat=(featured!==undefined&&featured!==null&&featured===i)?3.8:0;
-      const side=(i%POS.length)<5 ? (staff?staff.oc:0) : (staff?staff.dc:0);
-      let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0),3.0);
-      pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
-      pl.peak=Math.max(pl.peak||0,pl.r);
-      pl.c++;
-      // stars leave early for the draft
-      let keepOdds=bud?Math.max(0,1-bud.retention):1;
-      if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
-      if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
-        const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
-        leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured,
-                      starter:i<POS.length, car:pl.car||null, from:pl.from||null,
-                      peak:pl.peak||pl.r, idx:i%POS.length});
-        if(wasFeatured)u.pipeline=(u.pipeline||0)+1;
-        if(i<POS.length){
-          roster[i]=roster[BK(i)];
-          roster[BK(i)]=newcomer(i);
-          arriving.push(roster[BK(i)]);
-        }else{ roster[i]=newcomer(i); arriving.push(roster[i]) }
-      }
-    }
-  }
-  POS.forEach((_,i)=>{
-    const s=roster[i], b=roster[BK(i)];
-    if(s&&b&&b.r>s.r+2){roster[i]=b;roster[BK(i)]=s}   // clear upgrade wins the job
-  });
-  return {leaving:leaving,arriving:arriving};
-}
-
-function classLabel(rank,total){
-  const pct=rank/total;
-  if(rank<=10)return "Top-10 class";
-  if(pct<=0.20)return "Top-25 class";
-  if(pct<=0.45)return "Above average";
-  if(pct<=0.75)return "Middling";
-  return "Thin class";
 }
 
 /* ============ box scores ============ */

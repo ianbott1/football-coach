@@ -71,36 +71,6 @@ function syncConf(u){
   else if(u){u.conf={};NAMES.forEach(t=>u.conf[t]=CONF[t])}
 }
 
-/* ---- realignment ---- */
-/* Money moves programs. Every few years the strongest independents-in-waiting
-   get poached upward and the weakest P4 members get left behind. */
-function realign(u,rng,year){
-  if(!u.conf)syncConf(u);
-  const size=c=>NAMES.filter(t=>u.conf[t]===c).length;
-  const moves=[];
-  const P4L=LEAGUE.playoff.autoBids;
-  const G6L=LEAGUE.conf.autoBidPool;
-  const n=1+rng.int(3);
-  for(let k=0;k<n;k++){
-    // a strong Group of 6 program gets the call up
-    const cands=NAMES.filter(t=>G6L.indexOf(u.conf[t])>=0 && u.program[t]>=1600)
-      .sort((a,b)=>u.program[b]-u.program[a]).slice(0,8);
-    if(!cands.length)break;
-    const mover=rng.pick(cands);
-    const dest=P4L.filter(c=>size(c)<20).sort((a,b)=>{
-      const pa=NAMES.filter(t=>u.conf[t]===a).reduce((s,t)=>s+u.program[t],0)/Math.max(1,size(a));
-      const pb=NAMES.filter(t=>u.conf[t]===b).reduce((s,t)=>s+u.program[t],0)/Math.max(1,size(b));
-      return pa-pb;
-    })[0];
-    if(!dest||size(u.conf[mover])<=8)continue;
-    moves.push({team:mover,from:u.conf[mover],to:dest});
-    u.conf[mover]=dest;
-  }
-  syncConf(u);
-  if(moves.length){u.realignLog=u.realignLog||[];u.realignLog.push({year:year,moves:moves})}
-  return moves;
-}
-
 /* ============ schedule ============ */
 /* d-regular circulant: every team gets EXACTLY d conference games.
    Valid whenever d <= n-1 and (n*d) is even. */
@@ -569,17 +539,6 @@ function coachCandidates(rng,prestige){
   });
 }
 
-const RECRUIT_FOCUS={
-  balanced:{l:"Best available", d:"Take the best player on the board at every spot.",
-            pos:null, r:0, pot:0},
-  trenches:{l:"Win the trenches", d:"Load up on the lines. Slower payoff, sturdier teams.",
-            pos:["OT","EDGE","DT"], r:8, pot:0},
-  skill:   {l:"Skill players",   d:"Quarterbacks and playmakers. Explosive, and streakier.",
-            pos:["QB","RB","WR","WR2"], r:5, pot:0},
-  upside:  {l:"Chase upside",    d:"Raw prospects with ceilings. Rough now, dangerous in two years.",
-            pos:null, r:-5, pot:14, dev:3.4}
-};
-
 const PHILOSOPHY={
   win_now: {l:"Win now",  d:"Veterans get every rep. Better this year, thinner next.",
             elo:44, dev:-3.0},
@@ -587,39 +546,6 @@ const PHILOSOPHY={
   build:   {l:"Build",    d:"Young players play through mistakes. Costs you this year.",
             elo:-38, dev:3.2}
 };
-
-/* ============ program budget ============ */
-/* A fixed pool each offseason. Everything you fund is something you didn't. */
-const BUCKETS=[
- {k:"recruit",  l:"Recruiting",   d:"Better players sign. Pays off in two or three years."},
- {k:"develop",  l:"Development",  d:"Strength staff and position coaches. Your current roster grows faster."},
- {k:"facility", l:"Facilities",   d:"Permanent. Compounds quietly for as long as you're here."},
- {k:"retention",l:"Retention/NIL",d:"Keep your stars from leaving early for the draft."}
-];
-
-function budgetPool(u,t,wins){
-  const base=6+Math.round((u.program[t]-1150)/150);
-  const success=wins>=11?3:wins>=9?2:wins>=7?1:0;
-  const fac=Math.floor((u.facility&&u.facility[t]?u.facility[t]:0)/22);
-  return Math.max(6,Math.min(20,base+success+fac));
-}
-
-function applyBudgetRead(alloc){
-  return {recruitBonus:(alloc.recruit||0)*0.30,
-          devBonus:(alloc.develop||0)*0.46,
-          retention:Math.min(0.62,(alloc.retention||0)*0.055)};
-}
-
-function applyBudget(u,t,alloc){
-  u.facility=u.facility||{};
-  u.facility[t]=(u.facility[t]||0)+(alloc.facility||0)*2.4;
-  return {
-    recruitBonus:(alloc.recruit||0)*0.30,
-    devBonus:(alloc.develop||0)*0.46,
-    retention:Math.min(0.62,(alloc.retention||0)*0.055),
-    facility:Math.min(520,u.facility[t])
-  };
-}
 
 /* ============ your coaching career ============ */
 /* You are the head coach, not the athletic director. You get hired, you get
@@ -685,7 +611,7 @@ function newUniverse(seed){
   LEAGUE.teams.forEach(t=>u.conf[t[0]]=t[2]);
   LEAGUE.teams.forEach(([n,e])=>{
     u.program[n]=e; u.perceived[n]=e;
-    u.roster[n]=makeRoster(rng,e);
+    u.roster[n]=LEAGUE.offseason.newRoster(rng,e);
     u.oc[n]=newCoordinator(rng,e,"oc"); u.dc[n]=newCoordinator(rng,e,"dc");
     u.trueBase[n]=rosterElo(u.roster[n])+rng.gauss(0,26);
     u.tenure[n]=1+rng.int(6); u.bad[n]=0;
@@ -787,96 +713,5 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
   return {fired:fired,hires:hires,poached:poached,userOpen:userOpen,
           candidates:candidates,openJobs:openJobs,
           coordMoves:coordMoves,staffOpen:staffOpen};
-}
-
-function offseasonRosters(u,rng,healthy,elo,rec,choices){
-  /* One human or several: each coached program gets its own choices. */
-  const U_CH = choices.users || (choices.userTeam?{[choices.userTeam]:choices}:{});
-  const chFor = t=>U_CH[t]||null;
-  const leavers={};
-  choices=choices||{};
-  const risers=[],fallers=[],churn={};
-  const ut=choices.userTeam;
-
-  if(ut&&choices.coach){
-    const c=choices.coach;
-    u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0};
-  }
-
-  NAMES.forEach(t=>{
-    const before=u.program[t];
-    const c=u.coach[t];
-    u.program[t]+=RECRUIT*(elo[t]-u.program[t])
-                 +c.q*COACH_BUILD
-                 +rng.gauss(0,PROG_NOISE*iscale(u.program[t]));
-    u.program[t]=Math.max(P_FLOOR,Math.min(P_CEIL,u.program[t]));
-    c.t++;
-    const ch=chFor(t);
-    const focus=(ch&&ch.recruit)?ch.recruit:"balanced";
-    let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev:0;
-    let bud=null;
-    if(ch&&ch.budget){
-      bud=applyBudget(u,t,ch.budget);
-      devMod+=bud.devBonus;
-      u.program[t]+=bud.facility*0.20;      // facilities lift the program itself
-    }
-    const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
-    churn[t]=developRoster(u,t,rng,RECRUIT_FOCUS[focus],devMod,bud,
-                           ch?ch.featured:null,
-                           {oc:ocq*0.030, dc:dcq*0.030});
-    leavers[t]=churn[t].leaving;
-    u.trueBase[t]=rosterElo(u.roster[t])
-                 +(c.t<=1?ROOKIE_DIP:0)
-                 +rng.gauss(0,ROSTER_NOISE);
-    u.perceived[t]=0.58*elo[t]+0.42*u.program[t]+rng.gauss(0,PERCEPT_N);
-    const d=u.program[t]-before;
-    if(d>35)risers.push([t,Math.round(d)]);
-    if(d<-35)fallers.push([t,Math.round(d)]);
-  });
-
-  /* Draft night: everyone who left the college game gets sorted out. */
-  const draftResult=runDraft(u,rng,u.year,leavers);
-  recordAlumni(u,u.year,draftResult.pool);
-
-  /* Every program signs a class each year, whether or not a freshman starts.
-     Quality tracks program pull, the coach's recruiting, and your stated focus. */
-  u.classAvg=u.classAvg||{};
-  const incoming=[];
-  NAMES.forEach(t=>{
-    const c=u.coach[t];
-    const ch2=chFor(t);
-    const focus=(ch2&&ch2.recruit)?RECRUIT_FOCUS[ch2.recruit]:RECRUIT_FOCUS.balanced;
-    const q=eloToRating(u.program[t])
-           +c.q*0.055 +(c.rec||0)*0.55
-           +(focus.r||0)*0.45 +(focus.pot||0)*0.12
-           +((ch2&&ch2.budget)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
-           +((ch2&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
-           +rng.gauss(0,2.6);
-    const signed=6+Math.round(rng.range(0,3));
-    incoming.push([t,q,signed]);
-    // classes compound: what you sign now shapes who is available later
-    const prev=u.classAvg[t]!==undefined?u.classAvg[t]:q;
-    u.classAvg[t]=prev*0.62+q*0.38;
-  });
-  incoming.sort((a,b)=>b[1]-a[1]);
-  const classes={};
-  incoming.forEach(([t,av,n],i)=>{
-    classes[t]={avg:Math.round(av),n:n,rank:i+1,of:incoming.length,
-                l:classLabel(i+1,incoming.length)};
-  });
-  const early={};
-  NAMES.forEach(t=>{const x=churn[t].leaving.filter(y=>y.early); if(x.length)early[t]=x});
-
-  if(ut&&choices.phil)u.phil=choices.phil;
-  u.year++;
-  let realigned=[];
-  if(u.nextRealign&&u.year>=u.nextRealign){
-    realigned=realign(u,rng,u.year);
-    u.nextRealign=u.year+4+rng.int(4);
-  }
-  risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
-  return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
-          churn:churn,classes:classes,early:early,realigned:realigned,
-          draft:draftResult};
 }
 
