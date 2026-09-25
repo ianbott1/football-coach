@@ -214,11 +214,13 @@ function rebuild(){
   SEA.plan=plan;
 }
 
+let saveOK=null;                     // did the last save land? null = not tried yet
 async function save(){
-  try{await window.storage.set(KEYFOR(slot),JSON.stringify(S))}catch(e){}
+  try{saveOK=!!(await store.set(KEYFOR(slot),JSON.stringify(S)))}catch(e){saveOK=false}
+  return saveOK;
 }
 async function loadSlot(n){
-  try{const r=await window.storage.get(KEYFOR(n));return r?migrateSave(JSON.parse(r.value)):null}catch(e){return null}
+  try{const r=await store.get(KEYFOR(n));return r?migrateSave(JSON.parse(r.value)):null}catch(e){return null}
 }
 async function allSlots(){
   const out=[];
@@ -1357,20 +1359,22 @@ async function postSeason(){
   const row={coach:C.name,team:S.myTeam,seed:S.seed,year:last.year,rec:last.rec,
     rank:last.rank,result:last.result,grade:last.grade,
     titles:C.titles,cw:C.w,cl:C.l,rep:Math.round(C.rep),at:Date.now()};
+  if(store.kind()!=="claude"){leagueMsg="The shared table only works when the game runs inside Claude.";render();return}
   try{
-    await window.storage.set(key,JSON.stringify(row),true);
+    if(!(await store.set(key,JSON.stringify(row),true)))throw new Error("not stored");
     leagueMsg="Posted "+last.year+".";
     await loadLeague();
   }catch(e){leagueMsg="Couldn't post right now.";render()}
 }
 
 async function loadLeague(){
+  if(store.kind()!=="claude"){league=[];leagueMsg="The shared table only works when the game runs inside Claude.";render();return}
   try{
-    const r=await window.storage.list("lg-",true);
+    const r=await store.list("lg-",true);
     const keys=(r&&r.keys)?r.keys:[];
     const rows=[];
     for(const k of keys.slice(0,80)){
-      try{const v=await window.storage.get(k,true); if(v&&v.value)rows.push(JSON.parse(v.value))}
+      try{const v=await store.get(k,true); if(v&&v.value)rows.push(JSON.parse(v.value))}
       catch(e){}
     }
     league=rows;
@@ -1958,7 +1962,7 @@ function render(){
         <span class="stoprec">${s.w}-${s.l}</span></div>`).join("")}
       <div class="actionbar"><button class="advance gold" id="reset2">New career</button></div>`;
     const r=el("reset2"); if(r)r.onclick=async()=>{
-      try{await window.storage.delete(KEY)}catch(e){}
+      try{await store.delete(KEYFOR(slot))}catch(e){}
       S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
       U=null;SEA=null;renderStart();};
     return;
@@ -2031,7 +2035,7 @@ function render(){
   const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
   const rb=el("rst"); if(rb)rb.onclick=async()=>{
     if(confirm("Abandon this dynasty and start a new one?")){
-      try{await window.storage.delete(KEY)}catch(e){}
+      try{await store.delete(KEYFOR(slot))}catch(e){}
       S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
       U=null;SEA=null;flash=null;renderStart();}};
   const advance=()=>{
@@ -2236,7 +2240,7 @@ function renderTitle(){
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
     if(ev.target&&ev.target.dataset.del){
       if(!confirm("Erase this career permanently?"))return;
-      try{await window.storage.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
+      try{await store.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
       S._slots=await allSlots(); render(); return;
     }
     const n=+b.dataset.slot;
