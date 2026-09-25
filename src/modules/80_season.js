@@ -12,7 +12,7 @@ class Season{
     if(u.userTeam&&ph)tb[u.userTeam]=(tb[u.userTeam]||0)+ph;
     this.featCost=0;
     this.talent=new Talent(this.rng,tb,this.roster);
-    this.poll=new Poll(Object.assign({},u.perceived));
+    this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
     this.sched=buildSchedule(this.rng,u.perceived,u.year);
     this.rec={};this.confrec={};
     NAMES.forEach(t=>{this.rec[t]=[0,0];this.confrec[t]=[0,0]});
@@ -173,54 +173,11 @@ class Season{
       out.push(r);
     });
     this.poll.update(out,this.elo);
-    this._award(w,out);
+    this._award(w,out);                   // the league's awards
     this.talent.advance(w+1);
     out.sort((a,b)=>Math.min(a.hrank,a.arank)-Math.min(b.hrank,b.arank));
     this.weeks.push({label:`Week ${w+1}`,date:LEAGUE.dates[w],games:out,
       poll:this.top25(prev),standings:this.standings(prev)});
-  }
-  allConfAll(){
-    const out={};
-    LEAGUE.conf.order.forEach(c=>{out[c]=this.allConference(c)});
-    return out;
-  }
-  _award(w,games){
-    if(!this.roster)return;
-    const won={};
-    games.forEach(g=>{won[g.winner]=1;won[g.loser]=0});
-    NAMES.forEach(t=>{
-      if(won[t]===undefined)return;                    // bye week
-      const wp=this.rec[t][0]/Math.max(1,this.rec[t][0]+this.rec[t][1]);
-      this.roster[t].forEach((pl,i)=>{
-        if(!pl||!pl.st2||!pl.st2.g)return;
-        const P=POS[i%POS.length];
-        pl.st=pl.st2.g;
-        // voters reward production, and reward it more on a winning team
-        pl.prod=statProd(P.p,pl.st2)*P.aw*(0.72+wp*0.52);
-      });
-    });
-  }
-  heisman(n){
-    if(!this.roster)return [];
-    const all=[];
-    NAMES.forEach(t=>this.roster[t].forEach((pl,i)=>{
-      if(pl&&(pl.st||0)>=6)all.push({t:t,n:pl.n,p:pl.p,r:pl.r,c:pl.c,
-        prod:pl.prod||0,line:statLine(pl.p,pl.st2),
-        rec:this.rec[t][0]+"-"+this.rec[t][1]});
-    }));
-    all.sort((a,b)=>b.prod-a.prod);
-    return all.slice(0,n||10);
-  }
-  allConference(conf){
-    if(!this.roster)return [];
-    const out=[];
-    POS.forEach((P,i)=>{
-      const best=NAMES.filter(t=>CONF[t]===conf)
-        .map(t=>({t:t,pl:this.roster[t][i]}))
-        .sort((a,b)=>(b.pl.prod||0)-(a.pl.prod||0))[0];
-      if(best)out.push({pos:P.p,team:best.t,n:best.pl.n,r:best.pl.r,c:best.pl.c});
-    });
-    return out;
   }
   top25(prev){
     return this.poll.order().slice(0,25).map((t,i)=>({

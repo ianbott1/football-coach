@@ -50,7 +50,7 @@ for (let s = 1; s <= N; s++) {
     m.games++; m.pts += h+a; m.margin += Math.abs(h-a);
     if (eH!==eA && ((eH>eA)===(h>a))) m.fav++;
   });
-  const hz = sea.heisman(1)[0]; if (hz) m.heis[hz.p]=(m.heis[hz.p]||0)+1;
+  const hz = (sea.mvpRace||sea.heisman).call(sea,1)[0]; if (hz) m.heis[hz.p]=(m.heis[hz.p]||0)+1;
 }
 const pct = x => (100*x).toFixed(1)+'%';
 console.log(`seasons ${N}, games ${m.games}`);

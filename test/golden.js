@@ -59,7 +59,7 @@ function career(file, team, seed, seasons) {
       .map(g => [g.home,g.away,g.hp,g.ap,g.title||'']);
     const season = {
       year: SEA.year, games: h(games), post: h(post), champion: SEA.champion,
-      rec: h(SEA.rec), poll: h(SEA.poll.order()), heis: h((SEA.heisman(10)||[]).map(x=>[x.n,x.t,x.p])),
+      rec: h(SEA.rec), poll: h(SEA.poll.order()), heis: h(((SEA.mvpRace||SEA.heisman).call(SEA,10)||[]).map(x=>[x.n,x.t,x.p])),
     };
     api.openOffseason();
     const S = api.S;

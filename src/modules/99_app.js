@@ -441,7 +441,7 @@ function endSeason(rng,choices,act){
       .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
         early:!!d.early,d:d.draft})):[],
     post:post, pnote:pnote,
-    heis:(SEA.heisman(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
+    heis:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
     allconf:(function(){const o=SEA.allConfAll(),k=CONF[my];
       return {conf:k,list:(o[k]||[]).map(x=>({pos:x.pos,team:x.team,n:x.n,r:x.r,c:x.c}))}})(),
     classes:off.classes||{}, early:off.early||{},
@@ -883,7 +883,7 @@ function rosterView(){
           <span class="prate sm">${b.r}</span></div>
       </div></div>`;
   }).join("");
-  const hz=SEA.heisman(30).filter(x=>x.t===my);
+  const hz=SEA.mvpRace(30).filter(x=>x.t===my);
   if(hz.length){
     h+=`<div class="grouphead">In the ${LEAGUE.awards.mvp} conversation</div>`;
     h+=hz.map(x=>`<div class="frow"><div class="fmain"><div class="fname">${esc(x.n)}</div>
@@ -1296,7 +1296,7 @@ function weekNews(W){
 
   // heisman watch
   if(SEA.step>=6&&SEA.roster){
-    const hz=SEA.heisman(2);
+    const hz=SEA.mvpRace(2);
     if(hz.length)items.push({p:55,k:"heis",tone:"muted",
       h:`${LEAGUE.awards.mvp} watch: ${hz[0].n}, ${LEAGUE.classes[hz[0].c]} ${hz[0].p}, ${hz[0].t}`,
       b:`${hz[0].line||""}${hz[1]?" \u00b7 "+hz[1].n+" ("+hz[1].t+") is closest.":""}`});
@@ -1869,7 +1869,7 @@ function dynastyView(){
   if(!S.history.length)return h+`<div class="note">Finish a season and league history builds here.</div>`;
   // live race, once enough of the current season has been played
   if(SEA&&SEA.step>=6&&SEA.roster){
-    const hz=SEA.heisman(5);
+    const hz=SEA.mvpRace(5);
     if(hz.length){
       h+=`<div class="grouphead">${LEAGUE.awards.mvp} race &mdash; ${SEA.year}, week ${Math.min(SEA.step,LEAGUE.weeks)}</div>`;
       h+=hz.map((x,i)=>`<div class="frow ${x.t===my?'mine':''}">
