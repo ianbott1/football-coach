@@ -183,11 +183,16 @@ function twoPointCall(mine, theirs, q, late){
   return null;
 }
 
-function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
+/* humans: which sides a person is calling, {home, away}. A bare boolean is
+   the one-coach form: true means the user is the home side. Each side has
+   its own calls, asked only on its own drives, and an ask says whose it is. */
+function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
+  if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const st={h:0,a:0,drives:[],prev:"TD",i:0,total:DRIVES_PER_TEAM*2,
             aggrH:planH||"balanced",aggrA:planA||"balanced",
             baseH:planH||"balanced",baseA:planA||"balanced",
-            used:{},calls:0,rng:rng,endAfter:undefined,
+            usedH:{},usedA:{},callsH:0,callsA:0,humans:humans,
+            rng:rng,endAfter:undefined,
             ask:null,stage:null,pend:null,answer:null};
 
   function push(home,q,start,res,aggr){
@@ -218,9 +223,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
     }
 
     const i=st.i, home=i%2===0;
-    const isUser = home ? userIsHome : !userIsHome;
+    const isUser = home ? humans.home : humans.away;
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
-    const mine=userIsHome?st.h:st.a, theirs=userIsHome?st.a:st.h;
+    // asks only ever go to the side with the ball, so the score is theirs
+    const mine=home?st.h:st.a, theirs=home?st.a:st.h;
+    const side=home?"home":"away";
+    const used=home?st.usedH:st.usedA;
+    const calls=()=>home?st.callsH:st.callsA, called=()=>{if(home)st.callsH++;else st.callsA++};
     const late = i>=st.total-7;
     const offE=home?eloH:eloA, defE=home?eloA:eloH;
 
@@ -274,14 +283,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
     const start=nextStart(rng,st.prev);
 
     // ---- strategic call before the snap ----
-    if(isUser&&st.calls<MAX_CALLS&&!st.stage){
-      const ctx={q:q,idx:i,total:st.total,startYd:start,used:st.used,rng:rng,
+    if(isUser&&calls()<MAX_CALLS&&!st.stage){
+      const ctx={q:q,idx:i,total:st.total,startYd:start,used:used,rng:rng,
                  mine:mine,theirs:theirs};
       const dp=decisionPoint(ctx,true);
       if(dp){
-        st.used[dp.k]=true; st.calls++;
+        used[dp.k]=true; called();
         st.stage="strategy"; st.pend={q:q,start:start};
-        return {ask:dp,mine:mine,theirs:theirs,q:q};
+        return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
       }
     }
 
@@ -289,21 +298,21 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
     const res=rollDrive(rng,offE,defE,start,aggr);
 
     // ---- a call the situation creates ----
-    if(isUser&&st.calls<MAX_CALLS){
-      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(st.used.fourth||0)<2){
+    if(isUser&&calls()<MAX_CALLS){
+      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<2){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
         if(dp){
-          st.used.fourth=(st.used.fourth||0)+1; st.calls++;
+          used.fourth=(used.fourth||0)+1; called();
           st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr};
-          return {ask:dp,mine:mine,theirs:theirs,q:q};
+          return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
         }
       }
-      if(res.kind==="TD"&&!st.used.two){
+      if(res.kind==="TD"&&!used.two){
         const dp=twoPointCall(mine,theirs,q,late);
         if(dp){
-          st.used.two=true; st.calls++;
+          used.two=true; called();
           st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr};
-          return {ask:dp,mine:mine,theirs:theirs,q:q};
+          return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
         }
       }
     }

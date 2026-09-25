@@ -28,7 +28,7 @@ function load(file) {
     createElement: () => mk(), body:{classList:{toggle(){}}}, addEventListener(){} };
   // live getters: U, SEA, S, live are reassigned with `let`, so capture by closure
   return new Function(js + `
-    return { newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
+    return { setPlan(p){plan=p}, render, newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
       NAMES, loadCoach, stashCoach,
       async loadSave(json){ await window.storage.set(KEYFOR(1),json); slot=1;

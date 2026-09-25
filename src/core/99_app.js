@@ -35,8 +35,32 @@ function ensureCoaches(){
 }
 
 let live=null;          // a game being played out right now
+let handoffNotes={};    // hot seat: team -> the coach who deferred a game against it
 let handoff=false;      // showing the "pass the device" screen
 let owlTaps=0;
+
+/* ---- head to head ----
+   When two coaches in a hot seat meet, the game is played once, on the later
+   coach's turn, and each coach calls their own side. The earlier coach picks
+   a plan and hands over without playing. */
+function coachIndexOf(team){
+  if(!S.coaches)return -1;
+  if(team===S.myTeam)return S.turn||0;
+  return S.coaches.findIndex((c,i)=>i!==(S.turn||0)&&c.myTeam===team);
+}
+function opponentOf(g){ return g?(g.home===S.myTeam?g.away:g.home):null }
+/* Both coaches' plans and featured players, applied to one game. */
+function h2hElo(g,step,oj){
+  const keepU=SEA.userTeam, keepF=SEA.featured, oc=S.coaches[oj];
+  SEA.userTeam=null; SEA.featured=null;
+  const e0=SEA.matchupElo(g,"balanced");
+  SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+  const e1=SEA.matchupElo(g,plan);
+  SEA.userTeam=oc.myTeam; SEA.featured=(oc.featured===undefined?null:oc.featured);
+  const e2=SEA.matchupElo(g,(oc.plans&&oc.plans[step])||"balanced");
+  SEA.userTeam=keepU; SEA.featured=keepF;
+  return {h:e1.h+e2.h-e0.h, a:e1.a+e2.a-e0.a};
+}
 
 /* Answers belong to a season as well as a week. Keyed by step alone, season
    three replays season one's decisions and silently answers everything. */
@@ -47,14 +71,19 @@ function liveSeed(step){
 }
 
 function startLive(g,step){
-  const e=SEA.matchupElo(g,plan);
+  const oj=isHotSeat()?coachIndexOf(opponentOf(g)):-1;
+  const h2h=oj>=0&&oj<(S.turn||0);                 // an earlier coach waited for this one
+  const e=h2h?h2hElo(g,step,oj):SEA.matchupElo(g,plan);
   const rng=new RNG(liveSeed(step));
   const userIsHome=(g.home===S.myTeam);
+  const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):"balanced";
   live={g:g, step:step,
         eng:makeLiveGame(rng,e.h,e.a,
-              userIsHome?plan:"balanced", userIsHome?"balanced":plan, userIsHome),
+              userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
+              h2h?{home:true,away:true}:userIsHome),
         drives:[], ask:null, done:false,
-        paused:(S.watchStep===true), userIsHome:userIsHome};
+        paused:(S.watchStep===true), userIsHome:userIsHome,
+        h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
   // replay any answers already recorded for this week
   live.replay=((S.calls&&S.calls[callKey(step)])||[]).slice();
   live.ri=0;
@@ -80,7 +109,8 @@ function liveTick(){
         live.eng.reply(live.replay[live.ri++]);
         continue;
       }
-      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs};
+      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs,
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam};
       render();
       return;
     }
@@ -133,6 +163,7 @@ function finishLive(){
 
 /* Everyone has had their turn: play out the rest of the league. */
 function resolveWeek(step){
+  handoffNotes={};
   SEA.userTeam=S.myTeam;
   SEA.advance();
   SEA.forcedList=[]; SEA.forced=null;
@@ -273,7 +304,10 @@ function doAdvance(){
   const ug=(SEA.phase==="week")?SEA.nextGame(S.myTeam)
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
   const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never";
-  if(wantLive && !live){
+  // meeting a coach who comes later this turn: they play it, with both of you calling
+  const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
+  if(wantLive && !live && laterRival){ handoffNotes[opponentOf(ug)]={vs:S.myTeam, coach:S.career.name}; }
+  else if(wantLive && !live){
     startLive(ug, before);
     return;                                    // the game is played in the viewer
   }
@@ -1797,12 +1831,14 @@ function driveWord(d){
 }
 
 function liveCallView(){
-  const dp=live.ask.dp, g=live.g, my=S.myTeam;
+  const dp=live.ask.dp, g=live.g, my=live.ask.team||S.myTeam;
   const mine=live.ask.mine, theirs=live.ask.theirs;
+  const whose=!live.h2h?"Your call"
+    :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call \u00b7 "+my);
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
-      <div class="wlabel">Your call</div>
+      <div class="wlabel">${whose}</div>
       <div class="calltitle">${esc(dp.h)}</div>
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.b)}</div>
@@ -1873,7 +1909,9 @@ function handoffView(){
     <div class="handteam" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</div>
     <div class="handrec">${SEA.rec[S.myTeam][0]}-${SEA.rec[S.myTeam][1]}${
       SEA.poll.rankMap()[S.myTeam]?" &middot; No. "+SEA.poll.rankMap()[S.myTeam]:""}</div>
-    <div class="handnote">The others have played their week. Your turn.</div>
+    <div class="handnote">${handoffNotes[S.myTeam]
+      ?`You play ${esc(handoffNotes[S.myTeam].vs)} this week. ${esc(handoffNotes[S.myTeam].coach)} has set their plan; the game is played now, and each of you makes your own calls.`
+      :"The others have played their week. Your turn."}</div>
     <div class="actionbar"><button class="advance" id="hgo">I'm ready</button></div>
   </div>`;
 }
@@ -1896,7 +1934,7 @@ function quitPrompt(){
 function render(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
-    const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;render()};
+    const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;delete handoffNotes[S.myTeam];render()};
     return;
   }
   if(cardFor){
