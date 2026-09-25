@@ -209,6 +209,10 @@ function enforceReal(games,rng){
 
 /* Put those games in the week they are actually played, and the right way round. */
 function pinRealWeeks(sched,busy,NW_){
+  // busy[] must always agree with sched; rebuild it for the teams we touch
+  // rather than patching it by hand
+  const rebusy=ts=>ts.forEach(t=>{busy[t]=new Set(
+    sched.filter(x=>x.home===t||x.away===t).map(x=>x.week))});
   REAL2026.forEach(R=>{
     const g=sched.find(x=>(x.home===R.h&&x.away===R.a)||(x.home===R.a&&x.away===R.h));
     if(!g)return;
@@ -216,34 +220,35 @@ function pinRealWeeks(sched,busy,NW_){
     if(g.home!==R.h){g.home=R.h; g.away=R.a}          // correct the venue
     if(g.week===R.w)return;
     const A=R.h, B=R.a, from=g.week, to=R.w;
-    // shift anything already occupying that week for either side
+    // anything already occupying that week for either side has to move
     const block=sched.filter(x=>x!==g&&x.week===to&&
       (x.home===A||x.away===A||x.home===B||x.away===B));
     if(block.some(x=>x.real))return;                  // never displace another real game
-    let placed=true;
-    block.forEach(x=>{
+    // Plan every move against the schedule as it would be, and only commit
+    // if all of them fit. Moving some and then giving up left a displaced
+    // game sitting on top of this one.
+    const occ={};
+    const weeksOf=t=>occ[t]||(occ[t]=new Set(sched.filter(x=>x!==g&&block.indexOf(x)<0&&
+      (x.home===t||x.away===t)).map(x=>x.week)));
+    weeksOf(A).add(to); weeksOf(B).add(to);
+    const plan=[];
+    for(const x of block){
       const teams=[x.home,x.away];
       let target=-1;
       for(let w=0;w<NW_;w++){
         if(w===to)continue;
-        if(teams.every(t=>(t===A||t===B)?w!==from||true:!busy[t].has(w))
-           && teams.every(t=>!busy[t].has(w)||((t===A||t===B)&&w===from)))
-          {target=w;break}
+        if(teams.every(t=>!weeksOf(t).has(w))){target=w;break}
       }
-      if(target<0){placed=false;return}
-      teams.forEach(t=>{busy[t].delete(to);busy[t].add(target)});
-      x.week=target;
-    });
-    if(!placed)return;
-    busy[A].delete(from);busy[B].delete(from);
-    busy[A].add(to);busy[B].add(to);
+      if(target<0)return;                             // can't pin this one; leave it
+      teams.forEach(t=>weeksOf(t).add(target));
+      plan.push([x,target]);
+    }
+    plan.forEach(([x,w])=>{x.week=w});
     g.week=to;
+    rebusy([A,B].concat(...block.map(x=>[x.home,x.away])));
   });
   return sched;
 }
-
-/* Force every rivalry onto the schedule by swapping opponents, then drag those
-   games as late in the season as both teams are free. */
 function enforceRivalries(games,rng,protectReal){
   const key=(x,y)=>[x,y].sort().join("|");
   const has=new Set(games.map(g=>key(g[0],g[1])));

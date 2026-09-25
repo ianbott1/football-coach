@@ -1,5 +1,5 @@
 {
- "fp": "2dfd39ef596b3623",
+ "fp": "92fb09906aea2130",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -9,6 +9,11 @@
    "fp": "2dfd39ef596b3623",
    "from": "bc56ed5d4e53a6d0",
    "note": "recorded from the published build (cf06b22), now with 60 seeded 2026 schedules"
+  },
+  {
+   "fp": "92fb09906aea2130",
+   "from": "2dfd39ef596b3623",
+   "note": "Fix double-booking in pinRealWeeks: it moved blocking games before knowing all of them fit and patched busy[] by hand, so a team could get two games in one week (69 in 200 seasons). Only the 60-schedule fingerprint changes; the four careers never hit it. Checked: 0 double bookings in 200 seasons; 792 regular-season games/season and real-2026 fidelity (97.0% present, 92.5% in real week) unchanged; calibration within targets."
   }
  ],
  "result": {
@@ -190,7 +195,7 @@
   ],
   "schedules#60": [
    {
-    "all": "c3e158a21fcac11f"
+    "all": "38de2146dbfac50b"
    }
   ]
  }
