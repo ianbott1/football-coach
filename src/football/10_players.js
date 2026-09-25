@@ -18,19 +18,19 @@ const PNAMES_L=["Whitfield","Okonkwo","Barrera","Sanders","Colquitt","Adeyemi","
 "Balogun","Tremblay","Norwood","Sarkisian","Faletau","Mensah","Quintero","Ashworth",
 "Diallo","Buchanan","Lefevre","Odom","Tagovailoa","Kponeh","Vasquez","Randle"];
 
-/* position, share of team strength, backup dropoff, award weight */
+/* position, share of team strength, backup dropoff */
 /* hz = share of injuries that land on this spot */
 const POS=[
-  {p:"QB",  w:0.27, drop:21, aw:1.14, hz:0.14},
-  {p:"RB",  w:0.07, drop:10, aw:1.68, hz:0.13},
-  {p:"WR",  w:0.09, drop:11, aw:1.68, hz:0.11},
-  {p:"WR2", w:0.06, drop:9,  aw:0.7, hz:0.09},
-  {p:"OT",  w:0.12, drop:12, aw:0.47, hz:0.13},
-  {p:"EDGE",w:0.11, drop:13, aw:1.02, hz:0.10},
-  {p:"DT",  w:0.08, drop:10, aw:0.62, hz:0.09},
-  {p:"LB",  w:0.08, drop:10, aw:0.85, hz:0.08},
-  {p:"CB",  w:0.07, drop:11, aw:0.78, hz:0.08},
-  {p:"S",   w:0.05, drop:9,  aw:0.5, hz:0.05},
+  {p:"QB",  w:0.27, drop:21, hz:0.14},
+  {p:"RB",  w:0.07, drop:10, hz:0.13},
+  {p:"WR",  w:0.09, drop:11, hz:0.11},
+  {p:"WR2", w:0.06, drop:9,  hz:0.09},
+  {p:"OT",  w:0.12, drop:12, hz:0.13},
+  {p:"EDGE",w:0.11, drop:13, hz:0.10},
+  {p:"DT",  w:0.08, drop:10, hz:0.09},
+  {p:"LB",  w:0.08, drop:10, hz:0.08},
+  {p:"CB",  w:0.07, drop:11, hz:0.08},
+  {p:"S",   w:0.05, drop:9,  hz:0.05},
 ];
 function pickInjuredPos(rng){
   let x=rng.r(), acc=0;
@@ -150,7 +150,7 @@ function statLine(pos,s){
   return `${s.tkl} tkl, ${s.ints} INT, ${s.pd} PD`;
 }
 
-/* Heisman weight, now built from what a player actually did. */
+/* Award production, built from what a player actually did. */
 function statProd(pos,s){
   if(!s||!s.g)return 0;
   if(pos==="QB")  return s.pyd*0.042 + s.ptd*4.4 - s.int*3.0;

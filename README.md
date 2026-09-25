@@ -5,20 +5,43 @@ Python 3 and (for tests) Node.
 
 ## Layout
 
-    src/_head.html        page shell, styles, fonts, favicon
-    src/_tail.html        closing tags
-    src/modules/*.js      the shared core, in build order (filenames are numbered)
-    src/sports/<id>/*.js  one league: its data and league-only modules
-    build.py              merges core + one sport into dist/<game>.html
-    dist/                 build output — this is the shippable artifact
-    test/                 headless harness and checks
+    src/_head.html          page shell, styles, fonts, favicon
+    src/_tail.html          closing tags
+    src/core/*.js           the engine: RNG, Elo, talent and injuries, coaches,
+                            the Season machine, the season card, all UI
+    src/football/*.js       the sport: positions, rosters' two-deep, box
+                            scores, coordinators, the drive engine, the staff
+                            room, the field graphic and game plans
+    src/leagues/<id>/*.js   one league: teams, conferences, schedule, ranking,
+                            postseason, awards, offseason, draft, names
+    src/leagues/<id>/GAME   which sport layer the league is played in
+    build.py                merges core + sport + league into dist/<game>.html
+    test/                   headless harness, golden master, calibration
 
 ## Build
 
-    python3 build.py
+    python3 build.py            # cfb -> dist/football-coach.html
 
-Writes `dist/football-coach.html`. That one file is the whole game: open it in
-a browser, or copy it to a web host as `index.html`.
+That one file is the whole game: open it in a browser, or copy it to a web
+host as `index.html`.
+
+## What a league provides
+
+Everything the core and the sport layer know about a league goes through
+`LEAGUE`, defined in the league's `05_league.js` and extended by its other
+files:
+
+    teams, colors, conf{names,order,display,autoBidPool,divisions}
+    weeks, dates, classes, bowls, draftTeams, awards{mvp,weights}
+    tuning{hfa}, venues, schedule{games,confGames,...}, playoff{...}
+    buildSchedule(rng, ratings, year)          25_schedule.js
+    Ranking  class: order, rankMap, update     22_poll.js
+    offseason{newRoster, run}                  26_offseason.js
+    post{phases, run, init} + Season methods   85_postseason.js
+    Season._award, mvpRace, allConference      86_awards.js
+
+The UI (core/99_app.js) is not yet split: it still draws college football's
+bracket, bowls, poll, recruiting and budget screens directly.
 
 ## Tests
 
@@ -28,23 +51,11 @@ a browser, or copy it to a web host as `index.html`.
 A change meant to alter no behaviour must pass `golden.js --check`. A change
 that is meant to alter behaviour re-records with `--write`, and says why.
 
-## Module order
+## Build order
 
-Order matters — later modules depend on earlier ones. The numeric prefixes
-give the correct order under plain filename sort.
-
-    05_league   [cfb] teams, conferences, weeks, classes, bowls, draft, awards
-    10_players        player generation, rosters, development, box scores
-    20_engine         RNG, teams, schedule building, sim, poll, coaches, budget
-    30_schedule2026   [cfb] the real 2026 schedule (81% of games are the released slate)
-    40_rivals   [cfb] rivalry definitions and enforcement
-    50_drives         live drive-by-drive engine and in-game decisions
-    60_staff          Two Bears, Pearl, Apprehensive Capybara
-    70_watch          the field graphic and drive chart
-    80_season         Season state machine — weeks, titles, bowls, playoff
-    90_draft          NFL draft and the program record book
-    95_card           shareable season card (SVG -> PNG)
-    99_app            all UI, state, saves, rendering
+Order matters: later files depend on earlier ones at load time. The numeric
+prefixes give the order across all three layers under plain filename sort;
+run `python3 build.py` to see the merged list.
 
 ## Publishing
 

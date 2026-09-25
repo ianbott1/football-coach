@@ -19,7 +19,7 @@ extendSeason({
         const P=POS[i%POS.length];
         pl.st=pl.st2.g;
         // voters reward production, and reward it more on a winning team
-        pl.prod=statProd(P.p,pl.st2)*P.aw*(0.72+wp*0.52);
+        pl.prod=statProd(P.p,pl.st2)*LEAGUE.awards.weights[P.p]*(0.72+wp*0.52);
       });
     });
   },

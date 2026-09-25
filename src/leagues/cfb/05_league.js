@@ -187,7 +187,9 @@ const LEAGUE={
   "Philadelphia","Pittsburgh","San Francisco","Seattle","Tampa Bay","Tennessee",
   "Washington"],
 
-  awards:{mvp:"Heisman"},
+  /* how much Heisman voters care about each position's production */
+  awards:{mvp:"Heisman",
+    weights:{QB:1.14,RB:1.68,WR:1.68,WR2:0.7,OT:0.47,EDGE:1.02,DT:0.62,LB:0.85,CB:0.78,S:0.5}},
 
   tuning:{
     hfa:62            // baseline home-field edge, Elo
