@@ -1,10 +1,15 @@
 {
- "fp": "f9076522cf8ba9ce",
+ "fp": "bc56c0ca0595591c",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
    "from": null,
    "note": "baseline: two coaches, three seasons; identical on 9cb4058 (pre-split) and the split. Coach A's result line is blank every season (known bug)"
+  },
+  {
+   "fp": "bc56c0ca0595591c",
+   "from": "f9076522cf8ba9ce",
+   "note": "Grading fix 2: in a hot seat every coach but the last got a blank result line and a grade computed from it, because writeSeasonHistory called SEA.resultLine, which never existed. It now uses seasonResult. Coach A: '' C+/C/C+ -> first round B, ReliaQuest Bowl C+, quarterfinals B. Coach B unchanged."
   }
  ],
  "out": [
@@ -15,10 +20,10 @@
      "team": "Alabama",
      "last": {
       "rec": "10-3",
-      "result": "",
-      "grade": "C+"
+      "result": "Eliminated in the first round",
+      "grade": "B"
      },
-     "book": "92c1a2a440bf8211"
+     "book": "cee36661f2b66112"
     },
     {
      "team": "Rice",
@@ -38,10 +43,10 @@
      "team": "Alabama",
      "last": {
       "rec": "9-4",
-      "result": "",
-      "grade": "C"
+      "result": "Won the ReliaQuest Bowl",
+      "grade": "C+"
      },
-     "book": "418d0e686da39cbb"
+     "book": "3dcc6f46b91156c3"
     },
     {
      "team": "Rice",
@@ -61,10 +66,10 @@
      "team": "Alabama",
      "last": {
       "rec": "10-4",
-      "result": "",
-      "grade": "C+"
+      "result": "Eliminated in the quarterfinals",
+      "grade": "B"
      },
-     "book": "bb3d7bac9d73c154"
+     "book": "777db7542fb5f7c8"
     },
     {
      "team": "Rice",

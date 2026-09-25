@@ -365,7 +365,7 @@ function commitOffseason(){
    calls this for themselves before the world moves on. */
 function writeSeasonHistory(){
   const my=S.myTeam, rk=SEA.poll.rankMap();
-  const result=SEA.resultLine?SEA.resultLine(my):"";
+  const result=SEA.seasonResult(my);
   const exp=S.expNow||expectations();
   const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);
   const myGames=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
