@@ -1,5 +1,5 @@
 {
- "fp": "bc56c0ca0595591c",
+ "fp": "ebed9c902c774bd2",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -10,6 +10,11 @@
    "fp": "bc56c0ca0595591c",
    "from": "f9076522cf8ba9ce",
    "note": "Grading fix 2: in a hot seat every coach but the last got a blank result line and a grade computed from it, because writeSeasonHistory called SEA.resultLine, which never existed. It now uses seasonResult. Coach A: '' C+/C/C+ -> first round B, ReliaQuest Bowl C+, quarterfinals B. Coach B unchanged."
+  },
+  {
+   "fp": "ebed9c902c774bd2",
+   "from": "bc56c0ca0595591c",
+   "note": "History entry v2: the book's format changes, its content doesn't; records, results and grades for both coaches identical to the previous recording."
   }
  ],
  "out": [
@@ -23,7 +28,7 @@
       "result": "Eliminated in the first round",
       "grade": "B"
      },
-     "book": "cee36661f2b66112"
+     "book": "82e79e743969c462"
     },
     {
      "team": "Rice",
@@ -32,7 +37,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "b5cbc065f455d886"
+     "book": "4ca9f020613b3f0a"
     }
    ]
   },
@@ -46,7 +51,7 @@
       "result": "Won the ReliaQuest Bowl",
       "grade": "C+"
      },
-     "book": "3dcc6f46b91156c3"
+     "book": "310d9daab5e73d40"
     },
     {
      "team": "Rice",
@@ -55,7 +60,7 @@
       "result": "Won the Cure Bowl",
       "grade": "A+"
      },
-     "book": "d4f3fd02b722191c"
+     "book": "1f447532458e76bd"
     }
    ]
   },
@@ -69,7 +74,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "B"
      },
-     "book": "777db7542fb5f7c8"
+     "book": "d6c15a8a7e171bf7"
     },
     {
      "team": "Rice",
@@ -78,7 +83,7 @@
       "result": "Won the Frisco Bowl",
       "grade": "A"
      },
-     "book": "9df48bff1ffebca4"
+     "book": "d89447db53d50ee6"
     }
    ]
   }

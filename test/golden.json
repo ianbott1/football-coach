@@ -1,5 +1,5 @@
 {
- "fp": "fa9d679c4fca0dd8",
+ "fp": "d6932d79e60ed879",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -29,6 +29,11 @@
    "fp": "fa9d679c4fca0dd8",
    "from": "6023e9cb091d21ed",
    "note": "Grading fix 1: the offseason screen graded on its own result line, in which every playoff team was just 'Playoff', so it showed a lower grade than the history book recorded (5 of 24 seasons in grades.js; Oregon 2026 and 2028 among golden careers). It now grades on seasonResult. Only offseason-screen fingerprints change. grades.js: AGREE 24 of 24."
+  },
+  {
+   "fp": "d6932d79e60ed879",
+   "from": "fa9d679c4fca0dd8",
+   "note": "History entry v2 (league-neutral, NFL-ready; see core/90_history.js). Only the stored history fingerprints change: every screen, game, ranking and universe state is identical. Old saves migrate on load; test/migrate.js: 2217 of 2217 screens, team pages and cards identical to the v1 build, and migrated entries equal native v2 entries."
   }
  ],
  "result": {
@@ -41,7 +46,7 @@
     "rec": "35af61f8274aa94b",
     "poll": "f344bb22473337de",
     "heis": "f4bffc65a63bcc64",
-    "history": "c56350a5c5370c99",
+    "history": "f20a84e12f178293",
     "universe": "30444fd05b9c7c85",
     "screens": "e7480a8699310782"
    },
@@ -53,7 +58,7 @@
     "rec": "5f425849801895e8",
     "poll": "b26dbef497cc0e34",
     "heis": "647b43600053d258",
-    "history": "03c8405fbcf138bd",
+    "history": "f52705b240847854",
     "universe": "eeeea97c006cb123",
     "screens": "b12bccbbac5b4fb1"
    },
@@ -65,7 +70,7 @@
     "rec": "baa01d47febd8bf7",
     "poll": "82c65db6afc57887",
     "heis": "1b4004c213bac2a3",
-    "history": "d61034b791a2e0a3",
+    "history": "40913721a805f950",
     "universe": "0353593895611441",
     "screens": "a7dfdecd2b6b1a95"
    },
@@ -77,7 +82,7 @@
     "rec": "8fdb7ae9835f450f",
     "poll": "1a20e64c7e424bde",
     "heis": "0018170dd06ef53d",
-    "history": "418cc8fb7931e9c2",
+    "history": "46e2eb3bc8c3b35d",
     "universe": "eff25a2247064b8a",
     "screens": "49929a15c119ac1a"
    }
@@ -91,7 +96,7 @@
     "rec": "5a13038bb9c0659a",
     "poll": "fe0ded9f629a50ed",
     "heis": "62c67774006ebb20",
-    "history": "a15b06e0111c2523",
+    "history": "b56fb6a362543089",
     "universe": "ff03bc9d76877853",
     "screens": "9ae3f3ca5fb6dd06"
    },
@@ -103,7 +108,7 @@
     "rec": "b4ef22e2bef889b6",
     "poll": "1e4c3c9fd9e54266",
     "heis": "7451222cd507b5b8",
-    "history": "8d20ea282516d7c7",
+    "history": "9389cd5d0fcfa01b",
     "universe": "dcce9cac9832036f",
     "screens": "d1caad155b1dfa41"
    },
@@ -115,7 +120,7 @@
     "rec": "dccf714e1df95440",
     "poll": "85cbb3661bf1c5d4",
     "heis": "bdc6fbf8638fa62d",
-    "history": "c3fa03b370393a7f",
+    "history": "25fbad8c604b04c3",
     "universe": "36f4076373d27d15",
     "screens": "21db849a59cc74c4"
    },
@@ -127,7 +132,7 @@
     "rec": "859d3bca59892f4b",
     "poll": "26c44069e8690d2f",
     "heis": "823516a6499c0628",
-    "history": "cb208714fb77998a",
+    "history": "40128ed572d14776",
     "universe": "699f10b7d6a7eb9d",
     "screens": "43c4a8a9fa051601"
    }
@@ -141,7 +146,7 @@
     "rec": "172f6cc83e778fae",
     "poll": "0cb89d31d0911abb",
     "heis": "e322cdbd03e4abfa",
-    "history": "6a7ded5c532484da",
+    "history": "07cc856a1ce1cabe",
     "universe": "071bf8a4582fdd04",
     "screens": "7909b66eaa12c2d8"
    },
@@ -153,7 +158,7 @@
     "rec": "55adb8b5e167e851",
     "poll": "303ecb2e9ce1a93a",
     "heis": "163ca91d3775b170",
-    "history": "7d77f6b289d22601",
+    "history": "d3168b7ce926b2af",
     "universe": "9f695559688bb954",
     "screens": "97e28e1fd5524b1b"
    },
@@ -165,7 +170,7 @@
     "rec": "efa76e7fba55abff",
     "poll": "c6c28724356f6aea",
     "heis": "4186b4812676696d",
-    "history": "f1bbeaeeeea225c3",
+    "history": "558a98e0febcd109",
     "universe": "a436c9051ac75692",
     "screens": "f3899f5b6b1b599b"
    }
@@ -179,7 +184,7 @@
     "rec": "dacd6b28942133a7",
     "poll": "b51e919a07e7f56a",
     "heis": "eb2739b75cbf53ed",
-    "history": "c7037c14cef8325d",
+    "history": "ebd17035edceea33",
     "universe": "7a6a0871d29561d8",
     "screens": "d953bdbacbbff497"
    },
@@ -191,7 +196,7 @@
     "rec": "5461359478018ec0",
     "poll": "99de7db8d0cc258a",
     "heis": "8ae0e8d313c33b06",
-    "history": "26f2d412b807bc48",
+    "history": "032b67d75b47f722",
     "universe": "dd611a4cde1b95db",
     "screens": "3444cbb87d459dfc"
    },
@@ -203,7 +208,7 @@
     "rec": "c4c1224bdf6e56c4",
     "poll": "5d94f2a5bc31abb5",
     "heis": "efc1fe877bf238c6",
-    "history": "da7497f273347191",
+    "history": "6974e9d5aa027238",
     "universe": "cd5d2d38e3bba675",
     "screens": "81ebdc0f6b2d5bf9"
    }

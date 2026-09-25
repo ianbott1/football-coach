@@ -11,13 +11,14 @@ function cardFit(text, max, size){
 }
 
 function seasonCardSVG(h, team){
-  const c = h.card || {};
+  const c = {conf:h.group.name, confRec:h.group.rec, bestWin:h.bestWin, coach:h.coach.name,
+             titles:h.coach.titles, seasons:h.coach.seasons};
   const ink   = teamColor(team);
   const ink2  = teamInk ? teamInk(team) : ink;
   const rec   = h.rec || "";
   const big   = h.champion===team ? "NATIONAL CHAMPIONS"
               : c.confChampLine ? c.confChampLine
-              : (h.confChamp ? (c.conf||"Conference").toUpperCase()+" CHAMPIONS"
+              : (h.honours.group ? (c.conf||"Conference").toUpperCase()+" CHAMPIONS"
               : (h.rank ? "FINISHED No. "+h.rank : (h.result||"")));
   const teamSize = cardFit(team, 880, 132);
   const bigSize  = cardFit(big, 940, 52);
@@ -80,10 +81,10 @@ function seasonCardSVG(h, team){
 
 /* The same season as a line of text, for anywhere an image won't go. */
 function seasonCardText(h, team){
-  const c=h.card||{};
+  const c={conf:h.group.name, confRec:h.group.rec, bestWin:h.bestWin, coach:h.coach.name};
   const bits=[`${team} ${h.rec} (${c.confRec} ${c.conf})`];
   if(h.champion===team)bits.push("NATIONAL CHAMPIONS");
-  else if(h.confChamp)bits.push(`${c.conf} champions`);
+  else if(h.honours.group)bits.push(`${c.conf} champions`);
   else if(h.rank)bits.push(`finished No. ${h.rank}`);
   if(c.bestWin)bits.push(`beat ${c.bestWin.rank?"No. "+c.bestWin.rank+" ":""}${c.bestWin.opp} ${c.bestWin.score}`);
   return `${c.coach}, ${h.year}. ${bits.join(" \u2014 ")}. Football Coach: ianbott1.github.io/football-coach`;

@@ -14,16 +14,16 @@ function offseasonBanner(){
   const last=S.history[S.history.length-1];
   if(!last)return "";
   const my=S.myTeam;
-  const myHire=(last.hires||[]).find(x=>x.team===my);
-  const myPoach=(last.poached||[]).find(x=>x.from===my);
+  const myHire=(last.coaching.hires||[]).find(x=>x.team===my);
+  const myPoach=(last.coaching.poached||[]).find(x=>x.from===my);
   let news="";
   if(myPoach)news=`<div class="bnews flag"><b>${esc(myPoach.name)} left for
     ${esc(myPoach.to)}.</b> ${myHire?esc(myHire.name)+" takes over.":""}</div>`;
-  else if(last.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
+  else if(last.coaching.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
     ${esc(myHire.name)} is your new head coach.</div>`;
   else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
-  const cls=last.classes?last.classes[my]:null;
-  const early=last.early?last.early[my]:null;
+  const cls=last.league.classes?last.league.classes[my]:null;
+  const early=last.league.early?last.league.early[my]:null;
   let rec="";
   if(cls)rec=`<div class="bnews"><b>Recruiting:</b> ${esc(cls.l)} &mdash;
     ranked ${cls.rank} of ${cls.of} nationally.</div>`;
@@ -34,30 +34,30 @@ function offseasonBanner(){
       rec+=`<div class="bnews"><b>NFL pipeline.</b> Sending a player you built to the draft
         is a recruiting pitch &mdash; future classes take note.</div>`;
   }
-  const ra=(last.realigned||[]).length?`<div class="bnews"><b>Realignment.</b> ${
-    last.realigned.map(m=>esc(m.team)+" leaves the "+esc(LEAGUE.conf.names[m.from]||m.from)+
+  const ra=(last.league.realigned||[]).length?`<div class="bnews"><b>Realignment.</b> ${
+    last.league.realigned.map(m=>esc(m.team)+" leaves the "+esc(LEAGUE.conf.names[m.from]||m.from)+
       " for the "+esc(LEAGUE.conf.names[m.to]||m.to)).join("; ")}.</div>`:"";
-  const hz=last.heis&&last.heis[0]?`<div class="bnews small">${esc(last.heis[0].n)}
-    (${esc(last.heis[0].p)}, ${esc(last.heis[0].t)}) won the ${LEAGUE.awards.mvp}.</div>`:"";
-  const mine=(last.allconf&&last.allconf.list||[]).filter(x=>x.team===my);
+  const hz=last.awards.mvp[0]?`<div class="bnews small">${esc(last.awards.mvp[0].n)}
+    (${esc(last.awards.mvp[0].p)}, ${esc(last.awards.mvp[0].t)}) won the ${LEAGUE.awards.mvp}.</div>`:"";
+  const mine=(last.awards.team&&last.awards.team.list||[]).filter(x=>x.team===my);
   const acn=mine.length?`<div class="bnews"><b>All-conference.</b> ${
     mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the
-    All-${esc(LEAGUE.conf.names[last.allconf.conf]||"")} team.</div>`:"";
-  const cm=(last.coordMoves||[]).filter(m=>m.from===my);
+    All-${esc(LEAGUE.conf.names[last.awards.team.group]||"")} team.</div>`:"";
+  const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
     cm.map(m=>esc(m.name)+" ("+m.side.toUpperCase()+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
-  const cmo=(last.coordMoves||[]).filter(m=>m.from!==my).slice(0,2).map(m=>
+  const cmo=(last.coaching.coordMoves||[]).filter(m=>m.from!==my).slice(0,2).map(m=>
     `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${m.side.toUpperCase()},
       hired as head coach at ${esc(m.to)}.</div>`).join("");
-  const bigMoves=(last.poached||[]).slice(0,3).map(p=>
+  const bigMoves=(last.coaching.poached||[]).slice(0,3).map(p=>
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
     <div class="bsub">${esc(last.champion)} won the national title.
-      ${(last.hires||[]).length} programs hired a new head coach.</div>
+      ${(last.coaching.hires||[]).length} programs hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
-      const mine=(last.draft||[]).filter(d=>d.team===my);
+      const mine=(last.league.draft||[]).filter(d=>d.team===my);
       if(!mine.length)return "";
       return `<div class="grouphead">Draft night &mdash; ${last.year}</div>`+
         mine.map(d=>`<div class="drow">

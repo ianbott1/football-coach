@@ -210,7 +210,7 @@ async function save(){
   try{await window.storage.set(KEYFOR(slot),JSON.stringify(S))}catch(e){}
 }
 async function loadSlot(n){
-  try{const r=await window.storage.get(KEYFOR(n));return r?JSON.parse(r.value):null}catch(e){return null}
+  try{const r=await window.storage.get(KEYFOR(n));return r?migrateSave(JSON.parse(r.value)):null}catch(e){return null}
 }
 async function allSlots(){
   const out=[];
@@ -364,26 +364,8 @@ function commitOffseason(){
 /* One coach's year, written into their own book. In a hot seat every coach
    calls this for themselves before the world moves on. */
 function writeSeasonHistory(){
-  const my=S.myTeam, rk=SEA.poll.rankMap();
-  const result=SEA.seasonResult(my);
-  const exp=S.expNow||expectations();
-  const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);
-  const myGames=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
-  const bestWin=myGames.filter(g=>g.winner===my)
-    .sort((x,y)=>(x.home===my?(x.arank||999):(x.hrank||999))-(y.home===my?(y.arank||999):(y.hrank||999)))[0];
-  const bwOpp=bestWin?(bestWin.home===my?bestWin.away:bestWin.home):null;
-  const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
   S.history=S.history||[];
-  S.history.push({
-    card:{conf:LEAGUE.conf.names[CONF[my]]||"",
-      confRec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1],
-      bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
-        score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
-      coach:S.career.name, titles:S.career.titles, seasons:S.history.length+1},
-    year:SEA.year, rec:SEA.rec[my][0]+"-"+SEA.rec[my][1], rank:rk[my]||99,
-    result:result, grade:gr.g, gradeLine:gr.l, team:my,
-    champion:SEA.champion, confChamp:SEA.honours(my).conf
-  });
+  S.history.push(seasonEntry(S.myTeam));
 }
 
 function endSeason(rng,choices,act){
@@ -392,7 +374,7 @@ function endSeason(rng,choices,act){
   const result=SEA.seasonResult(my);
   const teamRows={};
   NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
-  const {confChamps,bowlOf,post,pnote,cfpOf}=SEA.postRecord();
+  const {confChamps,post,pnote,cfpOf}=SEA.postRecord();
   LEAGUE.rivals.record(U,SEA);
   SEA.bankCareers(U);
   if(S.calls){ const keep={}, pre=SEA.year+":";
@@ -402,41 +384,20 @@ function endSeason(rng,choices,act){
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
-  const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);
   const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my]);
-  const myGames=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
-  const bestWin=myGames.filter(g=>g.winner===my)
-    .sort((x,y)=>(x.home===my?(x.arank||999):(x.hrank||999))-(y.home===my?(y.arank||999):(y.hrank||999)))[0];
-  const bwOpp=bestWin?(bestWin.home===my?bestWin.away:bestWin.home):null;
-  const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
-  S.history.push({
-    card:{conf:LEAGUE.conf.names[CONF[my]]||"",
-      confRec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1],
-      bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
-        score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
-      coach:S.career.name, titles:S.career.titles, seasons:S.history.length+1},
-    grade:gr.g,gradeLine:gr.l,miles:miles,exp:exp.t,
-    year:SEA.year,rec:SEA.rec[my][0]+"-"+SEA.rec[my][1],
-    rank:rk[my],champion:SEA.champion,result:result,
-    program:Math.round(U.program[my]),
-    fired:off.fired.indexOf(my)>=0, firedList:off.fired,
-    confChamp:SEA.honours(my).conf,
-    nFired:off.fired.length,
-    teams:teamRows, confChamps:confChamps, bowls:bowlOf, cfp:cfpOf,
-    realigned:off.realigned||[],
-    coordMoves:(off.coordMoves||[]).slice(0,6),
-    draft:(off.draft&&off.draft.picks)?off.draft.picks
-      .filter(d=>d.team===my||d.draft.round<=1)
-      .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
-        early:!!d.early,d:d.draft})):[],
-    post:post, pnote:pnote,
-    heis:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
-    allconf:(function(){const o=SEA.allConfAll(),k=CONF[my];
-      return {conf:k,list:(o[k]||[]).map(x=>({pos:x.pos,team:x.team,n:x.n,r:x.r,c:x.c}))}})(),
-    classes:off.classes||{}, early:off.early||{},
-    coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null,
-    hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
-    top10:SEA.poll.order().slice(0,10)});
+  const entry=seasonEntry(my);
+  S.history.push(Object.assign(entry,{
+    miles:miles, exp:exp.t, program:Math.round(U.program[my]),
+    teams:teamRows, top10:SEA.poll.order().slice(0,10),
+    groupChamps:confChamps, seeds:cfpOf, post:post, pnote:pnote,
+    awards:{mvp:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
+      team:(function(){const o=SEA.allConfAll(),k=CONF[my];
+        return {group:k,list:(o[k]||[]).map(x=>({pos:x.pos,team:x.team,n:x.n,r:x.r,c:x.c}))}})()},
+    coaching:{fired:off.fired.indexOf(my)>=0, firedList:off.fired, nFired:off.fired.length,
+      hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
+      coordMoves:(off.coordMoves||[]).slice(0,6),
+      coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null},
+    league:LEAGUE.historyExtras(SEA,off,my)}));
   S.uStart=snap(U); S.off=null; S.plans={};
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -1442,11 +1403,10 @@ function allTime(t){
     const r=h.teams[t]; if(!r)return;
     w+=r[0]; l+=r[1]; if(r[2]<best)best=r[2];
     if(h.champion===t)titles++;
-    if(h.confChamps&&Object.values(h.confChamps).indexOf(t)>=0)confs++;
-    if(h.cfp&&h.cfp[t])cfp++;
+    if(h.groupChamps&&Object.values(h.groupChamps).indexOf(t)>=0)confs++;
+    if(h.seeds&&h.seeds[t])cfp++;
     if(h.post&&h.post[t]){pw+=h.post[t][0]; pl+=h.post[t][1]}
-    else if(h.bowls&&h.bowls[t]){h.bowls[t][0]==="W"?pw++:pl++}
-    if(h.firedList&&h.firedList.indexOf(t)>=0)coach++;
+    if(h.coaching&&h.coaching.firedList.indexOf(t)>=0)coach++;
   });
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
@@ -1457,18 +1417,12 @@ function allTime(t){
 function seasonRowsFor(t){
   return S.history.map(h=>{
     const r=h.teams[t]||[0,0,999];
-    const seed=h.cfp?h.cfp[t]:null;
-    const bw=h.bowls?h.bowls[t]:null;
-    let res;
-    if(h.pnote&&h.pnote[t])res=h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
-    else if(h.champion===t)res="National champions";
-    else if(seed)res="Playoff, No. "+seed+" seed";
-    else if(bw)res=(bw[0]==="W"?"Won the ":"Lost the ")+bw[1];
-    else res=r[0]>=6?"No bowl":"Losing season";
-    const cc=h.confChamps?Object.keys(h.confChamps).find(c=>h.confChamps[c]===t):null;
+    const seed=h.seeds?h.seeds[t]:null;
+    const res=LEAGUE.seasonLine(h,t,r,seed);
+    const cc=h.groupChamps?Object.keys(h.groupChamps).find(c=>h.groupChamps[c]===t):null;
     return {year:h.year,rec:r[0]+"-"+r[1],rank:r[2],res:res,grade:(t===S.myTeam?h.grade:null),
             champ:h.champion===t,conf:cc?LEAGUE.conf.names[cc]:null,
-            coach:!!(h.firedList&&h.firedList.indexOf(t)>=0)};
+            coach:!!(h.coaching&&h.coaching.firedList.indexOf(t)>=0)};
   }).reverse();
 }
 
@@ -1550,7 +1504,7 @@ function teamCard(t){
   h+=`<div class="grouphead">Season by season</div>`;
   h+=rows.map((r,i)=>{
     const idx=(t===S.myTeam)?(S.history.length-1-i):-1;
-    const has=idx>=0&&S.history[idx]&&S.history[idx].card;
+    const has=idx>=0&&S.history[idx]&&S.history[idx].coach;
     return `<div class="yrow ${r.champ?'gold':''}">
     <span class="yr">${r.year}</span>
     ${r.grade?`<span class="ygrade">${esc(r.grade)}</span>`:""}
@@ -1642,10 +1596,10 @@ function dynastyView(){
         <span class="fcfp">${x.r}</span></div>`).join("");
     }
   }
-  const hw=S.history.filter(x=>x.heis&&x.heis.length);
+  const hw=S.history.filter(x=>x.awards&&x.awards.mvp.length);
   if(hw.length){
     h+=`<div class="grouphead">${LEAGUE.awards.mvp} winners</div>`;
-    h+=hw.slice().reverse().map(x=>{const w=x.heis[0];
+    h+=hw.slice().reverse().map(x=>{const w=x.awards.mvp[0];
       return `<div class="frow ${w.t===my?'mine':''}">
         <span class="sd">${x.year}</span>
         <span class="dot" style="background:${teamColor(w.t)}"></span>
@@ -1654,9 +1608,10 @@ function dynastyView(){
         ${w.line?`<div class="sline2 inrow">${esc(w.line)}</div>`:""}</div>
         <span class="fcfp">${w.r}</span></div>`}).join("");
   }
-  const ac=S.history.length?S.history[S.history.length-1].allconf:null;
+  const lh=S.history.length?S.history[S.history.length-1]:null;
+  const ac=lh&&lh.awards?lh.awards.team:null;
   if(ac&&ac.list&&ac.list.length){
-    h+=`<div class="grouphead">All-${esc(LEAGUE.conf.names[ac.conf]||ac.conf)} &mdash;
+    h+=`<div class="grouphead">All-${esc(LEAGUE.conf.names[ac.group]||ac.group)} &mdash;
       ${S.history[S.history.length-1].year}</div>`;
     h+=ac.list.map(x=>`<div class="frow ${x.team===my?'mine':''}">
       <span class="sd">${esc(x.pos)}</span>
@@ -1672,9 +1627,9 @@ function dynastyView(){
       style="border-left:3px solid ${teamInk(x.champion)}">
       <span class="yr">${x.year}</span>
       <div class="ymain"><div class="yrec">${esc(x.champion)}</div>
-      <div class="yres">${r?r[0]+"-"+r[1]:""}${x.confChamps?" &middot; "+
-        (Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)
-          ?LEAGUE.conf.names[Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)]+" champion"
+      <div class="yres">${r?r[0]+"-"+r[1]:""}${x.groupChamps?" &middot; "+
+        (Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)
+          ?LEAGUE.conf.names[Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)]+" champion"
           :"at-large"):""}</div></div></div>`;
   }).join("");
   const last=S.history[S.history.length-1];

@@ -30,7 +30,11 @@ function load(file) {
   return new Function(js + `
     return { newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
-      NAMES,
+      NAMES, loadCoach, stashCoach,
+      async loadSave(json){ await window.storage.set(KEYFOR(1),json); slot=1;
+        const d=await loadSlot(1); S=d; S.title=false; rebuild(); S.expNow=S.expNow||expectations(); flash=null; render(); },
+      teamPages(){ return NAMES.map(t=>teamCard(t)) },
+      cards(){ return (S.history||[]).map(h=>[seasonCardText(h,h.team||S.myTeam),seasonCardSVG(h,h.team||S.myTeam)]) },
       // draw every tab and sub-tab, so a broken view can't hide off-screen
       allViews(){ const out=[]; const V=[view,teamTab,dynTab,pollTab,postTab];
         const set=(a,b,c,d,e)=>{view=a;teamTab=b;dynTab=c;pollTab=d;postTab=e;flash=null;render();

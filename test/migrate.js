@@ -1,0 +1,39 @@
+/* Old saves: plays careers on a version-1 build (history entries without v),
+   saves after every season, loads each save through the new build's load
+   path, and compares every tab, every team's page and every season card with what the old
+   build draws for the same save. Also checks a migrated entry equals the
+   entry the new build writes natively for the same season.
+     node test/migrate.js <v1 build.html> [new build.html]   last line: MATCH or MISMATCH */
+const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
+const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
+const [oldF,newF=path.join(__dirname,'..','dist','football-coach.html')]=process.argv.slice(2);
+const md5=x=>crypto.createHash('md5').update(x).digest('hex').slice(0,8);
+const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api.live&&!api.live.done&&g++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}}
+  api.openOffseason(); for(let c=0;c<4;c++){const S=api.S;if(!S.off)break;if(S.off.act.userOpen&&S.off.move===null)S.off.move=(S.off.jobs[0]&&S.off.jobs[0].team)||S.myTeam;api.commitOffseason()}};
+(async()=>{
+  let bad=0,checks=0;
+  for(const [team,seed,roster,strip] of [['Alabama',1],['Rice',2024],['Kent State',31337],
+      ['Oregon',777,null,true],                                  // oldest saves: no post/pnote
+      ['Alabama',99,[{team:'Alabama',name:'Coach A'},{team:'Rice',name:'Coach B'}]]]){
+    const O=mk()(oldF), N=mk()(newF); const V=mk()(newF);
+    O.newDynasty(team,seed,'T',roster); N.newDynasty(team,seed,'T',roster);
+    for(let y=0;y<3;y++){
+      play(O); play(N);
+      const save=JSON.parse(JSON.stringify(O.S));
+      if(strip)[save.history].concat((save.coaches||[]).map(c=>c.history)).forEach(H=>(H||[]).forEach(h=>{delete h.post;delete h.pnote}));
+      const js=JSON.stringify(save);
+      // the old build drawing its own save, vs the new build drawing it migrated
+      const R=mk()(oldF); await R.loadSave(js); const want=R.allViews().concat(R.teamPages()), wantC=R.cards();
+      const L=mk()(newF); await L.loadSave(js); const got=L.allViews().concat(L.teamPages()), gotC=L.cards();
+      want.forEach((w,i)=>{checks++;if(w!==got[i]){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`)}});
+      wantC.forEach((w,i)=>{checks++;if(JSON.stringify(w)!==JSON.stringify(gotC[i])){bad++;console.log(`  ${team}#${seed}: card ${i} differs`)}});
+      // migrated entries vs native v2 entries (strip changes content, so skip it there)
+      if(!strip){checks++;const a=JSON.stringify(L.S.history), b=JSON.stringify(N.S.history);
+        if(a!==b){bad++;console.log(`  ${team}#${seed} after ${2026+y}: migrated history != native v2 (${md5(a)} vs ${md5(b)})`)}}
+      if(L.S.history.some(h=>h.v!==2)){bad++;console.log('  unmigrated entry left')}
+    }
+  }
+  console.log(bad?`MISMATCH ${bad} of ${checks} checks`:`MATCH ${checks} of ${checks} checks`);
+  process.exit(bad?1:0);
+})();

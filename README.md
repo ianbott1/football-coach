@@ -59,7 +59,9 @@ the history-book fields (bowls, cfp, heis, allconf) that saves depend on.
     node test/golden.js --check   seeded careers must reproduce test/golden.json
     node test/golden.js           ends MATCH or MISMATCH (exit 1)
     node test/calibrate.js 200    measures the calibration targets below
-    node test/hotseat.js          two coaches, three seasons; compare builds
+    node test/hotseat.js          two coaches, three seasons; MATCH or MISMATCH
+    node test/grades.js           offseason-screen grade vs recorded grade
+    node test/migrate.js <v1.html> old saves load and draw identically
 
 A change meant to alter no behaviour must pass `golden.js --check`. A change
 that is meant to alter behaviour re-records with `--write`, and says why.

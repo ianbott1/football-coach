@@ -329,3 +329,27 @@ LEAGUE.goals={
     return {g:g,l:l};
   }
 };
+
+/* ---- the history book: what only college football records ---- */
+LEAGUE.historyExtras=function(sea,off,my){
+  const bowlOf={}; sea.bowls.forEach(g=>{
+    bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
+  return {id:"cfb", bowls:bowlOf,
+    draft:(off.draft&&off.draft.picks)?off.draft.picks
+      .filter(d=>d.team===my||d.draft.round<=1)
+      .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
+        early:!!d.early,d:d.draft})):[],
+    classes:off.classes||{}, early:off.early||{}, realigned:off.realigned||[]};
+};
+/* a version-1 entry's college-only fields */
+LEAGUE.migrateHistory=function(h){
+  return {id:"cfb", bowls:h.bowls||{}, draft:h.draft||[], classes:h.classes||{},
+          early:h.early||{}, realigned:h.realigned||[]};
+};
+/* one season of a team's history, in a line */
+LEAGUE.seasonLine=function(h,t,r,seed){
+  if(h.pnote&&h.pnote[t])return h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
+  if(h.champion===t)return "National champions";
+  if(seed)return "Playoff, No. "+seed+" seed";
+  return r[0]>=6?"No bowl":"Losing season";
+};
