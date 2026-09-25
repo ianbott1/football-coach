@@ -282,5 +282,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
 
 LEAGUE.offseason={
   newRoster:makeRoster,         // (rng, programElo) -> roster
-  run:offseasonRosters          // (u, rng, healthy, elo, rec, choices) -> report
+  run:offseasonRosters,         // (u, rng, healthy, elo, rec, choices) -> report
+  recruitFocus:RECRUIT_FOCUS,   // the choices offered on the offseason screen
+  budget:{buckets:BUCKETS, pool:budgetPool}
 };

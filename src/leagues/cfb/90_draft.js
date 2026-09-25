@@ -151,3 +151,5 @@ function recordBook(u, team){
   return list;
 }
 
+/* The program record book, as the core's team pages read it. */
+LEAGUE.records={book:recordBook, leaders:programLeaders, alumniLine:alumniLine};

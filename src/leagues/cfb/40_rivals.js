@@ -350,3 +350,10 @@ function lateenRivalries(sched,busy){
   return sched;
 }
 
+/* What the core may ask about rivalries. */
+LEAGUE.rivals={
+  name:rivalryName,             // (a, b) -> "the Iron Bowl" or null
+  series:seriesFor,             // (u, a, b) -> all-time series record
+  record:recordRivalries,       // (u, season) -> bank this season's games
+  of:RIVAL_OF                   // team -> [{o: opponent, ...}]
+};

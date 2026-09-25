@@ -318,7 +318,7 @@ function openOffseason(){
   if(A.staffOpen&&A.staffOpen.dc)staffCands.dc=coordCandidates(rng,U.program[my],"dc",C.rep);
   const jobs=A.userOpen?jobMarket(U,rng,C.rep,A.openJobs,my):[];
   const poach=A.userOpen?[]:poachOffers(U,rng,C.rep,A.openJobs,my);
-  const pool=budgetPool(U,my,SEA.rec[my][0]);
+  const pool=LEAGUE.offseason.budget.pool(U,my,SEA.rec[my][0]);
   S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:pool,staff:staffCands,
     picks:{recruit:"balanced",phil:(U.phil||"balanced"),oc:null,dc:null,
       budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
@@ -330,7 +330,7 @@ function openOffseason(){
 function budgetLeft(){
   if(!S.off)return 0;
   const B=S.off.picks.budget;
-  return S.off.pool-BUCKETS.reduce((s,b)=>s+(B[b.k]||0),0);
+  return S.off.pool-LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0);
 }
 
 function commitOffseason(){
@@ -404,7 +404,7 @@ function endSeason(rng,choices,act){
   const teamRows={};
   NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
   const {confChamps,bowlOf,post,pnote,cfpOf}=SEA.postRecord();
-  recordRivalries(U,SEA);
+  LEAGUE.rivals.record(U,SEA);
   SEA.bankCareers(U);
   if(S.calls){ const keep={}, pre=SEA.year+":";
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
@@ -472,7 +472,7 @@ function gameLine(g,mine){
   if(ups&&best<=25)chips.push(`<span class="chip up">Upset</span>`);
   if(g.neutral&&!g.site&&!g.title)chips.push(`<span class="chip">Neutral</span>`);
   if(g.margin<=3)chips.push(`<span class="chip">One score</span>`);
-  const rv=rivalryName(g.home,g.away);
+  const rv=LEAGUE.rivals.name(g.home,g.away);
   if(rv)chips.push(`<span class="chip riv">${esc(rv)}</span>`);
   return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
     ${side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)}${side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
@@ -737,11 +737,11 @@ function stakesFor(ng){
   const wk=SEA.step, left=LEAGUE.weeks-wk;
   const rec=SEA.rec[my], w=rec[0], l=rec[1];
   const cp=confPosition(my);
-  const riv=rivalryName(my,opp);
+  const riv=LEAGUE.rivals.name(my,opp);
   const out=[];
 
   if(riv){
-    const ser=seriesFor(U,my,opp);
+    const ser=LEAGUE.rivals.series(U,my,opp);
     let extra="";
     if(ser&&ser.streak&&ser.streak.n>=2)
       extra=ser.streak.team===my?` You've won ${ser.streak.n} in a row.`
@@ -1041,8 +1041,8 @@ function nextUpHTML(my,rk){
     const opp=ng.home===my?ng.away:ng.home;
     const wp=winProb(my,opp,ng.home===my,ng.neutral);
     const st=stakesFor(ng);
-    const riv=rivalryName(my,opp);
-    const ser=riv?seriesFor(U,my,opp):null;
+    const riv=LEAGUE.rivals.name(my,opp);
+    const ser=riv?LEAGUE.rivals.series(U,my,opp):null;
     h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>
       <div class="nextcard ${riv?'riv':''}">
       <div class="nlabel">${ng.home===my?"HOME vs":"AWAY at"}</div>
@@ -1079,7 +1079,7 @@ function scheduleHTML(team,compact){
       <span class="steam">Bye week</span><span class="sconf byelbl">${label}</span></div>`);continue}
     const opp=g.home===team?g.away:g.home;
     const rk=SEA.poll.rankMap()[opp];
-    const riv=rivalryName(team,opp);
+    const riv=LEAGUE.rivals.name(team,opp);
     if(played){
       const won=g.winner===team;
       const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
@@ -1227,11 +1227,11 @@ function weekNews(W){
   }
 
   // rivalry, with the series behind it
-  const rivG=gs.filter(g=>rivalryName(g.home,g.away))
+  const rivG=gs.filter(g=>LEAGUE.rivals.name(g.home,g.away))
     .sort((x,y)=>Math.min(x.hrank||999,x.arank||999)-Math.min(y.hrank||999,y.arank||999))[0];
   if(rivG){
-    const nm=rivalryName(rivG.home,rivG.away);
-    const ser=seriesFor(U,rivG.winner,rivG.loser);
+    const nm=LEAGUE.rivals.name(rivG.home,rivG.away);
+    const ser=LEAGUE.rivals.series(U,rivG.winner,rivG.loser);
     let b=`${rivG.winner} keeps ${nm}.`;
     if(ser&&ser.streak&&ser.streak.n>=2)
       b=`${ser.streak.team} has now won ${ser.streak.n} straight in ${nm}.`;
@@ -1745,8 +1745,8 @@ function teamCard(t){
     <div class="progline">Program strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
-  if(U&&U.series&&RIVAL_OF[t]){
-    const rows=RIVAL_OF[t].map(x=>seriesFor(U,t,x.o)?{o:x.o,s:seriesFor(U,t,x.o)}:null)
+  if(U&&U.series&&LEAGUE.rivals.of[t]){
+    const rows=LEAGUE.rivals.of[t].map(x=>LEAGUE.rivals.series(U,t,x.o)?{o:x.o,s:LEAGUE.rivals.series(U,t,x.o)}:null)
                           .filter(Boolean);
     if(rows.length){
       h+=`<div class="grouphead">Rivalries</div>`;
@@ -1761,8 +1761,8 @@ function teamCard(t){
   h+=rosterOf(t);
   h+=`<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(t);
   if(!rows.length)return h+`<div class="note">No completed seasons yet.</div>`;
-  const book=(typeof recordBook==="function"&&U)?recordBook(U,t):[];
-  const leaders=(typeof programLeaders==="function"&&U)?programLeaders(U,t):[];
+  const book=(LEAGUE.records&&U)?LEAGUE.records.book(U,t):[];
+  const leaders=(LEAGUE.records&&U)?LEAGUE.records.leaders(U,t):[];
   if(leaders.length){
     h+=`<div class="grouphead">Career leaders</div>`;
     h+=`<div class="ldwrap">`+leaders.map(L=>`<div class="ldcat">
@@ -1780,7 +1780,7 @@ function teamCard(t){
       <div class="fmain"><div class="fname">${esc(x.n)}
         <span class="dpos">${esc(x.p)}</span>
         ${x.early?`<span class="etag">left early</span>`:""}</div>
-      <div class="fnote">${x.from}&ndash;${x.to} &middot; ${esc(alumniLine(x))}</div></div>
+      <div class="fnote">${x.from}&ndash;${x.to} &middot; ${esc(LEAGUE.records.alumniLine(x))}</div></div>
       <span class="ares ${x.draft?(x.draft.round<=1?'gold':'up'):''}">${
         x.draft?(x.draft.round+"."+String(x.draft.pick).padStart(2,"0")):"\u2013"}</span>
       </div>`).join("");
@@ -2010,7 +2010,7 @@ function weekWeight(w){
   const g=SEA.sched.find(x=>x.week===w&&(x.home===my||x.away===my));
   if(!g)return 0;
   const opp=g.home===my?g.away:g.home;
-  if(rivalryName(my,opp))return 3;
+  if(LEAGUE.rivals.name(my,opp))return 3;
   const rk=SEA.poll.rankMap()[opp];
   if(rk<=25)return 3;
   if(w>=LEAGUE.weeks-3)return 2;
@@ -2145,14 +2145,14 @@ function offseasonScreen(){
       <span class="cgrade">${esc(c.grade)}</span></div></div>`).join("");
   });
   const step=(A.userOpen||S.off.poach.length)?1:0;
-  const B=P.budget, used=BUCKETS.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
+  const B=P.budget, used=LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
   h+=`<div class="grouphead">${step?"2":"1"}. Budget &mdash; ${S.off.pool} to spend</div>`;
   h+=coachMark("budget","You must spend every point. Facilities compound for years but only if you keep the job; retention and development pay off right away.");
   h+=`<div class="note">Every point you put somewhere is a point you didn't put
     somewhere else. Bigger programs and better seasons earn a bigger pool.</div>`;
   h+=`<div class="budgetleft ${left===0?'done':''}">${left>0?left+" unspent":
       left<0?Math.abs(left)+" over budget":"Fully allocated"}</div>`;
-  h+=BUCKETS.map(bk=>`<div class="bud">
+  h+=LEAGUE.offseason.budget.buckets.map(bk=>`<div class="bud">
     <div class="budtop"><div><div class="fname">${esc(bk.l)}</div>
       <div class="cdesc" style="margin-top:3px">${esc(bk.d)}</div></div>
       <div class="budctl">
@@ -2163,9 +2163,9 @@ function offseasonScreen(){
     <div class="budbar"><i style="width:${((B[bk.k]||0)/S.off.pool*100).toFixed(0)}%"></i></div>
   </div>`).join("");
   h+=`<div class="grouphead">${step?"3":"2"}. Recruiting focus</div>`;
-  h+=Object.keys(RECRUIT_FOCUS).map(k=>`<div class="opt ${P.recruit===k?'on':''}" data-rec="${k}">
-    <div class="fname">${esc(RECRUIT_FOCUS[k].l)}</div>
-    <div class="cdesc">${esc(RECRUIT_FOCUS[k].d)}</div></div>`).join("");
+  h+=Object.keys(LEAGUE.offseason.recruitFocus).map(k=>`<div class="opt ${P.recruit===k?'on':''}" data-rec="${k}">
+    <div class="fname">${esc(LEAGUE.offseason.recruitFocus[k].l)}</div>
+    <div class="cdesc">${esc(LEAGUE.offseason.recruitFocus[k].d)}</div></div>`).join("");
 
   h+=`<div class="grouphead">${step?"4":"3"}. Team philosophy</div>`;
   h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
