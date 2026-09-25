@@ -74,7 +74,7 @@ function career(file, team, seed, seasons) {
       rec: h(SEA.rec), poll: h(SEA.poll.order()), heis: h(((SEA.mvpRace||SEA.heisman).call(SEA,10)||[]).map(x=>[x.n,x.t,x.p])),
     };
     screens.push(...api.allViews());
-    api.openOffseason();
+    api.openOffseason(); grab();          // the offseason screen itself
     const S = api.S;
     if (S.off && S.off.act.userOpen && S.off.move === null)
       S.off.move = (S.off.jobs[0] && S.off.jobs[0].team) || S.myTeam;

@@ -1,5 +1,5 @@
 {
- "fp": "535dcaa1d6892664",
+ "fp": "6023e9cb091d21ed",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -19,6 +19,11 @@
    "fp": "535dcaa1d6892664",
    "from": "92fb09906aea2130",
    "note": "golden now also draws every tab and sub-tab (13 screens) mid-season and at season end; recorded on 9cb4058 (after the double-booking fix, before the split)"
+  },
+  {
+   "fp": "6023e9cb091d21ed",
+   "from": "535dcaa1d6892664",
+   "note": "golden now also fingerprints the offseason screen itself (before, only the banner after it); recorded on 3d9b122, before the grading fixes"
   }
  ],
  "result": {
@@ -33,7 +38,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "c56350a5c5370c99",
     "universe": "30444fd05b9c7c85",
-    "screens": "92df8efb9cdd3f89"
+    "screens": "cfee543e4996e689"
    },
    {
     "year": 2027,
@@ -45,7 +50,7 @@
     "heis": "647b43600053d258",
     "history": "03c8405fbcf138bd",
     "universe": "eeeea97c006cb123",
-    "screens": "090e4608c3caa339"
+    "screens": "b12bccbbac5b4fb1"
    },
    {
     "year": 2028,
@@ -57,7 +62,7 @@
     "heis": "1b4004c213bac2a3",
     "history": "d61034b791a2e0a3",
     "universe": "0353593895611441",
-    "screens": "de740139f640abb0"
+    "screens": "a7dfdecd2b6b1a95"
    },
    {
     "year": 2029,
@@ -69,7 +74,7 @@
     "heis": "0018170dd06ef53d",
     "history": "418cc8fb7931e9c2",
     "universe": "eff25a2247064b8a",
-    "screens": "4ef3f032ae563d46"
+    "screens": "49929a15c119ac1a"
    }
   ],
   "Rice#2024": [
@@ -83,7 +88,7 @@
     "heis": "62c67774006ebb20",
     "history": "a15b06e0111c2523",
     "universe": "ff03bc9d76877853",
-    "screens": "560f31a27f1cf128"
+    "screens": "9ae3f3ca5fb6dd06"
    },
    {
     "year": 2027,
@@ -95,7 +100,7 @@
     "heis": "7451222cd507b5b8",
     "history": "8d20ea282516d7c7",
     "universe": "dcce9cac9832036f",
-    "screens": "d5262d05ae205927"
+    "screens": "d1caad155b1dfa41"
    },
    {
     "year": 2028,
@@ -107,7 +112,7 @@
     "heis": "bdc6fbf8638fa62d",
     "history": "c3fa03b370393a7f",
     "universe": "36f4076373d27d15",
-    "screens": "ea511c73f3a8aed5"
+    "screens": "21db849a59cc74c4"
    },
    {
     "year": 2029,
@@ -119,7 +124,7 @@
     "heis": "823516a6499c0628",
     "history": "cb208714fb77998a",
     "universe": "699f10b7d6a7eb9d",
-    "screens": "9d5fec4cad77cad9"
+    "screens": "43c4a8a9fa051601"
    }
   ],
   "Oregon#777": [
@@ -133,7 +138,7 @@
     "heis": "e322cdbd03e4abfa",
     "history": "6a7ded5c532484da",
     "universe": "071bf8a4582fdd04",
-    "screens": "381a7d37d0e14fbf"
+    "screens": "f0f318e24c14a712"
    },
    {
     "year": 2027,
@@ -145,7 +150,7 @@
     "heis": "163ca91d3775b170",
     "history": "7d77f6b289d22601",
     "universe": "9f695559688bb954",
-    "screens": "98303de48a95c084"
+    "screens": "97e28e1fd5524b1b"
    },
    {
     "year": 2028,
@@ -157,7 +162,7 @@
     "heis": "4186b4812676696d",
     "history": "f1bbeaeeeea225c3",
     "universe": "a436c9051ac75692",
-    "screens": "53d6401c8c08c9e4"
+    "screens": "681987c6349d905a"
    }
   ],
   "Kent State#31337": [
@@ -171,7 +176,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "c7037c14cef8325d",
     "universe": "7a6a0871d29561d8",
-    "screens": "aee0bc6fae92b8b2"
+    "screens": "d953bdbacbbff497"
    },
    {
     "year": 2027,
@@ -183,7 +188,7 @@
     "heis": "8ae0e8d313c33b06",
     "history": "26f2d412b807bc48",
     "universe": "dd611a4cde1b95db",
-    "screens": "0fc62be6bc24c04f"
+    "screens": "3444cbb87d459dfc"
    },
    {
     "year": 2028,
@@ -195,7 +200,7 @@
     "heis": "efc1fe877bf238c6",
     "history": "da7497f273347191",
     "universe": "cd5d2d38e3bba675",
-    "screens": "8aa3d9fcd3a846cd"
+    "screens": "81ebdc0f6b2d5bf9"
    }
   ],
   "schedules#60": [
