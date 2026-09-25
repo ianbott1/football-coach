@@ -400,37 +400,10 @@ function writeSeasonHistory(){
 function endSeason(rng,choices,act){
   if(SEA.phase!=="done"||!rng||!act)return;
   const my=S.myTeam, rk=SEA.poll.rankMap();
-  const made=SEA.field.indexOf(my)>=0;
-  let result="Missed the playoff";
-  const bowl=SEA.myBowl(my);
-  if(bowl)result=(bowl.winner===my?"Won the ":"Lost the ")+bowl.title;
-  else if(SEA.field.indexOf(my)<0)result=SEA.rec[my][0]>=6?"Bowl snub":"No bowl game";
-  if(SEA.champion===my)result="NATIONAL CHAMPIONS";
-  else if(made){
-    const lost=[].concat(SEA.rounds.fin,SEA.rounds.sf,SEA.rounds.qf,SEA.rounds.r1)
-      .find(g=>g.loser===my);
-    const R={"National Championship":"Lost the national title game"};
-    result=lost?("Eliminated in the "+(SEA.rounds.fin.indexOf(lost)>=0?"national title game":
-      SEA.rounds.sf.indexOf(lost)>=0?"semifinals":
-      SEA.rounds.qf.indexOf(lost)>=0?"quarterfinals":"first round")):"Made the playoff";
-  }
+  const result=SEA.seasonResult(my);
   const teamRows={};
   NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
-  const confChamps={}; Object.keys(SEA.champs).forEach(c=>confChamps[c]=SEA.champs[c]);
-  const bowlOf={}; SEA.bowls.forEach(g=>{
-    bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
-  const post={}, pnote={};
-  const bump=(t,won)=>{post[t]=post[t]||[0,0]; post[t][won?0:1]++};
-  SEA.bowls.forEach(g=>{
-    bump(g.winner,true); bump(g.loser,false);
-    pnote[g.winner]="Won the "+g.title; pnote[g.loser]="Lost the "+g.title;});
-  [["first round",SEA.rounds.r1],["quarterfinals",SEA.rounds.qf],
-   ["semifinals",SEA.rounds.sf],["national title game",SEA.rounds.fin]]
-   .forEach(([nm,gs])=>gs.forEach(g=>{
-     bump(g.winner,true); bump(g.loser,false);
-     pnote[g.loser]="Playoff \u2014 lost in the "+nm;}));
-  if(SEA.champion)pnote[SEA.champion]="National champions";
-  const cfpOf={}; SEA.field.forEach(t=>cfpOf[t]=SEA.seeds[t]);
+  const {confChamps,bowlOf,post,pnote,cfpOf}=SEA.postRecord();
   recordRivalries(U,SEA);
   SEA.bankCareers(U);
   if(S.calls){ const keep={}, pre=SEA.year+":";
