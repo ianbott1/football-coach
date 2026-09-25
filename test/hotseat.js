@@ -5,7 +5,7 @@ const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const m={exports:{}}; new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
 const h=o=>crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0,16);
-const file=process.argv[2]||path.join(__dirname,'..','dist','football-coach.html');
+const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach.html');
 const api=m.exports.load(file);
 api.newDynasty('Alabama',99,'A',[{team:'Alabama',name:'Coach A'},{team:'Rice',name:'Coach B'}]);
 const out=[];
@@ -26,4 +26,15 @@ for(let y=0;y<3;y++){
     last:c.history&&c.history.length?{rec:c.history[c.history.length-1].rec,result:c.history[c.history.length-1].result,grade:c.history[c.history.length-1].grade}:null,
     book:h(c.history)}))});
 }
-console.log(h(out)); out.forEach(o=>console.log(' ',o.year,o.coaches.map(c=>c.team+' '+(c.last?c.last.rec+' "'+c.last.result+'" '+c.last.grade:'-')).join(' | ')));
+out.forEach(o=>console.log(' ',o.year,o.coaches.map(c=>c.team+' '+(c.last?c.last.rec+' "'+c.last.result+'" '+c.last.grade:'-')).join(' | ')));
+/* Same contract as golden.js: last line is MATCH or MISMATCH. */
+const fp=h(out), REC=path.join(__dirname,'hotseat.json'), args=process.argv.slice(2);
+if(args.includes('--write')){
+  const ni=args.indexOf('--note'), note=ni>=0?args[ni+1]:null;
+  if(!note){console.log('refusing to re-record without --note');console.log('MISMATCH (nothing recorded)');process.exit(1)}
+  const prev=fs.existsSync(REC)?JSON.parse(fs.readFileSync(REC,'utf8')):{};
+  fs.writeFileSync(REC,JSON.stringify({fp,log:(prev.log||[]).concat([{fp,from:prev.fp||null,note}]),out},null,1));
+}
+const want=JSON.parse(fs.readFileSync(REC,'utf8')).fp;
+if(want===fp)console.log('MATCH '+fp);
+else{console.log('MISMATCH '+want+' expected, got '+fp);process.exit(1)}

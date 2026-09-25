@@ -1,0 +1,81 @@
+{
+ "fp": "f9076522cf8ba9ce",
+ "log": [
+  {
+   "fp": "f9076522cf8ba9ce",
+   "from": null,
+   "note": "baseline: two coaches, three seasons; identical on 9cb4058 (pre-split) and the split. Coach A's result line is blank every season (known bug)"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Alabama",
+     "last": {
+      "rec": "10-3",
+      "result": "",
+      "grade": "C+"
+     },
+     "book": "92c1a2a440bf8211"
+    },
+    {
+     "team": "Rice",
+     "last": {
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "B-"
+     },
+     "book": "b5cbc065f455d886"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Alabama",
+     "last": {
+      "rec": "9-4",
+      "result": "",
+      "grade": "C"
+     },
+     "book": "418d0e686da39cbb"
+    },
+    {
+     "team": "Rice",
+     "last": {
+      "rec": "8-5",
+      "result": "Won the Cure Bowl",
+      "grade": "A+"
+     },
+     "book": "d4f3fd02b722191c"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Alabama",
+     "last": {
+      "rec": "10-4",
+      "result": "",
+      "grade": "C+"
+     },
+     "book": "bb3d7bac9d73c154"
+    },
+    {
+     "team": "Rice",
+     "last": {
+      "rec": "7-6",
+      "result": "Won the Frisco Bowl",
+      "grade": "A"
+     },
+     "book": "9df48bff1ffebca4"
+    }
+   ]
+  }
+ ]
+}
