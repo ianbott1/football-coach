@@ -57,6 +57,7 @@ the history-book fields (bowls, cfp, heis, allconf) that saves depend on.
 ## Tests
 
     node test/golden.js --check   seeded careers must reproduce test/golden.json
+    node test/golden.js           ends MATCH or MISMATCH (exit 1)
     node test/calibrate.js 200    measures the calibration targets below
     node test/hotseat.js          two coaches, three seasons; compare builds
 

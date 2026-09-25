@@ -104,22 +104,27 @@ for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
 }
 const fp = h(result);
 const GOLD = path.join(__dirname, 'golden.json');
+/* Every run ends with exactly one verdict line: MATCH or MISMATCH.
+     node test/golden.js [file.html]                    compare with golden.json
+     node test/golden.js [file.html] --write --note "…"  re-record, then compare
+     node test/golden.js [file.html] --dump             print fingerprints, then compare */
+if (args.includes('--dump')) console.log(JSON.stringify(result, null, 1));
 if (args.includes('--write')) {
-  // every re-record says why: node test/golden.js --write --note "reason"
   const ni = args.indexOf('--note'), note = ni >= 0 ? args[ni+1] : null;
-  if (!note) { console.log('refusing to re-record without --note "why behaviour changed"'); process.exit(1); }
+  if (!note) { console.log('refusing to re-record without --note "why behaviour changed"');
+               console.log('MISMATCH (nothing recorded)'); process.exit(1); }
   const prev = fs.existsSync(GOLD) ? JSON.parse(fs.readFileSync(GOLD,'utf8')) : {};
   const log = (prev.log || (prev.fp ? [{fp:prev.fp, note:'recorded from the published build (cf06b22)'}] : []))
     .concat([{fp, from: prev.fp || null, note}]);
-  fs.writeFileSync(GOLD, JSON.stringify({fp, log, result}, null, 1)); console.log('wrote', fp);
+  fs.writeFileSync(GOLD, JSON.stringify({fp, log, result}, null, 1));
+  console.log('recorded', prev.fp || '(none)', '->', fp);
 }
-else if (args.includes('--check')) {
-  const g = JSON.parse(fs.readFileSync(GOLD,'utf8'));
-  if (g.fp === fp) { console.log('MATCH', fp); }
-  else {
-    console.log('MISMATCH', g.fp, '->', fp);
-    for (const k in result) result[k].forEach((s,i) => { for (const f in s)
-      if (JSON.stringify(s[f]) !== JSON.stringify(g.result[k][i][f])) console.log(' ', k, 'season', i+1, f); });
-    process.exit(1);
-  }
-} else console.log(fp, JSON.stringify(result, null, 1).slice(0, 1500));
+const g = JSON.parse(fs.readFileSync(GOLD,'utf8'));
+if (g.fp === fp) { console.log('MATCH ' + fp + '  (' + path.relative(process.cwd(), file) + ')'); }
+else {
+  for (const k in result) result[k].forEach((s,i) => { for (const f in s)
+    if (!g.result[k] || !g.result[k][i] || JSON.stringify(s[f]) !== JSON.stringify(g.result[k][i][f]))
+      console.log('  differs:', k, 'season', i+1, f); });
+  console.log('MISMATCH ' + g.fp + ' expected, got ' + fp + '  (' + path.relative(process.cwd(), file) + ')');
+  process.exit(1);
+}
