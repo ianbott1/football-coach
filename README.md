@@ -1,41 +1,54 @@
 # Football Coach
 
-A college football coaching career simulator. Build a program. Win it all.
+A single-file college football dynasty game. No build dependencies beyond
+Python 3 and (for tests) Node.
 
-**Play it:** https://ianbott.github.io/football-coach/
+## Layout
 
-## What it is
+    src/_head.html        page shell, styles, fonts, favicon
+    src/_tail.html        closing tags
+    src/modules/*.js      the game, in build order (filenames are numbered)
+    build.py              concatenates modules into dist/football-coach.html
+    dist/                 build output — this is the shippable artifact
+    test/                 headless harness and checks
 
-You're the head coach, not the athletic director. You have a job, a record, and a
-seat that gets warm. Miss expectations two years running and you're fired — then
-you pick from whatever programs will still take you.
+## Build
 
-- **132 FBS programs** across all ten conferences, with real 2026 alignment
-- **Ten rated starters per team** who develop, graduate, get hurt, and leave early
-- **A weekly gameplan** — protect a lead or open it up. An underdog going for it
-  roughly doubles its chances; a favourite doing it throws away a win.
-- **An offseason budget** across recruiting, development, facilities and retention.
-  Every point you spend somewhere is a point you didn't spend elsewhere.
-- **A coaching career** — reputation, job offers, firings, and a record that
-  follows you from program to program.
+    python3 build.py
 
-## How the simulation works
+Writes `dist/football-coach.html`. That one file is the whole game: open it in
+a browser, or copy it to a web host as `index.html`.
 
-Team strength is derived from player ratings rather than set by hand. Games are
-decided by the rating gap plus real-world variance, calibrated so favourites win
-about 70% of the time, the mean margin is ~15 points, and roughly one team a year
-finishes the regular season unbeaten.
+## Module order
 
-The public poll is modelled separately from the underlying ratings — voters are
-sticky and punish losses out of proportion, so the poll can be wrong about a team
-for weeks. The playoff field is picked from the poll, not from the ratings.
+Order matters — later modules depend on earlier ones. The numeric prefixes
+give the correct order under plain filename sort.
 
-## Running it
+    10_players        player generation, rosters, development, box scores
+    20_engine         RNG, teams, schedule building, sim, poll, coaches, budget
+    30_schedule2026   the real 2026 schedule (81% of games are the released slate)
+    40_rivals         rivalry definitions and enforcement
+    50_drives         live drive-by-drive engine and in-game decisions
+    60_staff          Two Bears, Pearl, Apprehensive Capybara
+    70_watch          the field graphic and drive chart
+    80_season         Season state machine — weeks, titles, bowls, playoff
+    90_draft          NFL draft and the program record book
+    95_card           shareable season card (SVG -> PNG)
+    99_app            all UI, state, saves, rendering
 
-One self-contained HTML file, no build step and no dependencies.
+## Publishing
 
-```
-open index.html
-```
+    cp dist/football-coach.html <repo>/index.html
+    git add -A && git commit -m "..." && git push
 
-Save data and the shared league table use the host environment's storage API.
+## Calibration targets
+
+Any change to the simulation should be checked against these:
+
+    favourite win rate      ~0.70
+    mean margin             ~15
+    undefeated teams/season ~1
+    talent swing            ~110 Elo
+    home win rate           57-59%
+    points per game         ~54
+    schedule integrity      all zeros
