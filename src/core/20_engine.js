@@ -71,23 +71,8 @@ function syncConf(u){
   else if(u){u.conf={};NAMES.forEach(t=>u.conf[t]=CONF[t])}
 }
 
-/* ============ game sim ============ */
-function simGame(rng,tH,tA,neutral,sdMult,edgeAdj){
-  const edge=tH-tA+(neutral?0:LEAGUE.tuning.hfa)+(edgeAdj||0);
-  let m=Math.round(rng.gauss(edge/ELO_PT,GAME_SD*(sdMult||1)));
-  if(m===0)m=rng.r()<0.5?-3:3;
-  let total=rng.gauss(52,9.5)+Math.abs(m)*0.18;
-  total=Math.max(20,Math.min(95,total));
-  let lo=Math.max(0,Math.round((total-Math.abs(m))/2));
-  let hi=lo+Math.abs(m);
-  // 1 is not a reachable football score
-  if(lo===1)lo=(rng.r()<0.5?0:2);
-  if(hi===1)hi=2;
-  if(hi<=lo)hi=lo+1;
-  if(hi===1)hi=2;
-  m=(m>0?1:-1)*(hi-lo);
-  return m>0?[hi,lo,m]:[lo,hi,m];
-}
+/* ============ Elo ============ */
+/* Games are played by the sport layer's drive engine (playGame). */
 function eloUpdate(eW,eL,mAbs,winHome,neutral){
   const hfa=neutral?0:LEAGUE.tuning.hfa;
   const diff=winHome?(eW+hfa-eL):(eW-eL-hfa);
