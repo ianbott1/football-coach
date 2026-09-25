@@ -435,8 +435,7 @@ function endSeason(rng,choices,act){
     teams:teamRows, top10:SEA.poll.order().slice(0,10),
     groupChamps:confChamps, seeds:cfpOf, post:post, pnote:pnote,
     awards:{mvp:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
-      team:(function(){const o=SEA.allConfAll(),k=CONF[my];
-        return {group:k,list:(o[k]||[]).map(x=>({pos:x.pos,team:x.team,n:x.n,r:x.r,c:x.c}))}})()},
+      team:SEA.awardTeam(my)},
     coaching:{fired:off.fired.indexOf(my)>=0, firedList:off.fired, nFired:off.fired.length,
       hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
       coordMoves:(off.coordMoves||[]).slice(0,6),
@@ -729,40 +728,13 @@ function stakesFor(ng){
   if(l===0&&w>=4)out.push({p:90,tag:"UNBEATEN",
     l:`${w}-0 and counting. A perfect season is still live.`});
 
-  if(wk>=8&&cp){
-    if(cp.pos<=2&&left<=4)out.push({p:88,tag:"TITLE RACE",
-      l:`You sit ${cp.pos===1?"first":"second"} in the ${cp.conf} with ${left} to play &mdash; the championship game is right there.`});
-    else if(cp.pos===3&&left<=4)out.push({p:80,tag:"TITLE RACE",
-      l:`Third in the ${cp.conf}, one spot out of the championship game.`});
-  }
-
-  if(wk>=7){
-    const f=LEAGUE.ui.projectedField();
-    const idx=f.indexOf(my);
-    if(idx>=0)out.push({p:85,tag:"PLAYOFF",
-      l:`You'd be the No. ${idx+1} seed if the season ended today.${idx<4?" That's a first-round bye.":""}`});
-    else{
-      const order=SEA.poll.order();
-      const outs=order.filter(t=>f.indexOf(t)<0);
-      const spot=outs.indexOf(my);
-      if(spot>=0&&spot<6)out.push({p:86,tag:"BUBBLE",
-        l:`${spot===0?"First team out":"Number "+(spot+1)+" out"} of the projected field. You need this one.`});
-    }
-  }
-
-  if(rk[opp]<=10)out.push({p:78,tag:"MARQUEE",
-    l:`A win over No. ${rk[opp]} ${opp} is the kind of result that decides seeding.`});
-  else if(rk[opp]<=25)out.push({p:62,tag:"RANKED",
-    l:`No. ${rk[opp]} ${opp} is a résumé game either way.`});
-
+  out.push(...LEAGUE.ui.stakes({my:my,opp:opp,rk:rk,wk:wk,left:left,w:w,l:l,cp:cp}));
   const st=streakOf(my);
   if(!st.won&&st.n>=3)out.push({p:74,tag:"SLIDE",
     l:`${st.n} straight losses. The seat under your coach is getting warm.`});
   else if(st.won&&st.n>=5)out.push({p:58,tag:"STREAK",
     l:`${st.n} in a row. Nobody wants to be the one who ends it.`});
 
-  if(w===5&&left<=5)out.push({p:70,tag:"BOWL",
-    l:`Win and you're bowl eligible.`});
   if(l>=6)out.push({p:40,tag:"SPOILER",
     l:`Nothing left but pride and a chance to wreck somebody's season.`});
 
@@ -805,7 +777,7 @@ function rosterOf(t){
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
         <div class="pmain"><div class="pname">${esc(p.n)}</div>
-          <div class="psub">${LEAGUE.classes[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
+          <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
         ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`}).join("");
@@ -840,7 +812,7 @@ function rosterView(){
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
     const feat=S.featured===i;
-    const tag=p=>`${LEAGUE.classes[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
+    const tag=p=>`${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
     return `<div class="depth ${inj?'out':''}">
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
@@ -1246,7 +1218,7 @@ function weekNews(W){
   if(SEA.step>=6&&SEA.roster){
     const hz=SEA.mvpRace(2);
     if(hz.length)items.push({p:55,k:"heis",tone:"muted",
-      h:`${LEAGUE.awards.mvp} watch: ${hz[0].n}, ${LEAGUE.classes[hz[0].c]} ${hz[0].p}, ${hz[0].t}`,
+      h:`${LEAGUE.awards.mvp} watch: ${hz[0].n}, ${classTag(hz[0].c)} ${hz[0].p}, ${hz[0].t}`,
       b:`${hz[0].line||""}${hz[1]?" \u00b7 "+hz[1].n+" ("+hz[1].t+") is closest.":""}`});
   }
   items.sort((x,y)=>(y.p||0)-(x.p||0));
@@ -1637,7 +1609,7 @@ function dynastyView(){
         <span class="sd">${i+1}</span>
         <span class="dot" style="background:${teamColor(x.t)}"></span>
         <div class="fmain"><div class="fname">${esc(x.n)}</div>
-        <div class="fnote">${LEAGUE.classes[x.c]} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div>
+        <div class="fnote">${classTag(x.c)} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div>
         ${x.line?`<div class="sline2 inrow">${esc(x.line)}</div>`:""}</div>
         <span class="fcfp">${x.r}</span></div>`).join("");
     }
@@ -1650,23 +1622,23 @@ function dynastyView(){
         <span class="sd">${x.year}</span>
         <span class="dot" style="background:${teamColor(w.t)}"></span>
         <div class="fmain"><div class="fname">${esc(w.n)}</div>
-        <div class="fnote">${LEAGUE.classes[w.c]} ${esc(w.p)} &middot; ${esc(w.t)}</div>
+        <div class="fnote">${classTag(w.c)} ${esc(w.p)} &middot; ${esc(w.t)}</div>
         ${w.line?`<div class="sline2 inrow">${esc(w.line)}</div>`:""}</div>
         <span class="fcfp">${w.r}</span></div>`}).join("");
   }
   const lh=S.history.length?S.history[S.history.length-1]:null;
   const ac=lh&&lh.awards?lh.awards.team:null;
   if(ac&&ac.list&&ac.list.length){
-    h+=`<div class="grouphead">All-${esc(LEAGUE.conf.names[ac.group]||ac.group)} &mdash;
+    h+=`<div class="grouphead">${esc(LEAGUE.awards.teamLabel(ac.group))} &mdash;
       ${S.history[S.history.length-1].year}</div>`;
     h+=ac.list.map(x=>`<div class="frow ${x.team===my?'mine':''}">
       <span class="sd">${esc(x.pos)}</span>
       <span class="dot" style="background:${teamColor(x.team)}"></span>
       <div class="fmain"><div class="fname">${esc(x.n)}</div>
-      <div class="fnote">${LEAGUE.classes[x.c]} &middot; ${esc(x.team)}</div></div>
+      <div class="fnote">${classTag(x.c)} &middot; ${esc(x.team)}</div></div>
       <span class="fcfp">${x.r}</span></div>`).join("");
   }
-  h+=`<div class="grouphead">National champions</div>`;
+  h+=`<div class="grouphead">${LEAGUE.text.champions}</div>`;
   h+=S.history.slice().reverse().map(x=>{
     const r=x.teams[x.champion];
     return `<div class="yrow ${x.champion===my?'gold':''}"
@@ -2134,15 +2106,8 @@ function render(){
     S.off.picks.phil=b.dataset.phil;save();render()});
 }
 
-const TIERS=[
- {max:15, l:"Blue blood",   d:"A playoff berth is the expectation. Miss twice and you're gone.",
-  c:"flag"},
- {max:42, l:"Contender",    d:"Nine wins and a conference push keeps everyone happy.",c:"sod"},
- {max:78, l:"Middle of the pack",d:"Get to a bowl. Beat someone you shouldn't. Good place to learn.",
-  c:"turf",rec:true},
- {max:106,l:"Tough job",    d:"Six wins here is a genuine achievement.",c:"vote"},
- {max:999,l:"Rebuild",      d:"Hard mode. Four wins would be real movement.",c:"muted"}
-];
+const TIERS=LEAGUE.text.tiers;
+function classTag(c){return LEAGUE.classTag?LEAGUE.classTag(c):LEAGUE.classes[c]}
 function tierOf(rank){return TIERS.find(t=>rank<=t.max)}
 
 /* The owl, drawn from the real one: cream face, rust feathering round the eyes,
@@ -2195,36 +2160,7 @@ function owlSVG(cls,withPost){
 }
 const LOGO=owlSVG("logo",true);
 
-const INTRO=[
- {h:"The job is yours until it isn't",
-  b:"You have a record, a program, and a seat that gets warm. Miss expectations two years "+
-    "running and you're fired \u2014 then you pick from whatever will still take you."},
- {h:"Two decisions that matter",
-  b:"<b>Every week</b> you set a gameplan. Playing it safe protects a lead; taking risks is "+
-    "how an underdog steals a game it has no business winning. "+
-    "<b>Every offseason</b> you spend a budget across recruiting, development, facilities and "+
-    "retention \u2014 and you can't fund everything."},
- {h:"Everything carries over",
-  b:"Players graduate and develop. Recruiting classes compound. Facilities you build outlast "+
-    "the season. Programs rise and fall across decades. Your career record follows you "+
-    "wherever you go next."}
-];
-
-const GLOSSARY=[
- ["Program strength","The slow-moving baseline of a school \u2014 resources, recruiting pull, "+
-  "reputation. It moves over years, not weeks, and sets what's expected of you."],
- ["Rating (player)","0\u201399 scale. A starter's rating drives how much he's worth to the team. "+
-  "Quarterbacks matter far more than safeties."],
- ["Ceiling","How good a player can still become. Freshmen have room; seniors usually don't."],
- ["Win probability","Derived from the rating gap plus home field. Your gameplan shifts the "+
-  "spread of outcomes around it, not the average."],
- ["Hot seat","Measured against your program's own expectations, not raw wins. A bad year at a "+
-  "blue blood burns hotter than a bad year at a rebuild."],
- ["Poll vs. reality","Voters are sticky and punish losses out of proportion. The poll can be "+
-  "wrong about you for weeks, and the playoff field is picked from it."],
- ["Reputation","What other programs think of you. Built by beating expectations, worth more at "+
-  "a small school than a big one. It decides which jobs open up when you're fired."]
-];
+const INTRO=LEAGUE.text.intro, GLOSSARY=LEAGUE.text.glossary;
 
 const PRE_RANK=(()=>{const o=LEAGUE.teams.slice().sort((a,b)=>b[1]-a[1]);
   const m={};o.forEach((t,i)=>m[t[0]]=i+1);return m})();

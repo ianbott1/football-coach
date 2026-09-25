@@ -220,5 +220,49 @@ const LEAGUE={
     size:12,
     autoBids:["SEC","B1G","B12","ACC"],    // plus the best autoBidPool champion
     independent:{team:"Notre Dame",withinRank:12,note:"Independent, top-12 bid"}
+  },
+
+  /* words the core shows */
+  text:{
+    champions:"National champions",
+    site:"Football Coach: ianbott1.github.io/football-coach",
+    tiers:[
+ {max:15, l:"Blue blood",   d:"A playoff berth is the expectation. Miss twice and you're gone.",
+  c:"flag"},
+ {max:42, l:"Contender",    d:"Nine wins and a conference push keeps everyone happy.",c:"sod"},
+ {max:78, l:"Middle of the pack",d:"Get to a bowl. Beat someone you shouldn't. Good place to learn.",
+  c:"turf",rec:true},
+ {max:106,l:"Tough job",    d:"Six wins here is a genuine achievement.",c:"vote"},
+ {max:999,l:"Rebuild",      d:"Hard mode. Four wins would be real movement.",c:"muted"}
+],
+    intro:[
+ {h:"The job is yours until it isn't",
+  b:"You have a record, a program, and a seat that gets warm. Miss expectations two years "+
+    "running and you're fired \u2014 then you pick from whatever will still take you."},
+ {h:"Two decisions that matter",
+  b:"<b>Every week</b> you set a gameplan. Playing it safe protects a lead; taking risks is "+
+    "how an underdog steals a game it has no business winning. "+
+    "<b>Every offseason</b> you spend a budget across recruiting, development, facilities and "+
+    "retention \u2014 and you can't fund everything."},
+ {h:"Everything carries over",
+  b:"Players graduate and develop. Recruiting classes compound. Facilities you build outlast "+
+    "the season. Programs rise and fall across decades. Your career record follows you "+
+    "wherever you go next."}
+],
+    glossary:[
+ ["Program strength","The slow-moving baseline of a school \u2014 resources, recruiting pull, "+
+  "reputation. It moves over years, not weeks, and sets what's expected of you."],
+ ["Rating (player)","0\u201399 scale. A starter's rating drives how much he's worth to the team. "+
+  "Quarterbacks matter far more than safeties."],
+ ["Ceiling","How good a player can still become. Freshmen have room; seniors usually don't."],
+ ["Win probability","Derived from the rating gap plus home field. Your gameplan shifts the "+
+  "spread of outcomes around it, not the average."],
+ ["Hot seat","Measured against your program's own expectations, not raw wins. A bad year at a "+
+  "blue blood burns hotter than a bad year at a rebuild."],
+ ["Poll vs. reality","Voters are sticky and punish losses out of proportion. The poll can be "+
+  "wrong about you for weeks, and the playoff field is picked from it."],
+ ["Reputation","What other programs think of you. Built by beating expectations, worth more at "+
+  "a small school than a big one. It decides which jobs open up when you're fired."]
+]
   }
 };

@@ -16,7 +16,7 @@ function seasonCardSVG(h, team){
   const ink   = teamColor(team);
   const ink2  = teamInk ? teamInk(team) : ink;
   const rec   = h.rec || "";
-  const big   = h.champion===team ? "NATIONAL CHAMPIONS"
+  const big   = h.champion===team ? LEAGUE.text.champions.toUpperCase()
               : c.confChampLine ? c.confChampLine
               : (h.honours.group ? (c.conf||"Conference").toUpperCase()+" CHAMPIONS"
               : (h.rank ? "FINISHED No. "+h.rank : (h.result||"")));
@@ -83,11 +83,11 @@ function seasonCardSVG(h, team){
 function seasonCardText(h, team){
   const c={conf:h.group.name, confRec:h.group.rec, bestWin:h.bestWin, coach:h.coach.name};
   const bits=[`${team} ${h.rec} (${c.confRec} ${c.conf})`];
-  if(h.champion===team)bits.push("NATIONAL CHAMPIONS");
+  if(h.champion===team)bits.push(LEAGUE.text.champions.toUpperCase());
   else if(h.honours.group)bits.push(`${c.conf} champions`);
   else if(h.rank)bits.push(`finished No. ${h.rank}`);
   if(c.bestWin)bits.push(`beat ${c.bestWin.rank?"No. "+c.bestWin.rank+" ":""}${c.bestWin.opp} ${c.bestWin.score}`);
-  return `${c.coach}, ${h.year}. ${bits.join(" \u2014 ")}. Football Coach: ianbott1.github.io/football-coach`;
+  return `${c.coach}, ${h.year}. ${bits.join(" \u2014 ")}. ${LEAGUE.text.site}`;
 }
 
 /* Rasterise the SVG to a PNG blob so it can be shared or saved as a real image. */
