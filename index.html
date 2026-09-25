@@ -102,12 +102,48 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--muted);cursor:pointer}
 .setbtn[aria-pressed="true"]{border-color:var(--sodium);color:var(--sodium);
  background:rgba(244,166,58,.1)}
+.pick.taken{opacity:.32;pointer-events:none}
+.handwrap{max-width:520px;margin:0 auto;padding:64px 24px 120px;text-align:center}
+.handlabel{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+ color:var(--vote)}
+.handname{font-family:var(--cond);font-size:26px;font-weight:600;color:var(--muted);margin-top:18px}
+.handteam{font-family:var(--cond);font-size:52px;font-weight:700;text-transform:uppercase;
+ line-height:1.05;margin-top:2px}
+.handrec{font-family:var(--mono);font-size:13px;color:var(--bone);margin-top:10px;letter-spacing:.06em}
+.handnote{font-size:13.5px;color:var(--muted);margin-top:22px;line-height:1.5}
+.whoturn{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--vote);margin-left:10px}
+.conames{display:flex;flex-direction:column;gap:7px;padding:0 16px 10px}
 .cardwrap{max-width:640px;margin:0 auto;padding:16px 16px 96px}
 .cardframe{border:1px solid var(--line);background:#10131C;overflow:hidden}
 .cardframe svg{width:100%;height:auto;display:block}
 .cardacts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
 .cardacts .advance{margin:0}
 .note.center{text-align:center}
+.ldwrap{padding:0 16px}
+.ldcat{margin-bottom:16px}
+.ldlabel{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--sodium);padding:4px 0 6px;border-bottom:1px solid var(--line)}
+.ldrow{display:flex;align-items:baseline;gap:9px;padding:6px 0;
+ border-bottom:1px solid rgba(42,49,69,.4)}
+.ldrow.first .ldname{color:var(--bone);font-weight:600}
+.ldn{font-family:var(--mono);font-size:10px;color:var(--muted);flex:0 0 12px}
+.ldname{flex:1;font-family:var(--cond);font-size:16px;color:#B4BCCB;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ldyr{font-family:var(--mono);font-size:10px;color:var(--muted);flex:0 0 auto}
+.ldv{font-family:var(--mono);font-size:13px;color:var(--bone);flex:0 0 auto;min-width:52px;
+ text-align:right}
+.drow,.arow{display:flex;align-items:center;gap:11px;padding:11px 16px;
+ border-bottom:1px solid rgba(42,49,69,.55)}
+.dpick{font-family:var(--mono);font-size:12px;color:var(--sodium);flex:0 0 42px;
+ letter-spacing:.04em}
+.dovr{font-family:var(--mono);font-size:11px;color:var(--muted);flex:0 0 auto}
+.dpos{font-family:var(--mono);font-size:9px;color:var(--muted);margin-left:6px;
+ letter-spacing:.1em}
+.etag{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--vote);border:1px solid var(--vote);padding:1px 4px;margin-left:6px}
+.ares{font-family:var(--mono);font-size:12px;color:var(--muted);flex:0 0 auto}
+.ares.gold{color:var(--sodium)}.ares.up{color:var(--turf)}
 .ycard{flex:0 0 auto;background:none;border:1px solid var(--line);color:var(--muted);
  font-size:15px;line-height:1;padding:7px 9px;cursor:pointer;border-radius:2px}
 .ycard:hover{border-color:var(--sodium);color:var(--sodium)}
@@ -925,7 +961,9 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
     const pl=roster[i];
     if(!pl)continue;
     if(pl.c>=3){                                   // senior graduates
-      leaving.push({n:pl.n,p:pl.p,r:pl.r,starter:i<POS.length});
+      leaving.push({n:pl.n,p:pl.p,r:pl.r,starter:i<POS.length,
+                    car:pl.car||null, from:pl.from||null, peak:pl.peak||pl.r,
+                    idx:i%POS.length});
       if(i<POS.length){
         // the backup steps up, and a new man arrives behind him
         roster[i]=roster[BK(i)];
@@ -941,6 +979,7 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
       const side=(i%POS.length)<5 ? (staff?staff.oc:0) : (staff?staff.dc:0);
       let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0),3.0);
       pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
+      pl.peak=Math.max(pl.peak||0,pl.r);
       pl.c++;
       // stars leave early for the draft
       let keepOdds=bud?Math.max(0,1-bud.retention):1;
@@ -948,7 +987,8 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
       if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
         const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
         leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured,
-                      starter:i<POS.length});
+                      starter:i<POS.length, car:pl.car||null, from:pl.from||null,
+                      peak:pl.peak||pl.r, idx:i%POS.length});
         if(wasFeatured)u.pipeline=(u.pipeline||0)+1;
         if(i<POS.length){
           roster[i]=roster[BK(i)];
@@ -1933,6 +1973,10 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
 }
 
 function offseasonRosters(u,rng,healthy,elo,rec,choices){
+  /* One human or several: each coached program gets its own choices. */
+  const U_CH = choices.users || (choices.userTeam?{[choices.userTeam]:choices}:{});
+  const chFor = t=>U_CH[t]||null;
+  const leavers={};
   choices=choices||{};
   const risers=[],fallers=[],churn={};
   const ut=choices.userTeam;
@@ -1950,17 +1994,20 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
                  +rng.gauss(0,PROG_NOISE*iscale(u.program[t]));
     u.program[t]=Math.max(P_FLOOR,Math.min(P_CEIL,u.program[t]));
     c.t++;
-    const focus=(t===ut&&choices.recruit)?choices.recruit:"balanced";
-    let devMod=(t===ut&&u.phil&&PHILOSOPHY[u.phil])?PHILOSOPHY[u.phil].dev:0;
+    const ch=chFor(t);
+    const focus=(ch&&ch.recruit)?ch.recruit:"balanced";
+    let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev:0;
     let bud=null;
-    if(t===ut&&choices.budget){
-      bud=applyBudget(u,t,choices.budget);
+    if(ch&&ch.budget){
+      bud=applyBudget(u,t,ch.budget);
       devMod+=bud.devBonus;
       u.program[t]+=bud.facility*0.20;      // facilities lift the program itself
     }
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
-    churn[t]=developRoster(u,t,rng,RECRUIT_FOCUS[focus],devMod,bud,choices.featured,
+    churn[t]=developRoster(u,t,rng,RECRUIT_FOCUS[focus],devMod,bud,
+                           ch?ch.featured:null,
                            {oc:ocq*0.030, dc:dcq*0.030});
+    leavers[t]=churn[t].leaving;
     u.trueBase[t]=rosterElo(u.roster[t])
                  +(c.t<=1?ROOKIE_DIP:0)
                  +rng.gauss(0,ROSTER_NOISE);
@@ -1970,18 +2017,23 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     if(d<-35)fallers.push([t,Math.round(d)]);
   });
 
+  /* Draft night: everyone who left the college game gets sorted out. */
+  const draftResult=runDraft(u,rng,u.year,leavers);
+  recordAlumni(u,u.year,draftResult.pool);
+
   /* Every program signs a class each year, whether or not a freshman starts.
      Quality tracks program pull, the coach's recruiting, and your stated focus. */
   u.classAvg=u.classAvg||{};
   const incoming=[];
   NAMES.forEach(t=>{
     const c=u.coach[t];
-    const focus=(t===ut&&choices.recruit)?RECRUIT_FOCUS[choices.recruit]:RECRUIT_FOCUS.balanced;
+    const ch2=chFor(t);
+    const focus=(ch2&&ch2.recruit)?RECRUIT_FOCUS[ch2.recruit]:RECRUIT_FOCUS.balanced;
     const q=eloToRating(u.program[t])
            +c.q*0.055 +(c.rec||0)*0.55
            +(focus.r||0)*0.45 +(focus.pot||0)*0.12
-           +((t===ut&&choices.budget)?applyBudgetRead(choices.budget).recruitBonus*0.6:0)
-           +((t===ut&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
+           +((ch2&&ch2.budget)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
+           +((ch2&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
            +rng.gauss(0,2.6);
     const signed=6+Math.round(rng.range(0,3));
     incoming.push([t,q,signed]);
@@ -2007,7 +2059,8 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   }
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
-          churn:churn,classes:classes,early:early,realigned:realigned};
+          churn:churn,classes:classes,early:early,realigned:realigned,
+          draft:draftResult};
 }
 
 /* ============ the real 2026 schedule ============ */
@@ -3723,7 +3776,7 @@ const BEAR_YELL={
           `Build us a statue at halftime. We'll wait.`,
           `We have notes. None of them are useful.`],
   distracted:[`CHOCOLATE CAKE!`,
-          `Sorry \u2014 what did we do?`,
+          `What did we do?`,
           `COOKIES AND CREAM!`,
           `Is there chocolate cake after? There should be chocolate cake after.`,
           `What did we do? Did we do something? Was it us?`,
@@ -3735,7 +3788,7 @@ const BEAR_YELL={
 /* Pearl is a dog roughly one time in six. Unlike the Bears, her advice
    survives it — the dog bit wraps the read rather than replacing it, so you
    never lose the balanced opinion just because a squirrel went past. */
-const PEARL_BEFORE=[`Woof! `,`SQUIRREL \u2014 sorry. `,`Ooh, ooh, ooh! `,
+const PEARL_BEFORE=[`Woof! `,`SQUIRREL. `,`Ooh, ooh, ooh! `,
   `Was that the treat bag? ... Anyway. `,`Someone's at the door! ... No. False alarm. `];
 const PEARL_AFTER=[` Woof!`,` (Tail going. Very hard.)`,` Can we go outside after?`,
   ` Also, is it dinner? It smells like dinner.`,` I'm going to spin in a circle about this.`,
@@ -4232,11 +4285,12 @@ class Season{
     const plan=PLANS[this.plan]?this.plan:"balanced";
     // a game already played out live: match on the user's team so the ordering
     // a round happens to use can never lose the result
-    const F0=this.forced;
-    const hit = F0 && (a===F0.team||b===F0.team) &&
-                (a===F0.other||b===F0.other);
-    if(hit){
-      const F=this.forced; this.forced=null;
+    const list=this.forcedList||(this.forced?[this.forced]:[]);
+    const fi=list.findIndex(F=>(a===F.team||b===F.team)&&(a===F.other||b===F.other));
+    if(fi>=0){
+      const F=list[fi];
+      list.splice(fi,1);
+      this.forcedList=list; this.forced=null;
       const userScore = F.mine, oppScore = F.theirs;
       let fh = (a===F.team)?userScore:oppScore;
       let fa = (a===F.team)?oppScore:userScore;
@@ -4491,6 +4545,25 @@ class Season{
     });
     return out;
   }
+  /* Fold this season's numbers into every player's career line. */
+  bankCareers(u){
+    // the season's box scores live on this Season's roster copy; the careers
+    // they feed belong to the universe's roster, so read one and write the other
+    if(!u.roster||!this.roster)return;
+    NAMES.forEach(t=>{
+      const live=this.roster[t]||[], keep=u.roster[t]||[];
+      keep.forEach((pl,i)=>{
+        if(!pl)return;
+        if(pl.from===undefined||pl.from===null)pl.from=this.year-(pl.c||0);
+        pl.peak=Math.max(pl.peak||0,pl.r||0);
+        const src=live[i];
+        if(!src||!src.st2||src.n!==pl.n)return;      // same man, same slot
+        if(!pl.car){pl.car=blankStats(POS[i%POS.length].p); pl.car.yrs=0}
+        addStats(pl.car,src.st2);
+        pl.car.yrs=(pl.car.yrs||0)+1;
+      });
+    });
+  }
   healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*NW);return h}
   myGame(team,wk){
     const W=this.weeks[wk]; if(!W)return null;
@@ -4608,6 +4681,25 @@ class Season{
     });
     return out;
   }
+  /* Fold this season's numbers into every player's career line. */
+  bankCareers(u){
+    // the season's box scores live on this Season's roster copy; the careers
+    // they feed belong to the universe's roster, so read one and write the other
+    if(!u.roster||!this.roster)return;
+    NAMES.forEach(t=>{
+      const live=this.roster[t]||[], keep=u.roster[t]||[];
+      keep.forEach((pl,i)=>{
+        if(!pl)return;
+        if(pl.from===undefined||pl.from===null)pl.from=this.year-(pl.c||0);
+        pl.peak=Math.max(pl.peak||0,pl.r||0);
+        const src=live[i];
+        if(!src||!src.st2||src.n!==pl.n)return;      // same man, same slot
+        if(!pl.car){pl.car=blankStats(POS[i%POS.length].p); pl.car.yrs=0}
+        addStats(pl.car,src.st2);
+        pl.car.yrs=(pl.car.yrs||0)+1;
+      });
+    });
+  }
   healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*NW);return h}
   myGame(team,wk){
     const W=this.weeks[wk]; if(!W)return null;
@@ -4618,6 +4710,165 @@ class Season{
     return g||null;
   }
   /* What the user's team faces next once the regular season is over. */
+}
+
+/* ============ draft night and the record book ============ */
+/* Four years of development should end somewhere. Players who leave get a
+   permanent entry in the program's record book, and the good ones get drafted
+   in front of everybody. */
+
+const NFL_TEAMS=["Arizona","Atlanta","Baltimore","Buffalo","Carolina","Chicago",
+  "Cincinnati","Cleveland","Dallas","Denver","Detroit","Green Bay","Houston",
+  "Indianapolis","Jacksonville","Kansas City","Las Vegas","LA Chargers","LA Rams",
+  "Miami","Minnesota","New England","New Orleans","NY Giants","NY Jets",
+  "Philadelphia","Pittsburgh","San Francisco","Seattle","Tampa Bay","Tennessee",
+  "Washington"];
+
+const DRAFT_ROUNDS=7, PICKS_PER_ROUND=32;
+
+/* How good a prospect looks: what he is, plus what he did. */
+function prospectScore(d, rng){
+  const prod = d.car ? statProd(d.p, d.car) : 0;
+  const yrs  = (d.car && d.car.yrs) ? d.car.yrs : 1;
+  const perYr = prod / Math.max(1, yrs);
+  const early = d.early ? 6 : 0;              // leaving early signals confidence
+  const start = d.starter ? 4 : 0;
+  return (d.peak||d.r)*0.82 + perYr*0.16 + early + start + rng.gauss(0,9.5);
+}
+
+/* Run the draft across every departing player in the country. */
+function runDraft(u, rng, year, leavers){
+  const pool=[];
+  Object.keys(leavers).forEach(team=>{
+    leavers[team].forEach(d=>pool.push(Object.assign({team:team},d)));
+  });
+  pool.forEach(d=>{d.score=prospectScore(d,rng)});
+  pool.sort((a,b)=>b.score-a.score);
+
+  const order=rng.shuffle(NFL_TEAMS.slice());
+  const picks=[];
+  const total=DRAFT_ROUNDS*PICKS_PER_ROUND;
+  for(let i=0;i<Math.min(total,pool.length);i++){
+    const d=pool[i];
+    const round=Math.floor(i/PICKS_PER_ROUND)+1;
+    const inRound=(i%PICKS_PER_ROUND)+1;
+    d.draft={round:round, pick:inRound, overall:i+1,
+             nfl:order[(i+round)%order.length], year:year};
+    picks.push(d);
+  }
+  pool.slice(total).forEach(d=>{d.draft=null});
+  return {picks:picks, pool:pool};
+}
+
+/* Everyone who left, drafted or not, goes into the record book for good. */
+function recordAlumni(u, year, pool){
+  u.alumni=u.alumni||{};
+  pool.forEach(d=>{
+    const t=d.team;
+    if(!t)return;
+    const rec={
+      n:d.n, p:d.p, from:d.from!==null&&d.from!==undefined?d.from:(year-((d.car&&d.car.yrs)||1)),
+      to:year, peak:d.peak||d.r, yrs:(d.car&&d.car.yrs)||1,
+      early:!!d.early, featured:!!d.featured, draft:d.draft||null
+    };
+    // keep the finished sentence rather than the whole stat object: a record
+    // book of 132 programs over 40 seasons has to stay small enough to save
+    rec.line=alumniLine({p:d.p,car:d.car,yrs:rec.yrs});
+    u.alumni[t]=u.alumni[t]||[];
+    // over decades the name generator repeats itself; a program that produces
+    // two Brock Guillorys gets a second-generation one rather than a duplicate
+    let suffix=0;
+    while(u.alumni[t].some(x=>x.n===rec.n)){
+      suffix++;
+      rec.n = d.n + (suffix===1?" II":suffix===2?" III":" "+(suffix+1));
+    }
+    u.alumni[t].push(rec);
+    const cap=u.alumni[t];
+    if(cap.length>40){
+      cap.sort((a,b)=>{
+        const ad=a.draft?a.draft.overall:9999, bd=b.draft?b.draft.overall:9999;
+        return ad-bd || b.peak-a.peak;
+      });
+      cap.length=40;                         // the 40 most notable stay for good
+    }
+  });
+}
+
+/* A one-line career summary from the accumulated stat line. */
+function alumniLine(a){
+  if(a.line)return a.line;
+  const c=a.car; if(!c)return `${a.yrs} season${a.yrs===1?"":"s"}`;
+  const P=a.p, n=x=>(x||0).toLocaleString();
+  if(P==="QB")   return `${n(c.pyd)} yds, ${c.ptd||0} TD, ${c.int||0} INT`;
+  if(P==="RB")   return `${n(c.ryd)} rush yds, ${c.rtd||0} TD`;
+  if(P==="WR"||P==="WR2") return `${c.rec||0} catches, ${n(c.cyd)} yds, ${c.ctd||0} TD`;
+  if(P==="EDGE"||P==="DT") return `${c.sck||0} sacks, ${c.tkl||0} tackles`;
+  if(P==="LB")   return `${c.tkl||0} tackles, ${c.tfl||0} for loss`;
+  if(P==="CB"||P==="S") return `${c.ints||0} INT, ${c.pd||0} passes defended`;
+  if(P==="OT")   return `${c.ska||0} sacks allowed in ${a.yrs} season${a.yrs===1?"":"s"}`;
+  return `${a.yrs} season${a.yrs===1?"":"s"}`;
+}
+
+function draftLabel(d){
+  if(!d)return "Undrafted";
+  if(d.overall===1)return `No. 1 overall, ${d.nfl}`;
+  return `Round ${d.round}, pick ${d.pick} \u2014 ${d.nfl}`;
+}
+
+/* Career leaders in the categories people actually argue about. */
+const LEADER_CATS=[
+  {k:"pyd", label:"Passing yards",   pos:["QB"]},
+  {k:"ptd", label:"Passing TD",      pos:["QB"]},
+  {k:"ryd", label:"Rushing yards",   pos:["RB"]},
+  {k:"rtd", label:"Rushing TD",      pos:["RB"]},
+  {k:"cyd", label:"Receiving yards", pos:["WR","WR2"]},
+  {k:"rec", label:"Receptions",      pos:["WR","WR2"]},
+  {k:"tkl", label:"Tackles",         pos:["EDGE","DT","LB","CB","S"]},
+  {k:"sck", label:"Sacks",           pos:["EDGE","DT"]},
+  {k:"ints",label:"Interceptions",   pos:["CB","S"]}
+];
+
+/* Alumni only keep a finished sentence, so the numbers are parsed back out of
+   it. Cheap, and it keeps the save small. */
+function leaderValue(a, cat){
+  if(!a.line)return 0;
+  const L=a.line;
+  const grab=re=>{const m=L.match(re); return m?+m[1].replace(/,/g,""):0};
+  switch(cat.k){
+    case "pyd": return grab(/([\d,]+) yds,/);
+    case "ptd": return grab(/([\d,]+) TD/);
+    case "ryd": return grab(/([\d,]+) rush yds/);
+    case "rtd": return grab(/rush yds, ([\d,]+) TD/);
+    case "cyd": return grab(/catches, ([\d,]+) yds/);
+    case "rec": return grab(/([\d,]+) catches/);
+    case "tkl": return grab(/([\d,]+) tackles/);
+    case "sck": return grab(/([\d,]+) sacks/);
+    case "ints":return grab(/([\d,]+) INT/);
+  }
+  return 0;
+}
+
+function programLeaders(u, team){
+  const list=(u.alumni&&u.alumni[team])?u.alumni[team]:[];
+  const out=[];
+  LEADER_CATS.forEach(cat=>{
+    const pool=list.filter(a=>cat.pos.indexOf(a.p)>=0)
+      .map(a=>({a:a, v:leaderValue(a,cat)}))
+      .filter(x=>x.v>0)
+      .sort((x,y)=>y.v-x.v);
+    if(pool.length)out.push({label:cat.label, top:pool.slice(0,3)});
+  });
+  return out;
+}
+
+/* The best players a program has ever produced. */
+function recordBook(u, team){
+  const list=(u.alumni&&u.alumni[team])?u.alumni[team].slice():[];
+  list.sort((a,b)=>{
+    const ad=a.draft?a.draft.overall:9999, bd=b.draft?b.draft.overall:9999;
+    return ad-bd || b.peak-a.peak;
+  });
+  return list;
 }
 
 /* ============ the season card ============ */
@@ -4759,8 +5010,42 @@ let slot=1;
 const KEYFOR=n=>KEYBASE+"-slot"+n;
 let S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,plans:{}};
 let plan="balanced", reveal=null, revealTimer=null;
+/* ---- hot seat ----
+   Several people can share one save, each coaching their own program in the
+   same world. Only one is "active" at a time: their state is swapped onto S so
+   the rest of the game needs no changes at all. */
+const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured",
+                    "history","expNow"];
+
+function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
+function isHotSeat(){ return coachCount()>1 }
+function activeCoach(){ return (S.coaches&&S.coaches[S.turn||0])||null }
+
+function stashCoach(){
+  if(!S.coaches)return;
+  const c=S.coaches[S.turn||0]; if(!c)return;
+  COACH_FIELDS.forEach(k=>{c[k]=S[k]});
+}
+function loadCoach(i){
+  if(!S.coaches||!S.coaches[i])return;
+  S.turn=i;
+  COACH_FIELDS.forEach(k=>{S[k]=S.coaches[i][k]});
+  if(!S.history)S.history=[];
+}
+/* Old single-coach saves become a one-man hot seat. */
+function ensureCoaches(){
+  if(S.coaches&&S.coaches.length)return;
+  S.coaches=[{}]; S.turn=0;
+  COACH_FIELDS.forEach(k=>{S.coaches[0][k]=S[k]});
+}
+
 let live=null;          // a game being played out right now
+let handoff=false;      // showing the "pass the device" screen
 let owlTaps=0;
+
+/* Answers belong to a season as well as a week. Keyed by step alone, season
+   three replays season one's decisions and silently answers everything. */
+function callKey(step,year){ return (year||SEA.year)+":"+step; }
 
 function liveSeed(step){
   return ((S.seasonSeed^0x9E37)+step*7919)>>>0;
@@ -4776,7 +5061,7 @@ function startLive(g,step){
         drives:[], ask:null, done:false,
         paused:(S.watchStep===true), userIsHome:userIsHome};
   // replay any answers already recorded for this week
-  live.replay=((S.calls&&S.calls[String(step)])||[]).slice();
+  live.replay=((S.calls&&S.calls[callKey(step)])||[]).slice();
   live.ri=0;
   reveal=null; watch=null;
   liveTick();
@@ -4818,7 +5103,7 @@ function liveGap(){
 }
 function answerLive(v){
   S.calls=S.calls||{};
-  const k=String(live.step);
+  const k=callKey(live.step);
   S.calls[k]=(S.calls[k]||[]).concat([v]);
   live.replay.push(v); live.ri=live.replay.length;
   live.eng.reply(v);
@@ -4828,20 +5113,36 @@ function answerLive(v){
 function finishLive(){
   const g=live.g;
   const meHome=(g.home===S.myTeam);
-  SEA.forced={team:S.myTeam, other:(meHome?g.away:g.home),
+  SEA.forcedList=SEA.forcedList||[];
+  SEA.forcedList.push({team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
-              drives:live.drives};
+              drives:live.drives});
   const step=live.step;
   live.result={hp:live.eng.h,ap:live.eng.a,
                mine:(g.home===S.myTeam?live.eng.h:live.eng.a)};
+  // in a hot seat, hand over before the week is resolved
+  if(isHotSeat() && (S.turn||0) < coachCount()-1){
+    stashCoach();
+    live=null; plan="balanced";
+    loadCoach((S.turn||0)+1);
+    handoff=true; save(); render(); return;
+  }
+  resolveWeek(step);
+}
+
+/* Everyone has had their turn: play out the rest of the league. */
+function resolveWeek(step){
+  SEA.userTeam=S.myTeam;
   SEA.advance();
-  SEA.forced=null;                     // consumed, or the matchup changed
+  SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   plan="balanced";
   flash={type:"week",step:step};
+  if(isHotSeat()){ stashCoach(); loadCoach(0) }
   save(); render();
 }
+
 function endLive(){
   if(live&&live.timer)clearTimeout(live.timer);
   if(live&&!live.done){                        // skip: run the rest instantly
@@ -4850,7 +5151,7 @@ function endLive(){
       const r=live.eng.next();
       if(r.done)break;
       if(r.ask){ live.eng.reply(r.ask.opts[0][0]);
-        S.calls=S.calls||{};const k=String(live.step);
+        S.calls=S.calls||{};const k=callKey(live.step);
         S.calls[k]=(S.calls[k]||[]).concat([r.ask.opts[0][0]]); continue }
       live.drives.push(r.drive);
     }
@@ -4902,7 +5203,7 @@ function rebuild(){
   for(let i=0;i<S.steps;i++){
     if(S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
     if(S.fires&&S.fires[i])S.fires[i].forEach(sd=>SEA.fireCoordinator(S.myTeam,sd));
-    const ans=(S.calls&&S.calls[String(i)])||[]; let ai=0;
+    const ans=(S.calls&&S.calls[callKey(i,SEA.year)])||[]; let ai=0;
     SEA.decideHook=ans.length?(()=>ans[ai++]||"normal"):null;
     SEA.plan=(S.plans&&S.plans[i])||"balanced";
     SEA.advance();
@@ -4929,15 +5230,25 @@ async function allSlots(){
 
 const COACH_FIRST=["Ray","Mack","Dabo","Kirby","Lane","Deion","Marcus","Hugh","Bronco",
 "Kalani","Sonny","Jimbo","Willie","Herm","Brent","Curt","Vic","Sherrone","Fran","Bo"];
-function newDynasty(team,seed,coachName){
+function newDynasty(team,seed,coachName,roster){
   const rng0=new RNG(seed^0x5f3a);
-  S={myTeam:team,seed:seed,uStart:null,seasonSeed:0,steps:0,history:[],origProgram:null,
-     career:{name:coachName||(rng0.pick(COACH_FIRST)+" "+rng0.pick(LAST)),
-             rep:0,w:0,l:0,titles:0,confs:0,fired:0,
-             stops:[{team:team,from:2026,w:0,l:0,titles:0}]}};
+  const people = (roster&&roster.length) ? roster
+    : [{team:team, name:coachName||(rng0.pick(COACH_FIRST)+" "+rng0.pick(LAST))}];
+  const mk=(p)=>({
+    myTeam:p.team,
+    career:{name:p.name||(rng0.pick(COACH_FIRST)+" "+rng0.pick(LAST)),
+            rep:0,w:0,l:0,titles:0,confs:0,fired:0,
+            stops:[{team:p.team,from:2026,w:0,l:0,titles:0}]},
+    plans:{}, calls:{}, promos:{}, fires:{}, featured:null, history:[], expNow:null
+  });
+  S={seed:seed,uStart:null,seasonSeed:0,steps:0,origProgram:null,
+     coaches:people.map(mk), turn:0};
+  COACH_FIELDS.forEach(k=>{S[k]=S.coaches[0][k]});
   const u=newUniverse(seed); syncConf(u);
-  u.coach[team]={id:0,n:S.career.name,q:0,t:0,hired:true,you:true,
-                 w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
+  S.coaches.forEach(c=>{
+    u.coach[c.myTeam]={id:0,n:c.career.name,q:0,t:0,hired:true,you:true,
+                       w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
+  });
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -4950,6 +5261,9 @@ function doAdvance(){
   const ph=SEA.phase;
   S.plans=S.plans||{}; S.plans[before]=plan;
   if(live&&live.done)live=null;               // last game is over; don't block the next
+  ensureCoaches();
+  SEA.userTeam=S.myTeam;
+  SEA.featured=(S.featured===undefined?null:S.featured);
   SEA.plan=plan;
   const ug=(SEA.phase==="week")?SEA.nextGame(S.myTeam)
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
@@ -4958,9 +5272,19 @@ function doAdvance(){
     startLive(ug, before);
     return;                                    // the game is played in the viewer
   }
+  // no live game to play (a bye, or watching turned off): still hand over
+  if(isHotSeat() && (S.turn||0) < coachCount()-1){
+    S.plans[before]=plan;
+    stashCoach(); live=null; plan="balanced";
+    loadCoach((S.turn||0)+1);
+    handoff=true; save(); render(); return;
+  }
+  SEA.userTeam=S.myTeam;
   SEA.advance();
+  SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   plan="balanced";
+  if(isHotSeat()){ stashCoach(); loadCoach(0) }
   if(ph==="selection")postTab="field";
   else if(ph==="bowls")postTab="bowls";
   else if(ph==="r1"||ph==="qf"||ph==="sf"||ph==="final")postTab="bracket";
@@ -4978,6 +5302,7 @@ function doAdvance(){
 function openOffseason(){
   if(SEA.phase!=="done")return;
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
+  if(S.off&&S.off.year===SEA.year)return;      // already booked this coach
   recordCoaches(U,SEA.rec,SEA.champion,SEA.champs,SEA.year);
   const A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,S.myTeam);
   const my=S.myTeam, C=S.career;
@@ -4999,7 +5324,7 @@ function openOffseason(){
   const jobs=A.userOpen?jobMarket(U,rng,C.rep,A.openJobs,my):[];
   const poach=A.userOpen?[]:poachOffers(U,rng,C.rep,A.openJobs,my);
   const pool=budgetPool(U,my,SEA.rec[my][0]);
-  S.off={act:A,jobs:jobs,poach:poach,move:null,pool:pool,staff:staffCands,
+  S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:pool,staff:staffCands,
     picks:{recruit:"balanced",phil:(U.phil||"balanced"),oc:null,dc:null,
       budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
               facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}},
@@ -5037,10 +5362,44 @@ function commitOffseason(){
       if(side==="oc")U.oc[S.myTeam]=pick; else U.dc[S.myTeam]=pick;
     }
   });
-  endSeason(rng,{userTeam:S.myTeam,coach:null,
+  S.pending=S.pending||{};
+  S.pending[S.myTeam]={recruit:P.recruit, phil:P.phil, budget:P.budget,
+                       featured:(S.featured===undefined?null:S.featured)};
+  if(isHotSeat() && (S.turn||0) < coachCount()-1){
+    writeSeasonHistory();                       // this coach's year, in their book
+    stashCoach(); loadCoach((S.turn||0)+1);
+    S.off=null; handoff=true; openOffseason(); save(); render(); return;
+  }
+  const users=S.pending; S.pending=null;
+  endSeason(rng,{userTeam:S.myTeam,users:users,coach:null,
     recruit:P.recruit, phil:P.phil, budget:P.budget,
     featured:(S.featured!==undefined?S.featured:null)}, A);
   S.featured=null;
+}
+
+/* One coach's year, written into their own book. In a hot seat every coach
+   calls this for themselves before the world moves on. */
+function writeSeasonHistory(){
+  const my=S.myTeam, rk=SEA.poll.rankMap();
+  const result=SEA.resultLine?SEA.resultLine(my):"";
+  const exp=S.expNow||expectations();
+  const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);
+  const myGames=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
+  const bestWin=myGames.filter(g=>g.winner===my)
+    .sort((x,y)=>(x.home===my?(x.arank||999):(x.hrank||999))-(y.home===my?(y.arank||999):(y.hrank||999)))[0];
+  const bwOpp=bestWin?(bestWin.home===my?bestWin.away:bestWin.home):null;
+  const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
+  S.history=S.history||[];
+  S.history.push({
+    card:{conf:CONF_NAMES[CONF[my]]||"",
+      confRec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1],
+      bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
+        score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
+      coach:S.career.name, titles:S.career.titles, seasons:S.history.length+1},
+    year:SEA.year, rec:SEA.rec[my][0]+"-"+SEA.rec[my][1], rank:rk[my]||99,
+    result:result, grade:gr.g, gradeLine:gr.l, team:my,
+    champion:SEA.champion, confChamp:Object.keys(SEA.champs).some(c=>SEA.champs[c]===my)
+  });
 }
 
 function endSeason(rng,choices,act){
@@ -5078,6 +5437,10 @@ function endSeason(rng,choices,act){
   if(SEA.champion)pnote[SEA.champion]="National champions";
   const cfpOf={}; SEA.field.forEach(t=>cfpOf[t]=SEA.seeds[t]);
   recordRivalries(U,SEA);
+  SEA.bankCareers(U);
+  if(S.calls){ const keep={}, pre=SEA.year+":";
+    Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
+    S.calls=keep; }
   if(U.coach[S.myTeam])U.coach[S.myTeam].q=Math.round(Math.max(-40,Math.min(60,S.career.rep*0.62)));
   const B=offseasonRosters(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
@@ -5105,6 +5468,10 @@ function endSeason(rng,choices,act){
     teams:teamRows, confChamps:confChamps, bowls:bowlOf, cfp:cfpOf,
     realigned:off.realigned||[],
     coordMoves:(off.coordMoves||[]).slice(0,6),
+    draft:(off.draft&&off.draft.picks)?off.draft.picks
+      .filter(d=>d.team===my||d.draft.round<=1)
+      .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
+        early:!!d.early,d:d.draft})):[],
     post:post, pnote:pnote,
     heis:(SEA.heisman(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
     allconf:(function(){const o=SEA.allConfAll(),k=CONF[my];
@@ -5191,7 +5558,7 @@ function driveScript(g,drives){
       h:d.h, a:d.a};
   });
 }
-const SPEEDS=[["slow",0.5,"Slow"],["normal",1,"Normal"],["fast",1.9,"Fast"],["rapid",3.4,"Very fast"]];
+const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],["rapid",2.1,"Very fast"]];
 function speedMult(){
   const k=S.watchSpeed||"normal";
   const f=SPEEDS.find(s=>s[0]===k);
@@ -6424,6 +6791,31 @@ function teamCard(t){
   h+=rosterOf(t);
   h+=`<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(t);
   if(!rows.length)return h+`<div class="note">No completed seasons yet.</div>`;
+  const book=(typeof recordBook==="function"&&U)?recordBook(U,t):[];
+  const leaders=(typeof programLeaders==="function"&&U)?programLeaders(U,t):[];
+  if(leaders.length){
+    h+=`<div class="grouphead">Career leaders</div>`;
+    h+=`<div class="ldwrap">`+leaders.map(L=>`<div class="ldcat">
+      <div class="ldlabel">${esc(L.label)}</div>
+      ${L.top.map((x,i)=>`<div class="ldrow ${i===0?'first':''}">
+        <span class="ldn">${i+1}</span>
+        <span class="ldname">${esc(x.a.n)}</span>
+        <span class="ldyr">${x.a.to}</span>
+        <span class="ldv">${x.v.toLocaleString()}</span></div>`).join("")}
+    </div>`).join("")+`</div>`;
+  }
+  if(book.length){
+    h+=`<div class="grouphead">Record book &mdash; ${book.length} played and left</div>`;
+    h+=book.slice(0,12).map(x=>`<div class="arow">
+      <div class="fmain"><div class="fname">${esc(x.n)}
+        <span class="dpos">${esc(x.p)}</span>
+        ${x.early?`<span class="etag">left early</span>`:""}</div>
+      <div class="fnote">${x.from}&ndash;${x.to} &middot; ${esc(alumniLine(x))}</div></div>
+      <span class="ares ${x.draft?(x.draft.round<=1?'gold':'up'):''}">${
+        x.draft?(x.draft.round+"."+String(x.draft.pick).padStart(2,"0")):"\u2013"}</span>
+      </div>`).join("");
+    if(book.length>12)h+=`<div class="note">Showing the top 12 by draft position.</div>`;
+  }
   h+=`<div class="grouphead">Season by season</div>`;
   h+=rows.map((r,i)=>{
     const idx=(t===S.myTeam)?(S.history.length-1-i):-1;
@@ -6625,6 +7017,18 @@ function offseasonBanner(){
     <div class="bsub">${esc(last.champion)} won the national title.
       ${(last.hires||[]).length} programs hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
+    ${(function(){
+      const mine=(last.draft||[]).filter(d=>d.team===my);
+      if(!mine.length)return "";
+      return `<div class="grouphead">Draft night &mdash; ${last.year}</div>`+
+        mine.map(d=>`<div class="drow">
+          <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
+          <div class="fmain"><div class="fname">${esc(d.n)}
+            <span class="dpos">${esc(d.p)}</span></div>
+          <div class="fnote">${esc(d.d.nfl)}${d.early?" &middot; left early":""}${
+            d.d.overall===1?" &middot; No. 1 overall":""}</div></div>
+          <span class="dovr">#${d.d.overall}</span></div>`).join("");
+    })()}
     <button class="cardbtn" data-card="${S.history.length-1}">Season card &mdash; share ${last.year}</button>
     </div>`;
 }
@@ -6912,7 +7316,7 @@ function callView(){
 function answerCall(v){
   const before=SEA.step;
   S.calls=S.calls||{};
-  S.calls[String(before)]=(S.calls[String(before)]||[]).concat([v]);
+  S.calls[callKey(before)]=(S.calls[callKey(before)]||[]).concat([v]);
   pendingCall=null;
   save();
   doAdvance();
@@ -6933,7 +7337,26 @@ function cardView(){
   </div>`;
 }
 
+function handoffView(){
+  const c=activeCoach()||{};
+  const n=coachCount(), i=(S.turn||0)+1;
+  return `<div class="handwrap">
+    <div class="handlabel">Pass it over &middot; coach ${i} of ${n}</div>
+    <div class="handname">${esc(c.career?c.career.name:"")}</div>
+    <div class="handteam" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</div>
+    <div class="handrec">${SEA.rec[S.myTeam][0]}-${SEA.rec[S.myTeam][1]}${
+      SEA.poll.rankMap()[S.myTeam]?" &middot; No. "+SEA.poll.rankMap()[S.myTeam]:""}</div>
+    <div class="handnote">The others have played their week. Your turn.</div>
+    <div class="actionbar"><button class="advance" id="hgo">I'm ready</button></div>
+  </div>`;
+}
+
 function render(){
+  if(handoff&&S.myTeam){
+    el("app").innerHTML=handoffView();
+    const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;render()};
+    return;
+  }
   if(cardFor){
     el("app").innerHTML=cardView();
     const sh=el("cshare"); if(sh)sh.onclick=async()=>{
@@ -7243,7 +7666,9 @@ function pickList(q){
       return `<div class="cbox"><div class="chead">${CONF_NAMES[c]}</div>
       <div class="pickgrid">${list.map(t=>{
         const ti=tierOf(PRE_RANK[t]);
-        return `<button class="pick" data-t="${esc(t)}" title="${esc(ti.l)}">
+        const gone=(S.picking||[]).some(x=>x.team===t);
+        return `<button class="pick ${gone?"taken":""}" data-t="${esc(t)}"
+          ${gone?"disabled":""} title="${esc(ti.l)}">
           <span class="dot" style="background:${teamColor(t)}"></span>
           <span class="pn">${esc(t)}<em class="ptier ${ti.c}">${esc(ti.l)}</em></span>
           <span class="pr">${PRE_RANK[t]}</span></button>`}).join("")}</div></div>`;
@@ -7252,7 +7677,18 @@ function pickList(q){
 
 function bindPicks(){
   document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>{
-    newDynasty(b.dataset.t,(S.setup.seed)>>>0,S.setup.name);
+    const want=(S.setup&&S.setup.coaches)||1;
+    if(want>1){
+      S.picking=S.picking||[];
+      const nm=((S.setup.names&&S.setup.names[S.picking.length])||"").trim()
+             ||("Coach "+(S.picking.length+1));
+      S.picking.push({team:b.dataset.t,name:nm});
+      if(S.picking.length<want){ save(); render(); return; }
+      const roster=S.picking.slice(); S.picking=null;
+      newDynasty(roster[0].team,(S.setup.seed)>>>0,roster[0].name,roster);
+    }else{
+      newDynasty(b.dataset.t,(S.setup.seed)>>>0,S.setup.name);
+    }
   });
 }
 
@@ -7318,12 +7754,33 @@ function renderSetup(){
     <input id="cseed" class="seedbox" value="${S.setup.seed}">
     <span class="seedhint">Share this number and a friend gets the identical universe &mdash;
       same schedules, same injuries, same upsets.</span>
+    <div class="grouphead" style="border:none;padding-left:0">Playing together</div>
+    <div class="setrow" style="padding:0 0 8px">${[1,2,3,4].map(n=>`
+      <button class="setbtn" data-nco="${n}" aria-pressed="${(S.setup.coaches||1)===n}"
+        >${n===1?"Just me":n}</button>`).join("")}</div>
+    <span class="seedhint">More than one and you take turns on this device &mdash;
+      same world, same season, different programs.</span>
+    ${(S.setup.coaches||1)>1?`<div class="conames">${
+      Array.from({length:(S.setup.coaches||1)-1}).map((_,i)=>`
+      <input class="seedbox" data-coname="${i+1}" maxlength="26"
+        placeholder="Coach ${i+2} name"
+        value="${esc((S.setup.names&&S.setup.names[i+1])||"")}">`).join("")}</div>`:""}
     <div class="titlebtns"><button class="advance" id="cgo">Choose your program</button></div>
   </div>`;
   el("crand").onclick=()=>{S.setup.name=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
-  el("cgo").onclick=()=>{
+  const grab=()=>{
     S.setup.name=(el("cname").value||"").trim()||rng.pick(COACH_FIRST)+" "+rng.pick(LAST);
     S.setup.seed=parseInt(el("cseed").value,10)||123456;
+    S.setup.names=S.setup.names||[];
+    document.querySelectorAll("[data-coname]").forEach(x=>{
+      S.setup.names[+x.dataset.coname]=(x.value||"").trim();});
+  };
+  document.querySelectorAll("[data-nco]").forEach(b=>b.onclick=()=>{
+    grab(); S.setup.coaches=+b.dataset.nco; render();});
+  el("cgo").onclick=()=>{
+    grab();
+    S.setup.names=S.setup.names||[];
+    S.setup.names[0]=S.setup.name;
     S.setup.ready=true; render();
   };
 }
@@ -7377,12 +7834,26 @@ function renderStart(){
   const byConf={};NAMES.forEach(t=>{(byConf[CONF[t]]=byConf[CONF[t]]||[]).push(t)});
   el("app").innerHTML=`
     <header class="mast">
-      <div class="kicker">${esc(S.setup&&S.setup.name?S.setup.name:"New career")}</div>
+      <div class="kicker">${(function(){
+        const n=(S.setup&&S.setup.coaches)||1;
+        if(n<2)return esc(S.setup&&S.setup.name?S.setup.name:"New career");
+        const taken=(S.picking||[]).length;
+        return esc(((S.setup.names&&S.setup.names[taken])||"").trim()||("Coach "+(taken+1)));
+      })()}</div>
       <h1>Where do you<br>want to coach?</h1>
       <p>Every program is a different job with different expectations. Win at a blue blood and
         it's what they pay you for; win at a rebuild and you'll have your pick of the country.</p>
     </header>
-    <div class="grouphead">Your program</div>
+    ${(function(){
+      const n=(S.setup&&S.setup.coaches)||1;
+      if(n<2)return `<div class="grouphead">Your program</div>`;
+      const taken=(S.picking||[]).map(x=>x.team);
+      const who=((S.setup.names&&S.setup.names[taken.length])||"").trim()
+              ||("Coach "+(taken.length+1));
+      return `<div class="grouphead">${esc(who)} &mdash; pick a program
+        (${taken.length+1} of ${n})</div>`+
+        (taken.length?`<div class="note">Already taken: ${taken.map(esc).join(", ")}</div>`:"");
+    })()}
     <div class="seedrow"><input id="find" class="seedbox findbox" placeholder="Search 132 teams...">
       <span class="seedhint">The number is the preseason rating rank. Lower means a stronger
       program &mdash; and higher expectations to go with it.</span></div>
