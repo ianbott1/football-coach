@@ -284,5 +284,35 @@ extendSeason({
     if(this.champion)pnote[this.champion]="National champions";
     const cfpOf={}; this.field.forEach(t=>cfpOf[t]=this.seeds[t]);
     return {confChamps,bowlOf,post,pnote,cfpOf};
+  },
+  /* ---- what the core UI asks about a finished or running postseason ---- */
+  /* postseason games, most important round first */
+  postPools(){
+    return [this.rounds.fin,this.rounds.sf,this.rounds.qf,this.rounds.r1,this.bowls,this.titles];
+  },
+  /* one team's postseason games in the order played, with a label each */
+  postGamesFor(team){
+    const post=[];
+    this.titles.forEach(g=>{if(g.home===team||g.away===team)post.push([g,g.title])});
+    this.bowls.forEach(g=>{if(g.home===team||g.away===team)post.push([g,g.title])});
+    [["First Round",this.rounds.r1],["Quarterfinal",this.rounds.qf],
+     ["Semifinal",this.rounds.sf],["National Championship",this.rounds.fin]]
+     .forEach(([n,gs])=>gs.forEach(g=>{if(g.home===team||g.away===team)post.push([g,n])}));
+    return post;
+  },
+  /* national title, playoff berth, conference title */
+  honours(team){
+    return {natl:this.champion===team,playoff:this.field.indexOf(team)>=0,
+            conf:Object.keys(this.champs).some(c=>this.champs[c]===team)};
+  },
+  confChampions(){return this.champs},
+  /* The result line the offseason screen grades on. KNOWN BUG, kept so the
+     split changes nothing: it differs from seasonResult (every playoff team is
+     just "Playoff"), so the grade shown here can differ from the grade the
+     history book records. */
+  screenResult(my){
+    return this.champion===my?"NATIONAL":(this.field.indexOf(my)>=0?"Playoff":
+      (this.myBowl(my)?(this.myBowl(my).winner===my?"Won the ":"Lost the ")+this.myBowl(my).title
+       :this.rec[my][0]>=6?"No bowl":"Losing season"));
   }
 });

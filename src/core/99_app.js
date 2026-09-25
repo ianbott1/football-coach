@@ -296,12 +296,11 @@ function openOffseason(){
   if(SEA.phase!=="done")return;
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
   if(S.off&&S.off.year===SEA.year)return;      // already booked this coach
-  recordCoaches(U,SEA.rec,SEA.champion,SEA.champs,SEA.year);
+  recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
   const A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,S.myTeam);
   const my=S.myTeam, C=S.career;
   const exp=S.expNow||expectations();
-  const titles={natl:SEA.champion===my,playoff:SEA.field.indexOf(my)>=0,
-                conf:Object.keys(SEA.champs).some(c=>SEA.champs[c]===my)};
+  const titles=SEA.honours(my);
   C.rep=C.rep*0.94;                       // reputations fade, good and bad
   C.rep+=repDelta(SEA.rec[my][0],SEA.rec[my][1],exp.w,U.program[my],titles);
   C.rep=Math.max(-48,Math.min(80,C.rep));
@@ -391,7 +390,7 @@ function writeSeasonHistory(){
       coach:S.career.name, titles:S.career.titles, seasons:S.history.length+1},
     year:SEA.year, rec:SEA.rec[my][0]+"-"+SEA.rec[my][1], rank:rk[my]||99,
     result:result, grade:gr.g, gradeLine:gr.l, team:my,
-    champion:SEA.champion, confChamp:Object.keys(SEA.champs).some(c=>SEA.champs[c]===my)
+    champion:SEA.champion, confChamp:SEA.honours(my).conf
   });
 }
 
@@ -429,7 +428,7 @@ function endSeason(rng,choices,act){
     rank:rk[my],champion:SEA.champion,result:result,
     program:Math.round(U.program[my]),
     fired:off.fired.indexOf(my)>=0, firedList:off.fired,
-    confChamp:Object.keys(SEA.champs).some(c=>SEA.champs[c]===my),
+    confChamp:SEA.honours(my).conf,
     nFired:off.fired.length,
     teams:teamRows, confChamps:confChamps, bowls:bowlOf, cfp:cfpOf,
     realigned:off.realigned||[],
@@ -634,7 +633,7 @@ function heroGame(){
     const W=SEA.weeks[flash.step];
     if(W)return W.games.find(x=>x.home===my||x.away===my)||null;
   }else if(flash&&flash.type==="post"){
-    const pools=[SEA.rounds.fin,SEA.rounds.sf,SEA.rounds.qf,SEA.rounds.r1,SEA.bowls,SEA.titles];
+    const pools=SEA.postPools();
     for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f)return f}
   }
   return null;
@@ -647,7 +646,7 @@ function heroResult(){
     const W=SEA.weeks[flash.step];
     if(W){g=W.games.find(x=>x.home===my||x.away===my);label=W.label}
   }else if(flash&&flash.type==="post"){
-    const pools=[SEA.rounds.fin,SEA.rounds.sf,SEA.rounds.qf,SEA.rounds.r1,SEA.bowls,SEA.titles];
+    const pools=SEA.postPools();
     for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f){g=f;break}}
   }
   if(!g)return "";
@@ -1075,12 +1074,7 @@ function scheduleHTML(team,compact){
     }
   }
   // postseason
-  const post=[];
-  SEA.titles.forEach(g=>{if(g.home===team||g.away===team)post.push([g,g.title])});
-  SEA.bowls.forEach(g=>{if(g.home===team||g.away===team)post.push([g,g.title])});
-  [["First Round",SEA.rounds.r1],["Quarterfinal",SEA.rounds.qf],
-   ["Semifinal",SEA.rounds.sf],["National Championship",SEA.rounds.fin]]
-   .forEach(([n,gs])=>gs.forEach(g=>{if(g.home===team||g.away===team)post.push([g,n])}));
+  const post=SEA.postGamesFor(team);
   post.forEach(([g,n])=>{
     const won=g.winner===team, opp=g.home===team?g.away:g.home;
     const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
@@ -1298,7 +1292,7 @@ function newsBlock(){
 
 /* ============ playoff picture ============ */
 function scoresView(){
-  if(!SEA.weeks.length&&!SEA.field.length)
+  if(!SEA.weeks.length)
     return `<div class="note">The season hasn't started. Hit the button below to play Week 1.</div>`;
   const pv=LEAGUE.ui.postseasonView(); if(pv)return pv;
   const W=SEA.weeks[SEA.weeks.length-1];
@@ -1871,11 +1865,7 @@ function offseasonScreen(){
   const last=SEA;
   let h=`<div class="dateline"><h2>Offseason</h2><span>${last.year} &rarr; ${last.year+1}</span></div>`;
   const exp=S.expNow||expectations();
-  const res=(()=>{const b=last.myBowl?last.myBowl(my):null;return ""})();
-  const gr=seasonGrade(last.rec[my][0],last.rec[my][1],
-    last.champion===my?"NATIONAL":(last.field.indexOf(my)>=0?"Playoff":
-      (last.myBowl(my)?(last.myBowl(my).winner===my?"Won the ":"Lost the ")+last.myBowl(my).title
-       :last.rec[my][0]>=6?"No bowl":"Losing season")),exp);
+  const gr=seasonGrade(last.rec[my][0],last.rec[my][1],last.screenResult(my),exp);
   const miles=milestones(last.rec[my][0],last.rec[my][1],
     last.champion===my?"NATIONAL":"",last.poll.rankMap()[my]);
   h+=`<div class="banner"><div class="bkick">${last.year} final</div>
