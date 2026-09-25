@@ -116,9 +116,9 @@ class Season{
       const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
       if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
     }
-    const venue=neutral?0:((this.hfa&&this.hfa[a])||HFA)-HFA;
+    const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
     return {
-      h:this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:HFA)+venue+edge,
+      h:this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge,
       a:this.talent.eff(b,w)+(this.staffAdj[b]||0)
     };
   }
@@ -162,9 +162,9 @@ class Season{
         if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
       }
     }
-    const venue=neutral?0:((this.hfa&&this.hfa[a])||HFA)-HFA;
+    const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
     const w=Math.min(this.step,LEAGUE.weeks);
-    const eloH=this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:HFA)+venue+edge;
+    const eloH=this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge;
     const eloA=this.talent.eff(b,w)+(this.staffAdj[b]||0);
     const isUser=(this.userTeam===a||this.userTeam===b);
     const plan=PLANS[this.plan]?this.plan:"balanced";
@@ -294,13 +294,14 @@ class Season{
   _select(){
     const order=this.poll.order(), rk={};order.forEach((t,i)=>rk[t]=i+1);
     const f=[];
-    ["SEC","B1G","B12","ACC"].forEach(c=>{f.push(this.champs[c]);
+    LEAGUE.playoff.autoBids.forEach(c=>{f.push(this.champs[c]);
       this.notes[this.champs[c]]=LEAGUE.conf.names[c]+" champion"});
     const g6=LEAGUE.conf.autoBidPool.map(c=>this.champs[c]).sort((a,b)=>rk[a]-rk[b])[0];
     f.push(g6); this.notes[g6]=LEAGUE.conf.names[CONF[g6]]+" champion";
-    if(rk["Notre Dame"]<=12&&f.indexOf("Notre Dame")<0){
-      f.push("Notre Dame");this.notes["Notre Dame"]="Independent, top-12 bid"}
-    for(const t of order){if(f.length>=12)break;
+    const ind=LEAGUE.playoff.independent;
+    if(rk[ind.team]<=ind.withinRank&&f.indexOf(ind.team)<0){
+      f.push(ind.team);this.notes[ind.team]=ind.note}
+    for(const t of order){if(f.length>=LEAGUE.playoff.size)break;
       if(f.indexOf(t)<0){f.push(t);if(!this.notes[t])this.notes[t]="At-large"}}
     f.sort((a,b)=>rk[a]-rk[b]);
     this.field=f; f.forEach((t,i)=>this.seeds[t]=i+1);

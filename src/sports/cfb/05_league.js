@@ -149,6 +149,8 @@ const LEAGUE={
     names:{SEC:"SEC",B1G:"Big Ten",B12:"Big 12",ACC:"ACC",P12:"Pac-12",
   AAC:"American",MW:"Mountain West",SBC:"Sun Belt",MAC:"MAC",CUSA:"Conference USA",IND:"Independent"},
     order:["SEC","B1G","B12","ACC","P12","AAC","MW","SBC","MAC","CUSA"],
+    /* team picker order: the independents sit with the power conferences */
+    display:["SEC","B1G","B12","ACC","IND","P12","AAC","MW","SBC","MAC","CUSA"],
     /* the Group of Six: their best champion gets the fifth automatic bid */
     autoBidPool:["AAC","CUSA","MAC","MW","P12","SBC"],
     /* The Sun Belt is the only conference still split into divisions. Everyone else
@@ -185,5 +187,36 @@ const LEAGUE={
   "Philadelphia","Pittsburgh","San Francisco","Seattle","Tampa Bay","Tennessee",
   "Washington"],
 
-  awards:{mvp:"Heisman"}
+  awards:{mvp:"Heisman"},
+
+  tuning:{
+    hfa:62            // baseline home-field edge, Elo
+  },
+
+  /* Not every stadium is the same place. A handful are genuinely miserable to
+     visit; most are ordinary; some are half empty in November. Added to a
+     prestige-based base; anyone not listed gets 8. */
+  venues:{
+"LSU":26,"Penn State":24,"Ohio State":21,"Alabama":20,"Texas A&M":22,"Oregon":19,
+"Clemson":18,"Wisconsin":17,"Tennessee":20,"Florida":16,"Georgia":18,"Michigan":19,
+"Oklahoma":15,"Notre Dame":16,"Auburn":16,"Iowa":15,"Washington":15,"Utah":14,
+"Virginia Tech":15,"West Virginia":13,"Mississippi St":12,"Ole Miss":12,"Texas":15,
+"USC":11,"Nebraska":13,"BYU":12,"Boise State":14,"Air Force":10,"Hawaii":12,
+"Kansas State":12,"Arkansas":12,"South Carolina":13,"Missouri":10,"Louisville":10,
+"Miami":8,"Duke":4,"Northwestern":3,"Rutgers":5,"Purdue":5,"Vanderbilt":4,
+"Wake Forest":5,"Boston College":6,"Stanford":4,"California":5,"Kent State":2,
+"Akron":2,"Charlotte":3,"UTEP":3,"Temple":3,"FIU":2,"Ga State":2
+},
+
+  schedule:{
+    games:12,
+    confGames:{SEC:9,B1G:9,B12:9,P12:7},   // Pac-12 plays a round robin
+    confGamesDefault:8
+  },
+
+  playoff:{
+    size:12,
+    autoBids:["SEC","B1G","B12","ACC"],    // plus the best autoBidPool champion
+    independent:{team:"Notre Dame",withinRank:12,note:"Independent, top-12 bid"}
+  }
 };

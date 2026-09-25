@@ -710,7 +710,7 @@ function heroResult(){
 
 /* ============ what's at stake ============ */
 function winProb(me,opp,atHome,neutral){
-  const v=t=>(SEA.hfa&&SEA.hfa[t])||HFA;
+  const v=t=>(SEA.hfa&&SEA.hfa[t])||LEAGUE.tuning.hfa;
   const hfa=neutral?0:(atHome?v(me):-v(opp));
   return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa-SEA.elo[opp])/400)));
 }
@@ -736,10 +736,11 @@ function projectedField(){
     });
     leaders[c]=mem[0];
   });
-  const f=["SEC","B1G","B12","ACC"].map(c=>leaders[c]);
+  const f=LEAGUE.playoff.autoBids.map(c=>leaders[c]);
   f.push(LEAGUE.conf.autoBidPool.map(c=>leaders[c]).sort((x,y)=>rk[x]-rk[y])[0]);
-  if(rk["Notre Dame"]<=12&&f.indexOf("Notre Dame")<0)f.push("Notre Dame");
-  for(const t of order){if(f.length>=12)break; if(f.indexOf(t)<0)f.push(t)}
+  const ind=LEAGUE.playoff.independent;
+  if(rk[ind.team]<=ind.withinRank&&f.indexOf(ind.team)<0)f.push(ind.team);
+  for(const t of order){if(f.length>=LEAGUE.playoff.size)break; if(f.indexOf(t)<0)f.push(t)}
   return f.sort((x,y)=>rk[x]-rk[y]);
 }
 
@@ -1075,7 +1076,7 @@ function nextUpHTML(my,rk){
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${SEA.rec[opp][0]}-${SEA.rec[opp][1]} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
-        ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||HFA))}.</div>`:""}
+        ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}</b> in the series${
         ser.streak&&ser.streak.n>1?` &middot; ${ser.streak.team===my
           ? "you've won "+ser.streak.n+" straight"
@@ -1355,13 +1356,14 @@ function playoffPicture(){
     leaders[c]=mem[0];
   });
   const field=[], note={};
-  ["SEC","B1G","B12","ACC"].forEach(c=>{field.push(leaders[c]);
+  LEAGUE.playoff.autoBids.forEach(c=>{field.push(leaders[c]);
     note[leaders[c]]=LEAGUE.conf.names[c]+" leader"});
   const g6=LEAGUE.conf.autoBidPool.map(c=>leaders[c]).sort((a,b)=>rk[a]-rk[b])[0];
   field.push(g6); note[g6]=LEAGUE.conf.names[CONF[g6]]+" leader";
-  if(rk["Notre Dame"]<=12&&field.indexOf("Notre Dame")<0){
-    field.push("Notre Dame");note["Notre Dame"]="Independent"}
-  for(const t of order){if(field.length>=12)break;
+  const ind=LEAGUE.playoff.independent;
+  if(rk[ind.team]<=ind.withinRank&&field.indexOf(ind.team)<0){
+    field.push(ind.team);note[ind.team]="Independent"}
+  for(const t of order){if(field.length>=LEAGUE.playoff.size)break;
     if(field.indexOf(t)<0){field.push(t);note[t]="At-large"}}
   field.sort((a,b)=>rk[a]-rk[b]);
   const out=order.filter(t=>field.indexOf(t)<0).slice(0,4);
@@ -2654,7 +2656,7 @@ const PRE_RANK=(()=>{const o=LEAGUE.teams.slice().sort((a,b)=>b[1]-a[1]);
 function pickList(q){
   const byConf={};NAMES.forEach(t=>{(byConf[CONF[t]]=byConf[CONF[t]]||[]).push(t)});
   const ql=q.trim().toLowerCase();
-  return ["SEC","B1G","B12","ACC","IND","P12","AAC","MW","SBC","MAC","CUSA"]
+  return LEAGUE.conf.display
     .filter(c=>byConf[c]).map(c=>{
       const list=byConf[c].filter(t=>!ql||t.toLowerCase().includes(ql)).sort();
       if(!list.length)return "";

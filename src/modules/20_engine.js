@@ -18,22 +18,11 @@ class RNG{
 /* ============ home fields ============ */
 /* Not every stadium is the same place. A handful are genuinely miserable to
    visit; most are ordinary; some are half empty in November. */
-const CATHEDRAL={
-"LSU":26,"Penn State":24,"Ohio State":21,"Alabama":20,"Texas A&M":22,"Oregon":19,
-"Clemson":18,"Wisconsin":17,"Tennessee":20,"Florida":16,"Georgia":18,"Michigan":19,
-"Oklahoma":15,"Notre Dame":16,"Auburn":16,"Iowa":15,"Washington":15,"Utah":14,
-"Virginia Tech":15,"West Virginia":13,"Mississippi St":12,"Ole Miss":12,"Texas":15,
-"USC":11,"Nebraska":13,"BYU":12,"Boise State":14,"Air Force":10,"Hawaii":12,
-"Kansas State":12,"Arkansas":12,"South Carolina":13,"Missouri":10,"Louisville":10,
-"Miami":8,"Duke":4,"Northwestern":3,"Rutgers":5,"Purdue":5,"Vanderbilt":4,
-"Wake Forest":5,"Boston College":6,"Stanford":4,"California":5,"Kent State":2,
-"Akron":2,"Charlotte":3,"UTEP":3,"Temple":3,"FIU":2,"Ga State":2
-};
 
 function homeField(u,t){
   const prog=(u&&u.program&&u.program[t])!==undefined?u.program[t]:1500;
   const base=39+Math.max(0,Math.min(1,(prog-1150)/900))*30;
-  return Math.round(base+(CATHEDRAL[t]||8));
+  return Math.round(base+(LEAGUE.venues[t]||8));
 }
 
 function venueLabel(v){
@@ -62,7 +51,7 @@ function teamInk(t){                      // brand color, lightened until legibl
 }
 
 /* ============ constants ============ */
-const ELO_PT=21, HFA=62, GAME_SD=14, K=32;
+const ELO_PT=21, GAME_SD=14, K=32;
 
 function divisionOf(u,t){
   const c=(u&&u.conf&&u.conf[t])||CONF[t];
@@ -89,8 +78,8 @@ function realign(u,rng,year){
   if(!u.conf)syncConf(u);
   const size=c=>NAMES.filter(t=>u.conf[t]===c).length;
   const moves=[];
-  const P4L=["SEC","B1G","B12","ACC"];
-  const G6L=["AAC","MW","P12","SBC","MAC","CUSA"];
+  const P4L=LEAGUE.playoff.autoBids;
+  const G6L=LEAGUE.conf.autoBidPool;
   const n=1+rng.int(3);
   for(let k=0;k<n;k++){
     // a strong Group of 6 program gets the call up
@@ -169,7 +158,7 @@ function completeConf(teams,need,rng,games,fixedKey,confCount){
 function buildSchedule(rng,R,year){
   const byConf={};
   NAMES.forEach(t=>{(byConf[CONF[t]]=byConf[CONF[t]]||[]).push(t)});
-  const games=[], nGames={SEC:9,B1G:9,B12:9,P12:7};   // Pac-12 plays a round robin
+  const games=[], nGames=LEAGUE.schedule.confGames;
   // The ACC has 17 teams in 2026: most play nine, a few play eight. The real
   // games push those teams to nine; the filler tops everyone up to eight.
 
@@ -183,7 +172,7 @@ function buildSchedule(rng,R,year){
       const k=[g.a,g.h].sort().join("|");
       if(fixedKey.has(k))return;
       const isC=CONF[g.a]===CONF[g.h];
-      if(isC&&(confCount[g.a]>=(nGames[CONF[g.a]]||8)||confCount[g.h]>=(nGames[CONF[g.h]]||8)))return;
+      if(isC&&(confCount[g.a]>=(nGames[CONF[g.a]]||LEAGUE.schedule.confGamesDefault)||confCount[g.h]>=(nGames[CONF[g.h]]||LEAGUE.schedule.confGamesDefault)))return;
       fixedKey.add(k);
       if(isC){confCount[g.a]++;confCount[g.h]++}
       games.push([g.a,g.h,isC,!!g.neutral,true,g.w,g.site||null]);
@@ -192,7 +181,7 @@ function buildSchedule(rng,R,year){
 
   for(const c in byConf){
     if(c==="IND")continue;
-    const need=nGames[c]||8;
+    const need=nGames[c]||LEAGUE.schedule.confGamesDefault;
     completeConf(byConf[c],need,rng,games,fixedKey,confCount);
   }
   const played={}; NAMES.forEach(t=>played[t]=0);
@@ -201,7 +190,7 @@ function buildSchedule(rng,R,year){
   NAMES.forEach(t=>{if(CONF[t]==="IND")RR[t]=RR[t]+130});
   const seen=new Set(games.map(g=>[g[0],g[1]].sort().join("|")));
   let pool=[];
-  NAMES.forEach(t=>{for(let i=0;i<Math.max(0,12-played[t]);i++)pool.push(t)});
+  NAMES.forEach(t=>{for(let i=0;i<Math.max(0,LEAGUE.schedule.games-played[t]);i++)pool.push(t)});
   rng.shuffle(pool);
   let tries=0;
   while(pool.length>=2 && tries<80000){
@@ -379,7 +368,7 @@ function buildSchedule(rng,R,year){
 
 /* ============ game sim ============ */
 function simGame(rng,tH,tA,neutral,sdMult,edgeAdj){
-  const edge=tH-tA+(neutral?0:HFA)+(edgeAdj||0);
+  const edge=tH-tA+(neutral?0:LEAGUE.tuning.hfa)+(edgeAdj||0);
   let m=Math.round(rng.gauss(edge/ELO_PT,GAME_SD*(sdMult||1)));
   if(m===0)m=rng.r()<0.5?-3:3;
   let total=rng.gauss(52,9.5)+Math.abs(m)*0.18;
@@ -395,7 +384,7 @@ function simGame(rng,tH,tA,neutral,sdMult,edgeAdj){
   return m>0?[hi,lo,m]:[lo,hi,m];
 }
 function eloUpdate(eW,eL,mAbs,winHome,neutral){
-  const hfa=neutral?0:HFA;
+  const hfa=neutral?0:LEAGUE.tuning.hfa;
   const diff=winHome?(eW+hfa-eL):(eW-eL-hfa);
   const exp=1/(1+Math.pow(10,-diff/400));
   const mov=Math.log(mAbs+1)*(2.2/(0.001*diff+2.2));
