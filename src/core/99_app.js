@@ -315,11 +315,9 @@ function openOffseason(){
   if(A.staffOpen&&A.staffOpen.dc)staffCands.dc=coordCandidates(rng,U.program[my],"dc",C.rep);
   const jobs=A.userOpen?jobMarket(U,rng,C.rep,A.openJobs,my):[];
   const poach=A.userOpen?[]:poachOffers(U,rng,C.rep,A.openJobs,my);
-  const pool=LEAGUE.offseason.budget.pool(U,my,SEA.rec[my][0]);
-  S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:pool,staff:staffCands,
-    picks:{recruit:"balanced",phil:(U.phil||"balanced"),oc:null,dc:null,
-      budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
-              facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}},
+  const LO=LEAGUE.offseason.open(U,my,SEA.rec[my][0]);   // the league's own choices
+  S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:LO.pool,staff:staffCands,
+    picks:Object.assign({phil:(U.phil||"balanced"),oc:null,dc:null},LO.picks),
     rngA:[rng.a,rng.sp]};
   flash=null; save(); render();
 }
@@ -349,17 +347,17 @@ function commitOffseason(){
     }
   });
   S.pending=S.pending||{};
-  S.pending[S.myTeam]={recruit:P.recruit, phil:P.phil, budget:P.budget,
-                       featured:(S.featured===undefined?null:S.featured)};
+  S.pending[S.myTeam]=Object.assign(LEAGUE.offseason.choices(P),{phil:P.phil,
+                       featured:(S.featured===undefined?null:S.featured)});
   if(isHotSeat() && (S.turn||0) < coachCount()-1){
     writeSeasonHistory();                       // this coach's year, in their book
     stashCoach(); loadCoach((S.turn||0)+1);
     S.off=null; handoff=true; openOffseason(); save(); render(); return;
   }
   const users=S.pending; S.pending=null;
-  endSeason(rng,{userTeam:S.myTeam,users:users,coach:null,
-    recruit:P.recruit, phil:P.phil, budget:P.budget,
-    featured:(S.featured!==undefined?S.featured:null)}, A);
+  endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
+    LEAGUE.offseason.choices(P),{phil:P.phil,
+    featured:(S.featured!==undefined?S.featured:null)}), A);
   S.featured=null;
 }
 
@@ -1085,33 +1083,10 @@ function seasonLogHTML(my){
 
 function expectations(){
   const my=S.myTeam, p=U?U.program[my]:1500;
-  const last=S.history.length?S.history[S.history.length-1]:null;
-  if(p>=1860)return {w:11,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
-  if(p>=1700)return {w:9,l:"Nine wins and a New Year's bowl. Contend in the conference.",t:"CONTEND"};
-  if(p>=1540)return {w:8,l:"Eight wins and a decent bowl. Beat someone you shouldn't.",t:"PUSH FORWARD"};
-  if(p>=1400)return {w:6,l:"Get to a bowl game. Six wins keeps everyone happy.",t:"BOWL ELIGIBLE"};
-  return {w:4,l:"Show progress. Four wins would be real movement here.",t:"BUILD SOMETHING"};
+  return LEAGUE.goals.expectations(p);
 }
 
-function seasonGrade(wins,losses,result,exp){
-  let s=(wins-exp.w)*1.0;
-  if(/NATIONAL/i.test(result))s+=5;
-  else if(/title game/i.test(result))s+=3;
-  else if(/semifinal/i.test(result))s+=2.4;
-  else if(/quarterfinal/i.test(result))s+=1.8;
-  else if(/first round|Playoff/i.test(result))s+=1.4;
-  else if(/^Won the/.test(result))s+=0.8;
-  else if(/^Lost the/.test(result))s+=0.2;
-  else if(/No bowl|Losing season/.test(result))s-=(exp.w>=6?1.0:0.2);
-  const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
-          s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
-  const l=s>=2.6?"Far beyond what anyone expected.":
-          s>=0.9?"Ahead of schedule.":
-          s>=-0.6?"About what was expected.":
-          s>=-2.2?"Short of the mark.":
-          "A bad year, and everyone knows it.";
-  return {g:g,l:l};
-}
+function seasonGrade(wins,losses,result,exp){ return LEAGUE.goals.grade(wins,losses,result,exp) }
 
 function milestones(wins,losses,result,rank){
   const my=S.myTeam, out=[], H=S.history;
@@ -1124,8 +1099,8 @@ function milestones(wins,losses,result,rank){
   const bestR=Math.min(...mine.map(r=>r[2]));
   if(wins>bestW)out.push(`Best season of your tenure &mdash; ${wins} wins, past the old high of ${bestW}.`);
   if(rank<bestR&&rank<=25)out.push(`Highest finish yet at No. ${rank}.`);
-  if(/NATIONAL/i.test(result)&&!H.some(h=>h.champion===my))
-    out.push(`First national title of your tenure.`);
+  if(LEAGUE.goals.isTitle(result)&&!H.some(h=>h.champion===my))
+    out.push(LEAGUE.goals.firstTitle);
   let streak=0;
   for(let i=mine.length-1;i>=0;i--){if(mine[i][0]>mine[i][1])streak++;else break}
   if(wins>losses&&streak+1>=5)out.push(`${streak+1} straight winning seasons.`);

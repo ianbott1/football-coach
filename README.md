@@ -39,14 +39,26 @@ files:
     offseason{newRoster, run}                  26_offseason.js
     post{phases, run, init} + Season methods   85_postseason.js
     Season._award, mvpRace, allConference      86_awards.js
+    Season postPools, postGamesFor, honours,
+      confChampions, seasonResult, postRecord  85_postseason.js
+    rivals{name,series,record,of}              40_rivals.js
+    records{book,leaders,alumniLine}           90_draft.js
+    offseason{open,choices,recruitFocus,budget} 26_offseason.js
+    goals{expectations,grade,isTitle,firstTitle} 26_offseason.js
+    ui{rankingTab,rankingView,postseasonView,afterAdvance,subtab,
+       projectedField}                         97_views.js
+    ui{offseasonScreen,offseasonBanner,offseasonBlock,
+       bindOffseason}                          98_offseason_views.js
 
-The UI (core/99_app.js) is not yet split: it still draws college football's
-bracket, bowls, poll, recruiting and budget screens directly.
+Still college-shaped inside the core UI (core/99_app.js): wording in the
+weekly news, stakes, team cards, dynasty tables, intro, help and glossary;
+the history-book fields (bowls, cfp, heis, allconf) that saves depend on.
 
 ## Tests
 
     node test/golden.js --check   seeded careers must reproduce test/golden.json
     node test/calibrate.js 200    measures the calibration targets below
+    node test/hotseat.js          two coaches, three seasons; compare builds
 
 A change meant to alter no behaviour must pass `golden.js --check`. A change
 that is meant to alter behaviour re-records with `--write`, and says why.

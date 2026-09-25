@@ -284,5 +284,48 @@ LEAGUE.offseason={
   newRoster:makeRoster,         // (rng, programElo) -> roster
   run:offseasonRosters,         // (u, rng, healthy, elo, rec, choices) -> report
   recruitFocus:RECRUIT_FOCUS,   // the choices offered on the offseason screen
-  budget:{buckets:BUCKETS, pool:budgetPool}
+  budget:{buckets:BUCKETS, pool:budgetPool},
+  /* the league's offseason choices, as the offseason screen starts them */
+  open(u,t,wins){
+    const pool=budgetPool(u,t,wins);
+    return {pool:pool, picks:{recruit:"balanced",
+      budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
+              facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}}};
+  },
+  /* ...and as run() reads them */
+  choices(P){ return {recruit:P.recruit, budget:P.budget} }
+};
+
+/* What a season is judged against, and how it is graded. The grade reads the
+   result line (seasonResult or screenResult). */
+LEAGUE.goals={
+  /* what the job demands, by program strength */
+  expectations(p){
+    if(p>=1860)return {w:11,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
+    if(p>=1700)return {w:9,l:"Nine wins and a New Year's bowl. Contend in the conference.",t:"CONTEND"};
+    if(p>=1540)return {w:8,l:"Eight wins and a decent bowl. Beat someone you shouldn't.",t:"PUSH FORWARD"};
+    if(p>=1400)return {w:6,l:"Get to a bowl game. Six wins keeps everyone happy.",t:"BOWL ELIGIBLE"};
+    return {w:4,l:"Show progress. Four wins would be real movement here.",t:"BUILD SOMETHING"};
+  },
+  isTitle(result){ return /NATIONAL/i.test(result) },
+  firstTitle:"First national title of your tenure.",
+  grade(wins,losses,result,exp){
+    let s=(wins-exp.w)*1.0;
+    if(/NATIONAL/i.test(result))s+=5;
+    else if(/title game/i.test(result))s+=3;
+    else if(/semifinal/i.test(result))s+=2.4;
+    else if(/quarterfinal/i.test(result))s+=1.8;
+    else if(/first round|Playoff/i.test(result))s+=1.4;
+    else if(/^Won the/.test(result))s+=0.8;
+    else if(/^Lost the/.test(result))s+=0.2;
+    else if(/No bowl|Losing season/.test(result))s-=(exp.w>=6?1.0:0.2);
+    const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
+            s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
+    const l=s>=2.6?"Far beyond what anyone expected.":
+            s>=0.9?"Ahead of schedule.":
+            s>=-0.6?"About what was expected.":
+            s>=-2.2?"Short of the mark.":
+            "A bad year, and everyone knows it.";
+    return {g:g,l:l};
+  }
 };
