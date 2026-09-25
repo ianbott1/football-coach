@@ -45,9 +45,21 @@ the interface. A second league is a new folder under `src/leagues/`.
     test/hotseat.js    two coaches sharing a save, three seasons
     test/grades.js     grade shown on the offseason screen = grade recorded
     test/migrate.js    old saves load and draw identically (needs a v1 build)
+    test/reload.js     reloading a save gives back the games actually played
+    test/storage.js    saving where there is no window.storage (the published
+                       site), the quit prompt, Start over
+    test/h2h.js        hot-seat coaches playing each other: once, both calling
     test/calibrate.js  the targets below, over N CPU seasons (default 200)
 
 Not covered by any test: click handlers (sub-tabs, budget buttons, picks).
+
+## Saves
+
+Saves go through core/15_store.js: window.storage inside Claude, the
+browser's localStorage anywhere else. A save holds the season's starting
+universe plus every choice and every live game's result (S.played); loading
+replays the season from those, so it must reproduce what was played exactly
+(test/reload.js).
 
 ## Calibration targets
 

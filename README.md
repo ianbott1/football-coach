@@ -62,6 +62,9 @@ the history-book fields (bowls, cfp, heis, allconf) that saves depend on.
     node test/hotseat.js          two coaches, three seasons; MATCH or MISMATCH
     node test/grades.js           offseason-screen grade vs recorded grade
     node test/migrate.js <v1.html> old saves load and draw identically
+    node test/reload.js           a reloaded save gives back the season played
+    node test/storage.js          saving outside Claude, the quit prompt
+    node test/h2h.js              hot-seat coaches playing each other
 
 A change meant to alter no behaviour must pass `golden.js --check`. A change
 that is meant to alter behaviour re-records with `--write`, and says why.
