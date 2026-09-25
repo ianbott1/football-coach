@@ -13,16 +13,17 @@ function boot(LS,blocked){
   const ls={getItem:k=>k in LS?LS[k]:null, setItem:(k,v)=>{if(blocked)throw new Error('QuotaExceededError');LS[k]=String(v)},
     removeItem:k=>{delete LS[k]}, key:i=>Object.keys(LS)[i], get length(){return Object.keys(LS).length}};
   global.localStorage=ls;
-  global.window={addEventListener(){},innerWidth:390,matchMedia:()=>({matches:false}),localStorage:ls,scrollTo(){}};
-  const nodes={}; const mk=()=>({innerHTML:'',dataset:{},classList:{toggle(){},add(){},remove(){}},setAttribute(){},onclick:null});
+  const L={}; global.window={addEventListener(t,f){(L[t]=L[t]||[]).push(f)},innerWidth:390,matchMedia:()=>({matches:false}),localStorage:ls,scrollTo(){}};
+  const nodes={}; const mk=()=>({innerHTML:'',dataset:{},classList:{toggle(){},add(){},remove(){}},setAttribute(){},onclick:null,disabled:false,click(){if(this.onclick)this.onclick()}});
   global.document={getElementById:id=>nodes[id]=nodes[id]||mk(),querySelector:()=>mk(),querySelectorAll:()=>[],createElement:mk,body:{classList:{toggle(){}}},addEventListener(){}};
   global.confirm=()=>true;
   const api=new Function(js+`return {render,newDynasty,postSeason,get leagueMsg(){return leagueMsg},doAdvance,liveTick,answerLive,loadSlot,allSlots,rebuild,
-    get S(){return S}, set S(v){S=v}, get SEA(){return SEA}, get live(){return live},
+    get S(){return S}, set S(v){S=v}, get quitAsk(){return typeof quitAsk==="undefined"?undefined:quitAsk}, get SEA(){return SEA}, get live(){return live},
     get saveOK(){return typeof saveOK==="undefined"?undefined:saveOK}, setSlot(n){slot=n}};`)();
-  api.nodes=nodes; return api;
+  api.nodes=nodes; api.key=k=>(L.keydown||[]).forEach(f=>f({key:k,preventDefault(){},target:{}})); return api;
 }
 const tick=()=>new Promise(r=>setImmediate(r));
+const click=async(api,id)=>{const b=api.nodes[id]; if(b&&b.onclick)await b.onclick(); await tick()};
 const play=async(api,weeks)=>{for(let i=0;i<weeks;i++){api.doAdvance();let n=0;
   while(api.live&&!api.live.done&&n++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}} await tick()};
 const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g.ap])),r:api.SEA.rec,step:api.SEA.step});
@@ -33,7 +34,19 @@ const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g
   const played=season(A);
   ok(Object.keys(LS).some(k=>/slot1$/.test(k)), 'three weeks in, slot 1 is written to localStorage');
   ok(A.saveOK===true, 'the game knows the save landed');
-  if(A.nodes.ttl.onclick) await A.nodes.ttl.onclick(); await tick();
+  // the square asks first, and says the progress is safe
+  await click(A,'ttl');
+  const app=()=>A.nodes.app.innerHTML;
+  ok(A.quitAsk && !A.S.title, 'the square opens a prompt instead of leaving');
+  ok(/saved in slot 1/.test(app()), 'the prompt says the progress is saved in slot 1');
+  const stepBefore=A.SEA.step; A.key('Enter'); A.key(' '); await tick();
+  ok(A.SEA.step===stepBefore, 'Enter and Space do not advance the season under the prompt');
+  await click(A,'quitno');
+  ok(!A.quitAsk && !A.S.title && !/quitask/.test(app()), '"Keep playing" closes it and stays in the game');
+  await click(A,'ttl'); A.key('Escape'); await tick();
+  ok(!A.quitAsk && !A.S.title, 'Escape closes it too');
+  await click(A,'ttl'); await click(A,'quitgo');
+  ok(A.S.title===true, '"Go to the title screen" leaves');
   const slots=await A.allSlots();
   ok(slots[0]&&slots[0].team==='Alabama', 'title screen lists slot 1: '+JSON.stringify(slots.map(s=>s.empty?'empty':s.team)));
   const B=boot(LS); const d=await B.loadSlot(1);                      // a fresh page load
@@ -53,6 +66,9 @@ const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g
   // 3. storage blocked: the failure is reported, not swallowed
   const D=boot({},true); D.newDynasty('Rice',2,'T'); await play(D,1);
   ok(D.saveOK===false, 'with storage blocked, the game knows the save failed');
+  D.render(); await click(D,'ttl');
+  ok(/isn't saved/.test(D.nodes.app.innerHTML)&&/career is lost/.test(D.nodes.app.innerHTML),
+     'and the prompt warns that leaving loses the career');
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH all checks');
   process.exit(bad?1:0);
 })();

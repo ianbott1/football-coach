@@ -1878,6 +1878,21 @@ function handoffView(){
   </div>`;
 }
 
+/* ---- leaving for the title screen ---- */
+/* The square saves first, then asks. The prompt says plainly whether the
+   save landed, so nobody walks away from a career they can't get back. */
+let quitAsk=false;
+function quitPrompt(){
+  const safe=saveOK===true;
+  return `<div class="banner quitask" role="alertdialog" aria-labelledby="qtitle">
+    <div class="btitle" id="qtitle">${safe?"Leave for the title screen?":"Your progress isn't saved"}</div>
+    <div class="bsub">${safe
+      ?`Everything is saved in slot ${slot}. Pick it on the title screen to carry on where you left off.`
+      :`This browser isn't letting the game save${store.kind()==="none"?" (storage is blocked, often by private browsing)":""}. If you leave now, this career is lost.`}</div>
+    <div class="lgbtns"><button class="advance gold" id="quitgo">${safe?"Go to the title screen":"Leave anyway"}</button>
+      <button class="skip" id="quitno">Keep playing</button></div></div>`;
+}
+
 function render(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
@@ -1982,7 +1997,7 @@ function render(){
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>
           <button class="reset" id="rst" title="Start over">&#8635;</button></div>
-      </div>
+      </div>${quitAsk?quitPrompt():""}
       ${inOff?"":`<div class="tabs">${TABS.map(([k,l])=>
         `<button class="tab" data-v="${k}" aria-selected="${view===k}">${l}</button>`).join("")}</div>`}
     </div>
@@ -2031,7 +2046,9 @@ function render(){
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
   document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
   const sb=el("skip"); if(sb)sb.onclick=()=>{simAhead();window.scrollTo({top:0})};
-  const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{save();S.title=true;S._slots=await allSlots();render()};
+  const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
+  const qg=el("quitgo"); if(qg)qg.onclick=async()=>{quitAsk=false;S.title=true;S._slots=await allSlots();render()};
+  const qn=el("quitno"); if(qn)qn.onclick=()=>{quitAsk=false;render()};
   const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
   const rb=el("rst"); if(rb)rb.onclick=async()=>{
     if(confirm("Abandon this dynasty and start a new one?")){
@@ -2389,6 +2406,11 @@ window.addEventListener("resize",()=>{
 });
 window.addEventListener("keydown",e=>{
   if(!S.myTeam)return;
+  if(quitAsk){                              // nothing advances under an open prompt
+    if(e.key==="Escape"){e.preventDefault();quitAsk=false;render()}
+    else if(e.key===" "||e.key==="Enter")e.preventDefault();
+    return;
+  }
   const tag=(e.target&&e.target.tagName)||"";
   if(tag==="INPUT"||tag==="TEXTAREA")return;
   if(live&&!live.done){
