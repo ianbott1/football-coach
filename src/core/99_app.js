@@ -108,11 +108,16 @@ function answerLive(v){
 function finishLive(){
   const g=live.g;
   const meHome=(g.home===S.myTeam);
-  SEA.forcedList=SEA.forcedList||[];
-  SEA.forcedList.push({team:S.myTeam, other:(meHome?g.away:g.home),
+  const played={team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
-              drives:live.drives});
+              drives:live.drives};
+  SEA.forcedList=SEA.forcedList||[];
+  SEA.forcedList.push(played);
+  // keep it in the save: a reload must replay this result, not re-simulate
+  S.played=S.played||{};
+  const pk=callKey(live.step);
+  S.played[pk]=(S.played[pk]||[]).concat([JSON.parse(JSON.stringify(played))]);
   const step=live.step;
   live.result={hp:live.eng.h,ap:live.eng.a,
                mine:(g.home===S.myTeam?live.eng.h:live.eng.a)};
@@ -201,7 +206,10 @@ function rebuild(){
     const ans=(S.calls&&S.calls[callKey(i,SEA.year)])||[]; let ai=0;
     SEA.decideHook=ans.length?(()=>ans[ai++]||"normal"):null;
     SEA.plan=(S.plans&&S.plans[i])||"balanced";
+    const pl=S.played&&S.played[callKey(i,SEA.year)];
+    SEA.forcedList=pl?JSON.parse(JSON.stringify(pl)):[];
     SEA.advance();
+    SEA.forcedList=[]; SEA.forced=null;
   }
   SEA.plan=plan;
 }
@@ -398,7 +406,7 @@ function endSeason(rng,choices,act){
       coordMoves:(off.coordMoves||[]).slice(0,6),
       coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null},
     league:LEAGUE.historyExtras(SEA,off,my)}));
-  S.uStart=snap(U); S.off=null; S.plans={};
+  S.uStart=snap(U); S.off=null; S.plans={}; S.played={};
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
   flash={type:"offseason"}; view="team"; save(); render();
