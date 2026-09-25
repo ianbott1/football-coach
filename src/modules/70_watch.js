@@ -203,11 +203,4 @@ const PLANS={
   aggressive:{sd:1.38, edge:-8,  l:"Take risks",    d:"Open it up. Higher ceiling, lower floor."}
 };
 
-const BOWLS=["Citrus Bowl","ReliaQuest Bowl","Alamo Bowl","Gator Bowl","Holiday Bowl",
-"Duke's Mayo Bowl","Las Vegas Bowl","Pinstripe Bowl","Music City Bowl","Texas Bowl",
-"Liberty Bowl","Sun Bowl","Pop-Tarts Bowl","Rate Bowl","Military Bowl","Independence Bowl",
-"Birmingham Bowl","Armed Forces Bowl","Gasparilla Bowl","First Responder Bowl","Fenway Bowl",
-"LA Bowl","New Mexico Bowl","Boca Raton Bowl","Cure Bowl","Camellia Bowl","New Orleans Bowl",
-"Myrtle Beach Bowl","Frisco Bowl","Idaho Potato Bowl","Hawaii Bowl","Bahamas Bowl",
-"Salute to Veterans Bowl","68 Ventures Bowl","Arizona Bowl"];
 

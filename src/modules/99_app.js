@@ -283,7 +283,7 @@ function doAdvance(){
   if(ph==="selection")postTab="field";
   else if(ph==="bowls")postTab="bowls";
   else if(ph==="r1"||ph==="qf"||ph==="sf"||ph==="final")postTab="bracket";
-  flash={type:SEA.phase==="week"||before<NW?"week":"post",step:before};
+  flash={type:SEA.phase==="week"||before<LEAGUE.weeks?"week":"post",step:before};
   const g=heroGame();
   const rk=SEA.poll.rankMap();
   if(g&&!prefersReduced()&&(S.watchMode||"all")==="never"){
@@ -386,7 +386,7 @@ function writeSeasonHistory(){
   const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
   S.history=S.history||[];
   S.history.push({
-    card:{conf:CONF_NAMES[CONF[my]]||"",
+    card:{conf:LEAGUE.conf.names[CONF[my]]||"",
       confRec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1],
       bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
         score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
@@ -448,7 +448,7 @@ function endSeason(rng,choices,act){
   const bwOpp=bestWin?(bestWin.home===my?bestWin.away:bestWin.home):null;
   const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
   S.history.push({
-    card:{conf:CONF_NAMES[CONF[my]]||"",
+    card:{conf:LEAGUE.conf.names[CONF[my]]||"",
       confRec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1],
       bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
         score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
@@ -723,12 +723,12 @@ function confPosition(t){
     const py=SEA.confrec[y][0]/Math.max(1,SEA.confrec[y][0]+SEA.confrec[y][1]);
     return py-px||SEA.confrec[y][0]-SEA.confrec[x][0]||SEA.elo[y]-SEA.elo[x];
   });
-  return {pos:mem.indexOf(t)+1,of:mem.length,conf:CONF_NAMES[c]};
+  return {pos:mem.indexOf(t)+1,of:mem.length,conf:LEAGUE.conf.names[c]};
 }
 
 function projectedField(){
   const rk=SEA.poll.rankMap(), order=SEA.poll.order(), leaders={};
-  CONF_ORDER.forEach(c=>{
+  LEAGUE.conf.order.forEach(c=>{
     const mem=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
       const px=SEA.confrec[x][0]/Math.max(1,SEA.confrec[x][0]+SEA.confrec[x][1]);
       const py=SEA.confrec[y][0]/Math.max(1,SEA.confrec[y][0]+SEA.confrec[y][1]);
@@ -737,7 +737,7 @@ function projectedField(){
     leaders[c]=mem[0];
   });
   const f=["SEC","B1G","B12","ACC"].map(c=>leaders[c]);
-  f.push(G6.map(c=>leaders[c]).sort((x,y)=>rk[x]-rk[y])[0]);
+  f.push(LEAGUE.conf.autoBidPool.map(c=>leaders[c]).sort((x,y)=>rk[x]-rk[y])[0]);
   if(rk["Notre Dame"]<=12&&f.indexOf("Notre Dame")<0)f.push("Notre Dame");
   for(const t of order){if(f.length>=12)break; if(f.indexOf(t)<0)f.push(t)}
   return f.sort((x,y)=>rk[x]-rk[y]);
@@ -760,7 +760,7 @@ function streakOf(t){
 function stakesFor(ng){
   const my=S.myTeam, opp=ng.home===my?ng.away:ng.home;
   const rk=SEA.poll.rankMap();
-  const wk=SEA.step, left=NW-wk;
+  const wk=SEA.step, left=LEAGUE.weeks-wk;
   const rec=SEA.rec[my], w=rec[0], l=rec[1];
   const cp=confPosition(my);
   const riv=rivalryName(my,opp);
@@ -855,7 +855,7 @@ function rosterOf(t){
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
         <div class="pmain"><div class="pname">${esc(p.n)}</div>
-          <div class="psub">${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
+          <div class="psub">${LEAGUE.classes[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
         ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`}).join("");
@@ -890,7 +890,7 @@ function rosterView(){
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
     const feat=S.featured===i;
-    const tag=p=>`${CLASSES[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
+    const tag=p=>`${LEAGUE.classes[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
     return `<div class="depth ${inj?'out':''}">
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
@@ -911,7 +911,7 @@ function rosterView(){
   }).join("");
   const hz=SEA.heisman(30).filter(x=>x.t===my);
   if(hz.length){
-    h+=`<div class="grouphead">In the Heisman conversation</div>`;
+    h+=`<div class="grouphead">In the ${LEAGUE.awards.mvp} conversation</div>`;
     h+=hz.map(x=>`<div class="frow"><div class="fmain"><div class="fname">${esc(x.n)}</div>
       <div class="fnote">${esc(x.p)} &middot; ${esc(x.line||"")}</div></div></div>`).join("");
   }
@@ -935,7 +935,7 @@ function myTeamView(){
 function teamCardHTML(my,rk,co){
   let h=`<div class="idcard" style="--tc:${teamInk(my)};border-left:4px solid ${teamInk(my)}">
     <div class="iname" style="color:${teamInk(my)}">${esc(my)}</div>
-    <div class="imeta">${esc(CONF_NAMES[CONF[my]])} &middot; ${SEA.year} season</div>
+    <div class="imeta">${esc(LEAGUE.conf.names[CONF[my]])} &middot; ${SEA.year} season</div>
     <div class="stats">
       <div><b>${(()=>{const r=liveRec(my);return r[0]+"-"+r[1]})()}</b><span>Record</span></div>
       <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>Conference</span></div>
@@ -1046,7 +1046,7 @@ function nextUpHTML(my,rk){
         <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
         <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>
         <div class="nrec">${pn.opp?SEA.rec[pn.opp][0]+"-"+SEA.rec[pn.opp][1]
-          +" &middot; "+esc(CONF_NAMES[CONF[pn.opp]])
+          +" &middot; "+esc(LEAGUE.conf.names[CONF[pn.opp]])
           :"Matchup set when the round is played"}</div>
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
           <span class="opct">${Math.round(wp*100)}%</span>
@@ -1057,7 +1057,7 @@ function nextUpHTML(my,rk){
   }
   const ng=SEA.nextGame(my);
   if(!ng&&SEA.phase==="week"){
-    h+=`<div class="grouphead">Next up &mdash; ${esc(DATES[SEA.step]||"")}</div>
+    h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>
       <div class="nextcard bye"><div class="nlabel">OPEN DATE</div>
       <div class="byeowl">${owlSVG("owlmini",false)}</div>
       <div class="nopp">Bye week</div>
@@ -1069,11 +1069,11 @@ function nextUpHTML(my,rk){
     const st=stakesFor(ng);
     const riv=rivalryName(my,opp);
     const ser=riv?seriesFor(U,my,opp):null;
-    h+=`<div class="grouphead">Next up &mdash; ${esc(DATES[SEA.step]||"")}</div>
+    h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>
       <div class="nextcard ${riv?'riv':''}">
       <div class="nlabel">${ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
-      <div class="nrec">${SEA.rec[opp][0]}-${SEA.rec[opp][1]} &middot; ${esc(CONF_NAMES[CONF[opp]])}</div>
+      <div class="nrec">${SEA.rec[opp][0]}-${SEA.rec[opp][1]} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
         ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||HFA))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}</b> in the series${
@@ -1095,7 +1095,7 @@ function nextUpHTML(my,rk){
 /* Whole slate: results where played, fixtures where not. */
 function scheduleHTML(team,compact){
   const rows=[];
-  for(let w=0;w<NW;w++){
+  for(let w=0;w<LEAGUE.weeks;w++){
     const W=SEA.weeks[w];
     const played=!!W;
     const g=played?W.games.find(x=>x.home===team||x.away===team)
@@ -1117,7 +1117,7 @@ function scheduleHTML(team,compact){
       rows.push(`<div class="srow up"><span class="spos">${label.replace("Wk ","")}</span>
         <span class="steam">${g.home===team?"vs":"at"} ${rkTag(rk)}${TL(opp)}${
           riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
-        <span class="sall">${esc(DATES[w]||"")}</span></div>`);
+        <span class="sall">${esc(LEAGUE.dates[w]||"")}</span></div>`);
     }
   }
   // postseason
@@ -1324,7 +1324,7 @@ function weekNews(W){
   if(SEA.step>=6&&SEA.roster){
     const hz=SEA.heisman(2);
     if(hz.length)items.push({p:55,k:"heis",tone:"muted",
-      h:`Heisman watch: ${hz[0].n}, ${CLASSES[hz[0].c]} ${hz[0].p}, ${hz[0].t}`,
+      h:`${LEAGUE.awards.mvp} watch: ${hz[0].n}, ${LEAGUE.classes[hz[0].c]} ${hz[0].p}, ${hz[0].t}`,
       b:`${hz[0].line||""}${hz[1]?" \u00b7 "+hz[1].n+" ("+hz[1].t+") is closest.":""}`});
   }
   items.sort((x,y)=>(y.p||0)-(x.p||0));
@@ -1346,7 +1346,7 @@ function newsBlock(){
 function playoffPicture(){
   const rk=SEA.poll.rankMap(), order=SEA.poll.order();
   const leaders={};
-  CONF_ORDER.forEach(c=>{
+  LEAGUE.conf.order.forEach(c=>{
     const mem=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
       const px=SEA.confrec[x][0]/Math.max(1,SEA.confrec[x][0]+SEA.confrec[x][1]);
       const py=SEA.confrec[y][0]/Math.max(1,SEA.confrec[y][0]+SEA.confrec[y][1]);
@@ -1356,9 +1356,9 @@ function playoffPicture(){
   });
   const field=[], note={};
   ["SEC","B1G","B12","ACC"].forEach(c=>{field.push(leaders[c]);
-    note[leaders[c]]=CONF_NAMES[c]+" leader"});
-  const g6=G6.map(c=>leaders[c]).sort((a,b)=>rk[a]-rk[b])[0];
-  field.push(g6); note[g6]=CONF_NAMES[CONF[g6]]+" leader";
+    note[leaders[c]]=LEAGUE.conf.names[c]+" leader"});
+  const g6=LEAGUE.conf.autoBidPool.map(c=>leaders[c]).sort((a,b)=>rk[a]-rk[b])[0];
+  field.push(g6); note[g6]=LEAGUE.conf.names[CONF[g6]]+" leader";
   if(rk["Notre Dame"]<=12&&field.indexOf("Notre Dame")<0){
     field.push("Notre Dame");note["Notre Dame"]="Independent"}
   for(const t of order){if(field.length>=12)break;
@@ -1529,7 +1529,7 @@ function pollRows(prev,cur){
       <span class="cbar"></span>
       <div class="pnum">${p.rank}</div>
       <div class="pmain"><div class="pname">${TL(p.team)}</div>
-      <div class="psub">${p.rec} &middot; ${esc(CONF_NAMES[p.conf])}</div></div>
+      <div class="psub">${p.rec} &middot; ${esc(LEAGUE.conf.names[p.conf])}</div></div>
       ${mv(p.team)}</div>`).join("");
   if(cur[S.myTeam]>25){
     h+=`<div class="grouphead">Your program</div>
@@ -1546,7 +1546,7 @@ function standingsView(){
   const st=SEA.weeks.length?SEA.weeks[SEA.weeks.length-1].standings:SEA.standings(null);
   let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
   const mine=CONF[S.myTeam];
-  const order=CONF_ORDER.filter(c=>c===mine).concat(CONF_ORDER.filter(c=>c!==mine));
+  const order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
   if(wide)h+=`<div class="standgrid">`;
   order.forEach(c=>{
     const head=`<div class="srow shead"><span class="spos">#</span>
@@ -1558,7 +1558,7 @@ function standingsView(){
       <span class="dot" style="background:${teamColor(r.team)}"></span>
       <span class="steam">${rkTag(r.rank)}${TL(r.team)}</span>
       <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span></div>`;
-    h+=`<div class="cbox"><div class="chead">${esc(CONF_NAMES[c])}</div>`;
+    h+=`<div class="cbox"><div class="chead">${esc(LEAGUE.conf.names[c])}</div>`;
     if(hasDivisions(c)){
       const div={};
       st[c].forEach(r=>{const d=divisionOf(U,r.team)||"East";(div[d]=div[d]||[]).push(r)});
@@ -1731,7 +1731,7 @@ function seasonRowsFor(t){
     else res=r[0]>=6?"No bowl":"Losing season";
     const cc=h.confChamps?Object.keys(h.confChamps).find(c=>h.confChamps[c]===t):null;
     return {year:h.year,rec:r[0]+"-"+r[1],rank:r[2],res:res,grade:(t===S.myTeam?h.grade:null),
-            champ:h.champion===t,conf:cc?CONF_NAMES[cc]:null,
+            champ:h.champion===t,conf:cc?LEAGUE.conf.names[cc]:null,
             coach:!!(h.firedList&&h.firedList.indexOf(t)>=0)};
   }).reverse();
 }
@@ -1745,7 +1745,7 @@ function teamCard(t){
   const base=S.history.length?S.history[0].year:SEA.year;
   let h=`<div class="idcard" style="border-left:4px solid ${teamInk(t)}">
     <div class="iname" style="color:${teamInk(t)}">${esc(t)}</div>
-    <div class="imeta">${esc(CONF_NAMES[CONF[t]])} &middot; currently
+    <div class="imeta">${esc(LEAGUE.conf.names[CONF[t]])} &middot; currently
       ${A.now<=25?"ranked #"+A.now:"unranked ("+A.now+"th)"}</div>
     <div class="stats">
       <div><b>${A.w}-${A.l}</b><span>All-time</span></div>
@@ -1874,7 +1874,7 @@ function dynastyView(){
     h+=`<div class="grouphead">${list.length} programs &middot; ordered by current ranking</div>`;
     h+=list.map(t=>{
       const A=allTime(t);
-      const bits=[esc(CONF_NAMES[CONF[t]])];
+      const bits=[esc(LEAGUE.conf.names[CONF[t]])];
       if(A.titles)bits.push(A.titles+" title"+(A.titles>1?"s":""));
       if(A.best)bits.push("best #"+A.best);
       return `<div class="frow tpick" data-t="${esc(t)}">
@@ -1896,37 +1896,37 @@ function dynastyView(){
   if(SEA&&SEA.step>=6&&SEA.roster){
     const hz=SEA.heisman(5);
     if(hz.length){
-      h+=`<div class="grouphead">Heisman race &mdash; ${SEA.year}, week ${Math.min(SEA.step,NW)}</div>`;
+      h+=`<div class="grouphead">${LEAGUE.awards.mvp} race &mdash; ${SEA.year}, week ${Math.min(SEA.step,LEAGUE.weeks)}</div>`;
       h+=hz.map((x,i)=>`<div class="frow ${x.t===my?'mine':''}">
         <span class="sd">${i+1}</span>
         <span class="dot" style="background:${teamColor(x.t)}"></span>
         <div class="fmain"><div class="fname">${esc(x.n)}</div>
-        <div class="fnote">${CLASSES[x.c]} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div>
+        <div class="fnote">${LEAGUE.classes[x.c]} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div>
         ${x.line?`<div class="sline2 inrow">${esc(x.line)}</div>`:""}</div>
         <span class="fcfp">${x.r}</span></div>`).join("");
     }
   }
   const hw=S.history.filter(x=>x.heis&&x.heis.length);
   if(hw.length){
-    h+=`<div class="grouphead">Heisman winners</div>`;
+    h+=`<div class="grouphead">${LEAGUE.awards.mvp} winners</div>`;
     h+=hw.slice().reverse().map(x=>{const w=x.heis[0];
       return `<div class="frow ${w.t===my?'mine':''}">
         <span class="sd">${x.year}</span>
         <span class="dot" style="background:${teamColor(w.t)}"></span>
         <div class="fmain"><div class="fname">${esc(w.n)}</div>
-        <div class="fnote">${CLASSES[w.c]} ${esc(w.p)} &middot; ${esc(w.t)}</div>
+        <div class="fnote">${LEAGUE.classes[w.c]} ${esc(w.p)} &middot; ${esc(w.t)}</div>
         ${w.line?`<div class="sline2 inrow">${esc(w.line)}</div>`:""}</div>
         <span class="fcfp">${w.r}</span></div>`}).join("");
   }
   const ac=S.history.length?S.history[S.history.length-1].allconf:null;
   if(ac&&ac.list&&ac.list.length){
-    h+=`<div class="grouphead">All-${esc(CONF_NAMES[ac.conf]||ac.conf)} &mdash;
+    h+=`<div class="grouphead">All-${esc(LEAGUE.conf.names[ac.conf]||ac.conf)} &mdash;
       ${S.history[S.history.length-1].year}</div>`;
     h+=ac.list.map(x=>`<div class="frow ${x.team===my?'mine':''}">
       <span class="sd">${esc(x.pos)}</span>
       <span class="dot" style="background:${teamColor(x.team)}"></span>
       <div class="fmain"><div class="fname">${esc(x.n)}</div>
-      <div class="fnote">${CLASSES[x.c]} &middot; ${esc(x.team)}</div></div>
+      <div class="fnote">${LEAGUE.classes[x.c]} &middot; ${esc(x.team)}</div></div>
       <span class="fcfp">${x.r}</span></div>`).join("");
   }
   h+=`<div class="grouphead">National champions</div>`;
@@ -1938,7 +1938,7 @@ function dynastyView(){
       <div class="ymain"><div class="yrec">${esc(x.champion)}</div>
       <div class="yres">${r?r[0]+"-"+r[1]:""}${x.confChamps?" &middot; "+
         (Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)
-          ?CONF_NAMES[Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)]+" champion"
+          ?LEAGUE.conf.names[Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)]+" champion"
           :"at-large"):""}</div></div></div>`;
   }).join("");
   const last=S.history[S.history.length-1];
@@ -1991,14 +1991,14 @@ function offseasonBanner(){
         is a recruiting pitch &mdash; future classes take note.</div>`;
   }
   const ra=(last.realigned||[]).length?`<div class="bnews"><b>Realignment.</b> ${
-    last.realigned.map(m=>esc(m.team)+" leaves the "+esc(CONF_NAMES[m.from]||m.from)+
-      " for the "+esc(CONF_NAMES[m.to]||m.to)).join("; ")}.</div>`:"";
+    last.realigned.map(m=>esc(m.team)+" leaves the "+esc(LEAGUE.conf.names[m.from]||m.from)+
+      " for the "+esc(LEAGUE.conf.names[m.to]||m.to)).join("; ")}.</div>`:"";
   const hz=last.heis&&last.heis[0]?`<div class="bnews small">${esc(last.heis[0].n)}
-    (${esc(last.heis[0].p)}, ${esc(last.heis[0].t)}) won the Heisman.</div>`:"";
+    (${esc(last.heis[0].p)}, ${esc(last.heis[0].t)}) won the ${LEAGUE.awards.mvp}.</div>`:"";
   const mine=(last.allconf&&last.allconf.list||[]).filter(x=>x.team===my);
   const acn=mine.length?`<div class="bnews"><b>All-conference.</b> ${
     mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the
-    All-${esc(CONF_NAMES[last.allconf.conf]||"")} team.</div>`:"";
+    All-${esc(LEAGUE.conf.names[last.allconf.conf]||"")} team.</div>`:"";
   const cm=(last.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
     cm.map(m=>esc(m.name)+" ("+m.side.toUpperCase()+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
@@ -2038,15 +2038,15 @@ function weekWeight(w){
   if(rivalryName(my,opp))return 3;
   const rk=SEA.poll.rankMap()[opp];
   if(rk<=25)return 3;
-  if(w>=NW-3)return 2;
+  if(w>=LEAGUE.weeks-3)return 2;
   const wp=winProb(my,opp,g.home===my,g.neutral);
   if(wp>0.30&&wp<0.70)return 2;
   return 1;
 }
 
 function nextBigWeek(){
-  for(let w=SEA.step+1;w<NW;w++)if(weekWeight(w)>=2)return w;
-  return NW;
+  for(let w=SEA.step+1;w<LEAGUE.weeks;w++)if(weekWeight(w)>=2)return w;
+  return LEAGUE.weeks;
 }
 
 function canSkip(){
@@ -2119,7 +2119,7 @@ function offseasonScreen(){
   const jobRow=(t,tag)=>`<div class="cand ${S.off.move===t?'on':''}" data-job="${esc(t)}">
     <div class="candtop"><div>
       <div class="fname" style="color:${teamInk(t)}">${esc(t)}</div>
-      <div class="fnote">${esc(CONF_NAMES[CONF[t]])} &middot; ${
+      <div class="fnote">${esc(LEAGUE.conf.names[CONF[t]])} &middot; ${
         U.program[t]>=1850?"blue blood":U.program[t]>=1650?"solid job":
         U.program[t]>=1450?"middling job":"rebuild"}</div></div>
       <span class="cgrade">${esc(tag)}</span></div>
@@ -2648,7 +2648,7 @@ const GLOSSARY=[
   "a small school than a big one. It decides which jobs open up when you're fired."]
 ];
 
-const PRE_RANK=(()=>{const o=TEAMS.slice().sort((a,b)=>b[1]-a[1]);
+const PRE_RANK=(()=>{const o=LEAGUE.teams.slice().sort((a,b)=>b[1]-a[1]);
   const m={};o.forEach((t,i)=>m[t[0]]=i+1);return m})();
 
 function pickList(q){
@@ -2658,7 +2658,7 @@ function pickList(q){
     .filter(c=>byConf[c]).map(c=>{
       const list=byConf[c].filter(t=>!ql||t.toLowerCase().includes(ql)).sort();
       if(!list.length)return "";
-      return `<div class="cbox"><div class="chead">${CONF_NAMES[c]}</div>
+      return `<div class="cbox"><div class="chead">${LEAGUE.conf.names[c]}</div>
       <div class="pickgrid">${list.map(t=>{
         const ti=tierOf(PRE_RANK[t]);
         const gone=(S.picking||[]).some(x=>x.team===t);

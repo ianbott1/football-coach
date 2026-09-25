@@ -3,12 +3,6 @@
    permanent entry in the program's record book, and the good ones get drafted
    in front of everybody. */
 
-const NFL_TEAMS=["Arizona","Atlanta","Baltimore","Buffalo","Carolina","Chicago",
-  "Cincinnati","Cleveland","Dallas","Denver","Detroit","Green Bay","Houston",
-  "Indianapolis","Jacksonville","Kansas City","Las Vegas","LA Chargers","LA Rams",
-  "Miami","Minnesota","New England","New Orleans","NY Giants","NY Jets",
-  "Philadelphia","Pittsburgh","San Francisco","Seattle","Tampa Bay","Tennessee",
-  "Washington"];
 
 const DRAFT_ROUNDS=7, PICKS_PER_ROUND=32;
 
@@ -31,7 +25,7 @@ function runDraft(u, rng, year, leavers){
   pool.forEach(d=>{d.score=prospectScore(d,rng)});
   pool.sort((a,b)=>b.score-a.score);
 
-  const order=rng.shuffle(NFL_TEAMS.slice());
+  const order=rng.shuffle(LEAGUE.draftTeams.slice());
   const picks=[];
   const total=DRAFT_ROUNDS*PICKS_PER_ROUND;
   for(let i=0;i<Math.min(total,pool.length);i++){

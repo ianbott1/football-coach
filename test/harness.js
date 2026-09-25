@@ -11,6 +11,7 @@ function load(opts) {
     .replace(/\(async function\(\)\{[\s\S]*?\}\)\(\);/, '');   // drop the boot call
 
   const mem = {};
+  global.setTimeout = () => 0; global.clearTimeout = () => {};
   global.window = {
     storage: {
       get: async k => mem[k] !== undefined ? {key:k, value:mem[k]} : null,
@@ -33,7 +34,9 @@ function load(opts) {
   };
 
   const exposed = opts.expose || [];
-  const ret = 'return {' + exposed.map(n => n + ':typeof ' + n + '!=="undefined"?' + n + ':undefined').join(',') + '};';
+  // getters, not values: S, U, SEA and live are reassigned with `let`, so a
+  // value captured here would be stale (null) forever
+  const ret = 'return {' + exposed.map(n => 'get ' + n + '(){return typeof ' + n + '!=="undefined"?' + n + ':undefined}').join(',') + '};';
   return new Function(js + '\n' + ret)();
 }
 
@@ -43,11 +46,11 @@ function driver(api) {
     season(answer) {
       answer = answer || (dp => dp.opts[0][0]);
       let guard = 0;
-      while (api.SEA && api.SEA().phase !== 'done' && guard++ < 80) {
+      while (api.SEA && api.SEA.phase !== 'done' && guard++ < 80) {
         api.doAdvance();
         let g = 0;
-        while (api.live && api.live() && !api.live().done && g++ < 600) {
-          const L = api.live();
+        while (api.live && !api.live.done && g++ < 600) {
+          const L = api.live;
           if (L.ask) api.answerLive(answer(L.ask.dp, L.ask)); else api.liveTick();
         }
       }

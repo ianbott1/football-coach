@@ -51,45 +51,32 @@ function _lum(c){const [r,g,b]=c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.po
 function _mix(c,t,p){return c.map((v,i)=>Math.round(v+(t[i]-v)*p))}
 const _READ={};
 function teamColor(t){                    // raw brand color
-  return COLORS[t]||"#F4A63A";
+  return LEAGUE.colors[t]||"#F4A63A";
 }
 function teamInk(t){                      // brand color, lightened until legible on dark
   if(_READ[t])return _READ[t];
-  let c=_hx(COLORS[t]||"#F4A63A"), p=0;
-  while(_lum(c)<0.30&&p<0.85){p+=0.08;c=_mix(_hx(COLORS[t]||"#F4A63A"),[255,255,255],p)}
+  let c=_hx(LEAGUE.colors[t]||"#F4A63A"), p=0;
+  while(_lum(c)<0.30&&p<0.85){p+=0.08;c=_mix(_hx(LEAGUE.colors[t]||"#F4A63A"),[255,255,255],p)}
   const out="#"+c.map(v=>v.toString(16).padStart(2,"0")).join("");
   _READ[t]=out; return out;
 }
 
 /* ============ constants ============ */
-const ELO_PT=21, HFA=62, GAME_SD=14, K=32, NW=14;
-const CONF_NAMES={SEC:"SEC",B1G:"Big Ten",B12:"Big 12",ACC:"ACC",P12:"Pac-12",
-  AAC:"American",MW:"Mountain West",SBC:"Sun Belt",MAC:"MAC",CUSA:"Conference USA",IND:"Independent"};
-const CONF_ORDER=["SEC","B1G","B12","ACC","P12","AAC","MW","SBC","MAC","CUSA"];
-const G6=["AAC","CUSA","MAC","MW","P12","SBC"];
+const ELO_PT=21, HFA=62, GAME_SD=14, K=32;
 
-/* The Sun Belt is the only conference still split into divisions. Everyone else
-   runs a single table with the top two meeting for the title. */
-const DIVISIONS={
-  SBC:{ East:["App State","Coastal Car","Georgia South","Ga State","James Madison",
-              "Marshall","Old Dominion"],
-        West:["Arkansas State","Louisiana","Louisiana Tech","South Alabama","Troy"] }
-};
 function divisionOf(u,t){
   const c=(u&&u.conf&&u.conf[t])||CONF[t];
-  const D=DIVISIONS[c]; if(!D)return null;
+  const D=LEAGUE.conf.divisions[c]; if(!D)return null;
   for(const k in D)if(D[k].indexOf(t)>=0)return k;
   // a newcomer joins whichever side is thinner
   const sizes=Object.keys(D).map(k=>[k,D[k].length]).sort((a,b)=>a[1]-b[1]);
   D[sizes[0][0]].push(t);
   return sizes[0][0];
 }
-function hasDivisions(c){return !!DIVISIONS[c]}
-function divisionNames(c){return DIVISIONS[c]?Object.keys(DIVISIONS[c]).sort():[]}
-const DATES=["Sep 5","Sep 12","Sep 19","Sep 26","Oct 3","Oct 10","Oct 17","Oct 24",
-  "Oct 31","Nov 7","Nov 14","Nov 21","Nov 28","Dec 5"];
-const NAMES=TEAMS.map(t=>t[0]);
-let CONF=Object.fromEntries(TEAMS.map(t=>[t[0],t[2]]));
+function hasDivisions(c){return !!LEAGUE.conf.divisions[c]}
+function divisionNames(c){return LEAGUE.conf.divisions[c]?Object.keys(LEAGUE.conf.divisions[c]).sort():[]}
+const NAMES=LEAGUE.teams.map(t=>t[0]);
+let CONF=Object.fromEntries(LEAGUE.teams.map(t=>[t[0],t[2]]));
 function syncConf(u){
   if(u&&u.conf)NAMES.forEach(t=>{if(u.conf[t])CONF[t]=u.conf[t]});
   else if(u){u.conf={};NAMES.forEach(t=>u.conf[t]=CONF[t])}
@@ -321,8 +308,8 @@ function buildSchedule(rng,R,year){
   const busy={}; NAMES.forEach(t=>busy[t]=new Set());
   const sched=[], unplaced=[];
   games.forEach(([a,h,isC,neu,rl,pw,site])=>{
-    let order=isC?[...Array(NW).keys()].slice(3).concat([0,1,2])
-                 :[...Array(NW).keys()];
+    let order=isC?[...Array(LEAGUE.weeks).keys()].slice(3).concat([0,1,2])
+                 :[...Array(LEAGUE.weeks).keys()];
     if(rl&&pw!==undefined)order=[pw].concat(order.filter(w=>w!==pw));
     let ok=false;
     for(const w of order){
@@ -334,7 +321,7 @@ function buildSchedule(rng,R,year){
     if(!ok)unplaced.push([a,h,isC,neu]);
   });
   const place=(a,h,isC,neu)=>{
-    for(let w=0;w<NW;w++){
+    for(let w=0;w<LEAGUE.weeks;w++){
       if(!busy[a].has(w)&&!busy[h].has(w)){
         busy[a].add(w);busy[h].add(w);
         sched.push({week:w,away:a,home:h,conf:isC,neutral:neu});return true}
@@ -343,14 +330,14 @@ function buildSchedule(rng,R,year){
   };
   const move=(g,depth)=>{               // try to relocate game g to a free week
     const A=g.home,B=g.away,cur=g.week;
-    for(let w=0;w<NW;w++){
+    for(let w=0;w<LEAGUE.weeks;w++){
       if(w===cur)continue;
       if(!busy[A].has(w)&&!busy[B].has(w)){
         busy[A].delete(cur);busy[B].delete(cur);
         busy[A].add(w);busy[B].add(w);g.week=w;return true}
     }
     if(depth<=0)return false;
-    for(let w=0;w<NW;w++){
+    for(let w=0;w<LEAGUE.weeks;w++){
       if(w===cur)continue;
       const block=sched.filter(x=>x!==g&&x.week===w&&
         (x.home===A||x.away===A||x.home===B||x.away===B));
@@ -367,7 +354,7 @@ function buildSchedule(rng,R,year){
   unplaced.forEach(([a,h,isC,neu])=>{
     if(place(a,h,isC,neu))return;
     let ok=false;
-    for(let w=0;w<NW&&!ok;w++){
+    for(let w=0;w<LEAGUE.weeks&&!ok;w++){
       const block=sched.filter(x=>x.week===w&&
         (x.home===a||x.away===a||x.home===h||x.away===h));
       if(block.length!==1)continue;
@@ -379,7 +366,7 @@ function buildSchedule(rng,R,year){
   });
   stillOut.forEach(([a,h,isC,neu])=>{ place(a,h,isC,neu) });
   lateenRivalries(sched,busy);
-  if(year===2026)pinRealWeeks(sched,busy,NW);
+  if(year===2026)pinRealWeeks(sched,busy,LEAGUE.weeks);
   fillEarlyByes(sched,busy);
   const tally={}; NAMES.forEach(t=>tally[t]=0);
   sched.forEach(g=>{tally[g.home]++;tally[g.away]++});
@@ -747,8 +734,8 @@ function newUniverse(seed){
            tenure:{},bad:{},history:[],rng:seed};
   u.coach={}; u.roster={}; u.oc={}; u.dc={}; u.conf={};
   u.nextRealign=2026+4+rng.int(4);
-  TEAMS.forEach(t=>u.conf[t[0]]=t[2]);
-  TEAMS.forEach(([n,e])=>{
+  LEAGUE.teams.forEach(t=>u.conf[t[0]]=t[2]);
+  LEAGUE.teams.forEach(([n,e])=>{
     u.program[n]=e; u.perceived[n]=e;
     u.roster[n]=makeRoster(rng,e);
     u.oc[n]=newCoordinator(rng,e,"oc"); u.dc[n]=newCoordinator(rng,e,"dc");

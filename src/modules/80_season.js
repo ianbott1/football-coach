@@ -28,14 +28,14 @@ class Season{
     this.midFired={}; this._u=u; this.plan="balanced"; this.planLog={};
   }
   get phase(){
-    if(this.step<NW)return "week";
-    if(this.step===NW)return "titles";
-    if(this.step===NW+1)return "selection";
-    if(this.step===NW+2)return "bowls";
-    if(this.step===NW+3)return "r1";
-    if(this.step===NW+4)return "qf";
-    if(this.step===NW+5)return "sf";
-    if(this.step===NW+6)return "final";
+    if(this.step<LEAGUE.weeks)return "week";
+    if(this.step===LEAGUE.weeks)return "titles";
+    if(this.step===LEAGUE.weeks+1)return "selection";
+    if(this.step===LEAGUE.weeks+2)return "bowls";
+    if(this.step===LEAGUE.weeks+3)return "r1";
+    if(this.step===LEAGUE.weeks+4)return "qf";
+    if(this.step===LEAGUE.weeks+5)return "sf";
+    if(this.step===LEAGUE.weeks+6)return "final";
     return "done";
   }
   buttonLabel(){
@@ -65,7 +65,7 @@ class Season{
       };
       const mem=this.titleField(c,rank);
       if(mem[0]!==team&&mem[1]!==team)return null;
-      return {home:mem[0],away:mem[1],neutral:true,label:CONF_NAMES[c]+" Championship"};
+      return {home:mem[0],away:mem[1],neutral:true,label:LEAGUE.conf.names[c]+" Championship"};
     }
     if(p==="bowls"){
       const pr=(this.bowlPairs||[]).find(x=>x.a===team||x.b===team);
@@ -106,7 +106,7 @@ class Season{
   /* The two effective ratings for a scheduled game, so it can be played live. */
   matchupElo(g,plan){
     const a=g.home,b=g.away,neutral=g.neutral;
-    const w=Math.min(this.step,NW);
+    const w=Math.min(this.step,LEAGUE.weeks);
     const P=PLANS[plan]||PLANS.balanced;
     let edge=0;
     if(this.userTeam===a||this.userTeam===b)
@@ -163,7 +163,7 @@ class Season{
       }
     }
     const venue=neutral?0:((this.hfa&&this.hfa[a])||HFA)-HFA;
-    const w=Math.min(this.step,NW);
+    const w=Math.min(this.step,LEAGUE.weeks);
     const eloH=this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:HFA)+venue+edge;
     const eloA=this.talent.eff(b,w)+(this.staffAdj[b]||0);
     const isUser=(this.userTeam===a||this.userTeam===b);
@@ -264,19 +264,19 @@ class Season{
     this._award(w,out);
     this.talent.advance(w+1);
     out.sort((a,b)=>Math.min(a.hrank,a.arank)-Math.min(b.hrank,b.arank));
-    this.weeks.push({label:`Week ${w+1}`,date:DATES[w],games:out,
+    this.weeks.push({label:`Week ${w+1}`,date:LEAGUE.dates[w],games:out,
       poll:this.top25(prev),standings:this.standings(prev)});
   }
   _titles(){
     const prev=this.rankMap();
-    CONF_ORDER.forEach(c=>{
+    LEAGUE.conf.order.forEach(c=>{
       const rank=(x,y)=>{
         const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
         const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
         return py-px || this.confrec[y][0]-this.confrec[x][0] || this.elo[y]-this.elo[x];
       };
       const mem=this.titleField(c,rank);
-      const r=this._resolve(mem[0],mem[1],true,{conf:true,title:CONF_NAMES[c]+" Championship"});
+      const r=this._resolve(mem[0],mem[1],true,{conf:true,title:LEAGUE.conf.names[c]+" Championship"});
       r.hrank=prev[mem[0]];r.arank=prev[mem[1]];
       r.hrec=this.rec[mem[0]][0]+"-"+this.rec[mem[0]][1];
       r.arec=this.rec[mem[1]][0]+"-"+this.rec[mem[1]][1];
@@ -288,16 +288,16 @@ class Season{
   }
   allConfAll(){
     const out={};
-    CONF_ORDER.forEach(c=>{out[c]=this.allConference(c)});
+    LEAGUE.conf.order.forEach(c=>{out[c]=this.allConference(c)});
     return out;
   }
   _select(){
     const order=this.poll.order(), rk={};order.forEach((t,i)=>rk[t]=i+1);
     const f=[];
     ["SEC","B1G","B12","ACC"].forEach(c=>{f.push(this.champs[c]);
-      this.notes[this.champs[c]]=CONF_NAMES[c]+" champion"});
-    const g6=G6.map(c=>this.champs[c]).sort((a,b)=>rk[a]-rk[b])[0];
-    f.push(g6); this.notes[g6]=CONF_NAMES[CONF[g6]]+" champion";
+      this.notes[this.champs[c]]=LEAGUE.conf.names[c]+" champion"});
+    const g6=LEAGUE.conf.autoBidPool.map(c=>this.champs[c]).sort((a,b)=>rk[a]-rk[b])[0];
+    f.push(g6); this.notes[g6]=LEAGUE.conf.names[CONF[g6]]+" champion";
     if(rk["Notre Dame"]<=12&&f.indexOf("Notre Dame")<0){
       f.push("Notre Dame");this.notes["Notre Dame"]="Independent, top-12 bid"}
     for(const t of order){if(f.length>=12)break;
@@ -353,14 +353,14 @@ class Season{
     const pool=NAMES.filter(t=>this.rec[t][0]>=6 && this.field.indexOf(t)<0)
                     .sort((a,b)=>rk[a]-rk[b]);
     const pairs=[]; let bi=0;
-    while(pool.length>=2 && bi<BOWLS.length){
+    while(pool.length>=2 && bi<LEAGUE.bowls.length){
       const a=pool.shift();
       let j=0;
       for(let k=0;k<Math.min(6,pool.length);k++){
         if(CONF[pool[k]]!==CONF[a]){j=k;break}
       }
       const b=pool.splice(j,1)[0];
-      pairs.push({name:BOWLS[bi++],a:a,b:b,
+      pairs.push({name:LEAGUE.bowls[bi++],a:a,b:b,
                   ra:this.rec[a][0]+"-"+this.rec[a][1],
                   rb:this.rec[b][0]+"-"+this.rec[b][1],
                   rka:rk[a],rkb:rk[b]});
@@ -379,85 +379,6 @@ class Season{
   }
 
   myBowl(team){return this.bowls.find(g=>g.home===team||g.away===team)||null}
-  _br(a,b,neutral,site){
-    const r=this._resolve(a,b,neutral,{site:site});
-    r.hseed=this.seeds[a];r.aseed=this.seeds[b];
-    r.hrec=this.rec[a][0]+"-"+this.rec[a][1];
-    r.arec=this.rec[b][0]+"-"+this.rec[b][1];
-    return r;
-  }
-  _r1(){
-    [[5,12],[6,11],[7,10],[8,9]].forEach(([h,l])=>
-      this.rounds.r1.push(this._br(this.field[h-1],this.field[l-1],false,
-        "at "+this.field[h-1])));
-    this.poll.update(this.rounds.r1,this.elo);
-  }
-  _qf(){
-    const w={};this.rounds.r1.forEach(g=>{w[Math.min(g.hseed,g.aseed)]=g.winner});
-    [["Rose Bowl",1,8],["Sugar Bowl",2,7],["Fiesta Bowl",3,6],["Peach Bowl",4,5]]
-      .forEach(([bowl,top,key])=>{
-        this.rounds.qf.push(this._br(this.field[top-1],w[key],true,bowl))});
-    this.poll.update(this.rounds.qf,this.elo);
-  }
-  _sf(){
-    const q=this.rounds.qf.map(g=>g.winner);
-    const s=q.slice().sort((a,b)=>this.seeds[a]-this.seeds[b]);
-    this.rounds.sf.push(this._br(s[0],s[3],true,"Cotton Bowl"));
-    this.rounds.sf.push(this._br(s[1],s[2],true,"Orange Bowl"));
-    this.poll.update(this.rounds.sf,this.elo);
-  }
-  _final(){
-    const f=this.rounds.sf.map(g=>g.winner)
-      .sort((a,b)=>this.seeds[a]-this.seeds[b]);
-    const g=this._br(f[0],f[1],true,"Allegiant Stadium, Las Vegas");
-    this.rounds.fin.push(g); this.champion=g.winner;
-    this.poll.update([g],this.elo);
-  }
-  top25(prev){
-    return this.poll.order().slice(0,25).map((t,i)=>({
-      rank:i+1,team:t,conf:CONF[t],rec:this.rec[t][0]+"-"+this.rec[t][1],
-      prev:prev?prev[t]:0,delta:prev&&prev[t]?prev[t]-(i+1):null}));
-  }
-  standings(prev){
-    const out={};
-    CONF_ORDER.forEach(c=>{
-      out[c]=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
-        const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
-        const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
-        return py-px||this.confrec[y][0]-this.confrec[x][0]||this.elo[y]-this.elo[x];
-      }).map(t=>({team:t,cr:this.confrec[t][0]+"-"+this.confrec[t][1],
-                  rec:this.rec[t][0]+"-"+this.rec[t][1],rank:prev?prev[t]:0}));
-    });
-    return out;
-  }
-  /* Fold this season's numbers into every player's career line. */
-  bankCareers(u){
-    // the season's box scores live on this Season's roster copy; the careers
-    // they feed belong to the universe's roster, so read one and write the other
-    if(!u.roster||!this.roster)return;
-    NAMES.forEach(t=>{
-      const live=this.roster[t]||[], keep=u.roster[t]||[];
-      keep.forEach((pl,i)=>{
-        if(!pl)return;
-        if(pl.from===undefined||pl.from===null)pl.from=this.year-(pl.c||0);
-        pl.peak=Math.max(pl.peak||0,pl.r||0);
-        const src=live[i];
-        if(!src||!src.st2||src.n!==pl.n)return;      // same man, same slot
-        if(!pl.car){pl.car=blankStats(POS[i%POS.length].p); pl.car.yrs=0}
-        addStats(pl.car,src.st2);
-        pl.car.yrs=(pl.car.yrs||0)+1;
-      });
-    });
-  }
-  healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*NW);return h}
-  myGame(team,wk){
-    const W=this.weeks[wk]; if(!W)return null;
-    return W.games.find(g=>g.home===team||g.away===team)||null;
-  }
-  nextGame(team){
-    const g=this.sched.find(g=>g.week===this.step&&(g.home===team||g.away===team));
-    return g||null;
-  }
   /* What the user's team faces next once the regular season is over.
      Every one of these is determined the moment the previous round ends. */
   postNext(team){
@@ -471,7 +392,7 @@ class Season{
       };
       const mem=this.titleField(c,rk2);
       if(mem[0]===team||mem[1]===team)
-        return {label:CONF_NAMES[c]+" Championship",
+        return {label:LEAGUE.conf.names[c]+" Championship",
                 opp:mem[0]===team?mem[1]:mem[0],neutral:true};
       return null;
     }
@@ -556,7 +477,7 @@ class Season{
   }
   standings(prev){
     const out={};
-    CONF_ORDER.forEach(c=>{
+    LEAGUE.conf.order.forEach(c=>{
       out[c]=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
         const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
         const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
@@ -585,7 +506,7 @@ class Season{
       });
     });
   }
-  healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*NW);return h}
+  healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*LEAGUE.weeks);return h}
   myGame(team,wk){
     const W=this.weeks[wk]; if(!W)return null;
     return W.games.find(g=>g.home===team||g.away===team)||null;
@@ -594,6 +515,5 @@ class Season{
     const g=this.sched.find(g=>g.week===this.step&&(g.home===team||g.away===team));
     return g||null;
   }
-  /* What the user's team faces next once the regular season is over. */
 }
 
