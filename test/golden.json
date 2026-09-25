@@ -1,5 +1,16 @@
 {
- "fp": "bc56ed5d4e53a6d0",
+ "fp": "2dfd39ef596b3623",
+ "log": [
+  {
+   "fp": "bc56ed5d4e53a6d0",
+   "note": "recorded from the published build (cf06b22)"
+  },
+  {
+   "fp": "2dfd39ef596b3623",
+   "from": "bc56ed5d4e53a6d0",
+   "note": "recorded from the published build (cf06b22), now with 60 seeded 2026 schedules"
+  }
+ ],
  "result": {
   "Alabama#1": [
    {
@@ -175,6 +186,11 @@
     "history": "da7497f273347191",
     "universe": "cd5d2d38e3bba675",
     "screens": "5b3bad533de17b4c"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "c3e158a21fcac11f"
    }
   ]
  }

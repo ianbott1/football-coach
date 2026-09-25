@@ -15,7 +15,7 @@ const G = new Function(js + `
   playGame=function(rng,eH,eA,pH,pA,o){const r=_pg(rng,eH,eA,pH,pA,o);LOG.push([eH,eA,r.h,r.a]);return r};
   return {newUniverse,syncConf,Season,NAMES,NW:(typeof LEAGUE!=='undefined'?LEAGUE.weeks:NW),LOG,get CONF(){return CONF}};`)();
 
-const m = {fav:0,games:0,margin:0,pts:0,homeW:0,homeG:0,undef:0,heis:{},sched:{twice:0,self:0,dupPair:0,short:0,long:0}};
+const m = {fav:0,games:0,margin:0,pts:0,homeW:0,homeG:0,undef:0,swing:0,injSwing:0,teamSeasons:0,heis:{},sched:{twice:0,self:0,dupPair:0,short:0,long:0}};
 for (let s = 1; s <= N; s++) {
   const u = G.newUniverse(s*7919+13); G.syncConf(u);
   const sea = new G.Season(u, (s*2654435761)>>>0);
@@ -29,7 +29,19 @@ for (let s = 1; s <= N; s++) {
   });
   G.NAMES.forEach(t => { const c=cnt[t]||0; if(c<11) m.sched.short++; if(c>12) m.sched.long++; });
   const lo = G.LOG.length;
-  while (sea.step < G.NW) sea.advance();
+  // talent swing: per team, highest minus lowest effective rating over the
+  // regular season (sampled at each week, as the game engine reads it),
+  // averaged league-wide. Also the injury-only part of that rating.
+  const hi={}, lo2={}, ihi={}, ilo={};
+  const inj = t => sea.talent.inj[t].reduce((a,e)=>a+(e.w>0?e.m:0),0);
+  while (sea.step < G.NW) {
+    const w = Math.min(sea.step, G.NW);
+    G.NAMES.forEach(t => { const e = sea.talent.eff(t,w), i = inj(t);
+      hi[t]=Math.max(hi[t]??-1e9,e); lo2[t]=Math.min(lo2[t]??1e9,e);
+      ihi[t]=Math.max(ihi[t]??-1e9,i); ilo[t]=Math.min(ilo[t]??1e9,i); });
+    sea.advance();
+  }
+  G.NAMES.forEach(t => { m.swing += hi[t]-lo2[t]; m.injSwing += ihi[t]-ilo[t]; m.teamSeasons++; });
   m.undef += G.NAMES.filter(t => sea.rec[t][1]===0).length;   // end of regular season
   while (sea.phase !== 'done') sea.advance();
   [].concat(...sea.weeks.map(w=>w.games), sea.bowls, sea.rounds.r1, sea.rounds.qf, sea.rounds.sf, sea.rounds.fin)
@@ -50,4 +62,4 @@ console.log(`points per game     ${(m.pts/m.games).toFixed(1)}     (target ~54)`
 console.log(`schedule integrity  ${JSON.stringify(m.sched)}  (target all zeros)`);
 const hs = Object.values(m.heis).reduce((a,b)=>a+b,0);
 console.log(`Heisman split       ${Object.entries(m.heis).sort((a,b)=>b[1]-a[1]).map(([p,c])=>p+' '+pct(c/hs)).join(' / ')}  (target QB 60-70 / WR 20-30 / RB 10-20)`);
-console.log('talent swing        NOT MEASURED — no definition in the repo');
+console.log(`talent swing        ${(m.swing/m.teamSeasons).toFixed(1)} Elo   (target ~110)  [injuries alone: ${(m.injSwing/m.teamSeasons).toFixed(1)}]`);

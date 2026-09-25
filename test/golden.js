@@ -30,7 +30,9 @@ function load(file) {
   return new Function(js + `
     return { newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
-      NAMES };`)();
+      NAMES,
+      schedule(seed){ const u=newUniverse(seed*7919+13); syncConf(u);
+        return new Season(u,(seed*2654435761)>>>0).sched.map(g=>[g.week,g.home,g.away,!!g.neutral,g.site||'']); } };`)();
 }
 
 const h = o => crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0,16);
@@ -77,9 +79,27 @@ const file = args.find(a => a.endsWith('.html')) || path.join(__dirname,'..','di
 const CASES = [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['Kent State',31337,3]];
 const result = {};
 for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
+// Schedules for many 2026 universes. Careers alone only see four opening
+// seasons, which missed the double-booking bug entirely.
+{ const api = load(file);
+  const sch = [];
+  for (let s = 1; s <= 60; s++) {
+    const pull = api.schedule(s);
+    sch.push(h(pull));
+  }
+  result['schedules#60'] = [{ all: h(sch) }];
+}
 const fp = h(result);
 const GOLD = path.join(__dirname, 'golden.json');
-if (args.includes('--write')) { fs.writeFileSync(GOLD, JSON.stringify({fp, result}, null, 1)); console.log('wrote', fp); }
+if (args.includes('--write')) {
+  // every re-record says why: node test/golden.js --write --note "reason"
+  const ni = args.indexOf('--note'), note = ni >= 0 ? args[ni+1] : null;
+  if (!note) { console.log('refusing to re-record without --note "why behaviour changed"'); process.exit(1); }
+  const prev = fs.existsSync(GOLD) ? JSON.parse(fs.readFileSync(GOLD,'utf8')) : {};
+  const log = (prev.log || (prev.fp ? [{fp:prev.fp, note:'recorded from the published build (cf06b22)'}] : []))
+    .concat([{fp, from: prev.fp || null, note}]);
+  fs.writeFileSync(GOLD, JSON.stringify({fp, log, result}, null, 1)); console.log('wrote', fp);
+}
 else if (args.includes('--check')) {
   const g = JSON.parse(fs.readFileSync(GOLD,'utf8'));
   if (g.fp === fp) { console.log('MATCH', fp); }
