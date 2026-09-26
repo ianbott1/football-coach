@@ -22,8 +22,10 @@ const play=async (api,badly)=>{let g=0;while(api.SEA.phase!=='done'&&g++<200){if
       // a real firing: play badly on purpose, and find a seed where it comes within 6 seasons
       for(let seed=c.seed;seed<c.seed+30;seed++){
         const t=mk()(file); t.newDynasty(c.team,seed,'T'); let fired=false;
-        for(let y=0;y<6&&!fired;y++){await play(t,true); t.openOffseason(); fired=t.S.off.act.userOpen;
-          if(!fired)t.commitOffseason()}
+        // a firing that comes with job offers (with none, the only choice is to retire)
+        for(let y=0;y<6&&!fired;y++){await play(t,true); t.openOffseason();
+          fired=t.S.off.act.userOpen&&t.S.off.jobs.length>0;
+          if(!fired){ if(t.S.off.act.userOpen)break; t.commitOffseason() }}
         if(fired){c.seed=seed; c.firedYear=t.SEA.year; break}
       }
     }

@@ -27,7 +27,10 @@ function load(file) {
   global.document = { getElementById: node, querySelector: node, querySelectorAll: () => [],
     createElement: () => mk(), body:{classList:{toggle(){}}}, addEventListener(){} };
   // live getters: U, SEA, S, live are reassigned with `let`, so capture by closure
-  return new Function(js + `
+  // each game gets its own window and document: a save the game finishes
+  // later must land in its own storage, not in whichever game loaded last
+  const W=global.window, D=global.document;
+  return new Function('window','document', js + `
     return { leagueId(){return LEAGUE.id}, tradeOffers(i){return nflTradeOffers(U,S.myTeam,i,(S.coaches||[]).map(c=>c.myTeam))}, tradeValue(p){return tradeValue(p)}, faPreview(){return typeof nflFreeAgentPreview==='function'?nflFreeAgentPreview(U,S.myTeam):[]}, draftClass(){return typeof nflDraftClass==='function'?nflDraftClass(U,S.myTeam):null}, recruitFocus(){return LEAGUE.offseason.recruitFocus}, seasonGradeFor(w,l,r,e){return seasonGrade(w,l,r,e||expectations())}, setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, seasonProto(){return Season.prototype}, homeFieldOf(u,t){return homeField(u,t)}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
       view(v,sub){ view=v; if(sub)dynTab=sub; flash=null; render(); return __nodes.app?__nodes.app.innerHTML:'' }, render, newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
@@ -48,7 +51,7 @@ function load(file) {
         ['program','teams','coaches','shared'].forEach(t=>set('dyn',teamTab,t,pollTab,postTab));
         [view,teamTab,dynTab,pollTab,postTab]=V; flash=null; render(); return out; },
       schedule(seed){ const u=newUniverse(seed*7919+13); syncConf(u);
-        return new Season(u,(seed*2654435761)>>>0).sched.map(g=>[g.week,g.home,g.away,!!g.neutral,g.site||'']); } };`)();
+        return new Season(u,(seed*2654435761)>>>0).sched.map(g=>[g.week,g.home,g.away,!!g.neutral,g.site||'']); } };`)(W,D);
 }
 
 // every tab: college football's sub-tabs by name; other leagues, each view and dynasty tab
