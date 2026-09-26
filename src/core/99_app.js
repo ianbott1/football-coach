@@ -1164,15 +1164,8 @@ function weekNews(W){
     NAMES.forEach(t=>{
       SEA.roster[t].forEach((pl,i)=>{
         if(!pl||!pl.last||pl.last.week!==SEA.step-1)return;
-        const L=pl.last.line, P=pl.last.pos;
-        let v=0,txt="";
-        if(P==="QB"&&L.pyd>=300){v=L.pyd+L.ptd*45;txt=`${L.pyd} yards and ${L.ptd} touchdown${L.ptd===1?"":"s"}`}
-        else if(P==="RB"&&L.ryd>=150){v=L.ryd*1.5+L.rtd*45;txt=`${L.ryd} rushing yards and ${L.rtd} score${L.rtd===1?"":"s"}`}
-        else if((P==="WR"||P==="WR2")&&L.cyd>=140){v=L.cyd*1.6+L.ctd*45;
-          txt=`${L.rec} catch${L.rec===1?"":"es"} for ${L.cyd} yards`}
-        else if(P==="EDGE"&&L.sck>=2){v=L.sck*90;txt=`${L.sck} sack${L.sck===1?"":"s"}`}
-        else if((P==="CB"||P==="S")&&L.ints>=2){v=L.ints*95;txt=`${L.ints} interception${L.ints===1?"":"s"}`}
-        if(v&&(!best||v>best.v))best={v:v,n:pl.n,t:pl.last.team,p:P,txt:txt};
+        const P=pl.last.pos, st=SPORT.starLine(P,pl.last.line);   // the sport says what stands out
+        if(st&&(!best||st.v>best.v))best={v:st.v,n:pl.n,t:pl.last.team,p:P,txt:st.txt};
       });
     });
     if(best)items.push({p:best.t===my?88:62,k:"star",tone:best.t===my?"gold":"muted",
