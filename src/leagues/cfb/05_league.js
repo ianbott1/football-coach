@@ -224,6 +224,8 @@ const LEAGUE={
 
   /* words the core shows */
   text:{
+    rankedWin:["A ranked scalp. That plays well with voters.","A ranked win. The voters will notice.","That one goes on the résumé."],
+    badLoss:["That is the kind of loss that follows you into December.","An unranked team did that. It will be remembered.","That one will be quoted back to you in November."],
     champions:"National champions",
     org:"Program", orgs:"programs", group:"Conference", rank:"Poll",
     ranking:"the poll", top:"the top 25", entered:"Entered the poll at #",

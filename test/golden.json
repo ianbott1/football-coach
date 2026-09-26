@@ -1,5 +1,5 @@
 {
- "fp": "102eaab00630f3cb",
+ "fp": "0c75a6b5c3aac064",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -59,6 +59,11 @@
    "fp": "102eaab00630f3cb",
    "from": "2aa0a11ba77714e2",
    "note": "The late chase call is asked on your last possession only, with a touchdown-or-bust 'force' mode for pushing: patience wins when a field goal wins (college down 1-2: 38 vs 27 at even), pushing when a touchdown is needed"
+  },
+  {
+   "fp": "0c75a6b5c3aac064",
+   "from": "102eaab00630f3cb",
+   "note": "Weekly news varies its phrasing (seeded by season, week and team, so a moment always reads the same); the plan tip describes the new gameplans; ranked-win and bad-loss lines come from league text (no voters in the pros). Screens only."
   }
  ],
  "result": {
@@ -73,7 +78,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "2d03e5d872291c88",
     "universe": "e79095527cedb7a2",
-    "screens": "fcfa26ee8baf6e70"
+    "screens": "bf2a58193ac85f3c"
    },
    {
     "year": 2027,
@@ -85,7 +90,7 @@
     "heis": "5c947393c6f7ab04",
     "history": "54e86afb05b51bb6",
     "universe": "7984b671b6b8445c",
-    "screens": "71b18f92e15789e2"
+    "screens": "832638988346cdd1"
    },
    {
     "year": 2028,
@@ -97,7 +102,7 @@
     "heis": "cea69a0c24106e1c",
     "history": "0fbedd73deeb837b",
     "universe": "10c0a14a142936e0",
-    "screens": "b7bbf641be078efe"
+    "screens": "c6895f0bbd3e1b06"
    },
    {
     "year": 2029,
@@ -109,7 +114,7 @@
     "heis": "86c27997c3fd52ed",
     "history": "534eefba20e56b1b",
     "universe": "e03443c50faacd3b",
-    "screens": "62e0341e364754b7"
+    "screens": "83e753e89e3357ad"
    }
   ],
   "Rice#2024": [
@@ -123,7 +128,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "e841cfe5c35d7121"
+    "screens": "6a3d5c0df31402a2"
    },
    {
     "year": 2027,
@@ -135,7 +140,7 @@
     "heis": "4e4319a44375c65b",
     "history": "badebf2c925eda97",
     "universe": "d27a590dd69db4c8",
-    "screens": "520c3642afd68a85"
+    "screens": "e36d04896dba43e5"
    },
    {
     "year": 2028,
@@ -147,7 +152,7 @@
     "heis": "f4929038beaf492f",
     "history": "c4907f846de53b96",
     "universe": "739fe69b302c434d",
-    "screens": "ed0071c42c2c0656"
+    "screens": "a29e03afc65591e1"
    },
    {
     "year": 2029,
@@ -159,7 +164,7 @@
     "heis": "aacb35d7197a5573",
     "history": "85bae84c3194d8be",
     "universe": "fd8e222efc417852",
-    "screens": "37eb8354338431ea"
+    "screens": "e0c9ff067c7ef865"
    }
   ],
   "Oregon#777": [
@@ -173,7 +178,7 @@
     "heis": "fde104829f9687a1",
     "history": "9316d1f06af839c7",
     "universe": "be152d1e2f6220f0",
-    "screens": "e77f94484b4bc654"
+    "screens": "3116663c2ef03fa6"
    },
    {
     "year": 2027,
@@ -185,7 +190,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "35f25fb860922003"
+    "screens": "6cc996912c62748b"
    },
    {
     "year": 2028,
@@ -197,7 +202,7 @@
     "heis": "8bc8df1a03879f2f",
     "history": "e5ded2f68e112df9",
     "universe": "10e4f661e0c5e66f",
-    "screens": "82aaadca632d83cf"
+    "screens": "839c4e782c80a585"
    }
   ],
   "Kent State#31337": [
@@ -211,7 +216,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "74007a0db2a63521",
     "universe": "e22d53c083f084ff",
-    "screens": "08f67d6be0652ff0"
+    "screens": "298f8d66f2943aea"
    },
    {
     "year": 2027,
@@ -223,7 +228,7 @@
     "heis": "e3afac23d3079708",
     "history": "4929007a1d5ff808",
     "universe": "8b8561c010c5d7ce",
-    "screens": "9d5ce29990fb6403"
+    "screens": "c3b4daef376072b3"
    },
    {
     "year": 2028,
@@ -235,7 +240,7 @@
     "heis": "1631e759996121aa",
     "history": "f34fa1d94fa7d861",
     "universe": "c6dadac000888428",
-    "screens": "939fd2cb7f75cc4c"
+    "screens": "0ec299a62ad06c29"
    }
   ],
   "schedules#60": [

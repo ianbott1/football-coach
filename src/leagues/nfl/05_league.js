@@ -68,6 +68,8 @@ const LEAGUE={
   playoff:{size:14, perSide:7, byes:1},
 
   text:{
+    rankedWin:["A win over one of the league's best. That tells you something.","Beat a good team. That's how contenders are made.","A statement win over a real team."],
+    badLoss:["That's a loss you can't afford in this league.","Beaten by a team you should handle. It will cost you in the standings.","The kind of loss that decides tiebreakers."],
     champions:"Super Bowl champions",
     org:"Franchise", orgs:"teams", group:"Division", rank:"Rank",
     groupShort:"Div",

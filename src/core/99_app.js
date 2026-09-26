@@ -968,7 +968,7 @@ function coachMark(key,text){
 }
 
 function planPickerHTML(wp){
-  return `${coachMark("plan","This choice is real. Safe protects a lead, risks give an underdog a puncher's chance. It resets to Balanced each week.")}
+  return `${coachMark("plan","This choice is real. Playing it safe lets the better team's talent show; taking risks makes it a game of chances, which is what an underdog wants. It resets to Balanced each week.")}
   <div class="planbox"><div class="planlab">Your gameplan</div>
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
@@ -1152,6 +1152,15 @@ function winnerRank(g){return g.winner===g.home?g.hrank:g.arank}
 function scoreOf(g,t){return g.home===t?g.hp:g.ap}
 function oppOf(g,t){return g.home===t?g.away:g.home}
 
+/* One of several ways to say a thing, chosen by season, week and a key, so
+   the same moment always reads the same (a reloaded save shows the same
+   words) but the season doesn't repeat itself. */
+function vary(list,key){
+  let h=(2166136261^((SEA?SEA.year:0)*131+(SEA?SEA.step:0)))>>>0;   // FNV-1a, then mixed
+  for(let i=0;i<key.length;i++)h=Math.imul(h^key.charCodeAt(i),16777619)>>>0;
+  h^=h>>>13; h=Math.imul(h,2246822507)>>>0; h^=h>>>16;
+  return list[h%list.length];
+}
 function weekNews(W){
   const my=S.myTeam, items=[];
   const gs=W.games;
@@ -1163,18 +1172,24 @@ function weekNews(W){
   if(ups.length){
     const g=ups[0], L=g.loser, Wn=g.winner;
     const lr=loserRank(g), wr=winnerRank(g);
-    const verb=g.margin>=21?"routed":g.margin<=3?"edged":"beat";
+    const verb=g.margin>=21?vary(["routed","ran over","blew out"],"uv"+Wn)
+              :g.margin<=3?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
     items.push({p:90,k:"upset",tone:"flag",
       h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
-      b: lr<=5 ? `A top-five team is down. ${L} won't drop out, but the margin for error is gone.`
-        : wr>25 ? `${Wn} came in unranked. ${L} will pay for this one in ${LEAGUE.text.ranking}.`
-        : `${Wn} moves up; ${L} slides.`});
+      b: lr<=5 ? vary([`A top-five team is down. ${L} won't drop out, but the margin for error is gone.`,
+                       `${L} was supposed to be one of the best. Not this week.`,
+                       `The top five just lost a member for a week. ${L} has work to do.`],"ub"+L)
+        : wr>25 ? vary([`${Wn} came in unranked. ${L} will pay for this one in ${LEAGUE.text.ranking}.`,
+                        `Nobody had ${Wn} on this one. ${L} will feel it in ${LEAGUE.text.ranking}.`],"ub"+L)
+        : vary([`${Wn} moves up; ${L} slides.`,`${Wn} climbs. ${L} has some explaining to do.`,
+                `A swap in ${LEAGUE.text.ranking} coming: ${Wn} up, ${L} down.`],"ub"+L)});
   }
   // other ranked casualties
   const more=ups.slice(1,3);
   if(more.length)items.push({p:40,k:"also",tone:"muted",
-    h:`Also down: ${more.map(g=>rankTxt(loserRank(g))+g.loser).join(", ")}`,
-    b:`${more.length===1?"That's":"Those are"} more cracks in ${LEAGUE.text.top}.`});
+    h:vary([`Also down: `,`Also losing: `,`More losses near the top: `],"ah")+more.map(g=>rankTxt(loserRank(g))+g.loser).join(", "),
+    b:vary([`${more.length===1?"That's":"Those are"} more cracks in ${LEAGUE.text.top}.`,
+            `It was that kind of week.`,`Nobody is safe this year.`,`Expect some reshuffling.`],"ab")});
 
   // your team, framed
   const mg=gs.find(g=>g.home===my||g.away===my);
@@ -1182,16 +1197,19 @@ function weekNews(W){
     const won=mg.winner===my, opp=oppOf(mg,my);
     const ms=scoreOf(mg,my), os=scoreOf(mg,opp);
     const oppR=mg.home===my?mg.arank:mg.hrank;
+    const v=(list)=>vary(list,"you"+opp);
     let b;
-    if(won&&oppR<=25)b=`A ranked scalp. That plays well with voters.`;
-    else if(won&&mg.margin>=28)b=`Never in doubt.`;
-    else if(won&&mg.margin<=3)b=`Survived. They won't all look like that.`;
-    else if(won)b=`Business handled.`;
-    else if(oppR<=10)b=`No shame in it, but the résumé takes a hit.`;
-    else if(oppR>25)b=`That is the kind of loss that follows you into December.`;
-    else b=`A setback.`;
+    if(won&&oppR<=25)b=v(LEAGUE.text.rankedWin);
+    else if(won&&mg.margin>=28)b=v([`Never in doubt.`,`Over by halftime.`,`A statement, if anyone was listening.`]);
+    else if(won&&mg.margin<=3)b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
+    else if(won)b=v([`Business handled.`,`A solid day's work.`,`No drama. Next.`]);
+    else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
+    else if(oppR>25)b=v(LEAGUE.text.badLoss);
+    else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
+    const verb=won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
+                  :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
     items.push({p:100,k:"you",tone:"gold",
-      h:`${my} ${won?"beat":"lost to"} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
+      h:`${my} ${verb} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
   }else{
     items.push({p:100,k:"you",tone:"muted",h:`${my} was idle`,
       b:`An open date. Everyone else kept playing.`});
@@ -1203,7 +1221,7 @@ function weekNews(W){
     unb.sort((x,y)=>SEA.poll.rankMap()[x]-SEA.poll.rankMap()[y]);
     items.push({p:50,k:"unbeaten",tone:"muted",
       h:unb.length===1?`${unb[0]} stands alone at ${SEA.rec[unb[0]][0]}-0`
-        :`${unb.length} teams still unbeaten`,
+        :vary([`${unb.length} teams still unbeaten`,`${unb.length} without a loss`,`Still perfect: ${unb.length} teams`],"un"),
       b:unb.slice(0,6).join(", ")+(unb.length>6?" and others":"")+"."});
   }
 
@@ -1240,7 +1258,9 @@ function weekNews(W){
     });
     if(best)items.push({p:best.t===my?88:62,k:"star",tone:best.t===my?"gold":"muted",
       h:`${best.n} goes for ${best.txt}`,
-      b:`The ${best.p} carried ${best.t}${best.t===my?" \u2014 your guy.":"."}`});
+      b:best.t===my?vary([`The ${best.p} carried ${best.t} \u2014 your guy.`,`Your ${best.p}, and the day belonged to him.`,
+                          `Put that one on the tape. Your ${best.p}.`],"st"+best.n)
+                   :vary([`The ${best.p} carried ${best.t}.`,`${best.t}'s ${best.p} was the story.`,`A day to remember for ${best.t}'s ${best.p}.`],"st"+best.n)});
   }
 
   // a team on a run

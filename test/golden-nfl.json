@@ -1,5 +1,5 @@
 {
- "fp": "e43e7627688e9131",
+ "fp": "fb46d368e5ae21c1",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -45,6 +45,11 @@
    "fp": "e43e7627688e9131",
    "from": "cf0ee3a0ac9d4e62",
    "note": "The late chase call is asked on your last possession only, with a touchdown-or-bust 'force' mode for pushing: patience wins when a field goal wins (college down 1-2: 38 vs 27 at even), pushing when a touchdown is needed"
+  },
+  {
+   "fp": "fb46d368e5ae21c1",
+   "from": "e43e7627688e9131",
+   "note": "Weekly news varies its phrasing (seeded by season, week and team, so a moment always reads the same); the plan tip describes the new gameplans; ranked-win and bad-loss lines come from league text (no voters in the pros). Screens only."
   }
  ],
  "result": {
@@ -59,7 +64,7 @@
     "heis": "d0f3e7cc2ab4d03b",
     "history": "b836aec634d53c28",
     "universe": "109091e6df009a32",
-    "screens": "622b40799fdbe740"
+    "screens": "8f7653111900ee09"
    },
    {
     "year": 2027,
@@ -71,7 +76,7 @@
     "heis": "99ac4a611574599c",
     "history": "12ce4adf24ab0317",
     "universe": "24ca3d7a136a236f",
-    "screens": "2bf290f3130d1085"
+    "screens": "c00ced19a6bc68db"
    },
    {
     "year": 2028,
@@ -83,7 +88,7 @@
     "heis": "5fb36c13dcaf6090",
     "history": "bb947d320404db02",
     "universe": "57a1c23626d81373",
-    "screens": "7159384c0c2eb94b"
+    "screens": "c06a9fbda05dd149"
    },
    {
     "year": 2029,
@@ -95,7 +100,7 @@
     "heis": "903f06018d7bab11",
     "history": "cb9f0cb99aee209c",
     "universe": "840fde600b0f1067",
-    "screens": "cce2c63a044c1a90"
+    "screens": "44aeb5bb951dcd18"
    }
   ],
   "Tennessee#2024": [
@@ -109,7 +114,7 @@
     "heis": "d3b2c11564b8f11f",
     "history": "b47f3a1f4643eefe",
     "universe": "900b8ea1ebf61d2e",
-    "screens": "2e445bc2554235ae"
+    "screens": "cd4efeabc2600659"
    },
    {
     "year": 2027,
@@ -121,7 +126,7 @@
     "heis": "e47f594fa7f8324b",
     "history": "6a407806ebbaffd0",
     "universe": "4856170eac205ba2",
-    "screens": "adb23bbe1e3b59c5"
+    "screens": "11ee35d93e906e9c"
    },
    {
     "year": 2028,
@@ -133,7 +138,7 @@
     "heis": "e7d888e4b498c650",
     "history": "1f255c0e32a6a833",
     "universe": "e89f985f957c79b3",
-    "screens": "34499937b6aa6d3a"
+    "screens": "fe8f47b6a4e7919a"
    },
    {
     "year": 2029,
@@ -145,7 +150,7 @@
     "heis": "f53f91f1ed18acc2",
     "history": "25743745d4aa471b",
     "universe": "6c7afe9a97eb5f1c",
-    "screens": "cd1ad3b190a68fbf"
+    "screens": "1c473153268c2136"
    }
   ],
   "Detroit#777": [
@@ -159,7 +164,7 @@
     "heis": "c63d061e72508bed",
     "history": "a29b9613027e4b8b",
     "universe": "8fa8d17790d7fc4d",
-    "screens": "40b4ad8c2e634c9c"
+    "screens": "1abfce6a749493b5"
    },
    {
     "year": 2027,
@@ -171,7 +176,7 @@
     "heis": "daabc7cae9a4d048",
     "history": "f708383e5beb49e0",
     "universe": "558f7e7d594de064",
-    "screens": "b2a4326d020b656e"
+    "screens": "45734692a7dc5cb6"
    },
    {
     "year": 2028,
@@ -183,7 +188,7 @@
     "heis": "b3cadf6abe637ef9",
     "history": "17eb10871f010ff4",
     "universe": "573dd167deac7174",
-    "screens": "be0a066509fdffc4"
+    "screens": "8b3c16f0e6e41871"
    }
   ],
   "NY Giants#31337": [
@@ -197,7 +202,7 @@
     "heis": "08b9b4b2da4cda4f",
     "history": "31a3dbb34b4785ee",
     "universe": "96d67399c529ffd8",
-    "screens": "07011b4d3befb114"
+    "screens": "5befe7866e772375"
    },
    {
     "year": 2027,
@@ -209,7 +214,7 @@
     "heis": "1370ae9cf2957667",
     "history": "76b6604656f590b9",
     "universe": "57cf95b8b4a28ef0",
-    "screens": "d5bd25c9152ef81d"
+    "screens": "d2302f68ef108e77"
    },
    {
     "year": 2028,
@@ -221,7 +226,7 @@
     "heis": "9aa0e356229b4b79",
     "history": "a894f148be611c40",
     "universe": "014c4eed2d40ed7c",
-    "screens": "fb8334823678b4b7"
+    "screens": "ab8035a5b2ced4d6"
    }
   ],
   "schedules#60": [
