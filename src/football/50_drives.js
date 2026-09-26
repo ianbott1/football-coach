@@ -133,9 +133,9 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
           const choice=opts.decide(dp,ctx);
           st.used[dp.k]=true;
           if(dp.k==="fourth")forced=choice;
-          else if(choice==="push")aggr="aggressive";
-          else if(choice==="sit"){
-            aggr="safe";
+          else if(choice==="push")aggr="chase";      // calls are game management,
+          else if(choice==="sit"){                     // not the weekly gameplan
+            aggr="sit";
             // running clock takes possessions off the board for both teams
             st.endAfter=Math.min(st.total-1, i+2);   // running clock really does end games
           }
@@ -268,9 +268,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       const P=st.pend, stage=st.stage;
       if(stage==="strategy"){
         st.stage=null;
-        if(choice==="push"){ if(home)st.aggrH="aggressive"; else st.aggrA="aggressive" }
+        // calls are game management, not the weekly gameplan
+        if(choice==="push"){ if(home)st.aggrH="chase"; else st.aggrA="chase" }
         else if(choice==="sit"){
-          if(home)st.aggrH="safe"; else st.aggrA="safe";
+          if(home)st.aggrH="sit"; else st.aggrA="sit";
           st.endAfter=Math.min(st.total-1,i+3);
         } else { if(home)st.aggrH=st.baseH; else st.aggrA=st.baseA }
         // fall through and play the drive normally
@@ -390,17 +391,4 @@ function decisionPoint(state, isUser){
   return null;
 }
 
-/* Apply a decision to the rest of the game. */
-function applyChoice(state, key, choice){
-  state.used[key] = true;
-  if (key === "fourth") {
-    state.pendingFourth = choice;
-  } else if (choice === "push") {
-    state.aggr = "aggressive";
-  } else if (choice === "sit") {
-    state.aggr = "safe";
-  } else if (choice === "keep" || choice === "normal") {
-    state.aggr = state.basePlan;
-  }
-}
 

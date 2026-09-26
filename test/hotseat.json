@@ -1,5 +1,5 @@
 {
- "fp": "05726cb4c3f32854",
+ "fp": "b64244c01dffa722",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -45,6 +45,11 @@
    "fp": "05726cb4c3f32854",
    "from": "b64244c01dffa722",
    "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
+  },
+  {
+   "fp": "b64244c01dffa722",
+   "from": "05726cb4c3f32854",
+   "note": "In-game calls use the game-management modes (push -> chase, sit -> sit) instead of the new gameplan modes, so they play exactly as before the gameplan change; dead applyChoice removed"
   }
  ],
  "out": [
@@ -54,11 +59,11 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Gator Bowl",
-      "grade": "C-"
+      "rec": "10-3",
+      "result": "Eliminated in the first round",
+      "grade": "B"
      },
-     "book": "196b32ce1a0dd2f3"
+     "book": "cb23656c12f0de14"
     },
     {
      "team": "Rice",
@@ -67,7 +72,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "4f957ebc8c7e3665"
+     "book": "e1c1cd116e0d6d85"
     }
    ]
   },
@@ -77,20 +82,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "16-0",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "10-3",
+      "result": "Won the ReliaQuest Bowl",
+      "grade": "B-"
      },
-     "book": "16ca3cecbc84cf97"
+     "book": "81fe476bb4c1e840"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "6-7",
+      "result": "Lost the Cure Bowl",
+      "grade": "A-"
      },
-     "book": "0f76a8d0df003fbe"
+     "book": "47b86bb60ff76729"
     }
    ]
   },
@@ -100,20 +105,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "13-2",
+      "rec": "12-3",
       "result": "Eliminated in the semifinals",
-      "grade": "A+"
+      "grade": "A"
      },
-     "book": "6c40f9f398e4e7be"
+     "book": "d939a2144b20ffd5"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "7-6",
+      "result": "Lost the LA Bowl",
+      "grade": "A"
      },
-     "book": "cfbd78e7132a0a7d"
+     "book": "72ce37be90c188fd"
     }
    ]
   }
