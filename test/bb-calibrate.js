@@ -13,7 +13,10 @@ let games=0,fav=0,favN=0,home=0,homeN=0,margin=0,pts=0,upset1216=0;
 const t0=Date.now();
 for(let s=0;s<N;s++){
   api.newDynasty(api.NAMES[(s*37)%api.NAMES.length],1000+s,'T');
-  const E=api.SEA, pre={}; api.NAMES.forEach(t=>pre[t]=E.elo[t]);
+  // YEARS=k: measure the k-th season, after k-1 offseasons (recruiting, one-and-dones)
+  for(let y=1;y<+(process.env.YEARS||1);y++){ let gg=0; while(api.SEA.phase!=='done'&&gg++<80)api.SEA.advance();
+    api.openOffseason(); const O=api.S.off; if(O&&O.act.userOpen)O.move=O.jobs[0]||api.S.myTeam; api.commitOffseason(); }
+  const E=api.SEA;
   let guard=0; while(E.phase!=='done'&&guard++<80)E.advance();
   // regular season
   E.weeks.slice(0,30).forEach(w=>w.games.forEach(g=>{games++; margin+=g.margin; pts+=g.hp+g.ap;

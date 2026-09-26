@@ -282,7 +282,8 @@ const COACH_ONFIELD=0.55,  // how much coach quality shows up on the field
       ROOKIE_DIP=-22;
 const ROSTER_NOISE=48;
 const CARRY=0.45,CHURN_SD=95,RECRUIT=0.16,PROG_NOISE=22,
-      P_FLOOR=1120,P_CEIL=2010,HOT_SEAT=0.42,COACH_SD=62,COACH_DIP=-18,PERCEPT_N=34;
+      // program strength's range: a league may set its own (basketball's is wider)
+      P_FLOOR=(LEAGUE.tuning&&LEAGUE.tuning.pFloor)||1120,P_CEIL=(LEAGUE.tuning&&LEAGUE.tuning.pCeil)||2010,HOT_SEAT=0.42,COACH_SD=62,COACH_DIP=-18,PERCEPT_N=34;
 
 function newUniverse(seed){
   const rng=new RNG(seed);

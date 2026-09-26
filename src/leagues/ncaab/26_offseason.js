@@ -52,15 +52,17 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
     const cls=rng.r()<0.62?0:1;
     // a focus concentrates the class: better where you aim, thinner elsewhere
     const bonus=(!focus.pos||focus.pos.indexOf(POS[i%POS.length].p)>=0)?focus.r:(focus.off||0);
-    const np=makePlayer(rng,target-rng.range(4,14)+(coach.q*0.045)+bonus
+    // ten-man rosters: a class has to replace what leaves, so recruits arrive
+    // closer to the program's level than in football
+    const np=makePlayer(rng,target-rng.range(1,8)+(coach.q*0.045)+bonus
       +(coach.rec||0)*0.5+(bud?bud.recruitBonus:0),cls,i%POS.length);
     if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
     if(focus.dev)np.up=focus.dev;
     if(cls===0)np.rec=true;
     // a five-star: ready to play now, with a ceiling the NBA will come for.
     // The stronger the program, the likelier it lands one.
-    if(cls===0&&rng.r()<Math.max(0.01,Math.min(0.30,(base-66)/55))){
-      np.r=Math.round(Math.max(np.r,base-3+rng.gauss(0,3))); np.pot=Math.min(99,Math.round(np.r+16+rng.gauss(0,4)));
+    if(cls===0&&rng.r()<Math.max(0.01,Math.min(0.45,(base-66)/40))){
+      np.r=Math.round(Math.max(np.r,base+rng.gauss(0,3))); np.pot=Math.min(99,Math.round(np.r+16+rng.gauss(0,4)));
       np.star5=true;
     }
     return np;

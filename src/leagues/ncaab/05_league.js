@@ -31,7 +31,7 @@ const LEAGUE={
     "New Orleans","New York","Oklahoma City","Orlando","Philadelphia","Phoenix","Portland","Sacramento",
     "San Antonio","Toronto","Utah","Washington"],
   awards:{mvp:"Player of the Year", weights:{PG:1.12,SG:1.1,SF:1.04,PF:0.98,C:0.98}},
-  tuning:{hfa:105},
+  tuning:{hfa:105, pFloor:1000, pCeil:2350},   // program strength spans more than in football
   /* arenas that are genuinely hard to visit (added to a prestige-based base) */
   venues:{"Kansas":30,"Duke":30,"Kentucky":24,"Gonzaga":22,"Purdue":22,"Michigan State":20,"Syracuse":16,
     "Houston":20,"Arizona":20,"North Carolina":18,"Iowa State":22,"Wisconsin":18,"Texas Tech":20,"BYU":20,
