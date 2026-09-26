@@ -394,27 +394,31 @@ function commitOffseason(){
   S.pending[S.myTeam]=Object.assign(LEAGUE.offseason.choices(P),{phil:P.phil,
                        featured:(S.featured===undefined?null:S.featured)});
   if(isHotSeat() && (S.turn||0) < coachCount()-1){
-    writeSeasonHistory();                       // this coach's year, in their book
+    writeSeasonHistory(oldTeam);                // this coach's year, in their book
     stashCoach(); loadCoach((S.turn||0)+1);
     S.off=null; handoff=true; openOffseason(); save(); render(); return;
   }
   const users=S.pending; S.pending=null;
   endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
     LEAGUE.offseason.choices(P),{phil:P.phil,
-    featured:(S.featured!==undefined?S.featured:null)}), A);
+    featured:(S.featured!==undefined?S.featured:null)}), A, oldTeam);
   S.featured=null;
 }
 
 /* One coach's year, written into their own book. In a hot seat every coach
    calls this for themselves before the world moves on. */
-function writeSeasonHistory(){
+/* team: the team this coach just coached, which is not S.myTeam if they have
+   already taken another job this offseason */
+function writeSeasonHistory(team){
   S.history=S.history||[];
-  S.history.push(seasonEntry(S.myTeam));
+  S.history.push(seasonEntry(team||S.myTeam));
 }
 
-function endSeason(rng,choices,act){
+/* seasonTeam: the team coached this season. If the coach has just changed
+   jobs, S.myTeam is already the new one; the season belongs to the old. */
+function endSeason(rng,choices,act,seasonTeam){
   if(SEA.phase!=="done"||!rng||!act)return;
-  const my=S.myTeam, rk=SEA.poll.rankMap();
+  const my=seasonTeam||S.myTeam, rk=SEA.poll.rankMap();
   const result=SEA.seasonResult(my);
   const teamRows={};
   NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
@@ -428,7 +432,7 @@ function endSeason(rng,choices,act){
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
-  const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my]);
+  const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my],my);
   const entry=seasonEntry(my);
   S.history.push(Object.assign(entry,{
     miles:miles, exp:exp.t, program:Math.round(U.program[my]),
@@ -1082,8 +1086,8 @@ function expectations(){
 
 function seasonGrade(wins,losses,result,exp){ return LEAGUE.goals.grade(wins,losses,result,exp) }
 
-function milestones(wins,losses,result,rank){
-  const my=S.myTeam, out=[], H=S.history;
+function milestones(wins,losses,result,rank,team){
+  const my=team||S.myTeam, out=[], H=S.history;
   const mine=H.map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
   if(!mine.length){
     if(wins>=11)out.push(`${wins} wins in your first season in charge.`);
