@@ -55,6 +55,8 @@ the interface. A second league is a new folder under `src/leagues/`.
     test/firing.js     people are fired on two missed seasons in a row, never one
     test/moves.js      a season is filed under the team coached, not the next job
     test/stress.js     random-choice careers: crashes, broken text, stuck offseasons
+    test/calls.js      report: each in-game call replayed with every answer
+    test/draftboard.js pro: your draft board decides your picks, in board order
     test/nfl.js        pro league: rules every season obeys, realism measures,
                        the cap gate on the offseason screen
 

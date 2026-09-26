@@ -10,6 +10,24 @@ function nflPlannedPay(){
     if(P.asks&&P.asks[i])return s+(P.resign[i]?P.asks[i].sal:0);
     return s+p.k.sal},0);
 }
+/* Your draft board: players you want, in order. At each of your picks you
+   take the highest one still there; if none are left, your style picks. */
+function nflBoardHTML(P){
+  const C=nflDraftClass(U,S.myTeam), byId={}; C.list.forEach(p=>byId[p.pid]=p);
+  const board=(P.board||[]).filter(id=>byId[id]);
+  const val=p=>p.sr+(p.spot-p.sr)*0.45;
+  const row=(p,i,on)=>`<div class="drow">
+      <span class="dpick">${on?(i+1)+".":""}</span>
+      <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
+        <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${p.sr}, ceiling ~${p.spot}</div></div>
+      <button class="skip small" ${on?`data-bdrm="${p.pid}"`:`data-bdadd="${p.pid}"`}>${on?"Remove":"Add"}</button></div>`;
+  let h=`<div class="grouphead">Your draft board</div>`;
+  h+=board.length?board.map((id,i)=>row(byId[id],i,true)).join("")
+     :`<div class="note">Empty: your draft style will choose. Add players below and you'll take the highest one still there at each of your picks.</div>`;
+  const pool=C.list.filter(p=>board.indexOf(p.pid)<0).sort((a,b)=>val(b)-val(a)).slice(0,30);
+  h+=`<div class="grouphead">The class &mdash; best 30 by your scouts</div>`+pool.map(p=>row(p,0,false)).join("");
+  return h;
+}
 function nflPickSlot(){
   const o=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam)+1;
   return o+(o===1?"st":o===2?"nd":o===3?"rd":"th");
@@ -165,6 +183,7 @@ function offseasonScreen(){
   const DR=LEAGUE.offseason.draftStyles;
   h+=Object.keys(DR).map(k=>`<div class="opt ${P.draft===k?'on':''}" data-draft="${k}">
     <div class="fname">${esc(DR[k].l)}</div><div class="cdesc">${esc(DR[k].d)}</div></div>`).join("");
+  h+=nflBoardHTML(P);
   h+=`<div class="grouphead">${n(4)}. Team philosophy</div>`;
   h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
     <div class="fname">${esc(PHILOSOPHY[k].l)}</div>
@@ -188,5 +207,9 @@ Object.assign(LEAGUE.ui,{
       S.off.picks.fa=b.dataset.fa; save(); render();});
     document.querySelectorAll("[data-draft]").forEach(b=>b.onclick=()=>{
       S.off.picks.draft=b.dataset.draft; save(); render();});
+    document.querySelectorAll("[data-bdadd]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks; P.board=(P.board||[]).concat([+b.dataset.bdadd]); save(); render();});
+    document.querySelectorAll("[data-bdrm]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks, id=+b.dataset.bdrm; P.board=(P.board||[]).filter(x=>x!==id); save(); render();});
   }
 });

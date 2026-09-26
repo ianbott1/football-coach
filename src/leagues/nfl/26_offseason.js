@@ -97,6 +97,27 @@ function nflProspects(rng,n){
   }
   return out;
 }
+/* The coming draft class, made when the offseason opens so a coach can see
+   it and build a board. Seeded by the year, so reopening the screen or
+   reloading a save shows the same class. sr/spot are a scout's estimates:
+   how far off depends on how well run the franchise is (as for the
+   computer's own picks). */
+function nflDraftClass(u,team){
+  if(!u.draftClass||u.draftClass.year!==u.year){
+    const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
+    const list=nflProspects(rng,7*32); list.forEach((p,i)=>p.pid=i);
+    u.draftClass={year:u.year,list:list};
+  }
+  const C=u.draftClass;
+  if(team&&C.scoutedFor!==team){
+    const noise=Math.max(0.8,2.6-orgEdge(u,team)*1.2);
+    let th=0; for(let i=0;i<team.length;i++)th=(th*31+team.charCodeAt(i))|0;
+    const r2=new RNG((((u.seed||0)*40503)^(u.year*104729)^th)>>>0);
+    C.list.forEach(p=>{p.sr=Math.round(p.r+r2.gauss(0,noise)); p.spot=Math.round(Math.max(p.sr,p.pot+r2.gauss(0,noise*1.6)))});
+    C.scoutedFor=team;
+  }
+  return C;
+}
 const rookieSal=o=>o<=32?Math.round((10-7*(o-1)/31)*10)/10:o<=64?1.6:1.0;
 
 /* what a player adds at his spot: over the backup, or over the starter */
@@ -185,7 +206,9 @@ function nflRun(u,rng,healthy,elo,rec,choices){
 
   // 4. the draft
   const order=nflDraftOrder(rec,elo);
-  const prospects=nflProspects(rng,7*32);
+  // the class shown on the offseason screen (a copy: the class itself isn't consumed)
+  const prospects=nflDraftClass(u).list.map(p=>Object.assign({},p));
+  delete u.draftClass;
   const picks=[];
   for(let rd=1;rd<=7;rd++)order.forEach((t,k)=>{
     const R=u.roster[t], ch=chFor(t), overall=(rd-1)*32+k+1;
@@ -195,6 +218,10 @@ function nflRun(u,rng,healthy,elo,rec,choices){
                   :p.r+(p.pot-p.r)*0.45+nflGain(R,p)*0.5;
     const scout=2.5-orgEdge(u,t)*1.4;                  // how often a team misjudges a prospect
     let bi=0,bs=-1e9; prospects.forEach((p,i)=>{if(p.taken)return; const s=score(p)+rng.gauss(0,scout); if(s>bs){bs=s;bi=i}});
+    // a coach's own board comes first: the highest player on it still there
+    const board=(ch&&ch.board)||[];
+    const mine=board.map(id=>prospects.findIndex(p=>p.pid===id&&!p.taken)).find(i=>i>=0);
+    if(mine!==undefined)bi=mine;
     const p=prospects[bi]; p.taken=true;
     p.draft={round:rd,pick:k+1,overall:overall,team:t,year:u.year};
     p.k={sal:rookieSal(overall),yrs:4}; p.joined=u.year+1; p.drafted=true;
@@ -203,7 +230,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r});
       if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")}}
     rep.drafted[t].push({n:p.n,p:p.p,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made});
-    picks.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made});
+    picks.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made,pid:p.pid});
   });
 
   // a draft class can tip a team over: release the worst-value backups until it fits
@@ -279,9 +306,10 @@ LEAGUE.offseason={
   open(u,t,wins){
     const R=u.roster[t], resign=nflResignPlan(R), asks={};
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
-    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa"}};
+    nflDraftClass(u,t);                              // made now, so the screen can show it
+    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[]}};
   },
-  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft}},
+  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[]}},
   faStyles:{contend:{l:"Spend to contend",d:"Chase the best players available, whatever their age. Uses nearly every dollar."},
             balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
@@ -327,7 +355,7 @@ LEAGUE.historyExtras=function(sea,off,my){
   const C=off.contracts||{};
   return {id:"nfl",
     draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my||d.d.round===1&&d.d.pick<=10)
-      .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made})),
+      .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
     payroll:off.cap?off.cap[my]:null};
