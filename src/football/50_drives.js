@@ -35,7 +35,10 @@ const AGGR = {
   // late-game management for sides nobody is calling (see situational):
   // sitting on a lead burns clock, chasing a deficit takes shots
   sit:       {td:-0.050, fg:+0.058, to:-0.070, gap:1.00},
-  chase:     {td:+0.082, fg:-0.060, to:+0.086, gap:1.00}
+  chase:     {td:+0.082, fg:-0.060, to:+0.086, gap:1.00},
+  // your call to force it on a last possession: touchdown or bust. Right
+  // when you need a touchdown; a mistake when a field goal would do.
+  force:     {td:+0.080, fg:-0.120, to:+0.090, gap:1.00}
 };
 
 /* Chance of each outcome on one drive, given the gap between the two teams. */
@@ -133,7 +136,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
           const choice=opts.decide(dp,ctx);
           st.used[dp.k]=true;
           if(dp.k==="fourth")forced=choice;
-          else if(choice==="push")aggr="chase";      // calls are game management,
+          else if(choice==="push")aggr=(dp.k==="chase"?"force":"chase");   // calls are game management,
           else if(choice==="sit"){                     // not the weekly gameplan
             aggr="sit";
             // running clock takes possessions off the board for both teams
@@ -269,7 +272,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       if(stage==="strategy"){
         st.stage=null;
         // calls are game management, not the weekly gameplan
-        if(choice==="push"){ if(home)st.aggrH="chase"; else st.aggrA="chase" }
+        if(choice==="push"){ const m=(P.k==="chase"?"force":"chase"); if(home)st.aggrH=m; else st.aggrA=m }
         else if(choice==="sit"){
           if(home)st.aggrH="sit"; else st.aggrA="sit";
           st.endAfter=Math.min(st.total-1,i+3);
@@ -319,7 +322,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       const dp=decisionPoint(ctx,true);
       if(dp){
         used[dp.k]=true; called();
-        st.stage="strategy"; st.pend={q:q,start:start};
+        st.stage="strategy"; st.pend={q:q,start:start,k:dp.k};
         return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
       }
     }
@@ -362,11 +365,15 @@ function decisionPoint(state, isUser){
   const veryLate = idx >= total - 7;
   const diff = mine - theirs;
 
-  if (veryLate && diff < 0 && diff >= -16 && !used.chase) {
+  // asked on your last possession, when what you need is known: a field
+  // goal to win or tie, or nothing less than a touchdown
+  const lastBall = idx >= total - 2;
+  if (lastBall && diff < 0 && diff >= -8 && !used.chase) {
     return {
       k:"chase",
-      h:`Down ${-diff} with the clock going`,
-      b:`Time to force it, or keep playing your game and hope for a stop.`,
+      h:`Down ${-diff}, last possession`,
+      b: -diff<=3 ? `A field goal ${-diff===3?"ties it":"wins it"}. Take what they give you, or go for the touchdown?`
+                  : `Only a touchdown will do. Force it downfield, or work it and trust the clock?`,
       opts:[["push","Open it up"],["normal","Stay patient"]]
     };
   }

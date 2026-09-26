@@ -1,5 +1,5 @@
 {
- "fp": "18106f8423eeff3b",
+ "fp": "609781fe96c302da",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -40,6 +40,11 @@
    "fp": "18106f8423eeff3b",
    "from": "26033ffd842e25e2",
    "note": "In-game calls use the game-management modes (push -> chase, sit -> sit) instead of the new gameplan modes, so they play exactly as before the gameplan change; dead applyChoice removed"
+  },
+  {
+   "fp": "609781fe96c302da",
+   "from": "18106f8423eeff3b",
+   "note": "The late chase call is asked on your last possession only, with a touchdown-or-bust 'force' mode for pushing"
   }
  ],
  "out": [
@@ -49,11 +54,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "15-2",
+      "rec": "14-3",
       "result": "Lost the Super Bowl",
-      "grade": "A+"
+      "grade": "A"
      },
-     "book": "4e12f05b4da90fb2"
+     "book": "fc2d23816b17cc3a"
     },
     {
      "team": "Tennessee",
@@ -62,7 +67,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "60ab4b7a3d50efb3"
+     "book": "13f92b63b3919943"
     }
    ]
   },
@@ -72,20 +77,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
-      "grade": "A-"
+      "rec": "14-3",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "ac80be2af63a6027"
+     "book": "10de2ce42e325acb"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost the Super Bowl",
-      "grade": "A"
+      "rec": "9-8",
+      "result": "Missed the playoffs",
+      "grade": "B+"
      },
-     "book": "0f03ce8df4249b20"
+     "book": "0b5586d5e732fed3"
     }
    ]
   },
@@ -95,20 +100,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the divisional round",
-      "grade": "B"
+      "rec": "12-5",
+      "result": "Lost the conference championship",
+      "grade": "A-"
      },
-     "book": "164b3b0f04c71bc2"
+     "book": "8492c007ef649af7"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "15-2",
-      "result": "Lost in the divisional round",
-      "grade": "A+"
+      "rec": "8-9",
+      "result": "Lost in the wild card round",
+      "grade": "B+"
      },
-     "book": "b2ed83a191ffe953"
+     "book": "bc16d25a9b86ab10"
     }
    ]
   }

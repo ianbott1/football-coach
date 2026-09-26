@@ -32,7 +32,7 @@ for(const kind of (process.env.KINDS||'chase,protect,half,fourth,two').split(','
       const base=play(s,gap,kind,'__none__'); if(!base.asked)continue;
       let group=kind+' ['+base.asked+']'; if(kind==='half')group+=base.sit<0?' behind':' ahead';
       if(kind==='fourth')group+=' '+(+base.togo<=2?'1-2 to go':+base.togo<=5?'3-5 to go':'6+ to go');
-      if(kind==='chase')group+=' down '+(-base.sit<=2?'1-2':-base.sit===3?'3':-base.sit<=8?'4-8':'9+');
+      if(kind==='chase')group+=' down '+(-base.sit<=2?'1-2':-base.sit===3?'3':'4-8');
       if(kind==='protect')group+=' up '+(base.sit<=3?'1-3':base.sit<=8?'4-8':'9+');
       const G2=out[group]=out[group]||{}; 
       base.asked.split('/').forEach(a=>{const r=play(s,gap,kind,a); const c=(G2[a]=G2[a]||{}); const q=(c[gap]=c[gap]||{w:0,n:0}); q.n++; if(r.win)q.w++});

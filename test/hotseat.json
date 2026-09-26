@@ -1,5 +1,5 @@
 {
- "fp": "b64244c01dffa722",
+ "fp": "5d2782438bd59aab",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -50,6 +50,11 @@
    "fp": "b64244c01dffa722",
    "from": "05726cb4c3f32854",
    "note": "In-game calls use the game-management modes (push -> chase, sit -> sit) instead of the new gameplan modes, so they play exactly as before the gameplan change; dead applyChoice removed"
+  },
+  {
+   "fp": "5d2782438bd59aab",
+   "from": "b64244c01dffa722",
+   "note": "The late chase call is asked on your last possession only, with a touchdown-or-bust 'force' mode for pushing"
   }
  ],
  "out": [
@@ -60,19 +65,19 @@
      "team": "Alabama",
      "last": {
       "rec": "10-3",
-      "result": "Eliminated in the first round",
-      "grade": "B"
+      "result": "Won the ReliaQuest Bowl",
+      "grade": "B-"
      },
-     "book": "cb23656c12f0de14"
+     "book": "4f53435c615df853"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "5-7",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "e1c1cd116e0d6d85"
+     "book": "d482dc9e491d7baa"
     }
    ]
   },
@@ -82,20 +87,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-3",
-      "result": "Won the ReliaQuest Bowl",
-      "grade": "B-"
+      "rec": "11-3",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A-"
      },
-     "book": "81fe476bb4c1e840"
+     "book": "f1fa4bd60f7453c3"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Cure Bowl",
-      "grade": "A-"
+      "rec": "2-10",
+      "result": "No bowl game",
+      "grade": "C"
      },
-     "book": "47b86bb60ff76729"
+     "book": "91cca027e34c83bd"
     }
    ]
   },
@@ -105,20 +110,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-3",
-      "result": "Eliminated in the semifinals",
-      "grade": "A"
+      "rec": "8-5",
+      "result": "Eliminated in the first round",
+      "grade": "C"
      },
-     "book": "d939a2144b20ffd5"
+     "book": "d3581a440691db58"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the LA Bowl",
-      "grade": "A"
+      "rec": "3-9",
+      "result": "No bowl game",
+      "grade": "C+"
      },
-     "book": "72ce37be90c188fd"
+     "book": "3116d00ec969bec0"
     }
    ]
   }
