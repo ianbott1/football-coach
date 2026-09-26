@@ -853,7 +853,7 @@ function teamCardHTML(my,rk,co){
       const row=(lab,c)=>`<div class="stline"><span class="stlab">${lab}</span>
         <span class="stn">${esc(c.n)}</span><span class="sts">${esc(c.s)}</span>
         <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}">${c.q>0?"+":""}${c.q}</span></div>`;
-      return `<div class="staffbar">${row("OC",O)}${row("DC",D)}</div>`})()}
+      return `<div class="staffbar">${row(SPORT.staff.oc.short,O)}${row(SPORT.staff.dc.short,D)}</div>`})()}
     ${(()=>{const e=S.expNow||expectations();
       const w=SEA.rec[my][0],l=SEA.rec[my][1],left=12-(w+l);
       const need=Math.max(0,e.w-w);
@@ -921,7 +921,7 @@ function attentionHTML(my){
     if(!st||!st[my]||st[my].interim||SEA.midFired[side])return;
     if(!shortfall&&st[my].q>-25)return;
     out.push({k:"staff",side:side,
-      h:`Your ${side==="oc"?"offensive":"defensive"} coordinator is under fire`,
+      h:`Your ${SPORT.staff[side].long} is under fire`,
       b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. An interim would be replacement level;
         you'd hire properly in the offseason.`});
   });
@@ -1472,9 +1472,9 @@ function teamCard(t){
       <div class="cmeta">Head coach &middot; ${U.coach[t].t<=0?"first season":"year "+(U.coach[t].t+1)}
       &middot; ${coachGrade(U.coach[t].q)}</div></div></div>
       ${U.oc&&U.oc[t]?`<div class="staffbar plain">
-        <div class="stline"><span class="stlab">OC</span><span class="stn">${esc(U.oc[t].n)}</span>
+        <div class="stline"><span class="stlab">${SPORT.staff.oc.short}</span><span class="stn">${esc(U.oc[t].n)}</span>
           <span class="sts">${esc(U.oc[t].s)}</span></div>
-        <div class="stline"><span class="stlab">DC</span><span class="stn">${esc(U.dc[t].n)}</span>
+        <div class="stline"><span class="stlab">${SPORT.staff.dc.short}</span><span class="stn">${esc(U.dc[t].n)}</span>
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
     <div class="progline">${LEAGUE.text.org} strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b>
@@ -1982,7 +1982,7 @@ function render(){
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>{
-    if(confirm("Replace your coordinator with an interim for the rest of the season?"))
+    if(confirm("Replace your "+SPORT.staff.any+" with an interim for the rest of the season?"))
       fireCoord(b.dataset.fire);});
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
     const h=S.history[+b.dataset.card]; if(h){cardFor=h;cardMsg="";render()}});

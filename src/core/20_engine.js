@@ -201,8 +201,7 @@ function coachGrade(q){
 const ARCHETYPES=[
  {k:"proven", l:"Proven winner",  bump:16, sd:16,
   d:"Has won at this level before. Expensive, and the expectations arrive with him."},
- {k:"riser",  l:"Rising coordinator", bump:2, sd:36,
-  d:"Hottest name on the market. Could be the next great one, could be a coordinator forever."},
+ {k:"riser",  l:SPORT.riser.l, bump:2, sd:36, d:SPORT.riser.d},
  {k:"builder",l:"Program builder", bump:-4, sd:19, rec:9,
   d:"Wins on the recruiting trail before he wins on Saturdays. Slow burn, high floor."},
  {k:"retread",l:"Veteran retread", bump:-7, sd:11,
