@@ -70,6 +70,13 @@ const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g
   D.render(); await click(D,'ttl');
   ok(/isn't saved/.test(D.nodes.app.innerHTML)&&/career is lost/.test(D.nodes.app.innerHTML),
      'and the prompt warns that leaving loses the career');
+  // compression (last: booting another game replaces the page objects the first one draws into)
+  { const LZ={}; A.newDynasty(T1,1,'T'); await play(A,2); Object.assign(LZ,LS); const k=Object.keys(LZ).find(k=>/slot1$/.test(k)), v=LZ[k], plain=JSON.stringify(A.S).length;
+    ok(/^LZW1:/.test(v)&&v.length<plain/3, `the save is compressed (${v.length} characters for ${plain} of JSON)`);
+    // a save from before compression, plain JSON, still loads
+    const P={}; P[k.replace(/slot1$/,'slot2')]=JSON.stringify(A.S);
+    const Q=boot(P); const d2=await Q.loadSlot(2);
+    ok(!!d2&&d2.myTeam===T1, 'an old, uncompressed save still loads'); }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH all checks');
   process.exit(bad?1:0);
 })();

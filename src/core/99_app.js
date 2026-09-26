@@ -247,11 +247,14 @@ function rebuild(){
 
 let saveOK=null;                     // did the last save land? null = not tried yet
 async function save(){
-  try{saveOK=!!(await store.set(KEYFOR(slot),JSON.stringify(S)))}catch(e){saveOK=false}
+  // compressing a long career takes a moment: let the screen draw first
+  if(typeof requestAnimationFrame==="function")
+    await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
+  try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(JSON.stringify(S))))}catch(e){saveOK=false}
   return saveOK;
 }
 async function loadSlot(n){
-  try{const r=await store.get(KEYFOR(n));return r?migrateSave(JSON.parse(r.value)):null}catch(e){return null}
+  try{const r=await store.get(KEYFOR(n));return r?migrateSave(JSON.parse(lzwUnpack(r.value))):null}catch(e){return null}
 }
 async function allSlots(){
   const out=[];
