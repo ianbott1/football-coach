@@ -118,6 +118,24 @@ function nflDraftClass(u,team){
   }
   return C;
 }
+/* Who will be a free agent: the players other teams' re-signing rules won't
+   keep (their own choice, for a person coaching one). Ratings are this
+   season's; players age before free agency opens. key identifies a player
+   across the offseason. */
+const faKey=(team,p)=>team+"|"+p.n+"|"+p.p;
+function nflFreeAgentPreview(u,myTeam,users){
+  const out=[];
+  NAMES.forEach(t=>{
+    if(t===myTeam)return;
+    const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R);
+    R.forEach((p,i)=>{ if(!p||p.k.yrs>1||plan[i])return;
+      if(p.r<58||p.age>=33)return;                  // likely to retire or go unsigned
+      out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
+                ask:Math.round(nflAsk(p.r,p.p,p.age+1)*1.1*10)/10});
+    });
+  });
+  return out.sort((a,b)=>(b.r+(b.pot-b.r)*0.3-b.age*0.2)-(a.r+(a.pot-a.r)*0.3-a.age*0.2));
+}
 const rookieSal=o=>o<=32?Math.round((10-7*(o-1)/31)*10)/10:o<=64?1.6:1.0;
 
 /* what a player adds at his spot: over the backup, or over the starter */
@@ -248,6 +266,28 @@ function nflRun(u,rng,healthy,elo,rec,choices){
 
   // 5. free agency: teams with the most room shop first, a few rounds of it
   pool.forEach(p=>{p.ask=nflAsk(p.r,p.p,p.age); p.i=POS.findIndex(P=>P.p===p.p)});
+  // a coach's own targets get the first look, in their order, at the asking
+  // price plus a premium for the competing offers, if it fits under the cap
+  rep.targets={};
+  Object.keys(U_CH).forEach(t=>{
+    const ch=U_CH[t]; if(!ch||!ch.targets||!ch.targets.length||!u.roster[t])return;
+    const R=u.roster[t]; rep.targets[t]=[];
+    ch.targets.forEach(key=>{
+      const p=pool.find(x=>!x.signed&&faKey(x.from,x)===key);
+      const [team,n,pos]=key.split("|");
+      if(!p){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:"wasn't on the market (retired or re-signed)"});return}
+      const cost=Math.round(p.ask*1.1*10)/10;
+      const bk=R[BK(p.i)];
+      if(bk&&bk.keep){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`no room at ${pos}: it would cut ${bk.n}, whom you just signed`});return}
+      if(payroll(R)+cost>NFL_CAP){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
+      p.signed=true; p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
+      p.keep=true;                                  // not to be cut again this offseason
+      const out=nflPlace(R,p);
+      rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from,target:true});
+      rep.targets[t].push({n:n,p:pos,from:team,got:true,sal:cost});
+      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
+    });
+  });
   const styleOf=t=>{const ch=chFor(t); if(ch&&ch.fa)return ch.fa;
     const rk=NAMES.slice().sort((a,b)=>elo[b]-elo[a]).indexOf(t);
     // bad teams with room are the big spenders, as in the real league; only a
@@ -260,6 +300,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const R=u.roster[t], st=styleOf(t), room=NFL_CAP*limit[st]-payroll(R);
       let best=null,bv=0;
       pool.forEach(p=>{if(p.signed||p.age>maxAge[st]||p.from===t)return;
+        const bk=R[BK(p.i)]; if(bk&&bk.keep)return;    // would cut a target you just signed
         const cost=Math.round(p.ask*(1+Math.max(0,rng.gauss(0.05,0.08)))*(1-orgEdge(u,t)*0.06)*10)/10;
         if(cost>room)return;
         const v=nflGain(R,p)-cost*0.08;
@@ -273,6 +314,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     });
   }
   pool.filter(p=>!p.signed).forEach(p=>leave(p.from,p,"unsigned"));
+  NAMES.forEach(t=>u.roster[t].forEach(p=>{if(p)delete p.keep}));
 
   // 6. fill the gaps, and put the best man at each spot
   NAMES.forEach(t=>{
@@ -307,9 +349,9 @@ LEAGUE.offseason={
     const R=u.roster[t], resign=nflResignPlan(R), asks={};
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
     nflDraftClass(u,t);                              // made now, so the screen can show it
-    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[]}};
+    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[]}};
   },
-  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[]}},
+  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[]}},
   faStyles:{contend:{l:"Spend to contend",d:"Chase the best players available, whatever their age. Uses nearly every dollar."},
             balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
@@ -358,6 +400,7 @@ LEAGUE.historyExtras=function(sea,off,my){
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
+    targets:(C.targets&&C.targets[my])||[],
     payroll:off.cap?off.cap[my]:null};
 };
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};

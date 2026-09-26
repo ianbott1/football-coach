@@ -1,5 +1,5 @@
 {
- "fp": "0bf7548bb6d8b46f",
+ "fp": "18bc1bd8ef303711",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -55,6 +55,11 @@
    "fp": "0bf7548bb6d8b46f",
    "from": "609781fe96c302da",
    "note": "Pro draft class made when the offseason opens (seeded by dynasty and year) so you can see it and build a board; the draft no longer draws the class from the offseason's random stream, so universes diverge from the first draft"
+  },
+  {
+   "fp": "18bc1bd8ef303711",
+   "from": "0bf7548bb6d8b46f",
+   "note": "Pro free-agent targets: your first look at players you mark, in your order, at their ask plus 10%, if they fit. Only history (targets list) and screens (new sections) change; computer free agency is unchanged."
   }
  ],
  "out": [
@@ -68,7 +73,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "200373d608e2fa29"
+     "book": "1a58fc9904f32c72"
     },
     {
      "team": "Tennessee",
@@ -77,7 +82,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "e4ae4e2ecc1a7a3f"
+     "book": "90e5675390c65271"
     }
    ]
   },
@@ -91,7 +96,7 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "82b8906c9f94e4ef"
+     "book": "956fc8320e961deb"
     },
     {
      "team": "Tennessee",
@@ -100,7 +105,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "8b8ebf59740be9d0"
+     "book": "73c9bd7f714acf8c"
     }
    ]
   },
@@ -114,7 +119,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "6011f508c6839131"
+     "book": "36352ed5551e4350"
     },
     {
      "team": "Tennessee",
@@ -123,7 +128,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "75a7a46af5c0d1cb"
+     "book": "5dd2571777d5faae"
     }
    ]
   }

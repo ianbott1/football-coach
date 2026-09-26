@@ -28,7 +28,7 @@ function load(file) {
     createElement: () => mk(), body:{classList:{toggle(){}}}, addEventListener(){} };
   // live getters: U, SEA, S, live are reassigned with `let`, so capture by closure
   return new Function(js + `
-    return { leagueId(){return LEAGUE.id}, draftClass(){return typeof nflDraftClass==='function'?nflDraftClass(U,S.myTeam):null}, recruitFocus(){return LEAGUE.offseason.recruitFocus}, seasonGradeFor(w,l,r,e){return seasonGrade(w,l,r,e||expectations())}, setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, seasonProto(){return Season.prototype}, homeFieldOf(u,t){return homeField(u,t)}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
+    return { leagueId(){return LEAGUE.id}, faPreview(){return typeof nflFreeAgentPreview==='function'?nflFreeAgentPreview(U,S.myTeam):[]}, draftClass(){return typeof nflDraftClass==='function'?nflDraftClass(U,S.myTeam):null}, recruitFocus(){return LEAGUE.offseason.recruitFocus}, seasonGradeFor(w,l,r,e){return seasonGrade(w,l,r,e||expectations())}, setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, seasonProto(){return Season.prototype}, homeFieldOf(u,t){return homeField(u,t)}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
       view(v,sub){ view=v; if(sub)dynTab=sub; flash=null; render(); return __nodes.app?__nodes.app.innerHTML:'' }, render, newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
       NAMES, get CONF(){return CONF}, loadCoach, stashCoach,

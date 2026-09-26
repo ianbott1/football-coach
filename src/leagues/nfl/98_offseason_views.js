@@ -28,6 +28,30 @@ function nflBoardHTML(P){
   h+=`<div class="grouphead">The class &mdash; best 30 by your scouts</div>`+pool.map(p=>row(p,0,false)).join("");
   return h;
 }
+/* Free agents you want, in order. They get your first look when free agency
+   opens, at the asking price plus about 10%, if they fit; then your style
+   fills whatever is left. */
+function nflTargetsHTML(P,room){
+  const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
+  const mine=(P.targets||[]).filter(k=>byKey[k]);
+  let left=room-8;                                  // leave room for the draft class
+  const seenPos={};
+  const row=(x,on,i)=>{ let fit="";
+      if(on){left-=x.ask; fit=left>=0?"fits":"won't fit as things stand";
+        if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
+      return `<div class="drow">
+      <span class="dpick">${on?(i+1)+".":""}</span>
+      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
+        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${on?" &middot; "+fit:""}</div></div>
+      <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
+  let h=`<div class="grouphead">Free agents you want</div>`;
+  h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
+    :`<div class="note">None yet: your free-agency style will decide. Players you add get your first look, in your order, if you have the room.</div>`;
+  const pool=pre.filter(x=>mine.indexOf(x.key)<0).slice(0,25);
+  h+=`<div class="grouphead">Likely free agents &mdash; the best 25</div>`+
+    (pool.length?pool.map(x=>row(x,false)).join(""):`<div class="note">Nobody worth chasing this year.</div>`);
+  return h;
+}
 function nflPickSlot(){
   const o=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam)+1;
   return o+(o===1?"st":o===2?"nd":o===3?"rd":"th");
@@ -50,6 +74,8 @@ function offseasonBanner(){
   let rec="";
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
   if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
+  const missed=(X.targets||[]).filter(x=>!x.got);
+  if(missed.length)rec+=`<div class="bnews small"><b>Targets you missed:</b> ${list(missed,x=>esc(x.n)+" ("+esc(x.p)+") "+esc(x.why))}.</div>`;
   const gone=(X.released||[]).filter(p=>p.r>=66);
   if(gone.length)rec+=`<div class="bnews small">Moved on: ${list(gone,p=>esc(p.n)+" ("+esc(p.p)+")")}.</div>`;
   const ra="";
@@ -178,6 +204,7 @@ function offseasonScreen(){
   const FA=LEAGUE.offseason.faStyles;
   h+=Object.keys(FA).map(k=>`<div class="opt ${P.fa===k?'on':''}" data-fa="${k}">
     <div class="fname">${esc(FA[k].l)}</div><div class="cdesc">${esc(FA[k].d)}</div></div>`).join("");
+  h+=nflTargetsHTML(P,room);
   h+=`<div class="grouphead">${n(3)}. The draft</div>`;
   h+=`<div class="note">You pick ${nflPickSlot()} in each round.</div>`;
   const DR=LEAGUE.offseason.draftStyles;
@@ -207,6 +234,10 @@ Object.assign(LEAGUE.ui,{
       S.off.picks.fa=b.dataset.fa; save(); render();});
     document.querySelectorAll("[data-draft]").forEach(b=>b.onclick=()=>{
       S.off.picks.draft=b.dataset.draft; save(); render();});
+    document.querySelectorAll("[data-fatadd]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks; P.targets=(P.targets||[]).concat([b.dataset.fatadd]); save(); render();});
+    document.querySelectorAll("[data-fatrm]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks, k=b.dataset.fatrm; P.targets=(P.targets||[]).filter(x=>x!==k); save(); render();});
     document.querySelectorAll("[data-bdadd]").forEach(b=>b.onclick=()=>{
       const P=S.off.picks; P.board=(P.board||[]).concat([+b.dataset.bdadd]); save(); render();});
     document.querySelectorAll("[data-bdrm]").forEach(b=>b.onclick=()=>{
