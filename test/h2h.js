@@ -33,19 +33,22 @@ function season(seed,roster){
   return {api,log,hand,U};
 }
 // 1-4: two coaches who meet (Iron Bowl), over several seeds
-const R2=[{team:'Alabama',name:'Coach A'},{team:'Auburn',name:'Coach B'}];
+const LG=mk()(file).leagueId();
+const [TA,TB,TM]=LG==='cfb'?['Alabama','Auburn','Rice']:['Kansas City','Denver','Tennessee'];
+const PAIR=[TA,TB].sort().join(' v ');
+const R2=[{team:TA,name:'Coach A'},{team:TB,name:'Coach B'}];
 let games=0, twice=0, bothAsked=0, overCap=0, wrongLabel=0, notCounted=0;
 for(const seed of [99,1,2,3,4,5,6,7]){
   const {api,log}=season(seed,R2);
   const key=x=>x.step+'|'+x.pair; const seen={};
   log.forEach(x=>{seen[key(x)]=(seen[key(x)]||0)+1});
-  const meet=log.filter(x=>x.pair==='Alabama v Auburn');
-  games+=meet.length; twice+=Object.keys(seen).filter(k=>/Alabama v Auburn/.test(k)&&seen[k]>1).length;
+  const meet=log.filter(x=>x.pair===PAIR);
+  games+=meet.length; twice+=Object.keys(seen).filter(k=>k.indexOf(PAIR)>=0&&seen[k]>1).length;
   meet.forEach(x=>{
-    if(x.asks.Alabama&&x.asks.Auburn)bothAsked++;
+    if(x.asks[TA]&&x.asks[TB])bothAsked++;
     if(Object.values(x.asks).some(n=>n>3))overCap++;
     x.labels.forEach(([t,l])=>{
-      const name=t==='Alabama'?'Coach A':'Coach B'; if(!(l||'').startsWith(name+"'s call")){wrongLabel++;}});
+      const name=t===TA?'Coach A':'Coach B'; if(!(l||'').startsWith(name+"'s call")){wrongLabel++;}});
     // the result that counts is the one that was played
     const W=x.step<api.SEA.weeks.length?api.SEA.weeks[x.step]:null;
     const all=[].concat(...api.SEA.weeks.map(w=>w.games),...api.SEA.postPools());
@@ -60,23 +63,23 @@ ok(overCap===0, 'neither side was asked more than 3 times in a game');
 ok(wrongLabel===0, `every call screen names the coach whose call it is (${wrongLabel} wrong)`);
 ok(notCounted===0, `the score that counts is the score that was played (${notCounted} not)`);
 // the waiting coach's plan is the one their side plays with
-{ const api=mk()(file); api.newDynasty('Alabama',99,'T',R2); let seen=null, g=0;
+{ const api=mk()(file); api.newDynasty(TA,99,'T',R2); let seen=null, g=0;
   while(api.SEA.phase==='week'&&g++<60&&!seen){
     const ug=api.SEA.nextGame(api.S.myTeam);
-    const meets=ug&&[ug.home,ug.away].sort().join(' v ')==='Alabama v Auburn';
-    api.setPlan(meets&&api.S.myTeam==='Alabama'?'aggressive':meets?'safe':'balanced');
+    const meets=ug&&[ug.home,ug.away].sort().join(' v ')===PAIR;
+    api.setPlan(meets&&api.S.myTeam===TA?'aggressive':meets?'safe':'balanced');
     api.doAdvance(); const b=global.__nodes.hgo; if(/handwrap/.test(global.__nodes.app.innerHTML)&&b&&b.onclick)b.onclick();
     if(api.live&&api.live.h2h){const e=api.live.eng, g2=api.live.g;
-      seen={Alabama:g2.home==='Alabama'?e.baseH:e.baseA, Auburn:g2.home==='Auburn'?e.baseH:e.baseA};}
+      seen={A:g2.home===TA?e.baseH:e.baseA, B:g2.home===TB?e.baseH:e.baseA};}
     let n=0; while(api.live&&!api.live.done&&n++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
   }
-  ok(seen&&seen.Alabama==='aggressive'&&seen.Auburn==='safe', `each coach's own game plan is used (${JSON.stringify(seen)})`);
+  ok(seen&&seen.A==='aggressive'&&seen.B==='safe', `each coach's own game plan is used (${JSON.stringify(seen)})`);
 }
 // 5: three coaches, first plays third: the note goes to the right coach
-{ const {hand}=season(99,[{team:'Alabama',name:'Coach A'},{team:'Rice',name:'Coach R'},{team:'Auburn',name:'Coach B'}]);
-  const iron=hand.filter(x=>/You play Alabama this week/.test(x.html));
-  ok(iron.length>0 && iron.every(x=>x.to==='Auburn'), `the head-to-head note is shown to Auburn's coach only (${iron.map(x=>x.to).join(',')||'never shown'})`);
-  ok(!hand.some(x=>x.to==='Rice'&&/You play/.test(x.html)), 'the coach in between gets the ordinary hand-over');
+{ const {hand}=season(99,[{team:TA,name:'Coach A'},{team:TM,name:'Coach R'},{team:TB,name:'Coach B'}]);
+  const iron=hand.filter(x=>x.html.indexOf('You play '+TA+' this week')>=0);
+  ok(iron.length>0 && iron.every(x=>x.to===TB), `the head-to-head note is shown to ${TB}'s coach only (${iron.map(x=>x.to).join(',')||'never shown'})`);
+  ok(!hand.some(x=>x.to===TM&&/You play/.test(x.html)), 'the coach in between gets the ordinary hand-over');
 }
 console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH all checks');
 process.exit(bad?1:0);

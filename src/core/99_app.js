@@ -655,7 +655,7 @@ function heroResult(){
   let move="";
   if(pv&&pv[my]){
     const d=pv[my]-cur[my];
-    if(cur[my]<=25&&pv[my]>25)move=`<div class="hmove up">Entered the poll at #${cur[my]}</div>`;
+    if(cur[my]<=25&&pv[my]>25)move=`<div class="hmove up">${LEAGUE.text.entered}${cur[my]}</div>`;
     else if(cur[my]>25&&pv[my]<=25)move=`<div class="hmove dn">Dropped out of the poll</div>`;
     else if(cur[my]<=25&&d>0)move=`<div class="hmove up">&#9650; Up ${d} to #${cur[my]}</div>`;
     else if(cur[my]<=25&&d<0)move=`<div class="hmove dn">&#9660; Down ${-d} to #${cur[my]}</div>`;
@@ -860,8 +860,8 @@ function teamCardHTML(my,rk,co){
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[my]])} &middot; ${SEA.year} season</div>
     <div class="stats">
       <div><b>${(()=>{const r=liveRec(my);return r[0]+"-"+r[1]})()}</b><span>Record</span></div>
-      <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>Conference</span></div>
-      <div><b>${reveal==="half"?"&mdash;":(rk[my]<=25?"#"+rk[my]:"NR")}</b><span>Poll</span></div>
+      <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>
+      <div><b>${reveal==="half"?"&mdash;":(rk[my]<=25?"#"+rk[my]:"NR")}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${co.t<=0?"first season":"year "+(co.t+1)}
@@ -1106,14 +1106,14 @@ function weekNews(W){
     items.push({p:90,k:"upset",tone:"flag",
       h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
       b: lr<=5 ? `A top-five team is down. ${L} won't drop out, but the margin for error is gone.`
-        : wr>25 ? `${Wn} came in unranked. ${L} will pay for this one in the poll.`
+        : wr>25 ? `${Wn} came in unranked. ${L} will pay for this one in ${LEAGUE.text.ranking}.`
         : `${Wn} moves up; ${L} slides.`});
   }
   // other ranked casualties
   const more=ups.slice(1,3);
   if(more.length)items.push({p:40,k:"also",tone:"muted",
     h:`Also down: ${more.map(g=>rankTxt(loserRank(g))+g.loser).join(", ")}`,
-    b:`${more.length===1?"That's":"Those are"} more cracks in the top 25.`});
+    b:`${more.length===1?"That's":"Those are"} more cracks in ${LEAGUE.text.top}.`});
 
   // your team, framed
   const mg=gs.find(g=>g.home===my||g.away===my);
@@ -1336,7 +1336,7 @@ function coachesView(){
   let rows=coachRows().filter(c=>!ql||c.n.toLowerCase().includes(ql)||c.team.toLowerCase().includes(ql));
   rows.sort((a,b)=>b.titles-a.titles||b.confs-a.confs||(b.w-b.l)-(a.w-a.l));
   let h=`<div class="seedrow"><input id="cfind" class="seedbox findbox"
-    placeholder="Search coaches or programs..." value="${esc(coachQ)}"></div>`;
+    placeholder="Search coaches or ${LEAGUE.text.orgs}..." value="${esc(coachQ)}"></div>`;
   h+=`<div class="grouphead">${rows.length} head coaches &middot; ranked by what they've won</div>`;
   h+=rows.slice(0,60).map(c=>`<div class="frow cpick ${c.you?'mine':''}" data-coach="${esc(c.team)}">
     <span class="dot" style="background:${teamColor(c.team)}"></span>
@@ -1475,7 +1475,7 @@ function teamCard(t){
           <span class="sts">${esc(U.oc[t].s)}</span></div>
         <div class="stline"><span class="stlab">DC</span><span class="stn">${esc(U.dc[t].n)}</span>
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
-    <div class="progline">Program strength since ${base}:
+    <div class="progline">${LEAGUE.text.org} strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
   if(U&&U.series&&LEAGUE.rivals.of[t]){
@@ -1571,15 +1571,15 @@ function dynastyView(){
   if(dynTab==="teams"){
     if(dynTeam)return h+`<button class="backbtn" id="dback">&larr; All teams</button>`+teamCard(dynTeam);
     h+=`<div class="seedrow"><input id="dfind" class="seedbox findbox"
-      placeholder="Search any of 132 programs..." value="${esc(dynQ)}"></div>`;
+      placeholder="Search any of ${NAMES.length} ${LEAGUE.text.orgs}..." value="${esc(dynQ)}"></div>`;
     const ql=dynQ.trim().toLowerCase();
     const list=NAMES.filter(t=>!ql||t.toLowerCase().includes(ql));
     const cur=SEA?SEA.poll.rankMap():{};
     list.sort((x,y)=>(cur[x]||999)-(cur[y]||999));
     if(!list.length)return h+`<div class="note">No team matches that.</div>`;
-    h+=`<div class="note">Tap any program for its roster, schedule and history. You can also
-      tap a team name anywhere in the game &mdash; scores, standings, the poll.</div>`;
-    h+=`<div class="grouphead">${list.length} programs &middot; ordered by current ranking</div>`;
+    h+=`<div class="note">Tap any ${LEAGUE.text.orgs.replace(/s$/,"")} for its roster, schedule and history. You can also
+      tap a team name anywhere in the game &mdash; scores, standings, ${LEAGUE.text.ranking}.</div>`;
+    h+=`<div class="grouphead">${list.length} ${LEAGUE.text.orgs} &middot; ordered by current ranking</div>`;
     h+=list.map(t=>{
       const A=allTime(t);
       const bits=[esc(LEAGUE.conf.names[CONF[t]])];
@@ -1669,8 +1669,7 @@ function dynastyView(){
     h+=d.slice(-8).reverse().map(([t,v])=>`<div class="srow"><span class="spos"></span>
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${esc(t)}</span><span class="sconf dn">${v}</span></div>`).join("");
-    h+=`<div class="note">Program strength is the slow-moving baseline &mdash; recruiting,
-      resources, coaching. Measured against where each program stood in ${base}.</div>`;
+    h+=`<div class="note">${LEAGUE.text.orgNote(base)}</div>`;
   }
   return h;
 }
@@ -2272,7 +2271,7 @@ function renderSetup(){
       <button class="setbtn" data-nco="${n}" aria-pressed="${(S.setup.coaches||1)===n}"
         >${n===1?"Just me":n}</button>`).join("")}</div>
     <span class="seedhint">More than one and you take turns on this device &mdash;
-      same world, same season, different programs.</span>
+      same world, same season, different ${LEAGUE.text.orgs}.</span>
     ${(S.setup.coaches||1)>1?`<div class="conames">${
       Array.from({length:(S.setup.coaches||1)-1}).map((_,i)=>`
       <input class="seedbox" data-coname="${i+1}" maxlength="26"

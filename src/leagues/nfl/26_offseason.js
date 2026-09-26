@@ -223,7 +223,9 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   pool.forEach(p=>{p.ask=nflAsk(p.r,p.p,p.age); p.i=POS.findIndex(P=>P.p===p.p)});
   const styleOf=t=>{const ch=chFor(t); if(ch&&ch.fa)return ch.fa;
     const rk=NAMES.slice().sort((a,b)=>elo[b]-elo[a]).indexOf(t);
-    return rk<10?"contend":rk<24?"balanced":"young"};
+    // bad teams with room are the big spenders, as in the real league; only a
+    // few rebuild through youth
+    return rk<8?"contend":rk>=28?"young":"balanced"};
   const limit={contend:0.99,balanced:0.93,young:0.85}, maxAge={contend:34,balanced:31,young:27};
   for(let round=0;round<4;round++){
     const shoppers=NAMES.slice().sort((a,b)=>payroll(u.roster[a])-payroll(u.roster[b]));
@@ -334,4 +336,4 @@ LEAGUE.seasonLine=function(h,t,r,seed){
   return r[0]>r[1]?"Missed the playoffs":"Losing season";
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
-LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0);
+LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;

@@ -17,7 +17,7 @@ function boot(LS,blocked){
   const nodes={}; const mk=()=>({innerHTML:'',dataset:{},classList:{toggle(){},add(){},remove(){}},setAttribute(){},onclick:null,disabled:false,click(){if(this.onclick)this.onclick()}});
   global.document={getElementById:id=>nodes[id]=nodes[id]||mk(),querySelector:()=>mk(),querySelectorAll:()=>[],createElement:mk,body:{classList:{toggle(){}}},addEventListener(){}};
   global.confirm=()=>true;
-  const api=new Function(js+`return {render,newDynasty,postSeason,get leagueMsg(){return leagueMsg},doAdvance,liveTick,answerLive,loadSlot,allSlots,rebuild,
+  const api=new Function(js+`return {firstTeam(){return NAMES[7]}, render,newDynasty,postSeason,get leagueMsg(){return leagueMsg},doAdvance,liveTick,answerLive,loadSlot,allSlots,rebuild,
     get S(){return S}, set S(v){S=v}, get quitAsk(){return typeof quitAsk==="undefined"?undefined:quitAsk}, get SEA(){return SEA}, get live(){return live},
     get saveOK(){return typeof saveOK==="undefined"?undefined:saveOK}, setSlot(n){slot=n}};`)();
   api.nodes=nodes; api.key=k=>(L.keydown||[]).forEach(f=>f({key:k,preventDefault(){},target:{}})); return api;
@@ -30,7 +30,8 @@ const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g
 (async()=>{
   let bad=0; const ok=(c,msg)=>{console.log((c?'  ok   ':'  FAIL ')+msg); if(!c)bad++};
   // 1. save, quit to title, resume
-  const LS={}; const A=boot(LS); A.newDynasty('Alabama',1,'T'); await play(A,3);
+  const LG=boot({}).leagueId?0:0;
+  const LS={}; const A=boot(LS); const T1=A.firstTeam(); A.newDynasty(T1,1,'T'); await play(A,3);
   const played=season(A);
   ok(Object.keys(LS).some(k=>/slot1$/.test(k)), 'three weeks in, slot 1 is written to localStorage');
   ok(A.saveOK===true, 'the game knows the save landed');
@@ -48,7 +49,7 @@ const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g
   await click(A,'ttl'); await click(A,'quitgo');
   ok(A.S.title===true, '"Go to the title screen" leaves');
   const slots=await A.allSlots();
-  ok(slots[0]&&slots[0].team==='Alabama', 'title screen lists slot 1: '+JSON.stringify(slots.map(s=>s.empty?'empty':s.team)));
+  ok(slots[0]&&slots[0].team===T1, 'title screen lists slot 1: '+JSON.stringify(slots.map(s=>s.empty?'empty':s.team)));
   const B=boot(LS); const d=await B.loadSlot(1);                      // a fresh page load
   ok(!!d, 'slot 1 loads on a fresh page');
   if(!d){console.log('MISMATCH (nothing to load)');process.exit(1)}
@@ -59,12 +60,12 @@ const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g
   if(C.nodes.rst&&C.nodes.rst.onclick){await C.nodes.rst.onclick(); await tick()}
   ok(!Object.keys(LS).some(k=>/slot1$/.test(k)), '"Start over" deletes slot 1');
   // 2b. the shared table says it is unavailable rather than claiming a post
-  { const E=boot(LS); E.newDynasty('Iowa',3,'T'); await play(E,1);
+  { const E=boot(LS); E.newDynasty(E.firstTeam(),3,'T'); await play(E,1);
     E.S.history=[{year:2026,rec:'1-0',rank:5,result:'x',grade:'B'}];
     await E.postSeason(); await tick();
     ok(!/^Posted/.test(E.leagueMsg), 'shared table outside Claude: "'+E.leagueMsg+'"'); }
   // 3. storage blocked: the failure is reported, not swallowed
-  const D=boot({},true); D.newDynasty('Rice',2,'T'); await play(D,1);
+  const D=boot({},true); D.newDynasty(D.firstTeam(),2,'T'); await play(D,1);
   ok(D.saveOK===false, 'with storage blocked, the game knows the save failed');
   D.render(); await click(D,'ttl');
   ok(/isn't saved/.test(D.nodes.app.innerHTML)&&/career is lost/.test(D.nodes.app.innerHTML),

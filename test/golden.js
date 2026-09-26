@@ -28,7 +28,7 @@ function load(file) {
     createElement: () => mk(), body:{classList:{toggle(){}}}, addEventListener(){} };
   // live getters: U, SEA, S, live are reassigned with `let`, so capture by closure
   return new Function(js + `
-    return { setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
+    return { leagueId(){return LEAGUE.id}, setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, seasonProto(){return Season.prototype}, homeFieldOf(u,t){return homeField(u,t)}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
       view(v,sub){ view=v; if(sub)dynTab=sub; flash=null; render(); return __nodes.app?__nodes.app.innerHTML:'' }, render, newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
       NAMES, get CONF(){return CONF}, loadCoach, stashCoach,
@@ -51,6 +51,9 @@ function load(file) {
         return new Season(u,(seed*2654435761)>>>0).sched.map(g=>[g.week,g.home,g.away,!!g.neutral,g.site||'']); } };`)();
 }
 
+// every tab: college football's sub-tabs by name; other leagues, each view and dynasty tab
+const views = api => api.leagueId()==='cfb' ? api.allViews()
+  : ['team','scores','poll','stand'].map(v=>api.view(v)).concat(['program','teams','coaches','shared'].map(d=>api.view('dyn',d)));
 const h = o => crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0,16);
 
 function career(file, team, seed, seasons) {
@@ -62,7 +65,7 @@ function career(file, team, seed, seasons) {
     let guard = 0;
     while (api.SEA.phase !== 'done' && guard++ < 80) {
       api.doAdvance(); grab();
-      if (api.SEA.step === 7) screens.push(...api.allViews());
+      if (api.SEA.step === 7) screens.push(...views(api));
       let g = 0;
       while (api.live && !api.live.done && g++ < 800) {
         const L = api.live;
@@ -72,13 +75,15 @@ function career(file, team, seed, seasons) {
     }
     const SEA = api.SEA;
     const games = [].concat(...SEA.weeks.map(w => w.games)).map(g => [g.home,g.away,g.hp,g.ap]);
-    const post = [].concat(SEA.bowls, SEA.rounds.r1, SEA.rounds.qf, SEA.rounds.sf, SEA.rounds.fin)
+    const post = (api.leagueId()==='cfb'
+        ? [].concat(SEA.bowls, SEA.rounds.r1, SEA.rounds.qf, SEA.rounds.sf, SEA.rounds.fin)
+        : [].concat(...SEA.postPools()))
       .map(g => [g.home,g.away,g.hp,g.ap,g.title||'']);
     const season = {
       year: SEA.year, games: h(games), post: h(post), champion: SEA.champion,
       rec: h(SEA.rec), poll: h(SEA.poll.order()), heis: h(((SEA.mvpRace||SEA.heisman).call(SEA,10)||[]).map(x=>[x.n,x.t,x.p])),
     };
-    screens.push(...api.allViews());
+    screens.push(...views(api));
     api.openOffseason(); grab();          // the offseason screen itself
     const S = api.S;
     if (S.off && S.off.act.userOpen && S.off.move === null)
@@ -94,7 +99,9 @@ function career(file, team, seed, seasons) {
 
 const args = process.argv.slice(2);
 const file = args.find(a => a.endsWith('.html')) || path.join(__dirname,'..','dist','football-coach.html');
-const CASES = [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['Kent State',31337,3]];
+const probe = load(file), LG = probe.leagueId();
+const CASES = LG==='cfb' ? [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['Kent State',31337,3]]
+  : [['Kansas City',1,4],['Tennessee',2024,4],['Detroit',777,3],['NY Giants',31337,3]];
 const result = {};
 for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
 // Schedules for many 2026 universes. Careers alone only see four opening
@@ -108,7 +115,7 @@ for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
   result['schedules#60'] = [{ all: h(sch) }];
 }
 const fp = h(result);
-const GOLD = path.join(__dirname, 'golden.json');
+const GOLD = path.join(__dirname, LG==='cfb' ? 'golden.json' : 'golden-'+LG+'.json');
 /* Every run ends with exactly one verdict line: MATCH or MISMATCH.
      node test/golden.js [file.html]                    compare with golden.json
      node test/golden.js [file.html] --write --note "…"  re-record, then compare

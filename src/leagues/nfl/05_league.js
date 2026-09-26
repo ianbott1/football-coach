@@ -9,14 +9,14 @@ const LEAGUE={
 
   /* [franchise, starting strength, division] */
   teams:[
-["Buffalo",1834,"AE"],["Miami",1645,"AE"],["New England",1674,"AE"],["NY Jets",1558,"AE"],
-["Baltimore",1848,"AN"],["Cincinnati",1689,"AN"],["Cleveland",1558,"AN"],["Pittsburgh",1689,"AN"],
-["Houston",1732,"AS"],["Indianapolis",1660,"AS"],["Jacksonville",1674,"AS"],["Tennessee",1529,"AS"],
-["Denver",1761,"AW"],["Kansas City",1805,"AW"],["Las Vegas",1544,"AW"],["LA Chargers",1747,"AW"],
-["Dallas",1645,"NE"],["NY Giants",1558,"NE"],["Philadelphia",1863,"NE"],["Washington",1703,"NE"],
-["Chicago",1689,"NN"],["Detroit",1834,"NN"],["Green Bay",1776,"NN"],["Minnesota",1732,"NN"],
-["Atlanta",1631,"NS"],["Carolina",1587,"NS"],["New Orleans",1544,"NS"],["Tampa Bay",1732,"NS"],
-["Arizona",1602,"NW"],["LA Rams",1790,"NW"],["San Francisco",1761,"NW"],["Seattle",1776,"NW"]
+["Buffalo",1761,"AE"],["Miami",1670,"AE"],["New England",1684,"AE"],["NY Jets",1628,"AE"],
+["Baltimore",1768,"AN"],["Cincinnati",1691,"AN"],["Cleveland",1628,"AN"],["Pittsburgh",1691,"AN"],
+["Houston",1712,"AS"],["Indianapolis",1677,"AS"],["Jacksonville",1684,"AS"],["Tennessee",1614,"AS"],
+["Denver",1726,"AW"],["Kansas City",1747,"AW"],["Las Vegas",1621,"AW"],["LA Chargers",1719,"AW"],
+["Dallas",1670,"NE"],["NY Giants",1628,"NE"],["Philadelphia",1775,"NE"],["Washington",1698,"NE"],
+["Chicago",1691,"NN"],["Detroit",1761,"NN"],["Green Bay",1733,"NN"],["Minnesota",1712,"NN"],
+["Atlanta",1663,"NS"],["Carolina",1642,"NS"],["New Orleans",1621,"NS"],["Tampa Bay",1712,"NS"],
+["Arizona",1649,"NW"],["LA Rams",1740,"NW"],["San Francisco",1726,"NW"],["Seattle",1733,"NW"]
   ],
 
   colors:{"Buffalo":"#00338D","Miami":"#008E97","New England":"#002244","NY Jets":"#125740",
@@ -58,7 +58,7 @@ const LEAGUE={
     /* MVP voters care about quarterbacks above everything */
     weights:{QB:2.2,RB:1.05,WR:0.95,WR2:0.35,OT:0.15,EDGE:0.8,DT:0.35,LB:0.35,CB:0.4,S:0.3}},
 
-  tuning:{hfa:40, drives:10},                  // less home field than on campus; fewer, longer drives
+  tuning:{hfa:20, drives:10, gapScale:2.2, gameState:true},                  // less home field than on campus; fewer, longer drives
   venues:{"Seattle":10,"Kansas City":9,"Green Bay":9,"Buffalo":8,"Denver":8,"Philadelphia":7,
     "New Orleans":7,"Baltimore":6,"Pittsburgh":6,"Minnesota":5,"LA Chargers":-6,"LA Rams":-4,
     "Las Vegas":-3,"Jacksonville":-2,"Tampa Bay":-2,"Arizona":-2},
@@ -69,6 +69,10 @@ const LEAGUE={
 
   text:{
     champions:"Super Bowl champions",
+    org:"Franchise", orgs:"teams", group:"Division", rank:"Rank",
+    ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
+    orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
+      front office. Measured against where each franchise stood in ${base}.`,
     site:"Football Coach: Pro \u2014 ianbott1.github.io/football-coach",
     tiers:[
       {max:5,  l:"Contender",  d:"The roster is built to win now. Anything short of a deep run is a failure.",c:"flag"},

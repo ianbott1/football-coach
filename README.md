@@ -21,6 +21,7 @@ Python 3 and (for tests) Node.
 ## Build
 
     python3 build.py            # cfb -> dist/football-coach.html
+    python3 build.py nfl        # pro -> dist/football-coach-pro.html
 
 That one file is the whole game: open it in a browser, or copy it to a web
 host as `index.html`.
@@ -65,6 +66,7 @@ the history-book fields (bowls, cfp, heis, allconf) that saves depend on.
     node test/reload.js           a reloaded save gives back the season played
     node test/storage.js          saving outside Claude, the quit prompt
     node test/h2h.js              hot-seat coaches playing each other
+    node test/nfl.js [8 12]       pro league rules and realism (careers, years)
 
 A change meant to alter no behaviour must pass `golden.js --check`. A change
 that is meant to alter behaviour re-records with `--write`, and says why.

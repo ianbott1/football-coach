@@ -225,6 +225,10 @@ const LEAGUE={
   /* words the core shows */
   text:{
     champions:"National champions",
+    org:"Program", orgs:"programs", group:"Conference", rank:"Poll",
+    ranking:"the poll", top:"the top 25", entered:"Entered the poll at #",
+    orgNote:base=>`Program strength is the slow-moving baseline &mdash; recruiting,
+      resources, coaching. Measured against where each program stood in ${base}.`,
     site:"Football Coach: ianbott1.github.io/football-coach",
     tiers:[
  {max:15, l:"Blue blood",   d:"A playoff berth is the expectation. Miss twice and you're gone.",

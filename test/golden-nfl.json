@@ -1,0 +1,198 @@
+{
+ "fp": "e63438be654c1076",
+ "log": [
+  {
+   "fp": "4a0dc082893a99c5",
+   "from": null,
+   "note": "first recording for pro football: 4 careers of 3-4 seasons (Kansas City, Tennessee, Detroit, NY Giants) and 60 opening schedules"
+  },
+  {
+   "fp": "e63438be654c1076",
+   "from": "4a0dc082893a99c5",
+   "note": "pro football screens use its own words (franchise, division, rank, the rankings) instead of college football's; only screen fingerprints change"
+  }
+ ],
+ "result": {
+  "Kansas City#1": [
+   {
+    "year": 2026,
+    "games": "35c44faa42eea76b",
+    "post": "13dbbf2ef33556fa",
+    "champion": "LA Rams",
+    "rec": "85d937d37fb50339",
+    "poll": "1ba000b14cf97035",
+    "heis": "d0f3e7cc2ab4d03b",
+    "history": "eb93201b8764730d",
+    "universe": "964557362ecda993",
+    "screens": "82b8740560a47a13"
+   },
+   {
+    "year": 2027,
+    "games": "6ec6be0d863bd934",
+    "post": "4b71db06f681a9bd",
+    "champion": "Atlanta",
+    "rec": "f759cd972861fcb2",
+    "poll": "f7e060fbe50699a2",
+    "heis": "651bbdba557ecd7b",
+    "history": "0d2b06369fb930d6",
+    "universe": "dddb27a1d6ea3aac",
+    "screens": "6f7975d32c95e419"
+   },
+   {
+    "year": 2028,
+    "games": "6b65c63cfc9d59e5",
+    "post": "64ab7620b61ea743",
+    "champion": "Kansas City",
+    "rec": "8d7ac172adf2d8a5",
+    "poll": "33e979b989166bc3",
+    "heis": "f8bbf1c2a2f70a49",
+    "history": "0605f7bad8633a49",
+    "universe": "79089e70b60cef7b",
+    "screens": "3be81b0ce88cf14a"
+   },
+   {
+    "year": 2029,
+    "games": "a4c49cb63855e83a",
+    "post": "63044aa373489dd4",
+    "champion": "Buffalo",
+    "rec": "6945b825a6c8ffc1",
+    "poll": "2841f106fa53a501",
+    "heis": "457a5b0696e0abaf",
+    "history": "f3602369b46ad62a",
+    "universe": "6f3a2b2a41856e37",
+    "screens": "c22ed8a86f81190c"
+   }
+  ],
+  "Tennessee#2024": [
+   {
+    "year": 2026,
+    "games": "cf45e9ca378d3fb0",
+    "post": "4c2f8f41892319a3",
+    "champion": "Philadelphia",
+    "rec": "007fcd6b578140d6",
+    "poll": "195a05a958f9ba51",
+    "heis": "d3b2c11564b8f11f",
+    "history": "adc0ee919e8a7bd5",
+    "universe": "288f845e1dbc5f3b",
+    "screens": "68dcbefba31e675c"
+   },
+   {
+    "year": 2027,
+    "games": "0dc9df46d3b3c396",
+    "post": "127455191ef886e0",
+    "champion": "Baltimore",
+    "rec": "ff54647a55a338cb",
+    "poll": "9aab3c4c233c1890",
+    "heis": "21a69d2d926a43b5",
+    "history": "cd5c4e564d23c8a4",
+    "universe": "57065d98fffbda51",
+    "screens": "bdd24a4979b84ba5"
+   },
+   {
+    "year": 2028,
+    "games": "0d15c9b924b44e4f",
+    "post": "a56fb48d474fedf7",
+    "champion": "San Francisco",
+    "rec": "807476946dde9c42",
+    "poll": "924763fb9ff57cf4",
+    "heis": "25e5af7bb1ef83bf",
+    "history": "0df500e7cf0f2cc7",
+    "universe": "1ca5e824b0d00afc",
+    "screens": "6724395d698cc0a2"
+   },
+   {
+    "year": 2029,
+    "games": "4fa35d76cada1147",
+    "post": "64b9057ba9879c8d",
+    "champion": "Denver",
+    "rec": "53dcfb2e6ba043b4",
+    "poll": "88e997a169d5de69",
+    "heis": "72b8f15ff3d223af",
+    "history": "e25fd8d6e6b6367b",
+    "universe": "fc39e799ddab021f",
+    "screens": "1a496a67d0cf44c5"
+   }
+  ],
+  "Detroit#777": [
+   {
+    "year": 2026,
+    "games": "82a2cf059b8338f7",
+    "post": "de298665fd8aa4fa",
+    "champion": "Seattle",
+    "rec": "448207b14ac3ff3e",
+    "poll": "86d6218e0a094702",
+    "heis": "75fe2e12b87393bf",
+    "history": "4bfa7533413e75bd",
+    "universe": "79d43781ad6a4025",
+    "screens": "80ce1f51c5a00e35"
+   },
+   {
+    "year": 2027,
+    "games": "832bb500bc6e08a4",
+    "post": "1f79ba73f4f0d937",
+    "champion": "Denver",
+    "rec": "ee07781770cafc3a",
+    "poll": "748af686994ba230",
+    "heis": "62bae06f62bd625e",
+    "history": "656b09f113d0c1bc",
+    "universe": "f4d569570d6d7924",
+    "screens": "6cb36fe36e74a6cc"
+   },
+   {
+    "year": 2028,
+    "games": "2a14f088a97eea78",
+    "post": "fe147459c2eb2afb",
+    "champion": "Green Bay",
+    "rec": "247f745118995590",
+    "poll": "c7968d7c00c90592",
+    "heis": "18e987d8ef00855c",
+    "history": "488295381a9ff9cf",
+    "universe": "d2ef635168f97caa",
+    "screens": "5b886016b7faea35"
+   }
+  ],
+  "NY Giants#31337": [
+   {
+    "year": 2026,
+    "games": "43ef8aaae603e48c",
+    "post": "59c14b9dc6bd77fa",
+    "champion": "Baltimore",
+    "rec": "640001496b169960",
+    "poll": "b8dd0341d360ef3f",
+    "heis": "3bce6c2c7e912de1",
+    "history": "fe26bc4a9f5646d5",
+    "universe": "5f98825eca8b2d40",
+    "screens": "d8a55e816df8f504"
+   },
+   {
+    "year": 2027,
+    "games": "d508c99a5409f00c",
+    "post": "9d4d8ad8b96fddf9",
+    "champion": "Philadelphia",
+    "rec": "f4abb4038c5d817c",
+    "poll": "bf9bd7d00887b57a",
+    "heis": "41510e0a040123f2",
+    "history": "4245ee3300c71cca",
+    "universe": "33cbe20dacd0191d",
+    "screens": "ca89e77b2a236a45"
+   },
+   {
+    "year": 2028,
+    "games": "7f2acd8a994a20dc",
+    "post": "4a1027f5776043e8",
+    "champion": "Carolina",
+    "rec": "2b159aa78727d323",
+    "poll": "dfd916365eb2666f",
+    "heis": "1d14d70bf2345220",
+    "history": "edc7ed903e9d82f0",
+    "universe": "842334e7ca6135dc",
+    "screens": "09d6466900a53ba4"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "cf93e377dd2d805c"
+   }
+  ]
+ }
+}

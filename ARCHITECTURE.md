@@ -20,7 +20,8 @@ published copy is `index.html` on main.
                            postseason, awards, offseason, draft, its screens
     src/leagues/<league>/GAME   names the sport layer the league uses
 
-    python3 build.py [league]      default cfb -> dist/football-coach.html
+    python3 build.py [league]      cfb (default) -> dist/football-coach.html
+                                   nfl           -> dist/football-coach-pro.html
 
 The core and the sport layer know a league only through `LEAGUE`, defined in
 the league's `05_league.js` and extended by its other files. README.md lists
@@ -49,6 +50,11 @@ the interface. A second league is a new folder under `src/leagues/`.
     test/storage.js    saving where there is no window.storage (the published
                        site), the quit prompt, Start over
     test/h2h.js        hot-seat coaches playing each other: once, both calling
+    test/nfl.js        pro league: rules every season obeys, realism measures,
+                       the cap gate on the offseason screen
+
+golden, reload, h2h and storage take either build as an argument; golden
+keeps one baseline per league (golden.json, golden-nfl.json).
     test/calibrate.js  the targets below, over N CPU seasons (default 200)
 
 Not covered by any test: click handlers (sub-tabs, budget buttons, picks).
@@ -117,13 +123,45 @@ league understands goes under `entry.league`, written by
 `LEAGUE.historyExtras` and read only by that league's views. Version-1 saves
 migrate on load.
 
+## Pro football (leagues/nfl)
+
+32 franchises by city in their real divisions; every player is fictional.
+The league's rotation formula builds 17 games over 18 weeks with byes in
+weeks 5-14. Seven seeds a conference, a bye for the 1 seed, re-seeding,
+a numbered Super Bowl; records stay regular-season only. Players have ages
+and contracts; each offseason re-signs (the user chooses, cap-aware), ages,
+retires, drafts in reverse order of finish, runs free agency under a hard
+$110M cap over the twenty tracked players, and fills gaps. Franchise
+strength is a sticky organisation edge (development, scouting, free-agent
+pull); without it the draft and free agency flatten the league.
+
+League-level tuning the football layer honours: tuning.drives (10),
+tuning.gapScale (2.2, how much a rating gap is worth on the field),
+tuning.gameState (teams nobody is calling sit on three-score fourth-quarter
+leads and chase when two scores down), homeField.
+
+Targets (test/nfl.js, 96 seasons):
+
+    favourite win rate   0.636   (NFL ~0.63-0.66, rating going into the game)
+    home win rate        55.1%   (~55%)
+    points per game      45.4    (~45)
+    13+ win teams/season 3.75    (~2-4)
+    repeat champions     9.1%    (~10%)
+    mean margin          12.8    (~11)          a little high
+    17-0 per 100 seasons 6.3     (~2-3)         a little high
+    MVP a quarterback    100%    (recent seasons nearly all)
+
+Not in yet: trades; drafting and signing individual players yourself (you
+choose a style; the picks and signings are made for you).
+
 ## Planned direction
 
 The engine/sport/league split is done for the simulation; the UI split is
 mostly done. Still college-shaped in core/99_app.js: wording in weekly news,
 stakes lines, team cards, dynasty headings, tiers, intro, help, glossary.
 
-NFL is the second league on the football layer. It needs genuinely new
+The NFL is now the second league on the football layer (see above). The
+original plan for it: It needs genuinely new
 mechanics, not relabelling: salary cap, contracts, player ages instead of
 class years, free agency, trades, draft order by record, a division-based
 schedule, a 14-team playoff, a power ranking instead of a poll, MVP and

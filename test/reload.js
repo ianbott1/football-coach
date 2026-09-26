@@ -17,8 +17,10 @@ const state=api=>{const E=api.SEA;return {
   history:api.S.history, coaches:(api.S.coaches||[]).map(c=>c.history)}};
 (async()=>{
   let bad=0,n=0;
-  for(const [team,seed,roster] of [['Alabama',1],['Rice',2024],
-        ['Alabama',99,[{team:'Alabama',name:'Coach A'},{team:'Auburn',name:'Coach B'}]]]){
+  const LG=mk()(file).leagueId();
+  const [T1,T2,R1,R2]=LG==='cfb'?['Alabama','Rice','Alabama','Auburn']:['Kansas City','Tennessee','Kansas City','Denver'];
+  for(const [team,seed,roster] of [[T1,1],[T2,2024],
+        [R1,99,[{team:R1,name:'Coach A'},{team:R2,name:'Coach B'}]]]){
     const A=mk()(file); A.newDynasty(team,seed,'T',roster);
     const label=team+'#'+seed+(roster?' (hot seat)':'');
     const check=async(when)=>{
