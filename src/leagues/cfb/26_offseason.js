@@ -50,7 +50,8 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
   }
   const newcomer=(i)=>{
     const cls=rng.r()<0.62?0:1;
-    const bonus=(!focus.pos||focus.pos.indexOf(POS[i%POS.length].p)>=0)?focus.r:0;
+    // a focus concentrates the class: better where you aim, thinner elsewhere
+    const bonus=(!focus.pos||focus.pos.indexOf(POS[i%POS.length].p)>=0)?focus.r:(focus.off||0);
     const np=makePlayer(rng,target-rng.range(4,14)+(coach.q*0.045)+bonus
       +(coach.rec||0)*0.5+(bud?bud.recruitBonus:0),cls,i%POS.length);
     if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
@@ -145,15 +146,18 @@ function realign(u,rng,year){
   return moves;
 }
 
+/* Each focus is a trade (measured over 8 careers: within noise of "Best
+   available" at 3 and 5 years; "Chase upside" behind in year 1, ahead by
+   year 5). r: recruits at the focus positions, off: everywhere else. */
 const RECRUIT_FOCUS={
   balanced:{l:"Best available", d:"Take the best player on the board at every spot.",
             pos:null, r:0, pot:0},
-  trenches:{l:"Win the trenches", d:"Load up on the lines. Slower payoff, sturdier teams.",
-            pos:["OT","EDGE","DT"], r:8, pot:0},
-  skill:   {l:"Skill players",   d:"Quarterbacks and playmakers. Explosive, and streakier.",
-            pos:["QB","RB","WR","WR2"], r:5, pot:0},
-  upside:  {l:"Chase upside",    d:"Raw prospects with ceilings. Rough now, dangerous in two years.",
-            pos:null, r:-5, pot:14, dev:3.4}
+  trenches:{l:"Win the trenches", d:"Load up on the lines, at the cost of the skill spots. Sturdier teams.",
+            pos:["OT","EDGE","DT"], r:8, off:-5, pot:0},
+  skill:   {l:"Skill players",   d:"Quarterbacks and playmakers, at the cost of the lines. Explosive, and streakier.",
+            pos:["QB","RB","WR","WR2"], r:5, off:-5, pot:0},
+  upside:  {l:"Chase upside",    d:"Raw prospects with ceilings. Weaker next year, dangerous in three or four.",
+            pos:null, r:-7, pot:14, dev:3.4}
 };
 
 /* ============ program budget ============ */

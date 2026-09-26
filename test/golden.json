@@ -1,5 +1,5 @@
 {
- "fp": "a752f20f2a96c525",
+ "fp": "eb34cd44ee3f7ae1",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -44,6 +44,11 @@
    "fp": "a752f20f2a96c525",
    "from": "4bef533a7e89fba3",
    "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
+  },
+  {
+   "fp": "eb34cd44ee3f7ae1",
+   "from": "a752f20f2a96c525",
+   "note": "Recruiting focuses are trades (penalty outside the focus; upside costs more up front); only the offseason screen's descriptions change for golden careers, which keep the default"
   }
  ],
  "result": {
@@ -58,7 +63,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "2d03e5d872291c88",
     "universe": "0875cf47ed652403",
-    "screens": "701e4b4221462836"
+    "screens": "fe47dcda39df861f"
    },
    {
     "year": 2027,
@@ -70,7 +75,7 @@
     "heis": "ce078f676d259b90",
     "history": "7ff4cb1e7bfbddac",
     "universe": "00a773f8649dbfb7",
-    "screens": "e5f475ae2038fb0c"
+    "screens": "d2d1aebd72c3df7d"
    },
    {
     "year": 2028,
@@ -82,7 +87,7 @@
     "heis": "bd400332a2143ef6",
     "history": "143666f02906348d",
     "universe": "af6019ef701abdcf",
-    "screens": "6d067bd6f0298c7d"
+    "screens": "8c26ac81278327fc"
    },
    {
     "year": 2029,
@@ -94,7 +99,7 @@
     "heis": "c7223cbf3eacd8cf",
     "history": "2b1c0e29ead1f268",
     "universe": "c3806c280f2ed277",
-    "screens": "70acfc50af6e2467"
+    "screens": "2aed5d75837d23ae"
    }
   ],
   "Rice#2024": [
@@ -108,7 +113,7 @@
     "heis": "62c67774006ebb20",
     "history": "3d03a706f1d28dfd",
     "universe": "ff03bc9d76877853",
-    "screens": "38286aaccfb4c541"
+    "screens": "1e1297a5549dafef"
    },
    {
     "year": 2027,
@@ -120,7 +125,7 @@
     "heis": "7451222cd507b5b8",
     "history": "50049ecd6d65ebf3",
     "universe": "986aecfab5eb0ec1",
-    "screens": "ab8b93803da40bbb"
+    "screens": "0c1776dddfaa1dfd"
    },
    {
     "year": 2028,
@@ -132,7 +137,7 @@
     "heis": "e51d50eddf367b04",
     "history": "a6f167c95776c8e4",
     "universe": "7ec52df79c7e8e30",
-    "screens": "f660002762ec5c4c"
+    "screens": "014caeb5bf6a0a72"
    },
    {
     "year": 2029,
@@ -144,7 +149,7 @@
     "heis": "c29058564f6e95a9",
     "history": "b20480723c30ed88",
     "universe": "c35b879b61c20c1c",
-    "screens": "7b93640d31ab8531"
+    "screens": "75029a961671ad83"
    }
   ],
   "Oregon#777": [
@@ -158,7 +163,7 @@
     "heis": "e322cdbd03e4abfa",
     "history": "424bf44ab57a0012",
     "universe": "baa7af0fd0ebcdb4",
-    "screens": "f9d3f7f64532a07c"
+    "screens": "b234620cb7c49534"
    },
    {
     "year": 2027,
@@ -170,7 +175,7 @@
     "heis": "620fb71345d974e8",
     "history": "315df835b2ce45f7",
     "universe": "dc82fe7b809e467b",
-    "screens": "bb5299072fc89de1"
+    "screens": "13543b171f74c0cb"
    },
    {
     "year": 2028,
@@ -182,7 +187,7 @@
     "heis": "3d4b8a8387ed5421",
     "history": "ba2e687c99f3f0f2",
     "universe": "9f50fc6a5ff7a61d",
-    "screens": "f9f32cddafc79221"
+    "screens": "13b2ec354438bb40"
    }
   ],
   "Kent State#31337": [
@@ -196,7 +201,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "4bae318c56e04932",
     "universe": "f72e3c4ce5bfdf5b",
-    "screens": "d85733212bb30ab0"
+    "screens": "e0ed33937742ed03"
    },
    {
     "year": 2027,
@@ -208,7 +213,7 @@
     "heis": "8ae0e8d313c33b06",
     "history": "c9153cefc18c4e42",
     "universe": "27d85ddbefa98d95",
-    "screens": "626788227f4949e6"
+    "screens": "0dc8307426077602"
    },
    {
     "year": 2028,
@@ -220,7 +225,7 @@
     "heis": "db5d3c0a4b6ad0d2",
     "history": "8a97ae6efaa1356e",
     "universe": "9ad1fa7492035951",
-    "screens": "ec6e18fe0d94d6c9"
+    "screens": "d7f0038320c69039"
    }
   ],
   "schedules#60": [
