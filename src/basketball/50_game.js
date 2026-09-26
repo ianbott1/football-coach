@@ -14,7 +14,7 @@ const SEGS = 8;
 const BB = {
   pace: 69,             // possessions per team per game, both teams balanced
   paceSd: 3.0,
-  gapPerPoss: 0.00025,  // rating gap (Elo) -> make-rate edge: about 25 Elo a point
+  gapPerPoss: 0.0004,   // rating gap (Elo) -> make-rate edge (calibrated: test/bb-calibrate.js)
   toBase: 0.17, toGap: 0.9,
   two: 0.52, three: 0.352,   // with fouls and and-ones, a two and a three are each worth ~1.05
   foul2: 0.085, foul3: 0.015, ft: 0.715, and1: 0.07,   // threes are rarely fouled

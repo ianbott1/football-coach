@@ -32,7 +32,7 @@ extendSeason({
   /* a résumé as the committee sees it: strength, wins, the losses, a title */
   resume(t){
     const r=this.rec[t], g=Math.max(1,r[0]+r[1]);
-    return this.elo[t]+ (r[0]-r[1])*9 + (this.champs[CONF[t]]===t?25:0);
+    return this.elo[t]+ (r[0]-r[1])*4 + (this.champs[CONF[t]]===t?25:0);
   },
   confRank(c){
     const cr=this.confrec;
