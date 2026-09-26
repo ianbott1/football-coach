@@ -59,6 +59,7 @@ the interface. A second league is a new folder under `src/leagues/`.
     test/draftboard.js pro: your draft board decides your picks, in board order
     test/fatargets.js  pro: free-agent targets are signed or reported, never cut
     test/advisors.js   report: win % following each advisor, four situations
+    test/trades.js     pro: fair offers from the trade block; an agreed trade goes through
     test/nfl.js        pro league: rules every season obeys, realism measures,
                        the cap gate on the offseason screen
 

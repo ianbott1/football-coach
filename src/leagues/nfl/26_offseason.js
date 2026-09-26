@@ -136,6 +136,63 @@ function nflFreeAgentPreview(u,myTeam,users){
   });
   return out.sort((a,b)=>(b.r+(b.pot-b.r)*0.3-b.age*0.2)-(a.r+(a.pot-a.r)*0.3-a.age*0.2));
 }
+/* ---- trades ----
+   A player's worth to a front office: rating, some of his ceiling while he
+   is young, less once he is past 29, and less the more he is paid. */
+function tradeValue(p){
+  const young=Math.max(0,27-p.age)/5;
+  return p.r+(p.pot-p.r)*0.4*young-Math.max(0,p.age-29)*1.5-p.k.sal*0.25;
+}
+const tradeKey=(t,p)=>t+"|"+p.n+"|"+p.p;
+/* Offers for one of your players under contract past this season: up to
+   three teams each offer a player (also under contract) at one of your
+   weakest spots, worth about the same, who helps them at the position they
+   get, and leaves both of you under the cap. Deterministic, so the screen
+   shows the same offers until something changes. */
+function nflTradeOffers(u,myTeam,idx,humans){
+  const R=u.roster[myTeam], give=R[idx]; if(!give||give.k.yrs<2)return [];
+  const gv=tradeValue(give), myPay=payroll(R);
+  // my weakest starting spots, by how far below the league's typical starter they are
+  const need=POS.map((P,i)=>({i:i,gap:R[i]?R[i].r:0})).sort((a,b)=>a.gap-b.gap).slice(0,4).map(x=>x.i);
+  const offers=[];
+  NAMES.forEach(t=>{
+    if(t===myTeam||(humans&&humans.indexOf(t)>=0))return;
+    const T=u.roster[t], theirPay=payroll(T);
+    // do they want him? he has to beat their starter or their backup at his spot
+    const gi=POS.findIndex(P=>P.p===give.p);
+    if(!(T[gi]&&give.r>T[BK(gi)].r+1))return;
+    let best=null;
+    T.forEach((q,j)=>{
+      if(!q||q.k.yrs<2||need.indexOf(j%POS.length)<0)return;
+      if(j<POS.length&&(!T[BK(j)]||T[BK(j)].r<q.r-8))return;   // they won't gut a spot
+      const qv=tradeValue(q); if(qv<gv*0.88||qv>gv*1.08)return;
+      if(myPay-give.k.sal+q.k.sal>NFL_CAP||theirPay-q.k.sal+give.k.sal>NFL_CAP)return;
+      const fit=Math.abs(qv-gv)-(R[j%POS.length]?(q.r-R[j%POS.length].r)*0.5:0);
+      if(!best||fit<best.fit)best={fit:fit,q:q,j:j};
+    });
+    if(best)offers.push({team:t,give:tradeKey(myTeam,give),get:tradeKey(t,best.q),
+      n:best.q.n,p:best.q.p,r:best.q.r,pot:best.q.pot,age:best.q.age,sal:best.q.k.sal,yrs:best.q.k.yrs,fit:best.fit});
+  });
+  return offers.sort((a,b)=>a.fit-b.fit).slice(0,3);
+}
+/* carry out an agreed trade: find both players now (after aging), swap them */
+function nflApplyTrade(u,myTeam,T,rep,leave,pool){
+  const [tt]=T.get.split("|"), mine=u.roster[myTeam], theirs=u.roster[tt];
+  const gi=mine.findIndex(p=>p&&tradeKey(myTeam,p)===T.give), qi=theirs?theirs.findIndex(p=>p&&tradeKey(tt,p)===T.get):-1;
+  const [,gn,gp]=T.give.split("|"), [,qn,qp]=T.get.split("|");
+  if(gi<0||qi<0){rep.trade[myTeam]={done:false,gave:gn,gp:gp,got:qn,qp:qp,with:tt,
+      why:gi<0?gn+" retired before it could go through":qn+" retired before it could go through"};return}
+  const give=mine[gi], get=theirs[qi];
+  mine[gi]=null; theirs[qi]=null;
+  // each lands where he fits; whoever drops off the end is released
+  [[mine,get,myTeam],[theirs,give,tt]].forEach(([R,p,t])=>{
+    p.yrsHere=0; p.joined=u.year+1; p.keep=true;
+    const i=POS.findIndex(P=>P.p===p.p);
+    if(!R[i]){R[i]=p} else if(!R[BK(i)]){ if(p.r>R[i].r){R[BK(i)]=R[i];R[i]=p}else R[BK(i)]=p }
+    else { const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")} }
+  });
+  rep.trade[myTeam]={done:true,gave:give.n,gp:give.p,got:get.n,qp:get.p,r:get.r,with:tt};
+}
 const rookieSal=o=>o<=32?Math.round((10-7*(o-1)/31)*10)/10:o<=64?1.6:1.0;
 
 /* what a player adds at his spot: over the backup, or over the starter */
@@ -221,6 +278,11 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const d=u.program[t]-before;
     if(d>30)risers.push([t,Math.round(d)]); if(d<-30)fallers.push([t,Math.round(d)]);
   });
+
+  // agreed trades go through now: after contracts and aging, before the draft
+  rep.trade={};
+  Object.keys(U_CH).forEach(t=>{const ch=U_CH[t]; if(ch&&ch.trade)nflApplyTrade(u,t,ch.trade,rep,leave,pool)});
+  NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
 
   // 4. the draft
   const order=nflDraftOrder(rec,elo);
@@ -349,9 +411,9 @@ LEAGUE.offseason={
     const R=u.roster[t], resign=nflResignPlan(R), asks={};
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
     nflDraftClass(u,t);                              // made now, so the screen can show it
-    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[]}};
+    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null}};
   },
-  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[]}},
+  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null}},
   faStyles:{contend:{l:"Spend to contend",d:"Chase the best players available, whatever their age. Uses nearly every dollar."},
             balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
@@ -400,7 +462,7 @@ LEAGUE.historyExtras=function(sea,off,my){
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
-    targets:(C.targets&&C.targets[my])||[],
+    targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     payroll:off.cap?off.cap[my]:null};
 };
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};

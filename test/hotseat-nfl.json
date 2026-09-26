@@ -1,5 +1,5 @@
 {
- "fp": "18bc1bd8ef303711",
+ "fp": "8471a290e425a9a9",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -60,6 +60,11 @@
    "fp": "18bc1bd8ef303711",
    "from": "0bf7548bb6d8b46f",
    "note": "Pro free-agent targets: your first look at players you mark, in your order, at their ask plus 10%, if they fit. Only history (targets list) and screens (new sections) change; computer free agency is unchanged."
+  },
+  {
+   "fp": "8471a290e425a9a9",
+   "from": "18bc1bd8ef303711",
+   "note": "Pro trade block: shop one player under contract, see up to three fair offers at your weakest spots, agree one; it goes through when the offseason runs. Only history (trade field) and screens (new section) change; computer play unchanged."
   }
  ],
  "out": [
@@ -73,7 +78,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "1a58fc9904f32c72"
+     "book": "f6650046b5af008d"
     },
     {
      "team": "Tennessee",
@@ -82,7 +87,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "90e5675390c65271"
+     "book": "ba568b9c37db23ae"
     }
    ]
   },
@@ -96,7 +101,7 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "956fc8320e961deb"
+     "book": "c2d3037b41359cbb"
     },
     {
      "team": "Tennessee",
@@ -105,7 +110,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "73c9bd7f714acf8c"
+     "book": "69c15428769dab0e"
     }
    ]
   },
@@ -119,7 +124,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "36352ed5551e4350"
+     "book": "d66227429d72ae13"
     },
     {
      "team": "Tennessee",
@@ -128,7 +133,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "5dd2571777d5faae"
+     "book": "14ec3e1915f1d220"
     }
    ]
   }

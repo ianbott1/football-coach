@@ -6,9 +6,42 @@
    expiring players you've chosen to re-sign at their asking price */
 function nflPlannedPay(){
   const R=U.roster[S.myTeam], P=S.off.picks;
-  return R.reduce((s,p,i)=>{if(!p)return s;
+  let pay=R.reduce((s,p,i)=>{if(!p)return s;
     if(P.asks&&P.asks[i])return s+(P.resign[i]?P.asks[i].sal:0);
     return s+p.k.sal},0);
+  if(P.trade)pay+=P.trade.sal-P.trade.giveSal;          // an agreed trade counts now
+  return pay;
+}
+/* Trade block: put one player under contract on it and see what teams offer. */
+function nflHumans(){return (S.coaches||[]).map((c,i)=>i===(S.turn||0)?S.myTeam:c.myTeam)}
+function nflTradeHTML(P){
+  const R=U.roster[S.myTeam];
+  let h=`<div class="grouphead">Trade block</div>`;
+  if(P.trade){
+    const T=P.trade;
+    return h+`<div class="cand on"><div class="candtop"><div><div class="fname">${esc(T.giveName)} for ${esc(T.n)} <span class="dpos">${esc(T.p)}</span></div>
+      <div class="fnote">With ${esc(T.team)} &middot; he's rated ${T.r}, age ${T.age}, $${T.sal.toFixed(1)}M for ${T.yrs} more year${T.yrs===1?"":"s"}</div></div>
+      <span class="cgrade">agreed</span></div>
+      <div class="cdesc">Goes through when the offseason runs.</div>
+      <button class="skip small" data-tcancel="1">Call it off</button></div>`;
+  }
+  if(P.block!==null&&P.block!==undefined&&R[P.block]){
+    const g=R[P.block], offers=nflTradeOffers(U,S.myTeam,P.block,nflHumans());
+    h+=`<div class="note">${esc(g.n)} (${esc(g.p)}, rated ${g.r}, age ${g.age}, $${g.k.sal.toFixed(1)}M) is on the block.
+      <button class="skip small" data-tunblock="1">Take him off</button></div>`;
+    h+=offers.length?offers.map((o,k)=>`<div class="drow">
+        <div class="fmain"><div class="fname">${esc(o.team)} offer ${esc(o.n)} <span class="dpos">${esc(o.p)}</span></div>
+        <div class="fnote">Rated ${o.r}, ceiling ${o.pot}, age ${o.age} &middot; $${o.sal.toFixed(1)}M for ${o.yrs} more year${o.yrs===1?"":"s"}</div></div>
+        <button class="skip small" data-taccept="${k}">Accept</button></div>`).join("")
+      :`<div class="note">Nobody is offering anything you need for him.</div>`;
+    return h;
+  }
+  const can=R.map((p,i)=>({p:p,i:i})).filter(x=>x.p&&x.p.k.yrs>=2);
+  h+=`<div class="note">Put one player under contract on the block and see what teams offer: a player at one of your weakest spots, worth about the same.</div>`;
+  h+=can.map(x=>`<div class="drow"><div class="fmain"><div class="fname">${esc(x.p.n)} <span class="dpos">${esc(x.p.p)}</span></div>
+      <div class="fnote">${x.i<POS.length?"Starter":"Backup"} &middot; rated ${x.p.r} &middot; age ${x.p.age} &middot; $${x.p.k.sal.toFixed(1)}M</div></div>
+      <button class="skip small" data-tblock="${x.i}">Shop him</button></div>`).join("");
+  return h;
 }
 /* Your draft board: players you want, in order. At each of your picks you
    take the highest one still there; if none are left, your style picks. */
@@ -74,6 +107,8 @@ function offseasonBanner(){
   let rec="";
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
   if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
+  if(X.trade)rec+=X.trade.done?`<div class="bnews"><b>Trade:</b> ${esc(X.trade.gave)} (${esc(X.trade.gp)}) to ${esc(X.trade.with)} for ${esc(X.trade.got)} (${esc(X.trade.qp)}).</div>`
+    :`<div class="bnews small"><b>Trade called off:</b> ${esc(X.trade.why)}.</div>`;
   const missed=(X.targets||[]).filter(x=>!x.got);
   if(missed.length)rec+=`<div class="bnews small"><b>Targets you missed:</b> ${list(missed,x=>esc(x.n)+" ("+esc(x.p)+") "+esc(x.why))}.</div>`;
   const gone=(X.released||[]).filter(p=>p.r>=66);
@@ -205,6 +240,7 @@ function offseasonScreen(){
   h+=Object.keys(FA).map(k=>`<div class="opt ${P.fa===k?'on':''}" data-fa="${k}">
     <div class="fname">${esc(FA[k].l)}</div><div class="cdesc">${esc(FA[k].d)}</div></div>`).join("");
   h+=nflTargetsHTML(P,room);
+  h+=nflTradeHTML(P);
   h+=`<div class="grouphead">${n(3)}. The draft</div>`;
   h+=`<div class="note">You pick ${nflPickSlot()} in each round.</div>`;
   const DR=LEAGUE.offseason.draftStyles;
@@ -234,6 +270,13 @@ Object.assign(LEAGUE.ui,{
       S.off.picks.fa=b.dataset.fa; save(); render();});
     document.querySelectorAll("[data-draft]").forEach(b=>b.onclick=()=>{
       S.off.picks.draft=b.dataset.draft; save(); render();});
+    document.querySelectorAll("[data-tblock]").forEach(b=>b.onclick=()=>{S.off.picks.block=+b.dataset.tblock; save(); render();});
+    document.querySelectorAll("[data-tunblock]").forEach(b=>b.onclick=()=>{S.off.picks.block=null; save(); render();});
+    document.querySelectorAll("[data-tcancel]").forEach(b=>b.onclick=()=>{S.off.picks.trade=null; save(); render();});
+    document.querySelectorAll("[data-taccept]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks, R=U.roster[S.myTeam], g=R[P.block];
+      const o=nflTradeOffers(U,S.myTeam,P.block,nflHumans())[+b.dataset.taccept]; if(!o||!g)return;
+      P.trade=Object.assign({},o,{giveName:g.n,giveSal:g.k.sal}); P.block=null; save(); render();});
     document.querySelectorAll("[data-fatadd]").forEach(b=>b.onclick=()=>{
       const P=S.off.picks; P.targets=(P.targets||[]).concat([b.dataset.fatadd]); save(); render();});
     document.querySelectorAll("[data-fatrm]").forEach(b=>b.onclick=()=>{
