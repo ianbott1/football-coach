@@ -198,9 +198,9 @@ const INTERIM_Q=-18;     // replacement-level coordinator
 const FEATURE_EDGE=16;   // Elo, roughly 0.75 of a point of spread
 
 const PLANS={
-  safe:      {sd:0.76, edge:-14, l:"Play it safe",  d:"Shorten the game. Fewer swings either way."},
-  balanced:  {sd:1.00, edge:0,   l:"Balanced",      d:"Play your game."},
-  aggressive:{sd:1.38, edge:-8,  l:"Take risks",    d:"Open it up. Higher ceiling, lower floor."}
+  safe:      {sd:0.76, edge:0, l:"Play it safe",  d:"Let talent decide. Fewer turnovers, more field goals. Best when you're the better team."},
+  balanced:  {sd:1.00, edge:0, l:"Balanced",      d:"Play your game."},
+  aggressive:{sd:1.38, edge:0, l:"Take risks",    d:"Make it a game of chances. More touchdowns, more turnovers. Best when you're outgunned."}
 };
 
 

@@ -7,9 +7,9 @@ const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
 const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach.html');
 let bad=0,checks=0; const ok=(c,m)=>{checks++; if(!c){bad++; console.log('  FAIL '+m)}};
-const play=async api=>{let g=0;while(api.SEA.phase!=='done'&&g++<200){api.doAdvance();
+const play=async (api,badly)=>{let g=0;while(api.SEA.phase!=='done'&&g++<200){if(badly)api.setPlan('safe');api.doAdvance();
   const b=global.__nodes.hgo; if(/handwrap/.test(global.__nodes.app.innerHTML)&&b&&b.onclick)b.onclick();
-  let n=0;while(api.live&&!api.live.done&&n++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
+  let n=0;while(api.live&&!api.live.done&&n++<800){if(api.live.ask){const o=api.live.ask.dp.opts;api.answerLive(o[badly?o.length-1:0][0])}else api.liveTick()}
   await new Promise(r=>setImmediate(r))}};
 (async()=>{
   const LG=mk()(file).leagueId();
@@ -17,11 +17,21 @@ const play=async api=>{let g=0;while(api.SEA.phase!=='done'&&g++<200){api.doAdva
     ? [{team:'Iowa',seed:3,move:'Nebraska'},{team:'Rice',seed:4,move:'Tulane'},{team:'Iowa',seed:5,move:'Nebraska',hot:'Kansas'}]
     : [{team:'Chicago',seed:31,natural:true},{team:'Detroit',seed:4,move:'Miami'},{team:'Detroit',seed:5,move:'Miami',hot:'Seattle'}];
   for(const c of cases){
-    const api=mk()(file);
+    let api;
+    if(c.natural){
+      // a real firing: play badly on purpose, and find a seed where it comes within 6 seasons
+      for(let seed=c.seed;seed<c.seed+30;seed++){
+        const t=mk()(file); t.newDynasty(c.team,seed,'T'); let fired=false;
+        for(let y=0;y<6&&!fired;y++){await play(t,true); t.openOffseason(); fired=t.S.off.act.userOpen;
+          if(!fired)t.commitOffseason()}
+        if(fired){c.seed=seed; c.firedYear=t.SEA.year; break}
+      }
+    }
+    api=mk()(file);
     api.newDynasty(c.team,c.seed,'T',c.hot?[{team:c.team,name:'Coach A'},{team:c.hot,name:'Coach B'}]:null);
     let moved=false;
-    for(let y=0;y<4&&!moved;y++){
-      await play(api);
+    for(let y=0;y<6&&!moved;y++){
+      await play(api,c.natural);
       const E=api.SEA, coached=api.S.myTeam, rec=E.rec[coached].join('-'), result=E.seasonResult(coached);
       api.openOffseason(); const S=api.S;
       if(c.natural){ if(S.off.act.userOpen){S.off.move=S.off.jobs[0]; moved=true} }

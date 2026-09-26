@@ -51,6 +51,10 @@ the interface. A second league is a new folder under `src/leagues/`.
                        site), the quit prompt, Start over
     test/h2h.js        hot-seat coaches playing each other: once, both calling
     test/clinch.js     pro clinch marks (z/y/x/e) checked against how seasons ended
+    test/plans.js      the weekly gameplan is a real choice, both leagues
+    test/firing.js     people are fired on two missed seasons in a row, never one
+    test/moves.js      a season is filed under the team coached, not the next job
+    test/stress.js     random-choice careers: crashes, broken text, stuck offseasons
     test/nfl.js        pro league: rules every season obeys, realism measures,
                        the cap gate on the offseason screen
 
@@ -98,10 +102,21 @@ Definitions, where a number depends on how it is measured:
 - **Schedule integrity**: counts of a team booked twice in a week, a team
   playing itself, a repeated pairing, and teams below 11 or above 12 games.
 
+## Gameplans
+
+The weekly plan is a trade between talent and chance (football/50_drives.js
+AGGR). Risk makes the rating gap count less on your own drives, safe makes
+it count more; no hidden rating penalty. At even strength the three plans
+win equally often; an underdog should take risks, a favourite should play
+safe. test/plans.js checks that shape in both leagues. The engine's own
+urgency (overtime, a fourth down it goes for) and late-game management
+("sit", "chase") are separate modes, so computer-only play is unaffected.
+
 ## The three advisors
 
-Fixed strategies, each best in a different situation. Any change should
-preserve this shape. (Figures from before the split; no test reproduces them
+Fixed strategies, each best in a different situation. (Figures from before
+the split, and from before gameplans were rebalanced; in-game calls use the
+same risk/safe modes, so these need re-measuring. No test reproduces them
 yet.)
 
     situation        Two Bears   Pearl   Apprehensive Capybara

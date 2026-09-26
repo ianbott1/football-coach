@@ -1,5 +1,5 @@
 {
- "fp": "db508819dffcd53f",
+ "fp": "56a97ffbc3bc9469",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -25,6 +25,11 @@
    "fp": "db508819dffcd53f",
    "from": "70de5d8b06c428ff",
    "note": "Hot-seat entries completed at season end now also get the coach's expectation label and milestones, like a one-coach entry"
+  },
+  {
+   "fp": "56a97ffbc3bc9469",
+   "from": "db508819dffcd53f",
+   "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
   }
  ],
  "out": [
@@ -34,11 +39,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "15-2",
+      "rec": "14-3",
       "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "4e12f05b4da90fb2"
+     "book": "a49bd735a077fe9c"
     },
     {
      "team": "Tennessee",
@@ -47,7 +52,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "45d734109638247b"
+     "book": "7ca869c82a487c6e"
     }
    ]
   },
@@ -57,20 +62,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
-      "grade": "A"
+      "rec": "9-8",
+      "result": "Missed the playoffs",
+      "grade": "C"
      },
-     "book": "b74d6dc97a20feb9"
+     "book": "abcf799e7f5f763c"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost the Super Bowl",
+      "rec": "12-5",
+      "result": "Lost in the divisional round",
       "grade": "A+"
      },
-     "book": "e918e2d223e54362"
+     "book": "4f5fff9dc5e1e18c"
     }
    ]
   },
@@ -80,20 +85,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
+      "rec": "11-6",
       "result": "Lost in the divisional round",
-      "grade": "B"
+      "grade": "A"
      },
-     "book": "ad27b88085a23545"
+     "book": "3d54aebab5286245"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "15-2",
-      "result": "Lost in the divisional round",
+      "rec": "17-0",
+      "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "feb14023ca3f0aa1"
+     "book": "032fce8b2c03063e"
     }
    ]
   }

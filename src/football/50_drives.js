@@ -13,22 +13,37 @@ const GAME_STATE = !!(LEAGUE.tuning&&LEAGUE.tuning.gameState);
 function situational(aggr,i,total,mine,theirs){
   if(!GAME_STATE||i<total*0.75)return aggr;
   const d=mine-theirs;
-  return d>=17?"safe":d<=-9?"aggressive":aggr;
+  return d>=17?"sit":d<=-9?"chase":aggr;
 }
 const MAX_CALLS = 3;          // how many decisions a single game will ask of you
 
 /* Aggression presets, used both as a pre-game plan and as an in-game choice. */
+/* A gameplan is a trade between talent and chance. gap scales how much the
+   rating gap counts on the side's own drives: safe lets the better team's
+   talent show, risk makes the game more of a coin flip. At even strength the
+   three are worth the same; an underdog should take risks, a favourite
+   should play it safe. td/fg/to only change how it looks (more field goals
+   and fewer turnovers when safe; more touchdowns and turnovers when
+   risky), set so they don't change who wins. See test/plans.js. */
 const AGGR = {
-  safe:      {td:-0.050, fg:+0.058, to:-0.070},
-  balanced:  {td: 0,     fg: 0,     to: 0},
-  aggressive:{td:+0.082, fg:-0.060, to:+0.086}
+  safe:      {td:-0.015, fg:+0.040, to:-0.015, gap:1.30},
+  balanced:  {td: 0,     fg: 0,     to: 0,     gap:1.00},
+  aggressive:{td:+0.015, fg:-0.045, to:+0.030, gap:0.55},
+  // not a gameplan: the engine's own urgency, for overtime and for a fourth
+  // down it has decided to go for (the old "aggressive" numbers)
+  urgent:    {td:+0.082, fg:-0.060, to:+0.086, gap:1.00},
+  // late-game management for sides nobody is calling (see situational):
+  // sitting on a lead burns clock, chasing a deficit takes shots
+  sit:       {td:-0.050, fg:+0.058, to:-0.070, gap:1.00},
+  chase:     {td:+0.082, fg:-0.060, to:+0.086, gap:1.00}
 };
 
 /* Chance of each outcome on one drive, given the gap between the two teams. */
 function driveOdds(offElo, defElo, startYd, aggr){
-  const x = (offElo - defElo) * GAP_SCALE / 470;
-  const field = (startYd - 27) / 100;              // better starting spot helps
   const A = AGGR[aggr] || AGGR.balanced;
+  // risk makes a drive less about who is better; safe makes it more so
+  const x = (offElo - defElo) * GAP_SCALE / 470 * (A.gap || 1);
+  const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;
   let to = 0.135 - x * 0.0339 + A.to;
@@ -136,7 +151,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
       res = {pts:0,kind:"PUNT"};
     }else if(forced==="go"){
       const conv = rng.r() < 0.52;
-      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "aggressive")
+      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "urgent")
                  : {pts:0,kind:"DOWNS"};
       if(conv&&res.pts===0)res={pts:0,kind:res.kind};
     }else{
@@ -152,7 +167,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   while(st.h===st.a&&ot<24){
     ot++;
     const home=(ot%2===1);
-    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"aggressive");
+    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
     if(home)st.h+=r.pts; else st.a+=r.pts;
     st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                     h:st.h,a:st.a,n:st.total+ot,aggr:"aggressive",note:"overtime",ot:true});
@@ -228,7 +243,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       // overtime, both teams from the opponent's 25
       st.otGuard=(st.otGuard||0)+1;
       const home=(st.otGuard%2===1);
-      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"aggressive");
+      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
       if(home)st.h+=r.pts; else st.a+=r.pts;
       st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                       h:st.h,a:st.a,n:st.total+st.otGuard,aggr:"aggressive",
@@ -265,7 +280,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
           const tg=P.res.togo||3;
           if(rng.r()<goOdds(tg,offE,defE)){
             // converted: the drive carries on from there
-            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"aggressive");
+            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent");
             res=r2;
             res.converted=true;
             res.note = r2.pts>0 ? `converted on fourth and ${tg}, then scored`
