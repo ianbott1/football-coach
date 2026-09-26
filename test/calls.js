@@ -9,7 +9,10 @@ let js=fs.readFileSync(file,'utf8').split('<script>')[1].split('</script>')[0].r
 global.setTimeout=()=>0;global.window={storage:{get:async()=>null,set:async()=>({})},addEventListener(){},matchMedia:()=>({matches:false})};
 const nd=()=>({innerHTML:'',dataset:{},classList:{toggle(){},add(){},remove(){}},setAttribute(){}});
 global.document={getElementById:nd,querySelector:nd,querySelectorAll:()=>[],createElement:nd,body:{classList:{toggle(){}}},addEventListener(){}};
-const G=new Function(js+'return {makeLiveGame,RNG,LEAGUE,AGGR};')(); if(process.env.FORCE)Object.assign(G.AGGR.force,JSON.parse(process.env.FORCE));
+const G=new Function(js+'return {makeLiveGame,RNG,LEAGUE,AGGR};')();
+// try other mode settings without rebuilding: AGGR='{"sit":{"to":-0.1}}'
+if(process.env.AGGR){const o=JSON.parse(process.env.AGGR);Object.keys(o).forEach(k=>Object.assign(G.AGGR[k],o[k]))}
+if(process.env.FORCE)Object.assign(G.AGGR.force,JSON.parse(process.env.FORCE));
 const gaps=G.LEAGUE.id==='nfl'?[-60,0,60]:[-150,0,150];
 // base answers: the "stay the course" option of each call
 const BASE={chase:'normal',protect:'keep',half:'normal',fourth:null,two:'kick'};

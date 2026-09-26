@@ -137,7 +137,11 @@ late) no longer holds: Two Bears are best or level almost everywhere,
 mostly because going for it on fourth down pays in this engine, as in
 modern analytics. Restoring the shape would mean making "Bleed the clock" a
 clearly better way to protect a lead, which computer teams also use late in
-pro games, so it would move the league's margins too. An open decision.
+pro games. Tried and reverted: much stronger ball security when sitting on
+a lead (turnovers -0.15, touchdowns -0.03) gave the Capybara only +0.3
+leading late at 3000 games (noise) and left pro margins unchanged at 13.0.
+What drives the table is fourth down: going for it pays. Restoring the
+shape would mean making fourth-down tries worse, against the analytics.
 
 Two Bears always take the risk and never reason (no numbers in their lines).
 Pearl reads the situation and is a dog ~15% of the time, wrapping rather than
