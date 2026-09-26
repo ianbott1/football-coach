@@ -246,12 +246,21 @@ function rebuild(){
 }
 
 let saveOK=null;                     // did the last save land? null = not tried yet
-async function save(){
-  // compressing a long career takes a moment: let the screen draw first
-  if(typeof requestAnimationFrame==="function")
-    await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
-  try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(JSON.stringify(S))))}catch(e){saveOK=false}
-  return saveOK;
+/* Saves are coalesced: calls made in the same burst share one save, of the
+   state as it stands when it runs (compressing a long career takes a
+   moment). In a browser it runs after the screen has drawn. */
+let savePending=null;
+function save(){
+  if(savePending)return savePending;
+  savePending=(async()=>{
+    if(typeof requestAnimationFrame==="function")
+      await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
+    else await Promise.resolve();
+    savePending=null;
+    try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(JSON.stringify(S))))}catch(e){saveOK=false}
+    return saveOK;
+  })();
+  return savePending;
 }
 async function loadSlot(n){
   try{const r=await store.get(KEYFOR(n));return r?migrateSave(JSON.parse(lzwUnpack(r.value))):null}catch(e){return null}

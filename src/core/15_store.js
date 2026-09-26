@@ -40,20 +40,26 @@ const store=(function(){
    (offset past the control range, never a surrogate), a string any store
    accepts. Old saves, plain JSON, still load. */
 const SAVE_TAG="LZW1:";
+/* codes are looked up by number (previous code * 256 + next byte) and written
+   whole, 15 bits to a character; same output as the plain bit-by-bit version */
 function lzwPack(str){
   const bytes=unescape(encodeURIComponent(str));
-  const END=256, dict=new Map(); let next=257, bits=9, w="", acc=0, nacc=0; const out=[];
-  const emit=code=>{ for(let b=bits-1;b>=0;b--){ acc=(acc<<1)|((code>>b)&1); if(++nacc===15){out.push(String.fromCharCode(acc+32)); acc=0; nacc=0} } };
+  const END=256, dict=new Map(); let next=257, bits=9, w=-1, acc=0, nacc=0; const out=[];
+  // append a whole code at once; flush 15 bits at a time (acc never exceeds 30 bits)
+  const emit=code=>{ acc=(acc<<bits)|code; nacc+=bits;
+    while(nacc>=15){ nacc-=15; out.push(String.fromCharCode(((acc>>>nacc)&0x7fff)+32)); acc&=(1<<nacc)-1 } };
   for(let i=0;i<bytes.length;i++){
-    const wc=w+bytes[i];
-    if(wc.length===1||dict.has(wc)){w=wc;continue}
-    emit(w.length===1?w.charCodeAt(0):dict.get(w));
-    if(next<32767){dict.set(wc,next++); if(next>(1<<bits)&&bits<15)bits++}
-    w=bytes[i];
+    const c=bytes.charCodeAt(i);
+    if(w<0){w=c;continue}
+    const key=w*256+c, hit=dict.get(key);
+    if(hit!==undefined){w=hit;continue}
+    emit(w);
+    if(next<32767){dict.set(key,next++); if(next>(1<<bits)&&bits<15)bits++}
+    w=c;
   }
-  if(w)emit(w.length===1?w.charCodeAt(0):dict.get(w));
+  if(w>=0)emit(w);
   emit(END);
-  if(nacc>0)out.push(String.fromCharCode((acc<<(15-nacc))+32));
+  if(nacc>0)out.push(String.fromCharCode(((acc<<(15-nacc))&0x7fff)+32));
   return SAVE_TAG+out.join("");
 }
 function lzwUnpack(s){
