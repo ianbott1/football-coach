@@ -314,7 +314,7 @@ LEAGUE.goals={
             s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
     const l=s>=2.6?"Far beyond what anyone expected.":s>=0.9?"Ahead of schedule.":
             s>=-0.6?"About what was expected.":s>=-2.2?"Short of the mark.":"A bad year, and everyone knows it.";
-    return {g:g,l:l};
+    return {g:g,l:l,miss:s<-0.6};                 // "Short of the mark" or worse
   }
 };
 

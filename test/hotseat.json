@@ -1,5 +1,5 @@
 {
- "fp": "e61dc8ce6a735528",
+ "fp": "22e35cbc28fa7cef",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -20,6 +20,11 @@
    "fp": "e61dc8ce6a735528",
    "from": "ebed9c902c774bd2",
    "note": "Hot-seat coaches' entries written at hand-over are now completed with the league tables when the season ends; records, results and grades unchanged"
+  },
+  {
+   "fp": "22e35cbc28fa7cef",
+   "from": "e61dc8ce6a735528",
+   "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
   }
  ],
  "out": [
@@ -33,7 +38,7 @@
       "result": "Eliminated in the first round",
       "grade": "B"
      },
-     "book": "1bfa4e06ac05f1d4"
+     "book": "616a388599f82a9b"
     },
     {
      "team": "Rice",
@@ -42,7 +47,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "4ca9f020613b3f0a"
+     "book": "c68cbdaeab2fdfd0"
     }
    ]
   },
@@ -56,7 +61,7 @@
       "result": "Won the ReliaQuest Bowl",
       "grade": "C+"
      },
-     "book": "aff4fac83f290c08"
+     "book": "fc12f5b7d5138148"
     },
     {
      "team": "Rice",
@@ -65,7 +70,7 @@
       "result": "Won the Cure Bowl",
       "grade": "A+"
      },
-     "book": "1f447532458e76bd"
+     "book": "7adedf27c663d924"
     }
    ]
   },
@@ -79,7 +84,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "B"
      },
-     "book": "8868183ab8a6fb21"
+     "book": "b6bd4932bb9089a9"
     },
     {
      "team": "Rice",
@@ -88,7 +93,7 @@
       "result": "Won the Frisco Bowl",
       "grade": "A"
      },
-     "book": "d89447db53d50ee6"
+     "book": "f544e5e6c2b83541"
     }
    ]
   }

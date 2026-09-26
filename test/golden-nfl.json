@@ -1,5 +1,5 @@
 {
- "fp": "8490002e73885e9e",
+ "fp": "60ead5ec273d3b91",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -20,6 +20,11 @@
    "fp": "8490002e73885e9e",
    "from": "fd6507e2a2507647",
    "note": "standings sorted by overall record, then division record, the seeding order; note says so. Only screen fingerprints change."
+  },
+  {
+   "fp": "60ead5ec273d3b91",
+   "from": "8490002e73885e9e",
+   "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
   }
  ],
  "result": {
@@ -32,7 +37,7 @@
     "rec": "85d937d37fb50339",
     "poll": "1ba000b14cf97035",
     "heis": "d0f3e7cc2ab4d03b",
-    "history": "eb93201b8764730d",
+    "history": "38496e4fc2e88608",
     "universe": "964557362ecda993",
     "screens": "59745ff60eb9e44a"
    },
@@ -44,9 +49,9 @@
     "rec": "f759cd972861fcb2",
     "poll": "f7e060fbe50699a2",
     "heis": "651bbdba557ecd7b",
-    "history": "0d2b06369fb930d6",
+    "history": "6eb5c7eb5ceaade6",
     "universe": "dddb27a1d6ea3aac",
-    "screens": "3ea80057d73789d0"
+    "screens": "c7a807ffa02aa035"
    },
    {
     "year": 2028,
@@ -56,9 +61,9 @@
     "rec": "8d7ac172adf2d8a5",
     "poll": "33e979b989166bc3",
     "heis": "f8bbf1c2a2f70a49",
-    "history": "0605f7bad8633a49",
+    "history": "d197b21b8249fb22",
     "universe": "79089e70b60cef7b",
-    "screens": "90d88cd4f61efc12"
+    "screens": "4e4e9c17e183eec6"
    },
    {
     "year": 2029,
@@ -68,9 +73,9 @@
     "rec": "6945b825a6c8ffc1",
     "poll": "2841f106fa53a501",
     "heis": "457a5b0696e0abaf",
-    "history": "f3602369b46ad62a",
+    "history": "d004128e592368b8",
     "universe": "6f3a2b2a41856e37",
-    "screens": "fc406124ca630c68"
+    "screens": "c8fa8b16c99a3289"
    }
   ],
   "Tennessee#2024": [
@@ -82,7 +87,7 @@
     "rec": "007fcd6b578140d6",
     "poll": "195a05a958f9ba51",
     "heis": "d3b2c11564b8f11f",
-    "history": "adc0ee919e8a7bd5",
+    "history": "da003b1979c253d7",
     "universe": "288f845e1dbc5f3b",
     "screens": "af7aca811903d7a6"
    },
@@ -94,9 +99,9 @@
     "rec": "ff54647a55a338cb",
     "poll": "9aab3c4c233c1890",
     "heis": "21a69d2d926a43b5",
-    "history": "cd5c4e564d23c8a4",
+    "history": "6fd2ad57595fbb0b",
     "universe": "57065d98fffbda51",
-    "screens": "5d072fbdd196e08c"
+    "screens": "eb6c5109f472ac6d"
    },
    {
     "year": 2028,
@@ -106,21 +111,21 @@
     "rec": "807476946dde9c42",
     "poll": "924763fb9ff57cf4",
     "heis": "25e5af7bb1ef83bf",
-    "history": "0df500e7cf0f2cc7",
-    "universe": "1ca5e824b0d00afc",
-    "screens": "1e04c4561c64c57b"
+    "history": "1117455399224d9e",
+    "universe": "f63370260db2106d",
+    "screens": "e7c3e56368e92fe6"
    },
    {
     "year": 2029,
-    "games": "4fa35d76cada1147",
-    "post": "64b9057ba9879c8d",
-    "champion": "Denver",
-    "rec": "53dcfb2e6ba043b4",
-    "poll": "88e997a169d5de69",
-    "heis": "72b8f15ff3d223af",
-    "history": "e25fd8d6e6b6367b",
-    "universe": "fc39e799ddab021f",
-    "screens": "d7db896757c1ddd0"
+    "games": "465cf5cb613b1e9c",
+    "post": "ab1bd91aae034908",
+    "champion": "Cincinnati",
+    "rec": "a58e07ff82fb1c2a",
+    "poll": "6e163761c93a5251",
+    "heis": "bbb31f41d0b5c952",
+    "history": "83214f9a56957d81",
+    "universe": "31355c444e1c1375",
+    "screens": "ed19f5e9dc003eea"
    }
   ],
   "Detroit#777": [
@@ -132,9 +137,9 @@
     "rec": "448207b14ac3ff3e",
     "poll": "86d6218e0a094702",
     "heis": "75fe2e12b87393bf",
-    "history": "4bfa7533413e75bd",
+    "history": "8f2725b9080daa9a",
     "universe": "79d43781ad6a4025",
-    "screens": "de986053f8373009"
+    "screens": "b36ab87f37b06e53"
    },
    {
     "year": 2027,
@@ -144,9 +149,9 @@
     "rec": "ee07781770cafc3a",
     "poll": "748af686994ba230",
     "heis": "62bae06f62bd625e",
-    "history": "656b09f113d0c1bc",
+    "history": "5797b8ed78f5b665",
     "universe": "f4d569570d6d7924",
-    "screens": "d2c2840b7a3ab545"
+    "screens": "16469e2a13154ae2"
    },
    {
     "year": 2028,
@@ -156,7 +161,7 @@
     "rec": "247f745118995590",
     "poll": "c7968d7c00c90592",
     "heis": "18e987d8ef00855c",
-    "history": "488295381a9ff9cf",
+    "history": "02935c5b3b4a06a4",
     "universe": "d2ef635168f97caa",
     "screens": "82873f2131a78832"
    }
@@ -170,7 +175,7 @@
     "rec": "640001496b169960",
     "poll": "b8dd0341d360ef3f",
     "heis": "3bce6c2c7e912de1",
-    "history": "fe26bc4a9f5646d5",
+    "history": "6fa5c288cd56692c",
     "universe": "5f98825eca8b2d40",
     "screens": "486e28d9e8e6c73e"
    },
@@ -182,21 +187,21 @@
     "rec": "f4abb4038c5d817c",
     "poll": "bf9bd7d00887b57a",
     "heis": "41510e0a040123f2",
-    "history": "4245ee3300c71cca",
-    "universe": "33cbe20dacd0191d",
-    "screens": "ae8ff260fc0eef3d"
+    "history": "db3f0357cf8133c1",
+    "universe": "f1fe9d163ad58043",
+    "screens": "b0b685f6798eca07"
    },
    {
     "year": 2028,
-    "games": "7f2acd8a994a20dc",
-    "post": "4a1027f5776043e8",
-    "champion": "Carolina",
-    "rec": "2b159aa78727d323",
-    "poll": "dfd916365eb2666f",
-    "heis": "1d14d70bf2345220",
-    "history": "edc7ed903e9d82f0",
-    "universe": "842334e7ca6135dc",
-    "screens": "8324b1a36039dc3c"
+    "games": "f885f7cc9f4374df",
+    "post": "bcf4eaa776c36d25",
+    "champion": "LA Chargers",
+    "rec": "f5bdb7dcab957122",
+    "poll": "67eb36dab9092029",
+    "heis": "f9b77ed6f43709b2",
+    "history": "cda88e3ff9298174",
+    "universe": "6210c54c156f6667",
+    "screens": "6f47199b5408213c"
    }
   ],
   "schedules#60": [

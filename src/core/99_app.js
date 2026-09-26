@@ -341,9 +341,9 @@ function openOffseason(){
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
   if(S.off&&S.off.year===SEA.year)return;      // already booked this coach
   recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
-  const A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,S.myTeam);
   const my=S.myTeam, C=S.career;
   const exp=S.expNow||expectations();
+  const A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,my,missedTwice(my,exp));
   const titles=SEA.honours(my);
   C.rep=C.rep*0.94;                       // reputations fade, good and bad
   C.rep+=repDelta(SEA.rec[my][0],SEA.rec[my][1],exp.w,U.program[my],titles);
@@ -766,18 +766,26 @@ function stakesFor(ng){
   return out.slice(0,2);
 }
 
+/* A season misses expectations when its grade says so: "Short of the mark"
+   or worse. Two in a row at the same job and you're fired. */
+function seasonMissed(h){return h.miss!==undefined?!!h.miss:/Short of the mark|A bad year/.test(h.gradeLine||"")}
+function missedTwice(my,exp){
+  const now=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],SEA.seasonResult(my),exp);
+  const prev=(S.history||[]).find(h=>h.year===SEA.year-1&&h.team===my);
+  return !!(now.miss&&prev&&seasonMissed(prev));
+}
+/* where you stand against that rule: missed last year here, you're on the
+   hot seat all season; on pace to miss this year, you're under pressure */
 function seatBadge(){
   const my=S.myTeam;
   if(!U||!U.coach)return "";
   const w=SEA.rec[my][0], l=SEA.rec[my][1];
+  const prev=(S.history||[]).find(h=>h.year===SEA.year-1&&h.team===my);
+  if(prev&&seasonMissed(prev))return `<span class="seat hot">HOT SEAT</span>`;
   if(w+l<4)return `<span class="seat cool">Settled</span>`;
-  const wp=w/(w+l);
-  const short=(U.program[my]-SEA.elo[my])/45;
-  let heat=(U.bad[my]||0)*1.4+Math.max(0,short)+(wp<0.42?1.2:0);
-  if(U.coach[my].t<=1)heat-=1.6;
-  if(U.coach[my].q>=30)heat-=0.6;
-  if(heat>=3.6)return `<span class="seat hot">HOT SEAT</span>`;
-  if(heat>=2.2)return `<span class="seat warm">Under pressure</span>`;
+  const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
+  const paceW=Math.round(w/(w+l)*games), g=seasonGrade(paceW,games-paceW,"",exp);
+  if(g.miss)return `<span class="seat warm">Under pressure</span>`;
   return `<span class="seat cool">Secure</span>`;
 }
 

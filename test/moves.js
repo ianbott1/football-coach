@@ -31,7 +31,9 @@ const play=async api=>{let g=0;while(api.SEA.phase!=='done'&&g++<200){api.doAdva
       const grade=moved?api.seasonGradeFor(E.rec[coached][0],E.rec[coached][1],result,exp).g:null;
       const dest=S.off.move;
       api.commitOffseason();
-      if(c.hot&&api.S.off){ api.commitOffseason() }                  // coach B's offseason
+      if(c.hot&&api.S.off){                                          // coach B's offseason
+        const O=api.S.off; if(O.act.userOpen&&O.move===null)O.move=O.jobs[0]||'retire';
+        api.commitOffseason() }
       await new Promise(r=>setImmediate(r));
       if(!moved)continue;
       // the mover is coach A: in a hot seat their book is in S.coaches[0]
@@ -43,9 +45,11 @@ const play=async api=>{let g=0;while(api.SEA.phase!=='done'&&g++<200){api.doAdva
       ok(h&&h.result===result, `${label}: entry result "${h&&h.result}", should be "${result}"`);
       ok(h&&h.grade===grade, `${label}: entry grade ${h&&h.grade}, should be ${grade}`);
       ok(api.S.myTeam===dest, `${label}: now coaching ${api.S.myTeam}`);
-      // and the next season is the new team's
-      if(c.hot){api.stashCoach(); api.loadCoach(api.S.coaches.length-1)}
-      await play(api); api.openOffseason(); if(api.S.off.act.userOpen)api.S.off.move=api.S.myTeam; api.commitOffseason(); if(c.hot&&api.S.off)api.commitOffseason();
+      // and the next season is the new team's (a season always starts with coach 1,
+      // who is already loaded after reading their book above)
+      await play(api); api.openOffseason();
+      const pick=()=>{const O=api.S.off; if(O&&O.act.userOpen&&O.move===null)O.move=O.jobs[0]||'retire'};
+      pick(); api.commitOffseason(); if(c.hot&&api.S.off){pick(); api.commitOffseason()}
       if(c.hot){api.stashCoach(); api.loadCoach(0)}
       const h2=api.S.history.find(x=>x.year===E.year+1);
       ok(h2&&h2.team===dest, `${label}: next season filed under ${h2&&h2.team}, should be ${dest}`);

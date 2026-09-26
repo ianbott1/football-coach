@@ -35,7 +35,7 @@ function seasonEntry(my){
   const hon=SEA.honours(my), seeds=SEA.postRecord().cfpOf;
   return {v:HISTORY_V, year:SEA.year, team:my,
     rec:SEA.rec[my][0]+"-"+SEA.rec[my][1], rank:rk[my],
-    result:result, grade:gr.g, gradeLine:gr.l,
+    result:result, grade:gr.g, gradeLine:gr.l, miss:!!gr.miss,
     champion:SEA.champion,
     honours:{title:SEA.champion===my, group:hon.conf, seed:seeds[my]||null},
     group:{key:CONF[my], name:LEAGUE.conf.names[CONF[my]]||"",
@@ -59,6 +59,7 @@ function migrateEntry(h,career,fallback){
   const keyOf=name=>Object.keys(LEAGUE.conf.names).find(k=>LEAGUE.conf.names[k]===name)||null;
   const out={v:2, year:h.year, team:team, rec:h.rec, rank:h.rank, result:h.result,
     grade:h.grade, gradeLine:h.gradeLine, champion:h.champion,
+    miss:/Short of the mark|A bad year/.test(h.gradeLine||""),
     honours:{title:h.champion===team, group:!!h.confChamp, seed:(h.cfp&&h.cfp[team])||null},
     group:{key:(h.allconf&&h.allconf.conf)||keyOf(c.conf), name:c.conf||"", rec:c.confRec||""},
     bestWin:c.bestWin||null,

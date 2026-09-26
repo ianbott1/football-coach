@@ -326,7 +326,7 @@ LEAGUE.goals={
             s>=-0.6?"About what was expected.":
             s>=-2.2?"Short of the mark.":
             "A bad year, and everyone knows it.";
-    return {g:g,l:l};
+    return {g:g,l:l,miss:s<-0.6};                 // "Short of the mark" or worse
   }
 };
 

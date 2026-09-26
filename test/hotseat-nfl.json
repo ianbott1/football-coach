@@ -1,10 +1,15 @@
 {
- "fp": "a2e304f6a00408fd",
+ "fp": "8ac594d18bd43f79",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
    "from": null,
    "note": "first pro recording: Kansas City and Tennessee, three seasons"
+  },
+  {
+   "fp": "8ac594d18bd43f79",
+   "from": "a2e304f6a00408fd",
+   "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
   }
  ],
  "out": [
@@ -18,7 +23,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "e5b3cfff29ed3421"
+     "book": "bf44939d0eec2a54"
     },
     {
      "team": "Tennessee",
@@ -27,7 +32,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "fa53be424b0e2ccf"
+     "book": "bd9efb4b3260e4a9"
     }
    ]
   },
@@ -38,10 +43,10 @@
      "team": "Kansas City",
      "last": {
       "rec": "15-2",
-      "result": "Lost the Super Bowl",
+      "result": "Lost in the divisional round",
       "grade": "A+"
      },
-     "book": "56d8632aa53053ec"
+     "book": "514275bea61f9927"
     },
     {
      "team": "Tennessee",
@@ -50,7 +55,7 @@
       "result": "Lost in the wild card round",
       "grade": "A+"
      },
-     "book": "f2d4acfd68bfd6e6"
+     "book": "053a3a566df3565f"
     }
    ]
   },
@@ -60,20 +65,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
-      "grade": "A"
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
+      "grade": "A-"
      },
-     "book": "94c67428b5955759"
+     "book": "05ea0c3a1274a16f"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "14-3",
-      "result": "SUPER BOWL CHAMPIONS",
+      "result": "Lost the conference championship",
       "grade": "A+"
      },
-     "book": "f72bd4ac07df4819"
+     "book": "50e407fcbe2e7456"
     }
    ]
   }

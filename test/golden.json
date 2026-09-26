@@ -1,5 +1,5 @@
 {
- "fp": "d6932d79e60ed879",
+ "fp": "4bef533a7e89fba3",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -34,6 +34,11 @@
    "fp": "d6932d79e60ed879",
    "from": "fa9d679c4fca0dd8",
    "note": "History entry v2 (league-neutral, NFL-ready; see core/90_history.js). Only the stored history fingerprints change: every screen, game, ranking and universe state is identical. Old saves migrate on load; test/migrate.js: 2217 of 2217 screens, team pages and cards identical to the v1 build, and migrated entries equal native v2 entries."
+  },
+  {
+   "fp": "4bef533a7e89fba3",
+   "from": "d6932d79e60ed879",
+   "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
   }
  ],
  "result": {
@@ -46,9 +51,9 @@
     "rec": "35af61f8274aa94b",
     "poll": "f344bb22473337de",
     "heis": "f4bffc65a63bcc64",
-    "history": "f20a84e12f178293",
+    "history": "2d03e5d872291c88",
     "universe": "30444fd05b9c7c85",
-    "screens": "e7480a8699310782"
+    "screens": "a3496fe3b31df79d"
    },
    {
     "year": 2027,
@@ -58,7 +63,7 @@
     "rec": "5f425849801895e8",
     "poll": "b26dbef497cc0e34",
     "heis": "647b43600053d258",
-    "history": "f52705b240847854",
+    "history": "237174c030112921",
     "universe": "eeeea97c006cb123",
     "screens": "b12bccbbac5b4fb1"
    },
@@ -70,9 +75,9 @@
     "rec": "baa01d47febd8bf7",
     "poll": "82c65db6afc57887",
     "heis": "1b4004c213bac2a3",
-    "history": "40913721a805f950",
+    "history": "c6a3165a562b9c96",
     "universe": "0353593895611441",
-    "screens": "a7dfdecd2b6b1a95"
+    "screens": "08fcba8265efef37"
    },
    {
     "year": 2029,
@@ -82,9 +87,9 @@
     "rec": "8fdb7ae9835f450f",
     "poll": "1a20e64c7e424bde",
     "heis": "0018170dd06ef53d",
-    "history": "46e2eb3bc8c3b35d",
+    "history": "1c46df27da8840ff",
     "universe": "eff25a2247064b8a",
-    "screens": "49929a15c119ac1a"
+    "screens": "bfda0c7f70ae9030"
    }
   ],
   "Rice#2024": [
@@ -96,9 +101,9 @@
     "rec": "5a13038bb9c0659a",
     "poll": "fe0ded9f629a50ed",
     "heis": "62c67774006ebb20",
-    "history": "b56fb6a362543089",
+    "history": "3d03a706f1d28dfd",
     "universe": "ff03bc9d76877853",
-    "screens": "9ae3f3ca5fb6dd06"
+    "screens": "38286aaccfb4c541"
    },
    {
     "year": 2027,
@@ -108,33 +113,33 @@
     "rec": "b4ef22e2bef889b6",
     "poll": "1e4c3c9fd9e54266",
     "heis": "7451222cd507b5b8",
-    "history": "9389cd5d0fcfa01b",
-    "universe": "dcce9cac9832036f",
-    "screens": "d1caad155b1dfa41"
+    "history": "50049ecd6d65ebf3",
+    "universe": "986aecfab5eb0ec1",
+    "screens": "ab8b93803da40bbb"
    },
    {
     "year": 2028,
-    "games": "e04cf74a00f68fdb",
-    "post": "42695db34e279974",
+    "games": "298dc4d7a9922985",
+    "post": "dca2a1735e1993a9",
     "champion": "Notre Dame",
-    "rec": "dccf714e1df95440",
-    "poll": "85cbb3661bf1c5d4",
-    "heis": "bdc6fbf8638fa62d",
-    "history": "25fbad8c604b04c3",
-    "universe": "36f4076373d27d15",
-    "screens": "21db849a59cc74c4"
+    "rec": "5a2b716ec25232a7",
+    "poll": "e63d409a7e0e1a09",
+    "heis": "e51d50eddf367b04",
+    "history": "21b535dc7e58302f",
+    "universe": "7fbcfb8f6c2e9ded",
+    "screens": "08fb14bbd420f152"
    },
    {
     "year": 2029,
-    "games": "3911d868555f9078",
-    "post": "eccfbe28662ad4f2",
-    "champion": "Ohio State",
-    "rec": "859d3bca59892f4b",
-    "poll": "26c44069e8690d2f",
-    "heis": "823516a6499c0628",
-    "history": "40128ed572d14776",
-    "universe": "699f10b7d6a7eb9d",
-    "screens": "43c4a8a9fa051601"
+    "games": "803d9943b2aaa50c",
+    "post": "e1f1555a4f5fac06",
+    "champion": "LSU",
+    "rec": "bb3b95fce23f7490",
+    "poll": "2e32b7f26473b903",
+    "heis": "c29058564f6e95a9",
+    "history": "53c1dadb2241af4e",
+    "universe": "7ded2c2c96137bf8",
+    "screens": "68996905f4c645bb"
    }
   ],
   "Oregon#777": [
@@ -146,9 +151,9 @@
     "rec": "172f6cc83e778fae",
     "poll": "0cb89d31d0911abb",
     "heis": "e322cdbd03e4abfa",
-    "history": "07cc856a1ce1cabe",
+    "history": "424bf44ab57a0012",
     "universe": "071bf8a4582fdd04",
-    "screens": "7909b66eaa12c2d8"
+    "screens": "e16ebcfb8cbd2cb2"
    },
    {
     "year": 2027,
@@ -158,9 +163,9 @@
     "rec": "55adb8b5e167e851",
     "poll": "303ecb2e9ce1a93a",
     "heis": "163ca91d3775b170",
-    "history": "d3168b7ce926b2af",
+    "history": "dc6c5a6c1855800d",
     "universe": "9f695559688bb954",
-    "screens": "97e28e1fd5524b1b"
+    "screens": "be21c408d5373b16"
    },
    {
     "year": 2028,
@@ -170,9 +175,9 @@
     "rec": "efa76e7fba55abff",
     "poll": "c6c28724356f6aea",
     "heis": "4186b4812676696d",
-    "history": "558a98e0febcd109",
+    "history": "827be9c0e59281db",
     "universe": "a436c9051ac75692",
-    "screens": "f3899f5b6b1b599b"
+    "screens": "2b8e88f736ef7429"
    }
   ],
   "Kent State#31337": [
@@ -184,7 +189,7 @@
     "rec": "dacd6b28942133a7",
     "poll": "b51e919a07e7f56a",
     "heis": "eb2739b75cbf53ed",
-    "history": "ebd17035edceea33",
+    "history": "8b422e3483b4fff7",
     "universe": "7a6a0871d29561d8",
     "screens": "d953bdbacbbff497"
    },
@@ -196,9 +201,9 @@
     "rec": "5461359478018ec0",
     "poll": "99de7db8d0cc258a",
     "heis": "8ae0e8d313c33b06",
-    "history": "032b67d75b47f722",
+    "history": "5d28312fad32e78a",
     "universe": "dd611a4cde1b95db",
-    "screens": "3444cbb87d459dfc"
+    "screens": "4c9fd8b095a50115"
    },
    {
     "year": 2028,
@@ -208,9 +213,9 @@
     "rec": "c4c1224bdf6e56c4",
     "poll": "5d94f2a5bc31abb5",
     "heis": "efc1fe877bf238c6",
-    "history": "6974e9d5aa027238",
+    "history": "f78a0184f6e83036",
     "universe": "cd5d2d38e3bba675",
-    "screens": "81ebdc0f6b2d5bf9"
+    "screens": "78e2c1087cab46ec"
    }
   ],
   "schedules#60": [

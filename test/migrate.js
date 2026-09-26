@@ -26,11 +26,21 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // the old build drawing its own save, vs the new build drawing it migrated
       const R=mk()(oldF); await R.loadSave(js); const want=R.allViews().concat(R.teamPages()), wantC=R.cards();
       const L=mk()(newF); await L.loadSave(js); const got=L.allViews().concat(L.teamPages()), gotC=L.cards();
-      want.forEach((w,i)=>{checks++;if(w!==got[i]){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`)}});
+      // the seat badge follows the firing rule, which changed on purpose: it
+      // isn't expected to match the old build
+      const noSeat=x=>x.replace(/<span class="seat [a-z]+">[^<]*<\/span>/g,'');
+      want.forEach((w,i)=>{checks++;if(noSeat(w)!==noSeat(got[i])){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`)}});
       wantC.forEach((w,i)=>{checks++;if(JSON.stringify(w)!==JSON.stringify(gotC[i])){bad++;console.log(`  ${team}#${seed}: card ${i} differs`)}});
       // migrated entries vs native v2 entries (strip changes content, so skip it there)
-      if(!strip){checks++;const a=JSON.stringify(L.S.history), b=JSON.stringify(N.S.history);
-        if(a!==b){bad++;console.log(`  ${team}#${seed} after ${2026+y}: migrated history != native v2 (${md5(a)} vs ${md5(b)})`)}}
+      // migrated entries have the same shape as the entries this build writes
+      // (the careers themselves can differ once the game's rules change)
+      // the entry's own structure: top-level fields and the named sub-records
+      // (not the per-team tables, whose keys are team names)
+      const SUB=['honours','group','coach','coaching','awards','league'];
+      const shape=o=>Object.keys(o).sort().map(k=>SUB.includes(k)&&o[k]&&typeof o[k]==='object'?k+'{'+Object.keys(o[k]).sort().join(',')+'}':k).join(',');
+      if(!strip)L.S.history.forEach((h,i)=>{const n=N.S.history[i]; if(!n||(n.teams===undefined)!==(h.teams===undefined))return;
+        checks++; if(shape(h)!==shape(n)){bad++;console.log(`  ${team}#${seed} ${h.year}: migrated entry shape differs:\n    ${shape(h)}\n    ${shape(n)}`)}
+        checks++; if(h.miss!==/Short of the mark|A bad year/.test(h.gradeLine||'')){bad++;console.log(`  ${team}#${seed} ${h.year}: miss flag disagrees with "${h.gradeLine}"`)}});
       if(L.S.history.some(h=>h.v!==2)){bad++;console.log('  unmigrated entry left')}
     }
   }

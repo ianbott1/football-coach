@@ -317,13 +317,20 @@ function seatHeat(u,rec,elo,t){
 
 /* Offseason runs in two acts so the player can decide in between.
    Act 1: the coaching carousel. Act 2: rosters, recruiting, development. */
-function offseasonCoaching(u,rng,rec,elo,userTeam){
+/* userFired: whether the person coaching userTeam has missed expectations two
+   years running (decided from their grades, see openOffseason). Any team a
+   person coaches is theirs to lose that way, never the carousel's. */
+function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
   const fired=[],hires=[],poached=[];
   if(!u.coach){u.coach={};NAMES.forEach(t=>{u.coach[t]=newCoach(rng,u.program[t]);u.coach[t].hired=false})}
 
   NAMES.forEach(t=>{
     const wp=rec[t][0]/Math.max(1,rec[t][0]+rec[t][1]);
     u.bad[t]= wp<HOT_SEAT ? u.bad[t]+1 : 0;
+    if(u.coach[t]&&u.coach[t].you){
+      if(t===userTeam&&userFired){fired.push(t);u.bad[t]=0}
+      return;
+    }
     const heat=seatHeat(u,rec,elo,t);
     const change=(heat>=4.6)||(wp<0.25&&u.coach[t].t>=2);
     if(change&&rng.r()<0.82){fired.push(t);u.bad[t]=0}
@@ -331,8 +338,9 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
 
   const openings=fired.slice().sort((a,b)=>u.program[b]-u.program[a]);
   openings.forEach(job=>{
+    if(job===userTeam)return;                     // your job: you're told, then it's filled
     if(rng.r()>0.42)return;
-    const cands=NAMES.filter(t=>fired.indexOf(t)<0 && u.coach[t].q>=22
+    const cands=NAMES.filter(t=>fired.indexOf(t)<0 && !u.coach[t].you && u.coach[t].q>=22
       && u.program[t] < u.program[job]-140 && u.coach[t].t>=2
       && rec[t][0]>=rec[t][1]);
     if(!cands.length)return;
