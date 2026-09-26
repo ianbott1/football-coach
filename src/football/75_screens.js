@@ -46,7 +46,6 @@ function driveScript(g,drives){
       h:d.h, a:d.a};
   });
 }
-const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],["rapid",2.1,"Very fast"]];
 
 function watchView(){
   const g=watch.g, my=S.myTeam;

@@ -549,6 +549,9 @@ function watchGap(){
   const n=Math.max(1,watch.script.length);
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
 }
+/* playback speeds for watching a game (live or a replay) */
+const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],["rapid",2.1,"Very fast"]];
+
 function tickWatch(){
   if(!watch)return;
   if(watch.timer){clearTimeout(watch.timer);watch.timer=null}
