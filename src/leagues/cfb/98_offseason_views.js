@@ -174,9 +174,6 @@ function offseasonScreen(){
   return h;
 }
 
-/* ============ shell ============ */
-const TABS=[["team","Team"],["scores","Scores"],["poll",LEAGUE.ui.rankingTab],
-            ["stand","Standings"],["dyn","Dynasty"]];
 
 Object.assign(LEAGUE.ui,{
   offseasonScreen:offseasonScreen,

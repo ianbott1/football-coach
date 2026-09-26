@@ -1741,6 +1741,10 @@ function digestBlock(){
 }
 
 
+/* ============ shell ============ */
+const TABS=[["team","Team"],["scores","Scores"],["poll",LEAGUE.ui.rankingTab],
+            ["stand","Standings"],["dyn","Dynasty"]];
+
 function liveScoreboard(){
   const g=live.g, my=S.myTeam;
   const H=live.eng.h, A=live.eng.a;
