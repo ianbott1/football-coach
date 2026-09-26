@@ -16,26 +16,38 @@ for(let y=0;y<3;y++){
     api.doAdvance(); let g=0;
     while(api.live&&!api.live.done&&g++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
   }
+  // one coaching carousel per offseason, whichever coach's screen shows it
+  const humansNow=api.S.coaches.map((x,i)=>i===(api.S.turn||0)?api.S.myTeam:x.myTeam);
+  const coachBefore={}; api.NAMES.forEach(t=>coachBefore[t]=api.U.coach&&api.U.coach[t]?api.U.coach[t].n:null);
+  const seen=[];
   api.openOffseason();
   for(let c=0;c<2;c++){
     const S=api.S; if(!S.off)break;
+    seen.push(S.off.act.fired.slice().sort().join(',')); if(c===0)var poachedN=(S.off.act.poached||[]).length+(S.off.act.coordMoves||[]).length;
     if(S.off.act.userOpen&&S.off.move===null)S.off.move=(S.off.jobs[0]&&S.off.jobs[0].team)||S.myTeam;
     api.commitOffseason();
   }
+  if(seen.length===2&&seen[0]!==seen[1])crashes.push(`year ${api.SEA.year-1}: the two coaches saw different carousels`);
+  const changed=api.NAMES.filter(t=>humansNow.indexOf(t)<0&&api.U.coach[t]&&coachBefore[t]&&api.U.coach[t].n!==coachBefore[t]).length;
+  const firedN=seen[0]?seen[0].split(',').filter(Boolean).length:0;
+  // a team changes coach when it fires one, when its job is filled by poaching
+  // another team's coach, or when it promotes a coordinator from elsewhere
+  if(changed>firedN+poachedN)crashes.push(`year ${api.SEA.year-1}: ${changed} computer-coached teams changed coach, but one carousel accounts for ${firedN+poachedN}`);
   // every coach's Dynasty tabs and every team page must draw
+  const activeBefore=api.S.turn||0;
   for(let i=0;i<api.S.coaches.length;i++){
     api.stashCoach(); api.loadCoach(i);
-    for(const d of ['program','teams','coaches','shared']){try{api.view('dyn',d)}catch(e){crashes.push(`year ${api.SEA.year-1}, coach ${i+1}, Dynasty/${d}: ${e.message}`)}}
-    try{api.teamPages()}catch(e){crashes.push(`year ${api.SEA.year-1}, coach ${i+1}, team pages: ${e.message}`)}
+    for(const d of ['program','teams','coaches','shared']){try{api.view('dyn',d)}catch(e){crashes.push(`year ${api.SEA.year-1}, coach ${i+1}, Dynasty/${d} crashed: ${e.message}`)}}
+    try{api.teamPages()}catch(e){crashes.push(`year ${api.SEA.year-1}, coach ${i+1}, team pages crashed: ${e.message}`)}
   }
-  api.stashCoach(); api.loadCoach(api.S.coaches.length-1);
+  api.stashCoach(); api.loadCoach(activeBefore);        // put back whoever was active
   const S=api.S;
   out.push({year:api.SEA.year-1, coaches:S.coaches.map(c=>({team:c.myTeam,
     last:c.history&&c.history.length?{rec:c.history[c.history.length-1].rec,result:c.history[c.history.length-1].result,grade:c.history[c.history.length-1].grade}:null,
     book:h(c.history)}))});
 }
 out.forEach(o=>console.log(' ',o.year,o.coaches.map(c=>c.team+' '+(c.last?c.last.rec+' "'+c.last.result+'" '+c.last.grade:'-')).join(' | ')));
-if(crashes.length){crashes.slice(0,4).forEach(c=>console.log('  CRASH '+c)); console.log(`MISMATCH ${crashes.length} screen(s) crashed`); process.exit(1)}
+if(crashes.length){crashes.slice(0,4).forEach(c=>console.log('  FAIL '+c)); console.log(`MISMATCH ${crashes.length} problem(s)`); process.exit(1)}
 /* Same contract as golden.js: last line is MATCH or MISMATCH. */
 const fp=h(out), REC=path.join(__dirname,LG==='cfb'?'hotseat.json':'hotseat-'+LG+'.json'), args=process.argv.slice(2);
 if(args.includes('--write')){

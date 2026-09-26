@@ -1,5 +1,5 @@
 {
- "fp": "22e35cbc28fa7cef",
+ "fp": "5562e7952e1b52d7",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -25,6 +25,11 @@
    "fp": "22e35cbc28fa7cef",
    "from": "e61dc8ce6a735528",
    "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
+  },
+  {
+   "fp": "5562e7952e1b52d7",
+   "from": "22e35cbc28fa7cef",
+   "note": "One coaching carousel per offseason in a hot seat (it ran once per coach, roughly doubling coaching changes: 34 against 17 in the first college year); coach records counted once"
   }
  ],
  "out": [
@@ -38,7 +43,7 @@
       "result": "Eliminated in the first round",
       "grade": "B"
      },
-     "book": "616a388599f82a9b"
+     "book": "3ade17a2d3846515"
     },
     {
      "team": "Rice",
@@ -47,7 +52,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "c68cbdaeab2fdfd0"
+     "book": "e1c1cd116e0d6d85"
     }
    ]
   },
@@ -57,20 +62,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Won the ReliaQuest Bowl",
-      "grade": "C+"
+      "rec": "9-5",
+      "result": "Lost the Citrus Bowl",
+      "grade": "C"
      },
-     "book": "fc12f5b7d5138148"
+     "book": "cd86f3a1b1fbd162"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Cure Bowl",
-      "grade": "A+"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
      },
-     "book": "7adedf27c663d924"
+     "book": "78c671dc646ac3f4"
     }
    ]
   },
@@ -80,20 +85,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-4",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "B"
+      "rec": "8-5",
+      "result": "Won the Las Vegas Bowl",
+      "grade": "C"
      },
-     "book": "b6bd4932bb9089a9"
+     "book": "24993dd69e57bba3"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Won the Frisco Bowl",
-      "grade": "A"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "f544e5e6c2b83541"
+     "book": "bb660077e2c8baad"
     }
    ]
   }

@@ -40,7 +40,7 @@ let bad=0, offseasons=0, firings=0, oneBad=0; const fail=m=>{bad++; if(bad<=8)co
         // the other people's teams as they stand now (a coach who left a job isn't there any more)
         const others=hot?api.S.coaches.map((x,i)=>i===(api.S.turn||0)?null:x.myTeam).filter(Boolean):[];
         others.forEach(t=>{const c2=api.U.coach[t];
-          if(!c2||!c2.you)fail(`${E.year}: ${my}'s offseason replaced the human coach at ${t} with ${c2&&c2.n}`)});
+          if(!c2||!c2.you)fail(`${E.year}: ${my}'s offseason replaced the human coach at ${t} with ${c2&&c2.n} [turn ${api.S.turn}; saved teams ${api.S.coaches.map(x=>x.myTeam).join('/')}; active ${api.S.myTeam}]`)});
         if(went)S.off.move=S.off.jobs.length?S.off.jobs[0]:'retire';
         api.commitOffseason(); await new Promise(r=>setImmediate(r));
         if(api.S.retired||!api.S.off&&!hot)break;

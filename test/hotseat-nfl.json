@@ -1,5 +1,5 @@
 {
- "fp": "8ac594d18bd43f79",
+ "fp": "c063c3028c03830d",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -10,6 +10,11 @@
    "fp": "8ac594d18bd43f79",
    "from": "a2e304f6a00408fd",
    "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
+  },
+  {
+   "fp": "c063c3028c03830d",
+   "from": "8ac594d18bd43f79",
+   "note": "One coaching carousel per offseason in a hot seat (it ran once per coach, roughly doubling coaching changes: 34 against 17 in the first college year); coach records counted once"
   }
  ],
  "out": [
@@ -23,7 +28,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "bf44939d0eec2a54"
+     "book": "23ac9f27be3d315f"
     },
     {
      "team": "Tennessee",
@@ -32,7 +37,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "bd9efb4b3260e4a9"
+     "book": "45d734109638247b"
     }
    ]
   },
@@ -42,20 +47,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "15-2",
+      "rec": "11-6",
       "result": "Lost in the divisional round",
-      "grade": "A+"
+      "grade": "A"
      },
-     "book": "514275bea61f9927"
+     "book": "79e52ac94fd17e3c"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
       "grade": "A+"
      },
-     "book": "053a3a566df3565f"
+     "book": "21041900f36aa640"
     }
    ]
   },
@@ -65,20 +70,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the divisional round",
-      "grade": "A-"
+      "rec": "15-2",
+      "result": "SUPER BOWL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "05ea0c3a1274a16f"
+     "book": "39ad5e2116d49c5c"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "14-3",
-      "result": "Lost the conference championship",
+      "rec": "11-6",
+      "result": "Lost in the wild card round",
       "grade": "A+"
      },
-     "book": "50e407fcbe2e7456"
+     "book": "0fce522f647d6e40"
     }
    ]
   }

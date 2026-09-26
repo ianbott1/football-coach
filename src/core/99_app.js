@@ -340,10 +340,29 @@ function openOffseason(){
   if(SEA.phase!=="done")return;
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
   if(S.off&&S.off.year===SEA.year)return;      // already booked this coach
-  recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
   const my=S.myTeam, C=S.career;
   const exp=S.expNow||expectations();
-  const A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,my,missedTwice(my,exp));
+  let A;
+  if(isHotSeat()){
+    // once per offseason for the whole league; each coach reads their part
+    if(!S.carousel||S.carousel.year!==SEA.year){
+      recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+      const users={};
+      S.coaches.forEach((c,i)=>{
+        const cur=i===(S.turn||0);
+        const t=cur?S.myTeam:c.myTeam, H=(cur?S.history:c.history)||[];
+        const e=(cur?S.expNow:c.expNow)||LEAGUE.goals.expectations(U.program[t]);
+        users[t]=missedTwiceFor(t,H,e);
+      });
+      S.carousel={year:SEA.year,act:offseasonCoaching(U,rng,SEA.rec,SEA.elo,users)};
+    }
+    const X=S.carousel.act;
+    A=Object.assign({},X,{userOpen:!!X.userOpenBy[my],candidates:X.candidatesBy[my]||null,
+      staffOpen:X.staffOpenBy[my]||{oc:false,dc:false}});
+  }else{
+    recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+    A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,{[my]:missedTwice(my,exp)});
+  }
   const titles=SEA.honours(my);
   C.rep=C.rep*0.94;                       // reputations fade, good and bad
   C.rep+=repDelta(SEA.rec[my][0],SEA.rec[my][1],exp.w,U.program[my],titles);
@@ -462,7 +481,7 @@ function endSeason(rng,choices,act,seasonTeam){
         coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
-  S.uStart=snap(U); S.off=null; S.plans={}; S.played={};
+  S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
   flash={type:"offseason"}; view="team"; save(); render();
@@ -769,11 +788,12 @@ function stakesFor(ng){
 /* A season misses expectations when its grade says so: "Short of the mark"
    or worse. Two in a row at the same job and you're fired. */
 function seasonMissed(h){return h.miss!==undefined?!!h.miss:/Short of the mark|A bad year/.test(h.gradeLine||"")}
-function missedTwice(my,exp){
-  const now=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],SEA.seasonResult(my),exp);
-  const prev=(S.history||[]).find(h=>h.year===SEA.year-1&&h.team===my);
+function missedTwiceFor(team,history,exp){
+  const now=seasonGrade(SEA.rec[team][0],SEA.rec[team][1],SEA.seasonResult(team),exp);
+  const prev=(history||[]).find(h=>h.year===SEA.year-1&&h.team===team);
   return !!(now.miss&&prev&&seasonMissed(prev));
 }
+function missedTwice(my,exp){return missedTwiceFor(my,S.history,exp)}
 /* where you stand against that rule: missed last year here, you're on the
    hot seat all season; on pace to miss this year, you're under pressure */
 function seatBadge(){

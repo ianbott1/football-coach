@@ -317,10 +317,16 @@ function seatHeat(u,rec,elo,t){
 
 /* Offseason runs in two acts so the player can decide in between.
    Act 1: the coaching carousel. Act 2: rosters, recruiting, development. */
-/* userFired: whether the person coaching userTeam has missed expectations two
-   years running (decided from their grades, see openOffseason). Any team a
-   person coaches is theirs to lose that way, never the carousel's. */
-function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
+/* The coaching carousel, once per offseason for the whole league.
+   users: {team: fired} for every team a person coaches, fired meaning they
+   have missed expectations two years running (decided from their grades,
+   see openOffseason). A person's job is theirs to lose that way, never the
+   carousel's. Each person's part comes back in the ...By maps; the plain
+   userOpen/staffOpen/candidates are the first user's, for one-coach games. */
+function offseasonCoaching(u,rng,rec,elo,users){
+  users=users||{};
+  const isUser=t=>Object.prototype.hasOwnProperty.call(users,t);
+  const userTeam=Object.keys(users)[0];
   const fired=[],hires=[],poached=[];
   if(!u.coach){u.coach={};NAMES.forEach(t=>{u.coach[t]=newCoach(rng,u.program[t]);u.coach[t].hired=false})}
 
@@ -328,7 +334,7 @@ function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
     const wp=rec[t][0]/Math.max(1,rec[t][0]+rec[t][1]);
     u.bad[t]= wp<HOT_SEAT ? u.bad[t]+1 : 0;
     if(u.coach[t]&&u.coach[t].you){
-      if(t===userTeam&&userFired){fired.push(t);u.bad[t]=0}
+      if(isUser(t)&&users[t]){fired.push(t);u.bad[t]=0}
       return;
     }
     const heat=seatHeat(u,rec,elo,t);
@@ -338,7 +344,7 @@ function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
 
   const openings=fired.slice().sort((a,b)=>u.program[b]-u.program[a]);
   openings.forEach(job=>{
-    if(job===userTeam)return;                     // your job: you're told, then it's filled
+    if(isUser(job))return;                        // a person's job: they're told, then it's filled
     if(rng.r()>0.42)return;
     const cands=NAMES.filter(t=>fired.indexOf(t)<0 && !u.coach[t].you && u.coach[t].q>=22
       && u.program[t] < u.program[job]-140 && u.coach[t].t>=2
@@ -357,7 +363,7 @@ function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
   // a hot coordinator can be the man a program hires
   const coordMoves=[];
   fired.slice().forEach(job=>{
-    if(job===userTeam)return;
+    if(isUser(job))return;
     if(rng.r()>0.30)return;
     const pool=NAMES.filter(t=>fired.indexOf(t)<0 && u.oc[t] && u.oc[t].q>=26
       && u.program[t] < u.program[job]+90);
@@ -374,12 +380,13 @@ function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
     fired.splice(fired.indexOf(job),1);
   });
 
-  const userOpen=fired.indexOf(userTeam)>=0;
+  const userOpenBy={}, candidatesBy={}, staffOpenBy={};
+  Object.keys(users).forEach(t=>{userOpenBy[t]=fired.indexOf(t)>=0; staffOpenBy[t]={oc:false,dc:false}});
   const openJobs=fired.slice();
-  const candidates=userOpen?coachCandidates(rng,u.program[userTeam]):null;
+  Object.keys(users).forEach(t=>{candidatesBy[t]=userOpenBy[t]?coachCandidates(rng,u.program[t]):null});
 
   fired.forEach(t=>{
-    if(t===userTeam)return;                       // that's your job, not an AI hire
+    if(isUser(t))return;                          // a person's job, not an AI hire
     if(u.coach[t].hired&&u.coach[t].t===0)return;
     const old=u.coach[t].n;
     u.coach[t]=newCoach(rng,u.program[t]);
@@ -387,7 +394,6 @@ function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
   });
 
   // ordinary staff churn everywhere else
-  const staffOpen={oc:false,dc:false};
   NAMES.forEach(t=>{
     ["oc","dc"].forEach(side=>{
       const st=side==="oc"?u.oc:u.dc;
@@ -395,14 +401,15 @@ function offseasonCoaching(u,rng,rec,elo,userTeam,userFired){
       st[t].t=(st[t].t||0)+1;
       const leaves = st[t].q>=34 ? rng.r()<0.20 : (st[t].q<=-26 ? rng.r()<0.30 : rng.r()<0.09);
       if(leaves){
-        if(t===userTeam){staffOpen[side]=true;}
+        if(isUser(t)){staffOpenBy[t][side]=true;}
         else st[t]=newCoordinator(rng,u.program[t],side);
       }
     });
   });
 
-  return {fired:fired,hires:hires,poached:poached,userOpen:userOpen,
-          candidates:candidates,openJobs:openJobs,
-          coordMoves:coordMoves,staffOpen:staffOpen};
+  return {fired:fired,hires:hires,poached:poached,openJobs:openJobs,coordMoves:coordMoves,
+          userOpenBy:userOpenBy,staffOpenBy:staffOpenBy,candidatesBy:candidatesBy,
+          userOpen:!!userOpenBy[userTeam],candidates:candidatesBy[userTeam]||null,
+          staffOpen:staffOpenBy[userTeam]||{oc:false,dc:false}};
 }
 
