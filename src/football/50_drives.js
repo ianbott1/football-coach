@@ -3,6 +3,18 @@
    decision made in the fourth quarter genuinely changes the ending. */
 
 const DRIVES_PER_TEAM = (LEAGUE.tuning&&LEAGUE.tuning.drives)||12;   // the league sets its pace
+/* How much a rating gap is worth on the field. College gaps are enormous; a
+   pro league's are small but decide more, so a league can steepen it. */
+const GAP_SCALE = (LEAGUE.tuning&&LEAGUE.tuning.gapScale)||1;
+/* A league can have teams manage the game late: sit on a three-score lead in
+   the fourth quarter, take risks when well behind. Applies only to a side
+   nobody is calling; a coach makes that choice for himself. */
+const GAME_STATE = !!(LEAGUE.tuning&&LEAGUE.tuning.gameState);
+function situational(aggr,i,total,mine,theirs){
+  if(!GAME_STATE||i<total*0.75)return aggr;
+  const d=mine-theirs;
+  return d>=17?"safe":d<=-9?"aggressive":aggr;
+}
 const MAX_CALLS = 3;          // how many decisions a single game will ask of you
 
 /* Aggression presets, used both as a pre-game plan and as an in-game choice. */
@@ -14,7 +26,7 @@ const AGGR = {
 
 /* Chance of each outcome on one drive, given the gap between the two teams. */
 function driveOdds(offElo, defElo, startYd, aggr){
-  const x = (offElo - defElo) / 470;
+  const x = (offElo - defElo) * GAP_SCALE / 470;
   const field = (startYd - 27) / 100;              // better starting spot helps
   const A = AGGR[aggr] || AGGR.balanced;
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
@@ -62,7 +74,7 @@ function fgDistance(stall){ return (100-stall)+17; }
 /* Fourth-down conversion: distance is what matters, quality adjusts it. */
 function goOdds(togo, offElo, defElo){
   const base = 0.68 / (1 + 0.165*(Math.max(1,togo)-1));
-  const adj = (offElo-defElo)/3400;
+  const adj = (offElo-defElo) * GAP_SCALE / 3400;
   return Math.max(0.12, Math.min(0.82, base + adj));
 }
 
@@ -93,6 +105,8 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     const start=nextStart(rng,st.prev);
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
     let aggr=home?st.aggrH:st.aggrA;
+    if(!(opts.decide&&(home?opts.userIsHome:!opts.userIsHome)))
+      aggr=situational(aggr,i,st.total,home?st.h:st.a,home?st.a:st.h);
     let forced=null;
     if(opts.decide){
       const isUser = home ? opts.userIsHome : !opts.userIsHome;
@@ -294,7 +308,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       }
     }
 
-    const aggr=home?st.aggrH:st.aggrA;
+    const aggr=isUser?(home?st.aggrH:st.aggrA)
+                     :situational(home?st.aggrH:st.aggrA,i,st.total,mine,theirs);
     const res=rollDrive(rng,offE,defE,start,aggr);
 
     // ---- a call the situation creates ----
