@@ -58,6 +58,7 @@ the interface. A second league is a new folder under `src/leagues/`.
     test/calls.js      report: each in-game call replayed with every answer
     test/draftboard.js pro: your draft board decides your picks, in board order
     test/fatargets.js  pro: free-agent targets are signed or reported, never cut
+    test/advisors.js   report: win % following each advisor, four situations
     test/nfl.js        pro league: rules every season obeys, realism measures,
                        the cap gate on the offseason screen
 
@@ -117,16 +118,26 @@ urgency (overtime, a fourth down it goes for) and late-game management
 
 ## The three advisors
 
-Fixed strategies, each best in a different situation. (Figures from before
-the split, and from before gameplans were rebalanced; in-game calls use the
-same risk/safe modes, so these need re-measuring. No test reproduces them
-yet.)
+Measured with test/advisors.js: full live games with every call answered the
+way one advisor recommends, the same games replayed for each (3000 per
+situation). Win %:
 
-    situation        Two Bears   Pearl   Apprehensive Capybara
-    even match         59.3%     58.7%          55.4%
-    big underdog       40.9%     40.1%          38.5%
-    leading late       84.1%     83.6%          84.7%   <- capybara best
-    trailing late      25.0%     23.8%          18.7%   <- bears best
+    college          even match  big underdog  leading late  trailing late
+    Two Bears          57.3         28.1           84.6          18.5
+    Pearl              56.5         27.3           82.0          18.3
+    Capybara           54.5         25.4           84.0          17.1
+
+    pro              even match  big underdog  leading late  trailing late
+    Two Bears          58.2         31.0           83.8          21.5
+    Pearl              57.0         32.0           82.1          21.1
+    Capybara           54.5         31.7           83.7          18.5
+
+The intended shape (each advisor best somewhere, the Capybara when leading
+late) no longer holds: Two Bears are best or level almost everywhere,
+mostly because going for it on fourth down pays in this engine, as in
+modern analytics. Restoring the shape would mean making "Bleed the clock" a
+clearly better way to protect a lead, which computer teams also use late in
+pro games, so it would move the league's margins too. An open decision.
 
 Two Bears always take the risk and never reason (no numbers in their lines).
 Pearl reads the situation and is a dog ~15% of the time, wrapping rather than
