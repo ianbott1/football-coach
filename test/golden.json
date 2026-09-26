@@ -1,5 +1,5 @@
 {
- "fp": "0c75a6b5c3aac064",
+ "fp": "34efd4c76d399fb7",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -64,6 +64,11 @@
    "fp": "0c75a6b5c3aac064",
    "from": "102eaab00630f3cb",
    "note": "Weekly news varies its phrasing (seeded by season, week and team, so a moment always reads the same); the plan tip describes the new gameplans; ranked-win and bad-loss lines come from league text (no voters in the pros). Screens only."
+  },
+  {
+   "fp": "34efd4c76d399fb7",
+   "from": "0c75a6b5c3aac064",
+   "note": "Fix 'undefined' in weekly news: the phrase helper's hash could go negative and pick nothing; kept unsigned. Screens only."
   }
  ],
  "result": {
@@ -114,7 +119,7 @@
     "heis": "86c27997c3fd52ed",
     "history": "534eefba20e56b1b",
     "universe": "e03443c50faacd3b",
-    "screens": "83e753e89e3357ad"
+    "screens": "b486ad12c397a3b6"
    }
   ],
   "Rice#2024": [
@@ -190,7 +195,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "6cc996912c62748b"
+    "screens": "f163bfe6e670ae11"
    },
    {
     "year": 2028,

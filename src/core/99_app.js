@@ -1158,7 +1158,7 @@ function oppOf(g,t){return g.home===t?g.away:g.home}
 function vary(list,key){
   let h=(2166136261^((SEA?SEA.year:0)*131+(SEA?SEA.step:0)))>>>0;   // FNV-1a, then mixed
   for(let i=0;i<key.length;i++)h=Math.imul(h^key.charCodeAt(i),16777619)>>>0;
-  h^=h>>>13; h=Math.imul(h,2246822507)>>>0; h^=h>>>16;
+  h=(h^(h>>>13))>>>0; h=Math.imul(h,2246822507)>>>0; h=(h^(h>>>16))>>>0;   // keep it unsigned
   return list[h%list.length];
 }
 function weekNews(W){
