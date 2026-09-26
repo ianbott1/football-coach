@@ -9,8 +9,11 @@ packaged.
 1. Sport-neutral core (done: 1c86b85, and the two commits after it). Game
    screens, staff words and the star-performance picker moved out of the
    core; football output unchanged (golden MATCH in both leagues).
-2. Basketball sport layer: possession-based engine, positions, box scores,
-   gameplans and in-game calls, advisors, court view. Measured on its own.
+2. Basketball sport layer (done: 1e00dae, af37b31, and the commit after
+   them): possession-based engine, positions, box scores, gameplans and
+   in-game calls, advisors, court view. Measured on its own
+   (test/bb-engine.js, test/bb-plans.js, test/bb-calls.js). It supplies every
+   name the core uses from a sport (checked mechanically).
 3. College basketball league: real schools and conferences (fictional
    players), non-conference and conference schedule, conference tournaments
    with automatic bids, Selection Sunday (68 teams, First Four, four regions,
@@ -39,7 +42,8 @@ Everything the core and a league use from a sport, by name:
       OFF_SHARE
     STAFF, staffFace, staffTake(dp, ctx), staffAside
     gameScript, fieldSVG, and the screens: liveScoreboard, driveWord,
-      driveScript, liveView, liveCallView, callView, watchView, startWatch
+      driveScript, liveView, liveCallView, watchView, startWatch
+    (playback SPEEDS are the core's.)
 
 ## Calibration targets (real Division I men's basketball)
 
