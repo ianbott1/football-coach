@@ -1,16 +1,24 @@
-/* ============ poll: college football ============ */
+/* ============ poll: college basketball ============ */
 /* The league's ranking. The core asks any ranking for order(), rankMap() and
    update(results, elo); college football's is a voters' poll. */
-const INERTIA=0.82,ELO_PULL=0.18,L_UNR=-52,L_RNK=-22,L_T10=-9,
-      W_T10=48,W_RNK=26,W_UNR=4,BLOWOUT=10,IDLE=-3;
-/* Losses are the first thing voters sort on. A two-loss team has to be a great
-   deal better regarded to stay ahead of an unbeaten one. */
-const LOSS_TIER=100;
+/* Basketball voters weigh losses less than football's: the best teams lose
+   five to eight times over thirty games. Each game date moves the poll less. */
+const INERTIA=0.82,ELO_PULL=0.10,L_UNR=-30,L_RNK=-12,L_T10=-5,
+      W_T10=28,W_RNK=15,W_UNR=2,BLOWOUT=6,IDLE=0;
+const LOSS_TIER=22;
 class Poll{
   constructor(pre){this.s=Object.assign({},pre);this.L={};NAMES.forEach(t=>this.L[t]=0)}
   eff(t){return this.s[t]-(this.L[t]||0)*LOSS_TIER}
-  order(){return NAMES.slice().sort((a,b)=>this.eff(b)-this.eff(a))}
-  rankMap(){const o=this.order(),m={};o.forEach((t,i)=>m[t]=i+1);return m}
+  /* 365 teams: the order is sorted once and kept until the poll changes */
+  order(){
+    if(!this._ord){const e={}; NAMES.forEach(t=>e[t]=this.eff(t)); this._ord=NAMES.slice().sort((a,b)=>e[b]-e[a])}
+    return this._ord.slice();
+  }
+  rankMap(){
+    if(!this._rm){const m={}; this.order().forEach((t,i)=>m[t]=i+1); this._rm=m}
+    return Object.assign({},this._rm);
+  }
+  _dirty(){this._ord=null;this._rm=null}
   update(res,elo){
     const prev=this.rankMap(), played=new Set(), d={};
     NAMES.forEach(t=>d[t]=0);
@@ -30,14 +38,17 @@ class Poll{
       this.s[t]=this.s[t]*INERTIA+(1-INERTIA)*this.s[t]
                 +ELO_PULL*(elo[t]-this.s[t])+d[t]+(played.has(t)?0:IDLE);
     });
+    this._dirty();
+    // a ranked team that won doesn't drop: it keeps at least its old spot
     const winners=new Set(res.map(r=>r.winner));
-    const nr=this.rankMap();
+    const nr=this.rankMap(), o=this.order();
     winners.forEach(t=>{
       if((prev[t]||999)<=25 && (nr[t]||999)>prev[t]){
-        const o=this.order(), ref=o[prev[t]-1];
+        const ref=o[prev[t]-1];
         if(ref&&ref!==t)this.s[t]=this.eff(ref)+(this.L[t]||0)*LOSS_TIER+0.5;
       }
     });
+    this._dirty();
     return this.rankMap();
   }
 }
