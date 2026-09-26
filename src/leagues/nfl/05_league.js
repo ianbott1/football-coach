@@ -70,6 +70,10 @@ const LEAGUE={
   text:{
     champions:"Super Bowl champions",
     org:"Franchise", orgs:"teams", group:"Division", rank:"Rank",
+    groupShort:"Div",
+    standingsNote:`<div class="note">Division record, then overall. Amber marks the division leader.
+      <b>z</b> clinched the bye &middot; <b>y</b> clinched the division &middot; <b>x</b> clinched
+      a playoff spot &middot; <b>e</b> eliminated.</div>`,
     ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,

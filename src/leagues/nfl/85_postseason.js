@@ -136,5 +136,47 @@ extendSeason({
     return {natl:this.champion===team,playoff:!!this.seeds[team],
             conf:Object.keys(this.champs).some(d=>this.champs[d]===team)};
   },
-  confChampions(){return this.champs}
+  confChampions(){return this.champs},
+  /* Clinch marks, as the league prints them:
+       z  clinched the conference's only bye (the 1 seed)
+       y  clinched the division
+       x  clinched a playoff spot
+       e  eliminated
+     Only what is certain whatever happens in the games left, counting every
+     tie against the team, so a mark can come a week later than the league
+     would print it (real tiebreakers) but is never wrong. Once the regular
+     season is over the marks are simply the seeds. */
+  clinch(){
+    if(this._clinchAt===this.step&&this._clinch)return this._clinch;
+    const out={}, W=LEAGUE.weeks;
+    if(this.step>=W){
+      this._seed();
+      NAMES.forEach(t=>{const s=this.seeds[t];
+        out[t]=!s?"e":s===1?"z":s<=4?"y":"x"});
+    }else{
+      const rem={}; NAMES.forEach(t=>rem[t]=0);
+      this.sched.forEach(g=>{if(g.week>=this.step){rem[g.home]++;rem[g.away]++}});
+      const w=t=>this.rec[t][0], mx=t=>w(t)+rem[t];
+      const sides=LEAGUE.conf.sides, wild=LEAGUE.playoff.perSide-sides.AFC.length;
+      Object.keys(sides).forEach(sd=>{
+        const divs=sides[sd], teams=NAMES.filter(t=>divs.indexOf(CONF[t])>=0);
+        const inDiv=d=>teams.filter(t=>CONF[t]===d);
+        teams.forEach(T=>{
+          const others=teams.filter(t=>t!==T), mates=others.filter(t=>CONF[t]===CONF[T]);
+          const y=mates.every(t=>mx(t)<w(T));
+          const z=y&&others.every(t=>mx(t)<w(T));
+          // most non-division-winners that could finish level with or above T:
+          // in each division the winner is one of those who can, so one fewer
+          const B=divs.reduce((s,d)=>{const k=inDiv(d).filter(t=>t!==T&&mx(t)>=w(T)).length;return s+Math.max(0,k-1)},0);
+          const x=y||B<wild;
+          // guaranteed non-winners already past T's best possible finish
+          const lost=mates.some(t=>w(t)>mx(T));
+          const G=divs.reduce((s,d)=>{const c=inDiv(d).filter(t=>t!==T&&w(t)>mx(T)).length;return s+Math.max(0,c-1)},0);
+          out[T]=z?"z":y?"y":x?"x":(lost&&G>=wild)?"e":"";
+        });
+      });
+    }
+    this._clinch=out; this._clinchAt=this.step;
+    return out;
+  }
 });

@@ -1264,12 +1264,12 @@ function standingsView(){
   order.forEach(c=>{
     const head=`<div class="srow shead"><span class="spos">#</span>
       <span class="dot" style="opacity:0"></span>
-      <span class="steam">Team</span><span class="sconf">Conf</span>
+      <span class="steam">Team</span><span class="sconf">${LEAGUE.text.groupShort||"Conf"}</span>
       <span class="sall">Overall</span></div>`;
     const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}">
       <span class="spos ${mark?'qual':''}">${i+1}</span>
       <span class="dot" style="background:${teamColor(r.team)}"></span>
-      <span class="steam">${rkTag(r.rank)}${TL(r.team)}</span>
+      <span class="steam">${LEAGUE.ui.clinchTag?LEAGUE.ui.clinchTag(r.team):""}${rkTag(r.rank)}${TL(r.team)}</span>
       <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span></div>`;
     h+=`<div class="cbox"><div class="chead">${esc(LEAGUE.conf.names[c])}</div>`;
     if(hasDivisions(c)){
@@ -1280,12 +1280,13 @@ function standingsView(){
         h+=div[dn].map((r,i)=>row(r,i,i===0)).join("");
       });
     }else{
-      h+=head+st[c].map((r,i)=>row(r,i,i<2)+(i===1?`<div class="divider"></div>`:"")).join("");
+      const q=LEAGUE.ui.standingsQualify||2;
+      h+=head+st[c].map((r,i)=>row(r,i,i<q)+(i===q-1?`<div class="divider"></div>`:"")).join("");
     }
     h+=`</div>`;
   });
   if(wide)h+=`</div>`;
-  h+=`<div class="note">Conference record, then overall. Amber marks who would play for the
+  h+=LEAGUE.text.standingsNote!==undefined?LEAGUE.text.standingsNote:`<div class="note">Conference record, then overall. Amber marks who would play for the
     title &mdash; the top two, or each division winner in the Sun Belt, the one conference
     still split into divisions.</div>`;
   return h;

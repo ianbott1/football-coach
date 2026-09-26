@@ -2,6 +2,13 @@
 /* The ranking tab is the power ranking and the playoff picture by
    conference; once the regular season ends, Scores shows the bracket. */
 let nflRankTab="power";
+function nflClinchTag(t){
+  const k=SEA.clinch()[t];
+  return k?`<span class="clinch c${k}" title="${{z:"Clinched the bye",y:"Clinched the division",x:"Clinched a playoff spot",e:"Eliminated"}[k]}">${k}</span>`:"";
+}
+const NFL_LEGEND=`<div class="note clinchkey"><b>z</b> clinched the bye &middot; <b>y</b> clinched the division
+  &middot; <b>x</b> clinched a playoff spot &middot; <b>e</b> eliminated. Marks appear only once
+  they're certain whatever happens in the games left.</div>`;
 
 function nflPower(){
   const prev=SEA.prevRank, cur=SEA.poll.rankMap(), my=S.myTeam;
@@ -9,11 +16,11 @@ function nflPower(){
     const d=prev&&prev[t]?prev[t]-(i+1):0;
     return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
-      <span class="steam">${TL(t)}</span>
+      <span class="steam">${nflClinchTag(t)}${TL(t)}</span>
       <span class="sconf">${esc(LEAGUE.conf.names[CONF[t]])}</span>
       <span class="sall">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
       <span class="sconf ${d>0?'up':d<0?'dn':''}">${d>0?"&#9650;"+d:d<0?"&#9660;"+(-d):""}</span></div>`;
-  }).join("");
+  }).join("")+NFL_LEGEND;
 }
 /* the seven seeds per conference as it stands */
 function nflPicture(){
@@ -21,12 +28,12 @@ function nflPicture(){
   return Object.keys(f).map(sd=>`<div class="grouphead">${sd}</div>`+f[sd].map((t,i)=>
     `<div class="frow ${t===my?'mine':''}"><span class="sd">${i+1}</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
-      <div class="fmain"><div class="fname">${TL(t)}</div>
+      <div class="fmain"><div class="fname">${nflClinchTag(t)}${TL(t)}</div>
       <div class="fnote">${i<4?"Leads the "+esc(LEAGUE.conf.names[CONF[t]]):"Wild card"}</div></div>
       <span class="fcfp">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
       ${i===0?'<span class="byebadge">Bye</span>':''}</div>`).join("")+(()=>{
       const out=NAMES.filter(t=>SEA.sideOf(t)===sd&&f[sd].indexOf(t)<0).sort((a,b)=>SEA._tb(a,b)).slice(0,3);
-      return `<div class="note">In the hunt: ${out.map(t=>esc(t)+" "+SEA.rec[t][0]+"-"+SEA.rec[t][1]).join(", ")}.</div>`})()).join("");
+      return `<div class="note">In the hunt: ${out.map(t=>esc(t)+" "+SEA.rec[t][0]+"-"+SEA.rec[t][1]).join(", ")}.</div>`})()).join("")+NFL_LEGEND;
 }
 function nflRankingView(){
   const bar=`<div class="dateline"><h2>Rankings</h2><span>${SEA.year}</span></div>
@@ -52,7 +59,12 @@ function nflBracket(){
 }
 function nflStakes(x){
   const {my,opp,wk,left,w,l}=x, out=[];
-  if(wk>=9){
+  const ck=SEA.clinch()[my];
+  if(ck==="z")out.push({p:95,tag:"BYE CLINCHED",l:`The 1 seed is yours. The road to the Super Bowl goes through ${esc(my)}.`});
+  else if(ck==="y")out.push({p:94,tag:"DIVISION CLINCHED",l:`The ${esc(LEAGUE.conf.names[CONF[my]])} is yours. Now it's about seeding.`});
+  else if(ck==="x")out.push({p:93,tag:"PLAYOFFS CLINCHED",l:`You're in. What's left is where you're seeded.`});
+  else if(ck==="e")out.push({p:92,tag:"ELIMINATED",l:`Mathematically out. Play spoiler and look at next year.`});
+  if(wk>=9&&!ck){
     const f=SEA.seedsNow(), sd=SEA.sideOf(my), i=f[sd].indexOf(my);
     const lead=NAMES.filter(t=>CONF[t]===CONF[my]).sort((a,b)=>SEA._tb(a,b));
     if(i>=0&&i<4)out.push({p:88,tag:"DIVISION",l:`You lead the ${esc(LEAGUE.conf.names[CONF[my]])} with ${left} to play.${i===0?" Right now you'd have the bye.":""}`});
@@ -75,5 +87,7 @@ LEAGUE.ui={
   postseasonView(){return SEA.phase!=="week"?nflBracket():null},
   afterAdvance(ph){},
   subtab(b){if(b.dataset.k){nflRankTab=b.dataset.k;return true}return false},
-  stakes:nflStakes
+  stakes:nflStakes,
+  clinchTag:t=>nflClinchTag(t),
+  standingsQualify:1                   // the division leader
 };

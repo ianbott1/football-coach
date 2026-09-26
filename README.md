@@ -67,6 +67,7 @@ the history-book fields (bowls, cfp, heis, allconf) that saves depend on.
     node test/storage.js          saving outside Claude, the quit prompt
     node test/h2h.js              hot-seat coaches playing each other
     node test/nfl.js [8 12]       pro league rules and realism (careers, years)
+    node test/clinch.js [300]     pro clinch marks are never wrong
 
 A change meant to alter no behaviour must pass `golden.js --check`. A change
 that is meant to alter behaviour re-records with `--write`, and says why.

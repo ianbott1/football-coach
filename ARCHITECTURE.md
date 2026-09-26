@@ -50,6 +50,7 @@ the interface. A second league is a new folder under `src/leagues/`.
     test/storage.js    saving where there is no window.storage (the published
                        site), the quit prompt, Start over
     test/h2h.js        hot-seat coaches playing each other: once, both calling
+    test/clinch.js     pro clinch marks (z/y/x/e) checked against how seasons ended
     test/nfl.js        pro league: rules every season obeys, realism measures,
                        the cap gate on the offseason screen
 
