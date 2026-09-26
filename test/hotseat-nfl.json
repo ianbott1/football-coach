@@ -1,5 +1,5 @@
 {
- "fp": "70de5d8b06c428ff",
+ "fp": "db508819dffcd53f",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -20,6 +20,11 @@
    "fp": "70de5d8b06c428ff",
    "from": "c063c3028c03830d",
    "note": "A new hot-seat season starts with coach 1, with every coach's expectations refreshed for their current team and last year's plans cleared (it started with the last coach, so coach 1 lost their opening game, and the others were graded on last year's expectations)"
+  },
+  {
+   "fp": "db508819dffcd53f",
+   "from": "70de5d8b06c428ff",
+   "note": "Hot-seat entries completed at season end now also get the coach's expectation label and milestones, like a one-coach entry"
   }
  ],
  "out": [
@@ -33,7 +38,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "23ac9f27be3d315f"
+     "book": "4e12f05b4da90fb2"
     },
     {
      "team": "Tennessee",
@@ -56,7 +61,7 @@
       "result": "Lost in the wild card round",
       "grade": "A"
      },
-     "book": "8613e998cc1b68ea"
+     "book": "b74d6dc97a20feb9"
     },
     {
      "team": "Tennessee",
@@ -79,7 +84,7 @@
       "result": "Lost in the divisional round",
       "grade": "B"
      },
-     "book": "d45dde1dabad9dba"
+     "book": "ad27b88085a23545"
     },
     {
      "team": "Tennessee",

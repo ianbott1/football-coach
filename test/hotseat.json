@@ -1,5 +1,5 @@
 {
- "fp": "6206236567a8dacb",
+ "fp": "b64244c01dffa722",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -35,6 +35,11 @@
    "fp": "6206236567a8dacb",
    "from": "5562e7952e1b52d7",
    "note": "A new hot-seat season starts with coach 1, with every coach's expectations refreshed for their current team and last year's plans cleared (it started with the last coach, so coach 1 lost their opening game, and the others were graded on last year's expectations)"
+  },
+  {
+   "fp": "b64244c01dffa722",
+   "from": "6206236567a8dacb",
+   "note": "Hot-seat entries completed at season end now also get the coach's expectation label and milestones, like a one-coach entry"
   }
  ],
  "out": [
@@ -48,7 +53,7 @@
       "result": "Eliminated in the first round",
       "grade": "B"
      },
-     "book": "3ade17a2d3846515"
+     "book": "cb23656c12f0de14"
     },
     {
      "team": "Rice",
@@ -71,7 +76,7 @@
       "result": "Won the ReliaQuest Bowl",
       "grade": "B-"
      },
-     "book": "2eb324462ec654ee"
+     "book": "81fe476bb4c1e840"
     },
     {
      "team": "Rice",
@@ -94,7 +99,7 @@
       "result": "Eliminated in the semifinals",
       "grade": "A"
      },
-     "book": "c5a75081f9a958fe"
+     "book": "d939a2144b20ffd5"
     },
     {
      "team": "Rice",

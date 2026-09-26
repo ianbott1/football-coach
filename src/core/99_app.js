@@ -469,8 +469,10 @@ function endSeason(rng,choices,act,seasonTeam){
   (S.coaches||[]).forEach((c,i)=>{
     if(i===(S.turn||0)||!c.history)return;
     const e=c.history.find(x=>x.year===SEA.year&&!x.teams); if(!e)return;
-    const t=e.team;
+    const t=e.team, before=c.history.filter(x=>x!==e);
     Object.assign(e,{program:Math.round(U.program[t]),
+      exp:(c.expNow||LEAGUE.goals.expectations(U.program[t])).t,
+      miles:milestones(SEA.rec[t][0],SEA.rec[t][1],e.result,rk[t],t,before),
       teams:teamRows, top10:SEA.poll.order().slice(0,10),
       groupChamps:confChamps, seeds:cfpOf, post:post, pnote:pnote,
       awards:{mvp:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
@@ -1121,8 +1123,8 @@ function expectations(){
 
 function seasonGrade(wins,losses,result,exp){ return LEAGUE.goals.grade(wins,losses,result,exp) }
 
-function milestones(wins,losses,result,rank,team){
-  const my=team||S.myTeam, out=[], H=S.history;
+function milestones(wins,losses,result,rank,team,history){
+  const my=team||S.myTeam, out=[], H=history||S.history;
   const mine=H.map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
   if(!mine.length){
     if(wins>=11)out.push(`${wins} wins in your first season in charge.`);
