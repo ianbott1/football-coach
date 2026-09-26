@@ -4,7 +4,7 @@
    field view. The core runs the live game (start, tick, answer, finish);
    the sport supplies these, by these names:
      liveScoreboard, driveWord, driveScript, liveView, liveCallView,
-     callView, watchView, startWatch */
+     watchView, startWatch */
 
 function startWatch(g){
   if(!g||!SEA.roster)return;
@@ -187,18 +187,3 @@ function liveCallView(){
   </div>`;
 }
 
-function callView(){
-  const dp=pendingCall.dp;
-  return `<div class="watchwrap">
-    <div class="wtop"><div class="wlabel"><span class="live"></span>Your call</div>
-      <div class="calltitle">${esc(dp.h)}</div>
-      <div class="callsub">${esc(dp.b)}</div></div>
-    <div class="grouphead staffhead">The staff room</div>
-    <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
-    <div class="callopts">${dp.opts.map(o=>
-      `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
-  </div>`;
-}
