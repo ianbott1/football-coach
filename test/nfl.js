@@ -35,6 +35,11 @@ for(let c=0;c<CAREERS;c++){
     if(E.field.length!==14)broke(`${yr} playoff field of ${E.field.length}`);
     const pg=E.postPools().reduce((s,p)=>s+p.length,0); if(pg!==13)broke(`${yr} ${pg} playoff games`);
     if(!E.champion)broke(`${yr} no champion`);
+    // standings: overall record first, and each division's top row is the team seeded as its winner
+    const ST=E.weeks[E.weeks.length-1].standings;       // as the screen shows it: end of week 18
+    Object.keys(ST).forEach(d=>{const rows=ST[d], pct=r=>{const [w,l]=r.rec.split('-').map(Number);return w/(w+l)};
+      for(let i=1;i<rows.length;i++)if(pct(rows[i])>pct(rows[i-1]))broke(`${yr} ${d} standings: ${rows[i].team} ${rows[i].rec} below ${rows[i-1].team} ${rows[i-1].rec}`);
+      if(rows[0].team!==E.champs[d])broke(`${yr} ${d}: standings lead ${rows[0].team}, seeded winner ${E.champs[d]}`);});
     ['AFC','NFC'].forEach(sd=>{const f=E.side[sd]; if(!f||f.length!==7)broke(`${yr} ${sd} has ${f&&f.length} seeds`);
       else{const divs=new Set(f.slice(0,4).map(t=>api.CONF?0:0));}});
     views.forEach(v=>{try{api.view(v)}catch(e){broke(`${yr} view ${v} throws: ${e.message}`)}});

@@ -4,6 +4,9 @@
    play 2v7, 3v6, 4v5 at the higher seed. Rounds re-seed: the best seed left
    hosts the worst. Conference champions meet at a neutral site. A team's
    record stays its regular-season record, as the league reports it. */
+/* standings go by overall record, then division record: the same order the
+   seeding uses, so the team on top of a division is the one that gets its seed */
+LEAGUE.standingsCompare=(sea,x,y)=>sea._tb(x,y);
 LEAGUE.post={
   phases:["wildcard","divisional","conference","superbowl"],
   run:{wildcard:"_wildcard",divisional:"_divisional",conference:"_confGame",superbowl:"_superbowl"},
