@@ -301,15 +301,19 @@ LEAGUE.goals={
   },
   isTitle(result){return /SUPER BOWL CHAMPIONS/i.test(result)},
   firstTitle:"First Super Bowl of your tenure.",
+  /* A 17-game season is noisy and 14 teams make the playoffs, so each win
+     against expectation and each playoff round count for less than in
+     college; tuned so grades spread like college's (about 6% A+, 40% of
+     seasons missing) and swing less from year to year. */
   grade(wins,losses,result,exp){
-    let s=(wins-exp.w)*1.0;
-    if(/SUPER BOWL CHAMPIONS/i.test(result))s+=5;
-    else if(/Lost the Super Bowl/.test(result))s+=3;
-    else if(/conference championship/.test(result))s+=2.4;
-    else if(/divisional round/.test(result))s+=1.8;
-    else if(/wild card round|Made the playoffs/.test(result))s+=1.2;
-    else if(/Missed the playoffs/.test(result))s-=(exp.w>=10?0.8:0);
-    else if(/Losing season/.test(result))s-=(exp.w>=9?1.0:0.2);
+    let s=(wins-exp.w)*0.6;
+    if(/SUPER BOWL CHAMPIONS/i.test(result))s+=2.5;
+    else if(/Lost the Super Bowl/.test(result))s+=1.5;
+    else if(/conference championship/.test(result))s+=1.2;
+    else if(/divisional round/.test(result))s+=0.9;
+    else if(/wild card round|Made the playoffs/.test(result))s+=0.6;
+    else if(/Missed the playoffs/.test(result))s-=(exp.w>=10?0.5:0);
+    else if(/Losing season/.test(result))s-=(exp.w>=9?1.25:0.25);
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
             s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
     const l=s>=2.6?"Far beyond what anyone expected.":s>=0.9?"Ahead of schedule.":

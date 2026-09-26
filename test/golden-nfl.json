@@ -1,5 +1,5 @@
 {
- "fp": "5c6292686fc46c87",
+ "fp": "5be87059ba8ecbdc",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -30,6 +30,11 @@
    "fp": "5c6292686fc46c87",
    "from": "60ead5ec273d3b91",
    "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
+  },
+  {
+   "fp": "5be87059ba8ecbdc",
+   "from": "5c6292686fc46c87",
+   "note": "Pro grades: wins against expectation count 0.6, playoff bonuses halved, losing-season penalty 1.25; on 256 seasons A+ 27.7% -> 9.0%, year-to-year swing 3.58 -> 2.95 steps, missed seasons unchanged at ~35%"
   }
  ],
  "result": {
@@ -42,9 +47,9 @@
     "rec": "85d937d37fb50339",
     "poll": "0b7b4e6ff1b651f9",
     "heis": "d0f3e7cc2ab4d03b",
-    "history": "345721750a5194d7",
+    "history": "2c79668fbc1db6d9",
     "universe": "48faa8ca329c0402",
-    "screens": "496a56c118cd40d2"
+    "screens": "942f4cd839e4353f"
    },
    {
     "year": 2027,
@@ -54,9 +59,9 @@
     "rec": "23a8ef3fdac6fb36",
     "poll": "67203b0c4d2086a7",
     "heis": "96dcf1df15b98f89",
-    "history": "73bb63228f68b930",
+    "history": "68211705e0a64d37",
     "universe": "493f718e05893c61",
-    "screens": "983d99447b3ef0f7"
+    "screens": "8086316dffd89001"
    },
    {
     "year": 2028,
@@ -66,9 +71,9 @@
     "rec": "7c05a3388e59b04b",
     "poll": "add040296a28b679",
     "heis": "b43fc18e223e98a5",
-    "history": "01774db308209cc6",
+    "history": "f298276c8b46c2eb",
     "universe": "2f7299ac44665638",
-    "screens": "36577d4d4274e66e"
+    "screens": "eebbf4c39fa94936"
    },
    {
     "year": 2029,
@@ -78,9 +83,9 @@
     "rec": "eb08ac61401ba12f",
     "poll": "23326a83452841c1",
     "heis": "a0914bbc41be0648",
-    "history": "f6411b70bd52042c",
+    "history": "e4695990fe0f5dd0",
     "universe": "9cfff32fc03b9c78",
-    "screens": "c8cd4e19611eae80"
+    "screens": "02b74d94cf6a80f2"
    }
   ],
   "Tennessee#2024": [
@@ -104,9 +109,9 @@
     "rec": "51ddcc992b23ca10",
     "poll": "d77498864d7aef48",
     "heis": "ac834c5db6477ffe",
-    "history": "19a40e50ea405938",
+    "history": "01d702416a0eeb41",
     "universe": "4b3b00c612491aa8",
-    "screens": "dcde2bbb5e74c6ba"
+    "screens": "c75053fc5c18895c"
    },
    {
     "year": 2028,
@@ -116,9 +121,9 @@
     "rec": "104708de0f677976",
     "poll": "10bdd6255053fd27",
     "heis": "d64521a266a66543",
-    "history": "f1044f48c8d4bbed",
+    "history": "0823ac93f00fefa8",
     "universe": "719c821adf0f03ff",
-    "screens": "0e693d2e91e3207c"
+    "screens": "57f9d82bf4f90e83"
    },
    {
     "year": 2029,
@@ -130,7 +135,7 @@
     "heis": "aae632c65eb41dfc",
     "history": "7e6d17177218537e",
     "universe": "3950ad83c1a5ccee",
-    "screens": "bc8e400cf90e4f41"
+    "screens": "7f3cb021017abae8"
    }
   ],
   "Detroit#777": [
@@ -142,9 +147,9 @@
     "rec": "448207b14ac3ff3e",
     "poll": "86d6218e0a094702",
     "heis": "75fe2e12b87393bf",
-    "history": "8f2725b9080daa9a",
+    "history": "b5384d5d9e1d7f81",
     "universe": "bb9e27f3e8e95b37",
-    "screens": "56807298eef0ea9c"
+    "screens": "4c07a86589c8d8c5"
    },
    {
     "year": 2027,
@@ -154,9 +159,9 @@
     "rec": "ee07781770cafc3a",
     "poll": "832db50c1fd0e002",
     "heis": "62bae06f62bd625e",
-    "history": "226e128122137847",
+    "history": "0000776b0e319bd2",
     "universe": "18fda0fc66cd5eda",
-    "screens": "332257635bcba24d"
+    "screens": "513aee3a60394ab9"
    },
    {
     "year": 2028,
@@ -166,9 +171,9 @@
     "rec": "247f745118995590",
     "poll": "c7968d7c00c90592",
     "heis": "18e987d8ef00855c",
-    "history": "02935c5b3b4a06a4",
+    "history": "d8cdd2b50c2a3cf7",
     "universe": "9aa360f97a040039",
-    "screens": "854cc8073c84c779"
+    "screens": "7c12d79d6015a90e"
    }
   ],
   "NY Giants#31337": [
@@ -180,9 +185,9 @@
     "rec": "640001496b169960",
     "poll": "b8dd0341d360ef3f",
     "heis": "3bce6c2c7e912de1",
-    "history": "6fa5c288cd56692c",
+    "history": "f3b97d52c7fba3cb",
     "universe": "64dbf313ceff68c0",
-    "screens": "a52fbab7a815b28d"
+    "screens": "e7af1a7c4c1a670f"
    },
    {
     "year": 2027,
@@ -192,9 +197,9 @@
     "rec": "f4abb4038c5d817c",
     "poll": "bf9bd7d00887b57a",
     "heis": "41510e0a040123f2",
-    "history": "99152112993970b5",
+    "history": "f54c08dda894e5cd",
     "universe": "8cb4b96b64dd174d",
-    "screens": "81b20a45fd06ebee"
+    "screens": "3e7aa6f273a0024a"
    },
    {
     "year": 2028,
@@ -206,7 +211,7 @@
     "heis": "ca1413116ccdefa0",
     "history": "ac0f144d2973bb02",
     "universe": "5b38bbe332a3c269",
-    "screens": "6bb75ccbd826e5c5"
+    "screens": "5f84f49bc35d92b2"
    }
   ],
   "schedules#60": [

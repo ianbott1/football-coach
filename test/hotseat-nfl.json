@@ -1,5 +1,5 @@
 {
- "fp": "56a97ffbc3bc9469",
+ "fp": "26033ffd842e25e2",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -30,6 +30,11 @@
    "fp": "56a97ffbc3bc9469",
    "from": "db508819dffcd53f",
    "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
+  },
+  {
+   "fp": "26033ffd842e25e2",
+   "from": "56a97ffbc3bc9469",
+   "note": "Pro grades: wins against expectation count 0.6, playoff bonuses halved, losing-season penalty 1.25; on 256 seasons A+ 27.7% -> 9.0%, year-to-year swing 3.58 -> 2.95 steps, missed seasons unchanged at ~35%"
   }
  ],
  "out": [
@@ -41,18 +46,18 @@
      "last": {
       "rec": "14-3",
       "result": "Lost the Super Bowl",
-      "grade": "A+"
+      "grade": "A"
      },
-     "book": "a49bd735a077fe9c"
+     "book": "5f1a6492824c06b5"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "4-13",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "7ca869c82a487c6e"
+     "book": "c4720def7c6b5bc3"
     }
    ]
   },
@@ -64,18 +69,18 @@
      "last": {
       "rec": "9-8",
       "result": "Missed the playoffs",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "abcf799e7f5f763c"
+     "book": "ce7e2f49ed3181fc"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "12-5",
       "result": "Lost in the divisional round",
-      "grade": "A+"
+      "grade": "A"
      },
-     "book": "4f5fff9dc5e1e18c"
+     "book": "a37c961fb6ce909e"
     }
    ]
   },
@@ -87,9 +92,9 @@
      "last": {
       "rec": "11-6",
       "result": "Lost in the divisional round",
-      "grade": "A"
+      "grade": "B+"
      },
-     "book": "3d54aebab5286245"
+     "book": "f86b355441c40fda"
     },
     {
      "team": "Tennessee",
@@ -98,7 +103,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "032fce8b2c03063e"
+     "book": "c5bfb30ee90ed704"
     }
    ]
   }
