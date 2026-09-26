@@ -1,0 +1,81 @@
+{
+ "fp": "2995a68c0033645a",
+ "log": [
+  {
+   "fp": "2995a68c0033645a",
+   "from": null,
+   "note": "First basketball hot-seat baseline: Duke and North Carolina"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Duke",
+     "last": {
+      "rec": "28-7",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
+     },
+     "book": "fda2d0d4fcefae64"
+    },
+    {
+     "team": "North Carolina",
+     "last": {
+      "rec": "37-1",
+      "result": "Lost in the Final Four",
+      "grade": "A+"
+     },
+     "book": "1e1607c977baa10a"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Duke",
+     "last": {
+      "rec": "31-7",
+      "result": "Lost in the Final Four",
+      "grade": "A+"
+     },
+     "book": "061f521fa6997327"
+    },
+    {
+     "team": "North Carolina",
+     "last": {
+      "rec": "21-10",
+      "result": "Lost in the First Round",
+      "grade": "C"
+     },
+     "book": "ff78620ea8b6775d"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Duke",
+     "last": {
+      "rec": "27-8",
+      "result": "Lost in the Second Round",
+      "grade": "B"
+     },
+     "book": "0305ab219cdbdd87"
+    },
+    {
+     "team": "North Carolina",
+     "last": {
+      "rec": "27-6",
+      "result": "Lost in the Second Round",
+      "grade": "B"
+     },
+     "book": "f77fd278e2f5a356"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,95 @@
+{
+ "fp": "753aede7d5ae4055",
+ "log": [
+  {
+   "fp": "753aede7d5ae4055",
+   "from": null,
+   "note": "First basketball baseline: 3 careers of 2 seasons and 60 schedules"
+  }
+ ],
+ "result": {
+  "Duke#1": [
+   {
+    "year": 2026,
+    "games": "aa413d26f0f3fe34",
+    "post": "d0aee19ee4e51458",
+    "champion": "Kentucky",
+    "rec": "c921ba27381bd4d8",
+    "poll": "e0c12414f8937387",
+    "heis": "e24c4a71619fe428",
+    "history": "1c2b2c6440bea393",
+    "universe": "ab7e8d2614228090",
+    "screens": "6448439b7f54dc10"
+   },
+   {
+    "year": 2027,
+    "games": "202d0843bcde20f0",
+    "post": "789dc7115600984a",
+    "champion": "Houston",
+    "rec": "d848e173351a4e45",
+    "poll": "e7f1ecc4c65362eb",
+    "heis": "91ea34be8bbb22a7",
+    "history": "fa8381e7eff78946",
+    "universe": "96db9b9973275bae",
+    "screens": "9efcd1596c80a2fe"
+   }
+  ],
+  "Coppin State#2024": [
+   {
+    "year": 2026,
+    "games": "2e161451049d63e2",
+    "post": "0fbf498568f5e373",
+    "champion": "Kansas",
+    "rec": "f5184ada11949bf1",
+    "poll": "aa2616cbe7e6bbb3",
+    "heis": "0989698ffde423bf",
+    "history": "d5f4ae177fda9aa2",
+    "universe": "83739bf7a167e406",
+    "screens": "8dc568351eddde7d"
+   },
+   {
+    "year": 2027,
+    "games": "891eb477c61fde1e",
+    "post": "93eb5db4726c9549",
+    "champion": "St. Bonaventure",
+    "rec": "9617688dd3bf3776",
+    "poll": "021b6f66cc8756c4",
+    "heis": "8ac1e766ded00d7f",
+    "history": "c51a79d9e17068ee",
+    "universe": "615e8aa668b7b653",
+    "screens": "d20bbfd7822b1033"
+   }
+  ],
+  "Gonzaga#777": [
+   {
+    "year": 2026,
+    "games": "4b5be91720d6faaa",
+    "post": "2bacb2fab95c4ac7",
+    "champion": "Arizona",
+    "rec": "85f29672478fcfdc",
+    "poll": "bbe17fb420a4c95c",
+    "heis": "23e205f1867fa71e",
+    "history": "57835dd2b2a1dc25",
+    "universe": "872c4a69dc737092",
+    "screens": "ee87a4d29157efba"
+   },
+   {
+    "year": 2027,
+    "games": "cdab3ce2c754a734",
+    "post": "783bc6de1ecdb440",
+    "champion": "Butler",
+    "rec": "f44c4ccee46b7249",
+    "poll": "92944dc7e65d41f7",
+    "heis": "aa44c84e1eb1a2fa",
+    "history": "d21e3284547a2902",
+    "universe": "eb564c09202c7b7e",
+    "screens": "ee65fc8d0b87ce9b"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "3e2070d34d89680c"
+   }
+  ]
+ }
+}

@@ -33,3 +33,19 @@ const tot=Object.values(champSeed).reduce((a,b)=>a+b,0);
 console.log('Champion by seed: '+Object.keys(champSeed).sort((a,b)=>a-b).map(s=>s+': '+(100*champSeed[s]/tot).toFixed(0)+'%').join(', ')+'   (real: 1 seeds ~64%, 2s ~13%, 3s ~10%, 4+ ~13%)');
 const ft=Object.values(ff).reduce((a,b)=>a+b,0);
 console.log('Final Four by seed: '+Object.keys(ff).sort((a,b)=>a-b).map(s=>s+': '+(100*ff[s]/ft).toFixed(0)+'%').join(', ')+'   (real: 1s ~40%, 2s ~20%, 3s ~12%, 4s ~9%, 5+ ~19%)');
+// ---- pass/fail: tolerances about two standard errors wide at 60 seasons ----
+{
+  let bad=0; const chk=(c,msg)=>{if(!c){bad++;console.log('  FAIL '+msg)}};
+  const pct=k=>{const p=pair[k]||[0,1];return 100*p[0]/p[1]};
+  chk(pct('1v16')>=92, `1 v 16 ${pct('1v16').toFixed(1)}% (want >= 92)`);
+  chk(pct('2v15')>=85, `2 v 15 ${pct('2v15').toFixed(1)}% (want >= 85)`);
+  chk(pct('5v12')>=52&&pct('5v12')<=76, `5 v 12 ${pct('5v12').toFixed(1)}% (want 52-76)`);
+  chk(pct('8v9')>=38&&pct('8v9')<=62, `8 v 9 ${pct('8v9').toFixed(1)}% (want 38-62)`);
+  const f1=100*(ff[1]||0)/Math.max(1,ft); chk(f1>=28&&f1<=52, `1 seeds are ${f1.toFixed(0)}% of the Final Four (want 28-52)`);
+  const mm=margin/games, pp=pts/games/2, hh=100*home/homeN;
+  chk(mm>=10.5&&mm<=14, `mean margin ${mm.toFixed(1)} (want 10.5-14)`);
+  chk(pp>=69&&pp<=76, `points ${pp.toFixed(1)} a team (want 69-76)`);
+  chk(hh>=56&&hh<=66, `home teams win ${hh.toFixed(1)}% (want 56-66)`);
+  console.log(bad?`MISMATCH ${bad} calibration check(s) failed`:'MATCH calibration within tolerance (title share by seed is reported, not yet checked)');
+  process.exit(bad?1:0);
+}

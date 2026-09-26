@@ -7,7 +7,7 @@ const m={exports:{}}; new Function('require','module',src.slice(0,src.indexOf('c
 const h=o=>crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0,16);
 const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach.html');
 const api=m.exports.load(file);
-const LG=api.leagueId(), [TA,TB]=LG==='cfb'?['Alabama','Rice']:['Kansas City','Tennessee'];
+const LG=api.leagueId(), [TA,TB]=LG==='cfb'?['Alabama','Rice']:LG==='ncaab'?['Duke','North Carolina']:['Kansas City','Tennessee'];
 api.newDynasty(TA,99,'A',[{team:TA,name:'Coach A'},{team:TB,name:'Coach B'}]);
 const out=[], crashes=[];
 for(let y=0;y<3;y++){
