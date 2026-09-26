@@ -21,7 +21,7 @@ import os, glob, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC  = os.path.join(HERE, "src")
-OUTNAME = {"cfb": "football-coach.html", "nfl": "football-coach-pro.html"}
+OUTNAME = {"cfb": "football-coach.html", "nfl": "football-coach-pro.html", "ncaab": "basketball-coach.html"}
 
 def build(league="cfb"):
     ldir = os.path.join(SRC, "leagues", league)
@@ -36,7 +36,7 @@ def build(league="cfb"):
     if os.path.exists(tfile):
         import re
         title = open(tfile, encoding="utf-8").read().strip()
-        head = re.sub(r"<title>.*?</title>", "<title>" + title + "</title>", head, count=1)
+        head = re.sub(r"<title>.*?</title>", lambda m: "<title>" + title + "</title>", head, count=1)   # a function: no escapes
     tail = open(os.path.join(SRC, "_tail.html"), encoding="utf-8").read()
     files = [f for d in (os.path.join(SRC, "core"), gdir, ldir)
              for f in glob.glob(os.path.join(d, "*.js"))]
