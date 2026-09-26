@@ -20,6 +20,7 @@ class RNG{
    visit; most are ordinary; some are half empty in November. */
 
 function homeField(u,t){
+  if(LEAGUE.homeField)return LEAGUE.homeField(u,t);
   const prog=(u&&u.program&&u.program[t])!==undefined?u.program[t]:1500;
   const base=39+Math.max(0,Math.min(1,(prog-1150)/900))*30;
   return Math.round(base+(LEAGUE.venues[t]||8));

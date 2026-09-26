@@ -2,7 +2,7 @@
 /* Games are played out drive by drive and the score emerges from them, so a
    decision made in the fourth quarter genuinely changes the ending. */
 
-const DRIVES_PER_TEAM = 12;
+const DRIVES_PER_TEAM = (LEAGUE.tuning&&LEAGUE.tuning.drives)||12;   // the league sets its pace
 const MAX_CALLS = 3;          // how many decisions a single game will ask of you
 
 /* Aggression presets, used both as a pre-game plan and as an in-game choice. */
