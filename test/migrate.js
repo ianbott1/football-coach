@@ -29,9 +29,12 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // the seat badge follows the firing rule, which changed on purpose: it
       // isn't expected to match the old build
       // ...nor the gameplan tip, rewritten on purpose when plans were rebalanced
-      const noSeat=x=>x.replace(/<span class="seat [a-z]+">[^<]*<\/span>/g,'').replace(/<div class="mark" data-mark="plan">[\s\S]*?<\/div>/g,'');
+      const noSeat=x=>x.replace(/<span class="seat [a-z]+">[^<]*<\/span>/g,'').replace(/<div class="mark" data-mark="plan">[\s\S]*?<\/div>/g,'').replace(/\s+/g,' ');   // whitespace: the owl gained a helmet slot
       want.forEach((w,i)=>{checks++;if(noSeat(w)!==noSeat(got[i])){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`)}});
-      wantC.forEach((w,i)=>{checks++;if(JSON.stringify(w)!==JSON.stringify(gotC[i])){bad++;console.log(`  ${team}#${seed}: card ${i} differs`)}});
+      // the game's name on the card changed on purpose ("College Football Coach"),
+      // and the owl's markup gained a (college: empty) helmet slot
+      const renamed=x=>JSON.stringify(x).replace(/COLLEGE FOOTBALL COACH/g,'FOOTBALL COACH').replace(/College Football Coach/g,'Football Coach').replace(/\\n\s*\\n(\s*)<!-- feet/g,'\\n$1<!-- feet').replace(/\s+/g,' ');
+      wantC.forEach((w,i)=>{checks++;if(renamed(w)!==renamed(gotC[i])){bad++;console.log(`  ${team}#${seed}: card ${i} differs`)}});
       // migrated entries vs native v2 entries (strip changes content, so skip it there)
       // migrated entries have the same shape as the entries this build writes
       // (the careers themselves can differ once the game's rules change)

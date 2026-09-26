@@ -72,7 +72,7 @@ function seasonCardSVG(h, team){
       preserveAspectRatio="xMidYMid meet">${owlSVG("cardowl",false)}</svg>
     <text x="166" y="986" fill="#F4A63A" font-size="44"
       font-family="Impact,'Arial Black','Helvetica Neue',sans-serif"
-      letter-spacing="2">FOOTBALL COACH</text>
+      letter-spacing="2">${esc((LEAGUE.text.gameName||"Football Coach").toUpperCase())}</text>
     <text x="166" y="1020" fill="#7C879C" font-size="23"
       font-family="ui-monospace,Menlo,Consolas,monospace"
       letter-spacing="2">ianbott1.github.io/football-coach</text>

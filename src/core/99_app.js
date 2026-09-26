@@ -2048,7 +2048,7 @@ function render(){
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
-        <h1 class="wordmark"><span class="wm-a">Football</span><br>
+        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">Football</span><br>
         <span class="wm-b">Coach</span></h1></div>`;return}
     renderTitle();return}
   if(S.introStep!==null&&S.introStep!==undefined&&!S.myTeam){renderIntro();return}
@@ -2245,6 +2245,7 @@ function owlSVG(cls,withPost){
       <circle cx="29.15" cy="19.35" r="1.12" fill="#FFFFFF"/>
       <circle cx="45.15" cy="19.35" r="1.12" fill="#FFFFFF"/>
       <path d="M36 22.6 L32.9 27.8 Q36 30.1 39.1 27.8 Z" fill="#F2C14E"/>
+      ${(LEAGUE.art&&LEAGUE.art.owlHelmet)||""}
       <!-- feet gripping the bar -->
       <path d="M30.5 50.2 v3 M41.5 50.2 v3" stroke="#F2C14E" stroke-width="2.8"
         stroke-linecap="round" fill="none"/>
@@ -2309,7 +2310,7 @@ function renderTitle(){
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
     </div>
-    <h1 class="wordmark"><span class="wm-a">Football</span><br><span class="wm-b">Coach</span></h1>
+    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">Football</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">Build a program. Win it all.</div>
     <div class="slots">${slots.map(s=>s.empty
       ? `<button class="slot empty" data-slot="${s.n}">

@@ -1,5 +1,5 @@
 {
- "fp": "34efd4c76d399fb7",
+ "fp": "6aee623a6d02e0b6",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -69,6 +69,11 @@
    "fp": "34efd4c76d399fb7",
    "from": "0c75a6b5c3aac064",
    "note": "Fix 'undefined' in weekly news: the phrase helper's hash could go negative and pick nothing; kept unsigned. Screens only."
+  },
+  {
+   "fp": "6aee623a6d02e0b6",
+   "from": "34efd4c76d399fb7",
+   "note": "Names: College Football Coach and Pro Football Coach (tab title, a College/Pro line over the wordmark, the season card); the pro owl wears a helmet. Screens only."
   }
  ],
  "result": {
@@ -83,7 +88,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "2d03e5d872291c88",
     "universe": "e79095527cedb7a2",
-    "screens": "bf2a58193ac85f3c"
+    "screens": "b8abb34c489307d7"
    },
    {
     "year": 2027,
@@ -95,7 +100,7 @@
     "heis": "5c947393c6f7ab04",
     "history": "54e86afb05b51bb6",
     "universe": "7984b671b6b8445c",
-    "screens": "832638988346cdd1"
+    "screens": "b45e2545ad4a49a7"
    },
    {
     "year": 2028,
@@ -107,7 +112,7 @@
     "heis": "cea69a0c24106e1c",
     "history": "0fbedd73deeb837b",
     "universe": "10c0a14a142936e0",
-    "screens": "c6895f0bbd3e1b06"
+    "screens": "fb8c88f2d4bf79b3"
    },
    {
     "year": 2029,
@@ -119,7 +124,7 @@
     "heis": "86c27997c3fd52ed",
     "history": "534eefba20e56b1b",
     "universe": "e03443c50faacd3b",
-    "screens": "b486ad12c397a3b6"
+    "screens": "04fe48166d8ceb34"
    }
   ],
   "Rice#2024": [
@@ -133,7 +138,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "6a3d5c0df31402a2"
+    "screens": "344bc9ff9f8a441d"
    },
    {
     "year": 2027,
@@ -145,7 +150,7 @@
     "heis": "4e4319a44375c65b",
     "history": "badebf2c925eda97",
     "universe": "d27a590dd69db4c8",
-    "screens": "e36d04896dba43e5"
+    "screens": "2e27a787db162d7a"
    },
    {
     "year": 2028,
@@ -157,7 +162,7 @@
     "heis": "f4929038beaf492f",
     "history": "c4907f846de53b96",
     "universe": "739fe69b302c434d",
-    "screens": "a29e03afc65591e1"
+    "screens": "55d05e00e2a9355e"
    },
    {
     "year": 2029,
@@ -169,7 +174,7 @@
     "heis": "aacb35d7197a5573",
     "history": "85bae84c3194d8be",
     "universe": "fd8e222efc417852",
-    "screens": "e0c9ff067c7ef865"
+    "screens": "471085fdbc43783c"
    }
   ],
   "Oregon#777": [
@@ -183,7 +188,7 @@
     "heis": "fde104829f9687a1",
     "history": "9316d1f06af839c7",
     "universe": "be152d1e2f6220f0",
-    "screens": "3116663c2ef03fa6"
+    "screens": "b93af9bc876281ce"
    },
    {
     "year": 2027,
@@ -195,7 +200,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "f163bfe6e670ae11"
+    "screens": "1859cc63b70bc07e"
    },
    {
     "year": 2028,
@@ -207,7 +212,7 @@
     "heis": "8bc8df1a03879f2f",
     "history": "e5ded2f68e112df9",
     "universe": "10e4f661e0c5e66f",
-    "screens": "839c4e782c80a585"
+    "screens": "8928b8c16f673b62"
    }
   ],
   "Kent State#31337": [
@@ -221,7 +226,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "74007a0db2a63521",
     "universe": "e22d53c083f084ff",
-    "screens": "298f8d66f2943aea"
+    "screens": "95e99318a87fedde"
    },
    {
     "year": 2027,
@@ -233,7 +238,7 @@
     "heis": "e3afac23d3079708",
     "history": "4929007a1d5ff808",
     "universe": "8b8561c010c5d7ce",
-    "screens": "c3b4daef376072b3"
+    "screens": "dbb77d2ae94102b1"
    },
    {
     "year": 2028,
@@ -245,7 +250,7 @@
     "heis": "1631e759996121aa",
     "history": "f34fa1d94fa7d861",
     "universe": "c6dadac000888428",
-    "screens": "0ec299a62ad06c29"
+    "screens": "c6758dfaff87dab3"
    }
   ],
   "schedules#60": [

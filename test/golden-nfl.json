@@ -1,5 +1,5 @@
 {
- "fp": "e2bc734693699e04",
+ "fp": "f2fdb6d35c35e647",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -70,6 +70,11 @@
    "fp": "e2bc734693699e04",
    "from": "9a3bff917690dfd1",
    "note": "Fix 'undefined' in weekly news: the phrase helper's hash could go negative and pick nothing; kept unsigned. Screens only."
+  },
+  {
+   "fp": "f2fdb6d35c35e647",
+   "from": "e2bc734693699e04",
+   "note": "Names: College Football Coach and Pro Football Coach (tab title, a College/Pro line over the wordmark, the season card); the pro owl wears a helmet. Screens only."
   }
  ],
  "result": {
@@ -84,7 +89,7 @@
     "heis": "d0f3e7cc2ab4d03b",
     "history": "af399a4f094fa72e",
     "universe": "5c25c8624a8c0f83",
-    "screens": "99be583823258448"
+    "screens": "e541267e507cf023"
    },
    {
     "year": 2027,
@@ -96,7 +101,7 @@
     "heis": "030c6a943c4ef77c",
     "history": "a1b3e7e6b29866fd",
     "universe": "2495f443a426fa85",
-    "screens": "e5b794002e5be2ea"
+    "screens": "b6c374c87373d22f"
    },
    {
     "year": 2028,
@@ -108,7 +113,7 @@
     "heis": "2cefdc7752a1647a",
     "history": "6bcceec1fe2e52ce",
     "universe": "039ac77486fe7e4e",
-    "screens": "eb96cff99fd654ea"
+    "screens": "9dd6420febbd4b3c"
    },
    {
     "year": 2029,
@@ -120,7 +125,7 @@
     "heis": "68a7a6aec8e7a510",
     "history": "59302cfd5fa71ce7",
     "universe": "74997d040a4ec4b9",
-    "screens": "ad11141678ce1795"
+    "screens": "73f395b1cae2efef"
    }
   ],
   "Tennessee#2024": [
@@ -134,7 +139,7 @@
     "heis": "d3b2c11564b8f11f",
     "history": "5cff5b4cb88489ea",
     "universe": "32746977d15a3d1a",
-    "screens": "340e1c48274d1d9f"
+    "screens": "a0ec8c0760d95892"
    },
    {
     "year": 2027,
@@ -146,7 +151,7 @@
     "heis": "479e72021dd706cc",
     "history": "5118ec1f5481b37f",
     "universe": "f63fd1bfdf64a2d2",
-    "screens": "8c7afe58d03c528f"
+    "screens": "b280e9f2c51a5cf4"
    },
    {
     "year": 2028,
@@ -158,7 +163,7 @@
     "heis": "2a82b1b1d72919bf",
     "history": "6e014f5c133dbc46",
     "universe": "4574b18e2ea458cc",
-    "screens": "17dbe3dfb41cc852"
+    "screens": "05de0f965414d32a"
    },
    {
     "year": 2029,
@@ -170,7 +175,7 @@
     "heis": "a38a1f22fb7e9ffd",
     "history": "9c6d36dd93aa8565",
     "universe": "37006926700412dd",
-    "screens": "d51e3375cfbc4103"
+    "screens": "a6d66930c4915692"
    }
   ],
   "Detroit#777": [
@@ -184,7 +189,7 @@
     "heis": "c63d061e72508bed",
     "history": "48b773ce295ab16d",
     "universe": "d17abeea6960c98a",
-    "screens": "18e753d820c9055d"
+    "screens": "2b2f65a4b53a9551"
    },
    {
     "year": 2027,
@@ -196,7 +201,7 @@
     "heis": "b3a40c4427046738",
     "history": "e3b1730283b232fe",
     "universe": "a19585553f8f98c8",
-    "screens": "fe1c899b8435ad3b"
+    "screens": "04ad11451bcc8153"
    },
    {
     "year": 2028,
@@ -208,7 +213,7 @@
     "heis": "f0f9ceac579ecf05",
     "history": "82ebef88dc24be12",
     "universe": "3b85d9012d6a81b9",
-    "screens": "d275b3ef2a00b9b7"
+    "screens": "d66ed53ff6098226"
    }
   ],
   "NY Giants#31337": [
@@ -222,7 +227,7 @@
     "heis": "08b9b4b2da4cda4f",
     "history": "a492d3b57fc7d48e",
     "universe": "f4e45438d149aa9e",
-    "screens": "3ade9c60d9acd71b"
+    "screens": "8c64ba8db9f7aecb"
    },
    {
     "year": 2027,
@@ -234,7 +239,7 @@
     "heis": "fb372bf7b91b98b6",
     "history": "124131e9caa103f7",
     "universe": "f8627e6e1fe93699",
-    "screens": "0b3049d069553cf5"
+    "screens": "fdf1b96ad2e0ad6a"
    },
    {
     "year": 2028,
@@ -246,7 +251,7 @@
     "heis": "7ce85beb8ffe07aa",
     "history": "049f24f585357e98",
     "universe": "8bbf9dbf3a5e1f4c",
-    "screens": "03b4972a9fda1040"
+    "screens": "238dab024073a68f"
    }
   ],
   "schedules#60": [

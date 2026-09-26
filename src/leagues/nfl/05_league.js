@@ -67,6 +67,24 @@ const LEAGUE={
 
   playoff:{size:14, perSide:7, byes:1},
 
+  /* the baby owl, suited up for the pros */
+  art:{owlHelmet:`
+      <!-- pro: a helmet. Shell over the crown, ear tufts through it, a centre
+           stripe, an ear hole each side and a face mask below the eyes. -->
+      <path d="M18.6 22 C17.6 10.8 25.4 3.2 36 3.2 C46.6 3.2 54.4 10.8 53.4 22
+               C50.8 17.6 44.6 14.6 36 14.6 C27.4 14.6 21.2 17.6 18.6 22 Z" fill="#3A6FB8"/>
+      <path d="M33.6 3.4 C34.4 3.25 35.2 3.2 36 3.2 C36.8 3.2 37.6 3.25 38.4 3.4 L38.4 14.7 L33.6 14.7 Z" fill="#F2F2F2"/>
+      <circle cx="19.6" cy="22.6" r="2.3" fill="#3A6FB8"/>
+      <circle cx="52.4" cy="22.6" r="2.3" fill="#3A6FB8"/>
+      <circle cx="19.6" cy="22.6" r="0.9" fill="#14171F"/>
+      <circle cx="52.4" cy="22.6" r="0.9" fill="#14171F"/>
+      <path d="M20.6 24.8 C24.6 31.6 30 33.6 36 33.6 C42 33.6 47.4 31.6 51.4 24.8" fill="none" stroke="#C9CDD6" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M24.4 29.6 C28 31.4 31.6 31.9 36 31.9 C40.4 31.9 44 31.4 47.6 29.6" fill="none" stroke="#C9CDD6" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M31 30.9 V33.3 M41 30.9 V33.3" stroke="#C9CDD6" stroke-width="1.3" stroke-linecap="round"/>
+      <!-- the tufts come through the shell -->
+      <path d="M24 14 C22.6 7.6 24 4.8 26.4 4.2 C28.5 6.9 30 10 30.8 12.9 Z" fill="#C98A63"/>
+      <path d="M48 14 C49.4 7.6 48 4.8 45.6 4.2 C43.5 6.9 42 10 41.2 12.9 Z" fill="#C98A63"/>`},
+
   text:{
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a good team. That's how contenders are made.","A statement win over a real team."],
     badLoss:["That's a loss you can't afford in this league.","Beaten by a team you should handle. It will cost you in the standings.","The kind of loss that decides tiebreakers."],
@@ -79,7 +97,8 @@ const LEAGUE={
     ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
-    site:"Football Coach: Pro \u2014 ianbott1.github.io/football-coach",
+    gameName:"Pro Football Coach", eyebrow:"Pro",
+    site:"Pro Football Coach: ianbott1.github.io/football-coach",
     tiers:[
       {max:5,  l:"Contender",  d:"The roster is built to win now. Anything short of a deep run is a failure.",c:"flag"},
       {max:12, l:"Playoff team",d:"Get in, win a game in January, and keep the owner happy.",c:"sod"},
