@@ -484,6 +484,13 @@ function endSeason(rng,choices,act,seasonTeam){
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
+  if(isHotSeat()){
+    // a new season: every coach's expectations for the team they now coach,
+    // no plans carried over from last year, and coach 1 goes first
+    stashCoach();
+    S.coaches.forEach(c=>{c.expNow=LEAGUE.goals.expectations(U.program[c.myTeam]); c.plans={}});
+    loadCoach(0);
+  }
   flash={type:"offseason"}; view="team"; save(); render();
 }
 

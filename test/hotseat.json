@@ -1,5 +1,5 @@
 {
- "fp": "5562e7952e1b52d7",
+ "fp": "6206236567a8dacb",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -30,6 +30,11 @@
    "fp": "5562e7952e1b52d7",
    "from": "22e35cbc28fa7cef",
    "note": "One coaching carousel per offseason in a hot seat (it ran once per coach, roughly doubling coaching changes: 34 against 17 in the first college year); coach records counted once"
+  },
+  {
+   "fp": "6206236567a8dacb",
+   "from": "5562e7952e1b52d7",
+   "note": "A new hot-seat season starts with coach 1, with every coach's expectations refreshed for their current team and last year's plans cleared (it started with the last coach, so coach 1 lost their opening game, and the others were graded on last year's expectations)"
   }
  ],
  "out": [
@@ -62,20 +67,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-5",
-      "result": "Lost the Citrus Bowl",
-      "grade": "C"
+      "rec": "10-3",
+      "result": "Won the ReliaQuest Bowl",
+      "grade": "B-"
      },
-     "book": "cd86f3a1b1fbd162"
+     "book": "2eb324462ec654ee"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "6-7",
+      "result": "Lost the Cure Bowl",
+      "grade": "A-"
      },
-     "book": "78c671dc646ac3f4"
+     "book": "47b86bb60ff76729"
     }
    ]
   },
@@ -85,20 +90,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Las Vegas Bowl",
-      "grade": "C"
+      "rec": "12-3",
+      "result": "Eliminated in the semifinals",
+      "grade": "A"
      },
-     "book": "24993dd69e57bba3"
+     "book": "c5a75081f9a958fe"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
-      "result": "No bowl game",
-      "grade": "B-"
+      "rec": "7-6",
+      "result": "Lost the LA Bowl",
+      "grade": "A"
      },
-     "book": "bb660077e2c8baad"
+     "book": "72ce37be90c188fd"
     }
    ]
   }

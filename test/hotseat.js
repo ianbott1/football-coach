@@ -12,10 +12,25 @@ api.newDynasty(TA,99,'A',[{team:TA,name:'Coach A'},{team:TB,name:'Coach B'}]);
 const out=[], crashes=[];
 for(let y=0;y<3;y++){
   let guard=0;
+  // every season starts with coach 1, and every game a coached team plays is
+  // played live by a person (a head-to-head counts once)
+  if((api.S.turn||0)!==0)crashes.push(`season ${api.SEA.year} starts with coach ${(api.S.turn||0)+1}, not coach 1`);
+  const liveGames=[];
   while(api.SEA.phase!=='done'&&guard++<200){
     api.doAdvance(); let g=0;
+    if(api.live)liveGames.push(api.live.step+'|'+[api.live.g.home,api.live.g.away].sort().join('~'));
     while(api.live&&!api.live.done&&g++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
   }
+  { const E=api.SEA, coached=api.S.coaches.map((x,i)=>i===(api.S.turn||0)?api.S.myTeam:x.myTeam);
+    // college championship week is kept in both the weeks and the postseason: count each game once
+    const all=[...new Set([].concat(...E.weeks.map(w=>w.games),...E.postPools()))];
+    coached.forEach(t=>{const played=all.filter(x=>x.home===t||x.away===t).length;
+      const live=new Set(liveGames.filter(k=>k.split('|')[1].split('~').indexOf(t)>=0)).size;
+      if(live<played){const liveOpp=new Set(liveGames.filter(k=>k.split('|')[1].split('~').indexOf(t)>=0).map(k=>k.split('|')[1]));
+        const cnt={}; liveGames.filter(k=>k.split('|')[1].split('~').indexOf(t)>=0).forEach(k=>{const p=k.split('|')[1];cnt[p]=(cnt[p]||0)+1});
+        const miss=all.filter(x=>x.home===t||x.away===t).filter(x=>{const p=[x.home,x.away].sort().join('~'); if(cnt[p]>0){cnt[p]--;return false} return true})
+          .map(x=>(x.title||'regular season')+' '+x.away+' at '+x.home+' '+x.ap+'-'+x.hp);
+        crashes.push(`${E.year}: ${t} played ${played} games, only ${live} of them with its coach (without: ${miss.join('; ')})`)}}); }
   // one coaching carousel per offseason, whichever coach's screen shows it
   const humansNow=api.S.coaches.map((x,i)=>i===(api.S.turn||0)?api.S.myTeam:x.myTeam);
   const coachBefore={}; api.NAMES.forEach(t=>coachBefore[t]=api.U.coach&&api.U.coach[t]?api.U.coach[t].n:null);

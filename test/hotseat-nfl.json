@@ -1,5 +1,5 @@
 {
- "fp": "c063c3028c03830d",
+ "fp": "70de5d8b06c428ff",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -15,6 +15,11 @@
    "fp": "c063c3028c03830d",
    "from": "8ac594d18bd43f79",
    "note": "One coaching carousel per offseason in a hot seat (it ran once per coach, roughly doubling coaching changes: 34 against 17 in the first college year); coach records counted once"
+  },
+  {
+   "fp": "70de5d8b06c428ff",
+   "from": "c063c3028c03830d",
+   "note": "A new hot-seat season starts with coach 1, with every coach's expectations refreshed for their current team and last year's plans cleared (it started with the last coach, so coach 1 lost their opening game, and the others were graded on last year's expectations)"
   }
  ],
  "out": [
@@ -47,20 +52,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
-      "result": "Lost in the divisional round",
+      "rec": "12-5",
+      "result": "Lost in the wild card round",
       "grade": "A"
      },
-     "book": "79e52ac94fd17e3c"
+     "book": "8613e998cc1b68ea"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "10-7",
-      "result": "Lost in the divisional round",
+      "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "21041900f36aa640"
+     "book": "e918e2d223e54362"
     }
    ]
   },
@@ -70,20 +75,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "15-2",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "9-8",
+      "result": "Lost in the divisional round",
+      "grade": "B"
      },
-     "book": "39ad5e2116d49c5c"
+     "book": "d45dde1dabad9dba"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "11-6",
-      "result": "Lost in the wild card round",
+      "rec": "15-2",
+      "result": "Lost in the divisional round",
       "grade": "A+"
      },
-     "book": "0fce522f647d6e40"
+     "book": "feb14023ca3f0aa1"
     }
    ]
   }
