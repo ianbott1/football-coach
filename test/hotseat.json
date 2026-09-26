@@ -1,5 +1,5 @@
 {
- "fp": "ebed9c902c774bd2",
+ "fp": "e61dc8ce6a735528",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -15,6 +15,11 @@
    "fp": "ebed9c902c774bd2",
    "from": "bc56c0ca0595591c",
    "note": "History entry v2: the book's format changes, its content doesn't; records, results and grades for both coaches identical to the previous recording."
+  },
+  {
+   "fp": "e61dc8ce6a735528",
+   "from": "ebed9c902c774bd2",
+   "note": "Hot-seat coaches' entries written at hand-over are now completed with the league tables when the season ends; records, results and grades unchanged"
   }
  ],
  "out": [
@@ -28,7 +33,7 @@
       "result": "Eliminated in the first round",
       "grade": "B"
      },
-     "book": "82e79e743969c462"
+     "book": "1bfa4e06ac05f1d4"
     },
     {
      "team": "Rice",
@@ -51,7 +56,7 @@
       "result": "Won the ReliaQuest Bowl",
       "grade": "C+"
      },
-     "book": "310d9daab5e73d40"
+     "book": "aff4fac83f290c08"
     },
     {
      "team": "Rice",
@@ -74,7 +79,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "B"
      },
-     "book": "d6c15a8a7e171bf7"
+     "book": "8868183ab8a6fb21"
     },
     {
      "team": "Rice",

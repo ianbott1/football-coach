@@ -1,0 +1,81 @@
+{
+ "fp": "a2e304f6a00408fd",
+ "log": [
+  {
+   "fp": "a2e304f6a00408fd",
+   "from": null,
+   "note": "first pro recording: Kansas City and Tennessee, three seasons"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Kansas City",
+     "last": {
+      "rec": "15-2",
+      "result": "Lost the Super Bowl",
+      "grade": "A+"
+     },
+     "book": "e5b3cfff29ed3421"
+    },
+    {
+     "team": "Tennessee",
+     "last": {
+      "rec": "4-13",
+      "result": "Losing season",
+      "grade": "C-"
+     },
+     "book": "fa53be424b0e2ccf"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Kansas City",
+     "last": {
+      "rec": "15-2",
+      "result": "Lost the Super Bowl",
+      "grade": "A+"
+     },
+     "book": "56d8632aa53053ec"
+    },
+    {
+     "team": "Tennessee",
+     "last": {
+      "rec": "12-5",
+      "result": "Lost in the wild card round",
+      "grade": "A+"
+     },
+     "book": "f2d4acfd68bfd6e6"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Kansas City",
+     "last": {
+      "rec": "12-5",
+      "result": "Lost in the wild card round",
+      "grade": "A"
+     },
+     "book": "94c67428b5955759"
+    },
+    {
+     "team": "Tennessee",
+     "last": {
+      "rec": "14-3",
+      "result": "SUPER BOWL CHAMPIONS",
+      "grade": "A+"
+     },
+     "book": "f72bd4ac07df4819"
+    }
+   ]
+  }
+ ]
+}

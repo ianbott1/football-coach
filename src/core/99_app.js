@@ -441,6 +441,23 @@ function endSeason(rng,choices,act){
       coordMoves:(off.coordMoves||[]).slice(0,6),
       coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null},
     league:LEAGUE.historyExtras(SEA,off,my)}));
+  // hot seat: the other coaches' entries for this season were written at the
+  // hand-over, before the league had finished its year. Complete them now.
+  (S.coaches||[]).forEach((c,i)=>{
+    if(i===(S.turn||0)||!c.history)return;
+    const e=c.history.find(x=>x.year===SEA.year&&!x.teams); if(!e)return;
+    const t=e.team;
+    Object.assign(e,{program:Math.round(U.program[t]),
+      teams:teamRows, top10:SEA.poll.order().slice(0,10),
+      groupChamps:confChamps, seeds:cfpOf, post:post, pnote:pnote,
+      awards:{mvp:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
+        team:SEA.awardTeam(t)},
+      coaching:{fired:off.fired.indexOf(t)>=0, firedList:off.fired, nFired:off.fired.length,
+        hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
+        coordMoves:(off.coordMoves||[]).slice(0,6),
+        coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
+      league:LEAGUE.historyExtras(SEA,off,t)});
+  });
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={};
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -1419,7 +1436,7 @@ function leagueView(){
 function allTime(t){
   let w=0,l=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
   S.history.forEach(h=>{
-    const r=h.teams[t]; if(!r)return;
+    const r=h.teams&&h.teams[t]; if(!r)return;
     w+=r[0]; l+=r[1]; if(r[2]<best)best=r[2];
     if(h.champion===t)titles++;
     if(h.groupChamps&&Object.values(h.groupChamps).indexOf(t)>=0)confs++;
@@ -1435,7 +1452,7 @@ function allTime(t){
 
 function seasonRowsFor(t){
   return S.history.map(h=>{
-    const r=h.teams[t]||[0,0,999];
+    const r=(h.teams&&h.teams[t])||[0,0,999];
     const seed=h.seeds?h.seeds[t]:null;
     const res=LEAGUE.seasonLine(h,t,r,seed);
     const cc=h.groupChamps?Object.keys(h.groupChamps).find(c=>h.groupChamps[c]===t):null;
@@ -1641,7 +1658,7 @@ function dynastyView(){
   }
   h+=`<div class="grouphead">${LEAGUE.text.champions}</div>`;
   h+=S.history.slice().reverse().map(x=>{
-    const r=x.teams[x.champion];
+    const r=x.teams&&x.teams[x.champion];
     return `<div class="yrow ${x.champion===my?'gold':''}"
       style="border-left:3px solid ${teamInk(x.champion)}">
       <span class="yr">${x.year}</span>
@@ -1651,7 +1668,8 @@ function dynastyView(){
           ?LEAGUE.conf.names[Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)]+" champion"
           :"at-large"):""}</div></div></div>`;
   }).join("");
-  const last=S.history[S.history.length-1];
+  // the latest season with league tables (an old hot-seat entry may lack them)
+  const last=S.history.slice().reverse().find(x=>x.top10)||{year:S.history[S.history.length-1].year,top10:[],teams:{}};
   h+=`<div class="grouphead">Final top 10 &mdash; ${last.year}</div>`;
   h+=last.top10.map((t,i)=>{const r=last.teams[t];
     return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
