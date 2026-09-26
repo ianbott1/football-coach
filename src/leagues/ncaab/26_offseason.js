@@ -1,8 +1,8 @@
-/* ============ offseason: college football ============ */
+/* ============ offseason: college basketball ============ */
 /* Players arrive as freshmen, develop for up to four years, and leave by
-   graduating or declaring early. Programs sign a class every year, spend a
-   budget, drift in prestige, and now and then change conferences. The core
-   asks the league for a starting roster and for one offseason at a time. */
+   graduating or declaring for the NBA draft, the best of them after a single
+   season (the one-and-done). Programs sign a class every year, spend a
+   budget and drift in prestige. Conferences stay as they are. */
 
 function makePlayer(rng,target,cls,posIdx){
   // upperclassmen are closer to their ceiling; freshmen start lower with room to grow
@@ -57,13 +57,19 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
     if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
     if(focus.dev)np.up=focus.dev;
     if(cls===0)np.rec=true;
+    // a five-star: ready to play now, with a ceiling the NBA will come for.
+    // The stronger the program, the likelier it lands one.
+    if(cls===0&&rng.r()<Math.max(0.01,Math.min(0.30,(base-66)/55))){
+      np.r=Math.round(Math.max(np.r,base-3+rng.gauss(0,3))); np.pot=Math.min(99,Math.round(np.r+16+rng.gauss(0,4)));
+      np.star5=true;
+    }
     return np;
   };
   for(let i=0;i<roster.length;i++){
     const pl=roster[i];
     if(!pl)continue;
     if(pl.c>=3){                                   // senior graduates
-      leaving.push({n:pl.n,p:pl.p,r:pl.r,starter:i<POS.length,
+      leaving.push({n:pl.n,p:pl.p,r:pl.r,c:pl.c,pot:pl.pot,starter:i<POS.length,
                     car:pl.car||null, from:pl.from||null, peak:pl.peak||pl.r,
                     idx:i%POS.length});
       if(i<POS.length){
@@ -78,17 +84,20 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
       // development: biggest jumps early, capped by potential, nudged by coaching
       const base=[6.2,4.0,2.2][pl.c];
       const feat=(featured!==undefined&&featured!==null&&featured===i)?3.8:0;
-      const side=(i%POS.length)<5 ? (staff?staff.oc:0) : (staff?staff.dc:0);
+      // everyone plays both ends: both assistants shape a player's development
+      const side=staff?((staff.oc||0)+(staff.dc||0))/2:0;
       let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0),3.0);
       pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
       pl.peak=Math.max(pl.peak||0,pl.r);
       pl.c++;
-      // stars leave early for the draft
+      // the best leave early for the NBA, the very best after one season
       let keepOdds=bud?Math.max(0,1-bud.retention):1;
       if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
-      if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
+      // NBA teams draft ceilings: what he is, and more what he could be
+      const ready=0.45*pl.r+0.55*Math.max(pl.r,pl.pot);
+      if(ready>=77 && rng.r() < Math.min(0.95,((ready-75)/8)*(pl.c===1?1.4:1))*keepOdds){
         const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
-        leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured,
+        leaving.push({n:pl.n,p:pl.p,r:pl.r,c:pl.c-1,pot:pl.pot,early:true,featured:wasFeatured,
                       starter:i<POS.length, car:pl.car||null, from:pl.from||null,
                       peak:pl.peak||pl.r, idx:i%POS.length});
         if(wasFeatured)u.pipeline=(u.pipeline||0)+1;
@@ -152,10 +161,10 @@ function realign(u,rng,year){
 const RECRUIT_FOCUS={
   balanced:{l:"Best available", d:"Take the best player on the board at every spot.",
             pos:null, r:0, pot:0},
-  trenches:{l:"Win the trenches", d:"Load up on the lines, at the cost of the skill spots. Sturdier teams.",
-            pos:["OT","EDGE","DT"], r:8, off:-5, pot:0},
-  skill:   {l:"Skill players",   d:"Quarterbacks and playmakers, at the cost of the lines. Explosive, and streakier.",
-            pos:["QB","RB","WR","WR2"], r:5, off:-5, pot:0},
+  trenches:{l:"Bigs",            d:"Size and rebounding at forward and centre, at the cost of the guards.",
+            pos:["PF","C"], r:8, off:-5, pot:0},
+  skill:   {l:"Guards",          d:"Ball handlers and shooters, at the cost of size inside.",
+            pos:["PG","SG","SF"], r:6, off:-5, pot:0},
   upside:  {l:"Chase upside",    d:"Raw prospects with ceilings. Weaker next year, dangerous in three or four.",
             pos:null, r:-7, pot:14, dev:3.4}
 };
@@ -273,11 +282,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
 
   if(ut&&choices.phil)u.phil=choices.phil;
   u.year++;
-  let realigned=[];
-  if(u.nextRealign&&u.year>=u.nextRealign){
-    realigned=realign(u,rng,u.year);
-    u.nextRealign=u.year+4+rng.int(4);
-  }
+  const realigned=[];                          // conferences stay as they are
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
           churn:churn,classes:classes,early:early,realigned:realigned,
@@ -336,11 +341,11 @@ LEAGUE.goals={
 LEAGUE.historyExtras=function(sea,off,my){
   const bowlOf={}; sea.bowls.forEach(g=>{
     bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
-  return {id:"cfb", bowls:bowlOf,
+  return {id:"ncaab", bowls:bowlOf,
     draft:(off.draft&&off.draft.picks)?off.draft.picks
       .filter(d=>d.team===my||d.draft.round<=1)
       .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
-        early:!!d.early,d:d.draft})):[],
+        early:!!d.early,c:d.c,d:d.draft})):[],
     classes:off.classes||{}, early:off.early||{}, realigned:off.realigned||[]};
 };
 /* a version-1 entry's college-only fields */

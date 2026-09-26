@@ -4,7 +4,7 @@
    in front of everybody. */
 
 
-const DRAFT_ROUNDS=7, PICKS_PER_ROUND=32;
+const DRAFT_ROUNDS=2, PICKS_PER_ROUND=30;     // the NBA draft
 
 /* How good a prospect looks: what he is, plus what he did. */
 function prospectScore(d, rng){
@@ -13,7 +13,10 @@ function prospectScore(d, rng){
   const perYr = prod / Math.max(1, yrs);
   const early = d.early ? 6 : 0;              // leaving early signals confidence
   const start = d.starter ? 4 : 0;
-  return (d.peak||d.r)*0.82 + perYr*0.16 + early + start + rng.gauss(0,9.5);
+  // the NBA drafts ceilings and youth: a freshman's upside beats a senior's résumé
+  const upside=0.45*(d.peak||d.r)+0.55*Math.max(d.r,d.pot||d.r);
+  const youth=[7,4,1.5,0][d.c===undefined?3:Math.max(0,Math.min(3,d.c))];
+  return upside + youth + perYr*0.08 + early*0.5 + start*0.5 + rng.gauss(0,6);
 }
 
 /* Run the draft across every departing player in the country. */
