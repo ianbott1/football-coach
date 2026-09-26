@@ -303,26 +303,24 @@ LEAGUE.offseason={
 /* What a season is judged against, and how it is graded. The grade reads the
    result line from seasonResult. */
 LEAGUE.goals={
-  /* what the job demands, by program strength */
+  /* what the job demands, by program strength: wins over a 30-game season,
+     and par for March (how far into the NCAA tournament the job expects) */
   expectations(p){
-    if(p>=1860)return {w:11,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
-    if(p>=1700)return {w:9,l:"Nine wins and a New Year's bowl. Contend in the conference.",t:"CONTEND"};
-    if(p>=1540)return {w:8,l:"Eight wins and a decent bowl. Beat someone you shouldn't.",t:"PUSH FORWARD"};
-    if(p>=1400)return {w:6,l:"Get to a bowl game. Six wins keeps everyone happy.",t:"BOWL ELIGIBLE"};
-    return {w:4,l:"Show progress. Four wins would be real movement here.",t:"BUILD SOMETHING"};
+    if(p>=1950)return {w:24,par:1.2,l:"A deep March run. The Sweet 16 is the floor.",t:"SECOND WEEKEND"};
+    if(p>=1800)return {w:21,par:0.6,l:"Make the NCAA tournament and win a game when you get there.",t:"WIN IN MARCH"};
+    if(p>=1650)return {w:18,par:0.2,l:"Get into the field. Selection Sunday should be a good day.",t:"DANCE"};
+    if(p>=1480)return {w:15,par:0,l:"A winning season and a real run at the conference title.",t:"CONTEND"};
+    return {w:11,par:0,l:"Show progress. A winning conference record would be real movement.",t:"BUILD SOMETHING"};
   },
   isTitle(result){ return /NATIONAL/i.test(result) },
   firstTitle:"First national title of your tenure.",
   grade(wins,losses,result,exp){
-    let s=(wins-exp.w)*1.0;
-    if(/NATIONAL/i.test(result))s+=5;
-    else if(/title game/i.test(result))s+=3;
-    else if(/semifinal/i.test(result))s+=2.4;
-    else if(/quarterfinal/i.test(result))s+=1.8;
-    else if(/first round|Playoff/i.test(result))s+=1.4;
-    else if(/^Won the/.test(result))s+=0.8;
-    else if(/^Lost the/.test(result))s+=0.2;
-    else if(/No bowl|Losing season/.test(result))s-=(exp.w>=6?1.0:0.2);
+    const march=/NATIONAL/i.test(result)?5:/national championship/i.test(result)?3.6:/Final Four/.test(result)?3:
+      /Elite Eight/.test(result)?2.3:/Sweet 16/.test(result)?1.6:/Second Round/.test(result)?0.9:
+      /First Round/.test(result)?0.4:/Opening Round/.test(result)?0.2:/Made the NCAA/.test(result)?0.3:
+      /^Won the/.test(result)?0.8:-(exp.par>=0.2?1.0:0);
+    let s=(wins-exp.w)*0.32+march-(exp.par||0);
+    if(wins<losses)s-=(exp.w>=15?1.0:0.2);
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
             s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
     const l=s>=2.6?"Far beyond what anyone expected.":
