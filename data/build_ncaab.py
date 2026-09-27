@@ -45,6 +45,39 @@ KNOWN={"Gonzaga":"#041E42","Villanova":"#00205B","Creighton":"#005CA9","Xavier":
  "ETSU":"#041E42","Mercer":"#F76800","Hampton":"#0033A0","Towson":"#FFBB00","William & Mary":"#115740","Elon":"#73000A",
  "Campbell":"#F58025","Monmouth":"#002245","Stony Brook":"#990000","North Carolina A&T":"#004684","Detroit Mercy":"#A6192E",
  "Robert Morris":"#14234B","Green Bay":"#046A38","Purdue Fort Wayne":"#0B2341","Youngstown State":"#CE1141","IU Indy":"#990000"}
+# Further colours from ncaa-team-colors by Jacob (ISC licence; github.com/glidej/
+# ncaa-team-colors; data/ncaa-team-colors.json, notice in ncaa-team-colors.NOTICE).
+# Its colours are listed most primary first; we take the first that isn't
+# white or grey. Matched by school and nickname; these by hand
+# (older names: Houston Baptist is now Houston Christian, UMKC is Kansas City).
+import colorsys as _cs
+_DS=json.load(open('data/ncaa-team-colors.json'))
+_norm=lambda x:re.sub(r'[^a-z0-9]','',x.lower().replace('&','and').replace('state','st').replace('saint','st'))
+_IDX={_norm(x['name']):x for x in _DS}; _BYNAME={x['name']:x for x in _DS}
+DS_NAME={"Bryant":"Bryant University Bulldogs","CSU Bakersfield":"Cal State Bakersfield Roadrunners",
+ "CSUN":"Cal State Northridge Matadors","UMass":"Massachusetts Minutemen","NC Central":"North Carolina Central Eagles",
+ "Central Connecticut":"Central Connecticut State Blue Devils","UT Martin":"Tennessee-Martin Skyhawks",
+ "Loyola Maryland":"Loyola (MD) Greyhounds","The Citadel":"Citadel Bulldogs","VMI":"Virginia Military Institute Keydets",
+ "Houston Christian":"Houston Baptist Huskies","Nicholls":"Nicholls State Colonels","Kansas City":"UMKC Kangaroos",
+ "UT Arlington":"Texas-Arlington Mavericks"}
+# not in the dataset (most joined Division I after it was made): stand-in colours
+STILL_STANDIN=["UMass Lowell","West Florida","Utah Tech","Merrimack","Le Moyne","Mercyhurst","New Haven","Stonehill",
+ "Lindenwood","Southern Indiana","East Texas A&M","Incarnate Word","UTRGV","Omaha","St. Thomas","North Alabama",
+ "Tarleton State","West Georgia"]
+def _primary(cols):
+    # most primary first, but the list often leads with black (logo outlines):
+    # black only if nothing else is left
+    black=None
+    for c in cols:
+        r,g,b=[int(c[i:i+2],16)/255 for i in (1,3,5)]
+        h,l,sat=_cs.rgb_to_hls(r,g,b)
+        if l>0.85 or (sat<0.15 and l>0.35): continue      # white, silver, grey
+        if l<0.16: black=black or c; continue
+        return c.upper()
+    return black.upper() if black else None
+def dataset_colour(n,nick):
+    x=_BYNAME.get(DS_NAME[n]) if n in DS_NAME else (_IDX.get(_norm(n+' '+nick)) or _IDX.get(_norm(n)+_norm(nick)))
+    return _primary(x['colors']) if x else None
 def fallback(name,conf,i):
     # a readable colour from the conference's own hue, varied by school
     h=(sum(map(ord,conf))%360)/360.0; h=(h+i*0.137)%1.0
@@ -55,7 +88,7 @@ for conf,lst in CONF.items():
     for i,(n,nick,apps,ff,titles,yrs) in enumerate(lst):
         recent=len([y for y in yrs.split() if int(y)>=21]); older=len([y for y in yrs.split() if int(y)<21])
         pedigree=recent*24+older*9+min(apps,40)*1.6+ff*5+titles*7
-        col=CFB.get(ALIAS.get(n,n)) or CFB.get(n) or KNOWN.get(n)
+        col=CFB.get(ALIAS.get(n,n)) or CFB.get(n) or KNOWN.get(n) or dataset_colour(n,nick)
         if not col: unknown+=1; col=fallback(n,conf,i)
         teams.append({"n":n,"nick":nick,"conf":conf,"lvl":LEVEL[conf],"ped":round(pedigree),"c":col,
                       "apps":apps,"ff":ff,"titles":titles,"yrs":yrs,"trans":n in TRANSITIONING})

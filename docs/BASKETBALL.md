@@ -14,13 +14,17 @@ packaged.
    in-game calls, advisors, court view. Measured on its own
    (test/bb-engine.js, test/bb-plans.js, test/bb-calls.js). It supplies every
    name the core uses from a sport (checked mechanically).
-3. College basketball league: real schools and conferences (fictional
-   players), non-conference and conference schedule, conference tournaments
-   with automatic bids, Selection Sunday (68 teams, First Four, four regions,
-   seeds 1-16), the bracket to a champion, poll, awards, recruiting with
-   one-and-done early entry.
-4. Screens: the bracket, a Selection Sunday reveal, the court view.
-5. Tests, balance, polish.
+3. College basketball league (done): all 365 Division I schools in their
+   2026-27 conferences (fictional players), non-conference and conference
+   schedule, conference tournaments with automatic bids, Selection Sunday
+   and the 76-team tournament (the 2027 format, with the Opening Round),
+   poll with Bracketology, awards (Player of the Year, All-America),
+   recruiting with five-stars and one-and-dones, the NBA draft.
+4. Screens (done): the drawn bracket, the Selection Sunday reveal, the court.
+5. Tests and balance (done): golden, hot seat, bracket rules, screens,
+   calibration (season one) and March over the long run (test/bb-march.js).
+   Known: 4 v 13 and 7 v 10 upsets a few points more common than history;
+   18 small schools still use a stand-in colour (not in the colour dataset).
 
 ## The sport interface
 
@@ -45,7 +49,7 @@ Everything the core and a league use from a sport, by name:
       driveScript, liveView, liveCallView, watchView, startWatch
     (playback SPEEDS are the core's.)
 
-## Calibration targets (real Division I men's basketball)
+## Calibration (real Division I men's basketball, approximate)
 
     possessions per team      ~68-70
     points per team per game  ~71-73

@@ -1,5 +1,5 @@
 {
- "fp": "ff019d81fa639aec",
+ "fp": "7ba950b899800d3d",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -40,6 +40,11 @@
    "fp": "ff019d81fa639aec",
    "from": "043e70a98a2b983a",
    "note": "Wider program spread (1.45), power rating in the committee resume, at-large teams seeded no lower than the 11 line"
+  },
+  {
+   "fp": "7ba950b899800d3d",
+   "from": "ff019d81fa639aec",
+   "note": "Colours for 78 more schools from ncaa-team-colors (ISC); 18 stand-ins remain"
   }
  ],
  "result": {
@@ -54,7 +59,7 @@
     "heis": "63c51af92f20ba26",
     "history": "6f7fb539d707c8c1",
     "universe": "5ee6a4591a98f964",
-    "screens": "737b63d061af6e74"
+    "screens": "5bf347d0ea5e52ad"
    },
    {
     "year": 2027,
@@ -66,7 +71,7 @@
     "heis": "9fb0ee62c035be86",
     "history": "1e358d67b6b7c373",
     "universe": "ddc3ce114d7c262a",
-    "screens": "4e70fcc5b897520c"
+    "screens": "8c88e0007a73eb19"
    }
   ],
   "Coppin State#2024": [
@@ -80,7 +85,7 @@
     "heis": "1259105979116d86",
     "history": "5906a3265ce7068a",
     "universe": "9c8cc107b84d4643",
-    "screens": "7bc26925608c479e"
+    "screens": "49a30501f47be0d0"
    },
    {
     "year": 2027,
@@ -92,7 +97,7 @@
     "heis": "68a5b6ca38cb06fc",
     "history": "a53aaa6b7bdb2fd0",
     "universe": "72695bdc126150e5",
-    "screens": "3572dc93b6e819f0"
+    "screens": "560ae16b9d34ca42"
    }
   ],
   "Gonzaga#777": [
@@ -106,7 +111,7 @@
     "heis": "c30dde17209a314e",
     "history": "59a34cf0ea473586",
     "universe": "54812a8e4696c313",
-    "screens": "4cd713a8ac38a2c8"
+    "screens": "9ac754d80d6dc493"
    },
    {
     "year": 2027,
@@ -118,7 +123,7 @@
     "heis": "e78a5fec850eed16",
     "history": "e0b0f57f3b6be189",
     "universe": "eefe44c5f42b4f00",
-    "screens": "ca739ae978f61921"
+    "screens": "6610740bafd743aa"
    }
   ],
   "schedules#60": [
