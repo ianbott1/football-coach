@@ -1,5 +1,5 @@
 {
- "fp": "68fc28832b0af0f9",
+ "fp": "4f14f7d0051b44e7",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -80,6 +80,11 @@
    "fp": "68fc28832b0af0f9",
    "from": "e9eb89cd0bac3737",
    "note": "The transfer portal; basketball assistant wording on the offseason screen"
+  },
+  {
+   "fp": "4f14f7d0051b44e7",
+   "from": "68fc28832b0af0f9",
+   "note": "Sim game: the button's new name, and it's now in the desktop side panel; team search counts the league's own teams; a skipped game's remaining calls take the neutral option"
   }
  ],
  "result": {
@@ -94,7 +99,7 @@
     "heis": "63c51af92f20ba26",
     "history": "80e202bb52a03379",
     "universe": "41857a67b0f011d5",
-    "screens": "25f64c7a0f9cca86"
+    "screens": "ceb6ce2780895719"
    },
    {
     "year": 2027,
@@ -106,7 +111,7 @@
     "heis": "d2fc886b06536da3",
     "history": "7629e08546fd2110",
     "universe": "ce43b011b2439043",
-    "screens": "e43589335204fd9d"
+    "screens": "24f83d736d0e312b"
    }
   ],
   "Coppin State#2024": [
@@ -120,7 +125,7 @@
     "heis": "1259105979116d86",
     "history": "6964eb5b2c02a27d",
     "universe": "72554d8e5babe4d8",
-    "screens": "e1396a95cead81e5"
+    "screens": "0c4f9943cba339b8"
    },
    {
     "year": 2027,
@@ -132,7 +137,7 @@
     "heis": "aef0cc1da07e25cd",
     "history": "d7f8450ca98da18a",
     "universe": "78fed89a9b63e3ef",
-    "screens": "9265bae209f46a27"
+    "screens": "e47f941b7cd652a6"
    }
   ],
   "Gonzaga#777": [
@@ -146,7 +151,7 @@
     "heis": "c30dde17209a314e",
     "history": "57c76cfb71488fbb",
     "universe": "1377641d18d80969",
-    "screens": "72bf086694b2448f"
+    "screens": "35630b5b749810a2"
    },
    {
     "year": 2027,
@@ -158,7 +163,7 @@
     "heis": "a1e27e7b5f453d11",
     "history": "fcbb22b4f653421a",
     "universe": "15e38526bc8f75ba",
-    "screens": "953a3a0c43dc9ebf"
+    "screens": "1b09dc83426646f8"
    }
   ],
   "schedules#60": [

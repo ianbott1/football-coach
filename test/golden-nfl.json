@@ -1,5 +1,5 @@
 {
- "fp": "52932854038fc1b8",
+ "fp": "24e3effd0a7dfcfd",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -85,6 +85,11 @@
    "fp": "52932854038fc1b8",
    "from": "81ba0e76850bb387",
    "note": "A Sim it button beside Play for your game (all games); basketball: every team in its conference tournament (ACC and Big Ten 15, Ivy 4) on a 16-slot bracket; clearer NBA draft wording"
+  },
+  {
+   "fp": "24e3effd0a7dfcfd",
+   "from": "52932854038fc1b8",
+   "note": "Sim game: the button's new name, and it's now in the desktop side panel; team search counts the league's own teams; a skipped game's remaining calls take the neutral option"
   }
  ],
  "result": {
@@ -99,7 +104,7 @@
     "heis": "d0f3e7cc2ab4d03b",
     "history": "af399a4f094fa72e",
     "universe": "5c25c8624a8c0f83",
-    "screens": "3edd530426239dfa"
+    "screens": "1775127f99b2f070"
    },
    {
     "year": 2027,
@@ -111,7 +116,7 @@
     "heis": "030c6a943c4ef77c",
     "history": "a1b3e7e6b29866fd",
     "universe": "2495f443a426fa85",
-    "screens": "1106dda958eacb6a"
+    "screens": "b825b448b91841fa"
    },
    {
     "year": 2028,
@@ -123,7 +128,7 @@
     "heis": "2cefdc7752a1647a",
     "history": "6bcceec1fe2e52ce",
     "universe": "039ac77486fe7e4e",
-    "screens": "51a13ba7d38061cf"
+    "screens": "4dc692a70ab3c597"
    },
    {
     "year": 2029,
@@ -135,7 +140,7 @@
     "heis": "68a7a6aec8e7a510",
     "history": "59302cfd5fa71ce7",
     "universe": "74997d040a4ec4b9",
-    "screens": "bac0a4eef8ffd1e0"
+    "screens": "d8f6fb2d252410f3"
    }
   ],
   "Tennessee#2024": [
@@ -149,7 +154,7 @@
     "heis": "d3b2c11564b8f11f",
     "history": "5cff5b4cb88489ea",
     "universe": "32746977d15a3d1a",
-    "screens": "aa892b99c6094e14"
+    "screens": "e5c66d8f33eb3811"
    },
    {
     "year": 2027,
@@ -161,7 +166,7 @@
     "heis": "479e72021dd706cc",
     "history": "5118ec1f5481b37f",
     "universe": "f63fd1bfdf64a2d2",
-    "screens": "eda3f439970b2d16"
+    "screens": "eafd4361289f7467"
    },
    {
     "year": 2028,
@@ -173,7 +178,7 @@
     "heis": "2a82b1b1d72919bf",
     "history": "6e014f5c133dbc46",
     "universe": "4574b18e2ea458cc",
-    "screens": "193e1c0ea3c6d38f"
+    "screens": "b6661fe4f2245760"
    },
    {
     "year": 2029,
@@ -185,7 +190,7 @@
     "heis": "a38a1f22fb7e9ffd",
     "history": "9c6d36dd93aa8565",
     "universe": "37006926700412dd",
-    "screens": "b1a5521a153b3422"
+    "screens": "bd043f2fd45197f3"
    }
   ],
   "Detroit#777": [
@@ -199,7 +204,7 @@
     "heis": "c63d061e72508bed",
     "history": "48b773ce295ab16d",
     "universe": "d17abeea6960c98a",
-    "screens": "15cda21f0b2bf9d2"
+    "screens": "b33457d86a96910f"
    },
    {
     "year": 2027,
@@ -211,7 +216,7 @@
     "heis": "b3a40c4427046738",
     "history": "e3b1730283b232fe",
     "universe": "a19585553f8f98c8",
-    "screens": "411fcc82f27ae232"
+    "screens": "5cc56e9e01b93b44"
    },
    {
     "year": 2028,
@@ -223,7 +228,7 @@
     "heis": "f0f9ceac579ecf05",
     "history": "82ebef88dc24be12",
     "universe": "3b85d9012d6a81b9",
-    "screens": "eb5885f1ea0a5091"
+    "screens": "1299788a5ea2cc28"
    }
   ],
   "NY Giants#31337": [
@@ -237,7 +242,7 @@
     "heis": "08b9b4b2da4cda4f",
     "history": "a492d3b57fc7d48e",
     "universe": "f4e45438d149aa9e",
-    "screens": "328f0e24663f8778"
+    "screens": "1a6c9aa683e4a3e0"
    },
    {
     "year": 2027,
@@ -249,7 +254,7 @@
     "heis": "fb372bf7b91b98b6",
     "history": "124131e9caa103f7",
     "universe": "f8627e6e1fe93699",
-    "screens": "f6fa89691ed545cb"
+    "screens": "727fbca0bfb4f019"
    },
    {
     "year": 2028,
@@ -261,7 +266,7 @@
     "heis": "7ce85beb8ffe07aa",
     "history": "049f24f585357e98",
     "universe": "8bbf9dbf3a5e1f4c",
-    "screens": "2e6139e1e952e5c6"
+    "screens": "eb09b248745576d6"
    }
   ],
   "schedules#60": [
