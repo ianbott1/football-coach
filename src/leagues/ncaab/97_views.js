@@ -12,7 +12,17 @@ function pollView(){
     if(pollTab==="cfp")return bar+bracketology();
     return bar+pollRows(prev,cur);
   }
-  return `<div class="dateline"><h2>Top 25</h2><span>${SEA.year}</span></div>`+pollRows(prev,cur);
+  let h=`<div class="dateline"><h2>Top 25</h2><span>${SEA.year}</span></div>`+pollRows(prev,cur);
+  if(SEA.step>=LEAGUE.weeks)h+=allAmericaHTML();       // once the regular season is over
+  return h;
+}
+function allAmericaHTML(){
+  const A=SEA.allAmerica();
+  const row=(x,i)=>`<div class="prow ${x.t===S.myTeam?'mine':''}" style="--tc:${teamInk(x.t)}"><span class="cbar"></span>
+    <div class="pnum">${x.p}</div><div class="pmain"><div class="pname">${esc(x.n)}${i===0?" &middot; <b>Player of the Year</b>":""}</div>
+    <div class="psub">${esc(x.t)} &middot; ${esc(classTag(x.c))} &middot; ${esc(x.line)}</div></div></div>`;
+  return `<div class="grouphead">All-America first team</div>`+A.first.map(row).join("")+
+    `<div class="grouphead">Second team</div>`+A.second.map((x,i)=>row(x,i+1)).join("");
 }
 function pollRows(prev,cur){
   const rows=SEA.top25(null);

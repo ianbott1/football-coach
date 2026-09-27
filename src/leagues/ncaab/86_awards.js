@@ -1,6 +1,7 @@
-/* ============ awards: college football ============ */
-/* The Heisman race and the all-conference teams. The core calls _award after
-   every week's games; mvpRace(n) is the award race, best first. */
+/* ============ awards: college basketball ============ */
+/* National Player of the Year (the award race), the All-America teams (the
+   country's best, positions aside) and the all-conference teams. The core
+   calls _award after every game date; mvpRace(n) is the award race. */
 extendSeason({
   allConfAll(){
     const out={};
@@ -31,8 +32,20 @@ extendSeason({
         prod:pl.prod||0,line:statLine(pl.p,pl.st2),
         rec:this.rec[t][0]+"-"+this.rec[t][1]});
     }));
-    all.sort((a,b)=>b.prod-a.prod);
+    // measured against the position: a player's production over the typical
+    // production of his position's top 20, so a dominant centre and a dominant
+    // point guard compete on how dominant they are, not on whose numbers run bigger
+    const scale={};
+    POS.forEach(P=>{const top=all.filter(x=>x.p===P.p).map(x=>x.prod).sort((a,b)=>b-a).slice(0,20);
+      scale[P.p]=top.length?top.reduce((a,b)=>a+b,0)/top.length:1});
+    all.forEach(x=>x.score=x.prod/Math.max(1e-9,scale[x.p]));
+    all.sort((a,b)=>b.score-a.score);
     return all.slice(0,n||10);
+  },
+  /* All-America: first and second teams, five each, the best in the country */
+  allAmerica(){
+    const r=this.mvpRace(10);
+    return {first:r.slice(0,5), second:r.slice(5,10)};
   },
   allConference(conf){
     if(!this.roster)return [];

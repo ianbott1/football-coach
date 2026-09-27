@@ -1,5 +1,5 @@
 {
- "fp": "ae9401245af8df95",
+ "fp": "2a6e17cadbd9f048",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -20,6 +20,11 @@
    "fp": "ae9401245af8df95",
    "from": "ae9401245af8df95",
    "note": "Rankings tab crash fixed (pollTab); basketball season lines, firing joke, rivalry names"
+  },
+  {
+   "fp": "2a6e17cadbd9f048",
+   "from": "ae9401245af8df95",
+   "note": "All-America teams on the Rankings tab; awards compare each player with his own position"
   }
  ],
  "out": [
@@ -33,7 +38,7 @@
       "result": "Lost in the Second Round",
       "grade": "B+"
      },
-     "book": "077aa4905c775a57"
+     "book": "4cc5198e0d4bd19e"
     },
     {
      "team": "North Carolina",
@@ -42,7 +47,7 @@
       "result": "Lost in the Second Round",
       "grade": "A"
      },
-     "book": "7f508a79ecfdd35b"
+     "book": "42a6580c8e5de95c"
     }
    ]
   },
@@ -56,7 +61,7 @@
       "result": "Lost in the Elite Eight",
       "grade": "A-"
      },
-     "book": "ef022a5e3097ab0e"
+     "book": "76ce30074580870b"
     },
     {
      "team": "North Carolina",
@@ -65,7 +70,7 @@
       "result": "Lost in the First Round",
       "grade": "C+"
      },
-     "book": "21ae56139ab7b278"
+     "book": "b2c32038dcb33918"
     }
    ]
   },
@@ -79,7 +84,7 @@
       "result": "Lost in the First Round",
       "grade": "C+"
      },
-     "book": "7464e55284240869"
+     "book": "8b015ad2c2acd929"
     },
     {
      "team": "North Carolina",
@@ -88,7 +93,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "f30d292be8b03fa9"
+     "book": "8ca8ca811ce1f4d3"
     }
    ]
   }

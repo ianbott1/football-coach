@@ -87,5 +87,6 @@ function statLine(pos,s){
 /* award production, built from what a player actually did */
 function statProd(pos,s){
   if(!s||!s.g)return 0;
-  return s.pts*0.9+s.reb*0.8+s.ast*1.1+s.stl*1.8+s.blk*1.6;
+  // a rebound or a block counts nearly as much as an assist: bigs win awards too
+  return s.pts*0.9+s.reb*1.05+s.ast*0.95+s.stl*1.8+s.blk*2.0;
 }

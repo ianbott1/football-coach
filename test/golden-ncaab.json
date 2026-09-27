@@ -1,5 +1,5 @@
 {
- "fp": "2379fc1f827b67d7",
+ "fp": "043e70a98a2b983a",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -30,6 +30,11 @@
    "fp": "2379fc1f827b67d7",
    "from": "2379fc1f827b67d7",
    "note": "Selection Sunday reveal on the field tab"
+  },
+  {
+   "fp": "043e70a98a2b983a",
+   "from": "2379fc1f827b67d7",
+   "note": "All-America teams on the Rankings tab; awards compare each player with his own position"
   }
  ],
  "result": {
@@ -41,10 +46,10 @@
     "champion": "Ohio State",
     "rec": "3bfa854ca0b4c087",
     "poll": "ded7af6655f4d72e",
-    "heis": "e24c4a71619fe428",
-    "history": "e4c48012e9e2f6d7",
-    "universe": "c8ad085e55538d3a",
-    "screens": "46b800be4f02376f"
+    "heis": "2e52db4eb8ed8291",
+    "history": "aeebd59370367f32",
+    "universe": "bf4dd67c5900e187",
+    "screens": "4a26c987287152ac"
    },
    {
     "year": 2027,
@@ -53,10 +58,10 @@
     "champion": "Houston",
     "rec": "b7274a6ba72c3348",
     "poll": "63bd357dc3d06a6f",
-    "heis": "22ac739efab63b8a",
-    "history": "dc3ff30a111a6de4",
-    "universe": "c206cbecd9799294",
-    "screens": "4e6496120bce735f"
+    "heis": "4913bb146a7ada27",
+    "history": "42b54eb8d30c26ce",
+    "universe": "35fc22e2b11733aa",
+    "screens": "de5d218551e6567c"
    }
   ],
   "Coppin State#2024": [
@@ -67,10 +72,10 @@
     "champion": "Michigan",
     "rec": "5b9f123e02571906",
     "poll": "545c5d094030259b",
-    "heis": "0989698ffde423bf",
-    "history": "39df52cfdeba13aa",
-    "universe": "0f2fa472cf0228f0",
-    "screens": "153203a642cda5b9"
+    "heis": "49e0b429e0859d7d",
+    "history": "a2768506adf3a01f",
+    "universe": "6a240aefb7e42308",
+    "screens": "51ec654ad55b0944"
    },
    {
     "year": 2027,
@@ -79,10 +84,10 @@
     "champion": "Florida",
     "rec": "707fd5690babb2b4",
     "poll": "f56500a79b7009a9",
-    "heis": "a1dc4895a4b38cb0",
-    "history": "1c19070034e56852",
-    "universe": "fffca938599fe17a",
-    "screens": "f550bf96749fd184"
+    "heis": "8ce9e13550810fa0",
+    "history": "2a63d0ac8ada8edf",
+    "universe": "075787693dc8d131",
+    "screens": "a1b116046c089e29"
    }
   ],
   "Gonzaga#777": [
@@ -93,10 +98,10 @@
     "champion": "Missouri",
     "rec": "f17089fa7abe3f0b",
     "poll": "9ed3e3486cd70b24",
-    "heis": "23e205f1867fa71e",
-    "history": "b0d1707ea45af6dc",
-    "universe": "19b1cca78df31ffc",
-    "screens": "6e47c051aea8aedd"
+    "heis": "0dc240136db8be8e",
+    "history": "649ed15dc0f5890c",
+    "universe": "2c8d929c559a0c18",
+    "screens": "9aef031c94f0c47d"
    },
    {
     "year": 2027,
@@ -105,10 +110,10 @@
     "champion": "Arizona State",
     "rec": "28f66b0cfd568daf",
     "poll": "fee6b9d216878ec1",
-    "heis": "df6c1bf04c8b1e53",
-    "history": "2c2ac8bf7bdc119b",
-    "universe": "d5a112c6b7061e65",
-    "screens": "6cf12d13c7873a80"
+    "heis": "5c88064ce6cf852a",
+    "history": "713509ff1c9cee9b",
+    "universe": "86a7accbdeffff8a",
+    "screens": "a9f4d4f10ad24328"
    }
   ],
   "schedules#60": [
