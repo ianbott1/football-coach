@@ -11,7 +11,7 @@
    view shows one at a time (the sport's "drives"). */
 const DRIVES_PER_TEAM = 4;                    // segments per half; 8 in a game
 const SEGS = 8;
-const BB = {
+const BB_COLLEGE = {
   pace: 69,             // possessions per team per game, both teams balanced
   paceSd: 3.0,
   gapPerPoss: 0.0004,   // rating gap (Elo) -> make-rate edge (calibrated: test/bb-calibrate.js)
@@ -25,6 +25,10 @@ const BB = {
   garbage: 13,          // a lead this big after 25 minutes: the benches come in
   benchPull: 0.05       // the bench's make-rate cost to the side that's ahead
 };
+/* a league can set its own game (LEAGUE.tuning.bb): the pros play 48
+   minutes in quarters, faster, with better shooting */
+const BB = Object.assign({}, BB_COLLEGE,
+  (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.bb)||{});
 /* Calibrated on its own (test/bb-engine.js: 20,000 games, league spread sd
    160 Elo, home court 105 Elo): 72.8 points and 69 possessions a team, mean
    margin 11.9, game noise 12.7, home teams 59.2% (2.7 points) between equal
@@ -98,9 +102,9 @@ function halfCall(lead){
 }
 function lateCall(lead){
   return lead<0
-    ? {k:"chase",h:`Down ${-lead}, four minutes left`,b:"Throw on the full-court press, or play it straight? The press forces turnovers and gives up easy baskets.",
+    ? {k:"chase",h:`Down ${-lead}, ${BB.lateLeft||"four"} minutes left`,b:"Throw on the full-court press, or play it straight? The press forces turnovers and gives up easy baskets.",
        opts:[["press","Full-court press"],["normal","Play it straight"]]}
-    : {k:"protect",h:`Up ${lead}, four minutes left`,b:"Milk the clock, or keep attacking?",
+    : {k:"protect",h:`Up ${lead}, ${BB.lateLeft||"four"} minutes left`,b:"Milk the clock, or keep attacking?",
        opts:[["sit","Milk the clock"],["keep","Keep attacking"]]};
 }
 function lastCall(){
