@@ -107,7 +107,8 @@ function bracketView(){
     return h;
   }
   if(postTab==="field"){
-    h+=`<div class="note">${SEA.field.length} teams. ${SEA.firstOut.length?"First four out: "+SEA.firstOut.map(esc).join(", ")+".":""}</div>`;
+    h+=selectionReveal();
+    h+=`<div class="grouphead">The field by region</div>`;
     REGIONS.forEach(r=>{
       h+=`<div class="grouphead">${r}</div>`;
       for(let line=1;line<=16;line++){
@@ -132,6 +133,38 @@ function bracketView(){
   }
   return h;
 }
+/* ---- Selection Sunday ---- */
+/* your fate first, then the field: the 1 seeds, the bubble, bids by conference */
+function selectionReveal(){
+  const my=S.myTeam, sd=SEA.seeds[my], F=SEA.field, al=F.filter(t=>SEA.notes[t]==="At-large");
+  const lastIn=al.slice(-4), og=(SEA.openGames||[]).find(o=>o.a===my||o.b===my);
+  let card;
+  if(F.indexOf(my)>=0){
+    const reg=SEA.region[my];
+    let first="";
+    if(og)first=`First the Opening Round in ${og.line<=12?"Dayton":"the second Opening Round site"}: ${esc(og.a===my?og.b:og.a)}. Win, and you're the ${og.line} seed in the ${reg}.`;
+    else{const pr=R64_PAIRS.find(p=>p[0]===sd||p[1]===sd), other=pr[0]===sd?pr[1]:pr[0];
+      const opp=SEA.bracket[reg][other], oo=(SEA.openGames||[]).find(o=>o.region===reg&&o.line===other);
+      first=`First round: ${oo&&!(SEA.rounds.open||[]).length?"the winner of "+esc(oo.a)+" and "+esc(oo.b):esc(opp)} (${other} seed).`}
+    card=`<div class="selcard in"><div class="selhead">You're in</div>
+      <div class="selbig">${sd} seed &middot; ${reg}</div>
+      <div class="selsub">${esc(SEA.notes[my])}${lastIn.indexOf(my)>=0?" &middot; among the last four in":""}. ${first}</div></div>`;
+  }else{
+    const close=SEA.firstOut.indexOf(my)>=0;
+    card=`<div class="selcard out"><div class="selhead">${close?"So close":"Not this year"}</div>
+      <div class="selbig">${close?"First four out":"Not selected"}</div>
+      <div class="selsub">${SEA.rec[my][0]}-${SEA.rec[my][1]}. ${close?"One more good win would have done it.":"Win the conference tournament next year and you're in regardless."}</div></div>`;
+  }
+  const ones=REGIONS.map(r=>SEA.bracket[r][1]);
+  const byConf={}; F.forEach(t=>byConf[CONF[t]]=(byConf[CONF[t]]||0)+1);
+  const multi=Object.keys(byConf).filter(c=>byConf[c]>1).sort((a,b)=>byConf[b]-byConf[a]);
+  return card+
+    `<div class="grouphead">The No. 1 seeds</div>`+ones.map((t,i)=>`<div class="brow ${t===my?'mine':''}"><span class="seed">1</span> <b>${esc(t)}</b> &middot; ${REGIONS[i]} &middot; ${SEA.rec[t][0]}-${SEA.rec[t][1]}</div>`).join("")+
+    `<div class="grouphead">Last four in</div>`+lastIn.map(t=>`<div class="brow ${t===my?'mine':''}">${esc(t)} &middot; ${SEA.rec[t][0]}-${SEA.rec[t][1]} &middot; ${esc(CONF[t])}</div>`).join("")+
+    `<div class="grouphead">First four out</div>`+SEA.firstOut.map(t=>`<div class="brow ${t===my?'mine':''}">${esc(t)} &middot; ${SEA.rec[t][0]}-${SEA.rec[t][1]} &middot; ${esc(CONF[t])}</div>`).join("")+
+    `<div class="grouphead">Bids by conference</div><div class="note">${multi.map(c=>`${esc(c)} ${byConf[c]}`).join(" &middot; ")}; ${Object.keys(byConf).length-multi.length} conferences with one.</div>`;
+}
+
 /* ---- the drawn bracket ---- */
 let bracketRegion="East";
 /* a game box: two lines, seed and team and score; the winner in bold */
