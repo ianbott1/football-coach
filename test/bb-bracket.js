@@ -54,6 +54,22 @@ for(let s=0;s<N;s++){
     if(a!=='open')ok([...W].every(t=>next.indexOf(t)>=0), `${y}: a ${a} winner missing from the ${b}`);
   });
   ok((E.rounds.final||[]).length===1&&E.champion===E.rounds.final[0].winner, `${y}: the champion isn't the final's winner`);
+  // conference tournaments: a fixed bracket, one champion each
+  confs.forEach(c=>{
+    const T=E.ct[c], n=T.seeds.length, gs=E.ctGames[c], R=T.res;
+    const fin=R.ct4&&R.ct4[0]; const champ=fin&&fin.winner!==undefined?fin.winner:fin;
+    ok(!!champ&&E.champs[c]===champ, `${y} ${c}: champion isn't the final's winner`);
+    ['ct1','ct2','ct3','ct4'].forEach(r=>{const ts=[].concat(...(R[r]||[]).filter(g=>g&&g.home).map(g=>[g.home,g.away]));
+      ok(new Set(ts).size===ts.length, `${y} ${c} ${r}: a team plays twice`)});
+    if(n===12)ok((R.ct1||[]).length===4&&(R.ct1||[]).every(g=>g.hseed>=5&&g.aseed>=5&&g.hseed+g.aseed===17), `${y} ${c}: first round isn't 5-12, 6-11, 7-10, 8-9`);
+    const seen=new Set([].concat(...gs.map(g=>[g.home,g.away])));
+    if(n>=4)[0,1,2,3].forEach(i=>ok(!(R.ct1||[]).some(g=>g.home===T.seeds[i]||g.away===T.seeds[i]), `${y} ${c}: the ${i+1} seed played in the first round`));
+    // only winners go on
+    [['ct1','ct2'],['ct2','ct3'],['ct3','ct4']].forEach(([a,b])=>{
+      const losers=new Set((R[a]||[]).filter(g=>g&&g.loser).map(g=>g.loser));
+      const next=[].concat(...(R[b]||[]).filter(g=>g&&g.home).map(g=>[g.home,g.away]));
+      ok(next.every(t=>!losers.has(t)), `${y} ${c}: a ${a} loser plays in ${b}`)});
+  });
 }
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed (${N} seasons)`:`MATCH all ${checks} checks (${N} seasons)`);
 process.exit(bad?1:0);

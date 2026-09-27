@@ -69,43 +69,43 @@ extendSeason({
       const px=cr[x][0]/Math.max(1,cr[x][0]+cr[x][1]), py=cr[y][0]/Math.max(1,cr[y][0]+cr[y][1]);
       return py-px||cr[y][0]-cr[x][0]||this.elo[y]-this.elo[x]});
   },
-  /* the conference tournament brackets, set when the regular season ends:
-     seeds by conference record; 12 teams at most; the top 4 wait a round */
+  /* The conference tournament brackets, set when the regular season ends:
+     seeds by conference record, 12 teams at most, a fixed bracket. The
+     quarterfinal slots run 1-8, 4-5, 3-6, 2-7; seeds 9-12 (where there are
+     that many) play 8-5 for those slots in a first round; a slot with nobody
+     in it is a bye. */
   _ctSetup(){
     LEAGUE.conf.order.forEach(c=>{
       const s=this.confRank(c).slice(0,12);
-      this.ct[c]={seeds:s, alive:s.slice()};
+      this.ct[c]={seeds:s, res:{}};
       this.ctGames[c]=[];
     });
   },
-  /* who plays whom in this conference-tournament round */
   _ctPairs(c,round){
-    const T=this.ct[c], s=T.seeds, n=s.length, idx=t=>s.indexOf(t);
-    if(round==="ct1"){
-      if(n<=8)return [];                           // eight or fewer: straight to the quarterfinals
-      const extra=n-8, out=[];                     // seeds 9..n play seeds 8-extra+1..8
-      for(let k=0;k<extra;k++)out.push([s[7-k],s[8+k]]);
-      return out;
-    }
-    const alive=T.alive.slice().sort((a,b)=>idx(a)-idx(b));
-    if(alive.length<2)return [];
-    const out=[]; for(let i=0;i<Math.floor(alive.length/2);i++)out.push([alive[i],alive[alive.length-1-i]]);
-    return out;
+    const T=this.ct[c], s=T.seeds, n=s.length, seed=k=>k<=n?s[k-1]:null;
+    const winOf=(r,i)=>{const g=(T.res[r]||[])[i]; return g===undefined?null:(g&&g.winner!==undefined?g.winner:g)};
+    const QF=[1,8,4,5,3,6,2,7];
+    if(round==="ct1") return QF.filter(k=>k>=5&&17-k<=n).map(k=>[seed(k),seed(17-k)]);
+    // who fills each quarterfinal slot: the seed, or the first-round winner for it
+    const slot=k=>{ if(k>=5&&17-k<=n){const i=QF.filter(x=>x>=5&&17-x<=n).indexOf(k); return winOf("ct1",i)} return seed(k) };
+    const prev={ct2:null,ct3:"ct2",ct4:"ct3"}[round];
+    const field=round==="ct2"?QF.map(slot):(T.res[prev]||[]).map((g,i)=>winOf(prev,i));
+    const out=[]; for(let i=0;i<field.length;i+=2)out.push([field[i],field[i+1]]);
+    return out;                                   // [a,b]; a null side is a bye
   },
   _ct(){
     const round=this.phase;
     if(round==="ct1")this._ctSetup();
     const games=[];
     LEAGUE.conf.order.forEach(c=>{
+      const T=this.ct[c]; T.res[round]=[];
       this._ctPairs(c,round).forEach(([h,a])=>{
+        if(!h||!a){T.res[round].push(h||a); return}               // a bye: through without playing
         const g=this._resolve(h,a,true,{title:c+" Tournament "+ROUND_NAME[round],ct:c});
-        g.hseed=this.ct[c].seeds.indexOf(h)+1; g.aseed=this.ct[c].seeds.indexOf(a)+1;
-        this.ct[c].alive=this.ct[c].alive.filter(t=>t!==g.loser);
-        this.ctGames[c].push(g); games.push(g);
-        if(round==="ct4")this.champs[c]=g.winner;
+        g.hseed=T.seeds.indexOf(h)+1; g.aseed=T.seeds.indexOf(a)+1;
+        T.res[round].push(g); this.ctGames[c].push(g); games.push(g);
       });
-      // a conference whose tournament is already down to one (tiny conferences)
-      if(round==="ct4"&&!this.champs[c]&&this.ct[c].alive.length===1)this.champs[c]=this.ct[c].alive[0];
+      if(round==="ct4"){const f=T.res.ct4[0]; this.champs[c]=f&&f.winner!==undefined?f.winner:f}
     });
     if(round==="ct4")this.titles=LEAGUE.conf.order.map(c=>this.ctGames[c].slice(-1)[0]).filter(Boolean);
     this.poll.update(games,this.elo);
@@ -209,9 +209,9 @@ extendSeason({
     const p=this.phase;
     if(CT_ROUNDS.indexOf(p)>=0){
       const c=CONF[team];
-      const T=this.ct[c]||(()=>{const s=this.confRank(c).slice(0,12);return {seeds:s,alive:s.slice()}})();
+      const T=this.ct[c]||{seeds:this.confRank(c).slice(0,12),res:{}};
       const save=this.ct[c]; this.ct[c]=T;
-      const pr=this._ctPairs(c,p).find(x=>x[0]===team||x[1]===team);
+      const pr=this._ctPairs(c,p).find(x=>x[0]&&x[1]&&(x[0]===team||x[1]===team));
       this.ct[c]=save;
       return pr?{home:pr[0],away:pr[1],neutral:true,label:c+" Tournament "+ROUND_NAME[p]}:null;
     }

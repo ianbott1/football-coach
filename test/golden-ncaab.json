@@ -1,5 +1,5 @@
 {
- "fp": "277acea65d3164e8",
+ "fp": "84f2b43cace1140f",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -55,85 +55,90 @@
    "fp": "277acea65d3164e8",
    "from": "7ba950b899800d3d",
    "note": "Goal line counts your remaining games from the schedule (was 12 minus games played: wrong for pro and basketball) and says 'out of reach' only when a postseason run couldn't get there; basketball's seat badge grades a season in progress with March at par"
+  },
+  {
+   "fp": "84f2b43cace1140f",
+   "from": "277acea65d3164e8",
+   "note": "Conference tournaments on a fixed bracket (drawn, browsable); records at Selection Sunday in the NCAA first round"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "ecce2d7d6eb36ed3",
-    "post": "706944c43160dfeb",
+    "games": "e16181206e00b687",
+    "post": "7023b3c1e23d0153",
     "champion": "Virginia",
-    "rec": "f87f54ba66c9ec10",
-    "poll": "eed71d21627d5afa",
+    "rec": "cea92868cd62d053",
+    "poll": "157543bd40021531",
     "heis": "63c51af92f20ba26",
-    "history": "6f7fb539d707c8c1",
-    "universe": "5ee6a4591a98f964",
-    "screens": "5bf347d0ea5e52ad"
+    "history": "461ddef9d40cdd60",
+    "universe": "7fa650d97af0cc30",
+    "screens": "f5cedc5a33d787fb"
    },
    {
     "year": 2027,
-    "games": "3ef83f726243fe7d",
-    "post": "18226283d22e6a70",
+    "games": "5ea0fe163909e893",
+    "post": "170a20486d36af92",
     "champion": "UCLA",
-    "rec": "506fd604c6d396fd",
-    "poll": "9c77e661cc750847",
-    "heis": "9fb0ee62c035be86",
-    "history": "1e358d67b6b7c373",
-    "universe": "ddc3ce114d7c262a",
-    "screens": "cd244f26ec46ec96"
+    "rec": "6592a33912164e32",
+    "poll": "9a4a18a4e453101a",
+    "heis": "1125aeca1f4a5894",
+    "history": "454ef00f70fde269",
+    "universe": "ed9bc77172d9548c",
+    "screens": "ca10a2f7e9617ff6"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "5e04199848834df0",
-    "post": "02b9e36e2421cc62",
+    "games": "ba9cbbfac8472de3",
+    "post": "560e526eadab8a12",
     "champion": "Kansas",
-    "rec": "e0b79e85a7a91e8c",
-    "poll": "eadd2848b4e5a54f",
+    "rec": "2f33db461668c5ba",
+    "poll": "0b858bcf394de72e",
     "heis": "1259105979116d86",
-    "history": "5906a3265ce7068a",
-    "universe": "9c8cc107b84d4643",
-    "screens": "8ee1910893ba00bd"
+    "history": "0997da1ca03b0a57",
+    "universe": "b17b5a9a88d60604",
+    "screens": "f41712c6b6d5ba95"
    },
    {
     "year": 2027,
-    "games": "f0df78d5d64c018f",
-    "post": "42e9df73d2bacc3c",
+    "games": "f86475fc4e6f38ba",
+    "post": "998ac747bfde1b34",
     "champion": "Michigan",
-    "rec": "86a15d26b673fd35",
-    "poll": "b2e19cd339a30d57",
-    "heis": "68a5b6ca38cb06fc",
-    "history": "a53aaa6b7bdb2fd0",
-    "universe": "72695bdc126150e5",
-    "screens": "560ae16b9d34ca42"
+    "rec": "960230d1b89f1d69",
+    "poll": "f06015c70e7baf44",
+    "heis": "bfc1e7e1a6fb5e76",
+    "history": "0d9522055f47c4e3",
+    "universe": "19ee8bb6e5dc8fcd",
+    "screens": "0168c11c669d4275"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "5c3575190a8406f2",
-    "post": "b71b815883b02da0",
-    "champion": "Kentucky",
-    "rec": "dee69b6ef8026752",
-    "poll": "28cbb2fd9705ce62",
+    "games": "ada689b106727a0e",
+    "post": "0f249d9e059ae008",
+    "champion": "UCLA",
+    "rec": "20d36e7dbbc6a120",
+    "poll": "816261df7ac34873",
     "heis": "c30dde17209a314e",
-    "history": "59a34cf0ea473586",
-    "universe": "54812a8e4696c313",
-    "screens": "5fb58c60026d3fab"
+    "history": "143192ecfecf3d7f",
+    "universe": "c4a103cae5b3d8c4",
+    "screens": "ac81c2631ef5ab0e"
    },
    {
     "year": 2027,
-    "games": "8d7bb247d2bf6067",
-    "post": "2136ce7f6377d729",
-    "champion": "Arkansas",
-    "rec": "1e7e29ab88c6fc3d",
-    "poll": "f377219c0ea9d8c4",
-    "heis": "e78a5fec850eed16",
-    "history": "e0b0f57f3b6be189",
-    "universe": "eefe44c5f42b4f00",
-    "screens": "24efea77f0c34ba1"
+    "games": "bfe8f19a38a460ba",
+    "post": "d73e7936ae1b5ff3",
+    "champion": "Iowa State",
+    "rec": "12a6e080ae56868a",
+    "poll": "c7bc8ad65b4847db",
+    "heis": "c88a9af88e17f781",
+    "history": "6793d69677d55466",
+    "universe": "02e807518cad2721",
+    "screens": "d5745d99cdce6808"
    }
   ],
   "schedules#60": [

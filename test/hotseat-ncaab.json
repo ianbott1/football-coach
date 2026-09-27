@@ -1,5 +1,5 @@
 {
- "fp": "fda735b99acae3a7",
+ "fp": "04e1ad7976203de8",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -35,6 +35,11 @@
    "fp": "fda735b99acae3a7",
    "from": "fda735b99acae3a7",
    "note": "Colours for 78 more schools from ncaa-team-colors (ISC); 18 stand-ins remain"
+  },
+  {
+   "fp": "04e1ad7976203de8",
+   "from": "fda735b99acae3a7",
+   "note": "Conference tournaments on a fixed bracket (drawn, browsable); records at Selection Sunday in the NCAA first round"
   }
  ],
  "out": [
@@ -44,20 +49,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "32-6",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "28-7",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "8f8c806211c98054"
+     "book": "3ac0be73d56b9ba1"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "30-3",
+      "rec": "33-2",
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "a8b2da07065bc08c"
+     "book": "1d56745eb08b2ed3"
     }
    ]
   },
@@ -67,20 +72,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "29-6",
+      "rec": "27-8",
       "result": "Lost in the Elite Eight",
-      "grade": "A"
+      "grade": "A-"
      },
-     "book": "77afeb6ff6995aca"
+     "book": "581ea001f9caeb5b"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "26-6",
+      "rec": "31-3",
       "result": "Lost in the Second Round",
-      "grade": "B"
+      "grade": "A-"
      },
-     "book": "1f3147a7dbbfe174"
+     "book": "9f78b0a8258ee69b"
     }
    ]
   },
@@ -94,16 +99,16 @@
       "result": "Lost in the Second Round",
       "grade": "B+"
      },
-     "book": "fc9f4dd15b8ed806"
+     "book": "2f91dde0afac6a28"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "31-4",
-      "result": "Lost in the Second Round",
-      "grade": "A-"
+      "rec": "32-5",
+      "result": "Lost in the Elite Eight",
+      "grade": "A"
      },
-     "book": "0f210b1c1e53da67"
+     "book": "4442bb965ecdc9bf"
     }
    ]
   }

@@ -109,8 +109,12 @@ function bracketView(){
   if(tabs.map(t=>t[0]).indexOf(postTab)<0)postTab=tabs[tabs.length-1][0];
   let h=`<div class="subtabs">${tabs.map(([k,l])=>`<button class="subtab" data-p="${k}" aria-pressed="${postTab===k}">${l}</button>`).join("")}</div>`;
   if(postTab==="ct"){
-    const mine=CONF[S.myTeam], gs=(SEA.ctGames[mine]||[]);
-    h+=`<div class="grouphead">${esc(mine)} Tournament</div>`+(gs.length?gs.map(gameLine).join(""):`<div class="note">Not started.</div>`);
+    const order=LEAGUE.conf.order; if(order.indexOf(ctConf)<0)ctConf=CONF[S.myTeam];
+    const k=order.indexOf(ctConf), prev=order[(k+order.length-1)%order.length], next=order[(k+1)%order.length];
+    h+=`<div class="ctnav"><button class="subtab" data-ctc="${esc(prev)}">&larr; ${esc(prev)}</button>
+      <b>${esc(ctConf)} Tournament</b><button class="subtab" data-ctc="${esc(next)}">${esc(next)} &rarr;</button></div>`;
+    if(ctConf!==CONF[S.myTeam])h+=`<button class="subtab" data-ctc="${esc(CONF[S.myTeam])}">Back to ${esc(CONF[S.myTeam])}</button>`;
+    h+=ctBracketHTML(ctConf);
     const ch=Object.keys(SEA.champs);
     if(ch.length)h+=`<div class="grouphead">Automatic bids</div>`+LEAGUE.conf.order.filter(c=>SEA.champs[c]).map(c=>
       `<div class="brow ${SEA.champs[c]===S.myTeam?'mine':''}"><b>${esc(SEA.champs[c])}</b> &middot; ${esc(c)}</div>`).join("");
@@ -139,7 +143,7 @@ function bracketView(){
   const og=(SEA.rounds.open||[]);
   if(og.length&&bracketRegion!=="Final Four"){
     const mine=og.filter(g=>g.region===bracketRegion);
-    if(mine.length)h+=`<div class="grouphead">Opening Round</div>`+mine.map(gameLine).join("");
+    if(mine.length)h+=`<div class="grouphead">Opening Round</div><div class="bracket"><div class="bcol"><div class="bgames">${mine.map(g=>bgame(g,null,null,true)).join("")}</div></div></div>`;
   }
   return h;
 }
@@ -175,31 +179,58 @@ function selectionReveal(){
     `<div class="grouphead">Bids by conference</div><div class="note">${multi.map(c=>`${esc(c)} ${byConf[c]}`).join(" &middot; ")}; ${Object.keys(byConf).length-multi.length} conferences with one.</div>`;
 }
 
+/* ---- a conference tournament, drawn ---- */
+let ctConf=null;
+function ctBracketHTML(c){
+  const T=SEA.ct&&SEA.ct[c];
+  // before it starts: the seeds as they stand
+  const seeds=T?T.seeds:SEA.confRank(c).slice(0,12), n=seeds.length, sd=t=>seeds.indexOf(t)+1;
+  const R=(T&&T.res)||{};
+  const QF=[1,8,4,5,3,6,2,7], r1=QF.filter(k=>k>=5&&17-k<=n);
+  const box=(g,a,b)=>g&&g.home?bgame(g):bgame(null,a?{t:a,s:sd(a)}:null,b?{t:b,s:sd(b)}:null);
+  const win=(r,i)=>{const g=(R[r]||[])[i]; return g===undefined?null:(g&&g.winner!==undefined?g.winner:g)};
+  const slotT=k=>{ if(r1.indexOf(k)>=0)return win("ct1",r1.indexOf(k)); return k<=n?seeds[k-1]:null };
+  const cols=[];
+  if(r1.length)cols.push(["First round",r1.map((k,i)=>box((R.ct1||[])[i],seeds[k-1],seeds[16-k]))]);
+  const qf=[]; for(let i=0;i<8;i+=2){const a=slotT(QF[i]), b=slotT(QF[i+1]), g=(R.ct2||[])[i/2];
+    qf.push(g&&g.home?bgame(g):(a&&!b&&QF[i+1]>n)||(b&&!a&&QF[i]>n)?bgame(null,{t:a||b,s:sd(a||b)},{t:"bye",s:""}):box(null,a,b))}
+  cols.push(["Quarterfinals",qf]);
+  cols.push(["Semifinals",[0,1].map(i=>box((R.ct3||[])[i],win("ct2",2*i),win("ct2",2*i+1)))]);
+  cols.push(["Championship",[box((R.ct4||[])[0],win("ct3",0),win("ct3",1))]]);
+  const column=(title,items)=>`<div class="bcol"><div class="bhead">${title}</div><div class="bgames">${items.join("")}</div></div>`;
+  const champ=SEA.champs[c];
+  return (champ?`<div class="note"><b>${esc(champ)}</b> won the ${esc(c)} Tournament and the automatic bid.</div>`:"")+
+    `<div class="bracket">${cols.map(([t,i])=>column(t,i)).join("")}</div>`;
+}
+
 /* ---- the drawn bracket ---- */
 let bracketRegion="East";
 /* a game box: two lines, seed and team and score; the winner in bold */
-function bslot(t,seed,pts,win){
+function bslot(t,seed,pts,win,rec){
   const my=t&&t===S.myTeam;
-  return `<div class="bslot ${win?'bwin':''} ${my?'bmine':''}" style="--tc:${t?teamInk(t):'transparent'}">
-    <span class="bseed">${seed||""}</span><span class="bteam">${t?esc(t):'<span class="btbd">to be decided</span>'}</span>
+  return `<div class="bslot ${win?'bwin':''} ${my?'bmine':''}" style="--tc:${t&&NAMES.indexOf(t)>=0?teamInk(t):'transparent'}">
+    <span class="bseed">${seed||""}</span><span class="bteam">${t?esc(t)+(rec?` <span class="brec">(${esc(rec)})</span>`:""):'<span class="btbd">to be decided</span>'}</span>
     <span class="bpts">${pts!==undefined&&pts!==null?pts:""}</span></div>`;
 }
-function bgame(g,top,bot){
-  if(g)return `<div class="bgame">${bslot(g.home,g.hseed,g.hp,g.winner===g.home)}${bslot(g.away,g.aseed,g.ap,g.winner===g.away)}</div>`;
-  return `<div class="bgame">${bslot(top&&top.t,top&&top.s)}${bslot(bot&&bot.t,bot&&bot.s)}</div>`;
+/* a game box; recs=true adds each team's record at Selection Sunday, as a
+   printed bracket does in its first round */
+function bgame(g,top,bot,recs){
+  const rc=t=>recs&&t&&SEA.selRec?SEA.selRec[t]:null;
+  if(g)return `<div class="bgame">${bslot(g.home,g.hseed,g.hp,g.winner===g.home,rc(g.home))}${bslot(g.away,g.aseed,g.ap,g.winner===g.away,rc(g.away))}</div>`;
+  return `<div class="bgame">${bslot(top&&top.t,top&&top.s,null,false,top&&top.rec||rc(top&&top.t))}${bslot(bot&&bot.t,bot&&bot.s,null,false,bot&&bot.rec||rc(bot&&bot.t))}</div>`;
 }
 /* who fills a first-round slot before it's played: the team, or both Opening Round teams */
 function slotTeam(r,line){
   const t=SEA.bracket&&SEA.bracket[r]?SEA.bracket[r][line]:null;
   const og=(SEA.openGames||[]).find(o=>o.region===r&&o.line===line);
-  if(og&&!(SEA.rounds.open||[]).length)return {t:og.a+" / "+og.b,s:line};
+  if(og&&!(SEA.rounds.open||[]).length)return {t:`${og.a} (${SEA.selRec[og.a]}) / ${og.b}`,s:line,rec:SEA.selRec[og.b]};
   return t?{t:t,s:line}:null;
 }
 function regionHTML(r){
   const played=k=>(SEA.rounds[k]||[]).filter(g=>g.region===r);
   const col=(k,n,pre)=>{const gs=played(k); const out=[];
-    for(let i=0;i<n;i++)out.push(gs[i]?bgame(gs[i]):pre?pre(i):bgame(null)); return out};
-  const r64=col("r64",8,i=>bgame(null,slotTeam(r,R64_PAIRS[i][0]),slotTeam(r,R64_PAIRS[i][1])));
+    for(let i=0;i<n;i++)out.push(gs[i]?bgame(gs[i],null,null,k==="r64"):pre?pre(i):bgame(null)); return out};
+  const r64=col("r64",8,i=>bgame(null,slotTeam(r,R64_PAIRS[i][0]),slotTeam(r,R64_PAIRS[i][1]),true));
   const winnersOf=(k,i)=>{const g=played(k)[i]; return g?{t:g.winner,s:SEA.seeds[g.winner]}:null};
   const r32=col("r32",4,i=>bgame(null,winnersOf("r64",2*i),winnersOf("r64",2*i+1)));
   const s16=col("s16",2,i=>bgame(null,winnersOf("r32",2*i),winnersOf("r32",2*i+1)));
@@ -224,5 +255,6 @@ LEAGUE.ui={
   postseasonView(){ if(SEA.phase!=="week"&&(SEA.step>LEAGUE.weeks||Object.keys(SEA.ctGames||{}).length))return bracketView(); return null },
   afterAdvance(ph){ if(ph==="selection")postTab="field"; else if(NCAA_ROUNDS.indexOf(ph)>=0)postTab="bracket"; else if(CT_ROUNDS.indexOf(ph)>=0)postTab="ct" },
   subtab(b){ if(b.dataset.p){postTab=b.dataset.p;return true} if(b.dataset.k){pollTab=b.dataset.k;return true}
-    if(b.dataset.br){bracketRegion=b.dataset.br;return true} return false }
+    if(b.dataset.br){bracketRegion=b.dataset.br;return true}
+    if(b.dataset.ctc){ctConf=b.dataset.ctc;return true} return false }
 };
