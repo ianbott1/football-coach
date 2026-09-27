@@ -329,7 +329,8 @@ LEAGUE.goals={
   isTitle(result){ return /NATIONAL/i.test(result) },
   firstTitle:"First national title of your tenure.",
   grade(wins,losses,result,exp){
-    const march=/NATIONAL/i.test(result)?5:/national championship/i.test(result)?3.6:/Final Four/.test(result)?3:
+    // no result yet (a season in progress, as the seat badge asks): March at par
+    const march=!result?(exp.par||0):/NATIONAL/i.test(result)?5:/national championship/i.test(result)?3.6:/Final Four/.test(result)?3:
       /Elite Eight/.test(result)?2.3:/Sweet 16/.test(result)?1.6:/Second Round/.test(result)?0.9:
       /First Round/.test(result)?0.4:/Opening Round/.test(result)?0.2:/Made the NCAA/.test(result)?0.3:
       /^Won the/.test(result)?0.8:-(exp.par>=0.2?1.0:0);

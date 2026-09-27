@@ -903,12 +903,17 @@ function teamCardHTML(my,rk,co){
         <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}">${c.q>0?"+":""}${c.q}</span></div>`;
       return `<div class="staffbar">${row(SPORT.staff.oc.short,O)}${row(SPORT.staff.dc.short,D)}</div>`})()}
     ${(()=>{const e=S.expNow||expectations();
-      const w=SEA.rec[my][0],l=SEA.rec[my][1],left=12-(w+l);
+      const w=SEA.rec[my][0],l=SEA.rec[my][1];
+      // games left: your remaining regular-season games (was 12 minus games
+      // played, a college football season), plus what a postseason run can add
+      const left=SEA.sched.filter(g=>g.week>=SEA.step&&(g.home===my||g.away===my)).length;
+      const postMax=LEAGUE.post.phases.filter(p=>p!=="selection").length;
       const need=Math.max(0,e.w-w);
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :need===0?`Target of ${e.w} wins already met.`
-          :need>left?`${e.w} wins is out of reach now.`
+          :need>left+postMax?`${e.w} wins is out of reach now.`
+          :need>left?`${need} more win${need===1?"":"s"} from the ${e.w} expected: it will take a postseason run.`
           :`${need} more win${need===1?"":"s"} from the ${e.w} expected.`}</span></div>`})()}
     </div>`;
   return h;

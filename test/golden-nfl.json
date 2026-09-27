@@ -1,5 +1,5 @@
 {
- "fp": "f2fdb6d35c35e647",
+ "fp": "81ba0e76850bb387",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -75,6 +75,11 @@
    "fp": "f2fdb6d35c35e647",
    "from": "e2bc734693699e04",
    "note": "Names: College Football Coach and Pro Football Coach (tab title, a College/Pro line over the wordmark, the season card); the pro owl wears a helmet. Screens only."
+  },
+  {
+   "fp": "81ba0e76850bb387",
+   "from": "f2fdb6d35c35e647",
+   "note": "Goal line counts your remaining games from the schedule (was 12 minus games played: wrong for pro and basketball) and says 'out of reach' only when a postseason run couldn't get there; basketball's seat badge grades a season in progress with March at par"
   }
  ],
  "result": {
@@ -113,7 +118,7 @@
     "heis": "2cefdc7752a1647a",
     "history": "6bcceec1fe2e52ce",
     "universe": "039ac77486fe7e4e",
-    "screens": "9dd6420febbd4b3c"
+    "screens": "745907d84d581913"
    },
    {
     "year": 2029,
@@ -189,7 +194,7 @@
     "heis": "c63d061e72508bed",
     "history": "48b773ce295ab16d",
     "universe": "d17abeea6960c98a",
-    "screens": "2b2f65a4b53a9551"
+    "screens": "6147ddaa1ae986bd"
    },
    {
     "year": 2027,
@@ -239,7 +244,7 @@
     "heis": "fb372bf7b91b98b6",
     "history": "124131e9caa103f7",
     "universe": "f8627e6e1fe93699",
-    "screens": "fdf1b96ad2e0ad6a"
+    "screens": "9ddd6b97bfcb840d"
    },
    {
     "year": 2028,

@@ -1,5 +1,5 @@
 {
- "fp": "7ba950b899800d3d",
+ "fp": "277acea65d3164e8",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -50,6 +50,11 @@
    "fp": "7ba950b899800d3d",
    "from": "7ba950b899800d3d",
    "note": "Title screen: Basketball Coach wordmark, the owl on a rim"
+  },
+  {
+   "fp": "277acea65d3164e8",
+   "from": "7ba950b899800d3d",
+   "note": "Goal line counts your remaining games from the schedule (was 12 minus games played: wrong for pro and basketball) and says 'out of reach' only when a postseason run couldn't get there; basketball's seat badge grades a season in progress with March at par"
   }
  ],
  "result": {
@@ -76,7 +81,7 @@
     "heis": "9fb0ee62c035be86",
     "history": "1e358d67b6b7c373",
     "universe": "ddc3ce114d7c262a",
-    "screens": "8c88e0007a73eb19"
+    "screens": "cd244f26ec46ec96"
    }
   ],
   "Coppin State#2024": [
@@ -90,7 +95,7 @@
     "heis": "1259105979116d86",
     "history": "5906a3265ce7068a",
     "universe": "9c8cc107b84d4643",
-    "screens": "49a30501f47be0d0"
+    "screens": "8ee1910893ba00bd"
    },
    {
     "year": 2027,
@@ -116,7 +121,7 @@
     "heis": "c30dde17209a314e",
     "history": "59a34cf0ea473586",
     "universe": "54812a8e4696c313",
-    "screens": "9ac754d80d6dc493"
+    "screens": "5fb58c60026d3fab"
    },
    {
     "year": 2027,
@@ -128,7 +133,7 @@
     "heis": "e78a5fec850eed16",
     "history": "e0b0f57f3b6be189",
     "universe": "eefe44c5f42b4f00",
-    "screens": "6610740bafd743aa"
+    "screens": "24efea77f0c34ba1"
    }
   ],
   "schedules#60": [
