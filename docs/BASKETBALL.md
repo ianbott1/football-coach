@@ -68,3 +68,14 @@ Everything the core and a league use from a sport, by name:
   Balanced.
   Shorten the game (aggressive): slow the pace, let it fly from three;
     fewer possessions, more variance. Best when you're outgunned.
+
+## The advisors in basketball (test/advisors.js, 3000 games per situation)
+
+                     even match  big underdog  leading late  trailing late
+    Two Bears           51.5         20.0          80.2          21.5
+    Pearl               51.3         19.4          81.3          20.1
+    Capybara            51.0         19.4          79.6          18.3
+
+Within noise except late: the press (Two Bears) is worth about three
+points trailing late; Pearl reads leads best. The calls are realistic but
+low-stakes; making them matter more would mean redesigning them.
