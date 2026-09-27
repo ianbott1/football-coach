@@ -6,7 +6,7 @@ const fs=require('fs'),path=require('path');const src=fs.readFileSync(path.join(
 (async()=>{const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','basketball-coach.html'); const api=m.exports.load(file);api.newDynasty('Gonzaga',5,'T');
 const pages=[]; const grab=(lab)=>pages.push([lab,(global.__nodes.app?global.__nodes.app.innerHTML:'')]);
 for(let y=0;y<2;y++){let g=0;while(api.SEA.phase!=='done'&&g++<80){api.doAdvance();grab('step '+api.SEA.phase);
-  if(api.SEA.phase==='open'){pages.push(['selection sunday',api.view('scores')]); if(!/You're in|So close|Not this year/.test(pages[pages.length-1][1]))pages.push(['selection sunday','CRASH-MARK: no reveal'])}let n=0;while(api.live&&!api.live.done&&n++<400){if(api.live.ask){grab('call');api.answerLive(api.live.ask.dp.opts[0][0])}else{api.liveTick()}}
+  if(api.SEA.phase==='open'&&!api.live&&!pages.some(p=>p[0]==='selection sunday '+api.SEA.year)){pages.push(['selection sunday '+api.SEA.year,api.view('scores')]); if(!/You're in|So close|Not this year/.test(pages[pages.length-1][1]))pages.push(['selection sunday','CRASH-MARK: no reveal'])}let n=0;while(api.live&&!api.live.done&&n++<400){if(api.live.ask){grab('call');api.answerLive(api.live.ask.dp.opts[0][0])}else{api.liveTick()}}
   if(api.SEA.step===12){['team','scores','poll','stand'].forEach(v=>pages.push(['view '+v,api.view(v)]));['program','teams','coaches','shared'].forEach(d=>pages.push(['dyn '+d,api.view('dyn',d)]))}
   await new Promise(r=>setImmediate(r))}
  ['team','scores','poll','stand'].forEach(v=>pages.push(['end '+v,api.view(v)]));
