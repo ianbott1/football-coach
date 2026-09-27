@@ -15,7 +15,10 @@ for(let y=0;y<2;y++){let g=0;while(api.SEA.phase!=='done'&&g++<80){api.doAdvance
   if(api.SEA.step===12){['team','scores','poll','stand'].forEach(v=>pages.push(['view '+v,api.view(v)]));['program','teams','coaches','shared'].forEach(d=>pages.push(['dyn '+d,api.view('dyn',d)]))}
   await new Promise(r=>setImmediate(r))}
  ['team','scores','poll','stand'].forEach(v=>pages.push(['end '+v,api.view(v)]));
- api.openOffseason();grab('offseason');api.commitOffseason();grab('after offseason');}
+ api.openOffseason();grab('offseason');
+ // always check the assistant-hire section (it only appears when one leaves)
+ if(api.S.off){const SC=api.S.off.staff=api.S.off.staff||{}; ['oc','dc'].forEach(k=>{if(!SC[k])SC[k]=[{n:'Test Assistant',q:10,s:'Motion offense',grade:'solid'}]});
+   pages.push(['offseason, assistants leaving',api.view('team')]); delete api.S.off.staff}api.commitOffseason();grab('after offseason');}
 pages.push(['team pages',api.teamPages().join('')]);
 // after two seasons the record book has basketball leaders and career lines
 { const prog=api.view('dyn','program').replace(/<[^>]+>/g,' ');

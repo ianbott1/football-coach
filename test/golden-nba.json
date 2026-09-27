@@ -1,10 +1,15 @@
 {
- "fp": "264aba29be257fe4",
+ "fp": "17d49196be60ec24",
  "log": [
   {
    "fp": "264aba29be257fe4",
    "from": null,
    "note": "First pro basketball baseline: Boston and Detroit, two seasons each"
+  },
+  {
+   "fp": "17d49196be60ec24",
+   "from": "264aba29be257fe4",
+   "note": "Offseason: offensive/defensive assistant, not coordinator (one screen)"
   }
  ],
  "result": {
@@ -31,7 +36,7 @@
     "heis": "b6ab57903d397a0a",
     "history": "bafc599e9025c572",
     "universe": "d816cf0116c245ed",
-    "screens": "64e2cac154d8e1fe"
+    "screens": "52a752d058e1bf79"
    }
   ],
   "Detroit#777": [

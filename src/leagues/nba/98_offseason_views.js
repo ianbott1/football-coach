@@ -210,9 +210,9 @@ function offseasonScreen(){
   ["oc","dc"].forEach(side=>{
     const cands=SC[side]; if(!cands)return;
     const label=side==="oc"?"offensive":"defensive";
-    h+=`<div class="grouphead">Hire a new ${label} coordinator</div>`;
-    h+=`<div class="note">Your ${label} coordinator has moved on. He shapes how that side
-      of the ball plays and develops.</div>`;
+    h+=`<div class="grouphead">Hire a new ${esc(SPORT.staff[side].long)}</div>`;
+    h+=`<div class="note">Your ${esc(SPORT.staff[side].long)} has moved on. He shapes how that end
+      of the floor plays and develops.</div>`;
     h+=cands.map((c,i)=>`<div class="cand ${(P[side]===i||(P[side]==null&&i===0))?'on':''}"
       data-coord="${side}" data-ci="${i}">
       <div class="candtop"><div><div class="fname">${esc(c.n)}</div>
