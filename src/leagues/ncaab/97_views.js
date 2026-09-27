@@ -119,11 +119,59 @@ function bracketView(){
     });
     return h;
   }
-  const order=["final","f4","e8","s16","r32","r64","open"];
-  order.forEach(r=>{const gs=SEA.rounds[r]||[]; if(!gs.length)return;
-    h+=`<div class="grouphead">${ROUND_NAME[r]}</div>`+gs.map(gameLine).join("")});
-  if(SEA.champion)h=`<div class="note"><b>${esc(SEA.champion)}</b> are national champions.</div>`+h;
+  // the bracket, drawn: one region at a time, or the Final Four
+  const regTabs=REGIONS.concat(["Final Four"]);
+  if(regTabs.indexOf(bracketRegion)<0)bracketRegion=REGIONS[0];
+  h+=`<div class="subtabs">${regTabs.map(r=>`<button class="subtab" data-br="${r}" aria-pressed="${bracketRegion===r}">${r}</button>`).join("")}</div>`;
+  if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> are national champions.</div>`;
+  h+=bracketRegion==="Final Four"?finalFourHTML():regionHTML(bracketRegion);
+  const og=(SEA.rounds.open||[]);
+  if(og.length&&bracketRegion!=="Final Four"){
+    const mine=og.filter(g=>g.region===bracketRegion);
+    if(mine.length)h+=`<div class="grouphead">Opening Round</div>`+mine.map(gameLine).join("");
+  }
   return h;
+}
+/* ---- the drawn bracket ---- */
+let bracketRegion="East";
+/* a game box: two lines, seed and team and score; the winner in bold */
+function bslot(t,seed,pts,win){
+  const my=t&&t===S.myTeam;
+  return `<div class="bslot ${win?'bwin':''} ${my?'bmine':''}" style="--tc:${t?teamInk(t):'transparent'}">
+    <span class="bseed">${seed||""}</span><span class="bteam">${t?esc(t):'<span class="btbd">to be decided</span>'}</span>
+    <span class="bpts">${pts!==undefined&&pts!==null?pts:""}</span></div>`;
+}
+function bgame(g,top,bot){
+  if(g)return `<div class="bgame">${bslot(g.home,g.hseed,g.hp,g.winner===g.home)}${bslot(g.away,g.aseed,g.ap,g.winner===g.away)}</div>`;
+  return `<div class="bgame">${bslot(top&&top.t,top&&top.s)}${bslot(bot&&bot.t,bot&&bot.s)}</div>`;
+}
+/* who fills a first-round slot before it's played: the team, or both Opening Round teams */
+function slotTeam(r,line){
+  const t=SEA.bracket&&SEA.bracket[r]?SEA.bracket[r][line]:null;
+  const og=(SEA.openGames||[]).find(o=>o.region===r&&o.line===line);
+  if(og&&!(SEA.rounds.open||[]).length)return {t:og.a+" / "+og.b,s:line};
+  return t?{t:t,s:line}:null;
+}
+function regionHTML(r){
+  const played=k=>(SEA.rounds[k]||[]).filter(g=>g.region===r);
+  const col=(k,n,pre)=>{const gs=played(k); const out=[];
+    for(let i=0;i<n;i++)out.push(gs[i]?bgame(gs[i]):pre?pre(i):bgame(null)); return out};
+  const r64=col("r64",8,i=>bgame(null,slotTeam(r,R64_PAIRS[i][0]),slotTeam(r,R64_PAIRS[i][1])));
+  const winnersOf=(k,i)=>{const g=played(k)[i]; return g?{t:g.winner,s:SEA.seeds[g.winner]}:null};
+  const r32=col("r32",4,i=>bgame(null,winnersOf("r64",2*i),winnersOf("r64",2*i+1)));
+  const s16=col("s16",2,i=>bgame(null,winnersOf("r32",2*i),winnersOf("r32",2*i+1)));
+  const e8=col("e8",1,i=>bgame(null,winnersOf("s16",0),winnersOf("s16",1)));
+  const column=(title,items)=>`<div class="bcol"><div class="bhead">${title}</div><div class="bgames">${items.join("")}</div></div>`;
+  return `<div class="bracket">${column("First round",r64)}${column("Second round",r32)}${column("Sweet 16",s16)}${column("Elite Eight",e8)}</div>`;
+}
+function finalFourHTML(){
+  const champ=r=>{const g=(SEA.rounds.e8||[]).find(x=>x.region===r); return g?{t:g.winner,s:SEA.seeds[g.winner]}:null};
+  const f4=SEA.rounds.f4||[], fin=(SEA.rounds.final||[])[0];
+  const semis=[f4[0]?bgame(f4[0]):bgame(null,champ("East"),champ("South")), f4[1]?bgame(f4[1]):bgame(null,champ("Midwest"),champ("West"))];
+  const w=i=>f4[i]?{t:f4[i].winner,s:SEA.seeds[f4[i].winner]}:null;
+  const column=(title,items)=>`<div class="bcol"><div class="bhead">${title}</div><div class="bgames">${items.join("")}</div></div>`;
+  return `<div class="note">Ford Field, Detroit. East plays South; Midwest plays West.</div>
+    <div class="bracket">${column("Final Four",semis)}${column("National Championship",[fin?bgame(fin):bgame(null,w(0),w(1))])}</div>`;
 }
 LEAGUE.ui={
   stakes:bbStakes,
@@ -132,5 +180,6 @@ LEAGUE.ui={
   projectedField:()=>projectedField().field,
   postseasonView(){ if(SEA.phase!=="week"&&(SEA.step>LEAGUE.weeks||Object.keys(SEA.ctGames||{}).length))return bracketView(); return null },
   afterAdvance(ph){ if(ph==="selection")postTab="field"; else if(NCAA_ROUNDS.indexOf(ph)>=0)postTab="bracket"; else if(CT_ROUNDS.indexOf(ph)>=0)postTab="ct" },
-  subtab(b){ if(b.dataset.p){postTab=b.dataset.p;return true} if(b.dataset.k){pollTab=b.dataset.k;return true} return false }
+  subtab(b){ if(b.dataset.p){postTab=b.dataset.p;return true} if(b.dataset.k){pollTab=b.dataset.k;return true}
+    if(b.dataset.br){bracketRegion=b.dataset.br;return true} return false }
 };

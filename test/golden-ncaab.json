@@ -1,5 +1,5 @@
 {
- "fp": "6a9c4f6f9f3caab9",
+ "fp": "2379fc1f827b67d7",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -20,6 +20,11 @@
    "fp": "6a9c4f6f9f3caab9",
    "from": "230554d2116ace66",
    "note": "Rankings tab crash fixed (pollTab); basketball season lines, firing joke, rivalry names"
+  },
+  {
+   "fp": "2379fc1f827b67d7",
+   "from": "6a9c4f6f9f3caab9",
+   "note": "The bracket, drawn: by region (four columns) and the Final Four"
   }
  ],
  "result": {
@@ -34,7 +39,7 @@
     "heis": "e24c4a71619fe428",
     "history": "e4c48012e9e2f6d7",
     "universe": "c8ad085e55538d3a",
-    "screens": "e1af7b3b22ca5f0e"
+    "screens": "46b800be4f02376f"
    },
    {
     "year": 2027,
@@ -46,7 +51,7 @@
     "heis": "22ac739efab63b8a",
     "history": "dc3ff30a111a6de4",
     "universe": "c206cbecd9799294",
-    "screens": "68f42007737eb8c6"
+    "screens": "4e6496120bce735f"
    }
   ],
   "Coppin State#2024": [
@@ -60,7 +65,7 @@
     "heis": "0989698ffde423bf",
     "history": "39df52cfdeba13aa",
     "universe": "0f2fa472cf0228f0",
-    "screens": "d1f976b6f9b24a94"
+    "screens": "153203a642cda5b9"
    },
    {
     "year": 2027,
@@ -72,7 +77,7 @@
     "heis": "a1dc4895a4b38cb0",
     "history": "1c19070034e56852",
     "universe": "fffca938599fe17a",
-    "screens": "0397219538b48414"
+    "screens": "f550bf96749fd184"
    }
   ],
   "Gonzaga#777": [
@@ -86,7 +91,7 @@
     "heis": "23e205f1867fa71e",
     "history": "b0d1707ea45af6dc",
     "universe": "19b1cca78df31ffc",
-    "screens": "cb3717fca043fb23"
+    "screens": "6e47c051aea8aedd"
    },
    {
     "year": 2027,
@@ -98,7 +103,7 @@
     "heis": "df6c1bf04c8b1e53",
     "history": "2c2ac8bf7bdc119b",
     "universe": "d5a112c6b7061e65",
-    "screens": "e7c92659f051fad0"
+    "screens": "6cf12d13c7873a80"
    }
   ],
   "schedules#60": [
