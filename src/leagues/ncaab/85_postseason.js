@@ -6,6 +6,7 @@
    the 11 and 12 lines, the 12 lowest-seeded automatic qualifiers for the 15
    and 16 lines), then four regions of sixteen to a champion in Detroit. */
 const REGIONS=["East","South","Midwest","West"];
+const SOS_W=0.5;                  // how much strength of schedule counts in a resume
 const R64_PAIRS=[[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
 const CT_ROUNDS=["ct1","ct2","ct3","ct4"];
 const NCAA_ROUNDS=["open","r64","r32","s16","e8","f4","final"];
@@ -31,8 +32,19 @@ extendSeason({
   },
   /* a résumé as the committee sees it: strength, wins, the losses, a title */
   resume(t){
-    const r=this.rec[t], g=Math.max(1,r[0]+r[1]);
-    return this.elo[t]+ (r[0]-r[1])*4 + (this.champs[CONF[t]]===t?25:0);
+    const r=this.rec[t];
+    // like the committee's NET: strength, record, and who it came against
+    return this.elo[t]+ (r[0]-r[1])*4 + (this.champs[CONF[t]]===t?25:0) + SOS_W*(this.sos(t)-1500);
+  },
+  /* average rating of the opponents played so far (kept per game date) */
+  sos(t){
+    if(!this._sos||this._sosAt!==this.step){
+      const sum={},n={};
+      this.weeks.forEach(w=>w.games.forEach(g=>{
+        [[g.home,g.away],[g.away,g.home]].forEach(([a,b])=>{sum[a]=(sum[a]||0)+this.elo[b];n[a]=(n[a]||0)+1})}));
+      this._sos={}; NAMES.forEach(x=>this._sos[x]=n[x]?sum[x]/n[x]:1500); this._sosAt=this.step;
+    }
+    return this._sos[t];
   },
   confRank(c){
     const cr=this.confrec;

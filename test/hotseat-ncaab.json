@@ -1,5 +1,5 @@
 {
- "fp": "ffb9fdd642a9b71b",
+ "fp": "ae9401245af8df95",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -10,6 +10,11 @@
    "fp": "ffb9fdd642a9b71b",
    "from": "2995a68c0033645a",
    "note": "Program strength range 1000-2350 (football's 2010 ceiling flattened the blue bloods), recruits closer to program level, more five-stars at the top"
+  },
+  {
+   "fp": "ae9401245af8df95",
+   "from": "ffb9fdd642a9b71b",
+   "note": "Program strength anchored to its structural level (10% a year); strength of schedule in the committee's resume"
   }
  ],
  "out": [
@@ -23,16 +28,16 @@
       "result": "Lost in the Second Round",
       "grade": "B+"
      },
-     "book": "58bb2be663fe5f85"
+     "book": "077aa4905c775a57"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "37-1",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "34-1",
+      "result": "Lost in the Second Round",
+      "grade": "A"
      },
-     "book": "319047cc5d692472"
+     "book": "7f508a79ecfdd35b"
     }
    ]
   },
@@ -42,11 +47,11 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "27-10",
+      "rec": "28-8",
       "result": "Lost in the Elite Eight",
       "grade": "A-"
      },
-     "book": "4a018f02ee7f8cbd"
+     "book": "ef022a5e3097ab0e"
     },
     {
      "team": "North Carolina",
@@ -55,7 +60,7 @@
       "result": "Lost in the First Round",
       "grade": "C+"
      },
-     "book": "e988428dda7b2d20"
+     "book": "21ae56139ab7b278"
     }
    ]
   },
@@ -65,20 +70,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "27-8",
-      "result": "Lost in the Second Round",
-      "grade": "B"
+      "rec": "24-8",
+      "result": "Lost in the First Round",
+      "grade": "C+"
      },
-     "book": "d3432c280d87cc5f"
+     "book": "7464e55284240869"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "35-2",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "30-3",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
      },
-     "book": "9f3000cf5363f9cf"
+     "book": "f30d292be8b03fa9"
     }
    ]
   }

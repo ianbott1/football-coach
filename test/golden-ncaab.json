@@ -1,5 +1,5 @@
 {
- "fp": "fc53e52e4f0a45fe",
+ "fp": "230554d2116ace66",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -10,6 +10,11 @@
    "fp": "fc53e52e4f0a45fe",
    "from": "753aede7d5ae4055",
    "note": "Program strength range 1000-2350 (football's 2010 ceiling flattened the blue bloods), recruits closer to program level, more five-stars at the top"
+  },
+  {
+   "fp": "230554d2116ace66",
+   "from": "fc53e52e4f0a45fe",
+   "note": "Program strength anchored to its structural level (10% a year); strength of schedule in the committee's resume"
   }
  ],
  "result": {
@@ -17,78 +22,78 @@
    {
     "year": 2026,
     "games": "aa413d26f0f3fe34",
-    "post": "d0aee19ee4e51458",
-    "champion": "Kentucky",
-    "rec": "c921ba27381bd4d8",
-    "poll": "e0c12414f8937387",
+    "post": "1134d9b0fd93980c",
+    "champion": "Ohio State",
+    "rec": "3bfa854ca0b4c087",
+    "poll": "ded7af6655f4d72e",
     "heis": "e24c4a71619fe428",
-    "history": "6efe5a03950c3e79",
-    "universe": "1f7f68b728852f1f",
-    "screens": "d7e7c4fb4db5d86f"
+    "history": "e4c48012e9e2f6d7",
+    "universe": "cc8529f3064cd501",
+    "screens": "e1af7b3b22ca5f0e"
    },
    {
     "year": 2027,
-    "games": "76e514c7ec893156",
-    "post": "3e5a3024e337a559",
-    "champion": "UCLA",
-    "rec": "784990da20492dfe",
-    "poll": "6c95b3277bb679fc",
-    "heis": "571299b102ddc271",
-    "history": "f91ab259a4a53bd1",
-    "universe": "31435d00985d23a9",
-    "screens": "15651939d4b9d7df"
+    "games": "71335e6f54a580a7",
+    "post": "01488de56e04333b",
+    "champion": "Houston",
+    "rec": "b7274a6ba72c3348",
+    "poll": "63bd357dc3d06a6f",
+    "heis": "22ac739efab63b8a",
+    "history": "dc3ff30a111a6de4",
+    "universe": "128bfbc527f0cb4a",
+    "screens": "3e7ac5dd6c02f3ea"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
     "games": "2e161451049d63e2",
-    "post": "0fbf498568f5e373",
-    "champion": "Kansas",
-    "rec": "f5184ada11949bf1",
-    "poll": "aa2616cbe7e6bbb3",
+    "post": "4c0f0e1f93212629",
+    "champion": "Michigan",
+    "rec": "5b9f123e02571906",
+    "poll": "545c5d094030259b",
     "heis": "0989698ffde423bf",
-    "history": "550eb84ae82be33d",
-    "universe": "327cc5bd24959262",
-    "screens": "08b78c3cd08b5336"
+    "history": "39df52cfdeba13aa",
+    "universe": "5b574d65a7eaf246",
+    "screens": "d1f976b6f9b24a94"
    },
    {
     "year": 2027,
-    "games": "38d5abc72aaa3f9c",
-    "post": "264a8a23a79eb065",
-    "champion": "UCLA",
-    "rec": "3c241f9ce09463aa",
-    "poll": "d439ae3b9e11f83a",
-    "heis": "0a3ba21e11ace813",
-    "history": "4e1190119f442529",
-    "universe": "90f65958b9092021",
-    "screens": "cd509344b7edbf8d"
+    "games": "dba4f2fcd7224ad6",
+    "post": "51f4ca3af5993216",
+    "champion": "Florida",
+    "rec": "707fd5690babb2b4",
+    "poll": "f56500a79b7009a9",
+    "heis": "a1dc4895a4b38cb0",
+    "history": "1c19070034e56852",
+    "universe": "044e28dd561e5fb4",
+    "screens": "0be70c5a35d9ffe2"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
     "games": "4b5be91720d6faaa",
-    "post": "2bacb2fab95c4ac7",
-    "champion": "Arizona",
-    "rec": "85f29672478fcfdc",
-    "poll": "bbe17fb420a4c95c",
+    "post": "d5d8fb2dad3c87a9",
+    "champion": "Missouri",
+    "rec": "f17089fa7abe3f0b",
+    "poll": "9ed3e3486cd70b24",
     "heis": "23e205f1867fa71e",
-    "history": "14f2be9a82e89e28",
-    "universe": "842f445ed143f4d0",
-    "screens": "833274695f97db39"
+    "history": "b0d1707ea45af6dc",
+    "universe": "af9f61b6542d7578",
+    "screens": "ea6ce1845ef26602"
    },
    {
     "year": 2027,
-    "games": "1bdae4a02c40b666",
-    "post": "0349fcc5e004b33d",
-    "champion": "Florida State",
-    "rec": "4fa24568d3436223",
-    "poll": "891d1762e29ea5bf",
-    "heis": "1f971f9f067a3cfb",
-    "history": "e3efae2aa2dc01b0",
-    "universe": "7dd9d44342168052",
-    "screens": "f6c41d994741a824"
+    "games": "2ddc765e8ebb5f7e",
+    "post": "87d967120266a75c",
+    "champion": "Arizona State",
+    "rec": "28f66b0cfd568daf",
+    "poll": "fee6b9d216878ec1",
+    "heis": "df6c1bf04c8b1e53",
+    "history": "2c2ac8bf7bdc119b",
+    "universe": "2a89fc4b53dde0d0",
+    "screens": "c0d8a74efccfb64e"
    }
   ],
   "schedules#60": [

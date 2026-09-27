@@ -29,6 +29,9 @@ function makeRoster(rng,programElo){
   return r;
 }
 
+const ANCHOR=0.10;
+const ANCHOR_OF=Object.fromEntries(NCAAB_TEAMS.map(t=>[t.n,NCAAB_ELO(t)]));
+
 /* ---- offseason roster churn ---- */
 function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
   focus=focus||{pos:null,r:0,pot:0}; devMod=devMod||0; bud=bud||null;
@@ -224,6 +227,10 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     u.program[t]+=RECRUIT*(elo[t]-u.program[t])
                  +c.q*COACH_BUILD
                  +rng.gauss(0,PROG_NOISE*iscale(u.program[t]));
+    // resources anchor a program: conference money, arena, recruiting reach.
+    // A mid-major can rise, and a blue blood can fall, but both drift back
+    // toward their structural level unless results keep them there.
+    u.program[t]+=ANCHOR*(ANCHOR_OF[t]-u.program[t]);
     u.program[t]=Math.max(P_FLOOR,Math.min(P_CEIL,u.program[t]));
     c.t++;
     const ch=chFor(t);
