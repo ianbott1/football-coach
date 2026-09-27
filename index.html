@@ -1394,13 +1394,20 @@ const INJ_HAZARD=0.085,QB_SHARE=0.18,DEV_SD=4.2,AR_SD=5,AR_DECAY=0.8,
       COLLAPSE_P=0.018,BREAKOUT_P=0.018;
 const BODY=["OL","WR1","RB1","EDGE","CB1","LB","TE","S"];
 function iscale(r){return 0.70+0.45*Math.max(0,Math.min(1,(r-1150)/900))}
+/* The per-step rates below (drift, injuries, sudden swings) were set for a
+   season of a dozen or so steps. A league with many more (the NBA plays 90
+   game dates) sets tuning.talentSteps: rates are scaled so a whole season
+   varies as much as one of that many steps, and injuries last as many games.
+   Unset, nothing changes. */
+function talentScale(){const T=LEAGUE.tuning&&LEAGUE.tuning.talentSteps; return T?T/LEAGUE.weeks:1}
 
 class Talent{
   constructor(rng,base,roster){
     this.rng=rng;this.base=Object.assign({},base);
     this.roster=roster||null;
     this.slope={};this.ar={};this.inj={};this.log={};
-    NAMES.forEach(t=>{this.slope[t]=rng.gauss(0,DEV_SD);this.ar[t]=0;
+    const K=talentScale();
+    NAMES.forEach(t=>{this.slope[t]=rng.gauss(0,DEV_SD)*K;this.ar[t]=0;
       this.inj[t]=[];this.log[t]=[]});
   }
   eff(t,w){
@@ -1409,21 +1416,21 @@ class Talent{
   }
   active(t){return this.inj[t].filter(e=>e.w>0)}
   advance(w){
-    const r=this.rng;
+    const r=this.rng, K=talentScale();
     NAMES.forEach(t=>{
       this.inj[t].forEach(e=>e.w--);
       this.inj[t].filter(e=>e.w<=0).forEach(e=>
         this.log[t].push({wk:w,kind:"back",what:e.k,mag:0}));
       this.inj[t]=this.inj[t].filter(e=>e.w>0);
       const sc=iscale(this.base[t]);
-      if(r.r()<INJ_HAZARD){
+      if(r.r()<INJ_HAZARD*K){
         if(this.roster){
           // pick a starter, weighted toward the positions that take hits
           const idx=pickInjuredPos(r);
           const pl=this.roster[t][idx];
           if(!this.inj[t].some(e=>e.idx===idx)){
             const sev=r.r();
-            const wk=sev<0.12?14:r.pick([1,2,2,3,4,5,6]);
+            const wk=Math.max(1,Math.round((sev<0.12?14:r.pick([1,2,2,3,4,5,6]))/K));
             const m=injuryCost(this.roster[t],idx)*r.range(1.05,2.1);
             this.inj[t].push({m:m,w:wk,k:pl.p,idx:idx,who:pl.n,rating:pl.r});
             this.log[t].push({wk:w,kind:"injury",what:pl.p,who:pl.n,
@@ -1437,9 +1444,9 @@ class Talent{
           this.log[t].push({wk:w,kind:"injury",what:k,mag:Math.round(m),weeks:wk});
         }
       }
-      if(r.r()<COLLAPSE_P){const d=-r.range(40,110)*sc;this.base[t]+=d;
+      if(r.r()<COLLAPSE_P*K){const d=-r.range(40,110)*sc;this.base[t]+=d;
         this.log[t].push({wk:w,kind:"collapse",what:"locker room",mag:Math.round(d)})}
-      else if(r.r()<BREAKOUT_P){const d=r.range(35,95)*sc;this.base[t]+=d;
+      else if(r.r()<BREAKOUT_P*K){const d=r.range(35,95)*sc;this.base[t]+=d;
         this.log[t].push({wk:w,kind:"breakout",what:"scheme unlock",mag:Math.round(d)})}
       this.ar[t]=this.ar[t]*AR_DECAY+r.gauss(0,AR_SD);
     });
@@ -6153,7 +6160,7 @@ Object.assign(LEAGUE.ui,{
    so they share the browser's storage: the slots used to be shared too, and a
    game could list (and overwrite) another game's saves. College football
    keeps the original keys, so its saves are untouched. */
-const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1"};
+const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1"};
 const LEGACY_KEY="fbcoach-v2";
 const KEYBASE=SAVE_KEYS[LEAGUE.id]||LEGACY_KEY;
 const NSLOTS=3;
@@ -6439,9 +6446,9 @@ function saveLeague(d){
   if(d.league)return d.league;
   const R=d.uStart&&d.uStart.roster; if(!R)return "cfb";
   for(const t in R){const p=(R[t]||[]).find(x=>x); if(!p)continue;
-    if(p.k)return "nfl";
-    if(["PG","SG","SF","PF","C"].indexOf(p.p)>=0)return "ncaab";
-    return "cfb"}
+    const hoops=["PG","SG","SF","PF","C"].indexOf(p.p)>=0;      // basketball positions first:
+    if(hoops)return p.k?"nba":"ncaab";                            // pro basketball has contracts too
+    return p.k?"nfl":"cfb"}
   return "cfb";
 }
 /* Move other games' saves out of the old shared slots into their own game's
