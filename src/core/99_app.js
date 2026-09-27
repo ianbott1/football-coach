@@ -348,6 +348,9 @@ function newDynasty(team,seed,coachName,roster){
 }
 
 /* ============ advance ============ */
+/* "Sim it": play this one game without watching it, whatever the setting */
+let simOnce=false;
+function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } }
 function doAdvance(){
   if(SEA.phase==="done"){ openOffseason(); return; }
   const before=SEA.step;
@@ -360,7 +363,7 @@ function doAdvance(){
   SEA.plan=plan;
   const ug=(SEA.phase==="week")?SEA.nextGame(S.myTeam)
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
-  const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never";
+  const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never" && !simOnce;
   // meeting a coach who comes later this turn: they play it, with both of you calling
   const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
   if(wantLive && !live && laterRival){ handoffNotes[opponentOf(ug)]={vs:S.myTeam, coach:S.career.name}; }
@@ -1559,7 +1562,7 @@ function teamCard(t){
     h+=book.slice(0,12).map(x=>`<div class="arow">
       <div class="fmain"><div class="fname">${esc(x.n)}
         <span class="dpos">${esc(x.p)}</span>
-        ${x.early?`<span class="etag">left early</span>`:""}</div>
+        ${x.early?`<span class="etag">${esc(LEAGUE.text.earlyTag||"left early")}</span>`:""}</div>
       <div class="fnote">${x.from}&ndash;${x.to} &middot; ${esc(LEAGUE.records.alumniLine(x))}</div></div>
       <span class="ares ${x.draft?(x.draft.round<=1?'gold':'up'):''}">${
         x.draft?(x.draft.round+"."+String(x.draft.pick).padStart(2,"0")):"\u2013"}</span>
@@ -1971,6 +1974,9 @@ function render(){
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
       ${(()=>{const sk=canSkip();return sk?`<button class="skip" id="skip">Sim ${sk.n} weeks
         &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
+      ${(()=>{ if(inOff||done||(S.watchMode||"all")==="never"||prefersReduced()||live)return "";
+        const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
+        return ug?`<button class="skip" id="simone">Sim it</button>`:""})()}
       <button class="advance ${done||inOff?'gold':''}" id="adv" ${
         inOff&&((S.off.act.userOpen&&S.off.move===null)||LEAGUE.ui.offseasonBlock()!==null)?'disabled':''}>${
         inOff?(S.off.act.userOpen&&S.off.move===null?"Choose your next job"
@@ -2017,6 +2023,10 @@ function render(){
   };
   const a2=el("adv2"); if(a2)a2.onclick=advance;
   const s2=el("skip2"); if(s2)s2.onclick=()=>simAhead();
+  if(el("simone"))el("simone").onclick=()=>{
+    if(SEA.phase!=="week"&&view==="team")view="scores";
+    simAdvance(); window.scrollTo({top:0,behavior:"auto"});
+  };
   el("adv").onclick=()=>{
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team")view="scores";

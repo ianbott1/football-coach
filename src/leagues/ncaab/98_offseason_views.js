@@ -59,12 +59,12 @@ function offseasonBanner(){
     ${(function(){
       const mine=(last.league.draft||[]).filter(d=>d.team===my);
       if(!mine.length)return "";
-      return `<div class="grouphead">Draft night &mdash; ${last.year}</div>`+
+      return `<div class="grouphead">Your players in the NBA draft &mdash; ${last.year}</div>`+
         mine.map(d=>`<div class="drow">
           <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
           <div class="fmain"><div class="fname">${esc(d.n)}
             <span class="dpos">${esc(d.p)}</span></div>
-          <div class="fnote">${esc(d.d.nfl)}${d.early?" &middot; left early":""}${
+          <div class="fnote">Drafted by ${esc(d.d.nfl)}${d.early?" &middot; "+(d.c===0?"one-and-done":"turned pro after his "+(["freshman","sophomore","junior"][d.c]||"junior")+" year"):""}${
             d.d.overall===1?" &middot; No. 1 overall":""}</div></div>
           <span class="dovr">#${d.d.overall}</span></div>`).join("");
     })()}

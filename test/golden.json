@@ -1,5 +1,5 @@
 {
- "fp": "58a296477801f6a4",
+ "fp": "de96346c484daae0",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -79,6 +79,11 @@
    "fp": "58a296477801f6a4",
    "from": "6aee623a6d02e0b6",
    "note": "Goal line counts your remaining games from the schedule (was 12 minus games played: wrong for pro and basketball) and says 'out of reach' only when a postseason run couldn't get there; basketball's seat badge grades a season in progress with March at par"
+  },
+  {
+   "fp": "de96346c484daae0",
+   "from": "58a296477801f6a4",
+   "note": "A Sim it button beside Play for your game (all games); basketball: every team in its conference tournament (ACC and Big Ten 15, Ivy 4) on a 16-slot bracket; clearer NBA draft wording"
   }
  ],
  "result": {
@@ -93,7 +98,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "2d03e5d872291c88",
     "universe": "e79095527cedb7a2",
-    "screens": "53e291c164842229"
+    "screens": "7bc52f40379eb8ff"
    },
    {
     "year": 2027,
@@ -105,7 +110,7 @@
     "heis": "5c947393c6f7ab04",
     "history": "54e86afb05b51bb6",
     "universe": "7984b671b6b8445c",
-    "screens": "b45e2545ad4a49a7"
+    "screens": "8d577e069961aae9"
    },
    {
     "year": 2028,
@@ -117,7 +122,7 @@
     "heis": "cea69a0c24106e1c",
     "history": "0fbedd73deeb837b",
     "universe": "10c0a14a142936e0",
-    "screens": "05ea0cc3a903edef"
+    "screens": "9428b7f3463805d5"
    },
    {
     "year": 2029,
@@ -129,7 +134,7 @@
     "heis": "86c27997c3fd52ed",
     "history": "534eefba20e56b1b",
     "universe": "e03443c50faacd3b",
-    "screens": "04fe48166d8ceb34"
+    "screens": "e82c6710095d41a7"
    }
   ],
   "Rice#2024": [
@@ -143,7 +148,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "76ea741ee32b3c41"
+    "screens": "1b7550a893158080"
    },
    {
     "year": 2027,
@@ -155,7 +160,7 @@
     "heis": "4e4319a44375c65b",
     "history": "badebf2c925eda97",
     "universe": "d27a590dd69db4c8",
-    "screens": "aa477b8eb27c109e"
+    "screens": "a6e3b2d41a64d28d"
    },
    {
     "year": 2028,
@@ -167,7 +172,7 @@
     "heis": "f4929038beaf492f",
     "history": "c4907f846de53b96",
     "universe": "739fe69b302c434d",
-    "screens": "55d05e00e2a9355e"
+    "screens": "f3f60308356c274e"
    },
    {
     "year": 2029,
@@ -179,7 +184,7 @@
     "heis": "aacb35d7197a5573",
     "history": "85bae84c3194d8be",
     "universe": "fd8e222efc417852",
-    "screens": "471085fdbc43783c"
+    "screens": "e8df0b7a3a00b713"
    }
   ],
   "Oregon#777": [
@@ -193,7 +198,7 @@
     "heis": "fde104829f9687a1",
     "history": "9316d1f06af839c7",
     "universe": "be152d1e2f6220f0",
-    "screens": "b93af9bc876281ce"
+    "screens": "d2e634cb709c63e0"
    },
    {
     "year": 2027,
@@ -205,7 +210,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "1859cc63b70bc07e"
+    "screens": "6a170639945ebf06"
    },
    {
     "year": 2028,
@@ -217,7 +222,7 @@
     "heis": "8bc8df1a03879f2f",
     "history": "e5ded2f68e112df9",
     "universe": "10e4f661e0c5e66f",
-    "screens": "8928b8c16f673b62"
+    "screens": "de006f0a0efdfbe2"
    }
   ],
   "Kent State#31337": [
@@ -231,7 +236,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "74007a0db2a63521",
     "universe": "e22d53c083f084ff",
-    "screens": "55b0f4f621676c68"
+    "screens": "2d43ea8e756186ac"
    },
    {
     "year": 2027,
@@ -243,7 +248,7 @@
     "heis": "e3afac23d3079708",
     "history": "4929007a1d5ff808",
     "universe": "8b8561c010c5d7ce",
-    "screens": "dbb77d2ae94102b1"
+    "screens": "13b3ad1d9b73b90d"
    },
    {
     "year": 2028,
@@ -255,7 +260,7 @@
     "heis": "1631e759996121aa",
     "history": "f34fa1d94fa7d861",
     "universe": "c6dadac000888428",
-    "screens": "c6758dfaff87dab3"
+    "screens": "0f43756b006ddc61"
    }
   ],
   "schedules#60": [

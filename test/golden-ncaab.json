@@ -1,5 +1,5 @@
 {
- "fp": "84f2b43cace1140f",
+ "fp": "23c737a66387da28",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -60,85 +60,90 @@
    "fp": "84f2b43cace1140f",
    "from": "277acea65d3164e8",
    "note": "Conference tournaments on a fixed bracket (drawn, browsable); records at Selection Sunday in the NCAA first round"
+  },
+  {
+   "fp": "23c737a66387da28",
+   "from": "84f2b43cace1140f",
+   "note": "A Sim it button beside Play for your game (all games); basketball: every team in its conference tournament (ACC and Big Ten 15, Ivy 4) on a 16-slot bracket; clearer NBA draft wording"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "e16181206e00b687",
-    "post": "7023b3c1e23d0153",
-    "champion": "Virginia",
-    "rec": "cea92868cd62d053",
-    "poll": "157543bd40021531",
+    "games": "f29d7690d1c76deb",
+    "post": "b5c51d1acbc53c33",
+    "champion": "South Carolina",
+    "rec": "5208ac8b43f34613",
+    "poll": "3f8457e7080b9ced",
     "heis": "63c51af92f20ba26",
-    "history": "461ddef9d40cdd60",
-    "universe": "7fa650d97af0cc30",
-    "screens": "f5cedc5a33d787fb"
+    "history": "52cf549d5a9673b4",
+    "universe": "e4b5bdf917318de9",
+    "screens": "3c297e6b576ce7a7"
    },
    {
     "year": 2027,
-    "games": "5ea0fe163909e893",
-    "post": "170a20486d36af92",
-    "champion": "UCLA",
-    "rec": "6592a33912164e32",
-    "poll": "9a4a18a4e453101a",
-    "heis": "1125aeca1f4a5894",
-    "history": "454ef00f70fde269",
-    "universe": "ed9bc77172d9548c",
-    "screens": "ca10a2f7e9617ff6"
+    "games": "7b043e15dc78d27f",
+    "post": "a9caae6643f621e7",
+    "champion": "Miami",
+    "rec": "96f3803e654573d4",
+    "poll": "bccc94f9531e0c82",
+    "heis": "2bfaa15dc3b74ca6",
+    "history": "4df2958bc77f8d92",
+    "universe": "117d734273179498",
+    "screens": "b6c7ae70765b47a2"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "ba9cbbfac8472de3",
-    "post": "560e526eadab8a12",
+    "games": "923c83c4d3e7fec1",
+    "post": "34797444f0cdf7b2",
     "champion": "Kansas",
-    "rec": "2f33db461668c5ba",
-    "poll": "0b858bcf394de72e",
+    "rec": "acd9846afd56d900",
+    "poll": "f39d248d536694cb",
     "heis": "1259105979116d86",
-    "history": "0997da1ca03b0a57",
-    "universe": "b17b5a9a88d60604",
-    "screens": "f41712c6b6d5ba95"
+    "history": "268820be5c3b5376",
+    "universe": "ffa3b5e92694c725",
+    "screens": "38e5f0b27b98325b"
    },
    {
     "year": 2027,
-    "games": "f86475fc4e6f38ba",
-    "post": "998ac747bfde1b34",
+    "games": "71d74f6479c584f7",
+    "post": "8a06b713e1a553d4",
     "champion": "Michigan",
-    "rec": "960230d1b89f1d69",
-    "poll": "f06015c70e7baf44",
-    "heis": "bfc1e7e1a6fb5e76",
-    "history": "0d9522055f47c4e3",
-    "universe": "19ee8bb6e5dc8fcd",
-    "screens": "0168c11c669d4275"
+    "rec": "f7e7df439daf36c4",
+    "poll": "e74ee1b27c2a0eba",
+    "heis": "ae62b5eb414defeb",
+    "history": "353ad5b088864607",
+    "universe": "20af196c007fcbed",
+    "screens": "1d794c84c882aae3"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "ada689b106727a0e",
-    "post": "0f249d9e059ae008",
-    "champion": "UCLA",
-    "rec": "20d36e7dbbc6a120",
-    "poll": "816261df7ac34873",
+    "games": "c8f75445db808edf",
+    "post": "9bfd3a1d45ff6bbb",
+    "champion": "Kentucky",
+    "rec": "432a14cefc0962ef",
+    "poll": "632bb9da1f459ccf",
     "heis": "c30dde17209a314e",
-    "history": "143192ecfecf3d7f",
-    "universe": "c4a103cae5b3d8c4",
-    "screens": "ac81c2631ef5ab0e"
+    "history": "aee3c71ad1457fc9",
+    "universe": "da2d3a941658676c",
+    "screens": "afd2f957f17559b7"
    },
    {
     "year": 2027,
-    "games": "bfe8f19a38a460ba",
-    "post": "d73e7936ae1b5ff3",
-    "champion": "Iowa State",
-    "rec": "12a6e080ae56868a",
-    "poll": "c7bc8ad65b4847db",
-    "heis": "c88a9af88e17f781",
-    "history": "6793d69677d55466",
-    "universe": "02e807518cad2721",
-    "screens": "d5745d99cdce6808"
+    "games": "bd495727b1ac6b8c",
+    "post": "e489ae0f43cb2ccd",
+    "champion": "Michigan",
+    "rec": "c0fb2f6da8117bc0",
+    "poll": "e6ef485a925f13ec",
+    "heis": "7b1c51d42d47923e",
+    "history": "8a0c97c6a78f5f80",
+    "universe": "0fe01e30bc95780f",
+    "screens": "3409e6ce7b0b385b"
    }
   ],
   "schedules#60": [

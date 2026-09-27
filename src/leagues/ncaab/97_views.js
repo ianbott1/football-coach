@@ -184,22 +184,27 @@ let ctConf=null;
 function ctBracketHTML(c){
   const T=SEA.ct&&SEA.ct[c];
   // before it starts: the seeds as they stand
-  const seeds=T?T.seeds:SEA.confRank(c).slice(0,12), n=seeds.length, sd=t=>seeds.indexOf(t)+1;
+  const seeds=T?T.seeds:SEA.confRank(c).slice(0,(LEAGUE.playoff.ctCap||{})[c]||16), n=seeds.length, sd=t=>seeds.indexOf(t)+1;
   const R=(T&&T.res)||{};
-  const QF=[1,8,4,5,3,6,2,7], r1=QF.filter(k=>k>=5&&17-k<=n);
-  const box=(g,a,b)=>g&&g.home?bgame(g):bgame(null,a?{t:a,s:sd(a)}:null,b?{t:b,s:sd(b)}:null);
   const win=(r,i)=>{const g=(R[r]||[])[i]; return g===undefined?null:(g&&g.winner!==undefined?g.winner:g)};
-  const slotT=k=>{ if(r1.indexOf(k)>=0)return win("ct1",r1.indexOf(k)); return k<=n?seeds[k-1]:null };
+  const box=(g,a,b)=>g&&g.home?bgame(g):bgame(null,a?{t:a,s:sd(a)}:null,b?{t:b,s:sd(b)}:null);
+  // first round: a game, or a seed with a bye
+  const r1=CT_SLOTS.map(([x,y],i)=>{
+    const a=x<=n?seeds[x-1]:null, b=y<=n?seeds[y-1]:null, g=(R.ct1||[])[i];
+    if(a&&b)return box(g,a,b);
+    const t=a||b; return t?bgame(null,{t:t,s:sd(t)},{t:"bye",s:""}):"";
+  });
   const cols=[];
-  if(r1.length)cols.push(["First round",r1.map((k,i)=>box((R.ct1||[])[i],seeds[k-1],seeds[16-k]))]);
-  const qf=[]; for(let i=0;i<8;i+=2){const a=slotT(QF[i]), b=slotT(QF[i+1]), g=(R.ct2||[])[i/2];
-    qf.push(g&&g.home?bgame(g):(a&&!b&&QF[i+1]>n)||(b&&!a&&QF[i]>n)?bgame(null,{t:a||b,s:sd(a||b)},{t:"bye",s:""}):box(null,a,b))}
-  cols.push(["Quarterfinals",qf]);
+  if(CT_SLOTS.some(([x,y])=>x<=n&&y<=n))cols.push(["First round",r1]);
+  cols.push(["Quarterfinals",[0,1,2,3].map(i=>box((R.ct2||[])[i],win("ct1",2*i)||(n<=8?pre1(2*i):null),win("ct1",2*i+1)||(n<=8?pre1(2*i+1):null)))]);
   cols.push(["Semifinals",[0,1].map(i=>box((R.ct3||[])[i],win("ct2",2*i),win("ct2",2*i+1)))]);
   cols.push(["Championship",[box((R.ct4||[])[0],win("ct3",0),win("ct3",1))]]);
+  // with eight or fewer, everyone has a first-round bye: the quarterfinals are the seeds
+  function pre1(i){const [x,y]=CT_SLOTS[i]; return x<=n&&y>n?seeds[x-1]:null}
   const column=(title,items)=>`<div class="bcol"><div class="bhead">${title}</div><div class="bgames">${items.join("")}</div></div>`;
   const champ=SEA.champs[c];
-  return (champ?`<div class="note"><b>${esc(champ)}</b> won the ${esc(c)} Tournament and the automatic bid.</div>`:"")+
+  return `<div class="note">${n} teams${(LEAGUE.playoff.ctCap||{})[c]?" (the "+esc(c)+" takes its top "+n+")":""}.</div>`+
+    (champ?`<div class="note"><b>${esc(champ)}</b> won the ${esc(c)} Tournament and the automatic bid.</div>`:"")+
     `<div class="bracket">${cols.map(([t,i])=>column(t,i)).join("")}</div>`;
 }
 

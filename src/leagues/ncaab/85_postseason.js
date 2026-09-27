@@ -10,6 +10,7 @@ const SOS_W=0.25;                 // how much strength of schedule counts in a r
 const PTS_ELO=40, HOME_PTS=3;     // a point of margin, in rating (the engine's rate); home court
 const R64_PAIRS=[[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
 const CT_ROUNDS=["ct1","ct2","ct3","ct4"];
+const CT_SLOTS=[[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];   // a conference tournament's first round
 const NCAA_ROUNDS=["open","r64","r32","s16","e8","f4","final"];
 const ROUND_NAME={ct1:"First Round",ct2:"Quarterfinals",ct3:"Semifinals",ct4:"Championship",
   open:"Opening Round",r64:"First Round",r32:"Second Round",s16:"Sweet 16",e8:"Elite Eight",f4:"Final Four",final:"National Championship"};
@@ -70,13 +71,14 @@ extendSeason({
       return py-px||cr[y][0]-cr[x][0]||this.elo[y]-this.elo[x]});
   },
   /* The conference tournament brackets, set when the regular season ends:
-     seeds by conference record, 12 teams at most, a fixed bracket. The
-     quarterfinal slots run 1-8, 4-5, 3-6, 2-7; seeds 9-12 (where there are
-     that many) play 8-5 for those slots in a first round; a slot with nobody
-     in it is a bye. */
+     every team (a few conferences cap it: LEAGUE.playoff.ctCap), seeded by
+     conference record, in a fixed bracket of sixteen slots as the NCAA's
+     regions are: 1-16, 8-9, 5-12, 4-13, 6-11, 3-14, 7-10, 2-15, where a
+     missing seed is a bye for the team it would have played. Then the
+     quarterfinals, semifinals and championship. */
   _ctSetup(){
     LEAGUE.conf.order.forEach(c=>{
-      const s=this.confRank(c).slice(0,12);
+      const s=this.confRank(c).slice(0,(LEAGUE.playoff.ctCap||{})[c]||16);
       this.ct[c]={seeds:s, res:{}};
       this.ctGames[c]=[];
     });
@@ -84,15 +86,13 @@ extendSeason({
   _ctPairs(c,round){
     const T=this.ct[c], s=T.seeds, n=s.length, seed=k=>k<=n?s[k-1]:null;
     const winOf=(r,i)=>{const g=(T.res[r]||[])[i]; return g===undefined?null:(g&&g.winner!==undefined?g.winner:g)};
-    const QF=[1,8,4,5,3,6,2,7];
-    if(round==="ct1") return QF.filter(k=>k>=5&&17-k<=n).map(k=>[seed(k),seed(17-k)]);
-    // who fills each quarterfinal slot: the seed, or the first-round winner for it
-    const slot=k=>{ if(k>=5&&17-k<=n){const i=QF.filter(x=>x>=5&&17-x<=n).indexOf(k); return winOf("ct1",i)} return seed(k) };
-    const prev={ct2:null,ct3:"ct2",ct4:"ct3"}[round];
-    const field=round==="ct2"?QF.map(slot):(T.res[prev]||[]).map((g,i)=>winOf(prev,i));
+    let field;
+    if(round==="ct1") field=[].concat(...CT_SLOTS.map(([a,b])=>[seed(a),seed(b)]));
+    else{ const prev={ct2:"ct1",ct3:"ct2",ct4:"ct3"}[round]; field=(T.res[prev]||[]).map((g,i)=>winOf(prev,i)) }
     const out=[]; for(let i=0;i<field.length;i+=2)out.push([field[i],field[i+1]]);
     return out;                                   // [a,b]; a null side is a bye
   },
+
   _ct(){
     const round=this.phase;
     if(round==="ct1")this._ctSetup();
@@ -209,7 +209,7 @@ extendSeason({
     const p=this.phase;
     if(CT_ROUNDS.indexOf(p)>=0){
       const c=CONF[team];
-      const T=this.ct[c]||{seeds:this.confRank(c).slice(0,12),res:{}};
+      const T=this.ct[c]||{seeds:this.confRank(c).slice(0,(LEAGUE.playoff.ctCap||{})[c]||16),res:{}};
       const save=this.ct[c]; this.ct[c]=T;
       const pr=this._ctPairs(c,p).find(x=>x[0]&&x[1]&&(x[0]===team||x[1]===team));
       this.ct[c]=save;

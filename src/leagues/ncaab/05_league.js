@@ -39,7 +39,10 @@ const LEAGUE={
     "Villanova":16,"Illinois":18,"Indiana":18,"Tennessee":18,"Virginia":16,"Utah State":18,"San Diego State":18,
     "New Mexico":18,"Saint Mary's":16,"Dayton":18,"Wichita State":14,"Creighton":16,"Marquette":14,"Providence":16},
   schedule:{games:30, nonConf:11, confWeeks:19},
-  playoff:{size:76, autoBids:32, atLarge:44, ineligible:NCAAB_TEAMS.filter(t=>t.trans).map(t=>t.n)},
+  playoff:{size:76, autoBids:32, atLarge:44, ineligible:NCAAB_TEAMS.filter(t=>t.trans).map(t=>t.n),
+    /* conference tournaments take every team, except where the real one
+       doesn't: the ACC and Big Ten take 15 of 18, the Ivy League its top 4 */
+    ctCap:{"ACC":15,"Big Ten":15,"Ivy League":4}},
   text:{
     rankedWin:["A ranked win. The committee will notice.","That one goes on the résumé.","A Quad 1 win, and they count."],
     badLoss:["That is the kind of loss that follows you to Selection Sunday.","An unranked team did that. The committee will remember.","One of those losses you have to explain in March."],
@@ -48,7 +51,7 @@ const LEAGUE={
     ranking:"the poll", top:"the top 25", entered:"Entered the poll at #",
     orgNote:base=>`Program strength is the slow-moving baseline &mdash; recruiting,
       resources, coaching. Measured against where each program stood in ${base}.`,
-    gameName:"College Basketball Coach", eyebrow:"College",
+    gameName:"College Basketball Coach", eyebrow:"College", earlyTag:"turned pro early",
     site:"College Basketball Coach: ianbott1.github.io/football-coach",
     tiers:[
  {max:12, l:"Blue blood",    d:"A deep March run is the expectation. Miss the tournament twice and you're gone.",c:"flag"},

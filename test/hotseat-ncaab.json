@@ -1,5 +1,5 @@
 {
- "fp": "04e1ad7976203de8",
+ "fp": "51c31df136f13c37",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -40,6 +40,11 @@
    "fp": "04e1ad7976203de8",
    "from": "fda735b99acae3a7",
    "note": "Conference tournaments on a fixed bracket (drawn, browsable); records at Selection Sunday in the NCAA first round"
+  },
+  {
+   "fp": "51c31df136f13c37",
+   "from": "04e1ad7976203de8",
+   "note": "A Sim it button (all games); basketball conference tournaments take every team"
   }
  ],
  "out": [
@@ -49,11 +54,11 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-7",
+      "rec": "27-7",
       "result": "Lost in the Second Round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "3ac0be73d56b9ba1"
+     "book": "3cf703df5e820df5"
     },
     {
      "team": "North Carolina",
@@ -62,7 +67,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "1d56745eb08b2ed3"
+     "book": "c3c8b4545141ad51"
     }
    ]
   },
@@ -72,20 +77,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "27-8",
-      "result": "Lost in the Elite Eight",
-      "grade": "A-"
+      "rec": "24-9",
+      "result": "Lost in the Second Round",
+      "grade": "B-"
      },
-     "book": "581ea001f9caeb5b"
+     "book": "f9fc181e1f0379c3"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "31-3",
-      "result": "Lost in the Second Round",
-      "grade": "A-"
+      "rec": "25-10",
+      "result": "Lost in the Sweet 16",
+      "grade": "B"
      },
-     "book": "9f78b0a8258ee69b"
+     "book": "3c4e75d574dd4f51"
     }
    ]
   },
@@ -95,20 +100,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-5",
+      "rec": "30-3",
       "result": "Lost in the Second Round",
-      "grade": "B+"
+      "grade": "A-"
      },
-     "book": "2f91dde0afac6a28"
+     "book": "461d0b74c86d19af"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "32-5",
-      "result": "Lost in the Elite Eight",
-      "grade": "A"
+      "rec": "37-3",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "4442bb965ecdc9bf"
+     "book": "597811080594b190"
     }
    ]
   }

@@ -61,9 +61,12 @@ for(let s=0;s<N;s++){
     ok(!!champ&&E.champs[c]===champ, `${y} ${c}: champion isn't the final's winner`);
     ['ct1','ct2','ct3','ct4'].forEach(r=>{const ts=[].concat(...(R[r]||[]).filter(g=>g&&g.home).map(g=>[g.home,g.away]));
       ok(new Set(ts).size===ts.length, `${y} ${c} ${r}: a team plays twice`)});
-    if(n===12)ok((R.ct1||[]).length===4&&(R.ct1||[]).every(g=>g.hseed>=5&&g.aseed>=5&&g.hseed+g.aseed===17), `${y} ${c}: first round isn't 5-12, 6-11, 7-10, 8-9`);
+    const cap={'ACC':15,'Big Ten':15,'Ivy League':4}[c], all=api.NAMES.filter(x=>CONF[x]===c).length;
+    ok(n===(cap?Math.min(cap,all):all), `${y} ${c}: ${n} of ${all} teams in the tournament`);
+    ok((R.ct1||[]).filter(g=>g&&g.home).every(g=>g.hseed+g.aseed===17), `${y} ${c}: a first-round game that isn't k v 17-k`);
+    ok((R.ct1||[]).filter(g=>g&&g.home).length===Math.max(0,n-8), `${y} ${c}: ${(R.ct1||[]).filter(g=>g&&g.home).length} first-round games for ${n} teams`);
     const seen=new Set([].concat(...gs.map(g=>[g.home,g.away])));
-    if(n>=4)[0,1,2,3].forEach(i=>ok(!(R.ct1||[]).some(g=>g.home===T.seeds[i]||g.away===T.seeds[i]), `${y} ${c}: the ${i+1} seed played in the first round`));
+    const byes=Math.max(0,16-n); [...Array(Math.min(byes,n)).keys()].forEach(i=>ok(!(R.ct1||[]).some(g=>g&&(g.home===T.seeds[i]||g.away===T.seeds[i])), `${y} ${c}: the ${i+1} seed played in the first round`));
     // only winners go on
     [['ct1','ct2'],['ct2','ct3'],['ct3','ct4']].forEach(([a,b])=>{
       const losers=new Set((R[a]||[]).filter(g=>g&&g.loser).map(g=>g.loser));
