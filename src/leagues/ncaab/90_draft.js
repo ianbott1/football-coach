@@ -57,6 +57,8 @@ function recordAlumni(u, year, pool){
     // keep the finished sentence rather than the whole stat object: a record
     // book of 132 programs over 40 seasons has to stay small enough to save
     rec.line=alumniLine({p:d.p,car:d.car,yrs:rec.yrs});
+    // career totals for the program leaders (six numbers)
+    if(d.car)rec.car={pts:d.car.pts||0,reb:d.car.reb||0,ast:d.car.ast||0,tpm:d.car.tpm||0,blk:d.car.blk||0,stl:d.car.stl||0};
     u.alumni[t]=u.alumni[t]||[];
     // over decades the name generator repeats itself; a program that produces
     // two Brock Guillorys gets a second-generation one rather than a duplicate
@@ -80,16 +82,11 @@ function recordAlumni(u, year, pool){
 /* A one-line career summary from the accumulated stat line. */
 function alumniLine(a){
   if(a.line)return a.line;
-  const c=a.car; if(!c)return `${a.yrs} season${a.yrs===1?"":"s"}`;
-  const P=a.p, n=x=>(x||0).toLocaleString();
-  if(P==="QB")   return `${n(c.pyd)} yds, ${c.ptd||0} TD, ${c.int||0} INT`;
-  if(P==="RB")   return `${n(c.ryd)} rush yds, ${c.rtd||0} TD`;
-  if(P==="WR"||P==="WR2") return `${c.rec||0} catches, ${n(c.cyd)} yds, ${c.ctd||0} TD`;
-  if(P==="EDGE"||P==="DT") return `${c.sck||0} sacks, ${c.tkl||0} tackles`;
-  if(P==="LB")   return `${c.tkl||0} tackles, ${c.tfl||0} for loss`;
-  if(P==="CB"||P==="S") return `${c.ints||0} INT, ${c.pd||0} passes defended`;
-  if(P==="OT")   return `${c.ska||0} sacks allowed in ${a.yrs} season${a.yrs===1?"":"s"}`;
-  return `${a.yrs} season${a.yrs===1?"":"s"}`;
+  const c=a.car, yrs=`${a.yrs} season${a.yrs===1?"":"s"}`;
+  if(!c||!c.pts)return yrs;
+  const n=x=>(x||0).toLocaleString();
+  const second=(a.p==="PG")?`${n(c.ast)} assists`:(a.p==="PF"||a.p==="C")?`${n(c.reb)} rebounds`:`${n(c.tpm)} threes`;
+  return `${n(c.pts)} points, ${second} in ${yrs}`;
 }
 
 function draftLabel(d){
@@ -99,36 +96,21 @@ function draftLabel(d){
 }
 
 /* Career leaders in the categories people actually argue about. */
+/* program leaders: career totals, every position */
+const ALL_POS=["PG","SG","SF","PF","C"];
 const LEADER_CATS=[
-  {k:"pyd", label:"Passing yards",   pos:["QB"]},
-  {k:"ptd", label:"Passing TD",      pos:["QB"]},
-  {k:"ryd", label:"Rushing yards",   pos:["RB"]},
-  {k:"rtd", label:"Rushing TD",      pos:["RB"]},
-  {k:"cyd", label:"Receiving yards", pos:["WR","WR2"]},
-  {k:"rec", label:"Receptions",      pos:["WR","WR2"]},
-  {k:"tkl", label:"Tackles",         pos:["EDGE","DT","LB","CB","S"]},
-  {k:"sck", label:"Sacks",           pos:["EDGE","DT"]},
-  {k:"ints",label:"Interceptions",   pos:["CB","S"]}
+  {k:"pts", label:"Points",       pos:ALL_POS},
+  {k:"reb", label:"Rebounds",     pos:ALL_POS},
+  {k:"ast", label:"Assists",      pos:ALL_POS},
+  {k:"tpm", label:"Three-pointers",pos:ALL_POS},
+  {k:"blk", label:"Blocks",       pos:ALL_POS},
+  {k:"stl", label:"Steals",       pos:ALL_POS}
 ];
 
 /* Alumni only keep a finished sentence, so the numbers are parsed back out of
    it. Cheap, and it keeps the save small. */
 function leaderValue(a, cat){
-  if(!a.line)return 0;
-  const L=a.line;
-  const grab=re=>{const m=L.match(re); return m?+m[1].replace(/,/g,""):0};
-  switch(cat.k){
-    case "pyd": return grab(/([\d,]+) yds,/);
-    case "ptd": return grab(/([\d,]+) TD/);
-    case "ryd": return grab(/([\d,]+) rush yds/);
-    case "rtd": return grab(/rush yds, ([\d,]+) TD/);
-    case "cyd": return grab(/catches, ([\d,]+) yds/);
-    case "rec": return grab(/([\d,]+) catches/);
-    case "tkl": return grab(/([\d,]+) tackles/);
-    case "sck": return grab(/([\d,]+) sacks/);
-    case "ints":return grab(/([\d,]+) INT/);
-  }
-  return 0;
+  return a.car&&a.car[cat.k]?a.car[cat.k]:0;     // career totals, as recorded
 }
 
 function programLeaders(u, team){
