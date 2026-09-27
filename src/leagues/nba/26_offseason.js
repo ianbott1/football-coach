@@ -8,25 +8,26 @@
      5. free agency, under a hard salary cap
      6. empty spots are filled with replacement-level players
    Salaries are in millions and cover the twenty players the sim tracks. */
-const NFL_CAP=110;
+const NFL_CAP=165;                          // the NBA's 2026-27 cap, $164.961M, as a hard cap
 /* How well run a franchise is, from its slow-moving strength: good
    organisations develop players better, scout better, and free agents take
    a little less to join them. Without it the draft and free agency flatten
    the league within a few years. */
 const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1690)/100));
-const AGE_SHIFT={QB:3,RB:-2};
-const POS_PAY={QB:1.75,EDGE:1.15,OT:1.0,WR:1.05,WR2:0.8,CB:0.95,DT:0.9,LB:0.7,S:0.7,RB:0.6};
+const AGE_SHIFT={};                           // every position ages alike
+const POS_PAY={};                             // and is paid alike
+const MAX_DEAL=Math.round(NFL_CAP*0.35*10)/10; // a max contract: 35% of the cap
 
 function nflAsk(r,pos,age){
   const x=Math.max(0,(r-55)/35);
-  let s=(0.8+34*Math.pow(x,2.4))*(POS_PAY[pos]||1);
+  let s=Math.min(MAX_DEAL,(2+80*Math.pow(x,2.2))*(POS_PAY[pos]||1));   // $2M for the end of the bench, up to the max
   const a=age-(AGE_SHIFT[pos]||0);
   if(a>=31)s*=0.78; else if(a>=29)s*=0.9;
-  return Math.round(Math.max(0.8,s)*10)/10;
+  return Math.round(Math.max(2,s)*10)/10;
 }
 function nflYears(age,pos){const a=age-(AGE_SHIFT[pos]||0); return a<=26?4:a<=29?3:a<=31?2:1}
 function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
-const ROOKIE_ROOM=8;                        // what re-signing leaves free for the draft class
+const ROOKIE_ROOM=14;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
 function nflResignPlan(R){
@@ -35,7 +36,7 @@ function nflResignPlan(R){
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
-    const worth=(i<POS.length?p.r>=66:p.r>=64&&ask<=3)&&p.age<=32;
+    const worth=(i<POS.length?p.r>=66:p.r>=64&&ask<=8)&&p.age<=33;
     keep[i]=worth&&pay+ask<=NFL_CAP-ROOKIE_ROOM;
     if(keep[i])pay+=ask;
   });
@@ -70,18 +71,24 @@ function nflRoster(rng,programElo){
 
 /* the draft: worst regular season first; playoff teams after, by the round
    they went out in; the champion picks last */
-function nflDraftOrder(rec,elo){
-  const S2=(typeof SEA!=="undefined"&&SEA&&SEA.rounds&&SEA.rounds.wc)?SEA:null;
+/* The draft order: the fourteen teams that missed the playoffs draw for
+   the top four picks (the real odds, worst record first), the rest of them
+   follow worst first, then the playoff teams, worst record first. */
+const LOTTERY_ODDS=[140,140,140,125,105,90,75,60,45,30,20,15,10,5];      // per thousand
+function nflDraftOrder(rec,elo,rng){
+  const S2=(typeof SEA!=="undefined"&&SEA&&SEA.field)?SEA:null;
   const pct=t=>rec[t][0]/Math.max(1,rec[t][0]+rec[t][1]);
-  const out=(t)=>{
-    if(!S2||!S2.seeds||!S2.seeds[t])return 0;
-    if(S2.champion===t)return 5;
-    if(S2.rounds.sb.some(g=>g.loser===t))return 4;
-    if(S2.rounds.conf.some(g=>g.loser===t))return 3;
-    if(S2.rounds.div.some(g=>g.loser===t))return 2;
-    return 1;
-  };
-  return NAMES.slice().sort((a,b)=>out(a)-out(b)||pct(a)-pct(b)||elo[a]-elo[b]);
+  const worstFirst=(a,b)=>pct(a)-pct(b)||elo[a]-elo[b];
+  const inPO=t=>S2&&S2.field.indexOf(t)>=0;
+  const lot=NAMES.filter(t=>!inPO(t)).sort(worstFirst), po=NAMES.filter(inPO).sort(worstFirst);
+  if(!rng||lot.length!==14)return lot.concat(po);                 // no draw without a finished season
+  const pool=lot.slice(), w=LOTTERY_ODDS.slice(), top=[];
+  for(let k=0;k<4;k++){
+    let x=rng.r()*w.reduce((a,b)=>a+b,0), i=0;
+    while(x>w[i]){x-=w[i];i++}
+    top.push(pool[i]); pool.splice(i,1); w.splice(i,1);
+  }
+  return top.concat(pool,po);
 }
 
 function nflProspects(rng,n){
@@ -89,7 +96,7 @@ function nflProspects(rng,n){
   for(let i=0;i<n;i++){
     const q=i/n;
     const posIdx=rng.int(POS.length);
-    const age=21+rng.int(3);
+    const age=19+rng.int(4);                    // one-and-dones to four-year seniors
     const r=Math.round(Math.max(45,Math.min(80,rng.gauss(64-13*Math.pow(q,0.7),3.5))));
     const pot=Math.round(Math.min(99,r+Math.max(2,rng.gauss(11-5*q,4))));
     out.push({n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:age,age:age,r:r,pot:pot,
@@ -105,7 +112,7 @@ function nflProspects(rng,n){
 function nflDraftClass(u,team){
   if(!u.draftClass||u.draftClass.year!==u.year){
     const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
-    const list=nflProspects(rng,7*32); list.forEach((p,i)=>p.pid=i);
+    const list=nflProspects(rng,2*30); list.forEach((p,i)=>p.pid=i);
     u.draftClass={year:u.year,list:list};
   }
   const C=u.draftClass;
@@ -193,7 +200,7 @@ function nflApplyTrade(u,myTeam,T,rep,leave,pool){
   });
   rep.trade[myTeam]={done:true,gave:give.n,gp:give.p,got:get.n,qp:get.p,r:get.r,with:tt};
 }
-const rookieSal=o=>o<=32?Math.round((10-7*(o-1)/31)*10)/10:o<=64?1.6:1.0;
+const rookieSal=o=>o<=30?Math.round((13-10.2*(o-1)/29)*10)/10:2.0;   // the rookie scale: $13M for the first pick
 
 /* what a player adds at his spot: over the backup, or over the starter */
 function nflGain(roster,p){
@@ -285,13 +292,13 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
 
   // 4. the draft
-  const order=nflDraftOrder(rec,elo);
+  const order=nflDraftOrder(rec,elo,rng);
   // the class shown on the offseason screen (a copy: the class itself isn't consumed)
   const prospects=nflDraftClass(u).list.map(p=>Object.assign({},p));
   delete u.draftClass;
   const picks=[];
-  for(let rd=1;rd<=7;rd++)order.forEach((t,k)=>{
-    const R=u.roster[t], ch=chFor(t), overall=(rd-1)*32+k+1;
+  for(let rd=1;rd<=2;rd++)order.forEach((t,k)=>{
+    const R=u.roster[t], ch=chFor(t), overall=(rd-1)*30+k+1;
     const style=(ch&&ch.draft)||"bpa";
     const score=p=>style==="need"?nflGain(R,p)*1.6+p.r*0.3
                   :style==="upside"?p.pot*1.2+p.r*0.2+nflGain(R,p)*0.3
@@ -424,33 +431,29 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
+  /* what the job demands, by franchise strength: wins over 82 games, and a
+     par for the playoffs (how far the job expects you to go) */
   expectations(p){
-    if(p>=1790)return {w:12,l:"A deep playoff run. Anything less is a disappointment.",t:"SUPER BOWL OR BUST"};
-    if(p>=1720)return {w:10,l:"Win the division and a playoff game.",t:"CONTEND"};
-    if(p>=1650)return {w:9,l:"Get into the playoffs. Nine wins should do it.",t:"PLAYOFFS"};
-    if(p>=1580)return {w:7,l:"Be competitive in December and show the rebuild is working.",t:"PUSH FORWARD"};
-    return {w:5,l:"Show progress. Five wins would be real movement here.",t:"BUILD SOMETHING"};
+    if(p>=1600)return {w:55,par:2.2,l:"Built to win now. A conference final is the floor.",t:"CONTEND"};
+    if(p>=1540)return {w:47,par:1.3,l:"Make the playoffs and win a series.",t:"WIN A SERIES"};
+    if(p>=1480)return {w:41,par:0.4,l:"Get into the playoffs, through the play-in if you have to.",t:"MAKE THE PLAYOFFS"};
+    if(p>=1420)return {w:34,par:0,l:"Draft well and show progress. Thirty-five wins would be a statement.",t:"REBUILD"};
+    return {w:27,par:0,l:"The bottom of the league. Twenty-five wins would be real movement.",t:"START OVER"};
   },
-  isTitle(result){return /SUPER BOWL CHAMPIONS/i.test(result)},
-  firstTitle:"First Super Bowl of your tenure.",
-  /* A 17-game season is noisy and 14 teams make the playoffs, so each win
-     against expectation and each playoff round count for less than in
-     college; tuned so grades spread like college's (about 6% A+, 40% of
-     seasons missing) and swing less from year to year. */
+  isTitle(result){ return /NBA CHAMPIONS/i.test(result) },
+  firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
-    let s=(wins-exp.w)*0.6;
-    if(/SUPER BOWL CHAMPIONS/i.test(result))s+=2.5;
-    else if(/Lost the Super Bowl/.test(result))s+=1.5;
-    else if(/conference championship/.test(result))s+=1.2;
-    else if(/divisional round/.test(result))s+=0.9;
-    else if(/wild card round|Made the playoffs/.test(result))s+=0.6;
-    else if(/Missed the playoffs/.test(result))s-=(exp.w>=10?0.5:0);
-    else if(/Losing season/.test(result))s-=(exp.w>=9?1.25:0.25);
+    // no result yet (a season in progress, as the seat badge asks): the playoffs at par
+    const po=!result?(exp.par||0):/NBA CHAMPIONS/i.test(result)?5:/NBA Finals/.test(result)?3.6:/conference finals/.test(result)?2.6:
+      /conference semifinals/.test(result)?1.7:/first round/.test(result)?0.9:/Made the playoffs/.test(result)?0.9:
+      /play-in/.test(result)?0.2:-(exp.par>=0.4?0.8:0);
+    let s=(wins-exp.w)*0.13+po-(exp.par||0);
+    if(wins<losses)s-=(exp.w>=41?0.8:0.2);
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
             s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
     const l=s>=2.6?"Far beyond what anyone expected.":s>=0.9?"Ahead of schedule.":
             s>=-0.6?"About what was expected.":s>=-2.2?"Short of the mark.":"A bad year, and everyone knows it.";
-    return {g:g,l:l,miss:s<-0.6};                 // "Short of the mark" or worse
+    return {g:g,l:l,miss:s<-0.6};
   }
 };
 
