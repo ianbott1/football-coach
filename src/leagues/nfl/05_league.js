@@ -68,7 +68,7 @@ const LEAGUE={
   playoff:{size:14, perSide:7, byes:1},
 
   /* the baby owl, suited up for the pros */
-  art:{owlHelmet:`
+  art:{owlExtra:`
       <!-- pro: a helmet. Shell over the crown, ear tufts through it, a centre
            stripe, an ear hole each side and a face mask below the eyes. -->
       <path d="M18.6 22 C17.6 10.8 25.4 3.2 36 3.2 C46.6 3.2 54.4 10.8 53.4 22
