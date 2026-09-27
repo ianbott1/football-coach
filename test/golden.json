@@ -1,5 +1,5 @@
 {
- "fp": "dffd4bec2a5a06e5",
+ "fp": "33014019a9c9c785",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -89,6 +89,11 @@
    "fp": "dffd4bec2a5a06e5",
    "from": "de96346c484daae0",
    "note": "College football's owl holds a football, with a pennant on the goalpost"
+  },
+  {
+   "fp": "33014019a9c9c785",
+   "from": "dffd4bec2a5a06e5",
+   "note": "Sim game: the button's new name, and it's now in the desktop side panel; team search counts the league's own teams; a skipped game's remaining calls take the neutral option"
   }
  ],
  "result": {
@@ -103,7 +108,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "2d03e5d872291c88",
     "universe": "e79095527cedb7a2",
-    "screens": "2dd9451af3d62612"
+    "screens": "295d427742d557e9"
    },
    {
     "year": 2027,
@@ -115,7 +120,7 @@
     "heis": "5c947393c6f7ab04",
     "history": "54e86afb05b51bb6",
     "universe": "7984b671b6b8445c",
-    "screens": "6f06bc4c6f8fc2ee"
+    "screens": "c5a8a1c34adf6dd4"
    },
    {
     "year": 2028,
@@ -127,7 +132,7 @@
     "heis": "cea69a0c24106e1c",
     "history": "0fbedd73deeb837b",
     "universe": "10c0a14a142936e0",
-    "screens": "3f4ed165b5d7ffc3"
+    "screens": "7185465876bbdc85"
    },
    {
     "year": 2029,
@@ -139,7 +144,7 @@
     "heis": "86c27997c3fd52ed",
     "history": "534eefba20e56b1b",
     "universe": "e03443c50faacd3b",
-    "screens": "1c92c1e686cc8569"
+    "screens": "eb92d442536d07e2"
    }
   ],
   "Rice#2024": [
@@ -153,7 +158,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "14bc591d30736634"
+    "screens": "172e52408d26c731"
    },
    {
     "year": 2027,
@@ -165,7 +170,7 @@
     "heis": "4e4319a44375c65b",
     "history": "badebf2c925eda97",
     "universe": "d27a590dd69db4c8",
-    "screens": "2c1edcccb9030636"
+    "screens": "fb05a06c48301387"
    },
    {
     "year": 2028,
@@ -177,7 +182,7 @@
     "heis": "f4929038beaf492f",
     "history": "c4907f846de53b96",
     "universe": "739fe69b302c434d",
-    "screens": "4945b85fef92d881"
+    "screens": "4fd1fe7c2c72b60b"
    },
    {
     "year": 2029,
@@ -189,7 +194,7 @@
     "heis": "aacb35d7197a5573",
     "history": "85bae84c3194d8be",
     "universe": "fd8e222efc417852",
-    "screens": "1748f02ec0298db7"
+    "screens": "88e585dba84f7b5a"
    }
   ],
   "Oregon#777": [
@@ -203,7 +208,7 @@
     "heis": "fde104829f9687a1",
     "history": "9316d1f06af839c7",
     "universe": "be152d1e2f6220f0",
-    "screens": "d903d13142ee6b54"
+    "screens": "6eddf78c03819607"
    },
    {
     "year": 2027,
@@ -215,7 +220,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "efa3fa8392bb405a"
+    "screens": "c15e67bc491d164a"
    },
    {
     "year": 2028,
@@ -227,7 +232,7 @@
     "heis": "8bc8df1a03879f2f",
     "history": "e5ded2f68e112df9",
     "universe": "10e4f661e0c5e66f",
-    "screens": "832bf30714550eb1"
+    "screens": "42d53c05c6540840"
    }
   ],
   "Kent State#31337": [
@@ -241,7 +246,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "74007a0db2a63521",
     "universe": "e22d53c083f084ff",
-    "screens": "bafa55d9b64826bf"
+    "screens": "a1fe1a0b44c43904"
    },
    {
     "year": 2027,
@@ -253,7 +258,7 @@
     "heis": "e3afac23d3079708",
     "history": "4929007a1d5ff808",
     "universe": "8b8561c010c5d7ce",
-    "screens": "544dadfea008acc4"
+    "screens": "33764c17a18f7413"
    },
    {
     "year": 2028,
@@ -265,7 +270,7 @@
     "heis": "1631e759996121aa",
     "history": "f34fa1d94fa7d861",
     "universe": "c6dadac000888428",
-    "screens": "27e75b3e6c0e960e"
+    "screens": "b89843bdade9771b"
    }
   ],
   "schedules#60": [

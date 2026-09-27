@@ -1,5 +1,5 @@
 {
- "fp": "17d49196be60ec24",
+ "fp": "8d59cde0123e43f7",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -10,6 +10,11 @@
    "fp": "17d49196be60ec24",
    "from": "264aba29be257fe4",
    "note": "Offseason: offensive/defensive assistant, not coordinator (one screen)"
+  },
+  {
+   "fp": "8d59cde0123e43f7",
+   "from": "17d49196be60ec24",
+   "note": "Sim game: the button's new name, and it's now in the desktop side panel; team search counts the league's own teams; a skipped game's remaining calls take the neutral option"
   }
  ],
  "result": {
@@ -24,7 +29,7 @@
     "heis": "5093c248dccfc3e6",
     "history": "e6e5b114d45de542",
     "universe": "490f54c7acfd79ad",
-    "screens": "1836caa51fac9c2c"
+    "screens": "0ec83b537e086165"
    },
    {
     "year": 2027,
@@ -36,7 +41,7 @@
     "heis": "b6ab57903d397a0a",
     "history": "bafc599e9025c572",
     "universe": "d816cf0116c245ed",
-    "screens": "52a752d058e1bf79"
+    "screens": "6e8330a1eccd3bd7"
    }
   ],
   "Detroit#777": [
@@ -50,7 +55,7 @@
     "heis": "017c507aa3cb9406",
     "history": "467b28bab4ce41de",
     "universe": "ac57812476fa27d7",
-    "screens": "075646d017edcc2d"
+    "screens": "ff8f51167a154e41"
    },
    {
     "year": 2027,
@@ -62,7 +67,7 @@
     "heis": "f792074db0341d75",
     "history": "8804f615ec8ee257",
     "universe": "e5e073804ec8c28d",
-    "screens": "5bf2d57fdbf91960"
+    "screens": "73b663fed6ddedec"
    }
   ],
   "schedules#60": [
