@@ -1,5 +1,11 @@
 /* ============ state ============ */
-const KEYBASE="fbcoach-v2";
+/* Each game keeps its own save slots. All three games live on one website,
+   so they share the browser's storage: the slots used to be shared too, and a
+   game could list (and overwrite) another game's saves. College football
+   keeps the original keys, so its saves are untouched. */
+const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1"};
+const LEGACY_KEY="fbcoach-v2";
+const KEYBASE=SAVE_KEYS[LEAGUE.id]||LEGACY_KEY;
 const NSLOTS=3;
 let slot=1;
 const KEYFOR=n=>KEYBASE+"-slot"+n;
@@ -257,13 +263,52 @@ function save(){
       await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
     else await Promise.resolve();
     savePending=null;
-    try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(JSON.stringify(S))))}catch(e){saveOK=false}
+    S.league=LEAGUE.id;                                   // every save says which game it's from
+  try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(JSON.stringify(S))))}catch(e){saveOK=false}
     return saveOK;
   })();
   return savePending;
 }
+/* which game a save belongs to: new saves say; older ones are told apart by
+   their players (pro players have contracts; basketball players play PG-C) */
+function saveLeague(d){
+  if(!d)return null;
+  if(d.league)return d.league;
+  const R=d.uStart&&d.uStart.roster; if(!R)return "cfb";
+  for(const t in R){const p=(R[t]||[]).find(x=>x); if(!p)continue;
+    if(p.k)return "nfl";
+    if(["PG","SG","SF","PF","C"].indexOf(p.p)>=0)return "ncaab";
+    return "cfb"}
+  return "cfb";
+}
+/* Move other games' saves out of the old shared slots into their own game's
+   slots (first free one), once, whichever game is opened first. A save is
+   removed from the old slot only after its copy has been written. */
+let slotsMoved=false;
+async function moveForeignSaves(){
+  if(slotsMoved)return; slotsMoved=true;
+  for(let n=1;n<=NSLOTS;n++){
+    try{
+      const r=await store.get(LEGACY_KEY+"-slot"+n); if(!r)continue;
+      const lg=saveLeague(JSON.parse(lzwUnpack(r.value)));
+      if(!lg||lg==="cfb"||!SAVE_KEYS[lg])continue;
+      let dest=null;
+      for(const m of [n].concat([1,2,3].filter(x=>x!==n))){
+        if(!(await store.get(SAVE_KEYS[lg]+"-slot"+m))){dest=m;break}
+      }
+      if(!dest)continue;                              // nowhere to put it: leave it where it is
+      const ok=await store.set(SAVE_KEYS[lg]+"-slot"+dest,r.value);
+      const back=ok&&await store.get(SAVE_KEYS[lg]+"-slot"+dest);
+      if(back&&back.value===r.value)await store.delete(LEGACY_KEY+"-slot"+n);
+    }catch(e){}
+  }
+}
 async function loadSlot(n){
-  try{const r=await store.get(KEYFOR(n));return r?migrateSave(JSON.parse(lzwUnpack(r.value))):null}catch(e){return null}
+  await moveForeignSaves();
+  try{const r=await store.get(KEYFOR(n)); if(!r)return null;
+    const d=JSON.parse(lzwUnpack(r.value));
+    if(saveLeague(d)!==LEAGUE.id)return null;        // never open another game's save
+    return migrateSave(d)}catch(e){return null}
 }
 async function allSlots(){
   const out=[];
