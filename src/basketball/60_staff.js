@@ -174,7 +174,7 @@ function staffAside(kind, data){
     depth:[["bears",`Play the kid. Chaos is a ladder.`],
            ["pearl",`He's waited so patiently for this. Let him play!`],
            ["capy",`It seems to me changing the point guard mid-season rarely goes as people imagine.`]],
-    staff:[["bears",`SACK HIM. On the field. In front of everyone.`],
+    staff:[["bears",`FIRE HIM. At center court. During a timeout.`],
            ["pearl",`Everyone has bad seasons. Maybe he just needs a bit of help.`],
            ["capy",`I do believe I'd want to be very sure before we start pulling things apart.`]],
     win:  [["bears",`WE ARE UNSTOPPABLE. Say it back to us.`],

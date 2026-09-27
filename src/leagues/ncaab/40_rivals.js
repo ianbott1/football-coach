@@ -1,9 +1,10 @@
 /* ============ rivalries: college basketball ============ */
-/* [team, team, name, week when it's a non-conference game (pinned into the
+/* Names are the ones really used, or the two schools plainly.
+   [team, team, name, week when it's a non-conference game (pinned into the
    schedule so it happens every year)] */
 const RIVALS=[
 ["Duke","North Carolina","the Tobacco Road rivalry"],
-["Kentucky","Louisville","the Battle for the Bluegrass",8],
+["Kentucky","Louisville","the Kentucky-Louisville rivalry",8],
 ["Kansas","Kansas State","the Sunflower Showdown"],
 ["Kansas","Missouri","the Border War",9],
 ["Indiana","Purdue","the Indiana-Purdue rivalry"],
@@ -13,19 +14,19 @@ const RIVALS=[
 ["Cincinnati","Xavier","the Crosstown Shootout",7],
 ["Villanova","Saint Joseph's","the Holy War",6],
 ["Illinois","Missouri","Braggin' Rights",10],
-["Gonzaga","Saint Mary's","the West Coast rivalry",5],
+["Gonzaga","Saint Mary's","the Gonzaga-Saint Mary's rivalry",5],
 ["Syracuse","Georgetown","the Syracuse-Georgetown rivalry",9],
 ["Oklahoma","Oklahoma State","Bedlam",4],
-["Alabama","Auburn","the Iron Bowl of basketball"],
+["Alabama","Auburn","the Alabama-Auburn rivalry"],
 ["Texas","Texas A&M","the Lone Star Showdown"],
-["Utah","BYU","the Holy War of the West"],
+["Utah","BYU","the Utah-BYU Holy War"],
 ["Memphis","Tennessee","the Memphis-Tennessee rivalry",3],
 ["Marquette","Wisconsin","the I-94 rivalry",2],
 ["Iowa","Iowa State","the Cy-Hawk series",1],
 ["Virginia","Virginia Tech","the Commonwealth Clash"],
 ["Florida","Kentucky","the Florida-Kentucky rivalry"],
-["Penn","Princeton","the Ivy's oldest rivalry"],
-["San Diego State","UNLV","the Mountain West rivalry",3]
+["Penn","Princeton","the Penn-Princeton rivalry"],
+["San Diego State","UNLV","the San Diego State-UNLV rivalry",3]
 ].filter(r=>NAMES.indexOf(r[0])>=0&&NAMES.indexOf(r[1])>=0);
 const RIVAL_OF={};
 RIVALS.forEach(([a,b,n])=>{(RIVAL_OF[a]=RIVAL_OF[a]||[]).push({o:b,n:n});(RIVAL_OF[b]=RIVAL_OF[b]||[]).push({o:a,n:n})});

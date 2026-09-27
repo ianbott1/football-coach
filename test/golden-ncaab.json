@@ -1,5 +1,5 @@
 {
- "fp": "230554d2116ace66",
+ "fp": "6a9c4f6f9f3caab9",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -15,6 +15,11 @@
    "fp": "230554d2116ace66",
    "from": "fc53e52e4f0a45fe",
    "note": "Program strength anchored to its structural level (10% a year); strength of schedule in the committee's resume"
+  },
+  {
+   "fp": "6a9c4f6f9f3caab9",
+   "from": "230554d2116ace66",
+   "note": "Rankings tab crash fixed (pollTab); basketball season lines, firing joke, rivalry names"
   }
  ],
  "result": {
@@ -28,7 +33,7 @@
     "poll": "ded7af6655f4d72e",
     "heis": "e24c4a71619fe428",
     "history": "e4c48012e9e2f6d7",
-    "universe": "cc8529f3064cd501",
+    "universe": "c8ad085e55538d3a",
     "screens": "e1af7b3b22ca5f0e"
    },
    {
@@ -40,8 +45,8 @@
     "poll": "63bd357dc3d06a6f",
     "heis": "22ac739efab63b8a",
     "history": "dc3ff30a111a6de4",
-    "universe": "128bfbc527f0cb4a",
-    "screens": "3e7ac5dd6c02f3ea"
+    "universe": "c206cbecd9799294",
+    "screens": "68f42007737eb8c6"
    }
   ],
   "Coppin State#2024": [
@@ -54,7 +59,7 @@
     "poll": "545c5d094030259b",
     "heis": "0989698ffde423bf",
     "history": "39df52cfdeba13aa",
-    "universe": "5b574d65a7eaf246",
+    "universe": "0f2fa472cf0228f0",
     "screens": "d1f976b6f9b24a94"
    },
    {
@@ -66,8 +71,8 @@
     "poll": "f56500a79b7009a9",
     "heis": "a1dc4895a4b38cb0",
     "history": "1c19070034e56852",
-    "universe": "044e28dd561e5fb4",
-    "screens": "0be70c5a35d9ffe2"
+    "universe": "fffca938599fe17a",
+    "screens": "0397219538b48414"
    }
   ],
   "Gonzaga#777": [
@@ -80,8 +85,8 @@
     "poll": "9ed3e3486cd70b24",
     "heis": "23e205f1867fa71e",
     "history": "b0d1707ea45af6dc",
-    "universe": "af9f61b6542d7578",
-    "screens": "ea6ce1845ef26602"
+    "universe": "19b1cca78df31ffc",
+    "screens": "cb3717fca043fb23"
    },
    {
     "year": 2027,
@@ -92,8 +97,8 @@
     "poll": "fee6b9d216878ec1",
     "heis": "df6c1bf04c8b1e53",
     "history": "2c2ac8bf7bdc119b",
-    "universe": "2a89fc4b53dde0d0",
-    "screens": "c0d8a74efccfb64e"
+    "universe": "d5a112c6b7061e65",
+    "screens": "e7c92659f051fad0"
    }
   ],
   "schedules#60": [

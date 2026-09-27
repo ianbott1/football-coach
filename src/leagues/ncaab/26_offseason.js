@@ -363,9 +363,11 @@ LEAGUE.migrateHistory=function(h){
           early:h.early||{}, realigned:h.realigned||[]};
 };
 /* one season of a team's history, in a line */
+/* one season in a line, for a team's history: how March went */
 LEAGUE.seasonLine=function(h,t,r,seed){
-  if(h.pnote&&h.pnote[t])return h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
-  if(h.champion===t)return "National champions";
-  if(seed)return "Playoff, No. "+seed+" seed";
-  return r[0]>=6?"No bowl":"Losing season";
+  if(h.champion===t)return "National champions"+(seed?" \u00b7 a "+seed+" seed":"");
+  if(h.pnote&&h.pnote[t])return h.pnote[t].replace("NCAA tournament \u2014 ","NCAA: ")+(seed?" \u00b7 "+seed+" seed":"");
+  if(seed)return "NCAA tournament, "+seed+" seed";
+  if(h.groupChamps&&Object.keys(h.groupChamps).some(c=>h.groupChamps[c]===t))return "Conference tournament champions";
+  return r[0]>r[1]?"No NCAA bid":"Losing season";
 };

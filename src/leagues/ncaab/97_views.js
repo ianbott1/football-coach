@@ -1,6 +1,8 @@
 /* ============ views: college basketball ============ */
 /* The poll with bracketology beside it, the stakes line for your next game,
    and the postseason: conference tournaments, the field, the bracket. */
+let pollTab="poll";            // Rankings: the Top 25 or Bracketology
+let postTab="ct";              // postseason: conference tournaments, the field, the bracket
 function pollView(){
   const prev=SEA.prevRank, cur=SEA.poll.rankMap();
   if(SEA.step>=8&&SEA.phase==="week"){
