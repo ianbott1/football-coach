@@ -1847,7 +1847,7 @@ function render(){
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
-        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">Football</span><br>
+        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br>
         <span class="wm-b">Coach</span></h1></div>`;return}
     renderTitle();return}
   if(S.introStep!==null&&S.introStep!==undefined&&!S.myTeam){renderIntro();return}
@@ -2009,10 +2009,7 @@ function tierOf(rank){return TIERS.find(t=>rank<=t.max)}
 function owlSVG(cls,withPost){
   return `<svg class="${cls||'owl'}" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true">
-    ${withPost?`<g fill="none" stroke="var(--sodium)" stroke-width="4.4" stroke-linecap="square">
-      <path d="M9 13 V50"/><path d="M63 13 V50"/><path d="M9 50 H63"/><path d="M36 50 V62"/>
-    </g>
-    <ellipse cx="36" cy="65" rx="11.5" ry="3" fill="none" stroke="var(--line)" stroke-width="2.2"/>`:""}
+    ${withPost?SPORT.perch:""}
     <g>
       <!-- ear tufts -->
       <path d="M24 14 C22.6 7.6 24 4.8 26.4 4.2 C28.5 6.9 30 10 30.8 12.9 Z" fill="#C98A63"/>
@@ -2100,7 +2097,7 @@ function owlMark(size){
   return `<span class="owlmark" style="width:${size}px;height:${size}px">${owlSVG("owlmini",false)}</span>`;
 }
 
-const OWL_LINE="Baby Owl genius football coach!";
+const OWL_LINE="Baby Owl genius "+SPORT.word.toLowerCase()+" coach!";
 
 function renderTitle(){
   const slots=S._slots||[];
@@ -2109,7 +2106,7 @@ function renderTitle(){
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
     </div>
-    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">Football</span><br><span class="wm-b">Coach</span></h1>
+    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">Build a program. Win it all.</div>
     <div class="slots">${slots.map(s=>s.empty
       ? `<button class="slot empty" data-slot="${s.n}">

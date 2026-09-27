@@ -5,6 +5,12 @@
    its own SPORT. */
 const SPORT={
   id:"football",
+  word:"Football",                     // the title screen's wordmark: Football / Coach
+  /* what the owl perches on in the logo: the crossbar of a goalpost */
+  perch:`<g fill="none" stroke="var(--sodium)" stroke-width="4.4" stroke-linecap="square">
+      <path d="M9 13 V50"/><path d="M63 13 V50"/><path d="M9 50 H63"/><path d="M36 50 V62"/>
+    </g>
+    <ellipse cx="36" cy="65" rx="11.5" ry="3" fill="none" stroke="var(--line)" stroke-width="2.2"/>`,
   staff:{
     oc:{short:"OC", long:"offensive coordinator"},
     dc:{short:"DC", long:"defensive coordinator"},
