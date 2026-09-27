@@ -1,5 +1,5 @@
 {
- "fp": "9dd4a32b21f45c2f",
+ "fp": "3d1a6665a2d79e6d",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -55,6 +55,11 @@
    "fp": "9dd4a32b21f45c2f",
    "from": "9dd4a32b21f45c2f",
    "note": "Record book: basketball career lines and program leaders (points, rebounds, assists, threes, blocks, steals)"
+  },
+  {
+   "fp": "3d1a6665a2d79e6d",
+   "from": "9dd4a32b21f45c2f",
+   "note": "The transfer portal; basketball assistant wording on the offseason screen"
   }
  ],
  "out": [
@@ -68,7 +73,7 @@
       "result": "Lost in the Second Round",
       "grade": "B"
      },
-     "book": "d58feb3fae260698"
+     "book": "582ba664923f1e57"
     },
     {
      "team": "North Carolina",
@@ -77,7 +82,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "f6abc22ab0207c3d"
+     "book": "e6cec894bab04237"
     }
    ]
   },
@@ -87,20 +92,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "24-9",
-      "result": "Lost in the Second Round",
-      "grade": "B-"
+      "rec": "29-8",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "afacd1a7af09ee59"
+     "book": "1f7bf7ed86fcb5f9"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "25-10",
-      "result": "Lost in the Sweet 16",
-      "grade": "B"
+      "rec": "21-10",
+      "result": "Lost in the First Round",
+      "grade": "C"
      },
-     "book": "e18dd575f12adb16"
+     "book": "a4d72fc0c99b82f5"
     }
    ]
   },
@@ -110,20 +115,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "30-3",
+      "rec": "28-6",
       "result": "Lost in the Second Round",
-      "grade": "A-"
+      "grade": "B+"
      },
-     "book": "3478e15452eba8b0"
+     "book": "93c3cc2b903da911"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "37-3",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "30-3",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
      },
-     "book": "83daaacacd745fed"
+     "book": "cfecbed3175fb058"
     }
    ]
   }

@@ -207,12 +207,92 @@ function applyBudget(u,t,alloc){
   };
 }
 
+/* ---- the transfer portal ----
+   Who enters is known when the season ends (so the offseason screen can show
+   them): backups stuck behind a clearly better starter, who want minutes, and
+   about one in twelve of the stars at small programs, moving up (more drained
+   the mid-majors and made first-round upsets rarer than history: bb-march). Seniors
+   graduate instead. Keys identify a player across the offseason. */
+const portalKey=(t,p)=>t+"|"+p.n+"|"+p.p;
+const portalHash=x=>{let h=7;for(let i=0;i<x.length;i++)h=(h*31+x.charCodeAt(i))|0;return (Math.abs(h)%1000)/1000};
+function portalEntrants(u){
+  const out=[];
+  NAMES.forEach(t=>{const R=u.roster[t];
+    POS.forEach((P,i)=>{const st=R[i], bk=R[BK(i)];
+      if(bk&&st&&bk.c<=2&&bk.r>=55&&st.r>=bk.r+4)
+        out.push({key:portalKey(t,bk),from:t,n:bk.n,p:bk.p,r:bk.r,pot:bk.pot,c:bk.c,why:"wants more minutes"});
+      if(st&&st.c<=2&&st.r>=72&&(u.program[t]||1500)<1600&&portalHash(t+st.n+u.year)<0.08)
+        out.push({key:portalKey(t,st),from:t,n:st.n,p:st.p,r:st.r,pot:st.pot,c:st.c,why:"moving up"});
+    })});
+  return out.sort((a,b)=>b.r-a.r);
+}
+/* a transfer takes a spot at his position if he's better than who is there;
+   whoever he pushes off the end leaves the program */
+function portalPlace(R,pl){
+  const i=POS.findIndex(P=>P.p===pl.p); if(i<0)return {ok:false};
+  if(!R[i]||pl.r>R[i].r){const out=R[BK(i)]; R[BK(i)]=R[i]; R[i]=pl; return {ok:true,out:out,start:true}}
+  if(!R[BK(i)]||pl.r>R[BK(i)].r){const out=R[BK(i)]; R[BK(i)]=pl; return {ok:true,out:out,start:false}}
+  return {ok:false};
+}
+function runPortal(u,rng,entrants,U_CH,report){
+  const moved=[], touched=new Set();
+  const P={in:{},out:{},targets:{}}; const push=(o,t,x)=>{(o[t]=o[t]||[]).push(x)};
+  // they leave: each program signs a freshman in the spot
+  entrants.forEach(e=>{
+    const R=u.roster[e.from], i=R.findIndex(p=>p&&portalKey(e.from,p)===e.key);
+    if(i<0)return;                                   // graduated or gone to the NBA
+    const pl=R[i]; R[i]=makePlayer(rng,eloToRating(u.program[e.from])-rng.range(4,10),0,i%POS.length);
+    pl.yrsHere=0; moved.push({e:e,pl:pl}); touched.add(e.from);
+    push(P.out,e.from,{n:pl.n,p:pl.p,r:pl.r,why:e.why});
+  });
+  const taken=new Set(), count={};
+  const sign=(t,m)=>{const res=portalPlace(u.roster[t],m.pl); if(!res.ok)return res;
+    taken.add(m.e.key); count[t]=(count[t]||0)+1; touched.add(t);
+    push(P.in,t,{n:m.pl.n,p:m.pl.p,r:m.pl.r,from:m.e.from,start:res.start});
+    if(res.out)push(P.out,t,{n:res.out.n,p:res.out.p,r:res.out.r,why:"lost his spot to a transfer"});
+    return res};
+  // people's targets first, in their order
+  Object.keys(U_CH).forEach(t=>{const ch=U_CH[t]; if(!ch||!ch.portal||!ch.portal.length)return;
+    P.targets[t]=ch.portal.map(k=>{
+      const m=moved.find(x=>x.e.key===k&&!taken.has(k)), nm=k.split("|")[1];
+      if(!m)return {n:nm,got:false,why:"didn't enter the portal after all (or went elsewhere first)"};
+      if(m.e.from===t)return {n:nm,got:false,why:"he's leaving you"};
+      const res=sign(t,m);
+      return res.ok?{n:nm,got:true,start:res.start}:{n:nm,got:false,why:`no room at ${m.pl.p}: your players there are better`};
+    })});
+  // then the computer's programs, strongest first, two transfers at most each
+  const people=new Set(Object.keys(U_CH));
+  const order=NAMES.filter(t=>!people.has(t)).sort((a,b)=>u.program[b]-u.program[a]);
+  moved.filter(m=>!taken.has(m.e.key)).forEach(m=>{
+    const from=u.program[m.e.from]||1500;
+    // many suitors: he picks among the programs that want him (not always
+    // the strongest, which would hand the same programs the best every year)
+    const suitors=[];
+    for(const t of order){
+      if(t===m.e.from||(count[t]||0)>=2||u.program[t]<from-60)continue;
+      const R=u.roster[t], i=POS.findIndex(x=>x.p===m.pl.p);
+      // a player leaving for minutes goes where he'll start; a star moving up
+      // can also take a clear bench upgrade at a bigger program
+      const starts=i>=0&&m.pl.r>(R[i]?R[i].r:0);
+      const bench=i>=0&&m.e.why==="moving up"&&m.pl.r>(R[BK(i)]?R[BK(i)].r:0)+3;
+      if(!starts&&!bench)continue;
+      suitors.push(t); if(suitors.length>=12)break;
+    }
+    if(suitors.length)sign(suitors[rng.int(suitors.length)],m);
+  });
+  moved.filter(m=>!taken.has(m.e.key)).forEach(m=>push(P.out,m.e.from,{n:m.pl.n,p:m.pl.p,r:m.pl.r,why:m.e.why,unsigned:true}));
+  report.portal=P;
+  if(typeof S!=="undefined"&&S)S.lastPortalIn=P.in;          // for tests: every program's transfers in
+  return touched;
+}
+
 function offseasonRosters(u,rng,healthy,elo,rec,choices){
   /* One human or several: each coached program gets its own choices. */
   const U_CH = choices.users || (choices.userTeam?{[choices.userTeam]:choices}:{});
   const chFor = t=>U_CH[t]||null;
   const leavers={};
   choices=choices||{};
+  const entrants=portalEntrants(u);                 // decided as the season ended
   const risers=[],fallers=[],churn={};
   const ut=choices.userTeam;
 
@@ -256,6 +336,13 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     if(d<-35)fallers.push([t,Math.round(d)]);
   });
 
+  /* The transfer portal: players move between programs. */
+  const portalReport={}, preElo={};
+  NAMES.forEach(t=>preElo[t]=rosterElo(u.roster[t]));
+  const touched=runPortal(u,rng,entrants,U_CH,portalReport);
+  // strength moves by exactly what the portal changed (the rest, noise included, stays)
+  touched.forEach(t=>{u.trueBase[t]+=rosterElo(u.roster[t])-preElo[t]});
+
   /* Draft night: everyone who left the college game gets sorted out. */
   const draftResult=runDraft(u,rng,u.year,leavers);
   recordAlumni(u,u.year,draftResult.pool);
@@ -295,7 +382,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
           churn:churn,classes:classes,early:early,realigned:realigned,
-          draft:draftResult};
+          draft:draftResult, portal:portalReport.portal};
 }
 
 LEAGUE.offseason={
@@ -306,12 +393,13 @@ LEAGUE.offseason={
   /* the league's offseason choices, as the offseason screen starts them */
   open(u,t,wins){
     const pool=budgetPool(u,t,wins);
-    return {pool:pool, picks:{recruit:"balanced",
+    return {pool:pool, picks:{recruit:"balanced", portal:[],
       budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
               facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}}};
   },
   /* ...and as run() reads them */
-  choices(P){ return {recruit:P.recruit, budget:P.budget} }
+  choices(P){ return {recruit:P.recruit, budget:P.budget, portal:P.portal||[]} },
+  portalPreview:portalEntrants                  // who is likely to enter, for the screen
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the
@@ -358,7 +446,8 @@ LEAGUE.historyExtras=function(sea,off,my){
         early:!!d.early,c:d.c,d:d.draft})):[],
     // only the teams people coach: the screens show nothing else, and all 365
     // cost 85,000 characters a season in the save
-    classes:mineOnly(off.classes), early:mineOnly(off.early), realigned:off.realigned||[]};
+    classes:mineOnly(off.classes), early:mineOnly(off.early), realigned:off.realigned||[],
+    portal:off.portal?{in:mineOnly(off.portal.in), out:mineOnly(off.portal.out), targets:mineOnly(off.portal.targets)}:null};
 };
 /* a version-1 entry's college-only fields */
 LEAGUE.migrateHistory=function(h){

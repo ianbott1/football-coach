@@ -24,9 +24,14 @@ function offseasonBanner(){
   else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
   const cls=last.league.classes?last.league.classes[my]:null;
   const early=last.league.early?last.league.early[my]:null;
+  const pt=last.league.portal||null, pin=pt&&pt.in?pt.in[my]:null, pout=pt&&pt.out?pt.out[my]:null, ptg=pt&&pt.targets?pt.targets[my]:null;
   let rec="";
   if(cls)rec=`<div class="bnews"><b>Recruiting:</b> ${esc(cls.l)} &mdash;
     ranked ${cls.rank} of ${cls.of} nationally.</div>`;
+  if(pin&&pin.length)rec+=`<div class="bnews"><b>Transfer portal, in:</b> ${pin.map(p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+", from "+esc(p.from)+(p.start?", starting":"")+")").join(", ")}.</div>`;
+  if(pout&&pout.length)rec+=`<div class="bnews small"><b>Transfer portal, out:</b> ${pout.map(p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+"): "+esc(p.why)).join("; ")}.</div>`;
+  const missed=(ptg||[]).filter(x=>!x.got);
+  if(missed.length)rec+=`<div class="bnews small"><b>Transfer targets you missed:</b> ${missed.map(x=>esc(x.n)+" "+esc(x.why)).join("; ")}.</div>`;
   if(early){
     rec+=`<div class="bnews small">${early.map(p=>esc(p.n)+" ("+esc(p.p)+")").join(", ")}
       declared early for the draft.</div>`;
@@ -72,6 +77,28 @@ function offseasonBanner(){
     </div>`;
 }
 
+/* The transfer portal: who you're likely to lose, the best of who is likely
+   to enter, and your targets in order (they get your first look). */
+function portalHTML(num){
+  const P=S.off.picks, all=LEAGUE.offseason.portalPreview(U), my=S.myTeam, byKey={};
+  all.forEach(e=>byKey[e.key]=e);
+  const mine=(P.portal||[]).filter(k=>byKey[k]);
+  const yr=c=>["freshman","sophomore","junior"][c]||"";
+  const row=(e,on,i)=>`<div class="drow">
+      <span class="dpick">${on?(i+1)+".":""}</span>
+      <div class="fmain"><div class="fname">${esc(e.n)} <span class="dpos">${esc(e.p)}</span></div>
+        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)}</div></div>
+      <button class="skip small" ${on?`data-ptrm="${esc(e.key)}"`:`data-ptadd="${esc(e.key)}"`}>${on?"Remove":"Add"}</button></div>`;
+  let h=`<div class="grouphead">${num}. Transfer portal</div>`;
+  const losing=all.filter(e=>e.from===my);
+  h+=losing.length?`<div class="note">Likely to leave you: ${losing.map(e=>`${esc(e.n)} (${esc(e.p)}, ${e.r}), ${esc(e.why)}`).join("; ")}.</div>`
+    :`<div class="note">Nobody on your roster looks likely to leave.</div>`;
+  h+=`<div class="grouphead">Transfers you want</div>`+(mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
+    :`<div class="note">None yet. Players you add get your first look, in your order, if they'd start or beat your backup at their position.</div>`);
+  const pool=all.filter(e=>e.from!==my&&mine.indexOf(e.key)<0).slice(0,25);
+  h+=`<div class="grouphead">Likely in the portal &mdash; the best 25</div>`+pool.map(e=>row(e,false)).join("");
+  return h;
+}
 function offseasonScreen(){
   const A=S.off.act, P=S.off.picks, my=S.myTeam;
   const last=SEA;
@@ -135,9 +162,9 @@ function offseasonScreen(){
   ["oc","dc"].forEach(side=>{
     const cands=SC[side]; if(!cands)return;
     const label=side==="oc"?"offensive":"defensive";
-    h+=`<div class="grouphead">Hire a new ${label} coordinator</div>`;
-    h+=`<div class="note">Your ${label} coordinator has moved on. He shapes how that side
-      of the ball plays and develops.</div>`;
+    h+=`<div class="grouphead">Hire a new ${esc(SPORT.staff[side].long)}</div>`;
+    h+=`<div class="note">Your ${esc(SPORT.staff[side].long)} has moved on. He shapes how that end
+      of the floor plays and develops.</div>`;
     h+=cands.map((c,i)=>`<div class="cand ${(P[side]===i||(P[side]==null&&i===0))?'on':''}"
       data-coord="${side}" data-ci="${i}">
       <div class="candtop"><div><div class="fname">${esc(c.n)}</div>
@@ -167,7 +194,8 @@ function offseasonScreen(){
     <div class="fname">${esc(LEAGUE.offseason.recruitFocus[k].l)}</div>
     <div class="cdesc">${esc(LEAGUE.offseason.recruitFocus[k].d)}</div></div>`).join("");
 
-  h+=`<div class="grouphead">${step?"4":"3"}. Team philosophy</div>`;
+  h+=portalHTML(step?"4":"3");
+  h+=`<div class="grouphead">${step?"5":"4"}. Team philosophy</div>`;
   h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
     <div class="fname">${esc(PHILOSOPHY[k].l)}</div>
     <div class="cdesc">${esc(PHILOSOPHY[k].d)}</div></div>`).join("");
@@ -184,6 +212,10 @@ Object.assign(LEAGUE.ui,{
     return n>0?"Allocate "+n+" more":n<0?"Over budget":null;
   },
   bindOffseason(){
+    document.querySelectorAll("[data-ptadd]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks; P.portal=(P.portal||[]).concat([b.dataset.ptadd]); save(); render();});
+    document.querySelectorAll("[data-ptrm]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks, k=b.dataset.ptrm; P.portal=(P.portal||[]).filter(x=>x!==k); save(); render();});
     document.querySelectorAll("[data-bud]").forEach(b=>b.onclick=()=>{
       const k=b.dataset.bud, d=+b.dataset.dir, B=S.off.picks.budget;
       const nv=(B[k]||0)+d;

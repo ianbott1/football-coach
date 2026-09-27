@@ -20,7 +20,7 @@ pages.push(['team pages',api.teamPages().join('')]);
 // after two seasons the record book has basketball leaders and career lines
 { const prog=api.view('dyn','program').replace(/<[^>]+>/g,' ');
   if(!/Points/.test(prog)||!/\d[\d,]* points/.test(prog)){console.log('MISMATCH the record book has no basketball leaders or career lines');process.exit(1)} }
-const W=/\b(?<!slow it )(?<!Slow it )(touchdowns?|yards?|quarterbacks?|QB|bowls?|Heisman|field goals?|punts?|kickoffs?|end zone|gridiron|playoff|CFP|trenches|linemen|offensive line|defensive line|tailback|receivers?|sacks?|interceptions?|fumbles?|Saturdays?|NFL|scrimmage|down and)\b/gi;   // ("Slow it down and" is basketball)
+const W=/\b(?<!slow it )(?<!Slow it )(touchdowns?|yards?|quarterbacks?|QB|bowls?|Heisman|field goals?|punts?|kickoffs?|end zone|gridiron|playoff|CFP|trenches|linemen|offensive line|defensive line|tailback|receivers?|sacks?|interceptions?|fumbles?|Saturdays?|NFL|scrimmage|down and|coordinators?|side of the ball)\b/gi;   // ("Slow it down and" is basketball)
 const hits={};pages.forEach(([lab,h])=>{const t=h.replace(/<[^>]+>/g,' ');let mm;while((mm=W.exec(t))){const k=mm[0].toLowerCase();const ctx=t.slice(Math.max(0,mm.index-50),mm.index+40).replace(/\s+/g,' ');(hits[k]=hits[k]||[]).push(lab+': ...'+ctx+'...')}});
 Object.keys(hits).forEach(k=>{console.log(k,'x'+hits[k].length);[...new Set(hits[k])].slice(0,2).forEach(x=>console.log('    ',x.slice(0,150)))});
 if(pages.some(p=>p[1]==='CRASH-MARK: no reveal')){console.log('MISMATCH the Selection Sunday reveal is missing');process.exit(1)}

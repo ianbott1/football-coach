@@ -1,5 +1,5 @@
 {
- "fp": "e9eb89cd0bac3737",
+ "fp": "68fc28832b0af0f9",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -75,6 +75,11 @@
    "fp": "e9eb89cd0bac3737",
    "from": "27e1aa59f7f74e78",
    "note": "Record book: basketball career lines and program leaders (points, rebounds, assists, threes, blocks, steals)"
+  },
+  {
+   "fp": "68fc28832b0af0f9",
+   "from": "e9eb89cd0bac3737",
+   "note": "The transfer portal; basketball assistant wording on the offseason screen"
   }
  ],
  "result": {
@@ -87,21 +92,21 @@
     "rec": "5208ac8b43f34613",
     "poll": "3f8457e7080b9ced",
     "heis": "63c51af92f20ba26",
-    "history": "b4668b69d6201420",
-    "universe": "f0925db435bf3a57",
-    "screens": "3c297e6b576ce7a7"
+    "history": "80e202bb52a03379",
+    "universe": "41857a67b0f011d5",
+    "screens": "25f64c7a0f9cca86"
    },
    {
     "year": 2027,
-    "games": "7b043e15dc78d27f",
-    "post": "a9caae6643f621e7",
-    "champion": "Miami",
-    "rec": "96f3803e654573d4",
-    "poll": "bccc94f9531e0c82",
-    "heis": "2bfaa15dc3b74ca6",
-    "history": "15a6d68417637a09",
-    "universe": "1255c680205639e0",
-    "screens": "91290b114d1a5a73"
+    "games": "a89eb9bbb8112678",
+    "post": "6f5c686e00268081",
+    "champion": "Wisconsin",
+    "rec": "a9ed957c00412e81",
+    "poll": "7b226f32f3b212b5",
+    "heis": "d2fc886b06536da3",
+    "history": "7629e08546fd2110",
+    "universe": "ce43b011b2439043",
+    "screens": "e43589335204fd9d"
    }
   ],
   "Coppin State#2024": [
@@ -113,21 +118,21 @@
     "rec": "acd9846afd56d900",
     "poll": "f39d248d536694cb",
     "heis": "1259105979116d86",
-    "history": "abdbc652c7cc23a4",
-    "universe": "7add329db1f49077",
-    "screens": "38e5f0b27b98325b"
+    "history": "6964eb5b2c02a27d",
+    "universe": "72554d8e5babe4d8",
+    "screens": "e1396a95cead81e5"
    },
    {
     "year": 2027,
-    "games": "71d74f6479c584f7",
-    "post": "8a06b713e1a553d4",
-    "champion": "Michigan",
-    "rec": "f7e7df439daf36c4",
-    "poll": "e74ee1b27c2a0eba",
-    "heis": "ae62b5eb414defeb",
-    "history": "a582d29debc3fa48",
-    "universe": "5539f3056bdb40a4",
-    "screens": "e817018b68eba484"
+    "games": "1ff6b177de9d1dd1",
+    "post": "285753602691fb2f",
+    "champion": "Alabama",
+    "rec": "6e140a127ce1c44d",
+    "poll": "abf6d4ebd1d028f8",
+    "heis": "aef0cc1da07e25cd",
+    "history": "d7f8450ca98da18a",
+    "universe": "78fed89a9b63e3ef",
+    "screens": "9265bae209f46a27"
    }
   ],
   "Gonzaga#777": [
@@ -139,21 +144,21 @@
     "rec": "432a14cefc0962ef",
     "poll": "632bb9da1f459ccf",
     "heis": "c30dde17209a314e",
-    "history": "61c1a917618670e5",
-    "universe": "24e6a2c6fcdb5e42",
-    "screens": "afd2f957f17559b7"
+    "history": "57c76cfb71488fbb",
+    "universe": "1377641d18d80969",
+    "screens": "72bf086694b2448f"
    },
    {
     "year": 2027,
-    "games": "bd495727b1ac6b8c",
-    "post": "e489ae0f43cb2ccd",
-    "champion": "Michigan",
-    "rec": "c0fb2f6da8117bc0",
-    "poll": "e6ef485a925f13ec",
-    "heis": "7b1c51d42d47923e",
-    "history": "0769591f3edbbd45",
-    "universe": "004a1000811c9be9",
-    "screens": "460ad068a7abf80e"
+    "games": "2c3cb2cc1ee79b30",
+    "post": "d299dbbc0945d880",
+    "champion": "Arizona",
+    "rec": "8faa9382d6477358",
+    "poll": "09dd9155cc48f610",
+    "heis": "a1e27e7b5f453d11",
+    "history": "fcbb22b4f653421a",
+    "universe": "15e38526bc8f75ba",
+    "screens": "953a3a0c43dc9ebf"
    }
   ],
   "schedules#60": [
