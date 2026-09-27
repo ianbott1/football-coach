@@ -4375,9 +4375,11 @@ function endLive(){
     while(guard++<400){
       const r=live.eng.next();
       if(r.done)break;
-      if(r.ask){ live.eng.reply(r.ask.opts[0][0]);
+      // a skipped game's remaining calls take the neutral option (the last:
+      // stay the course, play it straight), not the aggressive first one
+      if(r.ask){ const v=r.ask.opts[r.ask.opts.length-1][0]; live.eng.reply(v);
         S.calls=S.calls||{};const k=callKey(live.step);
-        S.calls[k]=(S.calls[k]||[]).concat([r.ask.opts[0][0]]); continue }
+        S.calls[k]=(S.calls[k]||[]).concat([v]); continue }
       live.drives.push(r.drive);
     }
     finishLive();
@@ -4549,7 +4551,14 @@ function newDynasty(team,seed,coachName,roster){
 }
 
 /* ============ advance ============ */
-/* "Sim it": play this one game without watching it, whatever the setting */
+/* "Sim game": play this one game without watching it, whatever the setting.
+   Shown beside the main button, in the bottom bar and in the desktop side
+   panel (on a laptop the side panel is where the buttons are). */
+function simGameButton(id){
+  if(!SEA||SEA.phase==="done"||(S.watchMode||"all")==="never"||prefersReduced()||live)return "";
+  const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
+  return ug?`<button class="skip" id="${id}">Sim game</button>`:"";
+}
 let simOnce=false;
 function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } }
 function doAdvance(){
@@ -6163,7 +6172,7 @@ function render(){
     <div class="cols">
     ${wide&&!inOff?`<aside id="side">${teamPanel()}
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
-        SEA.buttonLabel()}</button>${(()=>{const sk=canSkip();return sk?
+        SEA.buttonLabel()}</button>${simGameButton("simone2")}${(()=>{const sk=canSkip();return sk?
         `<button class="skip" id="skip2">Sim ${sk.n} weeks &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
       </div></aside>`:""}
     <main id="view">${inOff?LEAGUE.ui.offseasonScreen():
@@ -6177,7 +6186,7 @@ function render(){
         &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
       ${(()=>{ if(inOff||done||(S.watchMode||"all")==="never"||prefersReduced()||live)return "";
         const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
-        return ug?`<button class="skip" id="simone">Sim it</button>`:""})()}
+        return ug?`<button class="skip" id="simone">Sim game</button>`:""})()}
       <button class="advance ${done||inOff?'gold':''}" id="adv" ${
         inOff&&((S.off.act.userOpen&&S.off.move===null)||LEAGUE.ui.offseasonBlock()!==null)?'disabled':''}>${
         inOff?(S.off.act.userOpen&&S.off.move===null?"Choose your next job"
@@ -6224,7 +6233,11 @@ function render(){
   };
   const a2=el("adv2"); if(a2)a2.onclick=advance;
   const s2=el("skip2"); if(s2)s2.onclick=()=>simAhead();
-  if(el("simone"))el("simone").onclick=()=>{
+  ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=()=>{
+    if(SEA.phase!=="week"&&view==="team")view="scores";
+    simAdvance(); window.scrollTo({top:0,behavior:"auto"});
+  }});
+  if(false)el("simone").onclick=()=>{
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
   };
@@ -6516,7 +6529,7 @@ function renderStart(){
         (${taken.length+1} of ${n})</div>`+
         (taken.length?`<div class="note">Already taken: ${taken.map(esc).join(", ")}</div>`:"");
     })()}
-    <div class="seedrow"><input id="find" class="seedbox findbox" placeholder="Search 132 teams...">
+    <div class="seedrow"><input id="find" class="seedbox findbox" placeholder="Search ${NAMES.length} ${esc(LEAGUE.text.orgs||"teams")}...">
       <span class="seedhint">The number is the preseason rating rank. Lower means a stronger
       program &mdash; and higher expectations to go with it.</span></div>
     <div class="tierkey">${TIERS.map(t=>`<span class="${t.c}">${esc(t.l)}</span>`).join("")}</div>
