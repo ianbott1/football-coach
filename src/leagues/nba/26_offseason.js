@@ -247,7 +247,9 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     u.alumni[t]=u.alumni[t]||[];
     u.alumni[t].push({n:p.n,p:p.p,from:p.joined||u.year-(p.yrsHere||1),to:u.year,
       peak:p.peak||p.r,yrs:p.yrsHere||1,draft:p.draft||null,
-      line:LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}),why:why});
+      line:LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}),why:why,
+      // career totals with the franchise, for its leaders (six numbers)
+      car:p.car?{pts:p.car.pts||0,reb:p.car.reb||0,ast:p.car.ast||0,tpm:p.car.tpm||0,blk:p.car.blk||0,stl:p.car.stl||0}:null});
     if(u.alumni[t].length>40){u.alumni[t].sort((a,b)=>b.peak-a.peak);u.alumni[t].length=40}
   };
 
@@ -492,7 +494,7 @@ LEAGUE.historyExtras=function(sea,off,my){
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};
 LEAGUE.seasonLine=function(h,t,r,seed){
   if(h.pnote&&h.pnote[t])return h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
-  if(h.champion===t)return "Super Bowl champions";
+  if(h.champion===t)return "NBA champions";
   if(seed)return "Playoffs, No. "+seed+" seed";
   return r[0]>r[1]?"Missed the playoffs":"Losing season";
 };

@@ -3,7 +3,7 @@
    so they share the browser's storage: the slots used to be shared too, and a
    game could list (and overwrite) another game's saves. College football
    keeps the original keys, so its saves are untouched. */
-const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1"};
+const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1"};
 const LEGACY_KEY="fbcoach-v2";
 const KEYBASE=SAVE_KEYS[LEAGUE.id]||LEGACY_KEY;
 const NSLOTS=3;

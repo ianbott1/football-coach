@@ -129,7 +129,7 @@ function offseasonBanner(){
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
-    <div class="bsub">${esc(last.champion)} won the Super Bowl.
+    <div class="bsub">${esc(last.champion)} won the NBA title.
       ${(last.coaching.hires||[]).length} teams hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
@@ -160,7 +160,7 @@ function offseasonScreen(){
       <div><div class="btitle" style="margin:0">${last.rec[my][0]}-${last.rec[my][1]}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
-    <div class="bsub">${esc(last.champion)} won the Super Bowl.
+    <div class="bsub">${esc(last.champion)} won the NBA title.
     ${A.hires.length} teams changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
@@ -187,7 +187,7 @@ function offseasonScreen(){
       <div class="candtop"><div><div class="fname">Retire</div>
       <div class="fnote">End your career here</div></div></div>
       <div class="cdesc">Walk away with a ${C.w}-${C.l} record and ${C.titles}
-        Super Bowl${C.titles===1?"":"s"}.</div></div>`;
+        championship${C.titles===1?"":"s"}.</div></div>`;
   }else if(S.off.poach.length){
     h+=`<div class="grouphead">1. You have offers</div>`;
     h+=`<div class="note">${esc(repGrade(C.rep))[0].toUpperCase()+esc(repGrade(C.rep)).slice(1)}

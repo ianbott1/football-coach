@@ -8,7 +8,7 @@
      node test/saves.js      last line: MATCH or MISMATCH */
 const fs=require('fs'),path=require('path');
 const D=f=>path.join(__dirname,'..','dist',f);
-const GAMES={cfb:D('football-coach.html'),nfl:D('football-coach-pro.html'),ncaab:D('basketball-coach.html')};
+const GAMES={cfb:D('football-coach.html'),nfl:D('football-coach-pro.html'),ncaab:D('basketball-coach.html'),nba:D('basketball-coach-pro.html')};
 const src=fs.readFileSync(path.join(__dirname,'storage.js'),'utf8');
 let bad=0; const ok=(c,m)=>{console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++};
 function boot(file,LS){
@@ -34,7 +34,9 @@ async function makeSave(lg,team,LS){           // a career a few games in, saved
   const cf=await makeSave('cfb','Alabama',scratch);  const cfbSave=scratch['fbcoach-v2-slot1'];
   const pr=await makeSave('nfl','Houston',scratch);  const nflSave=scratch['fbcoach-pro-v2-slot1'];
   const bb=await makeSave('ncaab','Duke',scratch);   const bbSave=scratch['bbcoach-v1-slot1'];
-  ok(!!cfbSave&&!!nflSave&&!!bbSave, 'each game saves to its own slots');
+  const pb=await makeSave('nba','Boston',scratch);  const nbaSave=scratch['bbcoach-pro-v1-slot1'];
+  ok(!!cfbSave&&!!nflSave&&!!bbSave&&!!nbaSave, 'each game saves to its own slots (pro basketball too)');
+  ok(scratch['fbcoach-v2-slot1']===cfbSave, "pro basketball didn't write into college football's slot");
   const strip=(A,v)=>{const d=JSON.parse(A.lzwUnpack(v)); delete d.league; return A.lzwPack(JSON.stringify(d))};   // as an older build wrote it
   const LS={'fbcoach-v2-slot1':cfbSave,'fbcoach-v2-slot2':strip(pr,nflSave),'fbcoach-v2-slot3':strip(bb,bbSave)};
   // open the basketball game first, as on the site

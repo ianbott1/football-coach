@@ -66,7 +66,7 @@ function career(file, team, seed, seasons) {
   const grab = () => screens.push(global.__nodes.app ? global.__nodes.app.innerHTML : '');
   for (let y = 0; y < seasons; y++) {
     let guard = 0;
-    while (api.SEA.phase !== 'done' && guard++ < 80) {
+    while (api.SEA.phase !== 'done' && guard++ < 200) {     // an NBA season is 120 steps
       api.doAdvance(); grab();
       if (api.SEA.step === 7) screens.push(...views(api));
       let g = 0;
@@ -105,6 +105,7 @@ const file = args.find(a => a.endsWith('.html')) || path.join(__dirname,'..','di
 const probe = load(file), LG = probe.leagueId();
 const CASES = LG==='cfb' ? [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['Kent State',31337,3]]
   : LG==='ncaab' ? [['Duke',1,2],['Coppin State',2024,2],['Gonzaga',777,2]]    // 365 teams: shorter careers
+  : LG==='nba' ? [['Boston',1,2],['Detroit',777,2]]
   : [['Kansas City',1,4],['Tennessee',2024,4],['Detroit',777,3],['NY Giants',31337,3]];
 const result = {};
 for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
