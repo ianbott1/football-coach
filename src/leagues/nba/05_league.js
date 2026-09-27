@@ -7,19 +7,22 @@ const NBA_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,9,20));      // Oct
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   for(let i=0;i<90;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+(i%5===4?3:2))}
   return out})();
+const NBA_K=+((typeof process!=="undefined"&&process.env&&process.env.NBA_K)||1.7);
+const NBA_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NBA_K),d]);
 const LEAGUE={
   id:"nba",
   name:"Pro Basketball",
 
-  /* [franchise, starting strength (a prior, not standings), division] */
-  teams:[
+  /* [franchise, starting strength (a prior, not standings), division];
+     spread 1.7x around 1500 (calibrated: records spread like the real league's) */
+  teams:NBA_SPREAD([
 ["Boston",1590,"ATL"],["Brooklyn",1440,"ATL"],["New York",1580,"ATL"],["Philadelphia",1500,"ATL"],["Toronto",1480,"ATL"],
 ["Chicago",1470,"CEN"],["Cleveland",1600,"CEN"],["Detroit",1560,"CEN"],["Indiana",1520,"CEN"],["Milwaukee",1510,"CEN"],
 ["Atlanta",1500,"SE"],["Charlotte",1450,"SE"],["Miami",1500,"SE"],["Orlando",1550,"SE"],["Washington",1420,"SE"],
 ["Denver",1590,"NW"],["Minnesota",1570,"NW"],["Oklahoma City",1640,"NW"],["Portland",1450,"NW"],["Utah",1420,"NW"],
 ["Golden State",1530,"PAC"],["LA Clippers",1520,"PAC"],["LA Lakers",1550,"PAC"],["Phoenix",1480,"PAC"],["Sacramento",1450,"PAC"],
 ["Dallas",1500,"SW"],["Houston",1570,"SW"],["Memphis",1520,"SW"],["New Orleans",1450,"SW"],["San Antonio",1540,"SW"]
-  ],
+  ]),
   colors:{"Boston":"#007A33","Brooklyn":"#000000","New York":"#006BB6","Philadelphia":"#006BB6","Toronto":"#CE1141",
     "Chicago":"#CE1141","Cleveland":"#860038","Detroit":"#C8102E","Indiana":"#002D62","Milwaukee":"#00471B",
     "Atlanta":"#E03A3E","Charlotte":"#1D1160","Miami":"#98002E","Orlando":"#0077C0","Washington":"#002B5C",
@@ -46,7 +49,7 @@ const LEAGUE={
     "Michigan State","Baylor","Texas","UCLA","Villanova","Purdue","Tennessee","Arkansas","Florida","Illinois",
     "Real Madrid","Partizan","ASVEL","Mega Superbet","Joventut","Ratiopharm Ulm","Overtime Elite","G League Ignite"],
   awards:{mvp:"MVP", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},
-  tuning:{hfa:60, gapScale:1, pFloor:1300, pCeil:1750,
+  tuning:{hfa:60, gapScale:1, pFloor:1200, pCeil:1850, talentSteps:+((typeof process!=="undefined"&&process.env&&process.env.NBA_TS)||12),
     /* the pro game (docs/NBA.md): 48 minutes in quarters, ~99 possessions */
     bb:{pace:99,paceSd:2.5,two:0.545,three:0.362,foul2:0.13,foul3:0.02,ft:0.785,and1:0.09,oreb:0.24,
         toBase:0.135,gapPerPoss:0.00028,garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},

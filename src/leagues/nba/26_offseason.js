@@ -8,19 +8,28 @@
      5. free agency, under a hard salary cap
      6. empty spots are filled with replacement-level players
    Salaries are in millions and cover the twenty players the sim tracks. */
-const NFL_CAP=165;                          // the NBA's 2026-27 cap, $164.961M, as a hard cap
+const NFL_CAP=165;                          // the NBA's 2026-27 cap, $164.961M
+/* Bird rights, simply: a team may go over the cap to re-sign its own players
+   (and in trades), up to the real tax line, $200.428M; free agents from other
+   teams must fit under the cap. With a hard cap for everything, good teams
+   couldn't keep their own players and the league flattened within a few years
+   (as the NFL's hard cap is meant to do). */
+const TAX_LINE=200;
 /* How well run a franchise is, from its slow-moving strength: good
    organisations develop players better, scout better, and free agents take
    a little less to join them. Without it the draft and free agency flatten
    the league within a few years. */
-const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1690)/100));
+// centred on this league's own average franchise (pro football's was 1690)
+const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1500)/(+((typeof process!=="undefined"&&process.env&&process.env.NBA_OE)||100))));
 const AGE_SHIFT={};                           // every position ages alike
 const POS_PAY={};                             // and is paid alike
 const MAX_DEAL=Math.round(NFL_CAP*0.35*10)/10; // a max contract: 35% of the cap
 
 function nflAsk(r,pos,age){
   const x=Math.max(0,(r-55)/35);
-  let s=Math.min(MAX_DEAL,(2+80*Math.pow(x,2.2))*(POS_PAY[pos]||1));   // $2M for the end of the bench, up to the max
+  // scaled to this league's ratings: a typical starter (~64) about $15M, a
+  // star (77+) the max, so payrolls sit near the cap and it binds
+  let s=Math.min(MAX_DEAL,(2+120*Math.pow(x,1.6))*(POS_PAY[pos]||1));
   const a=age-(AGE_SHIFT[pos]||0);
   if(a>=31)s*=0.78; else if(a>=29)s*=0.9;
   return Math.round(Math.max(2,s)*10)/10;
@@ -37,7 +46,7 @@ function nflResignPlan(R){
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     const worth=(i<POS.length?p.r>=66:p.r>=64&&ask<=8)&&p.age<=33;
-    keep[i]=worth&&pay+ask<=NFL_CAP-ROOKIE_ROOM;
+    keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
   });
   return keep;
@@ -97,8 +106,9 @@ function nflProspects(rng,n){
     const q=i/n;
     const posIdx=rng.int(POS.length);
     const age=19+rng.int(4);                    // one-and-dones to four-year seniors
-    const r=Math.round(Math.max(45,Math.min(80,rng.gauss(64-13*Math.pow(q,0.7),3.5))));
-    const pot=Math.round(Math.min(99,r+Math.max(2,rng.gauss(11-5*q,4))));
+    // NBA rookies: mostly below the league's typical starter at first, with ceilings
+    const r=Math.round(Math.max(42,Math.min(78,rng.gauss(+((typeof process!=="undefined"&&process.env&&process.env.NBA_PR)||57)-12*Math.pow(q,0.7),3.5))));
+    const pot=Math.round(Math.min(99,r+Math.max(3,rng.gauss(15-6*q,5))));
     out.push({n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:age,age:age,r:r,pot:pot,
               hz:0,prod:0,st:0,from:rng.pick(LEAGUE.draftTeams)});
   }
@@ -173,7 +183,7 @@ function nflTradeOffers(u,myTeam,idx,humans){
       if(!q||q.k.yrs<2||need.indexOf(j%POS.length)<0)return;
       if(j<POS.length&&(!T[BK(j)]||T[BK(j)].r<q.r-8))return;   // they won't gut a spot
       const qv=tradeValue(q); if(qv<gv*0.88||qv>gv*1.08)return;
-      if(myPay-give.k.sal+q.k.sal>NFL_CAP||theirPay-q.k.sal+give.k.sal>NFL_CAP)return;
+      if(myPay-give.k.sal+q.k.sal>TAX_LINE||theirPay-q.k.sal+give.k.sal>TAX_LINE)return;
       const fit=Math.abs(qv-gv)-(R[j%POS.length]?(q.r-R[j%POS.length].r)*0.5:0);
       if(!best||fit<best.fit)best={fit:fit,q:q,j:j};
     });
@@ -266,9 +276,14 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       p.age++; p.c=p.age;
       const a=p.age-(AGE_SHIFT[p.p]||0);
       const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
-      const side=(i%POS.length)<5?ocq*0.02:dcq*0.02;
+      const side=(ocq+dcq)*0.01;                      // both ends: both assistants
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      const g=rng.gauss(base+c.q*0.02+devMod+side+org,2.0);
+      let g=rng.gauss(base+c.q*0.02+devMod+side+org,2.0);
+      // a breakout season: now and then a young player jumps a level, and
+      // sometimes carries a franchise with him (the spread needs a source)
+      if(a<=25&&rng.r()<+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07)){
+        const leap=rng.range(4,9); p.pot=Math.max(p.pot,Math.round(p.r+g+leap+2)); g+=leap; p.leap=u.year;
+      }
       p.r=Math.round(Math.max(35,Math.min(g>0?p.pot:99,p.r+g)));
       if(a>=27)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
       p.peak=Math.max(p.peak||0,p.r);
@@ -323,7 +338,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // a draft class can tip a team over: release the worst-value backups until it fits
   NAMES.forEach(t=>{
     const R=u.roster[t];
-    while(payroll(R)>NFL_CAP){
+    while(payroll(R)>TAX_LINE){
       let wi=-1,wv=-1;
       R.forEach((p,i)=>{if(!p||i<POS.length)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});
       if(wi<0){ // only starters left over: the most overpaid starter goes
@@ -407,7 +422,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     cap:Object.fromEntries(NAMES.map(t=>[t,Math.round(payroll(u.roster[t])*10)/10]))};
 }
 
-LEAGUE.cap=NFL_CAP;
+LEAGUE.cap=NFL_CAP; LEAGUE.taxLine=TAX_LINE;
 LEAGUE.offseason={
   newRoster:nflRoster,
   run:nflRun,
