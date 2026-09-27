@@ -18,7 +18,12 @@ const state=api=>{const E=api.SEA;return {
 (async()=>{
   let bad=0,n=0;
   const LG=mk()(file).leagueId();
-  const [T1,T2,R1,R2]=LG==='cfb'?['Alabama','Rice','Alabama','Auburn']:['Kansas City','Tennessee','Kansas City','Denver'];
+  // each league's own teams (college basketball had been passing on pro football's names by
+  // coincidence: Kansas City, Tennessee and Denver are Division I schools too)
+  const [T1,T2,R1,R2]=LG==='cfb'?['Alabama','Rice','Alabama','Auburn']
+    :LG==='ncaab'?['Duke','Rice','Duke','North Carolina']
+    :LG==='nba'?['Boston','Denver','Boston','New York']
+    :['Kansas City','Tennessee','Kansas City','Denver'];
   for(const [team,seed,roster] of [[T1,1],[T2,2024],
         [R1,99,[{team:R1,name:'Coach A'},{team:R2,name:'Coach B'}]]]){
     const A=mk()(file); A.newDynasty(team,seed,'T',roster);

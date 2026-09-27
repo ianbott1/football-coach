@@ -7,7 +7,7 @@ const m={exports:{}}; new Function('require','module',src.slice(0,src.indexOf('c
 const h=o=>crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0,16);
 const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach.html');
 const api=m.exports.load(file);
-const LG=api.leagueId(), [TA,TB]=LG==='cfb'?['Alabama','Rice']:LG==='ncaab'?['Duke','North Carolina']:['Kansas City','Tennessee'];
+const LG=api.leagueId(), [TA,TB]=LG==='cfb'?['Alabama','Rice']:LG==='ncaab'?['Duke','North Carolina']:LG==='nba'?['Boston','New York']:['Kansas City','Tennessee'];
 api.newDynasty(TA,99,'A',[{team:TA,name:'Coach A'},{team:TB,name:'Coach B'}]);
 const out=[], crashes=[];
 for(let y=0;y<3;y++){
@@ -16,10 +16,10 @@ for(let y=0;y<3;y++){
   // played live by a person (a head-to-head counts once)
   if((api.S.turn||0)!==0)crashes.push(`season ${api.SEA.year} starts with coach ${(api.S.turn||0)+1}, not coach 1`);
   const liveGames=[];
-  while(api.SEA.phase!=='done'&&guard++<200){
+  while(api.SEA.phase!=='done'&&guard++<400){     // two coaches: two advances a step (an NBA season: 240)
     api.doAdvance(); let g=0;
     if(api.live)liveGames.push(api.live.step+'|'+[api.live.g.home,api.live.g.away].sort().join('~'));
-    while(api.live&&!api.live.done&&g++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
+    while(api.live&&!api.live.done&&g++<2000){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
   }
   { const E=api.SEA, coached=api.S.coaches.map((x,i)=>i===(api.S.turn||0)?api.S.myTeam:x.myTeam);
     // college championship week is kept in both the weeks and the postseason: count each game once

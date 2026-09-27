@@ -1,0 +1,81 @@
+{
+ "fp": "1357dacd5f6141d6",
+ "log": [
+  {
+   "fp": "1357dacd5f6141d6",
+   "from": null,
+   "note": "First pro basketball hot-seat baseline: Boston and New York"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "62-37",
+      "result": "Lost in the conference finals",
+      "grade": "B+"
+     },
+     "book": "1d566a613eb012be"
+    },
+    {
+     "team": "New York",
+     "last": {
+      "rec": "60-34",
+      "result": "Lost in the conference semifinals",
+      "grade": "B-"
+     },
+     "book": "f7695f5f9c162fb4"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "46-44",
+      "result": "Lost in the first round",
+      "grade": "C-"
+     },
+     "book": "c5ce5cc24875d74c"
+    },
+    {
+     "team": "New York",
+     "last": {
+      "rec": "56-37",
+      "result": "Lost in the conference semifinals",
+      "grade": "B-"
+     },
+     "book": "cb9b396e889bef0a"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "50-42",
+      "result": "Lost in the conference semifinals",
+      "grade": "C+"
+     },
+     "book": "a4b4fce990e0681d"
+    },
+    {
+     "team": "New York",
+     "last": {
+      "rec": "51-35",
+      "result": "Lost in the first round",
+      "grade": "C"
+     },
+     "book": "5d80a64e5ce865a4"
+    }
+   ]
+  }
+ ]
+}

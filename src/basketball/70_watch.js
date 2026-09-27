@@ -19,6 +19,7 @@ function isBigGame(g,team,seaRankMap,rivalName){
 function segClock(s){
   if(s==="last")return "0:02";
   if(s>=8)return "OT"+(s-7>1?(s-7):"");
+  if(BB.quarters)return "Q"+(Math.floor(s/2)+1)+" "+(s%2?"0:00":"6:00");   // the pros: four 12-minute quarters
   const half=s<4?"1st":"2nd", left=20-5*((s%4)+1);
   return half+" "+left+":00";
 }

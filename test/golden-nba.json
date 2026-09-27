@@ -1,0 +1,74 @@
+{
+ "fp": "17d49196be60ec24",
+ "log": [
+  {
+   "fp": "264aba29be257fe4",
+   "from": null,
+   "note": "First pro basketball baseline: Boston and Detroit, two seasons each"
+  },
+  {
+   "fp": "17d49196be60ec24",
+   "from": "264aba29be257fe4",
+   "note": "Offseason: offensive/defensive assistant, not coordinator (one screen)"
+  }
+ ],
+ "result": {
+  "Boston#1": [
+   {
+    "year": 2026,
+    "games": "64f8614da5b20790",
+    "post": "dff97127e26124ce",
+    "champion": "Denver",
+    "rec": "7b067187b0789a90",
+    "poll": "61cd6bbaafbcb74c",
+    "heis": "5093c248dccfc3e6",
+    "history": "e6e5b114d45de542",
+    "universe": "490f54c7acfd79ad",
+    "screens": "1836caa51fac9c2c"
+   },
+   {
+    "year": 2027,
+    "games": "b8f107344ddb78f8",
+    "post": "e8e18ece7941f6ba",
+    "champion": "Houston",
+    "rec": "a5e6a590bd2b619a",
+    "poll": "fdb31605ab2641f5",
+    "heis": "b6ab57903d397a0a",
+    "history": "bafc599e9025c572",
+    "universe": "d816cf0116c245ed",
+    "screens": "52a752d058e1bf79"
+   }
+  ],
+  "Detroit#777": [
+   {
+    "year": 2026,
+    "games": "1d7d5a1cb9cefa06",
+    "post": "90bead271a7fd1c8",
+    "champion": "Oklahoma City",
+    "rec": "3fbb1cb6bee48845",
+    "poll": "0ae9db20a6202596",
+    "heis": "017c507aa3cb9406",
+    "history": "467b28bab4ce41de",
+    "universe": "ac57812476fa27d7",
+    "screens": "075646d017edcc2d"
+   },
+   {
+    "year": 2027,
+    "games": "2a7d9dcd15e8d5ec",
+    "post": "3b30201354cfa28a",
+    "champion": "Oklahoma City",
+    "rec": "0861f26a4dc1861c",
+    "poll": "bf9888697db0c2c5",
+    "heis": "f792074db0341d75",
+    "history": "8804f615ec8ee257",
+    "universe": "e5e073804ec8c28d",
+    "screens": "5bf2d57fdbf91960"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "85ad3f63a9a6b5cf"
+   }
+  ]
+ }
+}
