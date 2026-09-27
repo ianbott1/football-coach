@@ -289,9 +289,9 @@ function saveLeague(d){
   if(d.league)return d.league;
   const R=d.uStart&&d.uStart.roster; if(!R)return "cfb";
   for(const t in R){const p=(R[t]||[]).find(x=>x); if(!p)continue;
-    if(p.k)return "nfl";
-    if(["PG","SG","SF","PF","C"].indexOf(p.p)>=0)return "ncaab";
-    return "cfb"}
+    const hoops=["PG","SG","SF","PF","C"].indexOf(p.p)>=0;      // basketball positions first:
+    if(hoops)return p.k?"nba":"ncaab";                            // pro basketball has contracts too
+    return p.k?"nfl":"cfb"}
   return "cfb";
 }
 /* Move other games' saves out of the old shared slots into their own game's
