@@ -2,7 +2,8 @@
 /* Every Division I school in its 2026-27 conference (04_teams.js, generated
    from data/ncaab_2026_27.py), a November-to-March season, conference
    tournaments, Selection Sunday and a 76-team NCAA tournament. */
-const NCAAB_ELO=t=>Math.round(1450+(t.lvl+t.ped*0.8)*1.25);      // starting strength: a prior, calibrated
+const SPREAD=+((typeof process!=="undefined"&&process.env&&process.env.BB_SPREAD)||1.45);   // how far apart programs start (calibrated)
+const NCAAB_ELO=t=>Math.round(1450+(t.lvl+t.ped*0.8)*SPREAD);      // starting strength: a prior, calibrated
 const LEAGUE={
   id:"ncaab",
   name:"College Basketball",
@@ -31,7 +32,7 @@ const LEAGUE={
     "New Orleans","New York","Oklahoma City","Orlando","Philadelphia","Phoenix","Portland","Sacramento",
     "San Antonio","Toronto","Utah","Washington"],
   awards:{mvp:"Player of the Year", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},   // awards compare each player with his position (86_awards)
-  tuning:{hfa:105, pFloor:1000, pCeil:2350},   // program strength spans more than in football
+  tuning:{hfa:105, pFloor:950, pCeil:2500},   // program strength spans more than in football
   /* arenas that are genuinely hard to visit (added to a prestige-based base) */
   venues:{"Kansas":30,"Duke":30,"Kentucky":24,"Gonzaga":22,"Purdue":22,"Michigan State":20,"Syracuse":16,
     "Houston":20,"Arizona":20,"North Carolina":18,"Iowa State":22,"Wisconsin":18,"Texas Tech":20,"BYU":20,

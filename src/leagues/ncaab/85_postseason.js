@@ -6,7 +6,8 @@
    the 11 and 12 lines, the 12 lowest-seeded automatic qualifiers for the 15
    and 16 lines), then four regions of sixteen to a champion in Detroit. */
 const REGIONS=["East","South","Midwest","West"];
-const SOS_W=0.5;                  // how much strength of schedule counts in a resume
+const SOS_W=0.25;                 // how much strength of schedule counts in a resume
+const PTS_ELO=40, HOME_PTS=3;     // a point of margin, in rating (the engine's rate); home court
 const R64_PAIRS=[[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
 const CT_ROUNDS=["ct1","ct2","ct3","ct4"];
 const NCAA_ROUNDS=["open","r64","r32","s16","e8","f4","final"];
@@ -34,7 +35,23 @@ extendSeason({
   resume(t){
     const r=this.rec[t];
     // like the committee's NET: strength, record, and who it came against
-    return this.elo[t]+ (r[0]-r[1])*4 + (this.champs[CONF[t]]===t?25:0) + SOS_W*(this.sos(t)-1500);
+    return 0.5*this.elo[t]+0.5*this.power(t) + (r[0]-r[1])*4 + (this.champs[CONF[t]]===t?25:0) + SOS_W*(this.sos(t)-1500);
+  },
+  /* a power rating from results, like the efficiency ratings the committee
+     reads: average scoring margin, adjusted for who it came against, on the
+     rating scale. Over thirty games it tracks true strength far better than
+     wins and losses do. */
+  power(t){
+    if(!this._pow||this._powAt!==this.step){
+      const sum={},n={}, PT=PTS_ELO;
+      this.weeks.forEach(w=>w.games.forEach(g=>{
+        const hm=g.neutral?0:HOME_PTS;
+        sum[g.home]=(sum[g.home]||0)+(g.hp-g.ap-hm)*PT+(this.elo[g.away]-1500); n[g.home]=(n[g.home]||0)+1;
+        sum[g.away]=(sum[g.away]||0)+(g.ap-g.hp+hm)*PT+(this.elo[g.home]-1500); n[g.away]=(n[g.away]||0)+1;
+      }));
+      this._pow={}; NAMES.forEach(x=>this._pow[x]=1500+(n[x]?sum[x]/n[x]:0)); this._powAt=this.step;
+    }
+    return this._pow[t];
   },
   /* average rating of the opponents played so far (kept per game date) */
   sos(t){
@@ -112,7 +129,14 @@ extendSeason({
     this.field=field; this.overall={}; field.forEach((t,i)=>this.overall[t]=i+1);   // the committee's 1-76
     // the Opening Round: the 12 lowest at-large, the 12 lowest automatic qualifiers
     const lowAL=field.filter(t=>al.indexOf(t)>=0).slice(-12), lowAQ=field.filter(t=>aq.indexOf(t)>=0).slice(-12);
-    const direct=field.filter(t=>lowAL.indexOf(t)<0&&lowAQ.indexOf(t)<0);            // 52
+    // 52 go straight into the bracket. At-large teams are never seeded below
+    // the 11 line (their Opening Round games are on 11 and 12), so the 42
+    // places on lines 1-11 go to every direct at-large team and the best
+    // direct automatic qualifiers; lines 13-15 are automatic qualifiers only.
+    const directAll=field.filter(t=>lowAL.indexOf(t)<0&&lowAQ.indexOf(t)<0);
+    const dAL=directAll.filter(t=>al.indexOf(t)>=0), dAQ=directAll.filter(t=>aq.indexOf(t)>=0);
+    const upper=dAL.concat(dAQ.slice(0,42-dAL.length)).sort((a,b)=>this.resume(b)-this.resume(a));
+    const direct=upper.concat(dAQ.slice(42-dAL.length));                            // 52
     // the 64 slots by seed line: 1-10 full, 11 has two direct, 12 none, 13-14 full, 15 two, 16 none
     const direct_lines=[1,2,3,4,5,6,7,8,9,10,11,13,14,15], perLine={11:2,15:2};
     const bracket={}; REGIONS.forEach(r=>bracket[r]={});

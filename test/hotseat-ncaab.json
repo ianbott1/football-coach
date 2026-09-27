@@ -1,5 +1,5 @@
 {
- "fp": "2a6e17cadbd9f048",
+ "fp": "fda735b99acae3a7",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -25,6 +25,11 @@
    "fp": "2a6e17cadbd9f048",
    "from": "ae9401245af8df95",
    "note": "All-America teams on the Rankings tab; awards compare each player with his own position"
+  },
+  {
+   "fp": "fda735b99acae3a7",
+   "from": "2a6e17cadbd9f048",
+   "note": "Wider program spread (1.45), power rating in the committee resume, at-large teams seeded no lower than the 11 line"
   }
  ],
  "out": [
@@ -34,20 +39,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-7",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "32-6",
+      "result": "Lost in the Final Four",
+      "grade": "A+"
      },
-     "book": "4cc5198e0d4bd19e"
+     "book": "8f8c806211c98054"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "34-1",
+      "rec": "30-3",
       "result": "Lost in the Second Round",
-      "grade": "A"
+      "grade": "A-"
      },
-     "book": "42a6580c8e5de95c"
+     "book": "a8b2da07065bc08c"
     }
    ]
   },
@@ -57,20 +62,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-8",
+      "rec": "29-6",
       "result": "Lost in the Elite Eight",
-      "grade": "A-"
+      "grade": "A"
      },
-     "book": "76ce30074580870b"
+     "book": "77afeb6ff6995aca"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "23-8",
-      "result": "Lost in the First Round",
-      "grade": "C+"
+      "rec": "26-6",
+      "result": "Lost in the Second Round",
+      "grade": "B"
      },
-     "book": "b2c32038dcb33918"
+     "book": "1f3147a7dbbfe174"
     }
    ]
   },
@@ -80,20 +85,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "24-8",
-      "result": "Lost in the First Round",
-      "grade": "C+"
+      "rec": "28-5",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "8b015ad2c2acd929"
+     "book": "fc9f4dd15b8ed806"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "30-3",
+      "rec": "31-4",
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "8ca8ca811ce1f4d3"
+     "book": "0f210b1c1e53da67"
     }
    ]
   }
