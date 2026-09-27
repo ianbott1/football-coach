@@ -20,6 +20,7 @@ class RNG{
    visit; most are ordinary; some are half empty in November. */
 
 function homeField(u,t){
+  if(LEAGUE.homeField)return LEAGUE.homeField(u,t);
   const prog=(u&&u.program&&u.program[t])!==undefined?u.program[t]:1500;
   const base=39+Math.max(0,Math.min(1,(prog-1150)/900))*30;
   return Math.round(base+(LEAGUE.venues[t]||8));
@@ -51,7 +52,7 @@ function teamInk(t){                      // brand color, lightened until legibl
 }
 
 /* ============ constants ============ */
-const ELO_PT=21, GAME_SD=14, K=32;
+const K=32;                  // Elo update factor
 
 function divisionOf(u,t){
   const c=(u&&u.conf&&u.conf[t])||CONF[t];
@@ -71,23 +72,8 @@ function syncConf(u){
   else if(u){u.conf={};NAMES.forEach(t=>u.conf[t]=CONF[t])}
 }
 
-/* ============ game sim ============ */
-function simGame(rng,tH,tA,neutral,sdMult,edgeAdj){
-  const edge=tH-tA+(neutral?0:LEAGUE.tuning.hfa)+(edgeAdj||0);
-  let m=Math.round(rng.gauss(edge/ELO_PT,GAME_SD*(sdMult||1)));
-  if(m===0)m=rng.r()<0.5?-3:3;
-  let total=rng.gauss(52,9.5)+Math.abs(m)*0.18;
-  total=Math.max(20,Math.min(95,total));
-  let lo=Math.max(0,Math.round((total-Math.abs(m))/2));
-  let hi=lo+Math.abs(m);
-  // 1 is not a reachable football score
-  if(lo===1)lo=(rng.r()<0.5?0:2);
-  if(hi===1)hi=2;
-  if(hi<=lo)hi=lo+1;
-  if(hi===1)hi=2;
-  m=(m>0?1:-1)*(hi-lo);
-  return m>0?[hi,lo,m]:[lo,hi,m];
-}
+/* ============ Elo ============ */
+/* Games are played by the sport layer's drive engine (playGame). */
 function eloUpdate(eW,eL,mAbs,winHome,neutral){
   const hfa=neutral?0:LEAGUE.tuning.hfa;
   const diff=winHome?(eW+hfa-eL):(eW-eL-hfa);
@@ -215,8 +201,7 @@ function coachGrade(q){
 const ARCHETYPES=[
  {k:"proven", l:"Proven winner",  bump:16, sd:16,
   d:"Has won at this level before. Expensive, and the expectations arrive with him."},
- {k:"riser",  l:"Rising coordinator", bump:2, sd:36,
-  d:"Hottest name on the market. Could be the next great one, could be a coordinator forever."},
+ {k:"riser",  l:SPORT.riser.l, bump:2, sd:36, d:SPORT.riser.d},
  {k:"builder",l:"Program builder", bump:-4, sd:19, rec:9,
   d:"Wins on the recruiting trail before he wins on Saturdays. Slow burn, high floor."},
  {k:"retread",l:"Veteran retread", bump:-7, sd:11,
@@ -297,7 +282,8 @@ const COACH_ONFIELD=0.55,  // how much coach quality shows up on the field
       ROOKIE_DIP=-22;
 const ROSTER_NOISE=48;
 const CARRY=0.45,CHURN_SD=95,RECRUIT=0.16,PROG_NOISE=22,
-      P_FLOOR=1120,P_CEIL=2010,HOT_SEAT=0.42,COACH_SD=62,COACH_DIP=-18,PERCEPT_N=34;
+      // program strength's range: a league may set its own (basketball's is wider)
+      P_FLOOR=(LEAGUE.tuning&&LEAGUE.tuning.pFloor)||1120,P_CEIL=(LEAGUE.tuning&&LEAGUE.tuning.pCeil)||2010,HOT_SEAT=0.42,COACH_SD=62,COACH_DIP=-18,PERCEPT_N=34;
 
 function newUniverse(seed){
   const rng=new RNG(seed);
@@ -331,13 +317,26 @@ function seatHeat(u,rec,elo,t){
 
 /* Offseason runs in two acts so the player can decide in between.
    Act 1: the coaching carousel. Act 2: rosters, recruiting, development. */
-function offseasonCoaching(u,rng,rec,elo,userTeam){
+/* The coaching carousel, once per offseason for the whole league.
+   users: {team: fired} for every team a person coaches, fired meaning they
+   have missed expectations two years running (decided from their grades,
+   see openOffseason). A person's job is theirs to lose that way, never the
+   carousel's. Each person's part comes back in the ...By maps; the plain
+   userOpen/staffOpen/candidates are the first user's, for one-coach games. */
+function offseasonCoaching(u,rng,rec,elo,users){
+  users=users||{};
+  const isUser=t=>Object.prototype.hasOwnProperty.call(users,t);
+  const userTeam=Object.keys(users)[0];
   const fired=[],hires=[],poached=[];
   if(!u.coach){u.coach={};NAMES.forEach(t=>{u.coach[t]=newCoach(rng,u.program[t]);u.coach[t].hired=false})}
 
   NAMES.forEach(t=>{
     const wp=rec[t][0]/Math.max(1,rec[t][0]+rec[t][1]);
     u.bad[t]= wp<HOT_SEAT ? u.bad[t]+1 : 0;
+    if(u.coach[t]&&u.coach[t].you){
+      if(isUser(t)&&users[t]){fired.push(t);u.bad[t]=0}
+      return;
+    }
     const heat=seatHeat(u,rec,elo,t);
     const change=(heat>=4.6)||(wp<0.25&&u.coach[t].t>=2);
     if(change&&rng.r()<0.82){fired.push(t);u.bad[t]=0}
@@ -345,8 +344,9 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
 
   const openings=fired.slice().sort((a,b)=>u.program[b]-u.program[a]);
   openings.forEach(job=>{
+    if(isUser(job))return;                        // a person's job: they're told, then it's filled
     if(rng.r()>0.42)return;
-    const cands=NAMES.filter(t=>fired.indexOf(t)<0 && u.coach[t].q>=22
+    const cands=NAMES.filter(t=>fired.indexOf(t)<0 && !u.coach[t].you && u.coach[t].q>=22
       && u.program[t] < u.program[job]-140 && u.coach[t].t>=2
       && rec[t][0]>=rec[t][1]);
     if(!cands.length)return;
@@ -363,7 +363,7 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
   // a hot coordinator can be the man a program hires
   const coordMoves=[];
   fired.slice().forEach(job=>{
-    if(job===userTeam)return;
+    if(isUser(job))return;
     if(rng.r()>0.30)return;
     const pool=NAMES.filter(t=>fired.indexOf(t)<0 && u.oc[t] && u.oc[t].q>=26
       && u.program[t] < u.program[job]+90);
@@ -380,12 +380,13 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
     fired.splice(fired.indexOf(job),1);
   });
 
-  const userOpen=fired.indexOf(userTeam)>=0;
+  const userOpenBy={}, candidatesBy={}, staffOpenBy={};
+  Object.keys(users).forEach(t=>{userOpenBy[t]=fired.indexOf(t)>=0; staffOpenBy[t]={oc:false,dc:false}});
   const openJobs=fired.slice();
-  const candidates=userOpen?coachCandidates(rng,u.program[userTeam]):null;
+  Object.keys(users).forEach(t=>{candidatesBy[t]=userOpenBy[t]?coachCandidates(rng,u.program[t]):null});
 
   fired.forEach(t=>{
-    if(t===userTeam)return;                       // that's your job, not an AI hire
+    if(isUser(t))return;                          // a person's job, not an AI hire
     if(u.coach[t].hired&&u.coach[t].t===0)return;
     const old=u.coach[t].n;
     u.coach[t]=newCoach(rng,u.program[t]);
@@ -393,7 +394,6 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
   });
 
   // ordinary staff churn everywhere else
-  const staffOpen={oc:false,dc:false};
   NAMES.forEach(t=>{
     ["oc","dc"].forEach(side=>{
       const st=side==="oc"?u.oc:u.dc;
@@ -401,14 +401,15 @@ function offseasonCoaching(u,rng,rec,elo,userTeam){
       st[t].t=(st[t].t||0)+1;
       const leaves = st[t].q>=34 ? rng.r()<0.20 : (st[t].q<=-26 ? rng.r()<0.30 : rng.r()<0.09);
       if(leaves){
-        if(t===userTeam){staffOpen[side]=true;}
+        if(isUser(t)){staffOpenBy[t][side]=true;}
         else st[t]=newCoordinator(rng,u.program[t],side);
       }
     });
   });
 
-  return {fired:fired,hires:hires,poached:poached,userOpen:userOpen,
-          candidates:candidates,openJobs:openJobs,
-          coordMoves:coordMoves,staffOpen:staffOpen};
+  return {fired:fired,hires:hires,poached:poached,openJobs:openJobs,coordMoves:coordMoves,
+          userOpenBy:userOpenBy,staffOpenBy:staffOpenBy,candidatesBy:candidatesBy,
+          userOpen:!!userOpenBy[userTeam],candidates:candidatesBy[userTeam]||null,
+          staffOpen:staffOpenBy[userTeam]||{oc:false,dc:false}};
 }
 

@@ -44,5 +44,11 @@ extendSeason({
       if(best)out.push({pos:P.p,team:best.t,n:best.pl.n,r:best.pl.r,c:best.pl.c});
     });
     return out;
+  },
+  /* the award team a team's history entry records: its conference's */
+  awardTeam(my){
+    const o=this.allConfAll(),k=CONF[my];
+    return {group:k,list:(o[k]||[]).map(x=>({pos:x.pos,team:x.team,n:x.n,r:x.r,c:x.c}))};
   }
 });
+LEAGUE.awards.teamLabel=g=>"All-"+(LEAGUE.conf.names[g]||g);

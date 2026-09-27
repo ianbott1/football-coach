@@ -187,7 +187,8 @@ class Season{
   standings(prev){
     const out={};
     LEAGUE.conf.order.forEach(c=>{
-      out[c]=NAMES.filter(t=>CONF[t]===c).sort((x,y)=>{
+      // a league can order its own standings; college goes by conference record
+      out[c]=NAMES.filter(t=>CONF[t]===c).sort(LEAGUE.standingsCompare?(x,y)=>LEAGUE.standingsCompare(this,x,y):(x,y)=>{
         const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
         const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
         return py-px||this.confrec[y][0]-this.confrec[x][0]||this.elo[y]-this.elo[x];

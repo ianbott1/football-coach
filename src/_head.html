@@ -467,6 +467,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  text-transform:uppercase;letter-spacing:-.012em;margin:20px 0 0}
 .tagline{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
  color:var(--muted);margin-top:12px}
+.wm-league{margin:20px 0 0}
+.wm-league+.wordmark{margin-top:6px}
 .wm-a{color:var(--sodium)}
 .wm-b{color:var(--bone)}
 .slots{width:100%;margin-top:34px;display:flex;flex-direction:column;gap:8px}
@@ -701,5 +703,35 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .hint{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.1em;
  text-transform:uppercase;padding:10px 24px 0}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.clinch{display:inline-block;min-width:1.2em;margin-right:6px;padding:0 3px;border-radius:3px;
+  font:700 10px/1.5 var(--mono);text-align:center;vertical-align:1px}
+.clinch.cz,.clinch.cy{background:var(--sodium);color:var(--ink)}
+.clinch.cx{background:var(--turf);color:var(--ink)}
+.clinch.ce{color:var(--muted);border:1px solid var(--line)}
+/* a drawn bracket (college basketball): columns side by side, scrolling sideways,
+   each game centred between the two that feed it */
+.bracket{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.bcol{flex:0 0 172px;display:flex;flex-direction:column}
+.bhead{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px}
+.bgames{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:6px}
+.bgame{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel)}
+.bslot{display:flex;align-items:center;gap:6px;padding:4px 6px;font-size:12.5px;border-left:3px solid var(--tc)}
+.bslot+.bslot{border-top:1px solid var(--line)}
+.bseed{font-family:var(--mono);font-size:10px;color:var(--muted);min-width:14px;text-align:right}
+.bteam{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bpts{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.bwin .bteam{font-weight:700}.bwin .bpts{color:var(--bone)}
+.bmine{background:rgba(244,166,58,.12)}
+.btbd{color:var(--muted);font-style:italic}
+.brec{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400}
+.ctnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 8px}
+.ctnav b{font-family:var(--cond);text-transform:uppercase;font-size:17px;text-align:center}
+/* Selection Sunday: your fate first */
+.selcard{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:6px 0 12px;background:var(--panel)}
+.selcard.in{border-color:var(--turf)}.selcard.out{border-color:var(--flag)}
+.selhead{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.selcard.in .selhead{color:var(--turf)}.selcard.out .selhead{color:var(--flag)}
+.selbig{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;margin:4px 0}
+.selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>

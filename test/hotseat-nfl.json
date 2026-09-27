@@ -1,0 +1,146 @@
+{
+ "fp": "8471a290e425a9a9",
+ "log": [
+  {
+   "fp": "a2e304f6a00408fd",
+   "from": null,
+   "note": "first pro recording: Kansas City and Tennessee, three seasons"
+  },
+  {
+   "fp": "8ac594d18bd43f79",
+   "from": "a2e304f6a00408fd",
+   "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
+  },
+  {
+   "fp": "c063c3028c03830d",
+   "from": "8ac594d18bd43f79",
+   "note": "One coaching carousel per offseason in a hot seat (it ran once per coach, roughly doubling coaching changes: 34 against 17 in the first college year); coach records counted once"
+  },
+  {
+   "fp": "70de5d8b06c428ff",
+   "from": "c063c3028c03830d",
+   "note": "A new hot-seat season starts with coach 1, with every coach's expectations refreshed for their current team and last year's plans cleared (it started with the last coach, so coach 1 lost their opening game, and the others were graded on last year's expectations)"
+  },
+  {
+   "fp": "db508819dffcd53f",
+   "from": "70de5d8b06c428ff",
+   "note": "Hot-seat entries completed at season end now also get the coach's expectation label and milestones, like a one-coach entry"
+  },
+  {
+   "fp": "56a97ffbc3bc9469",
+   "from": "db508819dffcd53f",
+   "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
+  },
+  {
+   "fp": "26033ffd842e25e2",
+   "from": "56a97ffbc3bc9469",
+   "note": "Pro grades: wins against expectation count 0.6, playoff bonuses halved, losing-season penalty 1.25; on 256 seasons A+ 27.7% -> 9.0%, year-to-year swing 3.58 -> 2.95 steps, missed seasons unchanged at ~35%"
+  },
+  {
+   "fp": "18106f8423eeff3b",
+   "from": "26033ffd842e25e2",
+   "note": "In-game calls use the game-management modes (push -> chase, sit -> sit) instead of the new gameplan modes, so they play exactly as before the gameplan change; dead applyChoice removed"
+  },
+  {
+   "fp": "609781fe96c302da",
+   "from": "18106f8423eeff3b",
+   "note": "The late chase call is asked on your last possession only, with a touchdown-or-bust 'force' mode for pushing"
+  },
+  {
+   "fp": "609781fe96c302da",
+   "from": "609781fe96c302da",
+   "note": "Weekly news varies its phrasing (seeded by season, week and team, so a moment always reads the same); the plan tip describes the new gameplans; ranked-win and bad-loss lines come from league text (no voters in the pros). Screens only."
+  },
+  {
+   "fp": "0bf7548bb6d8b46f",
+   "from": "609781fe96c302da",
+   "note": "Pro draft class made when the offseason opens (seeded by dynasty and year) so you can see it and build a board; the draft no longer draws the class from the offseason's random stream, so universes diverge from the first draft"
+  },
+  {
+   "fp": "18bc1bd8ef303711",
+   "from": "0bf7548bb6d8b46f",
+   "note": "Pro free-agent targets: your first look at players you mark, in your order, at their ask plus 10%, if they fit. Only history (targets list) and screens (new sections) change; computer free agency is unchanged."
+  },
+  {
+   "fp": "8471a290e425a9a9",
+   "from": "18bc1bd8ef303711",
+   "note": "Pro trade block: shop one player under contract, see up to three fair offers at your weakest spots, agree one; it goes through when the offseason runs. Only history (trade field) and screens (new section) change; computer play unchanged."
+  },
+  {
+   "fp": "8471a290e425a9a9",
+   "from": "8471a290e425a9a9",
+   "note": "A Sim it button (all games); basketball conference tournaments take every team"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Kansas City",
+     "last": {
+      "rec": "14-3",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
+     },
+     "book": "f6650046b5af008d"
+    },
+    {
+     "team": "Tennessee",
+     "last": {
+      "rec": "4-13",
+      "result": "Losing season",
+      "grade": "C"
+     },
+     "book": "ba568b9c37db23ae"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Kansas City",
+     "last": {
+      "rec": "12-5",
+      "result": "Lost the conference championship",
+      "grade": "A-"
+     },
+     "book": "c2d3037b41359cbb"
+    },
+    {
+     "team": "Tennessee",
+     "last": {
+      "rec": "14-3",
+      "result": "SUPER BOWL CHAMPIONS",
+      "grade": "A+"
+     },
+     "book": "69c15428769dab0e"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Kansas City",
+     "last": {
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "C-"
+     },
+     "book": "d66227429d72ae13"
+    },
+    {
+     "team": "Tennessee",
+     "last": {
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
+      "grade": "A"
+     },
+     "book": "14ec3e1915f1d220"
+    }
+   ]
+  }
+ ]
+}

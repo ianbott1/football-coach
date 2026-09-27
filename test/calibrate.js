@@ -11,11 +11,17 @@ global.window={storage:{get:async()=>null,set:async()=>({})},addEventListener(){
 const nd=()=>({innerHTML:'',dataset:{},classList:{toggle(){},add(){},remove(){}},setAttribute(){}});
 global.document={getElementById:nd,querySelector:nd,querySelectorAll:()=>[],createElement:nd,body:{classList:{toggle(){}}},addEventListener(){}};
 const G = new Function(js + `
-  const LOG=[]; const _pg=playGame;
+  const LOG=[], PUB=[]; const _pg=playGame;
   playGame=function(rng,eH,eA,pH,pA,o){const r=_pg(rng,eH,eA,pH,pA,o);LOG.push([eH,eA,r.h,r.a]);return r};
-  return {newUniverse,syncConf,Season,NAMES,NW:(typeof LEAGUE!=='undefined'?LEAGUE.weeks:NW),LOG,get CONF(){return CONF}};`)();
+  // the favourite as the game shows it: public Elo plus home field, before kickoff
+  const _rs=Season.prototype._resolve;
+  Season.prototype._resolve=function(a,b,neutral,extra){
+    const H=typeof LEAGUE!=='undefined'?LEAGUE.tuning.hfa:HFA, W=typeof LEAGUE!=='undefined'?LEAGUE.weeks:NW;
+    const pH=this.elo[a]+(neutral?0:((this.hfa&&this.hfa[a])||H)), pA=this.elo[b], reg=this.step<W;
+    const r=_rs.call(this,a,b,neutral,extra); if(reg&&pH!==pA)PUB.push((pH>pA)===(r.winner===a)); return r;};
+  return {PUB,newUniverse,syncConf,Season,NAMES,NW:(typeof LEAGUE!=='undefined'?LEAGUE.weeks:NW),LOG,get CONF(){return CONF}};`)();
 
-const m = {fav:0,games:0,margin:0,pts:0,homeW:0,homeG:0,undef:0,swing:0,injSwing:0,teamSeasons:0,heis:{},sched:{twice:0,self:0,dupPair:0,short:0,long:0}};
+const m = {fav:0,games:0,margin:0,pts:0,homeW:0,homeG:0,favN:0,undef:0,swing:0,injSwing:0,teamSeasons:0,heis:{},sched:{twice:0,self:0,dupPair:0,short:0,long:0}};
 for (let s = 1; s <= N; s++) {
   const u = G.newUniverse(s*7919+13); G.syncConf(u);
   const sea = new G.Season(u, (s*2654435761)>>>0);
@@ -48,13 +54,18 @@ for (let s = 1; s <= N; s++) {
     .forEach(g => { if(!g.neutral){ m.homeG++; if(g.winner===g.home) m.homeW++; } });
   G.LOG.slice(lo).forEach(([eH,eA,h,a]) => {
     m.games++; m.pts += h+a; m.margin += Math.abs(h-a);
-    if (eH!==eA && ((eH>eA)===(h>a))) m.fav++;
+    if (eH!==eA) { m.favN++; if ((eH>eA)===(h>a)) m.fav++; }
   });
   const hz = (sea.mvpRace||sea.heisman).call(sea,1)[0]; if (hz) m.heis[hz.p]=(m.heis[hz.p]||0)+1;
 }
 const pct = x => (100*x).toFixed(1)+'%';
 console.log(`seasons ${N}, games ${m.games}`);
-console.log(`favourite win rate  ${(m.fav/m.games).toFixed(3)}   (target ~0.70)`);
+/* Favourite = higher public Elo (what winProb shows the player) plus home
+   field, regular season. That is the definition that gives ~0.70; judged by
+   the hidden true ratings (injuries, form) favourites win ~0.73, and have
+   since before the drive engine. See ARCHITECTURE.md. */
+const pub = G.PUB.filter(Boolean).length / G.PUB.length;
+console.log(`favourite win rate  ${pub.toFixed(3)}   (target ~0.70)  [by true ratings, all games: ${(m.fav/m.favN).toFixed(3)}]`);
 console.log(`mean margin         ${(m.margin/m.games).toFixed(1)}     (target ~15)`);
 console.log(`undefeated (reg sea)${(m.undef/N).toFixed(2)}    (target ~1)`);
 console.log(`home win rate       ${pct(m.homeW/m.homeG)}   (target 57-59%)`);

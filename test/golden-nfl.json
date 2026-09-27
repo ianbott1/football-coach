@@ -1,0 +1,273 @@
+{
+ "fp": "52932854038fc1b8",
+ "log": [
+  {
+   "fp": "4a0dc082893a99c5",
+   "from": null,
+   "note": "first recording for pro football: 4 careers of 3-4 seasons (Kansas City, Tennessee, Detroit, NY Giants) and 60 opening schedules"
+  },
+  {
+   "fp": "e63438be654c1076",
+   "from": "4a0dc082893a99c5",
+   "note": "pro football screens use its own words (franchise, division, rank, the rankings) instead of college football's; only screen fingerprints change"
+  },
+  {
+   "fp": "fd6507e2a2507647",
+   "from": "e63438be654c1076",
+   "note": "clinch marks (z/y/x/e) on standings, power ranking and playoff picture, and clinch lines in the stakes; standings show division record and mark the division leader. Only screen fingerprints change."
+  },
+  {
+   "fp": "8490002e73885e9e",
+   "from": "fd6507e2a2507647",
+   "note": "standings sorted by overall record, then division record, the seeding order; note says so. Only screen fingerprints change."
+  },
+  {
+   "fp": "60ead5ec273d3b91",
+   "from": "8490002e73885e9e",
+   "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
+  },
+  {
+   "fp": "5c6292686fc46c87",
+   "from": "60ead5ec273d3b91",
+   "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
+  },
+  {
+   "fp": "5be87059ba8ecbdc",
+   "from": "5c6292686fc46c87",
+   "note": "Pro grades: wins against expectation count 0.6, playoff bonuses halved, losing-season penalty 1.25; on 256 seasons A+ 27.7% -> 9.0%, year-to-year swing 3.58 -> 2.95 steps, missed seasons unchanged at ~35%"
+  },
+  {
+   "fp": "cf0ee3a0ac9d4e62",
+   "from": "5be87059ba8ecbdc",
+   "note": "In-game calls use the game-management modes (push -> chase, sit -> sit) instead of the new gameplan modes, so they play exactly as before the gameplan change; dead applyChoice removed"
+  },
+  {
+   "fp": "e43e7627688e9131",
+   "from": "cf0ee3a0ac9d4e62",
+   "note": "The late chase call is asked on your last possession only, with a touchdown-or-bust 'force' mode for pushing: patience wins when a field goal wins (college down 1-2: 38 vs 27 at even), pushing when a touchdown is needed"
+  },
+  {
+   "fp": "fb46d368e5ae21c1",
+   "from": "e43e7627688e9131",
+   "note": "Weekly news varies its phrasing (seeded by season, week and team, so a moment always reads the same); the plan tip describes the new gameplans; ranked-win and bad-loss lines come from league text (no voters in the pros). Screens only."
+  },
+  {
+   "fp": "fe89e13ee75b8767",
+   "from": "fb46d368e5ae21c1",
+   "note": "Pro draft class made when the offseason opens (seeded by dynasty and year) so you can see it and build a board; the draft no longer draws the class from the offseason's random stream, so universes diverge from the first draft"
+  },
+  {
+   "fp": "8ff707ffda766de0",
+   "from": "fe89e13ee75b8767",
+   "note": "Pro free-agent targets: your first look at players you mark, in your order, at their ask plus 10%, if they fit. Only history (targets list) and screens (new sections) change; computer free agency is unchanged."
+  },
+  {
+   "fp": "9a3bff917690dfd1",
+   "from": "8ff707ffda766de0",
+   "note": "Pro trade block: shop one player under contract, see up to three fair offers at your weakest spots, agree one; it goes through when the offseason runs. Only history (trade field) and screens (new section) change; computer play unchanged."
+  },
+  {
+   "fp": "e2bc734693699e04",
+   "from": "9a3bff917690dfd1",
+   "note": "Fix 'undefined' in weekly news: the phrase helper's hash could go negative and pick nothing; kept unsigned. Screens only."
+  },
+  {
+   "fp": "f2fdb6d35c35e647",
+   "from": "e2bc734693699e04",
+   "note": "Names: College Football Coach and Pro Football Coach (tab title, a College/Pro line over the wordmark, the season card); the pro owl wears a helmet. Screens only."
+  },
+  {
+   "fp": "81ba0e76850bb387",
+   "from": "f2fdb6d35c35e647",
+   "note": "Goal line counts your remaining games from the schedule (was 12 minus games played: wrong for pro and basketball) and says 'out of reach' only when a postseason run couldn't get there; basketball's seat badge grades a season in progress with March at par"
+  },
+  {
+   "fp": "52932854038fc1b8",
+   "from": "81ba0e76850bb387",
+   "note": "A Sim it button beside Play for your game (all games); basketball: every team in its conference tournament (ACC and Big Ten 15, Ivy 4) on a 16-slot bracket; clearer NBA draft wording"
+  }
+ ],
+ "result": {
+  "Kansas City#1": [
+   {
+    "year": 2026,
+    "games": "d632158e66c0ee95",
+    "post": "d819e76fa9aa3098",
+    "champion": "LA Rams",
+    "rec": "85d937d37fb50339",
+    "poll": "c40cf09e42c0bddf",
+    "heis": "d0f3e7cc2ab4d03b",
+    "history": "af399a4f094fa72e",
+    "universe": "5c25c8624a8c0f83",
+    "screens": "3edd530426239dfa"
+   },
+   {
+    "year": 2027,
+    "games": "d90fb242e4ef1832",
+    "post": "2b9c8e94bf0f0d85",
+    "champion": "Buffalo",
+    "rec": "57365aaecb3b93a9",
+    "poll": "66f13ce01f3ecebb",
+    "heis": "030c6a943c4ef77c",
+    "history": "a1b3e7e6b29866fd",
+    "universe": "2495f443a426fa85",
+    "screens": "1106dda958eacb6a"
+   },
+   {
+    "year": 2028,
+    "games": "32b7882de61ebad8",
+    "post": "50cde800606236e0",
+    "champion": "Washington",
+    "rec": "4cc8debde4096674",
+    "poll": "6273c2715f39d92e",
+    "heis": "2cefdc7752a1647a",
+    "history": "6bcceec1fe2e52ce",
+    "universe": "039ac77486fe7e4e",
+    "screens": "51a13ba7d38061cf"
+   },
+   {
+    "year": 2029,
+    "games": "e37278e86357bece",
+    "post": "4088b48944f146d5",
+    "champion": "Cincinnati",
+    "rec": "87880722d3b742c9",
+    "poll": "fbc52d9dd5384efd",
+    "heis": "68a7a6aec8e7a510",
+    "history": "59302cfd5fa71ce7",
+    "universe": "74997d040a4ec4b9",
+    "screens": "bac0a4eef8ffd1e0"
+   }
+  ],
+  "Tennessee#2024": [
+   {
+    "year": 2026,
+    "games": "a5869d54af7379c2",
+    "post": "def2c7389fbf3e84",
+    "champion": "Philadelphia",
+    "rec": "f52c479b2a6fe982",
+    "poll": "c762feae87af9016",
+    "heis": "d3b2c11564b8f11f",
+    "history": "5cff5b4cb88489ea",
+    "universe": "32746977d15a3d1a",
+    "screens": "aa892b99c6094e14"
+   },
+   {
+    "year": 2027,
+    "games": "44b4e164428d58e1",
+    "post": "eb076d7e08ff2835",
+    "champion": "New England",
+    "rec": "c010e8401914ee65",
+    "poll": "60d781f054326a4a",
+    "heis": "479e72021dd706cc",
+    "history": "5118ec1f5481b37f",
+    "universe": "f63fd1bfdf64a2d2",
+    "screens": "eda3f439970b2d16"
+   },
+   {
+    "year": 2028,
+    "games": "ee7ba4fa7bbcb5db",
+    "post": "e32ddf4a2b7e030f",
+    "champion": "Baltimore",
+    "rec": "06cbcd467fc38a80",
+    "poll": "e64782d48f9f3d1b",
+    "heis": "2a82b1b1d72919bf",
+    "history": "6e014f5c133dbc46",
+    "universe": "4574b18e2ea458cc",
+    "screens": "193e1c0ea3c6d38f"
+   },
+   {
+    "year": 2029,
+    "games": "b7478366ef029ff9",
+    "post": "ad231a005f2f5678",
+    "champion": "NY Giants",
+    "rec": "540f7f4e27b4ed83",
+    "poll": "9dcc05f79b33843e",
+    "heis": "a38a1f22fb7e9ffd",
+    "history": "9c6d36dd93aa8565",
+    "universe": "37006926700412dd",
+    "screens": "b1a5521a153b3422"
+   }
+  ],
+  "Detroit#777": [
+   {
+    "year": 2026,
+    "games": "49a1d7a5f7fbcb12",
+    "post": "e762dc0e7fc22f33",
+    "champion": "Seattle",
+    "rec": "4f74532b9e447e43",
+    "poll": "6185b6bea4c1a155",
+    "heis": "c63d061e72508bed",
+    "history": "48b773ce295ab16d",
+    "universe": "d17abeea6960c98a",
+    "screens": "15cda21f0b2bf9d2"
+   },
+   {
+    "year": 2027,
+    "games": "b58d578dd9704ff5",
+    "post": "78fbda32f4794a1d",
+    "champion": "Philadelphia",
+    "rec": "6bbbe22678af5823",
+    "poll": "0f20c21ab3c046d5",
+    "heis": "b3a40c4427046738",
+    "history": "e3b1730283b232fe",
+    "universe": "a19585553f8f98c8",
+    "screens": "411fcc82f27ae232"
+   },
+   {
+    "year": 2028,
+    "games": "2417a382515e240a",
+    "post": "95514de0e031c59b",
+    "champion": "Minnesota",
+    "rec": "fe093d327864f7ef",
+    "poll": "151284b3abd0971f",
+    "heis": "f0f9ceac579ecf05",
+    "history": "82ebef88dc24be12",
+    "universe": "3b85d9012d6a81b9",
+    "screens": "eb5885f1ea0a5091"
+   }
+  ],
+  "NY Giants#31337": [
+   {
+    "year": 2026,
+    "games": "02a87311f7d1bff6",
+    "post": "1e5691cd35c3e305",
+    "champion": "New England",
+    "rec": "ab7b87aef346870c",
+    "poll": "b427ed7f524b5991",
+    "heis": "08b9b4b2da4cda4f",
+    "history": "a492d3b57fc7d48e",
+    "universe": "f4e45438d149aa9e",
+    "screens": "328f0e24663f8778"
+   },
+   {
+    "year": 2027,
+    "games": "b19ecadb98b59a6e",
+    "post": "a95dd03b49d0fb45",
+    "champion": "Kansas City",
+    "rec": "6326de70c5994115",
+    "poll": "c700cc93be04043e",
+    "heis": "fb372bf7b91b98b6",
+    "history": "124131e9caa103f7",
+    "universe": "f8627e6e1fe93699",
+    "screens": "f6fa89691ed545cb"
+   },
+   {
+    "year": 2028,
+    "games": "0c57620a20ef1ea4",
+    "post": "a4c3269ed90665b2",
+    "champion": "Green Bay",
+    "rec": "96c2ebcea520a8e1",
+    "poll": "259530f406f6bf08",
+    "heis": "7ce85beb8ffe07aa",
+    "history": "049f24f585357e98",
+    "universe": "8bbf9dbf3a5e1f4c",
+    "screens": "2e6139e1e952e5c6"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "cf93e377dd2d805c"
+   }
+  ]
+ }
+}

@@ -27,10 +27,18 @@ function load(file) {
   global.document = { getElementById: node, querySelector: node, querySelectorAll: () => [],
     createElement: () => mk(), body:{classList:{toggle(){}}}, addEventListener(){} };
   // live getters: U, SEA, S, live are reassigned with `let`, so capture by closure
-  return new Function(js + `
-    return { newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
+  // each game gets its own window and document: a save the game finishes
+  // later must land in its own storage, not in whichever game loaded last
+  const W=global.window, D=global.document;
+  return new Function('window','document', js + `
+    return { leagueId(){return LEAGUE.id}, portalPreview(){return LEAGUE.offseason.portalPreview?LEAGUE.offseason.portalPreview(U):[]}, portalIn(){return S.lastPortalIn||null}, titleHTML(){ renderTitle(); return __nodes.app?__nodes.app.innerHTML:'' }, tradeOffers(i){return nflTradeOffers(U,S.myTeam,i,(S.coaches||[]).map(c=>c.myTeam))}, tradeValue(p){return tradeValue(p)}, faPreview(){return typeof nflFreeAgentPreview==='function'?nflFreeAgentPreview(U,S.myTeam):[]}, draftClass(){return typeof nflDraftClass==='function'?nflDraftClass(U,S.myTeam):null}, recruitFocus(){return LEAGUE.offseason.recruitFocus}, seasonGradeFor(w,l,r,e){return seasonGrade(w,l,r,e||expectations())}, setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, seasonProto(){return Season.prototype}, homeFieldOf(u,t){return homeField(u,t)}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
+      view(v,sub){ view=v; if(sub)dynTab=sub; flash=null; render(); return __nodes.app?__nodes.app.innerHTML:'' }, render, newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
-      NAMES,
+      NAMES, get CONF(){return CONF}, loadCoach, stashCoach,
+      async loadSave(json){ await window.storage.set(KEYFOR(1),json); slot=1;
+        const d=await loadSlot(1); S=d; S.title=false; rebuild(); S.expNow=S.expNow||expectations(); flash=null; render(); },
+      teamPages(){ return NAMES.map(t=>teamCard(t)) },
+      cards(){ return (S.history||[]).map(h=>[seasonCardText(h,h.team||S.myTeam),seasonCardSVG(h,h.team||S.myTeam)]) },
       // draw every tab and sub-tab, so a broken view can't hide off-screen
       allViews(){ const out=[]; const V=[view,teamTab,dynTab,pollTab,postTab];
         const set=(a,b,c,d,e)=>{view=a;teamTab=b;dynTab=c;pollTab=d;postTab=e;flash=null;render();
@@ -43,9 +51,12 @@ function load(file) {
         ['program','teams','coaches','shared'].forEach(t=>set('dyn',teamTab,t,pollTab,postTab));
         [view,teamTab,dynTab,pollTab,postTab]=V; flash=null; render(); return out; },
       schedule(seed){ const u=newUniverse(seed*7919+13); syncConf(u);
-        return new Season(u,(seed*2654435761)>>>0).sched.map(g=>[g.week,g.home,g.away,!!g.neutral,g.site||'']); } };`)();
+        return new Season(u,(seed*2654435761)>>>0).sched.map(g=>[g.week,g.home,g.away,!!g.neutral,g.site||'']); } };`)(W,D);
 }
 
+// every tab: college football's sub-tabs by name; other leagues, each view and dynasty tab
+const views = api => api.leagueId()==='cfb' ? api.allViews()
+  : ['team','scores','poll','stand'].map(v=>api.view(v)).concat(['program','teams','coaches','shared'].map(d=>api.view('dyn',d)));
 const h = o => crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0,16);
 
 function career(file, team, seed, seasons) {
@@ -57,7 +68,7 @@ function career(file, team, seed, seasons) {
     let guard = 0;
     while (api.SEA.phase !== 'done' && guard++ < 80) {
       api.doAdvance(); grab();
-      if (api.SEA.step === 7) screens.push(...api.allViews());
+      if (api.SEA.step === 7) screens.push(...views(api));
       let g = 0;
       while (api.live && !api.live.done && g++ < 800) {
         const L = api.live;
@@ -67,14 +78,16 @@ function career(file, team, seed, seasons) {
     }
     const SEA = api.SEA;
     const games = [].concat(...SEA.weeks.map(w => w.games)).map(g => [g.home,g.away,g.hp,g.ap]);
-    const post = [].concat(SEA.bowls, SEA.rounds.r1, SEA.rounds.qf, SEA.rounds.sf, SEA.rounds.fin)
+    const post = (api.leagueId()==='cfb'
+        ? [].concat(SEA.bowls, SEA.rounds.r1, SEA.rounds.qf, SEA.rounds.sf, SEA.rounds.fin)
+        : [].concat(...SEA.postPools()))
       .map(g => [g.home,g.away,g.hp,g.ap,g.title||'']);
     const season = {
       year: SEA.year, games: h(games), post: h(post), champion: SEA.champion,
       rec: h(SEA.rec), poll: h(SEA.poll.order()), heis: h(((SEA.mvpRace||SEA.heisman).call(SEA,10)||[]).map(x=>[x.n,x.t,x.p])),
     };
-    screens.push(...api.allViews());
-    api.openOffseason();
+    screens.push(...views(api));
+    api.openOffseason(); grab();          // the offseason screen itself
     const S = api.S;
     if (S.off && S.off.act.userOpen && S.off.move === null)
       S.off.move = (S.off.jobs[0] && S.off.jobs[0].team) || S.myTeam;
@@ -89,7 +102,10 @@ function career(file, team, seed, seasons) {
 
 const args = process.argv.slice(2);
 const file = args.find(a => a.endsWith('.html')) || path.join(__dirname,'..','dist','football-coach.html');
-const CASES = [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['Kent State',31337,3]];
+const probe = load(file), LG = probe.leagueId();
+const CASES = LG==='cfb' ? [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['Kent State',31337,3]]
+  : LG==='ncaab' ? [['Duke',1,2],['Coppin State',2024,2],['Gonzaga',777,2]]    // 365 teams: shorter careers
+  : [['Kansas City',1,4],['Tennessee',2024,4],['Detroit',777,3],['NY Giants',31337,3]];
 const result = {};
 for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
 // Schedules for many 2026 universes. Careers alone only see four opening
@@ -103,23 +119,28 @@ for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
   result['schedules#60'] = [{ all: h(sch) }];
 }
 const fp = h(result);
-const GOLD = path.join(__dirname, 'golden.json');
+const GOLD = path.join(__dirname, LG==='cfb' ? 'golden.json' : 'golden-'+LG+'.json');
+/* Every run ends with exactly one verdict line: MATCH or MISMATCH.
+     node test/golden.js [file.html]                    compare with golden.json
+     node test/golden.js [file.html] --write --note "…"  re-record, then compare
+     node test/golden.js [file.html] --dump             print fingerprints, then compare */
+if (args.includes('--dump')) console.log(JSON.stringify(result, null, 1));
 if (args.includes('--write')) {
-  // every re-record says why: node test/golden.js --write --note "reason"
   const ni = args.indexOf('--note'), note = ni >= 0 ? args[ni+1] : null;
-  if (!note) { console.log('refusing to re-record without --note "why behaviour changed"'); process.exit(1); }
+  if (!note) { console.log('refusing to re-record without --note "why behaviour changed"');
+               console.log('MISMATCH (nothing recorded)'); process.exit(1); }
   const prev = fs.existsSync(GOLD) ? JSON.parse(fs.readFileSync(GOLD,'utf8')) : {};
   const log = (prev.log || (prev.fp ? [{fp:prev.fp, note:'recorded from the published build (cf06b22)'}] : []))
     .concat([{fp, from: prev.fp || null, note}]);
-  fs.writeFileSync(GOLD, JSON.stringify({fp, log, result}, null, 1)); console.log('wrote', fp);
+  fs.writeFileSync(GOLD, JSON.stringify({fp, log, result}, null, 1));
+  console.log('recorded', prev.fp || '(none)', '->', fp);
 }
-else if (args.includes('--check')) {
-  const g = JSON.parse(fs.readFileSync(GOLD,'utf8'));
-  if (g.fp === fp) { console.log('MATCH', fp); }
-  else {
-    console.log('MISMATCH', g.fp, '->', fp);
-    for (const k in result) result[k].forEach((s,i) => { for (const f in s)
-      if (JSON.stringify(s[f]) !== JSON.stringify(g.result[k][i][f])) console.log(' ', k, 'season', i+1, f); });
-    process.exit(1);
-  }
-} else console.log(fp, JSON.stringify(result, null, 1).slice(0, 1500));
+const g = JSON.parse(fs.readFileSync(GOLD,'utf8'));
+if (g.fp === fp) { console.log('MATCH ' + fp + '  (' + path.relative(process.cwd(), file) + ')'); }
+else {
+  for (const k in result) result[k].forEach((s,i) => { for (const f in s)
+    if (!g.result[k] || !g.result[k][i] || JSON.stringify(s[f]) !== JSON.stringify(g.result[k][i][f]))
+      console.log('  differs:', k, 'season', i+1, f); });
+  console.log('MISMATCH ' + g.fp + ' expected, got ' + fp + '  (' + path.relative(process.cwd(), file) + ')');
+  process.exit(1);
+}

@@ -21,7 +21,7 @@ import os, glob, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC  = os.path.join(HERE, "src")
-OUTNAME = {"cfb": "football-coach.html"}
+OUTNAME = {"cfb": "football-coach.html", "nfl": "football-coach-pro.html", "ncaab": "basketball-coach.html"}
 
 def build(league="cfb"):
     ldir = os.path.join(SRC, "leagues", league)
@@ -32,6 +32,11 @@ def build(league="cfb"):
     if not os.path.isdir(gdir):
         sys.exit("league %s wants game layer %s, which doesn't exist" % (league, game))
     head = open(os.path.join(SRC, "_head.html"), encoding="utf-8").read()
+    tfile = os.path.join(ldir, "TITLE")                   # the browser tab's title
+    if os.path.exists(tfile):
+        import re
+        title = open(tfile, encoding="utf-8").read().strip()
+        head = re.sub(r"<title>.*?</title>", lambda m: "<title>" + title + "</title>", head, count=1)   # a function: no escapes
     tail = open(os.path.join(SRC, "_tail.html"), encoding="utf-8").read()
     files = [f for d in (os.path.join(SRC, "core"), gdir, ldir)
              for f in glob.glob(os.path.join(d, "*.js"))]

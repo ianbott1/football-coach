@@ -1,0 +1,471 @@
+/* ============ offseason: college basketball ============ */
+/* Players arrive as freshmen, develop for up to four years, and leave by
+   graduating or declaring for the NBA draft, the best of them after a single
+   season (the one-and-done). Programs sign a class every year, spend a
+   budget and drift in prestige. Conferences stay as they are. */
+
+function makePlayer(rng,target,cls,posIdx){
+  // upperclassmen are closer to their ceiling; freshmen start lower with room to grow
+  const clsAdj=[-7,-2,2,4][cls];   // centred so a normal class mix averages the target
+  const r=Math.round(Math.max(30,Math.min(99,rng.gauss(target+clsAdj,5.5))));
+  const pot=Math.round(Math.max(r,Math.min(99,r+rng.gauss(10-cls*2.5,5))));
+  return {n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:cls,r:r,pot:pot,
+          hz:0,prod:0,st:0};
+}
+
+function makeRoster(rng,programElo){
+  const target=eloToRating(programElo);
+  const bag=[]; [3,3,2,2].forEach((n,k)=>{for(let i=0;i<n;i++)bag.push(3-k)});
+  rng.shuffle(bag);
+  const r=POS.map((_,i)=>makePlayer(rng,target,bag[i],i));
+  // backups are younger and a clear step down, but the gap varies a lot
+  const bbag=[]; [1,2,3,4].forEach((n,k)=>{for(let i=0;i<n;i++)bbag.push(3-k)});
+  rng.shuffle(bbag);
+  POS.forEach((_,i)=>{
+    const b=makePlayer(rng,target-rng.range(6,17),bbag[i],i);
+    b.r=Math.min(b.r,r[i].r);            // never better than the starter on day one
+    r.push(b);
+  });
+  return r;
+}
+
+const ANCHOR=0.10;
+const ANCHOR_OF=Object.fromEntries(NCAAB_TEAMS.map(t=>[t.n,NCAAB_ELO(t)]));
+
+/* ---- offseason roster churn ---- */
+function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
+  focus=focus||{pos:null,r:0,pot:0}; devMod=devMod||0; bud=bud||null;
+  const cls=(u.classAvg&&u.classAvg[t]!==undefined)?u.classAvg[t]:null;
+  const coach=u.coach[t];
+  const base=eloToRating(u.program[t]);
+  const target=(u.classAvg&&u.classAvg[t]!==undefined)
+    ? base*0.68+u.classAvg[t]*0.32     // recent classes feed the pipeline
+    : base;
+  const leaving=[], arriving=[];
+  const roster=u.roster[t];
+  if(roster.length<POS.length*2){          // older save: give it a two-deep
+    POS.forEach((_,i)=>{
+      if(!roster[BK(i)]){
+        const b=makePlayer(rng,target-rng.range(6,17),rng.int(3),i);
+        b.r=Math.min(b.r,roster[i].r); roster[BK(i)]=b;
+      }
+    });
+  }
+  const newcomer=(i)=>{
+    const cls=rng.r()<0.62?0:1;
+    // a focus concentrates the class: better where you aim, thinner elsewhere
+    const bonus=(!focus.pos||focus.pos.indexOf(POS[i%POS.length].p)>=0)?focus.r:(focus.off||0);
+    // ten-man rosters: a class has to replace what leaves, so recruits arrive
+    // closer to the program's level than in football
+    const np=makePlayer(rng,target-rng.range(1,8)+(coach.q*0.045)+bonus
+      +(coach.rec||0)*0.5+(bud?bud.recruitBonus:0),cls,i%POS.length);
+    if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
+    if(focus.dev)np.up=focus.dev;
+    if(cls===0)np.rec=true;
+    // a five-star: ready to play now, with a ceiling the NBA will come for.
+    // The stronger the program, the likelier it lands one.
+    if(cls===0&&rng.r()<Math.max(0.01,Math.min(0.45,(base-66)/40))){
+      np.r=Math.round(Math.max(np.r,base+rng.gauss(0,3))); np.pot=Math.min(99,Math.round(np.r+16+rng.gauss(0,4)));
+      np.star5=true;
+    }
+    return np;
+  };
+  for(let i=0;i<roster.length;i++){
+    const pl=roster[i];
+    if(!pl)continue;
+    if(pl.c>=3){                                   // senior graduates
+      leaving.push({n:pl.n,p:pl.p,r:pl.r,c:pl.c,pot:pl.pot,starter:i<POS.length,
+                    car:pl.car||null, from:pl.from||null, peak:pl.peak||pl.r,
+                    idx:i%POS.length});
+      if(i<POS.length){
+        // the backup steps up, and a new man arrives behind him
+        roster[i]=roster[BK(i)];
+        roster[BK(i)]=newcomer(i);
+        arriving.push(roster[BK(i)]);
+      }else{
+        roster[i]=newcomer(i); arriving.push(roster[i]);
+      }
+    }else{
+      // development: biggest jumps early, capped by potential, nudged by coaching
+      const base=[6.2,4.0,2.2][pl.c];
+      const feat=(featured!==undefined&&featured!==null&&featured===i)?3.8:0;
+      // everyone plays both ends: both assistants shape a player's development
+      const side=staff?((staff.oc||0)+(staff.dc||0))/2:0;
+      let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0),3.0);
+      pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
+      pl.peak=Math.max(pl.peak||0,pl.r);
+      pl.c++;
+      // the best leave early for the NBA, the very best after one season
+      let keepOdds=bud?Math.max(0,1-bud.retention):1;
+      if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
+      // NBA teams draft ceilings: what he is, and more what he could be
+      const ready=0.45*pl.r+0.55*Math.max(pl.r,pl.pot);
+      if(ready>=77 && rng.r() < Math.min(0.95,((ready-75)/8)*(pl.c===1?1.4:1))*keepOdds){
+        const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
+        leaving.push({n:pl.n,p:pl.p,r:pl.r,c:pl.c-1,pot:pl.pot,early:true,featured:wasFeatured,
+                      starter:i<POS.length, car:pl.car||null, from:pl.from||null,
+                      peak:pl.peak||pl.r, idx:i%POS.length});
+        if(wasFeatured)u.pipeline=(u.pipeline||0)+1;
+        if(i<POS.length){
+          roster[i]=roster[BK(i)];
+          roster[BK(i)]=newcomer(i);
+          arriving.push(roster[BK(i)]);
+        }else{ roster[i]=newcomer(i); arriving.push(roster[i]) }
+      }
+    }
+  }
+  POS.forEach((_,i)=>{
+    const s=roster[i], b=roster[BK(i)];
+    if(s&&b&&b.r>s.r+2){roster[i]=b;roster[BK(i)]=s}   // clear upgrade wins the job
+  });
+  return {leaving:leaving,arriving:arriving};
+}
+
+function classLabel(rank,total){
+  const pct=rank/total;
+  if(rank<=10)return "Top-10 class";
+  if(pct<=0.20)return "Top-25 class";
+  if(pct<=0.45)return "Above average";
+  if(pct<=0.75)return "Middling";
+  return "Thin class";
+}
+
+/* ---- realignment ---- */
+/* Money moves programs. Every few years the strongest independents-in-waiting
+   get poached upward and the weakest P4 members get left behind. */
+function realign(u,rng,year){
+  if(!u.conf)syncConf(u);
+  const size=c=>NAMES.filter(t=>u.conf[t]===c).length;
+  const moves=[];
+  const P4L=LEAGUE.playoff.autoBids;
+  const G6L=LEAGUE.conf.autoBidPool;
+  const n=1+rng.int(3);
+  for(let k=0;k<n;k++){
+    // a strong Group of 6 program gets the call up
+    const cands=NAMES.filter(t=>G6L.indexOf(u.conf[t])>=0 && u.program[t]>=1600)
+      .sort((a,b)=>u.program[b]-u.program[a]).slice(0,8);
+    if(!cands.length)break;
+    const mover=rng.pick(cands);
+    const dest=P4L.filter(c=>size(c)<20).sort((a,b)=>{
+      const pa=NAMES.filter(t=>u.conf[t]===a).reduce((s,t)=>s+u.program[t],0)/Math.max(1,size(a));
+      const pb=NAMES.filter(t=>u.conf[t]===b).reduce((s,t)=>s+u.program[t],0)/Math.max(1,size(b));
+      return pa-pb;
+    })[0];
+    if(!dest||size(u.conf[mover])<=8)continue;
+    moves.push({team:mover,from:u.conf[mover],to:dest});
+    u.conf[mover]=dest;
+  }
+  syncConf(u);
+  if(moves.length){u.realignLog=u.realignLog||[];u.realignLog.push({year:year,moves:moves})}
+  return moves;
+}
+
+/* Each focus is a trade (measured over 8 careers: within noise of "Best
+   available" at 3 and 5 years; "Chase upside" behind in year 1, ahead by
+   year 5). r: recruits at the focus positions, off: everywhere else. */
+const RECRUIT_FOCUS={
+  balanced:{l:"Best available", d:"Take the best player on the board at every spot.",
+            pos:null, r:0, pot:0},
+  trenches:{l:"Bigs",            d:"Size and rebounding at forward and centre, at the cost of the guards.",
+            pos:["PF","C"], r:8, off:-5, pot:0},
+  skill:   {l:"Guards",          d:"Ball handlers and shooters, at the cost of size inside.",
+            pos:["PG","SG","SF"], r:6, off:-5, pot:0},
+  upside:  {l:"Chase upside",    d:"Raw prospects with ceilings. Weaker next year, dangerous in three or four.",
+            pos:null, r:-7, pot:14, dev:3.4}
+};
+
+/* ============ program budget ============ */
+/* A fixed pool each offseason. Everything you fund is something you didn't. */
+const BUCKETS=[
+ {k:"recruit",  l:"Recruiting",   d:"Better players sign. Pays off in two or three years."},
+ {k:"develop",  l:"Development",  d:"Strength staff and position coaches. Your current roster grows faster."},
+ {k:"facility", l:"Facilities",   d:"Permanent. Compounds quietly for as long as you're here."},
+ {k:"retention",l:"Retention/NIL",d:"Keep your stars from leaving early for the draft."}
+];
+
+function budgetPool(u,t,wins){
+  const base=6+Math.round((u.program[t]-1150)/150);
+  const success=wins>=11?3:wins>=9?2:wins>=7?1:0;
+  const fac=Math.floor((u.facility&&u.facility[t]?u.facility[t]:0)/22);
+  return Math.max(6,Math.min(20,base+success+fac));
+}
+
+function applyBudgetRead(alloc){
+  return {recruitBonus:(alloc.recruit||0)*0.30,
+          devBonus:(alloc.develop||0)*0.46,
+          retention:Math.min(0.62,(alloc.retention||0)*0.055)};
+}
+
+function applyBudget(u,t,alloc){
+  u.facility=u.facility||{};
+  u.facility[t]=(u.facility[t]||0)+(alloc.facility||0)*2.4;
+  return {
+    recruitBonus:(alloc.recruit||0)*0.30,
+    devBonus:(alloc.develop||0)*0.46,
+    retention:Math.min(0.62,(alloc.retention||0)*0.055),
+    facility:Math.min(520,u.facility[t])
+  };
+}
+
+/* ---- the transfer portal ----
+   Who enters is known when the season ends (so the offseason screen can show
+   them): backups stuck behind a clearly better starter, who want minutes, and
+   about one in twelve of the stars at small programs, moving up (more drained
+   the mid-majors and made first-round upsets rarer than history: bb-march). Seniors
+   graduate instead. Keys identify a player across the offseason. */
+const portalKey=(t,p)=>t+"|"+p.n+"|"+p.p;
+const portalHash=x=>{let h=7;for(let i=0;i<x.length;i++)h=(h*31+x.charCodeAt(i))|0;return (Math.abs(h)%1000)/1000};
+function portalEntrants(u){
+  const out=[];
+  NAMES.forEach(t=>{const R=u.roster[t];
+    POS.forEach((P,i)=>{const st=R[i], bk=R[BK(i)];
+      if(bk&&st&&bk.c<=2&&bk.r>=55&&st.r>=bk.r+4)
+        out.push({key:portalKey(t,bk),from:t,n:bk.n,p:bk.p,r:bk.r,pot:bk.pot,c:bk.c,why:"wants more minutes"});
+      if(st&&st.c<=2&&st.r>=72&&(u.program[t]||1500)<1600&&portalHash(t+st.n+u.year)<0.08)
+        out.push({key:portalKey(t,st),from:t,n:st.n,p:st.p,r:st.r,pot:st.pot,c:st.c,why:"moving up"});
+    })});
+  return out.sort((a,b)=>b.r-a.r);
+}
+/* a transfer takes a spot at his position if he's better than who is there;
+   whoever he pushes off the end leaves the program */
+function portalPlace(R,pl){
+  const i=POS.findIndex(P=>P.p===pl.p); if(i<0)return {ok:false};
+  if(!R[i]||pl.r>R[i].r){const out=R[BK(i)]; R[BK(i)]=R[i]; R[i]=pl; return {ok:true,out:out,start:true}}
+  if(!R[BK(i)]||pl.r>R[BK(i)].r){const out=R[BK(i)]; R[BK(i)]=pl; return {ok:true,out:out,start:false}}
+  return {ok:false};
+}
+function runPortal(u,rng,entrants,U_CH,report){
+  const moved=[], touched=new Set();
+  const P={in:{},out:{},targets:{}}; const push=(o,t,x)=>{(o[t]=o[t]||[]).push(x)};
+  // they leave: each program signs a freshman in the spot
+  entrants.forEach(e=>{
+    const R=u.roster[e.from], i=R.findIndex(p=>p&&portalKey(e.from,p)===e.key);
+    if(i<0)return;                                   // graduated or gone to the NBA
+    const pl=R[i]; R[i]=makePlayer(rng,eloToRating(u.program[e.from])-rng.range(4,10),0,i%POS.length);
+    pl.yrsHere=0; moved.push({e:e,pl:pl}); touched.add(e.from);
+    push(P.out,e.from,{n:pl.n,p:pl.p,r:pl.r,why:e.why});
+  });
+  const taken=new Set(), count={};
+  const sign=(t,m)=>{const res=portalPlace(u.roster[t],m.pl); if(!res.ok)return res;
+    taken.add(m.e.key); count[t]=(count[t]||0)+1; touched.add(t);
+    push(P.in,t,{n:m.pl.n,p:m.pl.p,r:m.pl.r,from:m.e.from,start:res.start});
+    if(res.out)push(P.out,t,{n:res.out.n,p:res.out.p,r:res.out.r,why:"lost his spot to a transfer"});
+    return res};
+  // people's targets first, in their order
+  Object.keys(U_CH).forEach(t=>{const ch=U_CH[t]; if(!ch||!ch.portal||!ch.portal.length)return;
+    P.targets[t]=ch.portal.map(k=>{
+      const m=moved.find(x=>x.e.key===k&&!taken.has(k)), nm=k.split("|")[1];
+      if(!m)return {n:nm,got:false,why:"didn't enter the portal after all (or went elsewhere first)"};
+      if(m.e.from===t)return {n:nm,got:false,why:"he's leaving you"};
+      const res=sign(t,m);
+      return res.ok?{n:nm,got:true,start:res.start}:{n:nm,got:false,why:`no room at ${m.pl.p}: your players there are better`};
+    })});
+  // then the computer's programs, strongest first, two transfers at most each
+  const people=new Set(Object.keys(U_CH));
+  const order=NAMES.filter(t=>!people.has(t)).sort((a,b)=>u.program[b]-u.program[a]);
+  moved.filter(m=>!taken.has(m.e.key)).forEach(m=>{
+    const from=u.program[m.e.from]||1500;
+    // many suitors: he picks among the programs that want him (not always
+    // the strongest, which would hand the same programs the best every year)
+    const suitors=[];
+    for(const t of order){
+      if(t===m.e.from||(count[t]||0)>=2||u.program[t]<from-60)continue;
+      const R=u.roster[t], i=POS.findIndex(x=>x.p===m.pl.p);
+      // a player leaving for minutes goes where he'll start; a star moving up
+      // can also take a clear bench upgrade at a bigger program
+      const starts=i>=0&&m.pl.r>(R[i]?R[i].r:0);
+      const bench=i>=0&&m.e.why==="moving up"&&m.pl.r>(R[BK(i)]?R[BK(i)].r:0)+3;
+      if(!starts&&!bench)continue;
+      suitors.push(t); if(suitors.length>=12)break;
+    }
+    if(suitors.length)sign(suitors[rng.int(suitors.length)],m);
+  });
+  moved.filter(m=>!taken.has(m.e.key)).forEach(m=>push(P.out,m.e.from,{n:m.pl.n,p:m.pl.p,r:m.pl.r,why:m.e.why,unsigned:true}));
+  report.portal=P;
+  if(typeof S!=="undefined"&&S)S.lastPortalIn=P.in;          // for tests: every program's transfers in
+  return touched;
+}
+
+function offseasonRosters(u,rng,healthy,elo,rec,choices){
+  /* One human or several: each coached program gets its own choices. */
+  const U_CH = choices.users || (choices.userTeam?{[choices.userTeam]:choices}:{});
+  const chFor = t=>U_CH[t]||null;
+  const leavers={};
+  choices=choices||{};
+  const entrants=portalEntrants(u);                 // decided as the season ended
+  const risers=[],fallers=[],churn={};
+  const ut=choices.userTeam;
+
+  if(ut&&choices.coach){
+    const c=choices.coach;
+    u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0};
+  }
+
+  NAMES.forEach(t=>{
+    const before=u.program[t];
+    const c=u.coach[t];
+    u.program[t]+=RECRUIT*(elo[t]-u.program[t])
+                 +c.q*COACH_BUILD
+                 +rng.gauss(0,PROG_NOISE*iscale(u.program[t]));
+    // resources anchor a program: conference money, arena, recruiting reach.
+    // A mid-major can rise, and a blue blood can fall, but both drift back
+    // toward their structural level unless results keep them there.
+    u.program[t]+=ANCHOR*(ANCHOR_OF[t]-u.program[t]);
+    u.program[t]=Math.max(P_FLOOR,Math.min(P_CEIL,u.program[t]));
+    c.t++;
+    const ch=chFor(t);
+    const focus=(ch&&ch.recruit)?ch.recruit:"balanced";
+    let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev:0;
+    let bud=null;
+    if(ch&&ch.budget){
+      bud=applyBudget(u,t,ch.budget);
+      devMod+=bud.devBonus;
+      u.program[t]+=bud.facility*0.20;      // facilities lift the program itself
+    }
+    const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
+    churn[t]=developRoster(u,t,rng,RECRUIT_FOCUS[focus],devMod,bud,
+                           ch?ch.featured:null,
+                           {oc:ocq*0.030, dc:dcq*0.030});
+    leavers[t]=churn[t].leaving;
+    u.trueBase[t]=rosterElo(u.roster[t])
+                 +(c.t<=1?ROOKIE_DIP:0)
+                 +rng.gauss(0,ROSTER_NOISE);
+    u.perceived[t]=0.58*elo[t]+0.42*u.program[t]+rng.gauss(0,PERCEPT_N);
+    const d=u.program[t]-before;
+    if(d>35)risers.push([t,Math.round(d)]);
+    if(d<-35)fallers.push([t,Math.round(d)]);
+  });
+
+  /* The transfer portal: players move between programs. */
+  const portalReport={}, preElo={};
+  NAMES.forEach(t=>preElo[t]=rosterElo(u.roster[t]));
+  const touched=runPortal(u,rng,entrants,U_CH,portalReport);
+  // strength moves by exactly what the portal changed (the rest, noise included, stays)
+  touched.forEach(t=>{u.trueBase[t]+=rosterElo(u.roster[t])-preElo[t]});
+
+  /* Draft night: everyone who left the college game gets sorted out. */
+  const draftResult=runDraft(u,rng,u.year,leavers);
+  recordAlumni(u,u.year,draftResult.pool);
+
+  /* Every program signs a class each year, whether or not a freshman starts.
+     Quality tracks program pull, the coach's recruiting, and your stated focus. */
+  u.classAvg=u.classAvg||{};
+  const incoming=[];
+  NAMES.forEach(t=>{
+    const c=u.coach[t];
+    const ch2=chFor(t);
+    const focus=(ch2&&ch2.recruit)?RECRUIT_FOCUS[ch2.recruit]:RECRUIT_FOCUS.balanced;
+    const q=eloToRating(u.program[t])
+           +c.q*0.055 +(c.rec||0)*0.55
+           +(focus.r||0)*0.45 +(focus.pot||0)*0.12
+           +((ch2&&ch2.budget)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
+           +((ch2&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
+           +rng.gauss(0,2.6);
+    const signed=6+Math.round(rng.range(0,3));
+    incoming.push([t,q,signed]);
+    // classes compound: what you sign now shapes who is available later
+    const prev=u.classAvg[t]!==undefined?u.classAvg[t]:q;
+    u.classAvg[t]=prev*0.62+q*0.38;
+  });
+  incoming.sort((a,b)=>b[1]-a[1]);
+  const classes={};
+  incoming.forEach(([t,av,n],i)=>{
+    classes[t]={avg:Math.round(av),n:n,rank:i+1,of:incoming.length,
+                l:classLabel(i+1,incoming.length)};
+  });
+  const early={};
+  NAMES.forEach(t=>{const x=churn[t].leaving.filter(y=>y.early); if(x.length)early[t]=x});
+
+  if(ut&&choices.phil)u.phil=choices.phil;
+  u.year++;
+  const realigned=[];                          // conferences stay as they are
+  risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
+  return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
+          churn:churn,classes:classes,early:early,realigned:realigned,
+          draft:draftResult, portal:portalReport.portal};
+}
+
+LEAGUE.offseason={
+  newRoster:makeRoster,         // (rng, programElo) -> roster
+  run:offseasonRosters,         // (u, rng, healthy, elo, rec, choices) -> report
+  recruitFocus:RECRUIT_FOCUS,   // the choices offered on the offseason screen
+  budget:{buckets:BUCKETS, pool:budgetPool},
+  /* the league's offseason choices, as the offseason screen starts them */
+  open(u,t,wins){
+    const pool=budgetPool(u,t,wins);
+    return {pool:pool, picks:{recruit:"balanced", portal:[],
+      budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
+              facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}}};
+  },
+  /* ...and as run() reads them */
+  choices(P){ return {recruit:P.recruit, budget:P.budget, portal:P.portal||[]} },
+  portalPreview:portalEntrants                  // who is likely to enter, for the screen
+};
+
+/* What a season is judged against, and how it is graded. The grade reads the
+   result line from seasonResult. */
+LEAGUE.goals={
+  /* what the job demands, by program strength: wins over a 30-game season,
+     and par for March (how far into the NCAA tournament the job expects) */
+  expectations(p){
+    if(p>=1950)return {w:24,par:1.2,l:"A deep March run. The Sweet 16 is the floor.",t:"SECOND WEEKEND"};
+    if(p>=1800)return {w:21,par:0.6,l:"Make the NCAA tournament and win a game when you get there.",t:"WIN IN MARCH"};
+    if(p>=1650)return {w:18,par:0.2,l:"Get into the field. Selection Sunday should be a good day.",t:"DANCE"};
+    if(p>=1480)return {w:15,par:0,l:"A winning season and a real run at the conference title.",t:"CONTEND"};
+    return {w:11,par:0,l:"Show progress. A winning conference record would be real movement.",t:"BUILD SOMETHING"};
+  },
+  isTitle(result){ return /NATIONAL/i.test(result) },
+  firstTitle:"First national title of your tenure.",
+  grade(wins,losses,result,exp){
+    // no result yet (a season in progress, as the seat badge asks): March at par
+    const march=!result?(exp.par||0):/NATIONAL/i.test(result)?5:/national championship/i.test(result)?3.6:/Final Four/.test(result)?3:
+      /Elite Eight/.test(result)?2.3:/Sweet 16/.test(result)?1.6:/Second Round/.test(result)?0.9:
+      /First Round/.test(result)?0.4:/Opening Round/.test(result)?0.2:/Made the NCAA/.test(result)?0.3:
+      /^Won the/.test(result)?0.8:-(exp.par>=0.2?1.0:0);
+    let s=(wins-exp.w)*0.32+march-(exp.par||0);
+    if(wins<losses)s-=(exp.w>=15?1.0:0.2);
+    const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
+            s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
+    const l=s>=2.6?"Far beyond what anyone expected.":
+            s>=0.9?"Ahead of schedule.":
+            s>=-0.6?"About what was expected.":
+            s>=-2.2?"Short of the mark.":
+            "A bad year, and everyone knows it.";
+    return {g:g,l:l,miss:s<-0.6};                 // "Short of the mark" or worse
+  }
+};
+
+/* ---- the history book: what only college football records ---- */
+LEAGUE.historyExtras=function(sea,off,my){
+  const bowlOf={}; sea.bowls.forEach(g=>{
+    bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
+  return {id:"ncaab", bowls:bowlOf,
+    draft:(off.draft&&off.draft.picks)?off.draft.picks
+      .filter(d=>d.team===my||d.draft.round<=1)
+      .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
+        early:!!d.early,c:d.c,d:d.draft})):[],
+    // only the teams people coach: the screens show nothing else, and all 365
+    // cost 85,000 characters a season in the save
+    classes:mineOnly(off.classes), early:mineOnly(off.early), realigned:off.realigned||[],
+    portal:off.portal?{in:mineOnly(off.portal.in), out:mineOnly(off.portal.out), targets:mineOnly(off.portal.targets)}:null};
+};
+/* a version-1 entry's college-only fields */
+LEAGUE.migrateHistory=function(h){
+  return {id:"cfb", bowls:h.bowls||{}, draft:h.draft||[], classes:h.classes||{},
+          early:h.early||{}, realigned:h.realigned||[]};
+};
+/* one season of a team's history, in a line */
+function mineOnly(o){
+  if(!o)return {}; const out={};
+  const people=(S.coaches&&S.coaches.length?S.coaches.map((c,i)=>i===(S.turn||0)?S.myTeam:c.myTeam):[S.myTeam]);
+  people.concat([S.myTeam]).forEach(t=>{if(o[t])out[t]=o[t]});
+  return out;
+}
+/* one season in a line, for a team's history: how March went */
+LEAGUE.seasonLine=function(h,t,r,seed){
+  if(h.champion===t)return "National champions"+(seed?" \u00b7 a "+seed+" seed":"");
+  if(h.pnote&&h.pnote[t])return h.pnote[t].replace("NCAA tournament \u2014 ","NCAA: ")+(seed?" \u00b7 "+seed+" seed":"");
+  if(seed)return "NCAA tournament, "+seed+" seed";
+  if(h.groupChamps&&Object.keys(h.groupChamps).some(c=>h.groupChamps[c]===t))return "Conference tournament champions";
+  return r[0]>r[1]?"No NCAA bid":"Losing season";
+};

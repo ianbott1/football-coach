@@ -2,21 +2,51 @@
 /* Games are played out drive by drive and the score emerges from them, so a
    decision made in the fourth quarter genuinely changes the ending. */
 
-const DRIVES_PER_TEAM = 12;
+const DRIVES_PER_TEAM = (LEAGUE.tuning&&LEAGUE.tuning.drives)||12;   // the league sets its pace
+/* How much a rating gap is worth on the field. College gaps are enormous; a
+   pro league's are small but decide more, so a league can steepen it. */
+const GAP_SCALE = (LEAGUE.tuning&&LEAGUE.tuning.gapScale)||1;
+/* A league can have teams manage the game late: sit on a three-score lead in
+   the fourth quarter, take risks when well behind. Applies only to a side
+   nobody is calling; a coach makes that choice for himself. */
+const GAME_STATE = !!(LEAGUE.tuning&&LEAGUE.tuning.gameState);
+function situational(aggr,i,total,mine,theirs){
+  if(!GAME_STATE||i<total*0.75)return aggr;
+  const d=mine-theirs;
+  return d>=17?"sit":d<=-9?"chase":aggr;
+}
 const MAX_CALLS = 3;          // how many decisions a single game will ask of you
 
 /* Aggression presets, used both as a pre-game plan and as an in-game choice. */
+/* A gameplan is a trade between talent and chance. gap scales how much the
+   rating gap counts on the side's own drives: safe lets the better team's
+   talent show, risk makes the game more of a coin flip. At even strength the
+   three are worth the same; an underdog should take risks, a favourite
+   should play it safe. td/fg/to only change how it looks (more field goals
+   and fewer turnovers when safe; more touchdowns and turnovers when
+   risky), set so they don't change who wins. See test/plans.js. */
 const AGGR = {
-  safe:      {td:-0.050, fg:+0.058, to:-0.070},
-  balanced:  {td: 0,     fg: 0,     to: 0},
-  aggressive:{td:+0.082, fg:-0.060, to:+0.086}
+  safe:      {td:-0.015, fg:+0.040, to:-0.015, gap:1.30},
+  balanced:  {td: 0,     fg: 0,     to: 0,     gap:1.00},
+  aggressive:{td:+0.015, fg:-0.045, to:+0.030, gap:0.55},
+  // not a gameplan: the engine's own urgency, for overtime and for a fourth
+  // down it has decided to go for (the old "aggressive" numbers)
+  urgent:    {td:+0.082, fg:-0.060, to:+0.086, gap:1.00},
+  // late-game management for sides nobody is calling (see situational):
+  // sitting on a lead burns clock, chasing a deficit takes shots
+  sit:       {td:-0.050, fg:+0.058, to:-0.070, gap:1.00},
+  chase:     {td:+0.082, fg:-0.060, to:+0.086, gap:1.00},
+  // your call to force it on a last possession: touchdown or bust. Right
+  // when you need a touchdown; a mistake when a field goal would do.
+  force:     {td:+0.080, fg:-0.120, to:+0.090, gap:1.00}
 };
 
 /* Chance of each outcome on one drive, given the gap between the two teams. */
 function driveOdds(offElo, defElo, startYd, aggr){
-  const x = (offElo - defElo) / 470;
-  const field = (startYd - 27) / 100;              // better starting spot helps
   const A = AGGR[aggr] || AGGR.balanced;
+  // risk makes a drive less about who is better; safe makes it more so
+  const x = (offElo - defElo) * GAP_SCALE / 470 * (A.gap || 1);
+  const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;
   let to = 0.135 - x * 0.0339 + A.to;
@@ -62,7 +92,7 @@ function fgDistance(stall){ return (100-stall)+17; }
 /* Fourth-down conversion: distance is what matters, quality adjusts it. */
 function goOdds(togo, offElo, defElo){
   const base = 0.68 / (1 + 0.165*(Math.max(1,togo)-1));
-  const adj = (offElo-defElo)/3400;
+  const adj = (offElo-defElo) * GAP_SCALE / 3400;
   return Math.max(0.12, Math.min(0.82, base + adj));
 }
 
@@ -93,6 +123,8 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     const start=nextStart(rng,st.prev);
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
     let aggr=home?st.aggrH:st.aggrA;
+    if(!(opts.decide&&(home?opts.userIsHome:!opts.userIsHome)))
+      aggr=situational(aggr,i,st.total,home?st.h:st.a,home?st.a:st.h);
     let forced=null;
     if(opts.decide){
       const isUser = home ? opts.userIsHome : !opts.userIsHome;
@@ -104,9 +136,9 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
           const choice=opts.decide(dp,ctx);
           st.used[dp.k]=true;
           if(dp.k==="fourth")forced=choice;
-          else if(choice==="push")aggr="aggressive";
-          else if(choice==="sit"){
-            aggr="safe";
+          else if(choice==="push")aggr=(dp.k==="chase"?"force":"chase");   // calls are game management,
+          else if(choice==="sit"){                     // not the weekly gameplan
+            aggr="sit";
             // running clock takes possessions off the board for both teams
             st.endAfter=Math.min(st.total-1, i+2);   // running clock really does end games
           }
@@ -122,7 +154,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
       res = {pts:0,kind:"PUNT"};
     }else if(forced==="go"){
       const conv = rng.r() < 0.52;
-      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "aggressive")
+      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "urgent")
                  : {pts:0,kind:"DOWNS"};
       if(conv&&res.pts===0)res={pts:0,kind:res.kind};
     }else{
@@ -138,7 +170,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   while(st.h===st.a&&ot<24){
     ot++;
     const home=(ot%2===1);
-    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"aggressive");
+    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
     if(home)st.h+=r.pts; else st.a+=r.pts;
     st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                     h:st.h,a:st.a,n:st.total+ot,aggr:"aggressive",note:"overtime",ot:true});
@@ -183,11 +215,16 @@ function twoPointCall(mine, theirs, q, late){
   return null;
 }
 
-function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
+/* humans: which sides a person is calling, {home, away}. A bare boolean is
+   the one-coach form: true means the user is the home side. Each side has
+   its own calls, asked only on its own drives, and an ask says whose it is. */
+function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
+  if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const st={h:0,a:0,drives:[],prev:"TD",i:0,total:DRIVES_PER_TEAM*2,
             aggrH:planH||"balanced",aggrA:planA||"balanced",
             baseH:planH||"balanced",baseA:planA||"balanced",
-            used:{},calls:0,rng:rng,endAfter:undefined,
+            usedH:{},usedA:{},callsH:0,callsA:0,humans:humans,
+            rng:rng,endAfter:undefined,
             ask:null,stage:null,pend:null,answer:null};
 
   function push(home,q,start,res,aggr){
@@ -209,7 +246,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
       // overtime, both teams from the opponent's 25
       st.otGuard=(st.otGuard||0)+1;
       const home=(st.otGuard%2===1);
-      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"aggressive");
+      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
       if(home)st.h+=r.pts; else st.a+=r.pts;
       st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                       h:st.h,a:st.a,n:st.total+st.otGuard,aggr:"aggressive",
@@ -218,9 +255,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
     }
 
     const i=st.i, home=i%2===0;
-    const isUser = home ? userIsHome : !userIsHome;
+    const isUser = home ? humans.home : humans.away;
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
-    const mine=userIsHome?st.h:st.a, theirs=userIsHome?st.a:st.h;
+    // asks only ever go to the side with the ball, so the score is theirs
+    const mine=home?st.h:st.a, theirs=home?st.a:st.h;
+    const side=home?"home":"away";
+    const used=home?st.usedH:st.usedA;
+    const calls=()=>home?st.callsH:st.callsA, called=()=>{if(home)st.callsH++;else st.callsA++};
     const late = i>=st.total-7;
     const offE=home?eloH:eloA, defE=home?eloA:eloH;
 
@@ -230,9 +271,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
       const P=st.pend, stage=st.stage;
       if(stage==="strategy"){
         st.stage=null;
-        if(choice==="push"){ if(home)st.aggrH="aggressive"; else st.aggrA="aggressive" }
+        // calls are game management, not the weekly gameplan
+        if(choice==="push"){ const m=(P.k==="chase"?"force":"chase"); if(home)st.aggrH=m; else st.aggrA=m }
         else if(choice==="sit"){
-          if(home)st.aggrH="safe"; else st.aggrA="safe";
+          if(home)st.aggrH="sit"; else st.aggrA="sit";
           st.endAfter=Math.min(st.total-1,i+3);
         } else { if(home)st.aggrH=st.baseH; else st.aggrA=st.baseA }
         // fall through and play the drive normally
@@ -242,7 +284,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
           const tg=P.res.togo||3;
           if(rng.r()<goOdds(tg,offE,defE)){
             // converted: the drive carries on from there
-            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"aggressive");
+            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent");
             res=r2;
             res.converted=true;
             res.note = r2.pts>0 ? `converted on fourth and ${tg}, then scored`
@@ -274,36 +316,37 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, userIsHome){
     const start=nextStart(rng,st.prev);
 
     // ---- strategic call before the snap ----
-    if(isUser&&st.calls<MAX_CALLS&&!st.stage){
-      const ctx={q:q,idx:i,total:st.total,startYd:start,used:st.used,rng:rng,
+    if(isUser&&calls()<MAX_CALLS&&!st.stage){
+      const ctx={q:q,idx:i,total:st.total,startYd:start,used:used,rng:rng,
                  mine:mine,theirs:theirs};
       const dp=decisionPoint(ctx,true);
       if(dp){
-        st.used[dp.k]=true; st.calls++;
-        st.stage="strategy"; st.pend={q:q,start:start};
-        return {ask:dp,mine:mine,theirs:theirs,q:q};
+        used[dp.k]=true; called();
+        st.stage="strategy"; st.pend={q:q,start:start,k:dp.k};
+        return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
       }
     }
 
-    const aggr=home?st.aggrH:st.aggrA;
+    const aggr=isUser?(home?st.aggrH:st.aggrA)
+                     :situational(home?st.aggrH:st.aggrA,i,st.total,mine,theirs);
     const res=rollDrive(rng,offE,defE,start,aggr);
 
     // ---- a call the situation creates ----
-    if(isUser&&st.calls<MAX_CALLS){
-      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(st.used.fourth||0)<2){
+    if(isUser&&calls()<MAX_CALLS){
+      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<2){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
         if(dp){
-          st.used.fourth=(st.used.fourth||0)+1; st.calls++;
+          used.fourth=(used.fourth||0)+1; called();
           st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr};
-          return {ask:dp,mine:mine,theirs:theirs,q:q};
+          return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
         }
       }
-      if(res.kind==="TD"&&!st.used.two){
+      if(res.kind==="TD"&&!used.two){
         const dp=twoPointCall(mine,theirs,q,late);
         if(dp){
-          st.used.two=true; st.calls++;
+          used.two=true; called();
           st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr};
-          return {ask:dp,mine:mine,theirs:theirs,q:q};
+          return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
         }
       }
     }
@@ -322,11 +365,15 @@ function decisionPoint(state, isUser){
   const veryLate = idx >= total - 7;
   const diff = mine - theirs;
 
-  if (veryLate && diff < 0 && diff >= -16 && !used.chase) {
+  // asked on your last possession, when what you need is known: a field
+  // goal to win or tie, or nothing less than a touchdown
+  const lastBall = idx >= total - 2;
+  if (lastBall && diff < 0 && diff >= -8 && !used.chase) {
     return {
       k:"chase",
-      h:`Down ${-diff} with the clock going`,
-      b:`Time to force it, or keep playing your game and hope for a stop.`,
+      h:`Down ${-diff}, last possession`,
+      b: -diff<=3 ? `A field goal ${-diff===3?"ties it":"wins it"}. Take what they give you, or go for the touchdown?`
+                  : `Only a touchdown will do. Force it downfield, or work it and trust the clock?`,
       opts:[["push","Open it up"],["normal","Stay patient"]]
     };
   }
@@ -351,17 +398,4 @@ function decisionPoint(state, isUser){
   return null;
 }
 
-/* Apply a decision to the rest of the game. */
-function applyChoice(state, key, choice){
-  state.used[key] = true;
-  if (key === "fourth") {
-    state.pendingFourth = choice;
-  } else if (choice === "push") {
-    state.aggr = "aggressive";
-  } else if (choice === "sit") {
-    state.aggr = "safe";
-  } else if (choice === "keep" || choice === "normal") {
-    state.aggr = state.basePlan;
-  }
-}
 

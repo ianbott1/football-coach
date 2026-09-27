@@ -1,5 +1,11 @@
 /* ============ state ============ */
-const KEYBASE="fbcoach-v2";
+/* Each game keeps its own save slots. All three games live on one website,
+   so they share the browser's storage: the slots used to be shared too, and a
+   game could list (and overwrite) another game's saves. College football
+   keeps the original keys, so its saves are untouched. */
+const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1"};
+const LEGACY_KEY="fbcoach-v2";
+const KEYBASE=SAVE_KEYS[LEAGUE.id]||LEGACY_KEY;
 const NSLOTS=3;
 let slot=1;
 const KEYFOR=n=>KEYBASE+"-slot"+n;
@@ -35,8 +41,32 @@ function ensureCoaches(){
 }
 
 let live=null;          // a game being played out right now
+let handoffNotes={};    // hot seat: team -> the coach who deferred a game against it
 let handoff=false;      // showing the "pass the device" screen
 let owlTaps=0;
+
+/* ---- head to head ----
+   When two coaches in a hot seat meet, the game is played once, on the later
+   coach's turn, and each coach calls their own side. The earlier coach picks
+   a plan and hands over without playing. */
+function coachIndexOf(team){
+  if(!S.coaches)return -1;
+  if(team===S.myTeam)return S.turn||0;
+  return S.coaches.findIndex((c,i)=>i!==(S.turn||0)&&c.myTeam===team);
+}
+function opponentOf(g){ return g?(g.home===S.myTeam?g.away:g.home):null }
+/* Both coaches' plans and featured players, applied to one game. */
+function h2hElo(g,step,oj){
+  const keepU=SEA.userTeam, keepF=SEA.featured, oc=S.coaches[oj];
+  SEA.userTeam=null; SEA.featured=null;
+  const e0=SEA.matchupElo(g,"balanced");
+  SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+  const e1=SEA.matchupElo(g,plan);
+  SEA.userTeam=oc.myTeam; SEA.featured=(oc.featured===undefined?null:oc.featured);
+  const e2=SEA.matchupElo(g,(oc.plans&&oc.plans[step])||"balanced");
+  SEA.userTeam=keepU; SEA.featured=keepF;
+  return {h:e1.h+e2.h-e0.h, a:e1.a+e2.a-e0.a};
+}
 
 /* Answers belong to a season as well as a week. Keyed by step alone, season
    three replays season one's decisions and silently answers everything. */
@@ -47,14 +77,19 @@ function liveSeed(step){
 }
 
 function startLive(g,step){
-  const e=SEA.matchupElo(g,plan);
+  const oj=isHotSeat()?coachIndexOf(opponentOf(g)):-1;
+  const h2h=oj>=0&&oj<(S.turn||0);                 // an earlier coach waited for this one
+  const e=h2h?h2hElo(g,step,oj):SEA.matchupElo(g,plan);
   const rng=new RNG(liveSeed(step));
   const userIsHome=(g.home===S.myTeam);
+  const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):"balanced";
   live={g:g, step:step,
         eng:makeLiveGame(rng,e.h,e.a,
-              userIsHome?plan:"balanced", userIsHome?"balanced":plan, userIsHome),
+              userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
+              h2h?{home:true,away:true}:userIsHome),
         drives:[], ask:null, done:false,
-        paused:(S.watchStep===true), userIsHome:userIsHome};
+        paused:(S.watchStep===true), userIsHome:userIsHome,
+        h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
   // replay any answers already recorded for this week
   live.replay=((S.calls&&S.calls[callKey(step)])||[]).slice();
   live.ri=0;
@@ -80,7 +115,8 @@ function liveTick(){
         live.eng.reply(live.replay[live.ri++]);
         continue;
       }
-      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs};
+      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs,
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam};
       render();
       return;
     }
@@ -108,11 +144,16 @@ function answerLive(v){
 function finishLive(){
   const g=live.g;
   const meHome=(g.home===S.myTeam);
-  SEA.forcedList=SEA.forcedList||[];
-  SEA.forcedList.push({team:S.myTeam, other:(meHome?g.away:g.home),
+  const played={team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
-              drives:live.drives});
+              drives:live.drives};
+  SEA.forcedList=SEA.forcedList||[];
+  SEA.forcedList.push(played);
+  // keep it in the save: a reload must replay this result, not re-simulate
+  S.played=S.played||{};
+  const pk=callKey(live.step);
+  S.played[pk]=(S.played[pk]||[]).concat([JSON.parse(JSON.stringify(played))]);
   const step=live.step;
   live.result={hp:live.eng.h,ap:live.eng.a,
                mine:(g.home===S.myTeam?live.eng.h:live.eng.a)};
@@ -128,6 +169,7 @@ function finishLive(){
 
 /* Everyone has had their turn: play out the rest of the league. */
 function resolveWeek(step){
+  handoffNotes={};
   SEA.userTeam=S.myTeam;
   SEA.advance();
   SEA.forcedList=[]; SEA.forced=null;
@@ -201,16 +243,85 @@ function rebuild(){
     const ans=(S.calls&&S.calls[callKey(i,SEA.year)])||[]; let ai=0;
     SEA.decideHook=ans.length?(()=>ans[ai++]||"normal"):null;
     SEA.plan=(S.plans&&S.plans[i])||"balanced";
+    const pl=S.played&&S.played[callKey(i,SEA.year)];
+    SEA.forcedList=pl?JSON.parse(JSON.stringify(pl)):[];
     SEA.advance();
+    SEA.forcedList=[]; SEA.forced=null;
   }
   SEA.plan=plan;
 }
 
-async function save(){
-  try{await window.storage.set(KEYFOR(slot),JSON.stringify(S))}catch(e){}
+let saveOK=null;                     // did the last save land? null = not tried yet
+/* Saves are coalesced: calls made in the same burst share one save, of the
+   state as it stands when it runs (compressing a long career takes a
+   moment). In a browser it runs after the screen has drawn. */
+let savePending=null;
+function save(){
+  if(savePending)return savePending;
+  savePending=(async()=>{
+    if(typeof requestAnimationFrame==="function")
+      await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
+    else await Promise.resolve();
+    savePending=null;
+    S.league=LEAGUE.id;                                   // every save says which game it's from
+  try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
+    return saveOK;
+  })();
+  return savePending;
+}
+/* The active coach's stash in S.coaches holds a copy of S.history (and it
+   is S.history that's current): saved as a marker, not a second copy, and
+   restored on load. A 30-season basketball save was 9.2 MB, a third of it
+   this duplicate. */
+function saveText(S){
+  if(!S.coaches||!S.coaches.length)return JSON.stringify(S);
+  const t=S.turn||0, cs=S.coaches.map((c,i)=>i===t&&c&&c.history?Object.assign({},c,{history:"@S.history"}):c);
+  return JSON.stringify(Object.assign({},S,{coaches:cs}));
+}
+function unsaveDup(d){
+  (d.coaches||[]).forEach(c=>{ if(c&&c.history==="@S.history")c.history=d.history });
+  return d;
+}
+/* which game a save belongs to: new saves say; older ones are told apart by
+   their players (pro players have contracts; basketball players play PG-C) */
+function saveLeague(d){
+  if(!d)return null;
+  if(d.league)return d.league;
+  const R=d.uStart&&d.uStart.roster; if(!R)return "cfb";
+  for(const t in R){const p=(R[t]||[]).find(x=>x); if(!p)continue;
+    if(p.k)return "nfl";
+    if(["PG","SG","SF","PF","C"].indexOf(p.p)>=0)return "ncaab";
+    return "cfb"}
+  return "cfb";
+}
+/* Move other games' saves out of the old shared slots into their own game's
+   slots (first free one), once, whichever game is opened first. A save is
+   removed from the old slot only after its copy has been written. */
+let slotsMoved=false;
+async function moveForeignSaves(){
+  if(slotsMoved)return; slotsMoved=true;
+  for(let n=1;n<=NSLOTS;n++){
+    try{
+      const r=await store.get(LEGACY_KEY+"-slot"+n); if(!r)continue;
+      const lg=saveLeague(JSON.parse(lzwUnpack(r.value)));
+      if(!lg||lg==="cfb"||!SAVE_KEYS[lg])continue;
+      let dest=null;
+      for(const m of [n].concat([1,2,3].filter(x=>x!==n))){
+        if(!(await store.get(SAVE_KEYS[lg]+"-slot"+m))){dest=m;break}
+      }
+      if(!dest)continue;                              // nowhere to put it: leave it where it is
+      const ok=await store.set(SAVE_KEYS[lg]+"-slot"+dest,r.value);
+      const back=ok&&await store.get(SAVE_KEYS[lg]+"-slot"+dest);
+      if(back&&back.value===r.value)await store.delete(LEGACY_KEY+"-slot"+n);
+    }catch(e){}
+  }
 }
 async function loadSlot(n){
-  try{const r=await window.storage.get(KEYFOR(n));return r?JSON.parse(r.value):null}catch(e){return null}
+  await moveForeignSaves();
+  try{const r=await store.get(KEYFOR(n)); if(!r)return null;
+    const d=unsaveDup(JSON.parse(lzwUnpack(r.value)));
+    if(saveLeague(d)!==LEAGUE.id)return null;        // never open another game's save
+    return migrateSave(d)}catch(e){return null}
 }
 async function allSlots(){
   const out=[];
@@ -250,6 +361,9 @@ function newDynasty(team,seed,coachName,roster){
 }
 
 /* ============ advance ============ */
+/* "Sim it": play this one game without watching it, whatever the setting */
+let simOnce=false;
+function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } }
 function doAdvance(){
   if(SEA.phase==="done"){ openOffseason(); return; }
   const before=SEA.step;
@@ -262,8 +376,11 @@ function doAdvance(){
   SEA.plan=plan;
   const ug=(SEA.phase==="week")?SEA.nextGame(S.myTeam)
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
-  const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never";
-  if(wantLive && !live){
+  const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never" && !simOnce;
+  // meeting a coach who comes later this turn: they play it, with both of you calling
+  const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
+  if(wantLive && !live && laterRival){ handoffNotes[opponentOf(ug)]={vs:S.myTeam, coach:S.career.name}; }
+  else if(wantLive && !live){
     startLive(ug, before);
     return;                                    // the game is played in the viewer
   }
@@ -296,10 +413,29 @@ function openOffseason(){
   if(SEA.phase!=="done")return;
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
   if(S.off&&S.off.year===SEA.year)return;      // already booked this coach
-  recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
-  const A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,S.myTeam);
   const my=S.myTeam, C=S.career;
   const exp=S.expNow||expectations();
+  let A;
+  if(isHotSeat()){
+    // once per offseason for the whole league; each coach reads their part
+    if(!S.carousel||S.carousel.year!==SEA.year){
+      recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+      const users={};
+      S.coaches.forEach((c,i)=>{
+        const cur=i===(S.turn||0);
+        const t=cur?S.myTeam:c.myTeam, H=(cur?S.history:c.history)||[];
+        const e=(cur?S.expNow:c.expNow)||LEAGUE.goals.expectations(U.program[t]);
+        users[t]=missedTwiceFor(t,H,e);
+      });
+      S.carousel={year:SEA.year,act:offseasonCoaching(U,rng,SEA.rec,SEA.elo,users)};
+    }
+    const X=S.carousel.act;
+    A=Object.assign({},X,{userOpen:!!X.userOpenBy[my],candidates:X.candidatesBy[my]||null,
+      staffOpen:X.staffOpenBy[my]||{oc:false,dc:false}});
+  }else{
+    recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+    A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,{[my]:missedTwice(my,exp)});
+  }
   const titles=SEA.honours(my);
   C.rep=C.rep*0.94;                       // reputations fade, good and bad
   C.rep+=repDelta(SEA.rec[my][0],SEA.rec[my][1],exp.w,U.program[my],titles);
@@ -350,49 +486,35 @@ function commitOffseason(){
   S.pending[S.myTeam]=Object.assign(LEAGUE.offseason.choices(P),{phil:P.phil,
                        featured:(S.featured===undefined?null:S.featured)});
   if(isHotSeat() && (S.turn||0) < coachCount()-1){
-    writeSeasonHistory();                       // this coach's year, in their book
+    writeSeasonHistory(oldTeam);                // this coach's year, in their book
     stashCoach(); loadCoach((S.turn||0)+1);
     S.off=null; handoff=true; openOffseason(); save(); render(); return;
   }
   const users=S.pending; S.pending=null;
   endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
     LEAGUE.offseason.choices(P),{phil:P.phil,
-    featured:(S.featured!==undefined?S.featured:null)}), A);
+    featured:(S.featured!==undefined?S.featured:null)}), A, oldTeam);
   S.featured=null;
 }
 
 /* One coach's year, written into their own book. In a hot seat every coach
    calls this for themselves before the world moves on. */
-function writeSeasonHistory(){
-  const my=S.myTeam, rk=SEA.poll.rankMap();
-  const result=SEA.resultLine?SEA.resultLine(my):"";
-  const exp=S.expNow||expectations();
-  const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);
-  const myGames=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
-  const bestWin=myGames.filter(g=>g.winner===my)
-    .sort((x,y)=>(x.home===my?(x.arank||999):(x.hrank||999))-(y.home===my?(y.arank||999):(y.hrank||999)))[0];
-  const bwOpp=bestWin?(bestWin.home===my?bestWin.away:bestWin.home):null;
-  const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
+/* team: the team this coach just coached, which is not S.myTeam if they have
+   already taken another job this offseason */
+function writeSeasonHistory(team){
   S.history=S.history||[];
-  S.history.push({
-    card:{conf:LEAGUE.conf.names[CONF[my]]||"",
-      confRec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1],
-      bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
-        score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
-      coach:S.career.name, titles:S.career.titles, seasons:S.history.length+1},
-    year:SEA.year, rec:SEA.rec[my][0]+"-"+SEA.rec[my][1], rank:rk[my]||99,
-    result:result, grade:gr.g, gradeLine:gr.l, team:my,
-    champion:SEA.champion, confChamp:SEA.honours(my).conf
-  });
+  S.history.push(seasonEntry(team||S.myTeam));
 }
 
-function endSeason(rng,choices,act){
+/* seasonTeam: the team coached this season. If the coach has just changed
+   jobs, S.myTeam is already the new one; the season belongs to the old. */
+function endSeason(rng,choices,act,seasonTeam){
   if(SEA.phase!=="done"||!rng||!act)return;
-  const my=S.myTeam, rk=SEA.poll.rankMap();
+  const my=seasonTeam||S.myTeam, rk=SEA.poll.rankMap();
   const result=SEA.seasonResult(my);
   const teamRows={};
   NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
-  const {confChamps,bowlOf,post,pnote,cfpOf}=SEA.postRecord();
+  const {confChamps,post,pnote,cfpOf}=SEA.postRecord();
   LEAGUE.rivals.record(U,SEA);
   SEA.bankCareers(U);
   if(S.calls){ const keep={}, pre=SEA.year+":";
@@ -402,44 +524,48 @@ function endSeason(rng,choices,act){
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
-  const gr=seasonGrade(SEA.rec[my][0],SEA.rec[my][1],result,exp);
-  const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my]);
-  const myGames=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
-  const bestWin=myGames.filter(g=>g.winner===my)
-    .sort((x,y)=>(x.home===my?(x.arank||999):(x.hrank||999))-(y.home===my?(y.arank||999):(y.hrank||999)))[0];
-  const bwOpp=bestWin?(bestWin.home===my?bestWin.away:bestWin.home):null;
-  const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
-  S.history.push({
-    card:{conf:LEAGUE.conf.names[CONF[my]]||"",
-      confRec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1],
-      bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
-        score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
-      coach:S.career.name, titles:S.career.titles, seasons:S.history.length+1},
-    grade:gr.g,gradeLine:gr.l,miles:miles,exp:exp.t,
-    year:SEA.year,rec:SEA.rec[my][0]+"-"+SEA.rec[my][1],
-    rank:rk[my],champion:SEA.champion,result:result,
-    program:Math.round(U.program[my]),
-    fired:off.fired.indexOf(my)>=0, firedList:off.fired,
-    confChamp:SEA.honours(my).conf,
-    nFired:off.fired.length,
-    teams:teamRows, confChamps:confChamps, bowls:bowlOf, cfp:cfpOf,
-    realigned:off.realigned||[],
-    coordMoves:(off.coordMoves||[]).slice(0,6),
-    draft:(off.draft&&off.draft.picks)?off.draft.picks
-      .filter(d=>d.team===my||d.draft.round<=1)
-      .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
-        early:!!d.early,d:d.draft})):[],
-    post:post, pnote:pnote,
-    heis:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
-    allconf:(function(){const o=SEA.allConfAll(),k=CONF[my];
-      return {conf:k,list:(o[k]||[]).map(x=>({pos:x.pos,team:x.team,n:x.n,r:x.r,c:x.c}))}})(),
-    classes:off.classes||{}, early:off.early||{},
-    coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null,
-    hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
-    top10:SEA.poll.order().slice(0,10)});
-  S.uStart=snap(U); S.off=null; S.plans={};
+  const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my],my);
+  const entry=seasonEntry(my);
+  S.history.push(Object.assign(entry,{
+    miles:miles, exp:exp.t, program:Math.round(U.program[my]),
+    teams:teamRows, top10:SEA.poll.order().slice(0,10),
+    groupChamps:confChamps, seeds:cfpOf, post:post, pnote:pnote,
+    awards:{mvp:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
+      team:SEA.awardTeam(my)},
+    coaching:{fired:off.fired.indexOf(my)>=0, firedList:off.fired, nFired:off.fired.length,
+      hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
+      coordMoves:(off.coordMoves||[]).slice(0,6),
+      coachNow:(U.coach&&U.coach[my])?{n:U.coach[my].n,q:U.coach[my].q,t:U.coach[my].t}:null},
+    league:LEAGUE.historyExtras(SEA,off,my)}));
+  // hot seat: the other coaches' entries for this season were written at the
+  // hand-over, before the league had finished its year. Complete them now.
+  (S.coaches||[]).forEach((c,i)=>{
+    if(i===(S.turn||0)||!c.history)return;
+    const e=c.history.find(x=>x.year===SEA.year&&!x.teams); if(!e)return;
+    const t=e.team, before=c.history.filter(x=>x!==e);
+    Object.assign(e,{program:Math.round(U.program[t]),
+      exp:(c.expNow||LEAGUE.goals.expectations(U.program[t])).t,
+      miles:milestones(SEA.rec[t][0],SEA.rec[t][1],e.result,rk[t],t,before),
+      teams:teamRows, top10:SEA.poll.order().slice(0,10),
+      groupChamps:confChamps, seeds:cfpOf, post:post, pnote:pnote,
+      awards:{mvp:(SEA.mvpRace(3)||[]).map(x=>({n:x.n,p:x.p,t:x.t,r:x.r,c:x.c,line:x.line})),
+        team:SEA.awardTeam(t)},
+      coaching:{fired:off.fired.indexOf(t)>=0, firedList:off.fired, nFired:off.fired.length,
+        hires:(off.hires||[]).slice(0,60), poached:(off.poached||[]).slice(0,12),
+        coordMoves:(off.coordMoves||[]).slice(0,6),
+        coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
+      league:LEAGUE.historyExtras(SEA,off,t)});
+  });
+  S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
+  if(isHotSeat()){
+    // a new season: every coach's expectations for the team they now coach,
+    // no plans carried over from last year, and coach 1 goes first
+    stashCoach();
+    S.coaches.forEach(c=>{c.expNow=LEAGUE.goals.expectations(U.program[c.myTeam]); c.plans={}});
+    loadCoach(0);
+  }
   flash={type:"offseason"}; view="team"; save(); render();
 }
 
@@ -475,47 +601,6 @@ function watchSeed(g){
   return (g.hp*7919 + g.ap*104729 + (g.week||0)*131 + (g.home.length*17) + g.away.length)>>>0;
 }
 
-function startWatch(g){
-  if(!g||!SEA.roster)return;
-  const drives=(g.drives&&g.drives.length)?g.drives:null;
-  watch={g:g, script:drives?driveScript(g,drives):gameScript(g,SEA.roster[g.home],SEA.roster[g.away],watchSeed(g)),
-         i:-1, paused:(S.watchStep===true)};
-  reveal=null;
-  tickWatch();
-}
-
-/* Turn the real drives into readable lines, using the actual rosters. */
-function driveScript(g,drives){
-  const rng=new RNG(watchSeed(g));
-  const RH=SEA.roster[g.home], RA=SEA.roster[g.away];
-  const OUTTXT={PUNT:["three and out","forced to punt","stalls out, punt","goes backwards, punt"],
-                DOWNS:["turned over on downs"],MISS:["the kick is no good"],
-                INT:["intercepted"],FUM:["fumble, recovered by the defence"]};
-  return drives.map(d=>{
-    const off=d.home?RH:RA, def=d.home?RA:RH;
-    const nm=i=>off&&off[i]?off[i].n:"the offence";
-    const dn=i=>def&&def[i]?def[i].n:"the defence";
-    let text;
-    if(d.kind==="TD"){
-      const y=Math.round(rng.range(2,64));
-      text = rng.r()<0.56 ? `${nm(0)} ${y}-yd TD pass to ${nm(rng.r()<0.62?2:3)}`
-           : rng.r()<0.8  ? `${nm(1)} ${y}-yd TD run`
-                          : `${nm(0)} ${Math.round(rng.range(1,12))}-yd TD run`;
-    } else if(d.kind==="FG"){ text=`${Math.round(rng.range(19,52))}-yd field goal`; }
-    else if(d.kind==="INT"){ text=`intercepted by ${dn(8)}`; }
-    else if(d.kind==="FUM"){ text=`fumble, recovered by ${dn(7)}`; }
-    else if(d.kind==="MISS"){ text=`${Math.round(rng.range(38,56))}-yd attempt is no good`; }
-    else { text=rng.pick(OUTTXT[d.kind]||["punt"]); }
-    const sec=Math.max(5,Math.round(890-((d.n-1)%6+1)*140-rng.range(0,50)));
-    return {n:d.n,q:d.q,clock:Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0"),
-      team:d.home?g.home:g.away, pts:d.pts, outcome:d.kind, text:text,
-      start:d.start, end:d.pts>0?100:Math.min(95,d.start+20),
-      yards:d.pts>0?100-d.start:Math.max(0,20),
-      ball: d.home ? 100-(d.pts>0?100:d.start+18) : (d.pts>0?100:d.start+18),
-      h:d.h, a:d.a};
-  });
-}
-const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],["rapid",2.1,"Very fast"]];
 function speedMult(){
   const k=S.watchSpeed||"normal";
   const f=SPEEDS.find(s=>s[0]===k);
@@ -525,6 +610,9 @@ function watchGap(){
   const n=Math.max(1,watch.script.length);
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
 }
+/* playback speeds for watching a game (live or a replay) */
+const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],["rapid",2.1,"Very fast"]];
+
 function tickWatch(){
   if(!watch)return;
   if(watch.timer){clearTimeout(watch.timer);watch.timer=null}
@@ -548,55 +636,6 @@ function stopWatch(finish){
   if(watch&&watch.timer)clearTimeout(watch.timer);
   if(finish&&watch){watch.i=watch.script.length;watch.timer=null;render();return}
   watch=null; render();
-}
-
-function watchView(){
-  const g=watch.g, my=S.myTeam;
-  const upto=watch.script.slice(0,Math.max(0,Math.min(watch.i+1,watch.script.length)));
-  const cur=upto[upto.length-1]||null;
-  const H=cur?cur.h:0, A=cur?cur.a:0;
-  const done=watch.i>=watch.script.length;
-  const kick=watch.i<0;
-  const mine=(g.home===my)?H:A, theirs=(g.home===my)?A:H;
-  const q=cur?cur.q:1;
-  const venue=g.neutral?(g.site||"neutral site"):g.home;
-  const OUT={TD:"TD",FG:"FG",SAF:"SAFETY",PUNT:"PUNT",DOWNS:"DOWNS",MISS:"NO GOOD",
-             INT:"INT",FUM:"FUMBLE",HALF:"HALF",END:"END"};
-  return `<div class="watchwrap">
-    <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
-      <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
-        :kick?`<span class="live"></span>KICKOFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
-        :`<span class="live"></span>Q${q} ${esc(cur.clock)} &middot; drive ${cur.n}`}</div>
-      <div class="wscore">
-        <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
-          <span class="wn">${A}</span></div>
-        <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span>
-          <span class="wn">${H}</span></div>
-      </div>
-    </div>
-    ${fieldSVG(g,cur,teamColor(g.home),teamColor(g.away),venue)}
-    ${cur?`<div class="fpos">${esc(cur.team)} ball &middot; started own ${cur.start}
-      &middot; ${cur.yards} yards</div>`
-      :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
-    <div class="grouphead">Drive chart</div>
-    <div class="plays">${upto.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''}">
-      <span class="pq">Q${e.q} ${e.clock}</span>
-      <div class="ptxt"><b>${esc(e.team)}</b> ${esc(e.text)}
-        <span class="dtag ${e.pts?'sc':''}">${OUT[e.outcome]||e.outcome}</span></div>
-      <span class="pscore">${e.a}&ndash;${e.h}</span></div>`).join("")
-      ||`<div class="empty">${owlMark(40)}<span>Waiting for the opening drive&hellip;</span></div>`}</div>
-    <div class="actionbar">
-      ${done?`<button class="advance" id="wdone">Back to the season</button>`
-      :`<div class="wspeed">${SPEEDS.map(s=>
-          `<button class="spbtn" data-speed="${s[0]}"
-            aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
-        <div class="wctl">
-          <button class="wbtn" id="wpause">${watch.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
-          <button class="wbtn ${watch.paused?'hot':''}" id="wstep">Next drive &rarr;</button>
-          <button class="wbtn" id="wskip">Skip</button>
-        </div>
-        <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>`}
-    </div></div>`;
 }
 
 function prefersReduced(){
@@ -651,7 +690,7 @@ function heroResult(){
   let move="";
   if(pv&&pv[my]){
     const d=pv[my]-cur[my];
-    if(cur[my]<=25&&pv[my]>25)move=`<div class="hmove up">Entered the poll at #${cur[my]}</div>`;
+    if(cur[my]<=25&&pv[my]>25)move=`<div class="hmove up">${LEAGUE.text.entered}${cur[my]}</div>`;
     else if(cur[my]>25&&pv[my]<=25)move=`<div class="hmove dn">Dropped out of the poll</div>`;
     else if(cur[my]<=25&&d>0)move=`<div class="hmove up">&#9650; Up ${d} to #${cur[my]}</div>`;
     else if(cur[my]<=25&&d<0)move=`<div class="hmove dn">&#9660; Down ${-d} to #${cur[my]}</div>`;
@@ -724,40 +763,13 @@ function stakesFor(ng){
   if(l===0&&w>=4)out.push({p:90,tag:"UNBEATEN",
     l:`${w}-0 and counting. A perfect season is still live.`});
 
-  if(wk>=8&&cp){
-    if(cp.pos<=2&&left<=4)out.push({p:88,tag:"TITLE RACE",
-      l:`You sit ${cp.pos===1?"first":"second"} in the ${cp.conf} with ${left} to play &mdash; the championship game is right there.`});
-    else if(cp.pos===3&&left<=4)out.push({p:80,tag:"TITLE RACE",
-      l:`Third in the ${cp.conf}, one spot out of the championship game.`});
-  }
-
-  if(wk>=7){
-    const f=LEAGUE.ui.projectedField();
-    const idx=f.indexOf(my);
-    if(idx>=0)out.push({p:85,tag:"PLAYOFF",
-      l:`You'd be the No. ${idx+1} seed if the season ended today.${idx<4?" That's a first-round bye.":""}`});
-    else{
-      const order=SEA.poll.order();
-      const outs=order.filter(t=>f.indexOf(t)<0);
-      const spot=outs.indexOf(my);
-      if(spot>=0&&spot<6)out.push({p:86,tag:"BUBBLE",
-        l:`${spot===0?"First team out":"Number "+(spot+1)+" out"} of the projected field. You need this one.`});
-    }
-  }
-
-  if(rk[opp]<=10)out.push({p:78,tag:"MARQUEE",
-    l:`A win over No. ${rk[opp]} ${opp} is the kind of result that decides seeding.`});
-  else if(rk[opp]<=25)out.push({p:62,tag:"RANKED",
-    l:`No. ${rk[opp]} ${opp} is a résumé game either way.`});
-
+  out.push(...LEAGUE.ui.stakes({my:my,opp:opp,rk:rk,wk:wk,left:left,w:w,l:l,cp:cp}));
   const st=streakOf(my);
   if(!st.won&&st.n>=3)out.push({p:74,tag:"SLIDE",
     l:`${st.n} straight losses. The seat under your coach is getting warm.`});
   else if(st.won&&st.n>=5)out.push({p:58,tag:"STREAK",
     l:`${st.n} in a row. Nobody wants to be the one who ends it.`});
 
-  if(w===5&&left<=5)out.push({p:70,tag:"BOWL",
-    l:`Win and you're bowl eligible.`});
   if(l>=6)out.push({p:40,tag:"SPOILER",
     l:`Nothing left but pride and a chance to wreck somebody's season.`});
 
@@ -768,18 +780,27 @@ function stakesFor(ng){
   return out.slice(0,2);
 }
 
+/* A season misses expectations when its grade says so: "Short of the mark"
+   or worse. Two in a row at the same job and you're fired. */
+function seasonMissed(h){return h.miss!==undefined?!!h.miss:/Short of the mark|A bad year/.test(h.gradeLine||"")}
+function missedTwiceFor(team,history,exp){
+  const now=seasonGrade(SEA.rec[team][0],SEA.rec[team][1],SEA.seasonResult(team),exp);
+  const prev=(history||[]).find(h=>h.year===SEA.year-1&&h.team===team);
+  return !!(now.miss&&prev&&seasonMissed(prev));
+}
+function missedTwice(my,exp){return missedTwiceFor(my,S.history,exp)}
+/* where you stand against that rule: missed last year here, you're on the
+   hot seat all season; on pace to miss this year, you're under pressure */
 function seatBadge(){
   const my=S.myTeam;
   if(!U||!U.coach)return "";
   const w=SEA.rec[my][0], l=SEA.rec[my][1];
+  const prev=(S.history||[]).find(h=>h.year===SEA.year-1&&h.team===my);
+  if(prev&&seasonMissed(prev))return `<span class="seat hot">HOT SEAT</span>`;
   if(w+l<4)return `<span class="seat cool">Settled</span>`;
-  const wp=w/(w+l);
-  const short=(U.program[my]-SEA.elo[my])/45;
-  let heat=(U.bad[my]||0)*1.4+Math.max(0,short)+(wp<0.42?1.2:0);
-  if(U.coach[my].t<=1)heat-=1.6;
-  if(U.coach[my].q>=30)heat-=0.6;
-  if(heat>=3.6)return `<span class="seat hot">HOT SEAT</span>`;
-  if(heat>=2.2)return `<span class="seat warm">Under pressure</span>`;
+  const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
+  const paceW=Math.round(w/(w+l)*games), g=seasonGrade(paceW,games-paceW,"",exp);
+  if(g.miss)return `<span class="seat warm">Under pressure</span>`;
   return `<span class="seat cool">Secure</span>`;
 }
 
@@ -800,7 +821,7 @@ function rosterOf(t){
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
         <div class="pmain"><div class="pname">${esc(p.n)}</div>
-          <div class="psub">${LEAGUE.classes[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
+          <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
         ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`}).join("");
@@ -835,7 +856,7 @@ function rosterView(){
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
     const feat=S.featured===i;
-    const tag=p=>`${LEAGUE.classes[p.c]}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
+    const tag=p=>`${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
     return `<div class="depth ${inj?'out':''}">
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
@@ -883,8 +904,8 @@ function teamCardHTML(my,rk,co){
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[my]])} &middot; ${SEA.year} season</div>
     <div class="stats">
       <div><b>${(()=>{const r=liveRec(my);return r[0]+"-"+r[1]})()}</b><span>Record</span></div>
-      <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>Conference</span></div>
-      <div><b>${reveal==="half"?"&mdash;":(rk[my]<=25?"#"+rk[my]:"NR")}</b><span>Poll</span></div>
+      <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>
+      <div><b>${reveal==="half"?"&mdash;":(rk[my]<=25?"#"+rk[my]:"NR")}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${co.t<=0?"first season":"year "+(co.t+1)}
@@ -896,14 +917,19 @@ function teamCardHTML(my,rk,co){
       const row=(lab,c)=>`<div class="stline"><span class="stlab">${lab}</span>
         <span class="stn">${esc(c.n)}</span><span class="sts">${esc(c.s)}</span>
         <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}">${c.q>0?"+":""}${c.q}</span></div>`;
-      return `<div class="staffbar">${row("OC",O)}${row("DC",D)}</div>`})()}
+      return `<div class="staffbar">${row(SPORT.staff.oc.short,O)}${row(SPORT.staff.dc.short,D)}</div>`})()}
     ${(()=>{const e=S.expNow||expectations();
-      const w=SEA.rec[my][0],l=SEA.rec[my][1],left=12-(w+l);
+      const w=SEA.rec[my][0],l=SEA.rec[my][1];
+      // games left: your remaining regular-season games (was 12 minus games
+      // played, a college football season), plus what a postseason run can add
+      const left=SEA.sched.filter(g=>g.week>=SEA.step&&(g.home===my||g.away===my)).length;
+      const postMax=LEAGUE.post.phases.filter(p=>p!=="selection").length;
       const need=Math.max(0,e.w-w);
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :need===0?`Target of ${e.w} wins already met.`
-          :need>left?`${e.w} wins is out of reach now.`
+          :need>left+postMax?`${e.w} wins is out of reach now.`
+          :need>left?`${need} more win${need===1?"":"s"} from the ${e.w} expected: it will take a postseason run.`
           :`${need} more win${need===1?"":"s"} from the ${e.w} expected.`}</span></div>`})()}
     </div>`;
   return h;
@@ -930,7 +956,7 @@ function coachMark(key,text){
 }
 
 function planPickerHTML(wp){
-  return `${coachMark("plan","This choice is real. Safe protects a lead, risks give an underdog a puncher's chance. It resets to Balanced each week.")}
+  return `${coachMark("plan","This choice is real. Playing it safe lets the better team's talent show; taking risks makes it a game of chances, which is what an underdog wants. It resets to Balanced each week.")}
   <div class="planbox"><div class="planlab">Your gameplan</div>
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
@@ -964,7 +990,7 @@ function attentionHTML(my){
     if(!st||!st[my]||st[my].interim||SEA.midFired[side])return;
     if(!shortfall&&st[my].q>-25)return;
     out.push({k:"staff",side:side,
-      h:`Your ${side==="oc"?"offensive":"defensive"} coordinator is under fire`,
+      h:`Your ${SPORT.staff[side].long} is under fire`,
       b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. An interim would be replacement level;
         you'd hire properly in the offseason.`});
   });
@@ -1088,8 +1114,8 @@ function expectations(){
 
 function seasonGrade(wins,losses,result,exp){ return LEAGUE.goals.grade(wins,losses,result,exp) }
 
-function milestones(wins,losses,result,rank){
-  const my=S.myTeam, out=[], H=S.history;
+function milestones(wins,losses,result,rank,team,history){
+  const my=team||S.myTeam, out=[], H=history||S.history;
   const mine=H.map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
   if(!mine.length){
     if(wins>=11)out.push(`${wins} wins in your first season in charge.`);
@@ -1114,6 +1140,15 @@ function winnerRank(g){return g.winner===g.home?g.hrank:g.arank}
 function scoreOf(g,t){return g.home===t?g.hp:g.ap}
 function oppOf(g,t){return g.home===t?g.away:g.home}
 
+/* One of several ways to say a thing, chosen by season, week and a key, so
+   the same moment always reads the same (a reloaded save shows the same
+   words) but the season doesn't repeat itself. */
+function vary(list,key){
+  let h=(2166136261^((SEA?SEA.year:0)*131+(SEA?SEA.step:0)))>>>0;   // FNV-1a, then mixed
+  for(let i=0;i<key.length;i++)h=Math.imul(h^key.charCodeAt(i),16777619)>>>0;
+  h=(h^(h>>>13))>>>0; h=Math.imul(h,2246822507)>>>0; h=(h^(h>>>16))>>>0;   // keep it unsigned
+  return list[h%list.length];
+}
 function weekNews(W){
   const my=S.myTeam, items=[];
   const gs=W.games;
@@ -1125,18 +1160,24 @@ function weekNews(W){
   if(ups.length){
     const g=ups[0], L=g.loser, Wn=g.winner;
     const lr=loserRank(g), wr=winnerRank(g);
-    const verb=g.margin>=21?"routed":g.margin<=3?"edged":"beat";
+    const verb=g.margin>=21?vary(["routed","ran over","blew out"],"uv"+Wn)
+              :g.margin<=3?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
     items.push({p:90,k:"upset",tone:"flag",
       h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
-      b: lr<=5 ? `A top-five team is down. ${L} won't drop out, but the margin for error is gone.`
-        : wr>25 ? `${Wn} came in unranked. ${L} will pay for this one in the poll.`
-        : `${Wn} moves up; ${L} slides.`});
+      b: lr<=5 ? vary([`A top-five team is down. ${L} won't drop out, but the margin for error is gone.`,
+                       `${L} was supposed to be one of the best. Not this week.`,
+                       `The top five just lost a member for a week. ${L} has work to do.`],"ub"+L)
+        : wr>25 ? vary([`${Wn} came in unranked. ${L} will pay for this one in ${LEAGUE.text.ranking}.`,
+                        `Nobody had ${Wn} on this one. ${L} will feel it in ${LEAGUE.text.ranking}.`],"ub"+L)
+        : vary([`${Wn} moves up; ${L} slides.`,`${Wn} climbs. ${L} has some explaining to do.`,
+                `A swap in ${LEAGUE.text.ranking} coming: ${Wn} up, ${L} down.`],"ub"+L)});
   }
   // other ranked casualties
   const more=ups.slice(1,3);
   if(more.length)items.push({p:40,k:"also",tone:"muted",
-    h:`Also down: ${more.map(g=>rankTxt(loserRank(g))+g.loser).join(", ")}`,
-    b:`${more.length===1?"That's":"Those are"} more cracks in the top 25.`});
+    h:vary([`Also down: `,`Also losing: `,`More losses near the top: `],"ah")+more.map(g=>rankTxt(loserRank(g))+g.loser).join(", "),
+    b:vary([`${more.length===1?"That's":"Those are"} more cracks in ${LEAGUE.text.top}.`,
+            `It was that kind of week.`,`Nobody is safe this year.`,`Expect some reshuffling.`],"ab")});
 
   // your team, framed
   const mg=gs.find(g=>g.home===my||g.away===my);
@@ -1144,16 +1185,19 @@ function weekNews(W){
     const won=mg.winner===my, opp=oppOf(mg,my);
     const ms=scoreOf(mg,my), os=scoreOf(mg,opp);
     const oppR=mg.home===my?mg.arank:mg.hrank;
+    const v=(list)=>vary(list,"you"+opp);
     let b;
-    if(won&&oppR<=25)b=`A ranked scalp. That plays well with voters.`;
-    else if(won&&mg.margin>=28)b=`Never in doubt.`;
-    else if(won&&mg.margin<=3)b=`Survived. They won't all look like that.`;
-    else if(won)b=`Business handled.`;
-    else if(oppR<=10)b=`No shame in it, but the résumé takes a hit.`;
-    else if(oppR>25)b=`That is the kind of loss that follows you into December.`;
-    else b=`A setback.`;
+    if(won&&oppR<=25)b=v(LEAGUE.text.rankedWin);
+    else if(won&&mg.margin>=28)b=v([`Never in doubt.`,`Over by halftime.`,`A statement, if anyone was listening.`]);
+    else if(won&&mg.margin<=3)b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
+    else if(won)b=v([`Business handled.`,`A solid day's work.`,`No drama. Next.`]);
+    else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
+    else if(oppR>25)b=v(LEAGUE.text.badLoss);
+    else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
+    const verb=won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
+                  :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
     items.push({p:100,k:"you",tone:"gold",
-      h:`${my} ${won?"beat":"lost to"} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
+      h:`${my} ${verb} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
   }else{
     items.push({p:100,k:"you",tone:"muted",h:`${my} was idle`,
       b:`An open date. Everyone else kept playing.`});
@@ -1165,7 +1209,7 @@ function weekNews(W){
     unb.sort((x,y)=>SEA.poll.rankMap()[x]-SEA.poll.rankMap()[y]);
     items.push({p:50,k:"unbeaten",tone:"muted",
       h:unb.length===1?`${unb[0]} stands alone at ${SEA.rec[unb[0]][0]}-0`
-        :`${unb.length} teams still unbeaten`,
+        :vary([`${unb.length} teams still unbeaten`,`${unb.length} without a loss`,`Still perfect: ${unb.length} teams`],"un"),
       b:unb.slice(0,6).join(", ")+(unb.length>6?" and others":"")+"."});
   }
 
@@ -1189,20 +1233,15 @@ function weekNews(W){
     NAMES.forEach(t=>{
       SEA.roster[t].forEach((pl,i)=>{
         if(!pl||!pl.last||pl.last.week!==SEA.step-1)return;
-        const L=pl.last.line, P=pl.last.pos;
-        let v=0,txt="";
-        if(P==="QB"&&L.pyd>=300){v=L.pyd+L.ptd*45;txt=`${L.pyd} yards and ${L.ptd} touchdown${L.ptd===1?"":"s"}`}
-        else if(P==="RB"&&L.ryd>=150){v=L.ryd*1.5+L.rtd*45;txt=`${L.ryd} rushing yards and ${L.rtd} score${L.rtd===1?"":"s"}`}
-        else if((P==="WR"||P==="WR2")&&L.cyd>=140){v=L.cyd*1.6+L.ctd*45;
-          txt=`${L.rec} catch${L.rec===1?"":"es"} for ${L.cyd} yards`}
-        else if(P==="EDGE"&&L.sck>=2){v=L.sck*90;txt=`${L.sck} sack${L.sck===1?"":"s"}`}
-        else if((P==="CB"||P==="S")&&L.ints>=2){v=L.ints*95;txt=`${L.ints} interception${L.ints===1?"":"s"}`}
-        if(v&&(!best||v>best.v))best={v:v,n:pl.n,t:pl.last.team,p:P,txt:txt};
+        const P=pl.last.pos, st=SPORT.starLine(P,pl.last.line);   // the sport says what stands out
+        if(st&&(!best||st.v>best.v))best={v:st.v,n:pl.n,t:pl.last.team,p:P,txt:st.txt};
       });
     });
     if(best)items.push({p:best.t===my?88:62,k:"star",tone:best.t===my?"gold":"muted",
       h:`${best.n} goes for ${best.txt}`,
-      b:`The ${best.p} carried ${best.t}${best.t===my?" \u2014 your guy.":"."}`});
+      b:best.t===my?vary([`The ${best.p} carried ${best.t} \u2014 your guy.`,`Your ${best.p}, and the day belonged to him.`,
+                          `Put that one on the tape. Your ${best.p}.`],"st"+best.n)
+                   :vary([`The ${best.p} carried ${best.t}.`,`${best.t}'s ${best.p} was the story.`,`A day to remember for ${best.t}'s ${best.p}.`],"st"+best.n)});
   }
 
   // a team on a run
@@ -1241,7 +1280,7 @@ function weekNews(W){
   if(SEA.step>=6&&SEA.roster){
     const hz=SEA.mvpRace(2);
     if(hz.length)items.push({p:55,k:"heis",tone:"muted",
-      h:`${LEAGUE.awards.mvp} watch: ${hz[0].n}, ${LEAGUE.classes[hz[0].c]} ${hz[0].p}, ${hz[0].t}`,
+      h:`${LEAGUE.awards.mvp} watch: ${hz[0].n}, ${classTag(hz[0].c)} ${hz[0].p}, ${hz[0].t}`,
       b:`${hz[0].line||""}${hz[1]?" \u00b7 "+hz[1].n+" ("+hz[1].t+") is closest.":""}`});
   }
   items.sort((x,y)=>(y.p||0)-(x.p||0));
@@ -1287,12 +1326,12 @@ function standingsView(){
   order.forEach(c=>{
     const head=`<div class="srow shead"><span class="spos">#</span>
       <span class="dot" style="opacity:0"></span>
-      <span class="steam">Team</span><span class="sconf">Conf</span>
+      <span class="steam">Team</span><span class="sconf">${LEAGUE.text.groupShort||"Conf"}</span>
       <span class="sall">Overall</span></div>`;
     const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}">
       <span class="spos ${mark?'qual':''}">${i+1}</span>
       <span class="dot" style="background:${teamColor(r.team)}"></span>
-      <span class="steam">${rkTag(r.rank)}${TL(r.team)}</span>
+      <span class="steam">${LEAGUE.ui.clinchTag?LEAGUE.ui.clinchTag(r.team):""}${rkTag(r.rank)}${TL(r.team)}</span>
       <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span></div>`;
     h+=`<div class="cbox"><div class="chead">${esc(LEAGUE.conf.names[c])}</div>`;
     if(hasDivisions(c)){
@@ -1303,12 +1342,13 @@ function standingsView(){
         h+=div[dn].map((r,i)=>row(r,i,i===0)).join("");
       });
     }else{
-      h+=head+st[c].map((r,i)=>row(r,i,i<2)+(i===1?`<div class="divider"></div>`:"")).join("");
+      const q=LEAGUE.ui.standingsQualify||2;
+      h+=head+st[c].map((r,i)=>row(r,i,i<q)+(i===q-1?`<div class="divider"></div>`:"")).join("");
     }
     h+=`</div>`;
   });
   if(wide)h+=`</div>`;
-  h+=`<div class="note">Conference record, then overall. Amber marks who would play for the
+  h+=LEAGUE.text.standingsNote!==undefined?LEAGUE.text.standingsNote:`<div class="note">Conference record, then overall. Amber marks who would play for the
     title &mdash; the top two, or each division winner in the Sun Belt, the one conference
     still split into divisions.</div>`;
   return h;
@@ -1359,7 +1399,7 @@ function coachesView(){
   let rows=coachRows().filter(c=>!ql||c.n.toLowerCase().includes(ql)||c.team.toLowerCase().includes(ql));
   rows.sort((a,b)=>b.titles-a.titles||b.confs-a.confs||(b.w-b.l)-(a.w-a.l));
   let h=`<div class="seedrow"><input id="cfind" class="seedbox findbox"
-    placeholder="Search coaches or programs..." value="${esc(coachQ)}"></div>`;
+    placeholder="Search coaches or ${LEAGUE.text.orgs}..." value="${esc(coachQ)}"></div>`;
   h+=`<div class="grouphead">${rows.length} head coaches &middot; ranked by what they've won</div>`;
   h+=rows.slice(0,60).map(c=>`<div class="frow cpick ${c.you?'mine':''}" data-coach="${esc(c.team)}">
     <span class="dot" style="background:${teamColor(c.team)}"></span>
@@ -1388,20 +1428,22 @@ async function postSeason(){
   const row={coach:C.name,team:S.myTeam,seed:S.seed,year:last.year,rec:last.rec,
     rank:last.rank,result:last.result,grade:last.grade,
     titles:C.titles,cw:C.w,cl:C.l,rep:Math.round(C.rep),at:Date.now()};
+  if(store.kind()!=="claude"){leagueMsg="The shared table only works when the game runs inside Claude.";render();return}
   try{
-    await window.storage.set(key,JSON.stringify(row),true);
+    if(!(await store.set(key,JSON.stringify(row),true)))throw new Error("not stored");
     leagueMsg="Posted "+last.year+".";
     await loadLeague();
   }catch(e){leagueMsg="Couldn't post right now.";render()}
 }
 
 async function loadLeague(){
+  if(store.kind()!=="claude"){league=[];leagueMsg="The shared table only works when the game runs inside Claude.";render();return}
   try{
-    const r=await window.storage.list("lg-",true);
+    const r=await store.list("lg-",true);
     const keys=(r&&r.keys)?r.keys:[];
     const rows=[];
     for(const k of keys.slice(0,80)){
-      try{const v=await window.storage.get(k,true); if(v&&v.value)rows.push(JSON.parse(v.value))}
+      try{const v=await store.get(k,true); if(v&&v.value)rows.push(JSON.parse(v.value))}
       catch(e){}
     }
     league=rows;
@@ -1439,14 +1481,13 @@ function leagueView(){
 function allTime(t){
   let w=0,l=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
   S.history.forEach(h=>{
-    const r=h.teams[t]; if(!r)return;
+    const r=h.teams&&h.teams[t]; if(!r)return;
     w+=r[0]; l+=r[1]; if(r[2]<best)best=r[2];
     if(h.champion===t)titles++;
-    if(h.confChamps&&Object.values(h.confChamps).indexOf(t)>=0)confs++;
-    if(h.cfp&&h.cfp[t])cfp++;
+    if(h.groupChamps&&Object.values(h.groupChamps).indexOf(t)>=0)confs++;
+    if(h.seeds&&h.seeds[t])cfp++;
     if(h.post&&h.post[t]){pw+=h.post[t][0]; pl+=h.post[t][1]}
-    else if(h.bowls&&h.bowls[t]){h.bowls[t][0]==="W"?pw++:pl++}
-    if(h.firedList&&h.firedList.indexOf(t)>=0)coach++;
+    if(h.coaching&&h.coaching.firedList.indexOf(t)>=0)coach++;
   });
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
@@ -1456,19 +1497,13 @@ function allTime(t){
 
 function seasonRowsFor(t){
   return S.history.map(h=>{
-    const r=h.teams[t]||[0,0,999];
-    const seed=h.cfp?h.cfp[t]:null;
-    const bw=h.bowls?h.bowls[t]:null;
-    let res;
-    if(h.pnote&&h.pnote[t])res=h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
-    else if(h.champion===t)res="National champions";
-    else if(seed)res="Playoff, No. "+seed+" seed";
-    else if(bw)res=(bw[0]==="W"?"Won the ":"Lost the ")+bw[1];
-    else res=r[0]>=6?"No bowl":"Losing season";
-    const cc=h.confChamps?Object.keys(h.confChamps).find(c=>h.confChamps[c]===t):null;
+    const r=(h.teams&&h.teams[t])||[0,0,999];
+    const seed=h.seeds?h.seeds[t]:null;
+    const res=LEAGUE.seasonLine(h,t,r,seed);
+    const cc=h.groupChamps?Object.keys(h.groupChamps).find(c=>h.groupChamps[c]===t):null;
     return {year:h.year,rec:r[0]+"-"+r[1],rank:r[2],res:res,grade:(t===S.myTeam?h.grade:null),
             champ:h.champion===t,conf:cc?LEAGUE.conf.names[cc]:null,
-            coach:!!(h.firedList&&h.firedList.indexOf(t)>=0)};
+            coach:!!(h.coaching&&h.coaching.firedList.indexOf(t)>=0)};
   }).reverse();
 }
 
@@ -1499,11 +1534,11 @@ function teamCard(t){
       <div class="cmeta">Head coach &middot; ${U.coach[t].t<=0?"first season":"year "+(U.coach[t].t+1)}
       &middot; ${coachGrade(U.coach[t].q)}</div></div></div>
       ${U.oc&&U.oc[t]?`<div class="staffbar plain">
-        <div class="stline"><span class="stlab">OC</span><span class="stn">${esc(U.oc[t].n)}</span>
+        <div class="stline"><span class="stlab">${SPORT.staff.oc.short}</span><span class="stn">${esc(U.oc[t].n)}</span>
           <span class="sts">${esc(U.oc[t].s)}</span></div>
-        <div class="stline"><span class="stlab">DC</span><span class="stn">${esc(U.dc[t].n)}</span>
+        <div class="stline"><span class="stlab">${SPORT.staff.dc.short}</span><span class="stn">${esc(U.dc[t].n)}</span>
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
-    <div class="progline">Program strength since ${base}:
+    <div class="progline">${LEAGUE.text.org} strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
   if(U&&U.series&&LEAGUE.rivals.of[t]){
@@ -1540,7 +1575,7 @@ function teamCard(t){
     h+=book.slice(0,12).map(x=>`<div class="arow">
       <div class="fmain"><div class="fname">${esc(x.n)}
         <span class="dpos">${esc(x.p)}</span>
-        ${x.early?`<span class="etag">left early</span>`:""}</div>
+        ${x.early?`<span class="etag">${esc(LEAGUE.text.earlyTag||"left early")}</span>`:""}</div>
       <div class="fnote">${x.from}&ndash;${x.to} &middot; ${esc(LEAGUE.records.alumniLine(x))}</div></div>
       <span class="ares ${x.draft?(x.draft.round<=1?'gold':'up'):''}">${
         x.draft?(x.draft.round+"."+String(x.draft.pick).padStart(2,"0")):"\u2013"}</span>
@@ -1550,7 +1585,7 @@ function teamCard(t){
   h+=`<div class="grouphead">Season by season</div>`;
   h+=rows.map((r,i)=>{
     const idx=(t===S.myTeam)?(S.history.length-1-i):-1;
-    const has=idx>=0&&S.history[idx]&&S.history[idx].card;
+    const has=idx>=0&&S.history[idx]&&S.history[idx].coach;
     return `<div class="yrow ${r.champ?'gold':''}">
     <span class="yr">${r.year}</span>
     ${r.grade?`<span class="ygrade">${esc(r.grade)}</span>`:""}
@@ -1599,15 +1634,15 @@ function dynastyView(){
   if(dynTab==="teams"){
     if(dynTeam)return h+`<button class="backbtn" id="dback">&larr; All teams</button>`+teamCard(dynTeam);
     h+=`<div class="seedrow"><input id="dfind" class="seedbox findbox"
-      placeholder="Search any of 132 programs..." value="${esc(dynQ)}"></div>`;
+      placeholder="Search any of ${NAMES.length} ${LEAGUE.text.orgs}..." value="${esc(dynQ)}"></div>`;
     const ql=dynQ.trim().toLowerCase();
     const list=NAMES.filter(t=>!ql||t.toLowerCase().includes(ql));
     const cur=SEA?SEA.poll.rankMap():{};
     list.sort((x,y)=>(cur[x]||999)-(cur[y]||999));
     if(!list.length)return h+`<div class="note">No team matches that.</div>`;
-    h+=`<div class="note">Tap any program for its roster, schedule and history. You can also
-      tap a team name anywhere in the game &mdash; scores, standings, the poll.</div>`;
-    h+=`<div class="grouphead">${list.length} programs &middot; ordered by current ranking</div>`;
+    h+=`<div class="note">Tap any ${LEAGUE.text.orgs.replace(/s$/,"")} for its roster, schedule and history. You can also
+      tap a team name anywhere in the game &mdash; scores, standings, ${LEAGUE.text.ranking}.</div>`;
+    h+=`<div class="grouphead">${list.length} ${LEAGUE.text.orgs} &middot; ordered by current ranking</div>`;
     h+=list.map(t=>{
       const A=allTime(t);
       const bits=[esc(LEAGUE.conf.names[CONF[t]])];
@@ -1637,47 +1672,49 @@ function dynastyView(){
         <span class="sd">${i+1}</span>
         <span class="dot" style="background:${teamColor(x.t)}"></span>
         <div class="fmain"><div class="fname">${esc(x.n)}</div>
-        <div class="fnote">${LEAGUE.classes[x.c]} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div>
+        <div class="fnote">${classTag(x.c)} ${esc(x.p)} &middot; ${esc(x.t)} ${x.rec}</div>
         ${x.line?`<div class="sline2 inrow">${esc(x.line)}</div>`:""}</div>
         <span class="fcfp">${x.r}</span></div>`).join("");
     }
   }
-  const hw=S.history.filter(x=>x.heis&&x.heis.length);
+  const hw=S.history.filter(x=>x.awards&&x.awards.mvp.length);
   if(hw.length){
     h+=`<div class="grouphead">${LEAGUE.awards.mvp} winners</div>`;
-    h+=hw.slice().reverse().map(x=>{const w=x.heis[0];
+    h+=hw.slice().reverse().map(x=>{const w=x.awards.mvp[0];
       return `<div class="frow ${w.t===my?'mine':''}">
         <span class="sd">${x.year}</span>
         <span class="dot" style="background:${teamColor(w.t)}"></span>
         <div class="fmain"><div class="fname">${esc(w.n)}</div>
-        <div class="fnote">${LEAGUE.classes[w.c]} ${esc(w.p)} &middot; ${esc(w.t)}</div>
+        <div class="fnote">${classTag(w.c)} ${esc(w.p)} &middot; ${esc(w.t)}</div>
         ${w.line?`<div class="sline2 inrow">${esc(w.line)}</div>`:""}</div>
         <span class="fcfp">${w.r}</span></div>`}).join("");
   }
-  const ac=S.history.length?S.history[S.history.length-1].allconf:null;
+  const lh=S.history.length?S.history[S.history.length-1]:null;
+  const ac=lh&&lh.awards?lh.awards.team:null;
   if(ac&&ac.list&&ac.list.length){
-    h+=`<div class="grouphead">All-${esc(LEAGUE.conf.names[ac.conf]||ac.conf)} &mdash;
+    h+=`<div class="grouphead">${esc(LEAGUE.awards.teamLabel(ac.group))} &mdash;
       ${S.history[S.history.length-1].year}</div>`;
     h+=ac.list.map(x=>`<div class="frow ${x.team===my?'mine':''}">
       <span class="sd">${esc(x.pos)}</span>
       <span class="dot" style="background:${teamColor(x.team)}"></span>
       <div class="fmain"><div class="fname">${esc(x.n)}</div>
-      <div class="fnote">${LEAGUE.classes[x.c]} &middot; ${esc(x.team)}</div></div>
+      <div class="fnote">${classTag(x.c)} &middot; ${esc(x.team)}</div></div>
       <span class="fcfp">${x.r}</span></div>`).join("");
   }
-  h+=`<div class="grouphead">National champions</div>`;
+  h+=`<div class="grouphead">${LEAGUE.text.champions}</div>`;
   h+=S.history.slice().reverse().map(x=>{
-    const r=x.teams[x.champion];
+    const r=x.teams&&x.teams[x.champion];
     return `<div class="yrow ${x.champion===my?'gold':''}"
       style="border-left:3px solid ${teamInk(x.champion)}">
       <span class="yr">${x.year}</span>
       <div class="ymain"><div class="yrec">${esc(x.champion)}</div>
-      <div class="yres">${r?r[0]+"-"+r[1]:""}${x.confChamps?" &middot; "+
-        (Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)
-          ?LEAGUE.conf.names[Object.keys(x.confChamps).find(c=>x.confChamps[c]===x.champion)]+" champion"
+      <div class="yres">${r?r[0]+"-"+r[1]:""}${x.groupChamps?" &middot; "+
+        (Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)
+          ?LEAGUE.conf.names[Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)]+" champion"
           :"at-large"):""}</div></div></div>`;
   }).join("");
-  const last=S.history[S.history.length-1];
+  // the latest season with league tables (an old hot-seat entry may lack them)
+  const last=S.history.slice().reverse().find(x=>x.top10)||{year:S.history[S.history.length-1].year,top10:[],teams:{}};
   h+=`<div class="grouphead">Final top 10 &mdash; ${last.year}</div>`;
   h+=last.top10.map((t,i)=>{const r=last.teams[t];
     return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
@@ -1696,8 +1733,7 @@ function dynastyView(){
     h+=d.slice(-8).reverse().map(([t,v])=>`<div class="srow"><span class="spos"></span>
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${esc(t)}</span><span class="sconf dn">${v}</span></div>`).join("");
-    h+=`<div class="note">Program strength is the slow-moving baseline &mdash; recruiting,
-      resources, coaching. Measured against where each program stood in ${base}.</div>`;
+    h+=`<div class="note">${LEAGUE.text.orgNote(base)}</div>`;
   }
   return h;
 }
@@ -1768,110 +1804,9 @@ function digestBlock(){
 }
 
 
-function liveScoreboard(){
-  const g=live.g, my=S.myTeam;
-  const H=live.eng.h, A=live.eng.a;
-  const last=live.drives[live.drives.length-1];
-  const q=last?last.q:1;
-  const kick=!live.drives.length;
-  return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${kick?"KICKOFF":"Q"+q+" &middot; drive "+live.drives.length}
-      ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
-    <div class="wscore">
-      <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
-        <span class="wn">${A}</span></div>
-      <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span>
-        <span class="wn">${H}</span></div>
-    </div></div>`;
-}
-
-function liveView(){
-  const g=live.g, my=S.myTeam;
-  const last=live.drives[live.drives.length-1]||null;
-  const venue=g.neutral?(g.site||"neutral site"):g.home;
-  const OUT={TD:"TD",FG:"FG",PUNT:"PUNT",DOWNS:"DOWNS",MISS:"NO GOOD",INT:"INT",FUM:"FUMBLE"};
-  const ballOf=d=>{const end=d.pts>0?100:Math.min(95,d.start+18);
-    return d.home?100-end:end};
-  return `<div class="watchwrap">
-    ${liveScoreboard()}
-    ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
-    ${last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started own ${last.start}</div>`
-          :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
-    <div class="grouphead">Drive chart</div>
-    <div class="plays">${live.drives.slice().reverse().map(d=>{
-      const tm=d.home?g.home:g.away;
-      return `<div class="play ${tm===my?'mine':''}">
-        <span class="pq">Q${d.q} &middot; ${d.n}</span>
-        <div class="ptxt"><b>${esc(tm)}</b> ${esc(driveWord(d))}
-          <span class="dtag ${d.pts?'sc':''}">${OUT[d.kind]||d.kind}</span></div>
-        <span class="pscore">${d.a}&ndash;${d.h}</span></div>`}).join("")
-      ||`<div class="empty">${owlMark(40)}<span>Waiting for the opening drive&hellip;</span></div>`}</div>
-    <div class="actionbar">
-      <div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"
-        aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
-      <div class="wctl">
-        <button class="wbtn" id="wpause">${live.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
-        <button class="wbtn ${live.paused?'hot':''}" id="wstep">Next drive &rarr;</button>
-        <button class="wbtn" id="wskip">Skip</button>
-      </div>
-      <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>
-    </div></div>`;
-}
-
-function driveWord(d){
-  if(d.note)return d.note;
-  if(d.kind==="TD")return "touchdown";
-  if(d.kind==="FG")return "field goal";
-  if(d.kind==="INT")return "intercepted";
-  if(d.kind==="FUM")return "lost the ball";
-  if(d.kind==="MISS")return "the kick is no good";
-  if(d.kind==="DOWNS")return "turned over on downs";
-  return "forced to punt";
-}
-
-function liveCallView(){
-  const dp=live.ask.dp, g=live.g, my=S.myTeam;
-  const mine=live.ask.mine, theirs=live.ask.theirs;
-  return `<div class="watchwrap">
-    ${liveScoreboard()}
-    <div class="callbox">
-      <div class="wlabel">Your call</div>
-      <div class="calltitle">${esc(dp.h)}</div>
-      <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
-      <div class="callsub">${esc(dp.b)}</div>
-    </div>
-    <div class="grouphead staffhead">The staff room</div>
-    <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
-    <div class="callopts">${dp.opts.map(o=>
-      `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
-    <div class="grouphead">Drive chart</div>
-    <div class="plays">${live.drives.slice().reverse().slice(0,6).map(d=>{
-      const tm=d.home?g.home:g.away;
-      return `<div class="play ${tm===my?'mine':''}">
-        <span class="pq">Q${d.q} &middot; ${d.n}</span>
-        <div class="ptxt"><b>${esc(tm)}</b> ${esc(driveWord(d))}</div>
-        <span class="pscore">${d.a}&ndash;${d.h}</span></div>`}).join("")}</div>
-  </div>`;
-}
-
-function callView(){
-  const dp=pendingCall.dp;
-  return `<div class="watchwrap">
-    <div class="wtop"><div class="wlabel"><span class="live"></span>Your call</div>
-      <div class="calltitle">${esc(dp.h)}</div>
-      <div class="callsub">${esc(dp.b)}</div></div>
-    <div class="grouphead staffhead">The staff room</div>
-    <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
-    <div class="callopts">${dp.opts.map(o=>
-      `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
-  </div>`;
-}
+/* ============ shell ============ */
+const TABS=[["team","Team"],["scores","Scores"],["poll",LEAGUE.ui.rankingTab],
+            ["stand","Standings"],["dyn","Dynasty"]];
 
 function answerCall(v){
   const before=SEA.step;
@@ -1906,15 +1841,32 @@ function handoffView(){
     <div class="handteam" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</div>
     <div class="handrec">${SEA.rec[S.myTeam][0]}-${SEA.rec[S.myTeam][1]}${
       SEA.poll.rankMap()[S.myTeam]?" &middot; No. "+SEA.poll.rankMap()[S.myTeam]:""}</div>
-    <div class="handnote">The others have played their week. Your turn.</div>
+    <div class="handnote">${handoffNotes[S.myTeam]
+      ?`You play ${esc(handoffNotes[S.myTeam].vs)} this week. ${esc(handoffNotes[S.myTeam].coach)} has set their plan; the game is played now, and each of you makes your own calls.`
+      :"The others have played their week. Your turn."}</div>
     <div class="actionbar"><button class="advance" id="hgo">I'm ready</button></div>
   </div>`;
+}
+
+/* ---- leaving for the title screen ---- */
+/* The square saves first, then asks. The prompt says plainly whether the
+   save landed, so nobody walks away from a career they can't get back. */
+let quitAsk=false;
+function quitPrompt(){
+  const safe=saveOK===true;
+  return `<div class="banner quitask" role="alertdialog" aria-labelledby="qtitle">
+    <div class="btitle" id="qtitle">${safe?"Leave for the title screen?":"Your progress isn't saved"}</div>
+    <div class="bsub">${safe
+      ?`Everything is saved in slot ${slot}. Pick it on the title screen to carry on where you left off.`
+      :`This browser isn't letting the game save${store.kind()==="none"?" (storage is blocked, often by private browsing)":""}. If you leave now, this career is lost.`}</div>
+    <div class="lgbtns"><button class="advance gold" id="quitgo">${safe?"Go to the title screen":"Leave anyway"}</button>
+      <button class="skip" id="quitno">Keep playing</button></div></div>`;
 }
 
 function render(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
-    const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;render()};
+    const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;delete handoffNotes[S.myTeam];render()};
     return;
   }
   if(cardFor){
@@ -1961,7 +1913,7 @@ function render(){
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
-        <h1 class="wordmark"><span class="wm-a">Football</span><br>
+        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br>
         <span class="wm-b">Coach</span></h1></div>`;return}
     renderTitle();return}
   if(S.introStep!==null&&S.introStep!==undefined&&!S.myTeam){renderIntro();return}
@@ -1995,7 +1947,7 @@ function render(){
         <span class="stoprec">${s.w}-${s.l}</span></div>`).join("")}
       <div class="actionbar"><button class="advance gold" id="reset2">New career</button></div>`;
     const r=el("reset2"); if(r)r.onclick=async()=>{
-      try{await window.storage.delete(KEY)}catch(e){}
+      try{await store.delete(KEYFOR(slot))}catch(e){}
       S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
       U=null;SEA=null;renderStart();};
     return;
@@ -2015,7 +1967,7 @@ function render(){
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>
           <button class="reset" id="rst" title="Start over">&#8635;</button></div>
-      </div>
+      </div>${quitAsk?quitPrompt():""}
       ${inOff?"":`<div class="tabs">${TABS.map(([k,l])=>
         `<button class="tab" data-v="${k}" aria-selected="${view===k}">${l}</button>`).join("")}</div>`}
     </div>
@@ -2035,6 +1987,9 @@ function render(){
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
       ${(()=>{const sk=canSkip();return sk?`<button class="skip" id="skip">Sim ${sk.n} weeks
         &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
+      ${(()=>{ if(inOff||done||(S.watchMode||"all")==="never"||prefersReduced()||live)return "";
+        const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
+        return ug?`<button class="skip" id="simone">Sim it</button>`:""})()}
       <button class="advance ${done||inOff?'gold':''}" id="adv" ${
         inOff&&((S.off.act.userOpen&&S.off.move===null)||LEAGUE.ui.offseasonBlock()!==null)?'disabled':''}>${
         inOff?(S.off.act.userOpen&&S.off.move===null?"Choose your next job"
@@ -2064,11 +2019,13 @@ function render(){
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
   document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
   const sb=el("skip"); if(sb)sb.onclick=()=>{simAhead();window.scrollTo({top:0})};
-  const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{save();S.title=true;S._slots=await allSlots();render()};
+  const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
+  const qg=el("quitgo"); if(qg)qg.onclick=async()=>{quitAsk=false;S.title=true;S._slots=await allSlots();render()};
+  const qn=el("quitno"); if(qn)qn.onclick=()=>{quitAsk=false;render()};
   const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
   const rb=el("rst"); if(rb)rb.onclick=async()=>{
     if(confirm("Abandon this dynasty and start a new one?")){
-      try{await window.storage.delete(KEY)}catch(e){}
+      try{await store.delete(KEYFOR(slot))}catch(e){}
       S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
       U=null;SEA=null;flash=null;renderStart();}};
   const advance=()=>{
@@ -2079,6 +2036,10 @@ function render(){
   };
   const a2=el("adv2"); if(a2)a2.onclick=advance;
   const s2=el("skip2"); if(s2)s2.onclick=()=>simAhead();
+  if(el("simone"))el("simone").onclick=()=>{
+    if(SEA.phase!=="week"&&view==="team")view="scores";
+    simAdvance(); window.scrollTo({top:0,behavior:"auto"});
+  };
   el("adv").onclick=()=>{
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team")view="scores";
@@ -2090,7 +2051,7 @@ function render(){
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>{
-    if(confirm("Replace your coordinator with an interim for the rest of the season?"))
+    if(confirm("Replace your "+SPORT.staff.any+" with an interim for the rest of the season?"))
       fireCoord(b.dataset.fire);});
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
     const h=S.history[+b.dataset.card]; if(h){cardFor=h;cardMsg="";render()}});
@@ -2112,15 +2073,8 @@ function render(){
     S.off.picks.phil=b.dataset.phil;save();render()});
 }
 
-const TIERS=[
- {max:15, l:"Blue blood",   d:"A playoff berth is the expectation. Miss twice and you're gone.",
-  c:"flag"},
- {max:42, l:"Contender",    d:"Nine wins and a conference push keeps everyone happy.",c:"sod"},
- {max:78, l:"Middle of the pack",d:"Get to a bowl. Beat someone you shouldn't. Good place to learn.",
-  c:"turf",rec:true},
- {max:106,l:"Tough job",    d:"Six wins here is a genuine achievement.",c:"vote"},
- {max:999,l:"Rebuild",      d:"Hard mode. Four wins would be real movement.",c:"muted"}
-];
+const TIERS=LEAGUE.text.tiers;
+function classTag(c){return LEAGUE.classTag?LEAGUE.classTag(c):LEAGUE.classes[c]}
 function tierOf(rank){return TIERS.find(t=>rank<=t.max)}
 
 /* The owl, drawn from the real one: cream face, rust feathering round the eyes,
@@ -2128,10 +2082,7 @@ function tierOf(rank){return TIERS.find(t=>rank<=t.max)}
 function owlSVG(cls,withPost){
   return `<svg class="${cls||'owl'}" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true">
-    ${withPost?`<g fill="none" stroke="var(--sodium)" stroke-width="4.4" stroke-linecap="square">
-      <path d="M9 13 V50"/><path d="M63 13 V50"/><path d="M9 50 H63"/><path d="M36 50 V62"/>
-    </g>
-    <ellipse cx="36" cy="65" rx="11.5" ry="3" fill="none" stroke="var(--line)" stroke-width="2.2"/>`:""}
+    ${withPost?SPORT.perch:""}
     <g>
       <!-- ear tufts -->
       <path d="M24 14 C22.6 7.6 24 4.8 26.4 4.2 C28.5 6.9 30 10 30.8 12.9 Z" fill="#C98A63"/>
@@ -2163,6 +2114,7 @@ function owlSVG(cls,withPost){
       <circle cx="29.15" cy="19.35" r="1.12" fill="#FFFFFF"/>
       <circle cx="45.15" cy="19.35" r="1.12" fill="#FFFFFF"/>
       <path d="M36 22.6 L32.9 27.8 Q36 30.1 39.1 27.8 Z" fill="#F2C14E"/>
+      ${(LEAGUE.art&&LEAGUE.art.owlHelmet)||""}
       <!-- feet gripping the bar -->
       <path d="M30.5 50.2 v3 M41.5 50.2 v3" stroke="#F2C14E" stroke-width="2.8"
         stroke-linecap="round" fill="none"/>
@@ -2173,36 +2125,7 @@ function owlSVG(cls,withPost){
 }
 const LOGO=owlSVG("logo",true);
 
-const INTRO=[
- {h:"The job is yours until it isn't",
-  b:"You have a record, a program, and a seat that gets warm. Miss expectations two years "+
-    "running and you're fired \u2014 then you pick from whatever will still take you."},
- {h:"Two decisions that matter",
-  b:"<b>Every week</b> you set a gameplan. Playing it safe protects a lead; taking risks is "+
-    "how an underdog steals a game it has no business winning. "+
-    "<b>Every offseason</b> you spend a budget across recruiting, development, facilities and "+
-    "retention \u2014 and you can't fund everything."},
- {h:"Everything carries over",
-  b:"Players graduate and develop. Recruiting classes compound. Facilities you build outlast "+
-    "the season. Programs rise and fall across decades. Your career record follows you "+
-    "wherever you go next."}
-];
-
-const GLOSSARY=[
- ["Program strength","The slow-moving baseline of a school \u2014 resources, recruiting pull, "+
-  "reputation. It moves over years, not weeks, and sets what's expected of you."],
- ["Rating (player)","0\u201399 scale. A starter's rating drives how much he's worth to the team. "+
-  "Quarterbacks matter far more than safeties."],
- ["Ceiling","How good a player can still become. Freshmen have room; seniors usually don't."],
- ["Win probability","Derived from the rating gap plus home field. Your gameplan shifts the "+
-  "spread of outcomes around it, not the average."],
- ["Hot seat","Measured against your program's own expectations, not raw wins. A bad year at a "+
-  "blue blood burns hotter than a bad year at a rebuild."],
- ["Poll vs. reality","Voters are sticky and punish losses out of proportion. The poll can be "+
-  "wrong about you for weeks, and the playoff field is picked from it."],
- ["Reputation","What other programs think of you. Built by beating expectations, worth more at "+
-  "a small school than a big one. It decides which jobs open up when you're fired."]
-];
+const INTRO=LEAGUE.text.intro, GLOSSARY=LEAGUE.text.glossary;
 
 const PRE_RANK=(()=>{const o=LEAGUE.teams.slice().sort((a,b)=>b[1]-a[1]);
   const m={};o.forEach((t,i)=>m[t[0]]=i+1);return m})();
@@ -2247,7 +2170,7 @@ function owlMark(size){
   return `<span class="owlmark" style="width:${size}px;height:${size}px">${owlSVG("owlmini",false)}</span>`;
 }
 
-const OWL_LINE="Baby Owl genius football coach!";
+const OWL_LINE="Baby Owl genius "+SPORT.word.toLowerCase()+" coach!";
 
 function renderTitle(){
   const slots=S._slots||[];
@@ -2256,7 +2179,7 @@ function renderTitle(){
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
     </div>
-    <h1 class="wordmark"><span class="wm-a">Football</span><br><span class="wm-b">Coach</span></h1>
+    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">Build a program. Win it all.</div>
     <div class="slots">${slots.map(s=>s.empty
       ? `<button class="slot empty" data-slot="${s.n}">
@@ -2273,7 +2196,7 @@ function renderTitle(){
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
     if(ev.target&&ev.target.dataset.del){
       if(!confirm("Erase this career permanently?"))return;
-      try{await window.storage.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
+      try{await store.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
       S._slots=await allSlots(); render(); return;
     }
     const n=+b.dataset.slot;
@@ -2310,7 +2233,7 @@ function renderSetup(){
       <button class="setbtn" data-nco="${n}" aria-pressed="${(S.setup.coaches||1)===n}"
         >${n===1?"Just me":n}</button>`).join("")}</div>
     <span class="seedhint">More than one and you take turns on this device &mdash;
-      same world, same season, different programs.</span>
+      same world, same season, different ${LEAGUE.text.orgs}.</span>
     ${(S.setup.coaches||1)>1?`<div class="conames">${
       Array.from({length:(S.setup.coaches||1)-1}).map((_,i)=>`
       <input class="seedbox" data-coname="${i+1}" maxlength="26"
@@ -2422,6 +2345,11 @@ window.addEventListener("resize",()=>{
 });
 window.addEventListener("keydown",e=>{
   if(!S.myTeam)return;
+  if(quitAsk){                              // nothing advances under an open prompt
+    if(e.key==="Escape"){e.preventDefault();quitAsk=false;render()}
+    else if(e.key===" "||e.key==="Enter")e.preventDefault();
+    return;
+  }
   const tag=(e.target&&e.target.tagName)||"";
   if(tag==="INPUT"||tag==="TEXTAREA")return;
   if(live&&!live.done){

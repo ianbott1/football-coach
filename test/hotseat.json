@@ -1,0 +1,141 @@
+{
+ "fp": "5d2782438bd59aab",
+ "log": [
+  {
+   "fp": "f9076522cf8ba9ce",
+   "from": null,
+   "note": "baseline: two coaches, three seasons; identical on 9cb4058 (pre-split) and the split. Coach A's result line is blank every season (known bug)"
+  },
+  {
+   "fp": "bc56c0ca0595591c",
+   "from": "f9076522cf8ba9ce",
+   "note": "Grading fix 2: in a hot seat every coach but the last got a blank result line and a grade computed from it, because writeSeasonHistory called SEA.resultLine, which never existed. It now uses seasonResult. Coach A: '' C+/C/C+ -> first round B, ReliaQuest Bowl C+, quarterfinals B. Coach B unchanged."
+  },
+  {
+   "fp": "ebed9c902c774bd2",
+   "from": "bc56c0ca0595591c",
+   "note": "History entry v2: the book's format changes, its content doesn't; records, results and grades for both coaches identical to the previous recording."
+  },
+  {
+   "fp": "e61dc8ce6a735528",
+   "from": "ebed9c902c774bd2",
+   "note": "Hot-seat coaches' entries written at hand-over are now completed with the league tables when the season ends; records, results and grades unchanged"
+  },
+  {
+   "fp": "22e35cbc28fa7cef",
+   "from": "e61dc8ce6a735528",
+   "note": "People are fired on their grades: two missed seasons in a row at the same job (grade line 'Short of the mark' or worse), never one; the carousel no longer judges or poaches human coaches, and can't fill a fired user's job before they're told. History entries record miss. Carousel random draws for human-coached teams are gone, so careers diverge from their first offseason; Rice#2024 (college) is now fired after its second straight miss instead of after a B season."
+  },
+  {
+   "fp": "5562e7952e1b52d7",
+   "from": "22e35cbc28fa7cef",
+   "note": "One coaching carousel per offseason in a hot seat (it ran once per coach, roughly doubling coaching changes: 34 against 17 in the first college year); coach records counted once"
+  },
+  {
+   "fp": "6206236567a8dacb",
+   "from": "5562e7952e1b52d7",
+   "note": "A new hot-seat season starts with coach 1, with every coach's expectations refreshed for their current team and last year's plans cleared (it started with the last coach, so coach 1 lost their opening game, and the others were graded on last year's expectations)"
+  },
+  {
+   "fp": "b64244c01dffa722",
+   "from": "6206236567a8dacb",
+   "note": "Hot-seat entries completed at season end now also get the coach's expectation label and milestones, like a one-coach entry"
+  },
+  {
+   "fp": "05726cb4c3f32854",
+   "from": "b64244c01dffa722",
+   "note": "Gameplans are a real choice: risk makes the rating gap count less on your drives, safe makes it count more, no hidden rating penalty; at even strength all three are worth the same (test/plans.js). Overtime and fourth-down tries keep the old numbers as the engine's own 'urgent' mode, and late-game management its own 'sit'/'chase' modes, so computer-only play is unchanged (college calibration identical; pro realism unchanged). Golden careers answer in-game calls, and 'push'/'protect' now use the new plan modes."
+  },
+  {
+   "fp": "b64244c01dffa722",
+   "from": "05726cb4c3f32854",
+   "note": "In-game calls use the game-management modes (push -> chase, sit -> sit) instead of the new gameplan modes, so they play exactly as before the gameplan change; dead applyChoice removed"
+  },
+  {
+   "fp": "5d2782438bd59aab",
+   "from": "b64244c01dffa722",
+   "note": "The late chase call is asked on your last possession only, with a touchdown-or-bust 'force' mode for pushing"
+  },
+  {
+   "fp": "5d2782438bd59aab",
+   "from": "5d2782438bd59aab",
+   "note": "Weekly news varies its phrasing (seeded by season, week and team, so a moment always reads the same); the plan tip describes the new gameplans; ranked-win and bad-loss lines come from league text (no voters in the pros). Screens only."
+  },
+  {
+   "fp": "5d2782438bd59aab",
+   "from": "5d2782438bd59aab",
+   "note": "A Sim it button (all games); basketball conference tournaments take every team"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Alabama",
+     "last": {
+      "rec": "10-3",
+      "result": "Won the ReliaQuest Bowl",
+      "grade": "B-"
+     },
+     "book": "4f53435c615df853"
+    },
+    {
+     "team": "Rice",
+     "last": {
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
+     },
+     "book": "d482dc9e491d7baa"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Alabama",
+     "last": {
+      "rec": "11-3",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A-"
+     },
+     "book": "f1fa4bd60f7453c3"
+    },
+    {
+     "team": "Rice",
+     "last": {
+      "rec": "2-10",
+      "result": "No bowl game",
+      "grade": "C"
+     },
+     "book": "91cca027e34c83bd"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Alabama",
+     "last": {
+      "rec": "8-5",
+      "result": "Eliminated in the first round",
+      "grade": "C"
+     },
+     "book": "d3581a440691db58"
+    },
+    {
+     "team": "Rice",
+     "last": {
+      "rec": "3-9",
+      "result": "No bowl game",
+      "grade": "C+"
+     },
+     "book": "3116d00ec969bec0"
+    }
+   ]
+  }
+ ]
+}

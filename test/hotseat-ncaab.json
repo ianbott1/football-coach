@@ -1,0 +1,136 @@
+{
+ "fp": "3d1a6665a2d79e6d",
+ "log": [
+  {
+   "fp": "2995a68c0033645a",
+   "from": null,
+   "note": "First basketball hot-seat baseline: Duke and North Carolina"
+  },
+  {
+   "fp": "ffb9fdd642a9b71b",
+   "from": "2995a68c0033645a",
+   "note": "Program strength range 1000-2350 (football's 2010 ceiling flattened the blue bloods), recruits closer to program level, more five-stars at the top"
+  },
+  {
+   "fp": "ae9401245af8df95",
+   "from": "ffb9fdd642a9b71b",
+   "note": "Program strength anchored to its structural level (10% a year); strength of schedule in the committee's resume"
+  },
+  {
+   "fp": "ae9401245af8df95",
+   "from": "ae9401245af8df95",
+   "note": "Rankings tab crash fixed (pollTab); basketball season lines, firing joke, rivalry names"
+  },
+  {
+   "fp": "2a6e17cadbd9f048",
+   "from": "ae9401245af8df95",
+   "note": "All-America teams on the Rankings tab; awards compare each player with his own position"
+  },
+  {
+   "fp": "fda735b99acae3a7",
+   "from": "2a6e17cadbd9f048",
+   "note": "Wider program spread (1.45), power rating in the committee resume, at-large teams seeded no lower than the 11 line"
+  },
+  {
+   "fp": "fda735b99acae3a7",
+   "from": "fda735b99acae3a7",
+   "note": "Colours for 78 more schools from ncaa-team-colors (ISC); 18 stand-ins remain"
+  },
+  {
+   "fp": "04e1ad7976203de8",
+   "from": "fda735b99acae3a7",
+   "note": "Conference tournaments on a fixed bracket (drawn, browsable); records at Selection Sunday in the NCAA first round"
+  },
+  {
+   "fp": "51c31df136f13c37",
+   "from": "04e1ad7976203de8",
+   "note": "A Sim it button (all games); basketball conference tournaments take every team"
+  },
+  {
+   "fp": "9dd4a32b21f45c2f",
+   "from": "51c31df136f13c37",
+   "note": "Season history keeps early departures and recruiting classes only for coached teams (save size)"
+  },
+  {
+   "fp": "9dd4a32b21f45c2f",
+   "from": "9dd4a32b21f45c2f",
+   "note": "Record book: basketball career lines and program leaders (points, rebounds, assists, threes, blocks, steals)"
+  },
+  {
+   "fp": "3d1a6665a2d79e6d",
+   "from": "9dd4a32b21f45c2f",
+   "note": "The transfer portal; basketball assistant wording on the offseason screen"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Duke",
+     "last": {
+      "rec": "27-7",
+      "result": "Lost in the Second Round",
+      "grade": "B"
+     },
+     "book": "582ba664923f1e57"
+    },
+    {
+     "team": "North Carolina",
+     "last": {
+      "rec": "33-2",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
+     },
+     "book": "e6cec894bab04237"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Duke",
+     "last": {
+      "rec": "29-8",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
+     },
+     "book": "1f7bf7ed86fcb5f9"
+    },
+    {
+     "team": "North Carolina",
+     "last": {
+      "rec": "21-10",
+      "result": "Lost in the First Round",
+      "grade": "C"
+     },
+     "book": "a4d72fc0c99b82f5"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Duke",
+     "last": {
+      "rec": "28-6",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
+     },
+     "book": "93c3cc2b903da911"
+    },
+    {
+     "team": "North Carolina",
+     "last": {
+      "rec": "30-3",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
+     },
+     "book": "cfecbed3175fb058"
+    }
+   ]
+  }
+ ]
+}

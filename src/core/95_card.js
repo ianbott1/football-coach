@@ -11,13 +11,14 @@ function cardFit(text, max, size){
 }
 
 function seasonCardSVG(h, team){
-  const c = h.card || {};
+  const c = {conf:h.group.name, confRec:h.group.rec, bestWin:h.bestWin, coach:h.coach.name,
+             titles:h.coach.titles, seasons:h.coach.seasons};
   const ink   = teamColor(team);
   const ink2  = teamInk ? teamInk(team) : ink;
   const rec   = h.rec || "";
-  const big   = h.champion===team ? "NATIONAL CHAMPIONS"
+  const big   = h.champion===team ? LEAGUE.text.champions.toUpperCase()
               : c.confChampLine ? c.confChampLine
-              : (h.confChamp ? (c.conf||"Conference").toUpperCase()+" CHAMPIONS"
+              : (h.honours.group ? (c.conf||"Conference").toUpperCase()+" CHAMPIONS"
               : (h.rank ? "FINISHED No. "+h.rank : (h.result||"")));
   const teamSize = cardFit(team, 880, 132);
   const bigSize  = cardFit(big, 940, 52);
@@ -71,7 +72,7 @@ function seasonCardSVG(h, team){
       preserveAspectRatio="xMidYMid meet">${owlSVG("cardowl",false)}</svg>
     <text x="166" y="986" fill="#F4A63A" font-size="44"
       font-family="Impact,'Arial Black','Helvetica Neue',sans-serif"
-      letter-spacing="2">FOOTBALL COACH</text>
+      letter-spacing="2">${esc((LEAGUE.text.gameName||"Football Coach").toUpperCase())}</text>
     <text x="166" y="1020" fill="#7C879C" font-size="23"
       font-family="ui-monospace,Menlo,Consolas,monospace"
       letter-spacing="2">ianbott1.github.io/football-coach</text>
@@ -80,13 +81,13 @@ function seasonCardSVG(h, team){
 
 /* The same season as a line of text, for anywhere an image won't go. */
 function seasonCardText(h, team){
-  const c=h.card||{};
+  const c={conf:h.group.name, confRec:h.group.rec, bestWin:h.bestWin, coach:h.coach.name};
   const bits=[`${team} ${h.rec} (${c.confRec} ${c.conf})`];
-  if(h.champion===team)bits.push("NATIONAL CHAMPIONS");
-  else if(h.confChamp)bits.push(`${c.conf} champions`);
+  if(h.champion===team)bits.push(LEAGUE.text.champions.toUpperCase());
+  else if(h.honours.group)bits.push(`${c.conf} champions`);
   else if(h.rank)bits.push(`finished No. ${h.rank}`);
   if(c.bestWin)bits.push(`beat ${c.bestWin.rank?"No. "+c.bestWin.rank+" ":""}${c.bestWin.opp} ${c.bestWin.score}`);
-  return `${c.coach}, ${h.year}. ${bits.join(" \u2014 ")}. Football Coach: ianbott1.github.io/football-coach`;
+  return `${c.coach}, ${h.year}. ${bits.join(" \u2014 ")}. ${LEAGUE.text.site}`;
 }
 
 /* Rasterise the SVG to a PNG blob so it can be shared or saved as a real image. */

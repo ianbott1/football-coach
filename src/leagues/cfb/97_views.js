@@ -204,7 +204,43 @@ function pollRows(prev,cur){
   return h;
 }
 
+/* The stakes lines only college football has: the conference title game, the
+   playoff bubble, ranked opponents, bowl eligibility. */
+function cfbStakes(x){
+  const {my,opp,rk,wk,left,w,l,cp}=x, out=[];
+  if(wk>=8&&cp){
+    if(cp.pos<=2&&left<=4)out.push({p:88,tag:"TITLE RACE",
+      l:`You sit ${cp.pos===1?"first":"second"} in the ${cp.conf} with ${left} to play &mdash; the championship game is right there.`});
+    else if(cp.pos===3&&left<=4)out.push({p:80,tag:"TITLE RACE",
+      l:`Third in the ${cp.conf}, one spot out of the championship game.`});
+  }
+
+  if(wk>=7){
+    const f=LEAGUE.ui.projectedField();
+    const idx=f.indexOf(my);
+    if(idx>=0)out.push({p:85,tag:"PLAYOFF",
+      l:`You'd be the No. ${idx+1} seed if the season ended today.${idx<4?" That's a first-round bye.":""}`});
+    else{
+      const order=SEA.poll.order();
+      const outs=order.filter(t=>f.indexOf(t)<0);
+      const spot=outs.indexOf(my);
+      if(spot>=0&&spot<6)out.push({p:86,tag:"BUBBLE",
+        l:`${spot===0?"First team out":"Number "+(spot+1)+" out"} of the projected field. You need this one.`});
+    }
+  }
+
+  if(rk[opp]<=10)out.push({p:78,tag:"MARQUEE",
+    l:`A win over No. ${rk[opp]} ${opp} is the kind of result that decides seeding.`});
+  else if(rk[opp]<=25)out.push({p:62,tag:"RANKED",
+    l:`No. ${rk[opp]} ${opp} is a résumé game either way.`});
+
+  if(w===5&&left<=5)out.push({p:70,tag:"BOWL",
+    l:`Win and you're bowl eligible.`});
+  return out;
+}
+
 LEAGUE.ui={
+  stakes:cfbStakes,
   rankingTab:"Poll",                    // label of the ranking tab
   rankingView:pollView,
   projectedField:projectedField,        // who'd be in if it ended today

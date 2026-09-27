@@ -1,0 +1,170 @@
+{
+ "fp": "68fc28832b0af0f9",
+ "log": [
+  {
+   "fp": "753aede7d5ae4055",
+   "from": null,
+   "note": "First basketball baseline: 3 careers of 2 seasons and 60 schedules"
+  },
+  {
+   "fp": "fc53e52e4f0a45fe",
+   "from": "753aede7d5ae4055",
+   "note": "Program strength range 1000-2350 (football's 2010 ceiling flattened the blue bloods), recruits closer to program level, more five-stars at the top"
+  },
+  {
+   "fp": "230554d2116ace66",
+   "from": "fc53e52e4f0a45fe",
+   "note": "Program strength anchored to its structural level (10% a year); strength of schedule in the committee's resume"
+  },
+  {
+   "fp": "6a9c4f6f9f3caab9",
+   "from": "230554d2116ace66",
+   "note": "Rankings tab crash fixed (pollTab); basketball season lines, firing joke, rivalry names"
+  },
+  {
+   "fp": "2379fc1f827b67d7",
+   "from": "6a9c4f6f9f3caab9",
+   "note": "The bracket, drawn: by region (four columns) and the Final Four"
+  },
+  {
+   "fp": "2379fc1f827b67d7",
+   "from": "2379fc1f827b67d7",
+   "note": "Selection Sunday reveal on the field tab"
+  },
+  {
+   "fp": "043e70a98a2b983a",
+   "from": "2379fc1f827b67d7",
+   "note": "All-America teams on the Rankings tab; awards compare each player with his own position"
+  },
+  {
+   "fp": "ff019d81fa639aec",
+   "from": "043e70a98a2b983a",
+   "note": "Wider program spread (1.45), power rating in the committee resume, at-large teams seeded no lower than the 11 line"
+  },
+  {
+   "fp": "7ba950b899800d3d",
+   "from": "ff019d81fa639aec",
+   "note": "Colours for 78 more schools from ncaa-team-colors (ISC); 18 stand-ins remain"
+  },
+  {
+   "fp": "7ba950b899800d3d",
+   "from": "7ba950b899800d3d",
+   "note": "Title screen: Basketball Coach wordmark, the owl on a rim"
+  },
+  {
+   "fp": "277acea65d3164e8",
+   "from": "7ba950b899800d3d",
+   "note": "Goal line counts your remaining games from the schedule (was 12 minus games played: wrong for pro and basketball) and says 'out of reach' only when a postseason run couldn't get there; basketball's seat badge grades a season in progress with March at par"
+  },
+  {
+   "fp": "84f2b43cace1140f",
+   "from": "277acea65d3164e8",
+   "note": "Conference tournaments on a fixed bracket (drawn, browsable); records at Selection Sunday in the NCAA first round"
+  },
+  {
+   "fp": "23c737a66387da28",
+   "from": "84f2b43cace1140f",
+   "note": "A Sim it button beside Play for your game (all games); basketball: every team in its conference tournament (ACC and Big Ten 15, Ivy 4) on a 16-slot bracket; clearer NBA draft wording"
+  },
+  {
+   "fp": "27e1aa59f7f74e78",
+   "from": "23c737a66387da28",
+   "note": "Season history keeps early departures and recruiting classes only for coached teams (save size)"
+  },
+  {
+   "fp": "e9eb89cd0bac3737",
+   "from": "27e1aa59f7f74e78",
+   "note": "Record book: basketball career lines and program leaders (points, rebounds, assists, threes, blocks, steals)"
+  },
+  {
+   "fp": "68fc28832b0af0f9",
+   "from": "e9eb89cd0bac3737",
+   "note": "The transfer portal; basketball assistant wording on the offseason screen"
+  }
+ ],
+ "result": {
+  "Duke#1": [
+   {
+    "year": 2026,
+    "games": "f29d7690d1c76deb",
+    "post": "b5c51d1acbc53c33",
+    "champion": "South Carolina",
+    "rec": "5208ac8b43f34613",
+    "poll": "3f8457e7080b9ced",
+    "heis": "63c51af92f20ba26",
+    "history": "80e202bb52a03379",
+    "universe": "41857a67b0f011d5",
+    "screens": "25f64c7a0f9cca86"
+   },
+   {
+    "year": 2027,
+    "games": "a89eb9bbb8112678",
+    "post": "6f5c686e00268081",
+    "champion": "Wisconsin",
+    "rec": "a9ed957c00412e81",
+    "poll": "7b226f32f3b212b5",
+    "heis": "d2fc886b06536da3",
+    "history": "7629e08546fd2110",
+    "universe": "ce43b011b2439043",
+    "screens": "e43589335204fd9d"
+   }
+  ],
+  "Coppin State#2024": [
+   {
+    "year": 2026,
+    "games": "923c83c4d3e7fec1",
+    "post": "34797444f0cdf7b2",
+    "champion": "Kansas",
+    "rec": "acd9846afd56d900",
+    "poll": "f39d248d536694cb",
+    "heis": "1259105979116d86",
+    "history": "6964eb5b2c02a27d",
+    "universe": "72554d8e5babe4d8",
+    "screens": "e1396a95cead81e5"
+   },
+   {
+    "year": 2027,
+    "games": "1ff6b177de9d1dd1",
+    "post": "285753602691fb2f",
+    "champion": "Alabama",
+    "rec": "6e140a127ce1c44d",
+    "poll": "abf6d4ebd1d028f8",
+    "heis": "aef0cc1da07e25cd",
+    "history": "d7f8450ca98da18a",
+    "universe": "78fed89a9b63e3ef",
+    "screens": "9265bae209f46a27"
+   }
+  ],
+  "Gonzaga#777": [
+   {
+    "year": 2026,
+    "games": "c8f75445db808edf",
+    "post": "9bfd3a1d45ff6bbb",
+    "champion": "Kentucky",
+    "rec": "432a14cefc0962ef",
+    "poll": "632bb9da1f459ccf",
+    "heis": "c30dde17209a314e",
+    "history": "57c76cfb71488fbb",
+    "universe": "1377641d18d80969",
+    "screens": "72bf086694b2448f"
+   },
+   {
+    "year": 2027,
+    "games": "2c3cb2cc1ee79b30",
+    "post": "d299dbbc0945d880",
+    "champion": "Arizona",
+    "rec": "8faa9382d6477358",
+    "poll": "09dd9155cc48f610",
+    "heis": "a1e27e7b5f453d11",
+    "history": "fcbb22b4f653421a",
+    "universe": "15e38526bc8f75ba",
+    "screens": "953a3a0c43dc9ebf"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "5d4c89ca5a02fd1c"
+   }
+  ]
+ }
+}
