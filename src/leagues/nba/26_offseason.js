@@ -45,7 +45,8 @@ function nflResignPlan(R){
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
-    const worth=(i<POS.length?p.r>=66:p.r>=64&&ask<=8)&&p.age<=33;
+    // teams keep their useful players (the pros' bar was 66 for a starter)
+    const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12)&&p.age<=33;
     keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
   });
@@ -265,7 +266,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const ask={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)};
       const keep=!!plan[i];
       if(keep){p.k=ask;rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:ask.sal,yrs:ask.yrs})}
-      else{R[i]=null;rep.released[t].push({n:p.n,p:p.p,r:p.r});
+      else{R[i]=null;rep.released[t].push({n:p.n,p:p.p,r:p.r,why:"expired"});
         if(p.r>=58&&p.age<=33){p.from=t;pool.push(p)} else leave(t,p,"released")}
     }
     // 2. aging
@@ -329,7 +330,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     p.k={sal:rookieSal(overall),yrs:4}; p.joined=u.year+1; p.drafted=true;
     const g=nflGain(R,p);
     const made=g>0.6||!R[p.i]||!R[BK(p.i)];
-    if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r});
+    if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"draft"});
       if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")}}
     rep.drafted[t].push({n:p.n,p:p.p,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made});
     picks.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made,pid:p.pid});
@@ -379,7 +380,11 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     return rk<8?"contend":rk>=28?"young":"balanced"};
   const limit={contend:0.99,balanced:0.93,young:0.85}, maxAge={contend:34,balanced:31,young:27};
   for(let round=0;round<4;round++){
-    const shoppers=NAMES.slice().sort((a,b)=>payroll(u.roster[a])-payroll(u.roster[b]));
+    // free agents choose contenders: the better teams shop first (a little
+    // luck in it); they still need the room. (By cap room, weak teams bought
+    // every good free agent and the league flattened in a few years.)
+    const pull={}; NAMES.forEach(t=>pull[t]=elo[t]+rng.gauss(0,+((typeof process!=="undefined"&&process.env&&process.env.NBA_FAN)||45)));
+    const shoppers=NAMES.slice().sort((a,b)=>pull[b]-pull[a]);
     shoppers.forEach(t=>{
       const R=u.roster[t], st=styleOf(t), room=NFL_CAP*limit[st]-payroll(R);
       let best=null,bv=0;
@@ -394,7 +399,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from});
-      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
+      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"fa"}); if(out.r>=58&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
     });
   }
   pool.filter(p=>!p.signed).forEach(p=>leave(p.from,p,"unsigned"));
@@ -417,6 +422,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   if(ut&&choices.phil)u.phil=choices.phil;
   u.year++;
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
+  if(typeof S!=="undefined"&&S)S.lastNbaRep={rep:rep,picks:picks};     // for tests (test/nba-turnover.js)
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
     draft:{picks:picks}, contracts:rep,
     cap:Object.fromEntries(NAMES.map(t=>[t,Math.round(payroll(u.roster[t])*10)/10]))};

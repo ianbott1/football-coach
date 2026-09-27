@@ -225,8 +225,10 @@ function offseasonScreen(){
   const pay=nflPlannedPay(), room=LEAGUE.cap-pay;
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign go to free agency, where another team can take them. Rookies and free agents are added afterwards, inside whatever cap room you leave.");
-  h+=`<div class="budgetleft ${room>=0?'done':''}">Payroll $${pay.toFixed(1)}M of $${LEAGUE.cap}M &middot; ${
+  const tax=LEAGUE.taxLine||LEAGUE.cap;
+  h+=`<div class="budgetleft ${pay<=tax?'done':''}">Payroll $${pay.toFixed(1)}M &middot; cap $${LEAGUE.cap}M &middot; ${
     room>=0?"$"+room.toFixed(1)+"M room":"$"+(-room).toFixed(1)+"M over the cap"}</div>`;
+  if(tax>LEAGUE.cap)h+=`<div class="note">You can go over the cap to re-sign your own players, up to the $${tax}M tax line. Over the cap, you can't sign other teams' free agents.</div>`;
   if(!expiring.length)h+=`<div class="note">Nobody's contract is up this year.</div>`;
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];
     return `<div class="cand ${on?'on':''}" data-resign="${i}">
@@ -260,8 +262,9 @@ Object.assign(LEAGUE.ui,{
   /* null when you can go on; otherwise what the button says */
   offseasonBlock(){
     if(!S.off)return null;
-    const over=nflPlannedPay()-LEAGUE.cap;
-    return over>0?"Over the cap by $"+over.toFixed(1)+"M":null;
+    // your own players may take you over the cap, up to the tax line
+    const over=nflPlannedPay()-(LEAGUE.taxLine||LEAGUE.cap);
+    return over>0?"Over the tax line by $"+over.toFixed(1)+"M":null;
   },
   bindOffseason(){
     document.querySelectorAll("[data-resign]").forEach(b=>b.onclick=()=>{

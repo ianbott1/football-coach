@@ -7,14 +7,14 @@ const NBA_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,9,20));      // Oct
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   for(let i=0;i<90;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+(i%5===4?3:2))}
   return out})();
-const NBA_K=+((typeof process!=="undefined"&&process.env&&process.env.NBA_K)||1.7);
+const NBA_K=+((typeof process!=="undefined"&&process.env&&process.env.NBA_K)||2.0);
 const NBA_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NBA_K),d]);
 const LEAGUE={
   id:"nba",
   name:"Pro Basketball",
 
   /* [franchise, starting strength (a prior, not standings), division];
-     spread 1.7x around 1500 (calibrated: records spread like the real league's) */
+     spread 2x around 1500 (calibrated: test/nba-stability.js) */
   teams:NBA_SPREAD([
 ["Boston",1590,"ATL"],["Brooklyn",1440,"ATL"],["New York",1580,"ATL"],["Philadelphia",1500,"ATL"],["Toronto",1480,"ATL"],
 ["Chicago",1470,"CEN"],["Cleveland",1600,"CEN"],["Detroit",1560,"CEN"],["Indiana",1520,"CEN"],["Milwaukee",1510,"CEN"],
