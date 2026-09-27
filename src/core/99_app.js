@@ -264,10 +264,23 @@ function save(){
     else await Promise.resolve();
     savePending=null;
     S.league=LEAGUE.id;                                   // every save says which game it's from
-  try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(JSON.stringify(S))))}catch(e){saveOK=false}
+  try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
     return saveOK;
   })();
   return savePending;
+}
+/* The active coach's stash in S.coaches holds a copy of S.history (and it
+   is S.history that's current): saved as a marker, not a second copy, and
+   restored on load. A 30-season basketball save was 9.2 MB, a third of it
+   this duplicate. */
+function saveText(S){
+  if(!S.coaches||!S.coaches.length)return JSON.stringify(S);
+  const t=S.turn||0, cs=S.coaches.map((c,i)=>i===t&&c&&c.history?Object.assign({},c,{history:"@S.history"}):c);
+  return JSON.stringify(Object.assign({},S,{coaches:cs}));
+}
+function unsaveDup(d){
+  (d.coaches||[]).forEach(c=>{ if(c&&c.history==="@S.history")c.history=d.history });
+  return d;
 }
 /* which game a save belongs to: new saves say; older ones are told apart by
    their players (pro players have contracts; basketball players play PG-C) */
@@ -306,7 +319,7 @@ async function moveForeignSaves(){
 async function loadSlot(n){
   await moveForeignSaves();
   try{const r=await store.get(KEYFOR(n)); if(!r)return null;
-    const d=JSON.parse(lzwUnpack(r.value));
+    const d=unsaveDup(JSON.parse(lzwUnpack(r.value)));
     if(saveLeague(d)!==LEAGUE.id)return null;        // never open another game's save
     return migrateSave(d)}catch(e){return null}
 }

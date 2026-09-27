@@ -1,5 +1,5 @@
 {
- "fp": "23c737a66387da28",
+ "fp": "27e1aa59f7f74e78",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -65,6 +65,11 @@
    "fp": "23c737a66387da28",
    "from": "84f2b43cace1140f",
    "note": "A Sim it button beside Play for your game (all games); basketball: every team in its conference tournament (ACC and Big Ten 15, Ivy 4) on a 16-slot bracket; clearer NBA draft wording"
+  },
+  {
+   "fp": "27e1aa59f7f74e78",
+   "from": "23c737a66387da28",
+   "note": "Season history keeps early departures and recruiting classes only for coached teams (save size)"
   }
  ],
  "result": {
@@ -77,7 +82,7 @@
     "rec": "5208ac8b43f34613",
     "poll": "3f8457e7080b9ced",
     "heis": "63c51af92f20ba26",
-    "history": "52cf549d5a9673b4",
+    "history": "b4668b69d6201420",
     "universe": "e4b5bdf917318de9",
     "screens": "3c297e6b576ce7a7"
    },
@@ -89,7 +94,7 @@
     "rec": "96f3803e654573d4",
     "poll": "bccc94f9531e0c82",
     "heis": "2bfaa15dc3b74ca6",
-    "history": "4df2958bc77f8d92",
+    "history": "15a6d68417637a09",
     "universe": "117d734273179498",
     "screens": "b6c7ae70765b47a2"
    }
@@ -103,7 +108,7 @@
     "rec": "acd9846afd56d900",
     "poll": "f39d248d536694cb",
     "heis": "1259105979116d86",
-    "history": "268820be5c3b5376",
+    "history": "abdbc652c7cc23a4",
     "universe": "ffa3b5e92694c725",
     "screens": "38e5f0b27b98325b"
    },
@@ -115,7 +120,7 @@
     "rec": "f7e7df439daf36c4",
     "poll": "e74ee1b27c2a0eba",
     "heis": "ae62b5eb414defeb",
-    "history": "353ad5b088864607",
+    "history": "a582d29debc3fa48",
     "universe": "20af196c007fcbed",
     "screens": "1d794c84c882aae3"
    }
@@ -129,7 +134,7 @@
     "rec": "432a14cefc0962ef",
     "poll": "632bb9da1f459ccf",
     "heis": "c30dde17209a314e",
-    "history": "aee3c71ad1457fc9",
+    "history": "61c1a917618670e5",
     "universe": "da2d3a941658676c",
     "screens": "afd2f957f17559b7"
    },
@@ -141,7 +146,7 @@
     "rec": "c0fb2f6da8117bc0",
     "poll": "e6ef485a925f13ec",
     "heis": "7b1c51d42d47923e",
-    "history": "8a0c97c6a78f5f80",
+    "history": "0769591f3edbbd45",
     "universe": "0fe01e30bc95780f",
     "screens": "3409e6ce7b0b385b"
    }

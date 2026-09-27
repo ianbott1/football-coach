@@ -29,7 +29,7 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // the seat badge follows the firing rule, which changed on purpose: it
       // isn't expected to match the old build
       // ...nor the gameplan tip, rewritten on purpose when plans were rebalanced
-      const noSeat=x=>x.replace(/<span class="seat [a-z]+">[^<]*<\/span>/g,'').replace(/<div class="mark" data-mark="plan">[\s\S]*?<\/div>/g,'').replace(/\s+/g,' ');   // whitespace: the owl gained a helmet slot
+      const noSeat=x=>x.replace(/<span class="seat [a-z]+">[^<]*<\/span>/g,'').replace(/<div class="mark" data-mark="plan">[\s\S]*?<\/div>/g,'').replace(/<button class="skip" id="simone">Sim it<\/button>/g,'').replace(/\s+/g,' ');   // the Sim it button is new on purpose   // whitespace: the owl gained a helmet slot
       want.forEach((w,i)=>{checks++;if(noSeat(w)!==noSeat(got[i])){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`)}});
       // the game's name on the card changed on purpose ("College Football Coach"),
       // and the owl's markup gained a (college: empty) helmet slot

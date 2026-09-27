@@ -1,5 +1,5 @@
 {
- "fp": "51c31df136f13c37",
+ "fp": "9dd4a32b21f45c2f",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -45,6 +45,11 @@
    "fp": "51c31df136f13c37",
    "from": "04e1ad7976203de8",
    "note": "A Sim it button (all games); basketball conference tournaments take every team"
+  },
+  {
+   "fp": "9dd4a32b21f45c2f",
+   "from": "51c31df136f13c37",
+   "note": "Season history keeps early departures and recruiting classes only for coached teams (save size)"
   }
  ],
  "out": [
@@ -58,7 +63,7 @@
       "result": "Lost in the Second Round",
       "grade": "B"
      },
-     "book": "3cf703df5e820df5"
+     "book": "d58feb3fae260698"
     },
     {
      "team": "North Carolina",
@@ -67,7 +72,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "c3c8b4545141ad51"
+     "book": "f6abc22ab0207c3d"
     }
    ]
   },
@@ -81,7 +86,7 @@
       "result": "Lost in the Second Round",
       "grade": "B-"
      },
-     "book": "f9fc181e1f0379c3"
+     "book": "afacd1a7af09ee59"
     },
     {
      "team": "North Carolina",
@@ -90,7 +95,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "B"
      },
-     "book": "3c4e75d574dd4f51"
+     "book": "e18dd575f12adb16"
     }
    ]
   },
@@ -104,7 +109,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "461d0b74c86d19af"
+     "book": "3478e15452eba8b0"
     },
     {
      "team": "North Carolina",
@@ -113,7 +118,7 @@
       "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "597811080594b190"
+     "book": "83daaacacd745fed"
     }
    ]
   }

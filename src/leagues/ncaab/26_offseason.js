@@ -356,7 +356,9 @@ LEAGUE.historyExtras=function(sea,off,my){
       .filter(d=>d.team===my||d.draft.round<=1)
       .slice(0,40).map(d=>({n:d.n,p:d.p,team:d.team,peak:d.peak||d.r,
         early:!!d.early,c:d.c,d:d.draft})):[],
-    classes:off.classes||{}, early:off.early||{}, realigned:off.realigned||[]};
+    // only the teams people coach: the screens show nothing else, and all 365
+    // cost 85,000 characters a season in the save
+    classes:mineOnly(off.classes), early:mineOnly(off.early), realigned:off.realigned||[]};
 };
 /* a version-1 entry's college-only fields */
 LEAGUE.migrateHistory=function(h){
@@ -364,6 +366,12 @@ LEAGUE.migrateHistory=function(h){
           early:h.early||{}, realigned:h.realigned||[]};
 };
 /* one season of a team's history, in a line */
+function mineOnly(o){
+  if(!o)return {}; const out={};
+  const people=(S.coaches&&S.coaches.length?S.coaches.map((c,i)=>i===(S.turn||0)?S.myTeam:c.myTeam):[S.myTeam]);
+  people.concat([S.myTeam]).forEach(t=>{if(o[t])out[t]=o[t]});
+  return out;
+}
 /* one season in a line, for a team's history: how March went */
 LEAGUE.seasonLine=function(h,t,r,seed){
   if(h.champion===t)return "National champions"+(seed?" \u00b7 a "+seed+" seed":"");

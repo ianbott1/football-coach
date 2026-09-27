@@ -67,12 +67,12 @@ function recordAlumni(u, year, pool){
     }
     u.alumni[t].push(rec);
     const cap=u.alumni[t];
-    if(cap.length>40){
+    if(cap.length>25){                       // 365 programs: 25 each (the record book shows 12)
       cap.sort((a,b)=>{
         const ad=a.draft?a.draft.overall:9999, bd=b.draft?b.draft.overall:9999;
         return ad-bd || b.peak-a.peak;
       });
-      cap.length=40;                         // the 40 most notable stay for good
+      cap.length=25;                         // the 25 most notable stay for good
     }
   });
 }
