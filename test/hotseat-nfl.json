@@ -1,5 +1,5 @@
 {
- "fp": "421dac5f9b9f3e30",
+ "fp": "f4550e2320e47458",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -75,6 +75,11 @@
    "fp": "421dac5f9b9f3e30",
    "from": "8471a290e425a9a9",
    "note": "MVP compares each player with his position, plus a quarterback premium (1.12): quarterbacks win ~86%, not every year"
+  },
+  {
+   "fp": "f4550e2320e47458",
+   "from": "421dac5f9b9f3e30",
+   "note": "Season one plays the real 2026 NFL schedule (nflverse); later seasons the formula"
   }
  ],
  "out": [
@@ -84,20 +89,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "14-3",
-      "result": "Lost the Super Bowl",
+      "rec": "13-4",
+      "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "f6650046b5af008d"
+     "book": "38bdf0cd108f5f37"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "4-13",
+      "rec": "5-12",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "ba568b9c37db23ae"
+     "book": "cd6264e911ee7b59"
     }
    ]
   },
@@ -107,20 +112,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost the conference championship",
-      "grade": "A-"
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
+      "grade": "B+"
      },
-     "book": "c2d3037b41359cbb"
+     "book": "9e8cb1634d620f50"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "14-3",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "11-6",
+      "result": "Lost the conference championship",
+      "grade": "A"
      },
-     "book": "69c15428769dab0e"
+     "book": "6bba4767928d3bd9"
     }
    ]
   },
@@ -130,20 +135,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "7-10",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
+      "grade": "B+"
      },
-     "book": "3c078a084dd2ce5c"
+     "book": "ef05f41d4560f054"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the divisional round",
-      "grade": "A"
+      "rec": "13-4",
+      "result": "Lost the conference championship",
+      "grade": "A+"
      },
-     "book": "4503d4efc32e770b"
+     "book": "4792b97e8b205a3e"
     }
    ]
   }

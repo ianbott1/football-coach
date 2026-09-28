@@ -50,6 +50,9 @@ function nflPairings(R,year){
 }
 
 function buildSchedule(rng,R,year){
+  // the real 2026 season (30_schedule2026.js); the formula for every season after
+  if(year===2026&&typeof REAL_NFL2026!=="undefined")
+    return REAL_NFL2026.map(([w,a,h,n])=>({week:w,away:a,home:h,conf:CONF[a]===CONF[h],neutral:!!n,real:true,site:null}));
   const W=LEAGUE.weeks, games=nflPairings(R,year);
   for(let attempt=0;attempt<40;attempt++){
     const at={}; NAMES.forEach(t=>at[t]=new Array(W).fill(-1));   // week -> game index
