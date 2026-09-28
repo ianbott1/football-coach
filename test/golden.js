@@ -106,6 +106,7 @@ const probe = load(file), LG = probe.leagueId();
 const CASES = LG==='cfb' ? [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['Kent State',31337,3]]
   : LG==='ncaab' ? [['Duke',1,2],['Coppin State',2024,2],['Gonzaga',777,2]]    // 365 teams: shorter careers
   : LG==='nba' ? [['Boston',1,2],['Detroit',777,2]]
+  : LG==='nhl' ? [['Boston',1,2],['Edmonton',777,2]]
   : [['Kansas City',1,4],['Tennessee',2024,4],['Detroit',777,3],['NY Giants',31337,3]];
 const result = {};
 for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);

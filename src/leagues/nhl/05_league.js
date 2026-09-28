@@ -50,7 +50,11 @@ const LEAGUE={
   awards:{mvp:"Hart Trophy", weights:{C:1,LW:1,RW:1,D:1,D2:1,G:1},
     /* the race compares each player with his position; this is the voters' premium on top */
     premium:{C:1.06,LW:1.02,RW:1.02,D:0.93,D2:0.9,G:0.97}},
-  tuning:{hfa:20, gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12},
+  tuning:{hfa:20, gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12,
+    /* how much an edge is worth on the ice (the engine's are calibrated on
+       their own; the league's spread is set against NHL history) */
+    hk:{shotEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005),
+        finishEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005)*0.92}},
   venues:{"Colorado":4,"Winnipeg":3,"Edmonton":2,"Vegas":2,"San Jose":-3,"Anaheim":-2,"Columbus":-2},
   schedule:{games:82},
   playoff:{size:16, perSide:8, byes:0},
