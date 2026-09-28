@@ -66,6 +66,13 @@ class Season{
     this.midFired[side]=true;
     return true;
   }
+  /* a drawn game (LEAGUE.draws): counted per team; each side's rating moves by
+     half a result against what was expected of it */
+  _drawn(a,b,neutral){
+    this.drw=this.drw||{}; this.drw[a]=(this.drw[a]||0)+1; this.drw[b]=(this.drw[b]||0)+1;
+    const hfa=neutral?0:LEAGUE.tuning.hfa, exp=1/(1+Math.pow(10,-(this.elo[a]+hfa-this.elo[b])/400));
+    const sh=K*0.9*(0.5-exp); this.elo[a]+=sh; this.elo[b]-=sh;
+  }
   _resolve(a,b,neutral,extra){
     let sd=1, edge=0;
     if(this.userTeam===a||this.userTeam===b){
@@ -98,11 +105,18 @@ class Season{
       let fh = (a===F.team)?userScore:oppScore;
       let fa = (a===F.team)?oppScore:userScore;
       let fm = fh-fa;
-      if(fm===0){ if(this.rng.r()<0.5)fh+=3; else fa+=3; fm=fh-fa; }  // should never fire
-      const win=fm>0?a:b, lose=fm>0?b:a;
-      const sh=eloUpdate(this.elo[win],this.elo[lose],Math.abs(fm),(win===a)&&!neutral,neutral);
-      this.elo[win]+=sh; this.elo[lose]-=sh;
-      this.rec[win][0]++; this.rec[lose][1]++;
+      // a level score: a draw (soccer), a shoot-out's winner, or (other sports) never
+      let fdraw=false, fpens=F.pens?(a===F.team?(F.pens==="mine"?"home":"away"):(F.pens==="mine"?"away":"home")):null;
+      if(fm===0&&!(LEAGUE.draws&&(F.draw||fpens))){ if(this.rng.r()<0.5)fh+=3; else fa+=3; fm=fh-fa; }  // should never fire
+      if(fm===0&&LEAGUE.draws&&!fpens)fdraw=true;
+      const win=fdraw?null:fpens?(fpens==="home"?a:b):(fm>0?a:b), lose=fdraw?null:(win===a?b:a);
+      let fsh=0;
+      if(fdraw)this._drawn(a,b,neutral);
+      else{
+        fsh=eloUpdate(this.elo[win],this.elo[lose],Math.max(1,Math.abs(fm)),(win===a)&&!neutral,neutral);
+        this.elo[win]+=fsh; this.elo[lose]-=fsh;
+        this.rec[win][0]++; this.rec[lose][1]++;
+      }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
       if(this.roster){
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
@@ -121,7 +135,8 @@ class Season{
       const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+fh+fa)%11)/34))));
       return Object.assign({home:a,away:b,hp:fh,ap:fa,hh:hf(fh,fa),ah:hf(fa,fh),
         neutral:neutral,winner:win,loser:lose,margin:Math.abs(fm),
-        shift:Math.round(sh),drives:F.drives},LEAGUE.tracksOT?{ot:F.ot||0,so:!!F.so}:{},extra||{});
+        shift:Math.round(fsh),drives:F.drives},LEAGUE.tracksOT?{ot:F.ot||0,so:!!F.so}:{},
+        LEAGUE.draws?{draw:fdraw,pens:fpens}:{},extra||{});
     }
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
     if(LEAGUE.tracksOT)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"});   // hockey: sudden death in the playoffs
@@ -130,13 +145,20 @@ class Season{
       this.userTeam===b?plan:"balanced",
       gopts);
     let hp=gs.h, ap=gs.a, m=hp-ap;
-    if(m===0){ if(this.rng.r()<0.5)hp+=3; else ap+=3; m=hp-ap; }   // safety net only
+    // a level score: a draw (soccer), a shoot-out's winner, or (other sports) never
+    const pens=LEAGUE.draws&&gs.pens?gs.pens:null;
+    if(m===0&&!(LEAGUE.draws&&(gs.draw||pens))){ if(this.rng.r()<0.5)hp+=3; else ap+=3; m=hp-ap; }   // safety net only
+    const draw=LEAGUE.draws&&m===0&&!pens;
     this.lastDrives=gs.drives;
     if(isUser)this._userDrives=gs.drives;
-    const win=m>0?a:b, lose=m>0?b:a;
-    const sh=eloUpdate(this.elo[win],this.elo[lose],Math.abs(m),(win===a)&&!neutral,neutral);
-    this.elo[win]+=sh;this.elo[lose]-=sh;
-    this.rec[win][0]++;this.rec[lose][1]++;
+    const win=draw?null:pens?(pens==="home"?a:b):(m>0?a:b), lose=draw?null:(win===a?b:a);
+    let sh=0;
+    if(draw)this._drawn(a,b,neutral);
+    else{
+      sh=eloUpdate(this.elo[win],this.elo[lose],Math.max(1,Math.abs(m)),(win===a)&&!neutral,neutral);
+      this.elo[win]+=sh;this.elo[lose]-=sh;
+      this.rec[win][0]++;this.rec[lose][1]++;
+    }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
     if(this.roster){
@@ -157,7 +179,8 @@ class Season{
     const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+hp+ap)%11)/34))));
     return Object.assign({home:a,away:b,hp:hp,ap:ap,
       hh:hf(hp,ap),ah:hf(ap,hp),neutral:neutral,
-      winner:win,loser:lose,margin:Math.abs(m),shift:Math.round(sh)},LEAGUE.tracksOT?{ot:gs.ot||0,so:!!gs.so}:{},extra||{});
+      winner:win,loser:lose,margin:Math.abs(m),shift:Math.round(sh)},LEAGUE.tracksOT?{ot:gs.ot||0,so:!!gs.so}:{},
+      LEAGUE.draws?{draw:draw,pens:pens}:{},extra||{});
   }
   advance(){
     this.prevRank=this.rankMap();
@@ -170,7 +193,7 @@ class Season{
     const w=this.step, prev=this.rankMap(), out=[];
     this.sched.filter(g=>g.week===w).forEach(g=>{
       const r=this._resolve(g.home,g.away,g.neutral,{conf:g.conf});
-      if(g.conf){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
+      if(g.conf&&!r.draw){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
       r.hrank=prev[g.home];r.arank=prev[g.away];
       r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];
       r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];

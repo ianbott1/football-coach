@@ -149,6 +149,9 @@ function finishLive(){
               theirs:(meHome?live.eng.a:live.eng.h),
               drives:live.drives};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
+  // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
+  if(LEAGUE.draws){played.draw=!!live.eng.draw;
+    if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
   SEA.forcedList=SEA.forcedList||[];
   SEA.forcedList.push(played);
   // keep it in the save: a reload must replay this result, not re-simulate
