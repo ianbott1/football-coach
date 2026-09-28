@@ -1,5 +1,5 @@
 {
- "fp": "c2edeb9913c9ae5a",
+ "fp": "98fd9c95b1e9ec7a",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -100,6 +100,11 @@
    "fp": "c2edeb9913c9ae5a",
    "from": "24e3effd0a7dfcfd",
    "note": "MVP compares each player with his position, plus a quarterback premium (1.12): quarterbacks win ~86%, not every year"
+  },
+  {
+   "fp": "98fd9c95b1e9ec7a",
+   "from": "c2edeb9913c9ae5a",
+   "note": "The gameplan tip ('This choice is real') removed from every game; hockey: the NHL's 84-game matrix, regulation-wins tiebreak, OTL in schedules"
   }
  ],
  "result": {
@@ -114,7 +119,7 @@
     "heis": "2a5561abe637c7c5",
     "history": "c1370d677edafee7",
     "universe": "5c25c8624a8c0f83",
-    "screens": "1775127f99b2f070"
+    "screens": "edff5012e339cd09"
    },
    {
     "year": 2027,
@@ -126,7 +131,7 @@
     "heis": "7511091be56ae9c2",
     "history": "a1b3e7e6b29866fd",
     "universe": "2495f443a426fa85",
-    "screens": "b825b448b91841fa"
+    "screens": "03a52cb31cc0f65e"
    },
    {
     "year": 2028,
@@ -138,7 +143,7 @@
     "heis": "a0fe06befa326843",
     "history": "8e82c59f7e3292cc",
     "universe": "039ac77486fe7e4e",
-    "screens": "4dc692a70ab3c597"
+    "screens": "750942f3d343e687"
    },
    {
     "year": 2029,
@@ -150,7 +155,7 @@
     "heis": "fc45c23bffe230e0",
     "history": "120135c68b1ece6c",
     "universe": "74997d040a4ec4b9",
-    "screens": "d8f6fb2d252410f3"
+    "screens": "bee15d63c20d871e"
    }
   ],
   "Tennessee#2024": [
@@ -164,7 +169,7 @@
     "heis": "59f7dde375fbecb9",
     "history": "bdbc0ed434e7fa9e",
     "universe": "32746977d15a3d1a",
-    "screens": "e5c66d8f33eb3811"
+    "screens": "5336be4c5dee622d"
    },
    {
     "year": 2027,
@@ -176,7 +181,7 @@
     "heis": "83d86d638d45c8f3",
     "history": "248b06d8f13d9e98",
     "universe": "f63fd1bfdf64a2d2",
-    "screens": "eafd4361289f7467"
+    "screens": "a8d100cd32de3301"
    },
    {
     "year": 2028,
@@ -188,7 +193,7 @@
     "heis": "0d56233ece8288c1",
     "history": "6e014f5c133dbc46",
     "universe": "4574b18e2ea458cc",
-    "screens": "b6661fe4f2245760"
+    "screens": "a95a6eba003d9d56"
    },
    {
     "year": 2029,
@@ -200,7 +205,7 @@
     "heis": "7f669c895ee0044a",
     "history": "57ea26a78e7c7632",
     "universe": "37006926700412dd",
-    "screens": "bd043f2fd45197f3"
+    "screens": "78a05824cdfe82c2"
    }
   ],
   "Detroit#777": [
@@ -214,7 +219,7 @@
     "heis": "0e8fc1afbcc4896b",
     "history": "70b491fabfbb7b09",
     "universe": "d17abeea6960c98a",
-    "screens": "b33457d86a96910f"
+    "screens": "856132def9fdd18d"
    },
    {
     "year": 2027,
@@ -226,7 +231,7 @@
     "heis": "316a82440ff670aa",
     "history": "495b5eb14fbb4348",
     "universe": "a19585553f8f98c8",
-    "screens": "5cc56e9e01b93b44"
+    "screens": "5031bcb420f8414d"
    },
    {
     "year": 2028,
@@ -238,7 +243,7 @@
     "heis": "1730cb30e15cbe96",
     "history": "64eded16911688c5",
     "universe": "3b85d9012d6a81b9",
-    "screens": "1299788a5ea2cc28"
+    "screens": "0d66c9910ce3f501"
    }
   ],
   "NY Giants#31337": [
@@ -252,7 +257,7 @@
     "heis": "5dce6b0b0d9803ef",
     "history": "09ea8ca8643cc4de",
     "universe": "f4e45438d149aa9e",
-    "screens": "8db7c6742bf6204e"
+    "screens": "a1e4ae0ac0c5e2b1"
    },
    {
     "year": 2027,
@@ -264,7 +269,7 @@
     "heis": "afb8c390ff01c79c",
     "history": "62f39ccf388874f4",
     "universe": "f8627e6e1fe93699",
-    "screens": "727fbca0bfb4f019"
+    "screens": "f4115922d529f478"
    },
    {
     "year": 2028,
@@ -276,7 +281,7 @@
     "heis": "88c4ea05b969c49d",
     "history": "049f24f585357e98",
     "universe": "8bbf9dbf3a5e1f4c",
-    "screens": "eb09b248745576d6"
+    "screens": "624972f7bb486932"
    }
   ],
   "schedules#60": [

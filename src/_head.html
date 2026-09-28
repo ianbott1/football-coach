@@ -723,6 +723,12 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .bwin .bteam{font-weight:700}.bwin .bpts{color:var(--bone)}
 .bmine{background:rgba(244,166,58,.12)}
 .btbd{color:var(--muted);font-style:italic}
+/* records never wrap (hockey's W-L-OTL runs long) */
+.sall,.tb-right,.fcfp,.hstats b,.cstat b{white-space:nowrap}
+.sall{min-width:5.2em;text-align:right}
+/* an overtime loss: a point, so not quite a loss */
+.wl-o{color:var(--sodium)!important;font-weight:600}
+.dres.o{color:var(--sodium)}
 .brec{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400}
 .ctnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 8px}
 .ctnav b{font-family:var(--cond);text-transform:uppercase;font-size:17px;text-align:center}

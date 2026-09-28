@@ -972,7 +972,7 @@ function coachMark(key,text){
 }
 
 function planPickerHTML(wp){
-  return `${coachMark("plan","This choice is real. Playing it safe lets the better team's talent show; taking risks makes it a game of chances, which is what an underdog wants. It resets to Balanced each week.")}
+  return `
   <div class="planbox"><div class="planlab">Your gameplan</div>
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
@@ -1096,10 +1096,11 @@ function scheduleHTML(team,compact){
     if(played){
       const won=g.winner===team;
       const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
-      rows.push(`<div class="srow"><span class="spos ${won?'wl-w':'wl-l'}">${won?"W":"L"}</span>
+      const otl=!won&&g.ot;                            // hockey: a point for losing in overtime
+      rows.push(`<div class="srow"><span class="spos ${won?'wl-w':otl?'wl-o':'wl-l'}">${won?"W":otl?"OTL":"L"}</span>
         <span class="steam">${g.home===team?"vs":"at"} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
           riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
-        <span class="sconf">${ms}-${os}</span></div>`);
+        <span class="sconf">${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${label.replace("Wk ","")}</span>
         <span class="steam">${g.home===team?"vs":"at"} ${rkTag(rk)}${TL(opp)}${
@@ -1809,7 +1810,7 @@ function digestBlock(){
     const won=g.winner===my, opp=g.home===my?g.away:g.home;
     const ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
     rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
-      <span class="dres ${won?'w':'l'}">${won?"W":"L"} ${ms}-${os}</span>
+      <span class="dres ${won?'w':g.ot?'o':'l'}">${won?"W":g.ot?"OTL":"L"} ${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span>
       <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`);
   }
   h+=`<div class="digest">${rows.join("")}</div>`;

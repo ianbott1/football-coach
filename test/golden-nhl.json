@@ -1,5 +1,5 @@
 {
- "fp": "404165c33d796334",
+ "fp": "ae7909274b43abb6",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -10,64 +10,69 @@
    "fp": "404165c33d796334",
    "from": "63ab31cc9ed9a902",
    "note": "Pro leagues: game days not weeks, a number on the top ten only, 'The night that was'; hockey records W-L-OTL and a points column"
+  },
+  {
+   "fp": "ae7909274b43abb6",
+   "from": "404165c33d796334",
+   "note": "The gameplan tip ('This choice is real') removed from every game; hockey: the NHL's 84-game matrix, regulation-wins tiebreak, OTL in schedules"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "98025d8328350f02",
-    "post": "3a165b361e5a6a53",
-    "champion": "Toronto",
-    "rec": "1beffb9c1bc4ab87",
-    "poll": "ce9ea1799f52484d",
-    "heis": "99213acfd6f55514",
-    "history": "40ad1a3701978980",
-    "universe": "f22c2bf9090cf55e",
-    "screens": "b1629b222e8a5067"
+    "games": "0b036c26f086f0b2",
+    "post": "a3257e7f2df85c8b",
+    "champion": "Boston",
+    "rec": "f8848bfd77ee81a5",
+    "poll": "41631eaef83927ab",
+    "heis": "babad488e89cdf22",
+    "history": "9d821a84d50ab393",
+    "universe": "f8644f67d689b8e8",
+    "screens": "fd311c516b2fe164"
    },
    {
     "year": 2027,
-    "games": "be0e13efe36d2943",
-    "post": "398507e3cb338c19",
-    "champion": "Minnesota",
-    "rec": "9268584686c1a9f7",
-    "poll": "27ad1b63b9c5bee2",
-    "heis": "e5a7a5fe606dfcba",
-    "history": "6cdf18b704b5cb5c",
-    "universe": "ed5b2b0c503563d0",
-    "screens": "942ffdb0ac74716e"
+    "games": "89b3c77266b79384",
+    "post": "b54edffed6611207",
+    "champion": "Dallas",
+    "rec": "6a3fb08b60ce2de9",
+    "poll": "b2dfabf30631ad51",
+    "heis": "8f02370e2ce8a020",
+    "history": "b0eae2f5a0db4284",
+    "universe": "cd497a81bdfb5512",
+    "screens": "257a1452efb9038d"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "3c9b564fbc7efaa3",
-    "post": "68168e1d58e824aa",
-    "champion": "Tampa Bay",
-    "rec": "7ca12bdcd49cf996",
-    "poll": "8571fe49f68b6211",
-    "heis": "bd410a4f5ec7acf7",
-    "history": "3e60f311b41c8931",
-    "universe": "3cb57a41d68905c5",
-    "screens": "34c821b220baa0bb"
+    "games": "1f83e28f2b0eff43",
+    "post": "a34dbd0eb4a1a79d",
+    "champion": "Minnesota",
+    "rec": "64c41e1ae8a981a4",
+    "poll": "4b3ade1ebd3f469f",
+    "heis": "6ff5f0b9a0afe0da",
+    "history": "e426521d6c52d2d1",
+    "universe": "f19d1a0ff64d90c6",
+    "screens": "1e56fe33fa19ff59"
    },
    {
     "year": 2027,
-    "games": "ba2fde34fe145a4f",
-    "post": "aec9aef36d1f2179",
+    "games": "54d163bb74fa170e",
+    "post": "3684e07dd1949eff",
     "champion": "Vancouver",
-    "rec": "f1fba3c4618bf4f1",
-    "poll": "bd1b0ac62e31b32c",
-    "heis": "2484e11bda0efd83",
-    "history": "922e938873f319c6",
-    "universe": "925e79cd76b640a5",
-    "screens": "ca2ae1cb959c37b4"
+    "rec": "b0d5e5225f78e144",
+    "poll": "59b58a1090f8c15b",
+    "heis": "2842f184508005d2",
+    "history": "25809e9043f0d4f4",
+    "universe": "29899391e1e45812",
+    "screens": "d849fd2642f561a9"
    }
   ],
   "schedules#60": [
    {
-    "all": "f5a5b5fe7cbc2c1e"
+    "all": "008b03cf3c8cd00d"
    }
   ]
  }

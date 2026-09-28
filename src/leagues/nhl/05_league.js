@@ -1,11 +1,11 @@
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
-   fictional. The structure is the real league's: an 82-game schedule,
+   fictional. The structure is the real league's: an 84-game schedule (2026-27),
    a play-in and best-of-seven playoffs, a draft with a lottery, contracts and
    a salary cap (hard, at the real 2026-27 figure: $164.961M). */
-const NHL_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,9,7));        // Oct 7, then a date every other day or so
+const NHL_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,8,29));       // Sept 29 to about April 10
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  for(let i=0;i<90;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+(i%5===4?3:2))}
+  for(let i=0;i<92;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+(i%7===6?3:2))}
   return out})();
 const NHL_K=+((typeof process!=="undefined"&&process.env&&process.env.NHL_K)||1.6);
 const NHL_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NHL_K),d]);
@@ -39,7 +39,7 @@ const LEAGUE={
     divisions:{},
     sides:{East:["ATL","MET"], West:["CEN","PAC"]}
   },
-  weeks:90,                                  // 90 game dates, 82 games each: a date a step
+  weeks:92,                                  // 92 game dates, 84 games each: a date a step
   dates:NHL_DATES,
   classes:[],
   classTag:c=>"Age "+c,
@@ -56,7 +56,7 @@ const LEAGUE={
     hk:{shotEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005),
         finishEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005)*0.92}},
   venues:{"Colorado":4,"Winnipeg":3,"Edmonton":2,"Vegas":2,"San Jose":-3,"Anaheim":-2,"Columbus":-2},
-  schedule:{games:82},
+  schedule:{games:84},
   playoff:{size:16, perSide:8, byes:0},
   /* the baby owl, suited up: a helmet strap would hide the face; a jersey stripe and a number */
   art:{owlExtra:`
@@ -97,7 +97,7 @@ const LEAGUE={
       {h:"The job is yours until it isn't",
        b:"You have a record, a franchise, and an owner who is watching. Miss expectations two "+
          "years running and you're fired \u2014 then you pick from whatever will still take you."},
-      {h:"Eighty-two games, then sixteen wins",
+      {h:"Eighty-four games, then sixteen wins",
        b:"<b>Every game</b> you set a gameplan: skate with them when you're the better team, "+
          "clog it up when you're not. Late in games you decide when to pull the goalie. The top "+
          "three in each division make the playoffs, plus two wild cards; then four best-of-seven "+
@@ -117,7 +117,7 @@ const LEAGUE={
       ["Salary cap","A hard limit, at the real 2026-27 figure of $104 million, with no exceptions. "+
        "A max contract is 20% of it. Entry-level deals are the cheapest good players in the league."],
       ["Wild card","After the top three in each division, the two best remaining teams in each "+
-       "conference get in."],
+       "conference get in. Ties go to regulation wins."],
       ["Draft lottery","The sixteen teams that miss the playoffs draw for the top two picks; "+
        "the worst records have the best odds, and a team can move up at most ten places."],
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."]

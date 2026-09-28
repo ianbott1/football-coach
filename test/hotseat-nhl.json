@@ -1,5 +1,5 @@
 {
- "fp": "6a8256fbb0bd3534",
+ "fp": "39fa17049d54884a",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -10,6 +10,11 @@
    "fp": "6a8256fbb0bd3534",
    "from": "53981de08c69aade",
    "note": "Same results; the stored standings text is now W-L-OTL with a points column"
+  },
+  {
+   "fp": "39fa17049d54884a",
+   "from": "6a8256fbb0bd3534",
+   "note": "The NHL's 84-game schedule: new results throughout"
   }
  ],
  "out": [
@@ -19,20 +24,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "50-39",
+      "rec": "46-43",
       "result": "Lost in the first round",
-      "grade": "A-"
+      "grade": "B+"
      },
-     "book": "df1106848de25056"
+     "book": "6747834cf7f6dd2c"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "52-54",
-      "result": "Lost in the Stanley Cup Final",
-      "grade": "A"
+      "rec": "57-42",
+      "result": "Lost in the conference final",
+      "grade": "A+"
      },
-     "book": "cc920e2c572f9c5e"
+     "book": "05d8f606159c896a"
     }
    ]
   },
@@ -42,20 +47,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-42",
+      "rec": "42-42",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "743291b1dd6c2f1d"
+     "book": "344964a6cbb2977d"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "51-38",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "51-46",
+      "result": "Lost in the second round",
+      "grade": "A"
      },
-     "book": "28b4d19b9278209e"
+     "book": "178be71a3173ca56"
     }
    ]
   },
@@ -65,20 +70,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-50",
+      "rec": "41-43",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "30e73ca3b4f71180"
+     "book": "79d7b28f7118486c"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "51-38",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "38-46",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "955bab7299c21706"
+     "book": "e0922113c47420fb"
     }
    ]
   }

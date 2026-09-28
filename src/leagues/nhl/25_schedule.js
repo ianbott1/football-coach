@@ -1,24 +1,25 @@
 /* ============ schedule: pro hockey ============ */
-/* The real formula, 82 games: division rivals 26 (four games against five of
-   them, three against the other two, rotating by season), the conference's
-   other division 24 (three each), the other conference 32 (two each).
-   Fitted into 90 game dates, no team twice on a date. */
+/* The NHL's 2026-27 matrix, 84 games, 42 at home and 42 away: each of the
+   seven division rivals four times (two home, two away), each of the eight
+   teams in the conference's other division three times (four of them twice
+   at home, four of them once, rotating by season), each of the sixteen in the
+   other conference twice (one each way). Fitted into game dates, no team
+   twice on a date. */
 function nbaSchedule(rng,R,year){
-  const bySide={}, byDiv={};
-  NAMES.forEach(t=>{const d=CONF[t]; (byDiv[d]=byDiv[d]||[]).push(t)});
+  const byDiv={}, bySide={};
+  NAMES.forEach(t=>{(byDiv[CONF[t]]=byDiv[CONF[t]]||[]).push(t)});
   Object.keys(LEAGUE.conf.sides).forEach(sd=>bySide[sd]=[].concat(...LEAGUE.conf.sides[sd].map(d=>byDiv[d])));
   const sideOf=t=>Object.keys(bySide).find(sd=>bySide[sd].indexOf(t)>=0);
-  const series={}, key=(a,b)=>a<b?a+"|"+b:b+"|"+a;
-  // three-game division rivals: two each, around a shuffled ring of the division
-  const three=new Set();
-  Object.keys(byDiv).forEach(d=>{const ring=rng.shuffle(byDiv[d].slice());
-    ring.forEach((t,i)=>three.add(key(t,ring[(i+1)%ring.length])))});
-  NAMES.forEach(a=>NAMES.forEach(b=>{ if(a>=b)return;
-    series[key(a,b)]= CONF[a]===CONF[b]?(three.has(key(a,b))?3:4) : sideOf(a)===sideOf(b)?3 : 2 }));
-  // the games, home and away split evenly (the odd game of three goes either way)
-  const games=[];
-  Object.keys(series).forEach(k=>{const [a,b]=k.split("|"), n=series[k], ha=rng.r()<0.5;
-    for(let i=0;i<n;i++){const h=(i%2===0)===ha?a:b; games.push({home:h,away:h===a?b:a})}});
+  const games=[], add=(h,a,n)=>{for(let i=0;i<n;i++)games.push({home:h,away:a})};
+  // division: two each way
+  Object.values(byDiv).forEach(D=>D.forEach((a,i)=>D.forEach((b,j)=>{if(i<j){add(a,b,2);add(b,a,2)}})));
+  // the conference's other division: a balanced rotation of who hosts twice
+  Object.keys(LEAGUE.conf.sides).forEach(sd=>{
+    const [d1,d2]=LEAGUE.conf.sides[sd], A=rng.shuffle(byDiv[d1].slice()), B=rng.shuffle(byDiv[d2].slice()), k=rng.int(8);
+    A.forEach((a,i)=>B.forEach((b,j)=>{ if((i+j+k)%8<4){add(a,b,2);add(b,a,1)} else {add(a,b,1);add(b,a,2)} }));
+  });
+  // the other conference: one each way
+  NAMES.forEach(a=>NAMES.forEach(b=>{ if(a<b&&sideOf(a)!==sideOf(b)){add(a,b,1);add(b,a,1)} }));
   // fit into dates: each date a matching, teams with the most games left first
   const DAYS=LEAGUE.weeks;
   for(let attempt=0;attempt<30;attempt++){

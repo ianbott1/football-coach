@@ -29,8 +29,15 @@ extendSeason({
   },
   /* tiebreaks: win %, then division record, then rating */
   _tb(x,y){ const P=t=>LEAGUE.points(t,this);
-    const R=this.regRec||this.rec, E=this.regElo||this.elo;              // fixed once the playoffs begin
-    return P(y)-P(x)||R[y][0]-R[x][0]||E[y]-E[x] },
+    const E=this.regElo||this.elo;                                       // fixed once the playoffs begin
+    return P(y)-P(x)||this.rw(y)-this.rw(x)||E[y]-E[x] },
+  /* regulation wins, the NHL's first tiebreak: wins without overtime or a shootout */
+  rw(t){
+    const at=Math.min(this.step,LEAGUE.weeks);
+    if(this._rwAt!==at){ this._rw={}; NAMES.forEach(x=>this._rw[x]=0);
+      this.weeks.slice(0,LEAGUE.weeks).forEach(w=>w.games.forEach(g=>{if(!g.ot)this._rw[g.winner]++})); this._rwAt=at }
+    return this._rw[t]||0;
+  },
   pts(t){return LEAGUE.points(t,this)},
   sideOf(t){return Object.keys(LEAGUE.conf.sides).find(s=>LEAGUE.conf.sides[s].indexOf(CONF[t])>=0)},
   /* each conference in order, as it stands (mid-season a projection) */
@@ -133,11 +140,15 @@ extendSeason({
   honours(team){ return {natl:this.champion===team,playoff:!!this.seeds[team],
     conf:Object.keys(this.champs).some(d=>this.champs[d]===team)} },
   confChampions(){return this.champs},
-  /* Clinch marks, never wrong (they can come a little later than the
-     league's): z the conference's most points, y the division, x a playoff
-     place (at most three conference rivals can still reach you), e
-     eliminated (three division rivals and eight conference teams already
-     out of reach). */
+  /* Clinch marks, never wrong. z: no conference rival can reach you. y: no
+     division rival can. x: you're in whatever happens. To keep you out, the
+     teams finishing ahead of you would have to take the division's top three
+     and both wild cards; a wild card ahead of you is a team outside its own
+     division's top three, so it needs three from its division ahead of you
+     too. That takes five division rivals, or four and four from the other
+     division, or three and five. If the teams that can still reach you can't
+     make one of those, you're in. e: the same, with teams already out of
+     reach. */
   clinch(){
     if(this._clinchAt===this.step&&this._clinch)return this._clinch;
     const out={};
@@ -151,9 +162,12 @@ extendSeason({
         const teams=NAMES.filter(t=>this.sideOf(t)===sd);
         teams.forEach(T=>{
           const others=teams.filter(t=>t!==T), div=others.filter(t=>CONF[t]===CONF[T]);
+          const other=others.filter(t=>CONF[t]!==CONF[T]);
           const can=others.filter(t=>mx(t)>=p(T)).length;
-          const aheadDiv=div.filter(t=>p(t)>mx(T)).length, ahead=others.filter(t=>p(t)>mx(T)).length;
-          out[T]=can===0?"z":div.every(t=>mx(t)<p(T))?"y":can<=3?"x":(aheadDiv>=3&&ahead>=8)?"e":"";
+          const dC=div.filter(t=>mx(t)>=p(T)).length, oC=other.filter(t=>mx(t)>=p(T)).length;       // could pass you
+          const dA=div.filter(t=>p(t)>mx(T)).length,  oA=other.filter(t=>p(t)>mx(T)).length;        // already past you for good
+          const keepOut=(d,o)=>d>=5||(d>=4&&o>=4)||(d>=3&&o>=5);
+          out[T]=can===0?"z":div.every(t=>mx(t)<p(T))?"y":!keepOut(dC,oC)?"x":keepOut(dA,oA)?"e":"";
         });
       });
     }
