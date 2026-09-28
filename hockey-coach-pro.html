@@ -723,6 +723,12 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .bwin .bteam{font-weight:700}.bwin .bpts{color:var(--bone)}
 .bmine{background:rgba(244,166,58,.12)}
 .btbd{color:var(--muted);font-style:italic}
+/* records never wrap (hockey's W-L-OTL runs long) */
+.sall,.tb-right,.fcfp,.hstats b,.cstat b{white-space:nowrap}
+.sall{min-width:5.2em;text-align:right}
+/* an overtime loss: a point, so not quite a loss */
+.wl-o{color:var(--sodium)!important;font-weight:600}
+.dres.o{color:var(--sodium)}
 .brec{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400}
 .ctnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 8px}
 .ctnav b{font-family:var(--cond);text-transform:uppercase;font-size:17px;text-align:center}
@@ -737,12 +743,12 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 <body><div id="app"></div>
 <script>/* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
-   fictional. The structure is the real league's: an 82-game schedule,
+   fictional. The structure is the real league's: an 84-game schedule (2026-27),
    a play-in and best-of-seven playoffs, a draft with a lottery, contracts and
    a salary cap (hard, at the real 2026-27 figure: $164.961M). */
-const NHL_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,9,7));        // Oct 7, then a date every other day or so
+const NHL_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,8,29));       // Sept 29 to about April 10
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  for(let i=0;i<90;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+(i%5===4?3:2))}
+  for(let i=0;i<194;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+1)}   // every day, Sept 29 to Apr 10
   return out})();
 const NHL_K=+((typeof process!=="undefined"&&process.env&&process.env.NHL_K)||1.6);
 const NHL_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NHL_K),d]);
@@ -776,7 +782,8 @@ const LEAGUE={
     divisions:{},
     sides:{East:["ATL","MET"], West:["CEN","PAC"]}
   },
-  weeks:90,                                  // 90 game dates, 82 games each: a date a step
+  weeks:194,                                 // every calendar day, as the NHL plays (84 games each)
+  skipIdle:true,                              // the button plays through days you don't play
   dates:NHL_DATES,
   classes:[],
   classTag:c=>"Age "+c,
@@ -793,7 +800,7 @@ const LEAGUE={
     hk:{shotEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005),
         finishEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005)*0.92}},
   venues:{"Colorado":4,"Winnipeg":3,"Edmonton":2,"Vegas":2,"San Jose":-3,"Anaheim":-2,"Columbus":-2},
-  schedule:{games:82},
+  schedule:{games:84},
   playoff:{size:16, perSide:8, byes:0},
   /* the baby owl, suited up: a helmet strap would hide the face; a jersey stripe and a number */
   art:{owlExtra:`
@@ -834,7 +841,7 @@ const LEAGUE={
       {h:"The job is yours until it isn't",
        b:"You have a record, a franchise, and an owner who is watching. Miss expectations two "+
          "years running and you're fired \u2014 then you pick from whatever will still take you."},
-      {h:"Eighty-two games, then sixteen wins",
+      {h:"Eighty-four games, then sixteen wins",
        b:"<b>Every game</b> you set a gameplan: skate with them when you're the better team, "+
          "clog it up when you're not. Late in games you decide when to pull the goalie. The top "+
          "three in each division make the playoffs, plus two wild cards; then four best-of-seven "+
@@ -854,7 +861,7 @@ const LEAGUE={
       ["Salary cap","A hard limit, at the real 2026-27 figure of $104 million, with no exceptions. "+
        "A max contract is 20% of it. Entry-level deals are the cheapest good players in the league."],
       ["Wild card","After the top three in each division, the two best remaining teams in each "+
-       "conference get in."],
+       "conference get in. Ties go to regulation wins."],
       ["Draft lottery","The sixteen teams that miss the playoffs draw for the top two picks; "+
        "the worst records have the best odds, and a team can move up at most ten places."],
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."]
@@ -1546,26 +1553,28 @@ class PowerRank{
 }
 LEAGUE.Ranking=PowerRank;
 /* ============ schedule: pro hockey ============ */
-/* The real formula, 82 games: division rivals 26 (four games against five of
-   them, three against the other two, rotating by season), the conference's
-   other division 24 (three each), the other conference 32 (two each).
-   Fitted into 90 game dates, no team twice on a date. */
+/* The NHL's 2026-27 matrix, 84 games, 42 at home and 42 away: each of the
+   seven division rivals four times (two home, two away), each of the eight
+   teams in the conference's other division three times (four of them twice
+   at home, four of them once, rotating by season), each of the sixteen in the
+   other conference twice (one each way). Fitted into game dates, no team
+   twice on a date. */
 function nbaSchedule(rng,R,year){
-  const bySide={}, byDiv={};
-  NAMES.forEach(t=>{const d=CONF[t]; (byDiv[d]=byDiv[d]||[]).push(t)});
+  const byDiv={}, bySide={};
+  NAMES.forEach(t=>{(byDiv[CONF[t]]=byDiv[CONF[t]]||[]).push(t)});
   Object.keys(LEAGUE.conf.sides).forEach(sd=>bySide[sd]=[].concat(...LEAGUE.conf.sides[sd].map(d=>byDiv[d])));
   const sideOf=t=>Object.keys(bySide).find(sd=>bySide[sd].indexOf(t)>=0);
-  const series={}, key=(a,b)=>a<b?a+"|"+b:b+"|"+a;
-  // three-game division rivals: two each, around a shuffled ring of the division
-  const three=new Set();
-  Object.keys(byDiv).forEach(d=>{const ring=rng.shuffle(byDiv[d].slice());
-    ring.forEach((t,i)=>three.add(key(t,ring[(i+1)%ring.length])))});
-  NAMES.forEach(a=>NAMES.forEach(b=>{ if(a>=b)return;
-    series[key(a,b)]= CONF[a]===CONF[b]?(three.has(key(a,b))?3:4) : sideOf(a)===sideOf(b)?3 : 2 }));
-  // the games, home and away split evenly (the odd game of three goes either way)
-  const games=[];
-  Object.keys(series).forEach(k=>{const [a,b]=k.split("|"), n=series[k], ha=rng.r()<0.5;
-    for(let i=0;i<n;i++){const h=(i%2===0)===ha?a:b; games.push({home:h,away:h===a?b:a})}});
+  const games=[], add=(h,a,n)=>{for(let i=0;i<n;i++)games.push({home:h,away:a})};
+  // division: two each way
+  Object.values(byDiv).forEach(D=>D.forEach((a,i)=>D.forEach((b,j)=>{if(i<j){add(a,b,2);add(b,a,2)}})));
+  // the conference's other division: a balanced rotation of who hosts twice
+  Object.keys(LEAGUE.conf.sides).forEach(sd=>{
+    const [d1,d2]=LEAGUE.conf.sides[sd], A=rng.shuffle(byDiv[d1].slice()), B=rng.shuffle(byDiv[d2].slice()), k=rng.int(8);
+    A.forEach((a,i)=>B.forEach((b,j)=>{ if((i+j+k)%8<4){add(a,b,2);add(b,a,1)} else {add(a,b,1);add(b,a,2)} }));
+  });
+  // the other conference: one each way
+  NAMES.forEach(a=>NAMES.forEach(b=>{ if(a<b&&sideOf(a)!==sideOf(b)){add(a,b,1);add(b,a,1)} }));
+  if(year===2026&&typeof REAL_NHL2026!=="undefined")return nhlWithReal(rng,byDiv,sideOf);
   // fit into dates: each date a matching, teams with the most games left first
   const DAYS=LEAGUE.weeks;
   for(let attempt=0;attempt<30;attempt++){
@@ -1577,6 +1586,7 @@ function nbaSchedule(rng,R,year){
       pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8));
       for(let i=0;i<pool.length;i++){const g=pool[i];
         if(busy.has(g.home)||busy.has(g.away))continue;
+        if(LEAGUE.skipIdle&&busy.size>=2*paceCap(pool.length+busy.size/2,daysLeft,rng))break;   // paced: the season's games spread to its last day
         busy.add(g.home); busy.add(g.away); left[g.home]--; left[g.away]--;
         out.push({week:d,home:g.home,away:g.away,conf:CONF[g.home]===CONF[g.away],neutral:false});
         pool.splice(i,1); i--;
@@ -1587,6 +1597,71 @@ function nbaSchedule(rng,R,year){
   }
   throw new Error("could not fit the NHL schedule");
 }
+/* 2026: the real games so far (30_schedule2026.js) on their game days, then
+   the rest of the matrix. Each pairing's remaining games are the matrix's count
+   less what's been played; in a three-game pairing whose host-twice side the
+   real games haven't settled yet, it's chosen so every team ends on 42 home. */
+function nhlWithReal(rng,byDiv,sideOf){
+  const K=(h,a)=>h+"|"+a, need={}, played={};
+  const set=(h,a,n)=>need[K(h,a)]=n;
+  Object.values(byDiv).forEach(D=>D.forEach(a=>D.forEach(b=>{if(a!==b)set(a,b,2)})));
+  NAMES.forEach(a=>NAMES.forEach(b=>{if(a!==b&&sideOf(a)!==sideOf(b))set(a,b,1)}));
+  REAL_NHL2026.forEach(([d,a,h])=>played[K(h,a)]=(played[K(h,a)]||0)+1);
+  // the three-game pairings: who hosts twice
+  const tri=[]; Object.keys(LEAGUE.conf.sides).forEach(sd=>{const [d1,d2]=LEAGUE.conf.sides[sd];
+    byDiv[d1].forEach(x=>byDiv[d2].forEach(y=>tri.push([x,y])))});
+  const P=(h,a)=>played[K(h,a)]||0;
+  const home={}; NAMES.forEach(t=>home[t]=0);
+  Object.keys(need).forEach(k=>home[k.split("|")[0]]+=need[k]);       // division + other conference
+  const open=[]; tri.forEach(([x,y])=>{
+    if(P(x,y)>=2||P(y,x)>=2){const tw=P(x,y)>=2?x:y, on=tw===x?y:x; set(tw,on,2); set(on,tw,1); home[tw]+=2; home[on]+=1}
+    else open.push([x,y]); });
+  // settle the open ones: each team 42 home (retries with a swap search)
+  let pick=null;
+  for(let tries=0;tries<400&&!pick;tries++){
+    // decide in a shuffled order, but keep each decision with its own pairing
+    const h=Object.assign({},home), c=new Array(open.length);
+    rng.shuffle(open.map((_,i)=>i)).forEach(i=>{ const [x,y]=open[i];
+      const want=t=>42-h[t]; const tw=(want(x)>=want(y))?x:y;              // the side further from 42 hosts twice
+      c[i]=tw; h[tw]+=2; h[tw===x?y:x]+=1 });
+    let bad=NAMES.filter(t=>h[t]!==42).length;
+    for(let it=0;it<2000&&bad>0;it++){ const i=rng.int(open.length), [x,y]=open[i], tw=c[i], on=tw===x?y:x;
+      if(P(on,tw)>1)continue;                                   // can't: the other side already hosted once more
+      h[tw]-=1; h[on]+=1; const nb=NAMES.filter(t=>h[t]!==42).length;
+      if(nb<=bad){c[i]=on; bad=nb} else {h[tw]+=1; h[on]-=1} }
+    if(bad===0)pick=c;
+  }
+  if(!pick)throw new Error("NHL 2026: couldn't balance home games around the real schedule");
+  open.forEach(([x,y],i)=>{const tw=pick[i], on=tw===x?y:x; set(tw,on,2); set(on,tw,1)});
+  // the real games on their real dates (a game day is a calendar day)
+  const out=[], busy={};
+  REAL_NHL2026.slice().sort((p,q)=>p[0]-q[0]).forEach(([d,a,h,n])=>{
+    let w=d; while(busy[w+"|"+a]||busy[w+"|"+h])w++;                  // a game day a day: the real date
+    busy[w+"|"+a]=busy[w+"|"+h]=true; out.push({week:w,home:h,away:a,conf:CONF[a]===CONF[h],neutral:!!n,real:true});
+  });
+  const first=1+Math.max(...out.map(g=>g.week));
+  // the rest of the matrix
+  const games=[]; Object.keys(need).forEach(k=>{const [h,a]=k.split("|"), left=need[k]-P(h,a);
+    if(left<0)throw new Error("NHL 2026: "+a+" at "+h+" played more than the matrix allows");
+    for(let i=0;i<left;i++)games.push({home:h,away:a})});
+  const DAYS=LEAGUE.weeks;
+  for(let attempt=0;attempt<40;attempt++){
+    const left={}; NAMES.forEach(t=>left[t]=0); games.forEach(g=>{left[g.home]++;left[g.away]++});
+    const pool=rng.shuffle(games.slice()), rest=[]; let ok=true;
+    for(let d=first;d<DAYS;d++){ const b=new Set(), daysLeft=DAYS-d;
+      pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8));
+      const cap=paceCap(pool.length,daysLeft,rng);
+      for(let i=0;i<pool.length;i++){const g=pool[i]; if(b.has(g.home)||b.has(g.away))continue; if(b.size>=2*cap)break;
+        b.add(g.home); b.add(g.away); left[g.home]--; left[g.away]--;
+        rest.push({week:d,home:g.home,away:g.away,conf:CONF[g.home]===CONF[g.away],neutral:false}); pool.splice(i,1); i--}
+      if(NAMES.some(t=>left[t]>daysLeft-1)){ok=false;break} }
+    if(ok&&!pool.length)return out.concat(rest);
+  }
+  throw new Error("NHL 2026: couldn't fit the rest of the season");
+}
+/* a day's share of the games left: about the average, give or take, so the
+   season runs to its last day (a daily schedule would otherwise pack them early) */
+function paceCap(left,daysLeft,rng){ return Math.max(1,Math.round(left/Math.max(1,daysLeft)*(0.75+0.5*rng.r()))) }
 LEAGUE.buildSchedule=nbaSchedule;
 /* ============ offseason: pro football ============ */
 /* Players have ages and contracts. Each offseason, in order:
@@ -2042,7 +2117,7 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
-  /* what the job demands, by franchise strength: wins over 82 games, and a
+  /* what the job demands, by franchise strength: wins over 84 games, and a
      par for the playoffs (how far the job expects you to go) */
   expectations(p){
     if(p>=1600)return {w:50,par:2.2,l:"Built to win now. A conference final is the floor.",t:"CONTEND"};
@@ -2087,6 +2162,12 @@ LEAGUE.seasonLine=function(h,t,r,seed){
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;
+/* ============ the real start of the 2026-27 NHL schedule ============ */
+/* Sept 29 - Nov 29, 429 games, transcribed from Hockey-Reference's schedule page
+   (data/nhl_2026_oct_nov.txt; made by data/build_nhl2026.py). [days after
+   Sept 29, away, home, neutral]. The rest of the season is generated to fit the
+   NHL's 84-game matrix around these; later seasons come from the formula. */
+const REAL_NHL2026=[[0,"NY Rangers","Boston",0],[0,"Florida","Carolina",0],[0,"Vancouver","Edmonton",0],[0,"Montreal","Toronto",0],[0,"Chicago","Vegas",0],[1,"Los Angeles","Colorado",0],[1,"Pittsburgh","Philadelphia",0],[1,"NY Islanders","Toronto",0],[2,"Buffalo","Columbus",0],[2,"Seattle","Calgary",0],[2,"Philadelphia","New Jersey",0],[2,"Minnesota","Nashville",0],[2,"Tampa Bay","NY Rangers",0],[2,"Florida","San Jose",0],[2,"Chicago","Utah",0],[2,"Edmonton","Vancouver",0],[3,"Washington","Carolina",0],[3,"St. Louis","Dallas",0],[3,"NY Rangers","Detroit",0],[3,"Anaheim","Vegas",0],[3,"Boston","Winnipeg",0],[4,"Chicago","Buffalo",0],[4,"Utah","Columbus",0],[4,"St. Louis","Colorado",0],[4,"Seattle","Edmonton",0],[4,"Boston","Minnesota",0],[4,"Dallas","Nashville",0],[4,"New Jersey","NY Islanders",0],[4,"Carolina","Philadelphia",0],[4,"Montreal","Pittsburgh",0],[4,"Los Angeles","San Jose",0],[4,"Washington","Tampa Bay",0],[4,"Ottawa","Toronto",0],[4,"Calgary","Vancouver",0],[5,"Florida","Anaheim",0],[5,"Winnipeg","Detroit",0],[5,"Utah","NY Rangers",0],[5,"Calgary","Seattle",0],[5,"Vegas","Vancouver",0],[6,"Ottawa","Boston",0],[6,"San Jose","Dallas",0],[6,"Winnipeg","Pittsburgh",0],[6,"Philadelphia","Tampa Bay",0],[7,"Minnesota","Buffalo",0],[7,"St. Louis","Chicago",0],[7,"Ottawa","Detroit",0],[7,"Florida","Los Angeles",0],[7,"Carolina","Montreal",0],[7,"Utah","New Jersey",0],[7,"NY Islanders","NY Rangers",0],[7,"Vegas","Seattle",0],[7,"Nashville","Toronto",0],[8,"Edmonton","Anaheim",0],[8,"Colorado","Winnipeg",0],[8,"Pittsburgh","Washington",0],[9,"Utah","Boston",0],[9,"Dallas","Buffalo",0],[9,"Vancouver","Carolina",0],[9,"Colorado","Calgary",0],[9,"Nashville","Montreal",0],[9,"Chicago","NY Islanders",0],[9,"Philadelphia","Ottawa",0],[9,"San Jose","St. Louis",0],[9,"Minnesota","Tampa Bay",0],[9,"Toronto","Vegas",0],[10,"Pittsburgh","Columbus",0],[10,"Seattle","Detroit",0],[10,"Anaheim","Winnipeg",0],[10,"NY Rangers","Washington",0],[11,"Philadelphia","Boston",0],[11,"Utah","Buffalo",0],[11,"Anaheim","Calgary",0],[11,"Carolina","Chicago",0],[11,"Toronto","Colorado",0],[11,"Minnesota","Florida",0],[11,"Detroit","Montreal",0],[11,"Vancouver","New Jersey",0],[11,"Tampa Bay","NY Islanders",0],[11,"Nashville","Ottawa",0],[11,"Dallas","Pittsburgh",0],[11,"Edmonton","San Jose",0],[11,"Columbus","St. Louis",0],[11,"Los Angeles","Vegas",0],[12,"Vancouver","NY Rangers",0],[12,"Carolina","Philadelphia",0],[12,"Seattle","Washington",0],[13,"Florida","Buffalo",0],[13,"Vegas","Minnesota",0],[13,"Ottawa","New Jersey",0],[14,"Calgary","Anaheim",0],[14,"Washington","Carolina",0],[14,"Florida","Columbus",0],[14,"Pittsburgh","Chicago",0],[14,"Colorado","Dallas",0],[14,"New Jersey","Detroit",0],[14,"Edmonton","Los Angeles",0],[14,"Buffalo","Montreal",0],[14,"Vegas","Nashville",0],[14,"Vancouver","NY Islanders",0],[14,"Tampa Bay","NY Rangers",0],[14,"St. Louis","Ottawa",0],[14,"Seattle","Philadelphia",0],[14,"Boston","San Jose",0],[14,"Toronto","Utah",0],[14,"Minnesota","Winnipeg",0],[15,"Dallas","Colorado",0],[15,"Montreal","Washington",0],[16,"Winnipeg","Chicago",0],[16,"Philadelphia","Detroit",0],[16,"Utah","Edmonton",0],[16,"Vancouver","Florida",0],[16,"St. Louis","Minnesota",0],[16,"NY Rangers","New Jersey",0],[16,"San Jose","Nashville",0],[16,"NY Islanders","Ottawa",0],[16,"Seattle","Tampa Bay",0],[16,"Buffalo","Toronto",0],[16,"Calgary","Vegas",0],[17,"Boston","Anaheim",0],[17,"Pittsburgh","Colorado",0],[18,"NY Rangers","Columbus",0],[18,"Dallas","Chicago",0],[18,"San Jose","Detroit",0],[18,"Seattle","Florida",0],[18,"Boston","Los Angeles",0],[18,"Buffalo","Montreal",0],[18,"St. Louis","Nashville",0],[18,"Ottawa","Philadelphia",0],[18,"Vancouver","Tampa Bay",0],[18,"NY Islanders","Toronto",0],[18,"Edmonton","Utah",0],[18,"Pittsburgh","Vegas",0],[18,"Carolina","Winnipeg",0],[18,"New Jersey","Washington",0],[19,"Carolina","Calgary",0],[19,"Columbus","Minnesota",0],[20,"Anaheim","NY Rangers",0],[20,"Colorado","Philadelphia",0],[20,"San Jose","Toronto",0],[20,"Pittsburgh","Utah",0],[21,"Toronto","Columbus",0],[21,"Boston","Dallas",0],[21,"Minnesota","Edmonton",0],[21,"San Jose","Montreal",0],[21,"Colorado","New Jersey",0],[21,"Anaheim","NY Islanders",0],[21,"Detroit","Seattle",0],[21,"Winnipeg","St. Louis",0],[21,"Carolina","Vancouver",0],[21,"Tampa Bay","Vegas",0],[21,"Los Angeles","Washington",0],[22,"Philadelphia","Buffalo",0],[22,"Florida","Ottawa",0],[23,"Nashville","Boston",0],[23,"Minnesota","Calgary",0],[23,"Winnipeg","Dallas",0],[23,"Carolina","Edmonton",0],[23,"Anaheim","New Jersey",0],[23,"Los Angeles","NY Islanders",0],[23,"San Jose","Ottawa",0],[23,"Florida","Pittsburgh",0],[23,"Utah","Seattle",0],[23,"Vegas","St. Louis",0],[23,"NY Rangers","Toronto",0],[23,"Detroit","Vancouver",0],[24,"Montreal","Chicago",0],[24,"Tampa Bay","Colorado",0],[25,"San Jose","Boston",0],[25,"Vegas","Columbus",0],[25,"Detroit","Calgary",0],[25,"Toronto","Edmonton",0],[25,"Los Angeles","New Jersey",0],[25,"NY Rangers","Ottawa",0],[25,"Anaheim","Philadelphia",0],[25,"Nashville","Pittsburgh",0],[25,"Minnesota","Seattle",0],[25,"Carolina","St. Louis",0],[25,"Tampa Bay","Utah",0],[25,"Buffalo","Washington",0],[26,"Florida","Chicago",0],[26,"NY Islanders","Dallas",0],[26,"Colorado","Nashville",0],[26,"Minnesota","Vancouver",0],[26,"Montreal","Winnipeg",0],[27,"Toronto","Calgary",0],[27,"Detroit","Edmonton",0],[27,"Los Angeles","NY Rangers",0],[28,"Vancouver","Anaheim",0],[28,"Boston","Carolina",0],[28,"Los Angeles","Chicago",0],[28,"New Jersey","Dallas",0],[28,"NY Islanders","Nashville",0],[28,"Columbus","Philadelphia",0],[28,"Buffalo","San Jose",0],[28,"Montreal","St. Louis",0],[28,"Minnesota","Utah",0],[28,"Ottawa","Vegas",0],[28,"Florida","Winnipeg",0],[29,"New Jersey","Colorado",0],[29,"Calgary","Edmonton",0],[29,"Toronto","Seattle",0],[29,"Philadelphia","Washington",0],[30,"Buffalo","Anaheim",0],[30,"Columbus","Carolina",0],[30,"Montreal","Dallas",0],[30,"Chicago","Detroit",0],[30,"Ottawa","Los Angeles",0],[30,"NY Islanders","Minnesota",0],[30,"Washington","Nashville",0],[30,"Utah","Pittsburgh",0],[30,"Vancouver","San Jose",0],[30,"Boston","St. Louis",0],[30,"Winnipeg","Tampa Bay",0],[31,"Seattle","Calgary",0],[31,"Winnipeg","Florida",0],[31,"New Jersey","Vegas",0],[32,"Chicago","Boston",0],[32,"Calgary","Colorado",0],[32,"Columbus","Dallas",0],[32,"St. Louis","Detroit",0],[32,"Buffalo","Los Angeles",0],[32,"Pittsburgh","Montreal",0],[32,"Tampa Bay","Nashville",0],[32,"Edmonton","NY Islanders",0],[32,"Ottawa","San Jose",0],[32,"Toronto","Vancouver",0],[33,"Ottawa","Anaheim",0],[33,"Winnipeg","Carolina",0],[33,"Edmonton","NY Rangers",0],[33,"Utah","Philadelphia",0],[33,"Minnesota","Washington",0],[34,"Vegas","Boston",0],[34,"Colorado","Chicago",0],[34,"Detroit","Florida",0],[34,"Calgary","San Jose",0],[35,"Colorado","Columbus",0],[35,"Winnipeg","Montreal",0],[35,"Edmonton","New Jersey",0],[35,"Carolina","Nashville",0],[35,"St. Louis","NY Rangers",0],[35,"Minnesota","Philadelphia",0],[35,"Vegas","Pittsburgh",0],[35,"Detroit","Tampa Bay",0],[35,"Utah","Toronto",0],[35,"Anaheim","Vancouver",0],[35,"Dallas","Washington",0],[36,"Ottawa","Buffalo",0],[36,"Chicago","Florida",0],[36,"San Jose","Los Angeles",0],[36,"Calgary","Seattle",0],[37,"Dallas","Columbus",0],[37,"Nashville","Colorado",0],[37,"Vegas","Detroit",0],[37,"Anaheim","Edmonton",0],[37,"Utah","Montreal",0],[37,"St. Louis","New Jersey",0],[37,"Carolina","NY Islanders",0],[37,"Philadelphia","NY Rangers",0],[37,"Boston","Pittsburgh",0],[37,"Chicago","Tampa Bay",0],[37,"Vancouver","Winnipeg",0],[38,"Columbus","Buffalo",0],[38,"Anaheim","Calgary",0],[38,"San Jose","Minnesota",0],[39,"Chicago","Carolina",0],[39,"Detroit","Colorado",0],[39,"San Jose","Dallas",0],[39,"Vancouver","Edmonton",0],[39,"Pittsburgh","Los Angeles",0],[39,"Tampa Bay","Minnesota",0],[39,"St. Louis","Nashville",0],[39,"New Jersey","NY Islanders",0],[39,"Utah","Ottawa",0],[39,"NY Rangers","Seattle",0],[39,"Montreal","Toronto",0],[39,"Florida","Washington",0],[40,"Pittsburgh","Anaheim",0],[40,"Florida","Boston",0],[40,"Vegas","Buffalo",0],[40,"Philadelphia","Calgary",0],[40,"New Jersey","Toronto",0],[40,"Tampa Bay","Winnipeg",0],[41,"NY Rangers","Edmonton",0],[41,"NY Islanders","San Jose",0],[41,"Philadelphia","Vancouver",0],[42,"Florida","Columbus",0],[42,"Nashville","Los Angeles",0],[42,"Minnesota","Montreal",0],[42,"Washington","Ottawa",0],[42,"Detroit","St. Louis",0],[42,"Colorado","Toronto",0],[42,"New Jersey","Winnipeg",0],[43,"Nashville","Anaheim",0],[43,"Tampa Bay","Buffalo",0],[43,"NY Rangers","Calgary",0],[43,"Philadelphia","Edmonton",0],[43,"Pittsburgh","San Jose",0],[43,"Utah","Vegas",0],[44,"Montreal","Boston",0],[44,"Tampa Bay","Columbus",0],[44,"Buffalo","Chicago",0],[44,"Winnipeg","Dallas",0],[44,"Detroit","Florida",0],[44,"NY Islanders","Los Angeles",0],[44,"Washington","New Jersey",0],[44,"Colorado","Ottawa",0],[44,"Carolina","Seattle",1],[44,"Minnesota","Toronto",0],[44,"St. Louis","Utah",0],[45,"NY Rangers","Vancouver",0],[45,"Nashville","Vegas",0],[46,"NY Islanders","Anaheim",0],[46,"Minnesota","Boston",0],[46,"Seattle","Carolina",1],[46,"Philadelphia","Columbus",0],[46,"Winnipeg","Chicago",0],[46,"Buffalo","Dallas",0],[46,"Calgary","Los Angeles",0],[46,"Colorado","Montreal",0],[46,"Ottawa","Pittsburgh",0],[46,"Florida","St. Louis",0],[46,"Detroit","Tampa Bay",0],[46,"Edmonton","Toronto",0],[46,"San Jose","Utah",0],[46,"New Jersey","Washington",0],[47,"Calgary","Anaheim",0],[47,"Florida","Dallas",0],[47,"Edmonton","Philadelphia",0],[47,"Nashville","San Jose",0],[47,"Vancouver","Vegas",0],[48,"Montreal","NY Rangers",0],[48,"Vancouver","Utah",0],[49,"Los Angeles","Boston",0],[49,"Toronto","Chicago",0],[49,"Edmonton","Florida",0],[49,"Nashville","Minnesota",0],[49,"Columbus","NY Islanders",0],[49,"Buffalo","Philadelphia",0],[49,"Calgary","San Jose",0],[49,"Anaheim","St. Louis",0],[49,"Washington","Tampa Bay",0],[49,"Dallas","Vegas",0],[49,"Ottawa","Winnipeg",0],[50,"Boston","Detroit",0],[50,"Montreal","New Jersey",0],[50,"Colorado","Utah",0],[51,"Montreal","Carolina",0],[51,"Minnesota","Calgary",0],[51,"Columbus","Chicago",0],[51,"Anaheim","Colorado",0],[51,"Philadelphia","Ottawa",0],[51,"St. Louis","Pittsburgh",0],[51,"Vancouver","Seattle",0],[51,"Edmonton","Tampa Bay",0],[51,"Los Angeles","Toronto",0],[51,"Dallas","Vegas",0],[51,"NY Islanders","Winnipeg",0],[51,"Buffalo","Washington",0],[53,"Washington","Boston",0],[53,"Edmonton","Carolina",0],[53,"Chicago","Calgary",0],[53,"NY Islanders","Detroit",0],[53,"Buffalo","Florida",0],[53,"Philadelphia","Montreal",0],[53,"Pittsburgh","Nashville",0],[53,"Los Angeles","Ottawa",0],[53,"Seattle","San Jose",0],[53,"New Jersey","St. Louis",0],[53,"Columbus","Toronto",0],[53,"Anaheim","Utah",0],[53,"Minnesota","Vancouver",0],[53,"Vegas","Winnipeg",0],[54,"Pittsburgh","Dallas",0],[54,"Carolina","NY Rangers",0],[54,"Edmonton","St. Louis",0],[54,"Buffalo","Tampa Bay",0],[54,"Chicago","Vancouver",0],[55,"Los Angeles","Montreal",0],[55,"Columbus","New Jersey",0],[55,"Toronto","NY Islanders",0],[55,"Calgary","Ottawa",0],[55,"Anaheim","Seattle",0],[55,"Minnesota","San Jose",0],[55,"Utah","Winnipeg",0],[56,"Vegas","Edmonton",0],[57,"San Jose","Anaheim",0],[57,"Winnipeg","Boston",0],[57,"NY Rangers","Buffalo",0],[57,"New Jersey","Columbus",0],[57,"Montreal","Colorado",0],[57,"Nashville","Dallas",0],[57,"Vancouver","Detroit",0],[57,"Ottawa","Florida",0],[57,"Utah","Minnesota",0],[57,"St. Louis","NY Islanders",0],[57,"Calgary","Pittsburgh",0],[57,"Chicago","Seattle",0],[57,"Carolina","Tampa Bay",0],[57,"Philadelphia","Washington",0],[59,"Los Angeles","Anaheim",0],[59,"Toronto","Boston",0],[59,"Pittsburgh","Buffalo",0],[59,"Detroit","Columbus",0],[59,"NY Rangers","Chicago",0],[59,"Seattle","Edmonton",0],[59,"Colorado","Minnesota",0],[59,"Calgary","New Jersey",0],[59,"Utah","Nashville",0],[59,"Winnipeg","NY Islanders",0],[59,"Vancouver","Philadelphia",0],[59,"Vegas","San Jose",0],[59,"Dallas","St. Louis",0],[59,"Ottawa","Tampa Bay",0],[59,"Florida","Washington",0],[60,"Ottawa","Carolina",0],[60,"San Jose","Colorado",0],[60,"Utah","Dallas",0],[60,"Nashville","Detroit",0],[60,"Tampa Bay","Florida",0],[60,"Anaheim","Los Angeles",0],[60,"Winnipeg","New Jersey",0],[60,"Calgary","NY Rangers",0],[60,"NY Islanders","Philadelphia",0],[60,"Toronto","Pittsburgh",0],[60,"Edmonton","Seattle",0],[60,"Washington","St. Louis",0],[60,"Montreal","Vegas",0],[61,"Vancouver","Boston",0],[61,"Minnesota","Chicago",0]];
 /* ============ rivalries: pro hockey ============ */
 /* Every division rival is a rivalry and the series is kept across seasons;
    a few of the oldest have names. */
@@ -2910,8 +2991,15 @@ extendSeason({
   },
   /* tiebreaks: win %, then division record, then rating */
   _tb(x,y){ const P=t=>LEAGUE.points(t,this);
-    const R=this.regRec||this.rec, E=this.regElo||this.elo;              // fixed once the playoffs begin
-    return P(y)-P(x)||R[y][0]-R[x][0]||E[y]-E[x] },
+    const E=this.regElo||this.elo;                                       // fixed once the playoffs begin
+    return P(y)-P(x)||this.rw(y)-this.rw(x)||E[y]-E[x] },
+  /* regulation wins, the NHL's first tiebreak: wins without overtime or a shootout */
+  rw(t){
+    const at=Math.min(this.step,LEAGUE.weeks);
+    if(this._rwAt!==at){ this._rw={}; NAMES.forEach(x=>this._rw[x]=0);
+      this.weeks.slice(0,LEAGUE.weeks).forEach(w=>w.games.forEach(g=>{if(!g.ot)this._rw[g.winner]++})); this._rwAt=at }
+    return this._rw[t]||0;
+  },
   pts(t){return LEAGUE.points(t,this)},
   sideOf(t){return Object.keys(LEAGUE.conf.sides).find(s=>LEAGUE.conf.sides[s].indexOf(CONF[t])>=0)},
   /* each conference in order, as it stands (mid-season a projection) */
@@ -3014,11 +3102,15 @@ extendSeason({
   honours(team){ return {natl:this.champion===team,playoff:!!this.seeds[team],
     conf:Object.keys(this.champs).some(d=>this.champs[d]===team)} },
   confChampions(){return this.champs},
-  /* Clinch marks, never wrong (they can come a little later than the
-     league's): z the conference's most points, y the division, x a playoff
-     place (at most three conference rivals can still reach you), e
-     eliminated (three division rivals and eight conference teams already
-     out of reach). */
+  /* Clinch marks, never wrong. z: no conference rival can reach you. y: no
+     division rival can. x: you're in whatever happens. To keep you out, the
+     teams finishing ahead of you would have to take the division's top three
+     and both wild cards; a wild card ahead of you is a team outside its own
+     division's top three, so it needs three from its division ahead of you
+     too. That takes five division rivals, or four and four from the other
+     division, or three and five. If the teams that can still reach you can't
+     make one of those, you're in. e: the same, with teams already out of
+     reach. */
   clinch(){
     if(this._clinchAt===this.step&&this._clinch)return this._clinch;
     const out={};
@@ -3032,9 +3124,12 @@ extendSeason({
         const teams=NAMES.filter(t=>this.sideOf(t)===sd);
         teams.forEach(T=>{
           const others=teams.filter(t=>t!==T), div=others.filter(t=>CONF[t]===CONF[T]);
+          const other=others.filter(t=>CONF[t]!==CONF[T]);
           const can=others.filter(t=>mx(t)>=p(T)).length;
-          const aheadDiv=div.filter(t=>p(t)>mx(T)).length, ahead=others.filter(t=>p(t)>mx(T)).length;
-          out[T]=can===0?"z":div.every(t=>mx(t)<p(T))?"y":can<=3?"x":(aheadDiv>=3&&ahead>=8)?"e":"";
+          const dC=div.filter(t=>mx(t)>=p(T)).length, oC=other.filter(t=>mx(t)>=p(T)).length;       // could pass you
+          const dA=div.filter(t=>p(t)>mx(T)).length,  oA=other.filter(t=>p(t)>mx(T)).length;        // already past you for good
+          const keepOut=(d,o)=>d>=5||(d>=4&&o>=4)||(d>=3&&o>=5);
+          out[T]=can===0?"z":div.every(t=>mx(t)<p(T))?"y":!keepOut(dC,oC)?"x":keepOut(dA,oA)?"e":"";
         });
       });
     }
@@ -3379,11 +3474,13 @@ function nflPicture(){
       <div class="fmain"><div class="fname">${nflClinchTag(t)}${TL(t)}</div><div class="fnote">${note}</div></div>
       <span class="fcfp">${pts(t)} pts &middot; ${recStr(t)}</span></div>`;
   return Object.keys(LEAGUE.conf.sides).map(sd=>{
-    const divs=LEAGUE.conf.sides[sd], inTop=new Set(); let h=`<div class="grouphead">${sd}</div>`;
-    divs.forEach(d=>{const top=NAMES.filter(t=>CONF[t]===d).sort((a,b)=>SEA._tb(a,b)).slice(0,3); top.forEach(t=>inTop.add(t));
-      h+=top.map((t,i)=>row(t,`${esc(LEAGUE.conf.names[d])} ${i+1}`)).join("")});
-    const rest=NAMES.filter(t=>SEA.sideOf(t)===sd&&!inTop.has(t)).sort((a,b)=>SEA._tb(a,b));
-    h+=rest.slice(0,2).map((t,i)=>row(t,`Wild card ${i+1}`)).join("");
+    // the eight who'd be in today, most points first, each with how they got there
+    const divs=LEAGUE.conf.sides[sd], note={}; let h=`<div class="grouphead">${sd}</div>`;
+    divs.forEach(d=>NAMES.filter(t=>CONF[t]===d).sort((a,b)=>SEA._tb(a,b)).slice(0,3)
+      .forEach((t,i)=>note[t]=`${esc(LEAGUE.conf.names[d])} ${i+1}`));
+    const rest=NAMES.filter(t=>SEA.sideOf(t)===sd&&!note[t]).sort((a,b)=>SEA._tb(a,b));
+    rest.slice(0,2).forEach((t,i)=>note[t]=`Wild card ${i+1}`);
+    h+=Object.keys(note).sort((a,b)=>SEA._tb(a,b)).map(t=>row(t,note[t])).join("");
     h+=`<div class="note">Chasing: ${rest.slice(2,5).map(t=>esc(t)+" "+pts(t)+" pts").join(", ")}.</div>`;
     return h}).join("")+NFL_LEGEND;
 }
@@ -4126,6 +4223,10 @@ function newDynasty(team,seed,coachName,roster){
 
 /* ============ advance ============ */
 /* a team's record as text: W-L, or the league's own (hockey: W-L-OTL) */
+/* the season's unit in words: a week in college and pro football; a night (and
+   game days) in the long pro seasons */
+function WK(){ return LEAGUE.text.week||"week" }
+function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
 /* how many ranked teams wear a number: the top 25 in college, fewer in a 30-team league */
@@ -4140,7 +4241,19 @@ function simGameButton(id){
 }
 let simOnce=false;
 function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } }
+/* A league with a game every calendar day (LEAGUE.skipIdle) plays through
+   the days you don't play: the button always takes you to your next game. */
+function skipIdleDays(){
+  if(!LEAGUE.skipIdle||isHotSeat()||live)return;
+  let g=0;
+  while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
+    // the same bookkeeping as any advance: a reload replays exactly S.steps steps
+    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+    SEA.advance(); S.steps++;
+  }
+}
 function doAdvance(){
+  skipIdleDays();
   if(SEA.phase==="done"){ openOffseason(); return; }
   const before=SEA.step;
   const ph=SEA.phase;
@@ -4717,7 +4830,7 @@ function injuryHTML(inj){
     h+=`<div class="grouphead">Injury report</div>`;
     h+=inj.map(e=>`<div class="injrow"><span class="ipos">${esc(e.k)}</span>
       <div class="iwho"><div class="pname">${esc(e.who||e.k)}</div>
-      <div class="psub">out ${e.w} more week${e.w===1?"":"s"}${
+      <div class="psub">out ${e.w} more ${stepWord(e.w)}${
         e.rating?" &middot; rated "+e.rating:""}</div></div>
       <span class="imag">${Math.round(e.m)}</span></div>`).join("");
   }
@@ -4732,7 +4845,7 @@ function coachMark(key,text){
 }
 
 function planPickerHTML(wp){
-  return `${coachMark("plan","This choice is real. Playing it safe lets the better team's talent show; taking risks makes it a game of chances, which is what an underdog wants. It resets to Balanced each week.")}
+  return `
   <div class="planbox"><div class="planlab">Your gameplan</div>
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
@@ -4856,10 +4969,11 @@ function scheduleHTML(team,compact){
     if(played){
       const won=g.winner===team;
       const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
-      rows.push(`<div class="srow"><span class="spos ${won?'wl-w':'wl-l'}">${won?"W":"L"}</span>
+      const otl=!won&&g.ot;                            // hockey: a point for losing in overtime
+      rows.push(`<div class="srow"><span class="spos ${won?'wl-w':otl?'wl-o':'wl-l'}">${won?"W":otl?"OTL":"L"}</span>
         <span class="steam">${g.home===team?"vs":"at"} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
           riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
-        <span class="sconf">${ms}-${os}</span></div>`);
+        <span class="sconf">${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${label.replace("Wk ","")}</span>
         <span class="steam">${g.home===team?"vs":"at"} ${rkTag(rk)}${TL(opp)}${
@@ -4942,7 +5056,7 @@ function weekNews(W){
       h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
       b: lr<=5 ? vary([`A top-five team is down. ${L} won't drop out, but the margin for error is gone.`,
                        `${L} was supposed to be one of the best. ${LEAGUE.text.week?"Not tonight.":"Not this week."}`,
-                       `The top five just lost a member for a week. ${L} has work to do.`],"ub"+L)
+                       `The top five just lost a member for a ${WK()}. ${L} has work to do.`],"ub"+L)
         : wr>25 ? vary([`${Wn} came in unranked. ${L} will pay for this one in ${LEAGUE.text.ranking}.`,
                         `Nobody had ${Wn} on this one. ${L} will feel it in ${LEAGUE.text.ranking}.`],"ub"+L)
         : vary([`${Wn} moves up; ${L} slides.`,`${Wn} climbs. ${L} has some explaining to do.`,
@@ -4953,7 +5067,7 @@ function weekNews(W){
   if(more.length)items.push({p:40,k:"also",tone:"muted",
     h:vary([`Also down: `,`Also losing: `,`More losses near the top: `],"ah")+more.map(g=>rankTxt(loserRank(g))+g.loser).join(", "),
     b:vary([`${more.length===1?"That's":"Those are"} more cracks in ${LEAGUE.text.top}.`,
-            `It was that kind of week.`,`Nobody is safe this year.`,`Expect some reshuffling.`],"ab")});
+            `It was that kind of ${WK()}.`,`Nobody is safe this year.`,`Expect some reshuffling.`],"ab")});
 
   // your team, framed
   const mg=gs.find(g=>g.home===my||g.away===my);
@@ -5030,7 +5144,7 @@ function weekNews(W){
   const blow=gs.slice().sort((a,b)=>b.margin-a.margin)[0];
   if(blow&&blow.margin>=38)items.push({p:30,k:"blowout",tone:"muted",
     h:`${blow.winner} ${Math.max(blow.hp,blow.ap)}, ${blow.loser} ${Math.min(blow.hp,blow.ap)}`,
-    b:`The week's worst mismatch.`});
+    b:`The ${WK()}'s worst mismatch.`});
 
   // injury desk
   if(SEA.roster){
@@ -5047,7 +5161,7 @@ function weekNews(W){
     if(hurt.length){const x=hurt[0];
       items.push({p:70,k:"inj",tone:"flag",
         h:`${rankTxt(x.rk)}${x.t} loses ${x.who} (${x.p})`,
-        b:`Out ${x.w>=14?"for the season":"about "+x.w+" week"+(x.w===1?"":"s")}.`+
+        b:`Out ${x.w>=14?"for the season":"about "+x.w+" "+stepWord(x.w)}.`+
           (hurt.length>1?` ${hurt.length-1} other ranked team${hurt.length>2?"s":""} took a hit too.`:"")});
     }
   }
@@ -5569,7 +5683,7 @@ function digestBlock(){
     const won=g.winner===my, opp=g.home===my?g.away:g.home;
     const ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
     rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
-      <span class="dres ${won?'w':'l'}">${won?"W":"L"} ${ms}-${os}</span>
+      <span class="dres ${won?'w':g.ot?'o':'l'}">${won?"W":g.ot?"OTL":"L"} ${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span>
       <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`);
   }
   h+=`<div class="digest">${rows.join("")}</div>`;
@@ -5618,7 +5732,7 @@ function handoffView(){
     <div class="handrec">${recStr(S.myTeam)}${
       SEA.poll.rankMap()[S.myTeam]?" &middot; No. "+SEA.poll.rankMap()[S.myTeam]:""}</div>
     <div class="handnote">${handoffNotes[S.myTeam]
-      ?`You play ${esc(handoffNotes[S.myTeam].vs)} this week. ${esc(handoffNotes[S.myTeam].coach)} has set their plan; the game is played now, and each of you makes your own calls.`
+      ?`You play ${esc(handoffNotes[S.myTeam].vs)} ${LEAGUE.text.week?"tonight":"this week"}. ${esc(handoffNotes[S.myTeam].coach)} has set their plan; the game is played now, and each of you makes your own calls.`
       :"The others have played their week. Your turn."}</div>
     <div class="actionbar"><button class="advance" id="hgo">I'm ready</button></div>
   </div>`;
