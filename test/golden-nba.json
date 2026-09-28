@@ -1,5 +1,5 @@
 {
- "fp": "6566e15a0375f3c7",
+ "fp": "c1ac47faf1e59711",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -20,6 +20,11 @@
    "fp": "6566e15a0375f3c7",
    "from": "8d59cde0123e43f7",
    "note": "A rating gap is worth more in the pro game (gapPerPoss .0006): records, titles and series against NBA history"
+  },
+  {
+   "fp": "c1ac47faf1e59711",
+   "from": "6566e15a0375f3c7",
+   "note": "Sim game stays visible after a finished game (it hid whenever a live game existed, even a finished one)"
   }
  ],
  "result": {
@@ -34,7 +39,7 @@
     "heis": "d65be65f2863d2f4",
     "history": "f25ac99b15068fb1",
     "universe": "e867b2b7c18b0197",
-    "screens": "55aaeca79f68ae11"
+    "screens": "a9dde27ca526539d"
    },
    {
     "year": 2027,

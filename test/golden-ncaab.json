@@ -85,6 +85,11 @@
    "fp": "4f14f7d0051b44e7",
    "from": "68fc28832b0af0f9",
    "note": "Sim game: the button's new name, and it's now in the desktop side panel; team search counts the league's own teams; a skipped game's remaining calls take the neutral option"
+  },
+  {
+   "fp": "4f14f7d0051b44e7",
+   "from": "4f14f7d0051b44e7",
+   "note": "Sim game stays visible after a finished game (it hid whenever a live game existed, even a finished one)"
   }
  ],
  "result": {

@@ -1,5 +1,5 @@
 {
- "fp": "33014019a9c9c785",
+ "fp": "0c3a089bf28fd73e",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -94,6 +94,11 @@
    "fp": "33014019a9c9c785",
    "from": "dffd4bec2a5a06e5",
    "note": "Sim game: the button's new name, and it's now in the desktop side panel; team search counts the league's own teams; a skipped game's remaining calls take the neutral option"
+  },
+  {
+   "fp": "0c3a089bf28fd73e",
+   "from": "33014019a9c9c785",
+   "note": "Sim game stays visible after a finished game (it hid whenever a live game existed, even a finished one)"
   }
  ],
  "result": {
@@ -220,7 +225,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "c15e67bc491d164a"
+    "screens": "6a2a933a8adc0b27"
    },
    {
     "year": 2028,
@@ -232,7 +237,7 @@
     "heis": "8bc8df1a03879f2f",
     "history": "e5ded2f68e112df9",
     "universe": "10e4f661e0c5e66f",
-    "screens": "42d53c05c6540840"
+    "screens": "c38de5b4981551c9"
    }
   ],
   "Kent State#31337": [
