@@ -10,7 +10,7 @@ const n=R.length, P=[].concat(...R.map(r=>r.pts)), mu=P.reduce((s,x)=>s+x)/P.len
 const best=R.reduce((s,r)=>s+Math.max(...r.pts),0)/n, worst=R.reduce((s,r)=>s+Math.min(...r.pts),0)/n;
 let hw=0,hn=0; R.forEach(r=>r.r1.forEach(([x,y,w])=>{hw+=w;hn++}));
 let bad=0; const chk=(ok,m)=>{console.log((ok?'  ok   ':'  FAIL ')+m); if(!ok)bad++};
-chk(mu>=88&&mu<=95, `mean points ${mu.toFixed(1)} (82 games: ~91-92)`);
+chk(mu>=90&&mu<=98, `mean points ${mu.toFixed(1)} (84 games: ~94)`);
 chk(sd>=11.5&&sd<=18, `points spread ${sd.toFixed(1)} (NHL ~14)`);
 chk(best>=110&&best<=132, `the best team averages ${best.toFixed(0)} points (NHL ~115-125)`);
 chk(worst>=45&&worst<=70, `the worst team averages ${worst.toFixed(0)} points (NHL ~50-60)`);

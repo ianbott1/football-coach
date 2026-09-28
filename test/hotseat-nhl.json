@@ -1,5 +1,5 @@
 {
- "fp": "6a8256fbb0bd3534",
+ "fp": "18951c6b463204e2",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -10,6 +10,21 @@
    "fp": "6a8256fbb0bd3534",
    "from": "53981de08c69aade",
    "note": "Same results; the stored standings text is now W-L-OTL with a points column"
+  },
+  {
+   "fp": "39fa17049d54884a",
+   "from": "6a8256fbb0bd3534",
+   "note": "The NHL's 84-game schedule: new results throughout"
+  },
+  {
+   "fp": "3fcd8c6d541629c1",
+   "from": "39fa17049d54884a",
+   "note": "Season one: the real Sept 29 - Nov 29 NHL games (429), the rest generated to the matrix; 97 game days"
+  },
+  {
+   "fp": "18951c6b463204e2",
+   "from": "3fcd8c6d541629c1",
+   "note": "A game day every calendar day: real Oct-Nov dates exact; days without your game played through (off in hot seat)"
   }
  ],
  "out": [
@@ -19,20 +34,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "50-39",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "28-56",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "df1106848de25056"
+     "book": "4461251ce7d34f62"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "52-54",
+      "rec": "60-48",
       "result": "Lost in the Stanley Cup Final",
-      "grade": "A"
+      "grade": "A+"
      },
-     "book": "cc920e2c572f9c5e"
+     "book": "6bc06ab42ab44488"
     }
    ]
   },
@@ -42,20 +57,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-42",
+      "rec": "24-60",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "D"
      },
-     "book": "743291b1dd6c2f1d"
+     "book": "9dd743ac613d0ffa"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "51-38",
+      "rec": "46-44",
       "result": "Lost in the first round",
-      "grade": "A-"
+      "grade": "B+"
      },
-     "book": "28b4d19b9278209e"
+     "book": "e06fee48b21a62a7"
     }
    ]
   },
@@ -65,20 +80,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-50",
+      "rec": "37-47",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "C-"
      },
-     "book": "30e73ca3b4f71180"
+     "book": "09c078322b63838c"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "51-38",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "35-49",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "955bab7299c21706"
+     "book": "9ea16adc421cc0bf"
     }
    ]
   }

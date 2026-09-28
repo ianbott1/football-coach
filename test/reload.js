@@ -8,7 +8,7 @@ const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
 const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach.html');
-const h=o=>crypto.createHash('md5').update(JSON.stringify(o)).digest('hex').slice(0,8);
+const h=o=>crypto.createHash('md5').update(JSON.stringify(o)??'undefined').digest('hex').slice(0,8);   // empty fields (hockey's OT losses before the first OT) too
 const step=api=>{api.doAdvance();let n=0;while(api.live&&!api.live.done&&n++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[(n+api.SEA.step)%api.live.ask.dp.opts.length][0]):api.liveTick()}};
 const offseason=api=>{api.openOffseason();for(let c=0;c<4;c++){const S=api.S;if(!S.off)break;if(S.off.act.userOpen&&S.off.move===null)S.off.move=(S.off.jobs[0]&&S.off.jobs[0].team)||S.myTeam;api.commitOffseason()}};
 const state=api=>{const E=api.SEA;return {
@@ -23,6 +23,7 @@ const state=api=>{const E=api.SEA;return {
   const [T1,T2,R1,R2]=LG==='cfb'?['Alabama','Rice','Alabama','Auburn']
     :LG==='ncaab'?['Duke','Rice','Duke','North Carolina']
     :LG==='nba'?['Boston','Denver','Boston','New York']
+    :LG==='nhl'?['Boston','Toronto','Boston','Montreal']
     :['Kansas City','Tennessee','Kansas City','Denver'];
   for(const [team,seed,roster] of [[T1,1],[T2,2024],
         [R1,99,[{team:R1,name:'Coach A'},{team:R2,name:'Coach B'}]]]){

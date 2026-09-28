@@ -32,11 +32,13 @@ function nflPicture(){
       <div class="fmain"><div class="fname">${nflClinchTag(t)}${TL(t)}</div><div class="fnote">${note}</div></div>
       <span class="fcfp">${pts(t)} pts &middot; ${recStr(t)}</span></div>`;
   return Object.keys(LEAGUE.conf.sides).map(sd=>{
-    const divs=LEAGUE.conf.sides[sd], inTop=new Set(); let h=`<div class="grouphead">${sd}</div>`;
-    divs.forEach(d=>{const top=NAMES.filter(t=>CONF[t]===d).sort((a,b)=>SEA._tb(a,b)).slice(0,3); top.forEach(t=>inTop.add(t));
-      h+=top.map((t,i)=>row(t,`${esc(LEAGUE.conf.names[d])} ${i+1}`)).join("")});
-    const rest=NAMES.filter(t=>SEA.sideOf(t)===sd&&!inTop.has(t)).sort((a,b)=>SEA._tb(a,b));
-    h+=rest.slice(0,2).map((t,i)=>row(t,`Wild card ${i+1}`)).join("");
+    // the eight who'd be in today, most points first, each with how they got there
+    const divs=LEAGUE.conf.sides[sd], note={}; let h=`<div class="grouphead">${sd}</div>`;
+    divs.forEach(d=>NAMES.filter(t=>CONF[t]===d).sort((a,b)=>SEA._tb(a,b)).slice(0,3)
+      .forEach((t,i)=>note[t]=`${esc(LEAGUE.conf.names[d])} ${i+1}`));
+    const rest=NAMES.filter(t=>SEA.sideOf(t)===sd&&!note[t]).sort((a,b)=>SEA._tb(a,b));
+    rest.slice(0,2).forEach((t,i)=>note[t]=`Wild card ${i+1}`);
+    h+=Object.keys(note).sort((a,b)=>SEA._tb(a,b)).map(t=>row(t,note[t])).join("");
     h+=`<div class="note">Chasing: ${rest.slice(2,5).map(t=>esc(t)+" "+pts(t)+" pts").join(", ")}.</div>`;
     return h}).join("")+NFL_LEGEND;
 }

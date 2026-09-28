@@ -19,7 +19,7 @@ const BASE={chase:'normal',protect:'keep',half:'normal',fourth:null,two:'kick'};
 function play(seed,gap,kind,ans){
   const e=G.makeLiveGame(new G.RNG(seed),1700+gap,1700,'balanced','balanced',true);
   let asked=null, guard=0, sit=null, togo=null;
-  while(guard++<400){const r=e.next(); if(r.done)return {asked,win:r.h>r.a,sit,togo};
+  while(guard++<1200){const r=e.next(); if(r.done)return {asked,win:r.h>r.a,sit,togo};
     if(r.ask){const k=r.ask.k, o=r.ask.opts.map(x=>x[0]);
       let pick = k===kind ? (o.indexOf(ans)>=0?ans:null) : (k==='fourth' ? (o.indexOf('punt')>=0?'punt':'kick') : BASE[k]);
       if(k===kind&&!asked){asked=o.join('/'); sit=r.mine-r.theirs; togo=(r.ask.h.match(/Fourth and (\d+)/)||[])[1]}

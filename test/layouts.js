@@ -21,7 +21,7 @@ for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro
       for(const d of ['program','teams','coaches','shared','history']){ try{api.view('dyn',d);drawn++}catch(e){ok(false, `${where} ${when}, Dynasty/${d} crashed: ${e.message}`)} }
     };
     draw('at the start');
-    let g=0; while(api.SEA.phase!=='done'&&g++<200){ api.doAdvance(); let n=0;
+    let g=0; while(api.SEA.phase!=='done'&&g++<600){ api.doAdvance(); let n=0;
       while(api.live&&!api.live.done&&n++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
       if(g%9===0)draw('at '+api.SEA.phase+' '+api.SEA.step) }
     draw('at the end');

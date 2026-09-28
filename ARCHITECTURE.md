@@ -1,207 +1,96 @@
-# Sports Sims — architecture note
+# Sports Sims — architecture
 
-Orientation for any new session. The code is **not** in this document — it
-lives in the repo. Fetch what you need:
+Orientation for any new session. Code: github.com/ianbott1/football-coach
+(branch main). Each game is one self-contained HTML file, no dependencies, no
+server, published on GitHub Pages at ianbott1.github.io/football-coach.
 
-    https://github.com/ianbott1/football-coach
+## The five games
 
-## What this is
+    game                   build            output (dist/)              sport layer   league
+    College Football Coach python3 build.py football-coach.html        football      cfb
+    Pro Football Coach     build.py nfl     football-coach-pro.html    football      nfl
+    College Basketball     build.py ncaab   basketball-coach.html      basketball    ncaab
+    Pro Basketball Coach   build.py nba     basketball-coach-pro.html  basketball    nba
+    Pro Hockey Coach       build.py nhl     hockey-coach-pro.html      hockey        nhl
 
-Single-file browser games. One HTML file, no dependencies, no server. Source
-is three layers of numbered JS files, merged by filename and concatenated by
-`build.py` into `dist/<game>.html`. That file is the whole product; the
-published copy is `index.html` on main.
+Publishing copies each dist file to the repo root (college football as
+index.html) and pushes.
 
-    src/core/              engine: RNG, Elo, talent and injuries, coaches,
-                           the Season machine, the history book, card, all UI
-    src/football/          the sport: positions, box scores, coordinators,
-                           the drive engine, the staff room, the field
-    src/leagues/<league>/  one league: teams, conferences, schedule, ranking,
-                           postseason, awards, offseason, draft, its screens
-    src/leagues/<league>/GAME   names the sport layer the league uses
+## Three layers
 
-    python3 build.py [league]      cfb (default) -> dist/football-coach.html
-                                   nfl           -> dist/football-coach-pro.html
+    src/core/          sport-neutral: RNG, talent model, season state machine,
+                       offseason driver, UI, saves (99_app.js), record keeping
+    src/<sport>/       football, basketball, hockey: positions and ratings,
+                       the game engine (playGame, makeLiveGame), calls,
+                       advisors, the watch view, game screens (SPORT object)
+    src/leagues/<id>/  teams, schedule, postseason, offseason rules, awards,
+                       views, text (the LEAGUE object)
 
-The core and the sport layer know a league only through `LEAGUE`, defined in
-the league's `05_league.js` and extended by its other files. README.md lists
-the interface. A second league is a new folder under `src/leagues/`.
+A league chooses its sport with src/leagues/<id>/GAME. The core reads only
+the documented interface from each layer. League settings switch on
+anything one league needs (all default off, so other games are unchanged):
+tuning.talentSteps (long seasons), tuning.bb / tuning.hk (engine settings),
+tracksOT and recText/points/standingsCol (hockey's points and W-L-OTL),
+rankTop, stepLabel, text.week, skipIdle (daily schedules), awards.premium.
 
 ## Working rules
 
-1. The container filesystem does NOT persist between conversations. Package
-   the source and have Ian download it before any session ends.
-2. A change meant to alter no behaviour must pass `node test/golden.js`
-   (last line MATCH). A change meant to alter behaviour re-records with
-   `--write --note "why"`; the reason is kept in golden.json's log.
-3. Verify by measurement, not inspection. Every claim about behaviour should
-   come from a test run, not from reading the code.
-4. Bug fixes are their own commits, never folded into a refactor.
+1. The container doesn't persist between sessions. Package the source (a git
+   bundle of main) and have Ian download it before a session ends.
+2. Before changing anything, rebuild and confirm golden matches.
+3. Verify by measurement, not by reading code; every claim about behaviour
+   comes from a test run.
+4. Run the suite before every commit and read the result before writing the
+   message:   node test/run-all.js --quick   (full: without --quick).
+   One CPU: the quick suite takes ~8-10 minutes; run it detached
+   (setsid nohup node test/run-all.js --quick > /tmp/runall.txt &) and poll.
+5. Check simulation changes against the calibration targets below.
+6. Tell Ian plainly when something is broken, a plan is wrong, or you made a
+   mistake.
 
-## Tests
+Lessons from this project (each cost a bug that shipped or nearly did):
+- A new game needs its own save key in SAVE_KEYS (core) and a case in
+  test/saves.js, test/reload.js, test/golden.js, test/hotseat.js.
+- Test both layouts (test/layouts.js): at 1024px+ the buttons live in the
+  side panel.
+- Words: each game has a screen test that fails on another sport's words;
+  read a few screens by eye too (records, standings, dates the tests can't
+  judge).
+- Check real-world facts (season length, divisions, cap) against a current
+  source, not memory: the NHL's 2026-27 season is 84 games.
 
-    test/golden.js     seeded careers: every score, record, ranking, award,
-                       history entry, universe state, and every tab, the
-                       offseason screen and the banner; 60 opening schedules
-    test/hotseat.js    two coaches sharing a save, three seasons
-    test/grades.js     grade shown on the offseason screen = grade recorded
-    test/migrate.js    old saves load and draw identically (needs a v1 build)
-    test/reload.js     reloading a save gives back the games actually played
-    test/storage.js    saving where there is no window.storage (the published
-                       site), the quit prompt, Start over
-    test/h2h.js        hot-seat coaches playing each other: once, both calling
-    test/clinch.js     pro clinch marks (z/y/x/e) checked against how seasons ended
-    test/plans.js      the weekly gameplan is a real choice, both leagues
-    test/firing.js     people are fired on two missed seasons in a row, never one
-    test/moves.js      a season is filed under the team coached, not the next job
-    test/stress.js     random-choice careers: crashes, broken text, stuck offseasons
-    test/calls.js      report: each in-game call replayed with every answer
-    test/draftboard.js pro: your draft board decides your picks, in board order
-    test/fatargets.js  pro: free-agent targets are signed or reported, never cut
-    test/advisors.js   report: win % following each advisor, four situations
-    test/trades.js     pro: fair offers from the trade block; an agreed trade goes through
-    test/nfl.js        pro league: rules every season obeys, realism measures,
-                       the cap gate on the offseason screen
+## Tests (test/)
 
-golden, reload, h2h and storage take either build as an argument; golden
-keeps one baseline per league (golden.json, golden-nfl.json).
-    test/calibrate.js  the targets below, over N CPU seasons (default 200)
+run-all.js runs every verdict test in every game. Per game: golden (fingerprint
+of results and screens), hotseat, storage, reload. Across games: saves,
+layouts, sim-and-skip, goals, migrate (old saves; the v1 build is kept in
+test/fixtures). Per league: rules and clinch tests (nfl, nba-playoffs,
+nhl-playoffs, nhl-clinch, bb-bracket), screen and wording audits
+(bb-screens, nba-screens, nhl-screens), offseason systems (draftboard,
+fatargets, trades, bb-portal), and long-run history checks against the real
+leagues (bb-march, nba-history, nhl-history).
+Reports (run by hand): calibrate, advisors, calls, the engine harnesses
+(bb-engine, hk-engine, hk-decisions), the long-run recorders.
 
-Not covered by any test: click handlers (sub-tabs, budget buttons, picks).
+## Real data
 
-## Saves
+    college football  30_schedule2026: ~81% of the 2026 games, transcribed
+    pro football      30_schedule2026: all 272 games (nflverse, data/)
+    pro hockey        30_schedule2026: Sept 29 - Nov 29 (429 games, Hockey-
+                      Reference, data/); the rest generated to the NHL's matrix
+    pro basketball    formula only (no readable source found yet)
+    college basketball formula only
+    colours           data/ (ncaa-team-colors, ISC); 18 stand-ins remain
+Real schedules apply to a career's 2026 season; later seasons are generated.
 
-Saves go through core/15_store.js: window.storage inside Claude, the
-browser's localStorage anywhere else. A save holds the season's starting
-universe plus every choice and every live game's result (S.played); loading
-replays the season from those, so it must reproduce what was played exactly
-(test/reload.js).
+## Calibration targets (checked by the history tests)
 
-## Calibration targets
-
-Any simulation change must be re-checked against these (calibrate.js):
-
-    favourite win rate      ~0.70
-    mean margin             ~15
-    undefeated per season   ~1
-    talent swing            ~110 Elo
-    home win rate           57-59%
-    points per game         ~54
-    schedule integrity      all zeros
-    Heisman split           QB 60-70 / WR 20-30 / RB 10-20
-
-Definitions, where a number depends on how it is measured:
-
-- **Favourite win rate**: regular-season games; the favourite is the team
-  with the higher *public* Elo plus home field before kickoff (what the game
-  shows the player). Measured 0.700. By the hidden true ratings (injuries,
-  form, staff) favourites win 0.727, and did before the drive engine too
-  (29dce35) — so a gap against 0.70 on that basis is not drift.
-- **Talent swing**: per team, highest minus lowest *effective* rating over
-  the regular season, sampled each week as the game engine reads it,
-  averaged league-wide. This is total in-season variation — injuries,
-  development, week-to-week form, locker-room collapses and breakouts — not
-  injuries alone. Measured 107.6; injuries by themselves account for ~57.5.
-- **Undefeated per season**: teams unbeaten at the end of the regular
-  season (before championship week). Measured ~1.1.
-- **Schedule integrity**: counts of a team booked twice in a week, a team
-  playing itself, a repeated pairing, and teams below 11 or above 12 games.
-
-## Gameplans
-
-The weekly plan is a trade between talent and chance (football/50_drives.js
-AGGR). Risk makes the rating gap count less on your own drives, safe makes
-it count more; no hidden rating penalty. At even strength the three plans
-win equally often; an underdog should take risks, a favourite should play
-safe. test/plans.js checks that shape in both leagues. The engine's own
-urgency (overtime, a fourth down it goes for) and late-game management
-("sit", "chase") are separate modes, so computer-only play is unaffected.
-
-## The three advisors
-
-Measured with test/advisors.js: full live games with every call answered the
-way one advisor recommends, the same games replayed for each (3000 per
-situation). Win %:
-
-    college          even match  big underdog  leading late  trailing late
-    Two Bears          57.3         28.1           84.6          18.5
-    Pearl              56.5         27.3           82.0          18.3
-    Capybara           54.5         25.4           84.0          17.1
-
-    pro              even match  big underdog  leading late  trailing late
-    Two Bears          58.2         31.0           83.8          21.5
-    Pearl              57.0         32.0           82.1          21.1
-    Capybara           54.5         31.7           83.7          18.5
-
-The intended shape (each advisor best somewhere, the Capybara when leading
-late) no longer holds: Two Bears are best or level almost everywhere,
-mostly because going for it on fourth down pays in this engine, as in
-modern analytics. Restoring the shape would mean making "Bleed the clock" a
-clearly better way to protect a lead, which computer teams also use late in
-pro games. Tried and reverted: much stronger ball security when sitting on
-a lead (turnovers -0.15, touchdowns -0.03) gave the Capybara only +0.3
-leading late at 3000 games (noise) and left pro margins unchanged at 13.0.
-What drives the table is fourth down: going for it pays. Restoring the
-shape would mean making fourth-down tries worse, against the analytics.
-
-Two Bears always take the risk and never reason (no numbers in their lines).
-Pearl reads the situation and is a dog ~15% of the time, wrapping rather than
-replacing her advice. The Capybara is cautious and hedges everything
-("It seems to me...", "I do believe...").
-
-## The history book
-
-One entry per coach per season, version 2 (core/90_history.js). Core fields
-are league-neutral: honours {title, group, seed}, group {key, name, rec},
-seeds, groupChamps, awards {mvp, team}, coaching {...}. Anything only one
-league understands goes under `entry.league`, written by
-`LEAGUE.historyExtras` and read only by that league's views. Version-1 saves
-migrate on load.
-
-## Pro football (leagues/nfl)
-
-32 franchises by city in their real divisions; every player is fictional.
-The league's rotation formula builds 17 games over 18 weeks with byes in
-weeks 5-14. Seven seeds a conference, a bye for the 1 seed, re-seeding,
-a numbered Super Bowl; records stay regular-season only. Players have ages
-and contracts; each offseason re-signs (the user chooses, cap-aware), ages,
-retires, drafts in reverse order of finish, runs free agency under a hard
-$110M cap over the twenty tracked players, and fills gaps. Franchise
-strength is a sticky organisation edge (development, scouting, free-agent
-pull); without it the draft and free agency flatten the league.
-
-League-level tuning the football layer honours: tuning.drives (10),
-tuning.gapScale (2.2, how much a rating gap is worth on the field),
-tuning.gameState (teams nobody is calling sit on three-score fourth-quarter
-leads and chase when two scores down), homeField.
-
-Targets (test/nfl.js, 96 seasons):
-
-    favourite win rate   0.636   (NFL ~0.63-0.66, rating going into the game)
-    home win rate        55.1%   (~55%)
-    points per game      45.4    (~45)
-    13+ win teams/season 3.75    (~2-4)
-    repeat champions     9.1%    (~10%)
-    mean margin          12.8    (~11)          a little high
-    17-0 per 100 seasons 6.3     (~2-3)         a little high
-    MVP a quarterback    100%    (recent seasons nearly all)
-
-Not in yet: trades; drafting and signing individual players yourself (you
-choose a style; the picks and signings are made for you).
-
-## Planned direction
-
-The engine/sport/league split is done for the simulation; the UI split is
-mostly done. Still college-shaped in core/99_app.js: wording in weekly news,
-stakes lines, team cards, dynasty headings, tiers, intro, help, glossary.
-
-The NFL is now the second league on the football layer (see above). The
-original plan for it: It needs genuinely new
-mechanics, not relabelling: salary cap, contracts, player ages instead of
-class years, free agency, trades, draft order by record, a division-based
-schedule, a 14-team playoff, a power ranking instead of a poll, MVP and
-All-Pro weights. Recruiting, graduation, bowls and the Heisman don't exist
-there. The cap is the largest single piece of work.
+    college football  favourite ~0.70, margin ~15, home 57-59%, ~54 pts/game
+    pro football      favourite 0.63-0.66, margin (NFL ~10-11), MVP QB ~85-90%
+    college basketball first-round seed pairings vs NCAA history (bb-march)
+    pro basketball    wins sd 12-13, 1 seeds ~55% of titles, series 4-7 games
+    pro hockey        3.0-3.1 goals, save % ~.900, points mean ~94 (84 games),
+                      sd ~14, home ice 60-65% of first-round series
 
 ## Known calibration gaps (measured)
 

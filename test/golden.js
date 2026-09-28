@@ -31,7 +31,7 @@ function load(file) {
   // later must land in its own storage, not in whichever game loaded last
   const W=global.window, D=global.document;
   return new Function('window','document', js + `
-    return { leagueId(){return LEAGUE.id}, get CONF(){return CONF}, portalPreview(){return LEAGUE.offseason.portalPreview?LEAGUE.offseason.portalPreview(U):[]}, portalIn(){return S.lastPortalIn||null}, titleHTML(){ renderTitle(); return __nodes.app?__nodes.app.innerHTML:'' }, tradeOffers(i){return nflTradeOffers(U,S.myTeam,i,(S.coaches||[]).map(c=>c.myTeam))}, tradeValue(p){return tradeValue(p)}, faPreview(){return typeof nflFreeAgentPreview==='function'?nflFreeAgentPreview(U,S.myTeam):[]}, draftClass(){return typeof nflDraftClass==='function'?nflDraftClass(U,S.myTeam):null}, recruitFocus(){return LEAGUE.offseason.recruitFocus}, seasonGradeFor(w,l,r,e){return seasonGrade(w,l,r,e||expectations())}, setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, seasonProto(){return Season.prototype}, homeFieldOf(u,t){return homeField(u,t)}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
+    return { leagueId(){return LEAGUE.id}, pictureHTML(){ return typeof nflPicture==='function'?nflPicture():'' }, get CONF(){return CONF}, portalPreview(){return LEAGUE.offseason.portalPreview?LEAGUE.offseason.portalPreview(U):[]}, portalIn(){return S.lastPortalIn||null}, titleHTML(){ renderTitle(); return __nodes.app?__nodes.app.innerHTML:'' }, tradeOffers(i){return nflTradeOffers(U,S.myTeam,i,(S.coaches||[]).map(c=>c.myTeam))}, tradeValue(p){return tradeValue(p)}, faPreview(){return typeof nflFreeAgentPreview==='function'?nflFreeAgentPreview(U,S.myTeam):[]}, draftClass(){return typeof nflDraftClass==='function'?nflDraftClass(U,S.myTeam):null}, recruitFocus(){return LEAGUE.offseason.recruitFocus}, seasonGradeFor(w,l,r,e){return seasonGrade(w,l,r,e||expectations())}, setPlan(p){plan=p}, LEAGUE_CAP(){return LEAGUE.cap}, seasonProto(){return Season.prototype}, homeFieldOf(u,t){return homeField(u,t)}, LEAGUE_HFA(){return LEAGUE.tuning.hfa}, offseasonBlock(){return LEAGUE.ui.offseasonBlock()},
       view(v,sub){ view=v; if(sub)dynTab=sub; flash=null; render(); return __nodes.app?__nodes.app.innerHTML:'' }, render, newDynasty, doAdvance, liveTick, answerLive, openOffseason, commitOffseason,
       get S(){return S}, get SEA(){return SEA}, get U(){return U}, get live(){return live},
       NAMES, get CONF(){return CONF}, loadCoach, stashCoach,
@@ -66,7 +66,7 @@ function career(file, team, seed, seasons) {
   const grab = () => screens.push(global.__nodes.app ? global.__nodes.app.innerHTML : '');
   for (let y = 0; y < seasons; y++) {
     let guard = 0;
-    while (api.SEA.phase !== 'done' && guard++ < 200) {     // an NBA season is 120 steps
+    while (api.SEA.phase !== 'done' && guard++ < 600) {     // an NBA season is 120 steps
       api.doAdvance(); grab();
       if (api.SEA.step === 7) screens.push(...views(api));
       let g = 0;

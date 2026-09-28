@@ -3,11 +3,12 @@
    path, and compares every tab, every team's page and every season card with what the old
    build draws for the same save. Also checks a migrated entry equals the
    entry the new build writes natively for the same season.
-     node test/migrate.js <v1 build.html> [new build.html]   last line: MATCH or MISMATCH */
+     node test/migrate.js [v1 build.html] [new build.html]   last line: MATCH or MISMATCH
+   The v1 build is kept in test/fixtures/football-coach-v1.html (the default). */
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
-const [oldF,newF=path.join(__dirname,'..','dist','football-coach.html')]=process.argv.slice(2);
+const [oldF=path.join(__dirname,'fixtures','football-coach-v1.html'),newF=path.join(__dirname,'..','dist','football-coach.html')]=process.argv.slice(2);
 const md5=x=>crypto.createHash('md5').update(x).digest('hex').slice(0,8);
 const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api.live&&!api.live.done&&g++<800){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}}
   api.openOffseason(); for(let c=0;c<4;c++){const S=api.S;if(!S.off)break;if(S.off.act.userOpen&&S.off.move===null)S.off.move=(S.off.jobs[0]&&S.off.jobs[0].team)||S.myTeam;api.commitOffseason()}};

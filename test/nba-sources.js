@@ -7,7 +7,7 @@ const corr=(a,b)=>{const ma=a.reduce((x,y)=>x+y)/a.length,mb=b.reduce((x,y)=>x+y
 const cat={}; const add=(k,i,v)=>{(cat[k]=cat[k]||Array(30).fill(0))[i]+=v};
 const pre=[];
 for(let y=0;y<4;y++){
-  const E=api.SEA; let g=0; while(E.phase!=='done'&&g++<200)E.advance();
+  const E=api.SEA; let g=0; while(E.phase!=='done'&&g++<600)E.advance();
   const T=api.NAMES; const p0=T.map(t=>val(api.U.roster[t]));
   api.openOffseason(); const O=api.S.off; if(O&&O.act.userOpen)O.move=api.S.myTeam; api.commitOffseason();
   const {rep,picks}=api.S.lastNbaRep; const pts=x=>Math.max(0,x.r-50);

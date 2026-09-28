@@ -5,7 +5,7 @@ const W=[0.22,0.2,0.2,0.19,0.19];
 const val=R=>{let s=0;for(let i=0;i<5;i++)s+=W[i]*(0.8*R[i].r+0.2*(R[i+5]||R[i]).r);return s};
 const corr=(a,b)=>{const ma=a.reduce((x,y)=>x+y)/a.length,mb=b.reduce((x,y)=>x+y)/b.length;let n=0,da=0,db=0;a.forEach((x,i)=>{n+=(x-ma)*(b[i]-mb);da+=(x-ma)**2;db+=(b[i]-mb)**2});return n/Math.sqrt(da*db)};
 for(let y=0;y<3;y++){
-  const E=api.SEA; let g=0; while(E.phase!=='done'&&g++<200)E.advance();
+  const E=api.SEA; let g=0; while(E.phase!=='done'&&g++<600)E.advance();
   const T=api.NAMES, pre={}, ids={};
   T.forEach(t=>{pre[t]=val(api.U.roster[t]); ids[t]=new Map(api.U.roster[t].map(p=>[p.n+'|'+p.p,p.r]))});
   api.openOffseason(); const O=api.S.off; if(O&&O.act.userOpen)O.move=api.S.myTeam; api.commitOffseason();

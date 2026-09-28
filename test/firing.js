@@ -19,7 +19,7 @@ let bad=0, offseasons=0, firings=0, oneBad=0; const fail=m=>{bad++; if(bad<=8)co
     const hot=c%3===2, T=teams[c%teams.length], T2=teams[(c+5)%teams.length];
     const api=mk()(file); api.newDynasty(T,700+c,'T',hot?[{team:T,name:'Coach A'},{team:T2,name:'Coach B'}]:null);
     for(let y=0;y<8;y++){
-      let g=0;while(api.SEA.phase!=='done'&&g++<200){
+      let g=0;while(api.SEA.phase!=='done'&&g++<600){
         api.setPlan('safe');                                   // play it badly on purpose
         api.doAdvance(); const b=global.__nodes.hgo; if(/handwrap/.test(global.__nodes.app.innerHTML)&&b&&b.onclick)b.onclick();
         let n=0;while(api.live&&!api.live.done&&n++<800){if(api.live.ask){const o=api.live.ask.dp.opts;api.answerLive(o[o.length-1][0])}else api.liveTick()}

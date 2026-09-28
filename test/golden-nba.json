@@ -1,5 +1,5 @@
 {
- "fp": "ce4c052b8bc712fc",
+ "fp": "95534f5cb8180f35",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -30,6 +30,16 @@
    "fp": "ce4c052b8bc712fc",
    "from": "c1ac47faf1e59711",
    "note": "Pro leagues: game days not weeks, a number on the top ten only, 'The night that was'; hockey records W-L-OTL and a points column"
+  },
+  {
+   "fp": "f8c21bb964ffce77",
+   "from": "ce4c052b8bc712fc",
+   "note": "The gameplan tip ('This choice is real') removed from every game; hockey: the NHL's 84-game matrix, regulation-wins tiebreak, OTL in schedules"
+  },
+  {
+   "fp": "95534f5cb8180f35",
+   "from": "f8c21bb964ffce77",
+   "note": "The last 'week' phrases in pro seasons ('that kind of night', injuries in game days)"
   }
  ],
  "result": {
@@ -44,7 +54,7 @@
     "heis": "d65be65f2863d2f4",
     "history": "f25ac99b15068fb1",
     "universe": "e867b2b7c18b0197",
-    "screens": "e62bcdc20f9defd1"
+    "screens": "04b7f920fc7ee3e3"
    },
    {
     "year": 2027,
@@ -56,7 +66,7 @@
     "heis": "8443e829701d0396",
     "history": "a4346fff0e9d2cf4",
     "universe": "12a031e87af30deb",
-    "screens": "0065717550311d29"
+    "screens": "5d7ab6bc7cba2900"
    }
   ],
   "Detroit#777": [
@@ -70,7 +80,7 @@
     "heis": "a34ff66d88be5fdc",
     "history": "696737dc492fafd5",
     "universe": "66d8bb447215cf18",
-    "screens": "04c23e77a7ac8adc"
+    "screens": "eceb697da3f68545"
    },
    {
     "year": 2027,
@@ -82,7 +92,7 @@
     "heis": "e4580e67bdf34bcd",
     "history": "05141294ff2b8146",
     "universe": "8a54e0d312b50d68",
-    "screens": "ca109c937a0b76b5"
+    "screens": "d08cf4913e55c180"
    }
   ],
   "schedules#60": [

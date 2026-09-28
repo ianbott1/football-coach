@@ -452,7 +452,7 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
-  /* what the job demands, by franchise strength: wins over 82 games, and a
+  /* what the job demands, by franchise strength: wins over 84 games, and a
      par for the playoffs (how far the job expects you to go) */
   expectations(p){
     if(p>=1600)return {w:50,par:2.2,l:"Built to win now. A conference final is the floor.",t:"CONTEND"};

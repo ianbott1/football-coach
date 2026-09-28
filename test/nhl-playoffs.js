@@ -1,5 +1,5 @@
 /* Pro hockey: the season and the playoffs follow the league's rules every
-   season. 82 games each; points = 2 a win + 1 an overtime loss; 16
+   season. 84 games each; points = 2 a win + 1 an overtime loss; 16
    qualifiers: the top three in each division and two wild cards in each
    conference; the better division winner plays the second wild card, the
    other the first, 2 v 3 in each division; best of seven, first to four,
@@ -14,10 +14,10 @@ let bad=0,checks=0; const ok=(c,msg)=>{checks++; if(!c){bad++; if(bad<=10)consol
 const HOME=[1,1,0,0,1,0,1]; let otl=0,ptsAll=0,teams=0;
 for(let s=0;s<N;s++){
   api.newDynasty(api.NAMES[(s*5)%32],400+s,'T'); const E=api.SEA; let g=0;
-  while(E.phase!=='done'&&g++<200)E.advance();
+  while(E.phase!=='done'&&g++<600)E.advance();
   const y=E.year, per={}, myOtl={};
-  E.weeks.slice(0,90).forEach(w=>w.games.forEach(x=>{[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1); if(x.ot)myOtl[x.loser]=(myOtl[x.loser]||0)+1}));
-  ok(api.NAMES.every(t=>per[t]===82), `${y}: not everyone played 82`);
+  E.weeks.slice(0,194).forEach(w=>w.games.forEach(x=>{[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1); if(x.ot)myOtl[x.loser]=(myOtl[x.loser]||0)+1}));
+  ok(api.NAMES.every(t=>per[t]===84), `${y}: not everyone played 84`);
   ok(api.NAMES.every(t=>E.pts(t)===2*(E.regRec||E.rec)[t][0]+((E.otl||{})[t]||0)&&((E.otl||{})[t]||0)===(myOtl[t]||0)), `${y}: points or overtime losses don't add up`);
   api.NAMES.forEach(t=>{otl+=(myOtl[t]||0); ptsAll+=E.pts(t); teams++});
   ok(E.field.length===16, `${y}: ${E.field.length} qualifiers`);
@@ -44,6 +44,6 @@ for(let s=0;s<N;s++){
   });
   ok(!!E.champion&&E.champion===E.series.r4[0].winner, `${y}: the champion didn't win the Final`);
 }
-console.log(`  (overtime losses a team a season ${(otl/teams).toFixed(1)}, NHL ~9-10; points a team ${(ptsAll/teams).toFixed(1)}, NHL ~91-92)`);
+console.log(`  (overtime losses a team a season ${(otl/teams).toFixed(1)}, NHL ~9-10; points a team ${(ptsAll/teams).toFixed(1)}, 84 games: ~94)`);
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed (${N} seasons)`:`MATCH all ${checks} checks (${N} seasons)`);
 process.exit(bad?1:0);

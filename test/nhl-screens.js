@@ -10,7 +10,7 @@ const title=api.titleHTML();
 if(!/wm-a">Hockey</.test(title)||/football/i.test(title.replace(/<[^>]+>/g,' '))){console.log('MISMATCH the title screen is not basketball\'s: '+title.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,120));process.exit(1)}
 api.newDynasty(process.env.TEAM||'Boston',5,'T');
 const pages=[['title',title]]; const grab=(lab)=>pages.push([lab,(global.__nodes.app?global.__nodes.app.innerHTML:'')]);
-for(let y=0;y<2;y++){let g=0;while(api.SEA.phase!=='done'&&g++<200){api.doAdvance();grab('step '+api.SEA.phase);
+for(let y=0;y<2;y++){let g=0;while(api.SEA.phase!=='done'&&g++<600){api.doAdvance();grab('step '+api.SEA.phase);
   if(api.SEA.phase==='open'&&!api.live&&!pages.some(p=>p[0]==='selection sunday '+api.SEA.year)){pages.push(['selection sunday '+api.SEA.year,api.view('scores')]); if(!/You're in|So close|Not this year/.test(pages[pages.length-1][1]))pages.push(['selection sunday','CRASH-MARK: no reveal'])}let n=0;while(api.live&&!api.live.done&&n++<400){if(api.live.ask){grab('call');api.answerLive(api.live.ask.dp.opts[0][0])}else{api.liveTick()}}
   if(api.SEA.step===12){['team','scores','poll','stand'].forEach(v=>pages.push(['view '+v,api.view(v)]));['program','teams','coaches','shared'].forEach(d=>pages.push(['dyn '+d,api.view('dyn',d)]))}
   await new Promise(r=>setImmediate(r))}
