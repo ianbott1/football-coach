@@ -1,5 +1,5 @@
 {
- "fp": "39fa17049d54884a",
+ "fp": "3fcd8c6d541629c1",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -15,6 +15,11 @@
    "fp": "39fa17049d54884a",
    "from": "6a8256fbb0bd3534",
    "note": "The NHL's 84-game schedule: new results throughout"
+  },
+  {
+   "fp": "3fcd8c6d541629c1",
+   "from": "39fa17049d54884a",
+   "note": "Season one: the real Sept 29 - Nov 29 NHL games (429), the rest generated to the matrix; 97 game days"
   }
  ],
  "out": [
@@ -24,20 +29,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "46-43",
-      "result": "Lost in the first round",
-      "grade": "B+"
+      "rec": "55-45",
+      "result": "Lost in the conference final",
+      "grade": "A+"
      },
-     "book": "6747834cf7f6dd2c"
+     "book": "dc329529b3c4cebd"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "57-42",
-      "result": "Lost in the conference final",
-      "grade": "A+"
+      "rec": "53-40",
+      "result": "Lost in the second round",
+      "grade": "A"
      },
-     "book": "05d8f606159c896a"
+     "book": "259f11700cd5906a"
     }
    ]
   },
@@ -47,20 +52,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "42-42",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "50-48",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "344964a6cbb2977d"
+     "book": "e91e53b3e9764281"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "51-46",
-      "result": "Lost in the second round",
-      "grade": "A"
+      "rec": "51-38",
+      "result": "Lost in the first round",
+      "grade": "A-"
      },
-     "book": "178be71a3173ca56"
+     "book": "0a93ee48f553b3d2"
     }
    ]
   },
@@ -70,20 +75,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "41-43",
+      "rec": "37-47",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "79d7b28f7118486c"
+     "book": "3f2b8853c928718c"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "38-46",
+      "rec": "35-49",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "e0922113c47420fb"
+     "book": "ecce0f10f14e18b1"
     }
    ]
   }
