@@ -1,5 +1,5 @@
 {
- "fp": "8471a290e425a9a9",
+ "fp": "421dac5f9b9f3e30",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -70,6 +70,11 @@
    "fp": "8471a290e425a9a9",
    "from": "8471a290e425a9a9",
    "note": "A Sim it button (all games); basketball conference tournaments take every team"
+  },
+  {
+   "fp": "421dac5f9b9f3e30",
+   "from": "8471a290e425a9a9",
+   "note": "MVP compares each player with his position, plus a quarterback premium (1.12): quarterbacks win ~86%, not every year"
   }
  ],
  "out": [
@@ -129,7 +134,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "d66227429d72ae13"
+     "book": "3c078a084dd2ce5c"
     },
     {
      "team": "Tennessee",
@@ -138,7 +143,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "14ec3e1915f1d220"
+     "book": "4503d4efc32e770b"
     }
    ]
   }

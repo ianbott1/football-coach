@@ -23,7 +23,16 @@ extendSeason({
       if(pl&&(pl.st||0)>=8)all.push({t:t,n:pl.n,p:pl.p,r:pl.r,c:pl.c,
         prod:pl.prod||0,line:statLine(pl.p,pl.st2),rec:this.rec[t][0]+"-"+this.rec[t][1]});
     }));
-    all.sort((a,b)=>b.prod-a.prod);
+    // measured against the position: production over the typical production
+    // of that position's best eight, then the voters' premium for the
+    // position (LEAGUE.awards.premium). By raw production a quarterback won
+    // every year (passing yards dwarf everything); real voters pick one about
+    // nine years in ten.
+    const scale={}, P=LEAGUE.awards.premium||{};
+    [...new Set(all.map(x=>x.p))].forEach(p=>{const top=all.filter(x=>x.p===p).map(x=>x.prod).sort((a,b)=>b-a).slice(0,8);
+      scale[p]=top.length?top.reduce((a,b)=>a+b,0)/top.length:1});
+    all.forEach(x=>x.score=x.prod/Math.max(1e-9,scale[x.p])*(P[x.p]||1));
+    all.sort((a,b)=>b.score-a.score);
     return all.slice(0,n||10);
   },
   allConference(){

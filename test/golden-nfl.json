@@ -1,5 +1,5 @@
 {
- "fp": "24e3effd0a7dfcfd",
+ "fp": "c2edeb9913c9ae5a",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -95,6 +95,11 @@
    "fp": "24e3effd0a7dfcfd",
    "from": "24e3effd0a7dfcfd",
    "note": "Sim game stays visible after a finished game (it hid whenever a live game existed, even a finished one)"
+  },
+  {
+   "fp": "c2edeb9913c9ae5a",
+   "from": "24e3effd0a7dfcfd",
+   "note": "MVP compares each player with his position, plus a quarterback premium (1.12): quarterbacks win ~86%, not every year"
   }
  ],
  "result": {
@@ -106,8 +111,8 @@
     "champion": "LA Rams",
     "rec": "85d937d37fb50339",
     "poll": "c40cf09e42c0bddf",
-    "heis": "d0f3e7cc2ab4d03b",
-    "history": "af399a4f094fa72e",
+    "heis": "2a5561abe637c7c5",
+    "history": "c1370d677edafee7",
     "universe": "5c25c8624a8c0f83",
     "screens": "1775127f99b2f070"
    },
@@ -118,7 +123,7 @@
     "champion": "Buffalo",
     "rec": "57365aaecb3b93a9",
     "poll": "66f13ce01f3ecebb",
-    "heis": "030c6a943c4ef77c",
+    "heis": "7511091be56ae9c2",
     "history": "a1b3e7e6b29866fd",
     "universe": "2495f443a426fa85",
     "screens": "b825b448b91841fa"
@@ -130,8 +135,8 @@
     "champion": "Washington",
     "rec": "4cc8debde4096674",
     "poll": "6273c2715f39d92e",
-    "heis": "2cefdc7752a1647a",
-    "history": "6bcceec1fe2e52ce",
+    "heis": "a0fe06befa326843",
+    "history": "8e82c59f7e3292cc",
     "universe": "039ac77486fe7e4e",
     "screens": "4dc692a70ab3c597"
    },
@@ -142,8 +147,8 @@
     "champion": "Cincinnati",
     "rec": "87880722d3b742c9",
     "poll": "fbc52d9dd5384efd",
-    "heis": "68a7a6aec8e7a510",
-    "history": "59302cfd5fa71ce7",
+    "heis": "fc45c23bffe230e0",
+    "history": "120135c68b1ece6c",
     "universe": "74997d040a4ec4b9",
     "screens": "d8f6fb2d252410f3"
    }
@@ -156,8 +161,8 @@
     "champion": "Philadelphia",
     "rec": "f52c479b2a6fe982",
     "poll": "c762feae87af9016",
-    "heis": "d3b2c11564b8f11f",
-    "history": "5cff5b4cb88489ea",
+    "heis": "59f7dde375fbecb9",
+    "history": "bdbc0ed434e7fa9e",
     "universe": "32746977d15a3d1a",
     "screens": "e5c66d8f33eb3811"
    },
@@ -168,8 +173,8 @@
     "champion": "New England",
     "rec": "c010e8401914ee65",
     "poll": "60d781f054326a4a",
-    "heis": "479e72021dd706cc",
-    "history": "5118ec1f5481b37f",
+    "heis": "83d86d638d45c8f3",
+    "history": "248b06d8f13d9e98",
     "universe": "f63fd1bfdf64a2d2",
     "screens": "eafd4361289f7467"
    },
@@ -180,7 +185,7 @@
     "champion": "Baltimore",
     "rec": "06cbcd467fc38a80",
     "poll": "e64782d48f9f3d1b",
-    "heis": "2a82b1b1d72919bf",
+    "heis": "0d56233ece8288c1",
     "history": "6e014f5c133dbc46",
     "universe": "4574b18e2ea458cc",
     "screens": "b6661fe4f2245760"
@@ -192,8 +197,8 @@
     "champion": "NY Giants",
     "rec": "540f7f4e27b4ed83",
     "poll": "9dcc05f79b33843e",
-    "heis": "a38a1f22fb7e9ffd",
-    "history": "9c6d36dd93aa8565",
+    "heis": "7f669c895ee0044a",
+    "history": "57ea26a78e7c7632",
     "universe": "37006926700412dd",
     "screens": "bd043f2fd45197f3"
    }
@@ -206,8 +211,8 @@
     "champion": "Seattle",
     "rec": "4f74532b9e447e43",
     "poll": "6185b6bea4c1a155",
-    "heis": "c63d061e72508bed",
-    "history": "48b773ce295ab16d",
+    "heis": "0e8fc1afbcc4896b",
+    "history": "70b491fabfbb7b09",
     "universe": "d17abeea6960c98a",
     "screens": "b33457d86a96910f"
    },
@@ -218,8 +223,8 @@
     "champion": "Philadelphia",
     "rec": "6bbbe22678af5823",
     "poll": "0f20c21ab3c046d5",
-    "heis": "b3a40c4427046738",
-    "history": "e3b1730283b232fe",
+    "heis": "316a82440ff670aa",
+    "history": "495b5eb14fbb4348",
     "universe": "a19585553f8f98c8",
     "screens": "5cc56e9e01b93b44"
    },
@@ -230,8 +235,8 @@
     "champion": "Minnesota",
     "rec": "fe093d327864f7ef",
     "poll": "151284b3abd0971f",
-    "heis": "f0f9ceac579ecf05",
-    "history": "82ebef88dc24be12",
+    "heis": "1730cb30e15cbe96",
+    "history": "64eded16911688c5",
     "universe": "3b85d9012d6a81b9",
     "screens": "1299788a5ea2cc28"
    }
@@ -244,10 +249,10 @@
     "champion": "New England",
     "rec": "ab7b87aef346870c",
     "poll": "b427ed7f524b5991",
-    "heis": "08b9b4b2da4cda4f",
-    "history": "a492d3b57fc7d48e",
+    "heis": "5dce6b0b0d9803ef",
+    "history": "09ea8ca8643cc4de",
     "universe": "f4e45438d149aa9e",
-    "screens": "1a6c9aa683e4a3e0"
+    "screens": "8db7c6742bf6204e"
    },
    {
     "year": 2027,
@@ -256,8 +261,8 @@
     "champion": "Kansas City",
     "rec": "6326de70c5994115",
     "poll": "c700cc93be04043e",
-    "heis": "fb372bf7b91b98b6",
-    "history": "124131e9caa103f7",
+    "heis": "afb8c390ff01c79c",
+    "history": "62f39ccf388874f4",
     "universe": "f8627e6e1fe93699",
     "screens": "727fbca0bfb4f019"
    },
@@ -268,7 +273,7 @@
     "champion": "Green Bay",
     "rec": "96c2ebcea520a8e1",
     "poll": "259530f406f6bf08",
-    "heis": "7ce85beb8ffe07aa",
+    "heis": "88c4ea05b969c49d",
     "history": "049f24f585357e98",
     "universe": "8bbf9dbf3a5e1f4c",
     "screens": "eb09b248745576d6"

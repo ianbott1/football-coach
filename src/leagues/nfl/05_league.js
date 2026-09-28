@@ -56,7 +56,9 @@ const LEAGUE={
 
   awards:{mvp:"MVP",
     /* MVP voters care about quarterbacks above everything */
-    weights:{QB:2.2,RB:1.05,WR:0.95,WR2:0.35,OT:0.15,EDGE:0.8,DT:0.35,LB:0.35,CB:0.4,S:0.3}},
+    weights:{QB:2.2,RB:1.05,WR:0.95,WR2:0.35,OT:0.15,EDGE:0.8,DT:0.35,LB:0.35,CB:0.4,S:0.3},
+    /* the MVP race compares each player with his position; this is the voters' premium on top */
+    premium:{QB:+((typeof process!=="undefined"&&process.env&&process.env.QBP)||1.12),RB:1,WR:0.97,EDGE:0.95,WR2:0.8,CB:0.85,S:0.8,LB:0.8,DT:0.8,OT:0.6}},
 
   tuning:{hfa:20, drives:10, gapScale:2.2, gameState:true},                  // less home field than on campus; fewer, longer drives
   venues:{"Seattle":10,"Kansas City":9,"Green Bay":9,"Buffalo":8,"Denver":8,"Philadelphia":7,
