@@ -793,7 +793,9 @@ const LEAGUE={
 
   awards:{mvp:"MVP",
     /* MVP voters care about quarterbacks above everything */
-    weights:{QB:2.2,RB:1.05,WR:0.95,WR2:0.35,OT:0.15,EDGE:0.8,DT:0.35,LB:0.35,CB:0.4,S:0.3}},
+    weights:{QB:2.2,RB:1.05,WR:0.95,WR2:0.35,OT:0.15,EDGE:0.8,DT:0.35,LB:0.35,CB:0.4,S:0.3},
+    /* the MVP race compares each player with his position; this is the voters' premium on top */
+    premium:{QB:+((typeof process!=="undefined"&&process.env&&process.env.QBP)||1.12),RB:1,WR:0.97,EDGE:0.95,WR2:0.8,CB:0.85,S:0.8,LB:0.8,DT:0.8,OT:0.6}},
 
   tuning:{hfa:20, drives:10, gapScale:2.2, gameState:true},                  // less home field than on campus; fewer, longer drives
   venues:{"Seattle":10,"Kansas City":9,"Green Bay":9,"Buffalo":8,"Denver":8,"Philadelphia":7,
@@ -3737,7 +3739,16 @@ extendSeason({
       if(pl&&(pl.st||0)>=8)all.push({t:t,n:pl.n,p:pl.p,r:pl.r,c:pl.c,
         prod:pl.prod||0,line:statLine(pl.p,pl.st2),rec:this.rec[t][0]+"-"+this.rec[t][1]});
     }));
-    all.sort((a,b)=>b.prod-a.prod);
+    // measured against the position: production over the typical production
+    // of that position's best eight, then the voters' premium for the
+    // position (LEAGUE.awards.premium). By raw production a quarterback won
+    // every year (passing yards dwarf everything); real voters pick one about
+    // nine years in ten.
+    const scale={}, P=LEAGUE.awards.premium||{};
+    [...new Set(all.map(x=>x.p))].forEach(p=>{const top=all.filter(x=>x.p===p).map(x=>x.prod).sort((a,b)=>b-a).slice(0,8);
+      scale[p]=top.length?top.reduce((a,b)=>a+b,0)/top.length:1});
+    all.forEach(x=>x.score=x.prod/Math.max(1e-9,scale[x.p])*(P[x.p]||1));
+    all.sort((a,b)=>b.score-a.score);
     return all.slice(0,n||10);
   },
   allConference(){
@@ -4768,7 +4779,7 @@ function newDynasty(team,seed,coachName,roster){
    Shown beside the main button, in the bottom bar and in the desktop side
    panel (on a laptop the side panel is where the buttons are). */
 function simGameButton(id){
-  if(!SEA||SEA.phase==="done"||(S.watchMode||"all")==="never"||prefersReduced()||live)return "";
+  if(!SEA||SEA.phase==="done"||(S.watchMode||"all")==="never"||prefersReduced()||(live&&!live.done))return "";
   const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
   return ug?`<button class="skip" id="${id}">Sim game</button>`:"";
 }
@@ -6397,7 +6408,7 @@ function render(){
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
       ${(()=>{const sk=canSkip();return sk?`<button class="skip" id="skip">Sim ${sk.n} weeks
         &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
-      ${(()=>{ if(inOff||done||(S.watchMode||"all")==="never"||prefersReduced()||live)return "";
+      ${(()=>{ if(inOff||done||(S.watchMode||"all")==="never"||prefersReduced()||(live&&!live.done))return "";
         const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
         return ug?`<button class="skip" id="simone">Sim game</button>`:""})()}
       <button class="advance ${done||inOff?'gold':''}" id="adv" ${
