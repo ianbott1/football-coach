@@ -139,7 +139,7 @@ class Season{
         LEAGUE.draws?{draw:fdraw,pens:fpens}:{},extra||{});
     }
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
-    if(LEAGUE.tracksOT)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"});   // hockey: sudden death in the playoffs
+    if(LEAGUE.tracksOT||LEAGUE.draws)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"});   // hockey: sudden death; soccer: extra time and penalties
     const gs=playGame(this.rng,eloH,eloA,
       this.userTeam===a?plan:"balanced",
       this.userTeam===b?plan:"balanced",
