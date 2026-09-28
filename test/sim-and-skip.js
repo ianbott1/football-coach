@@ -12,7 +12,7 @@ const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,s
 const D=f=>path.join(__dirname,'..','dist',f);
 let bad=0,checks=0; const ok=(c,msg)=>{checks++; if(!c){bad++; console.log('  FAIL '+msg)}};
 (async()=>{
-for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Kansas City'],['basketball-coach.html','Duke'],['basketball-coach-pro.html','Boston']]){
+for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Kansas City'],['basketball-coach.html','Duke'],['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston']]){
   const name=file.replace('.html','');
   for(const [w,id] of [[390,'simone'],[1280,'simone2']]){
     const api=mk()(D(file)); global.window.scrollTo=()=>{}; global.window.innerWidth=w; api.newDynasty(team,6,'T');

@@ -1,10 +1,15 @@
 {
- "fp": "63ab31cc9ed9a902",
+ "fp": "404165c33d796334",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
    "from": null,
    "note": "First pro hockey baseline: Boston and Edmonton"
+  },
+  {
+   "fp": "404165c33d796334",
+   "from": "63ab31cc9ed9a902",
+   "note": "Pro leagues: game days not weeks, a number on the top ten only, 'The night that was'; hockey records W-L-OTL and a points column"
   }
  ],
  "result": {
@@ -19,7 +24,7 @@
     "heis": "99213acfd6f55514",
     "history": "40ad1a3701978980",
     "universe": "f22c2bf9090cf55e",
-    "screens": "800a005727a5c627"
+    "screens": "b1629b222e8a5067"
    },
    {
     "year": 2027,
@@ -31,7 +36,7 @@
     "heis": "e5a7a5fe606dfcba",
     "history": "6cdf18b704b5cb5c",
     "universe": "ed5b2b0c503563d0",
-    "screens": "789165e3903dc2f5"
+    "screens": "942ffdb0ac74716e"
    }
   ],
   "Edmonton#777": [
@@ -45,7 +50,7 @@
     "heis": "bd410a4f5ec7acf7",
     "history": "3e60f311b41c8931",
     "universe": "3cb57a41d68905c5",
-    "screens": "faad59de637a6c83"
+    "screens": "34c821b220baa0bb"
    },
    {
     "year": 2027,
@@ -57,7 +62,7 @@
     "heis": "2484e11bda0efd83",
     "history": "922e938873f319c6",
     "universe": "925e79cd76b640a5",
-    "screens": "c8a8f0d1460a4e71"
+    "screens": "ca2ae1cb959c37b4"
    }
   ],
   "schedules#60": [

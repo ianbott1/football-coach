@@ -1,10 +1,15 @@
 {
- "fp": "53981de08c69aade",
+ "fp": "6a8256fbb0bd3534",
  "log": [
   {
    "fp": "53981de08c69aade",
    "from": null,
    "note": "First pro hockey hot-seat baseline: Boston and Montreal"
+  },
+  {
+   "fp": "6a8256fbb0bd3534",
+   "from": "53981de08c69aade",
+   "note": "Same results; the stored standings text is now W-L-OTL with a points column"
   }
  ],
  "out": [
@@ -41,7 +46,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "5932de1629b0be30"
+     "book": "743291b1dd6c2f1d"
     },
     {
      "team": "Montreal",
@@ -64,7 +69,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "6e1d2ff437c816d1"
+     "book": "30e73ca3b4f71180"
     },
     {
      "team": "Montreal",

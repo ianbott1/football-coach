@@ -367,6 +367,9 @@ function newDynasty(team,seed,coachName,roster){
 /* ============ advance ============ */
 /* a team's record as text: W-L, or the league's own (hockey: W-L-OTL) */
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
+function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
+/* how many ranked teams wear a number: the top 25 in college, fewer in a 30-team league */
+const RANK_TOP=(LEAGUE.rankTop||25);
 /* "Sim game": play this one game without watching it, whatever the setting.
    Shown beside the main button, in the bottom bar and in the desktop side
    panel (on a laptop the side panel is where the buttons are). */
@@ -583,13 +586,13 @@ function endSeason(rng,choices,act,seasonTeam){
 }
 
 /* ============ rendering ============ */
-function rkTag(r){return r&&r<=25?`<span class="rk">${r}</span>`:""}
+function rkTag(r){return r&&r<=RANK_TOP?`<span class="rk">${r}</span>`:""}
 
 function gameLine(g,mine){
   const hw=g.winner===g.home;
   const best=Math.min(g.hrank||999,g.arank||999);
   const ups=g.hrank&&g.arank?(hw?g.hrank>g.arank:g.arank>g.hrank):false;
-  const cls="game"+(best<=25?" marquee":"")+(ups&&best<=25?" upset":"")+(mine?" mine":"");
+  const cls="game"+(best<=RANK_TOP?" marquee":"")+(ups&&best<=RANK_TOP?" upset":"")+(mine?" mine":"");
   const side=(t,s,r,w,seed,rec)=>`<div class="side ${w?'w':''}">${
     seed?`<span class="sdchip">${seed}</span>`:rkTag(r)}
     <span class="nm">${TL(t)}</span>${rec?`<span class="grec">${rec}</span>`:""}
@@ -597,7 +600,7 @@ function gameLine(g,mine){
   const chips=[];
   if(g.title)chips.push(`<span class="chip ttl">${esc(g.title)}</span>`);
   if(g.site)chips.push(`<span class="chip ttl">${esc(g.site)}</span>`);
-  if(ups&&best<=25)chips.push(`<span class="chip up">Upset</span>`);
+  if(ups&&best<=RANK_TOP)chips.push(`<span class="chip up">Upset</span>`);
   if(g.neutral&&!g.site&&!g.title)chips.push(`<span class="chip">Neutral</span>`);
   if(g.margin<=3)chips.push(`<span class="chip">One score</span>`);
   const rv=LEAGUE.rivals.name(g.home,g.away);
@@ -916,7 +919,7 @@ function teamCardHTML(my,rk,co){
     <div class="iname" style="color:${teamInk(my)}">${esc(my)}</div>
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[my]])} &middot; ${SEA.year} season</div>
     <div class="stats">
-      <div><b>${(()=>{const r=liveRec(my);return r[0]+"-"+r[1]})()}</b><span>Record</span></div>
+      <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
       <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>
       <div><b>${reveal==="half"?"&mdash;":(rk[my]<=25?"#"+rk[my]:"NR")}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
@@ -1137,7 +1140,7 @@ function milestones(wins,losses,result,rank,team,history){
   const bestW=Math.max(...mine.map(r=>r[0]));
   const bestR=Math.min(...mine.map(r=>r[2]));
   if(wins>bestW)out.push(`Best season of your tenure &mdash; ${wins} wins, past the old high of ${bestW}.`);
-  if(rank<bestR&&rank<=25)out.push(`Highest finish yet at No. ${rank}.`);
+  if(rank<bestR&&rank<=RANK_TOP)out.push(`Highest finish yet at No. ${rank}.`);
   if(LEAGUE.goals.isTitle(result)&&!H.some(h=>h.champion===my))
     out.push(LEAGUE.goals.firstTitle);
   let streak=0;
@@ -1165,7 +1168,7 @@ function vary(list,key){
 function weekNews(W){
   const my=S.myTeam, items=[];
   const gs=W.games;
-  const rankTxt=r=>r&&r<=25?"No. "+r+" ":"";
+  const rankTxt=r=>r&&r<=RANK_TOP?"No. "+r+" ":"";
 
   // headline: the best ranked team to go down
   const ups=gs.filter(g=>loserRank(g)<=25&&winnerRank(g)>loserRank(g))
@@ -1178,7 +1181,7 @@ function weekNews(W){
     items.push({p:90,k:"upset",tone:"flag",
       h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
       b: lr<=5 ? vary([`A top-five team is down. ${L} won't drop out, but the margin for error is gone.`,
-                       `${L} was supposed to be one of the best. Not this week.`,
+                       `${L} was supposed to be one of the best. ${LEAGUE.text.week?"Not tonight.":"Not this week."}`,
                        `The top five just lost a member for a week. ${L} has work to do.`],"ub"+L)
         : wr>25 ? vary([`${Wn} came in unranked. ${L} will pay for this one in ${LEAGUE.text.ranking}.`,
                         `Nobody had ${Wn} on this one. ${L} will feel it in ${LEAGUE.text.ranking}.`],"ub"+L)
@@ -1305,7 +1308,7 @@ function newsBlock(){
   if(!W||!W.games.length)return "";
   const items=weekNews(W).slice(0,6);
   if(!items.length)return "";
-  return `<div class="grouphead">The week that was</div>`+
+  return `<div class="grouphead">${LEAGUE.text.week?"The "+LEAGUE.text.week+" that was":"The week that was"}</div>`+
     items.map(x=>`<div class="news ${x.tone}">
       <div class="nh">${esc(x.h)}</div>${x.b?`<div class="nb">${esc(x.b)}</div>`:""}
     </div>`).join("");
@@ -1314,7 +1317,7 @@ function newsBlock(){
 /* ============ playoff picture ============ */
 function scoresView(){
   if(!SEA.weeks.length)
-    return `<div class="note">The season hasn't started. Hit the button below to play Week 1.</div>`;
+    return `<div class="note">The season hasn't started. Hit the button below to play ${LEAGUE.stepLabel?LEAGUE.stepLabel(0):"Week 1"}.</div>`;
   const pv=LEAGUE.ui.postseasonView(); if(pv)return pv;
   const W=SEA.weeks[SEA.weeks.length-1];
   if(!W)return `<div class="note">No games yet.</div>`;
@@ -1339,7 +1342,7 @@ function standingsView(){
   order.forEach(c=>{
     const head=`<div class="srow shead"><span class="spos">#</span>
       <span class="dot" style="opacity:0"></span>
-      <span class="steam">Team</span><span class="sconf">${LEAGUE.text.groupShort||"Conf"}</span>
+      <span class="steam">Team</span><span class="sconf">${LEAGUE.standingsCol?LEAGUE.standingsCol.label:(LEAGUE.text.groupShort||"Conf")}</span>
       <span class="sall">Overall</span></div>`;
     const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}">
       <span class="spos ${mark?'qual':''}">${i+1}</span>
@@ -1975,7 +1978,7 @@ function render(){
       <div class="topbar">
         <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
           <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
-        <div class="tb-right">${(()=>{const r=liveRec(my);return r[0]+"-"+r[1]})()}
+        <div class="tb-right">${recFmt(my,liveRec(my))}
           ${reveal==="half"?"":(rk[my]<=25?`<span class="tb-rk">#${rk[my]}</span>`:"")}
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>

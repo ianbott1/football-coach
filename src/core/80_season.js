@@ -181,7 +181,7 @@ class Season{
     this._award(w,out);                   // the league's awards
     this.talent.advance(w+1);
     out.sort((a,b)=>Math.min(a.hrank,a.arank)-Math.min(b.hrank,b.arank));
-    this.weeks.push({label:`Week ${w+1}`,date:LEAGUE.dates[w],games:out,
+    this.weeks.push({label:LEAGUE.stepLabel?LEAGUE.stepLabel(w):`Week ${w+1}`,date:LEAGUE.dates[w],games:out,
       poll:this.top25(prev),standings:this.standings(prev)});
   }
   top25(prev){
@@ -197,8 +197,8 @@ class Season{
         const px=this.confrec[x][0]/Math.max(1,this.confrec[x][0]+this.confrec[x][1]);
         const py=this.confrec[y][0]/Math.max(1,this.confrec[y][0]+this.confrec[y][1]);
         return py-px||this.confrec[y][0]-this.confrec[x][0]||this.elo[y]-this.elo[x];
-      }).map(t=>({team:t,cr:this.confrec[t][0]+"-"+this.confrec[t][1],
-                  rec:this.rec[t][0]+"-"+this.rec[t][1],rank:prev?prev[t]:0}));
+      }).map(t=>({team:t,cr:LEAGUE.standingsCol?String(LEAGUE.standingsCol.val(t,this)):this.confrec[t][0]+"-"+this.confrec[t][1],
+                  rec:LEAGUE.recText?LEAGUE.recText(t,this):this.rec[t][0]+"-"+this.rec[t][1],rank:prev?prev[t]:0}));
     });
     return out;
   }

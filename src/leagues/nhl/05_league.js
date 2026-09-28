@@ -64,7 +64,10 @@ const LEAGUE={
       <text x="36" y="51.2" text-anchor="middle" font-family="Impact,'Arial Black',sans-serif" font-size="7.5" fill="#F4F1EA">99</text>`},
   /* W-L-OTL, as hockey writes it; points: two a win, one an overtime loss */
   // the regular season's record: playoff games don't count in the standings
-  recText(t,sea){ const [w,l]=(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return `${w}-${l-o}-${o}` },
+  recText(t,sea,r){ const [w,l]=r||(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return `${w}-${l-o}-${o}` },
+  standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
+  stepLabel:w=>`Game day ${w+1}`,               // a pro season is game days, not weeks
+  rankTop:10,                                 // a number on the ten best, not twenty-five of thirty-two
   points(t,sea){ const [w]=(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return 2*w+o },
 
   text:{
@@ -80,6 +83,7 @@ const LEAGUE={
     ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
+    week:"night",                                // the digest: "The night that was"
     gameName:"Pro Hockey Coach", eyebrow:"Pro",
     site:"Pro Hockey Coach: ianbott1.github.io/football-coach",
     tiers:[

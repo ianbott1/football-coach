@@ -55,6 +55,8 @@ const LEAGUE={
         toBase:0.135,gapPerPoss:+((typeof process!=="undefined"&&process.env&&process.env.NBA_GAP)||0.0006),garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
   venues:{"Denver":6,"Utah":5,"Golden State":3,"Boston":3,"Oklahoma City":3,"Brooklyn":-3,"LA Clippers":-2,"Washington":-2},
   schedule:{games:82},
+  stepLabel:w=>`Game day ${w+1}`,               // a pro season is game days, not weeks
+  rankTop:10,                                 // a number on the ten best, not twenty-five of thirty
   playoff:{size:16, perSide:8, byes:0, playIn:true},
   /* the baby owl, suited up for the pros: a headband and a jersey number */
   art:{owlExtra:`
@@ -72,6 +74,7 @@ const LEAGUE={
     ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
+    week:"night",                                // the digest: "The night that was"
     gameName:"Pro Basketball Coach", eyebrow:"Pro",
     site:"Pro Basketball Coach: ianbott1.github.io/football-coach",
     tiers:[
