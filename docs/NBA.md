@@ -47,3 +47,21 @@ league (contracts, cap, draft board, free-agent targets, trade block).
     threes                           36.1%     ~36%
     turnovers per possession         .137      ~.13
     overtime                         5.5%      ~6%
+
+## League calibration (test/nba-history.js, 194 seasons of long careers)
+
+The engine's first settings let too little separate teams: wins spread with
+a standard deviation of 7.7 (real ~12-13) and first-round favourites won too
+rarely (1 v 8 74%, real ~94). The rating gap is worth more per possession in
+the pro game (gapPerPoss .00028 -> .0006):
+
+    measured                      game     NBA (approximate)
+    regular-season wins, sd       12.1     12-13
+    60-win teams a season         2.0      1-2
+    mean margin                   13.2     12-13
+    titles: 1 / 2 / 3 seeds       57-59% / 19% / 11%   ~55 / ~20 / ~10
+    first round 1v8 2v7 3v6 4v5   88 73 66 57          ~94 ~90 ~78 ~55
+    series in 4 / 5 / 6 / 7       28 / 30 / 24 / 18%   ~20 / 25 / 33 / 20
+    year-to-year win % r          0.64     0.6-0.7
+
+Known: 2 v 7 and 3 v 6 upsets remain too common.

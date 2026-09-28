@@ -52,7 +52,7 @@ const LEAGUE={
   tuning:{hfa:60, gapScale:1, pFloor:1200, pCeil:1850, talentSteps:+((typeof process!=="undefined"&&process.env&&process.env.NBA_TS)||12),
     /* the pro game (docs/NBA.md): 48 minutes in quarters, ~99 possessions */
     bb:{pace:99,paceSd:2.5,two:0.545,three:0.362,foul2:0.13,foul3:0.02,ft:0.785,and1:0.09,oreb:0.24,
-        toBase:0.135,gapPerPoss:0.00028,garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
+        toBase:0.135,gapPerPoss:+((typeof process!=="undefined"&&process.env&&process.env.NBA_GAP)||0.0006),garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
   venues:{"Denver":6,"Utah":5,"Golden State":3,"Boston":3,"Oklahoma City":3,"Brooklyn":-3,"LA Clippers":-2,"Washington":-2},
   schedule:{games:82},
   playoff:{size:16, perSide:8, byes:0, playIn:true},

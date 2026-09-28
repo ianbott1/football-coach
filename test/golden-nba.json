@@ -1,5 +1,5 @@
 {
- "fp": "8d59cde0123e43f7",
+ "fp": "6566e15a0375f3c7",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -15,59 +15,64 @@
    "fp": "8d59cde0123e43f7",
    "from": "17d49196be60ec24",
    "note": "Sim game: the button's new name, and it's now in the desktop side panel; team search counts the league's own teams; a skipped game's remaining calls take the neutral option"
+  },
+  {
+   "fp": "6566e15a0375f3c7",
+   "from": "8d59cde0123e43f7",
+   "note": "A rating gap is worth more in the pro game (gapPerPoss .0006): records, titles and series against NBA history"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "64f8614da5b20790",
-    "post": "dff97127e26124ce",
-    "champion": "Denver",
-    "rec": "7b067187b0789a90",
-    "poll": "61cd6bbaafbcb74c",
-    "heis": "5093c248dccfc3e6",
-    "history": "e6e5b114d45de542",
-    "universe": "490f54c7acfd79ad",
-    "screens": "0ec83b537e086165"
+    "games": "b1c0f0a27798dc7b",
+    "post": "31e7278761b2652f",
+    "champion": "Minnesota",
+    "rec": "914781dfcad3925c",
+    "poll": "fe56b4b47243fa9d",
+    "heis": "d65be65f2863d2f4",
+    "history": "f25ac99b15068fb1",
+    "universe": "e867b2b7c18b0197",
+    "screens": "55aaeca79f68ae11"
    },
    {
     "year": 2027,
-    "games": "b8f107344ddb78f8",
-    "post": "e8e18ece7941f6ba",
-    "champion": "Houston",
-    "rec": "a5e6a590bd2b619a",
-    "poll": "fdb31605ab2641f5",
-    "heis": "b6ab57903d397a0a",
-    "history": "bafc599e9025c572",
-    "universe": "d816cf0116c245ed",
-    "screens": "6e8330a1eccd3bd7"
+    "games": "290387aeba485998",
+    "post": "26ec463cd8c9646c",
+    "champion": "Oklahoma City",
+    "rec": "0b7254aa29878e73",
+    "poll": "2b46086e8c31967e",
+    "heis": "8443e829701d0396",
+    "history": "a4346fff0e9d2cf4",
+    "universe": "12a031e87af30deb",
+    "screens": "541e21718ac963d3"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "1d7d5a1cb9cefa06",
-    "post": "90bead271a7fd1c8",
-    "champion": "Oklahoma City",
-    "rec": "3fbb1cb6bee48845",
-    "poll": "0ae9db20a6202596",
-    "heis": "017c507aa3cb9406",
-    "history": "467b28bab4ce41de",
-    "universe": "ac57812476fa27d7",
-    "screens": "ff8f51167a154e41"
+    "games": "9903f010bdf26e87",
+    "post": "08b7364d05948c7d",
+    "champion": "Houston",
+    "rec": "24c7c551f0f34fd3",
+    "poll": "c222ec86ac346f5d",
+    "heis": "a34ff66d88be5fdc",
+    "history": "696737dc492fafd5",
+    "universe": "66d8bb447215cf18",
+    "screens": "b06b49b6e0e88b7e"
    },
    {
     "year": 2027,
-    "games": "2a7d9dcd15e8d5ec",
-    "post": "3b30201354cfa28a",
-    "champion": "Oklahoma City",
-    "rec": "0861f26a4dc1861c",
-    "poll": "bf9888697db0c2c5",
-    "heis": "f792074db0341d75",
-    "history": "8804f615ec8ee257",
-    "universe": "e5e073804ec8c28d",
-    "screens": "73b663fed6ddedec"
+    "games": "c391381601a61a26",
+    "post": "e1921ecc03b5db75",
+    "champion": "Houston",
+    "rec": "fe197bc7fcecbb19",
+    "poll": "c6318c5d639eef58",
+    "heis": "e4580e67bdf34bcd",
+    "history": "05141294ff2b8146",
+    "universe": "8a54e0d312b50d68",
+    "screens": "f2c68d2b9ef818db"
    }
   ],
   "schedules#60": [
