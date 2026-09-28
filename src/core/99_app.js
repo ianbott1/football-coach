@@ -3,7 +3,7 @@
    so they share the browser's storage: the slots used to be shared too, and a
    game could list (and overwrite) another game's saves. College football
    keeps the original keys, so its saves are untouched. */
-const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1"};
+const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1", nhl:"hkcoach-pro-v1"};
 const LEGACY_KEY="fbcoach-v2";
 const KEYBASE=SAVE_KEYS[LEAGUE.id]||LEGACY_KEY;
 const NSLOTS=3;
@@ -291,7 +291,8 @@ function saveLeague(d){
   if(!d)return null;
   if(d.league)return d.league;
   const R=d.uStart&&d.uStart.roster; if(!R)return "cfb";
-  for(const t in R){const p=(R[t]||[]).find(x=>x); if(!p)continue;
+  for(const t in R){const ps=(R[t]||[]).filter(x=>x).map(x=>x.p), p=(R[t]||[]).find(x=>x); if(!p)continue;
+    if(ps.indexOf("G")>=0||ps.indexOf("LW")>=0)return "nhl";      // hockey: wingers and goalies (it has a C too)
     const hoops=["PG","SG","SF","PF","C"].indexOf(p.p)>=0;      // basketball positions first:
     if(hoops)return p.k?"nba":"ncaab";                            // pro basketball has contracts too
     return p.k?"nfl":"cfb"}
