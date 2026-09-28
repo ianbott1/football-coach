@@ -14,9 +14,9 @@ let bad=0,checks=0; const ok=(c,msg)=>{checks++; if(!c){bad++; if(bad<=10)consol
 const HOME=[1,1,0,0,1,0,1]; let otl=0,ptsAll=0,teams=0;
 for(let s=0;s<N;s++){
   api.newDynasty(api.NAMES[(s*5)%32],400+s,'T'); const E=api.SEA; let g=0;
-  while(E.phase!=='done'&&g++<200)E.advance();
+  while(E.phase!=='done'&&g++<600)E.advance();
   const y=E.year, per={}, myOtl={};
-  E.weeks.slice(0,97).forEach(w=>w.games.forEach(x=>{[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1); if(x.ot)myOtl[x.loser]=(myOtl[x.loser]||0)+1}));
+  E.weeks.slice(0,194).forEach(w=>w.games.forEach(x=>{[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1); if(x.ot)myOtl[x.loser]=(myOtl[x.loser]||0)+1}));
   ok(api.NAMES.every(t=>per[t]===84), `${y}: not everyone played 84`);
   ok(api.NAMES.every(t=>E.pts(t)===2*(E.regRec||E.rec)[t][0]+((E.otl||{})[t]||0)&&((E.otl||{})[t]||0)===(myOtl[t]||0)), `${y}: points or overtime losses don't add up`);
   api.NAMES.forEach(t=>{otl+=(myOtl[t]||0); ptsAll+=E.pts(t); teams++});

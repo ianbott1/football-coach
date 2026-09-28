@@ -1,5 +1,5 @@
 {
- "fp": "3fcd8c6d541629c1",
+ "fp": "18951c6b463204e2",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -20,6 +20,11 @@
    "fp": "3fcd8c6d541629c1",
    "from": "39fa17049d54884a",
    "note": "Season one: the real Sept 29 - Nov 29 NHL games (429), the rest generated to the matrix; 97 game days"
+  },
+  {
+   "fp": "18951c6b463204e2",
+   "from": "3fcd8c6d541629c1",
+   "note": "A game day every calendar day: real Oct-Nov dates exact; days without your game played through (off in hot seat)"
   }
  ],
  "out": [
@@ -29,20 +34,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "55-45",
-      "result": "Lost in the conference final",
-      "grade": "A+"
+      "rec": "28-56",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "dc329529b3c4cebd"
+     "book": "4461251ce7d34f62"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "53-40",
-      "result": "Lost in the second round",
-      "grade": "A"
+      "rec": "60-48",
+      "result": "Lost in the Stanley Cup Final",
+      "grade": "A+"
      },
-     "book": "259f11700cd5906a"
+     "book": "6bc06ab42ab44488"
     }
    ]
   },
@@ -52,20 +57,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "50-48",
-      "result": "Lost in the second round",
-      "grade": "A-"
+      "rec": "24-60",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "e91e53b3e9764281"
+     "book": "9dd743ac613d0ffa"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "51-38",
+      "rec": "46-44",
       "result": "Lost in the first round",
-      "grade": "A-"
+      "grade": "B+"
      },
-     "book": "0a93ee48f553b3d2"
+     "book": "e06fee48b21a62a7"
     }
    ]
   },
@@ -77,9 +82,9 @@
      "last": {
       "rec": "37-47",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "3f2b8853c928718c"
+     "book": "09c078322b63838c"
     },
     {
      "team": "Montreal",
@@ -88,7 +93,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "ecce0f10f14e18b1"
+     "book": "9ea16adc421cc0bf"
     }
    ]
   }

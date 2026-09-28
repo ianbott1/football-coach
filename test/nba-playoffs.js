@@ -13,7 +13,7 @@ let bad=0,checks=0; const ok=(c,msg)=>{checks++; if(!c){bad++; if(bad<=10)consol
 const HOME=[1,1,0,0,1,0,1];
 for(let s=0;s<N;s++){
   api.newDynasty(api.NAMES[(s*7)%30],300+s,'T'); const E=api.SEA; let g=0;
-  while(E.phase!=='done'&&g++<200)E.advance();
+  while(E.phase!=='done'&&g++<600)E.advance();
   const y=E.year, per={};
   E.weeks.slice(0,90).forEach(w=>w.games.forEach(x=>[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1)));
   ok(api.NAMES.every(t=>per[t]===82), `${y}: not everyone played 82 (${Math.min(...Object.values(per))}-${Math.max(...Object.values(per))})`);

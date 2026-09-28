@@ -366,6 +366,10 @@ function newDynasty(team,seed,coachName,roster){
 
 /* ============ advance ============ */
 /* a team's record as text: W-L, or the league's own (hockey: W-L-OTL) */
+/* the season's unit in words: a week in college and pro football; a night (and
+   game days) in the long pro seasons */
+function WK(){ return LEAGUE.text.week||"week" }
+function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
 /* how many ranked teams wear a number: the top 25 in college, fewer in a 30-team league */
@@ -380,7 +384,19 @@ function simGameButton(id){
 }
 let simOnce=false;
 function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } }
+/* A league with a game every calendar day (LEAGUE.skipIdle) plays through
+   the days you don't play: the button always takes you to your next game. */
+function skipIdleDays(){
+  if(!LEAGUE.skipIdle||isHotSeat()||live)return;
+  let g=0;
+  while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
+    // the same bookkeeping as any advance: a reload replays exactly S.steps steps
+    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+    SEA.advance(); S.steps++;
+  }
+}
 function doAdvance(){
+  skipIdleDays();
   if(SEA.phase==="done"){ openOffseason(); return; }
   const before=SEA.step;
   const ph=SEA.phase;
@@ -957,7 +973,7 @@ function injuryHTML(inj){
     h+=`<div class="grouphead">Injury report</div>`;
     h+=inj.map(e=>`<div class="injrow"><span class="ipos">${esc(e.k)}</span>
       <div class="iwho"><div class="pname">${esc(e.who||e.k)}</div>
-      <div class="psub">out ${e.w} more week${e.w===1?"":"s"}${
+      <div class="psub">out ${e.w} more ${stepWord(e.w)}${
         e.rating?" &middot; rated "+e.rating:""}</div></div>
       <span class="imag">${Math.round(e.m)}</span></div>`).join("");
   }
@@ -1183,7 +1199,7 @@ function weekNews(W){
       h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
       b: lr<=5 ? vary([`A top-five team is down. ${L} won't drop out, but the margin for error is gone.`,
                        `${L} was supposed to be one of the best. ${LEAGUE.text.week?"Not tonight.":"Not this week."}`,
-                       `The top five just lost a member for a week. ${L} has work to do.`],"ub"+L)
+                       `The top five just lost a member for a ${WK()}. ${L} has work to do.`],"ub"+L)
         : wr>25 ? vary([`${Wn} came in unranked. ${L} will pay for this one in ${LEAGUE.text.ranking}.`,
                         `Nobody had ${Wn} on this one. ${L} will feel it in ${LEAGUE.text.ranking}.`],"ub"+L)
         : vary([`${Wn} moves up; ${L} slides.`,`${Wn} climbs. ${L} has some explaining to do.`,
@@ -1194,7 +1210,7 @@ function weekNews(W){
   if(more.length)items.push({p:40,k:"also",tone:"muted",
     h:vary([`Also down: `,`Also losing: `,`More losses near the top: `],"ah")+more.map(g=>rankTxt(loserRank(g))+g.loser).join(", "),
     b:vary([`${more.length===1?"That's":"Those are"} more cracks in ${LEAGUE.text.top}.`,
-            `It was that kind of week.`,`Nobody is safe this year.`,`Expect some reshuffling.`],"ab")});
+            `It was that kind of ${WK()}.`,`Nobody is safe this year.`,`Expect some reshuffling.`],"ab")});
 
   // your team, framed
   const mg=gs.find(g=>g.home===my||g.away===my);
@@ -1271,7 +1287,7 @@ function weekNews(W){
   const blow=gs.slice().sort((a,b)=>b.margin-a.margin)[0];
   if(blow&&blow.margin>=38)items.push({p:30,k:"blowout",tone:"muted",
     h:`${blow.winner} ${Math.max(blow.hp,blow.ap)}, ${blow.loser} ${Math.min(blow.hp,blow.ap)}`,
-    b:`The week's worst mismatch.`});
+    b:`The ${WK()}'s worst mismatch.`});
 
   // injury desk
   if(SEA.roster){
@@ -1288,7 +1304,7 @@ function weekNews(W){
     if(hurt.length){const x=hurt[0];
       items.push({p:70,k:"inj",tone:"flag",
         h:`${rankTxt(x.rk)}${x.t} loses ${x.who} (${x.p})`,
-        b:`Out ${x.w>=14?"for the season":"about "+x.w+" week"+(x.w===1?"":"s")}.`+
+        b:`Out ${x.w>=14?"for the season":"about "+x.w+" "+stepWord(x.w)}.`+
           (hurt.length>1?` ${hurt.length-1} other ranked team${hurt.length>2?"s":""} took a hit too.`:"")});
     }
   }
@@ -1859,7 +1875,7 @@ function handoffView(){
     <div class="handrec">${recStr(S.myTeam)}${
       SEA.poll.rankMap()[S.myTeam]?" &middot; No. "+SEA.poll.rankMap()[S.myTeam]:""}</div>
     <div class="handnote">${handoffNotes[S.myTeam]
-      ?`You play ${esc(handoffNotes[S.myTeam].vs)} this week. ${esc(handoffNotes[S.myTeam].coach)} has set their plan; the game is played now, and each of you makes your own calls.`
+      ?`You play ${esc(handoffNotes[S.myTeam].vs)} ${LEAGUE.text.week?"tonight":"this week"}. ${esc(handoffNotes[S.myTeam].coach)} has set their plan; the game is played now, and each of you makes your own calls.`
       :"The others have played their week. Your turn."}</div>
     <div class="actionbar"><button class="advance" id="hgo">I'm ready</button></div>
   </div>`;

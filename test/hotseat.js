@@ -16,10 +16,10 @@ for(let y=0;y<3;y++){
   // played live by a person (a head-to-head counts once)
   if((api.S.turn||0)!==0)crashes.push(`season ${api.SEA.year} starts with coach ${(api.S.turn||0)+1}, not coach 1`);
   const liveGames=[];
-  while(api.SEA.phase!=='done'&&guard++<400){     // two coaches: two advances a step (an NBA season: 240)
+  while(api.SEA.phase!=='done'&&guard++<1200){     // two coaches: two advances a step (an NBA season: 240)
     api.doAdvance(); let g=0;
     if(api.live)liveGames.push(api.live.step+'|'+[api.live.g.home,api.live.g.away].sort().join('~'));
-    while(api.live&&!api.live.done&&g++<2000){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
+    while(api.live&&!api.live.done&&g++<6000){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
   }
   { const E=api.SEA, coached=api.S.coaches.map((x,i)=>i===(api.S.turn||0)?api.S.myTeam:x.myTeam);
     // college championship week is kept in both the weeks and the postseason: count each game once

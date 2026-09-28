@@ -66,7 +66,7 @@ function career(file, team, seed, seasons) {
   const grab = () => screens.push(global.__nodes.app ? global.__nodes.app.innerHTML : '');
   for (let y = 0; y < seasons; y++) {
     let guard = 0;
-    while (api.SEA.phase !== 'done' && guard++ < 200) {     // an NBA season is 120 steps
+    while (api.SEA.phase !== 'done' && guard++ < 600) {     // an NBA season is 120 steps
       api.doAdvance(); grab();
       if (api.SEA.step === 7) screens.push(...views(api));
       let g = 0;

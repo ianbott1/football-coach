@@ -11,7 +11,7 @@ const users=r=>r.map(x=>x.team);
 function season(seed,roster){
   const api=mk()(file); api.newDynasty(roster[0].team,seed,'T',roster);
   const U=users(roster), log=[], hand=[]; let guard=0;
-  while(api.SEA.phase!=='done'&&guard++<400){
+  while(api.SEA.phase!=='done'&&guard++<1200){
     const step=api.SEA.step, who=api.S.myTeam, wasHand=api.S&&false;
     api.doAdvance();
     if(global.__nodes.app&&/handwrap/.test(global.__nodes.app.innerHTML))

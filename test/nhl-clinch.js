@@ -11,7 +11,7 @@ const N=+(process.argv.find(a=>/^\d+$/.test(a))||6);
 const api=m.exports.load(path.join(__dirname,'..','dist','hockey-coach-pro.html'));
 let bad=0,checks=0,early=0,made=0,lead=0; const ok=(c,msg)=>{checks++; if(!c){bad++; if(bad<=10)console.log('  FAIL '+msg)}};
 for(let s=0;s<N;s++){
-  api.newDynasty(api.NAMES[(s*3)%32],500+s,'T'); const E=api.SEA, W=97, seen={}, first={}, lateAt={};
+  api.newDynasty(api.NAMES[(s*3)%32],500+s,'T'); const E=api.SEA, W=194, seen={}, first={}, lateAt={};
   // the worst case, worked out directly: T loses every game left, everyone else
   // wins every game left, ties go against T; the real format picks the eight
   const worstIn=(T)=>{ const rem={}; api.NAMES.forEach(t=>rem[t]=0);
@@ -22,12 +22,12 @@ for(let s=0;s<N;s++){
     const wc=inSide.filter(t=>!top.has(t)).sort(cmp).slice(0,2);
     return top.has(T)||wc.indexOf(T)>=0 };
   let g=0, late=0;
-  while(E.phase==='week'&&g++<200){ E.advance(); const c=E.clinch();
+  while(E.phase==='week'&&g++<600){ E.advance(); const c=E.clinch();
     api.NAMES.forEach(t=>{ if(c[t]){(seen[t]=seen[t]||new Set()).add(c[t]); if(first[t]===undefined&&c[t]!=='e')first[t]=E.step} });
     // on time: whenever the worst case still gets a team in, it's marked (division
     // rivals playing each other can make the true worst case a little kinder; allow a
     // team at most one game day of grace)
-    if(E.step%3===0)api.NAMES.forEach(t=>{ if(worstIn(t)&&!c[t]){ late++; lateAt[t]=(lateAt[t]||0)+1 } }) }
+    if(E.step%6===0)api.NAMES.forEach(t=>{ if(worstIn(t)&&!c[t]){ late++; lateAt[t]=(lateAt[t]||0)+1 } }) }
   api.NAMES.forEach(t=>ok((lateAt[t]||0)<=1, `${E.year} ${t}: in whatever happens on ${lateAt[t]} checks, and not marked`));
   E._seed(); const y=E.year;
   api.NAMES.forEach(t=>{ const S=seen[t]||new Set(), inn=E.field.indexOf(t)>=0;

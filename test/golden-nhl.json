@@ -1,5 +1,5 @@
 {
- "fp": "7ef87e115bdb7737",
+ "fp": "63755b785baf1796",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -20,64 +20,69 @@
    "fp": "7ef87e115bdb7737",
    "from": "ae7909274b43abb6",
    "note": "Season one: the real Sept 29 - Nov 29 NHL games (429), the rest generated to the matrix; 97 game days"
+  },
+  {
+   "fp": "63755b785baf1796",
+   "from": "7ef87e115bdb7737",
+   "note": "A game day every calendar day: the real Sept 29 - Nov 29 games on their real dates; the rest paced to Apr 10; days without your game played through"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "82bce1901f820b42",
-    "post": "1bed10426f66b7b1",
+    "games": "9dd8ac2c86ffe294",
+    "post": "196d5c39df1e6ffd",
     "champion": "Los Angeles",
-    "rec": "b030f053ffb4c4af",
-    "poll": "616e250ba5d528de",
-    "heis": "63627626d2a649e5",
-    "history": "b3b9d3e1a929f58a",
-    "universe": "1b1235b0635723df",
-    "screens": "9f339975d9aef966"
+    "rec": "f6d2fd5b70a57cb4",
+    "poll": "1970c0c57821eefd",
+    "heis": "fa744f12968703d6",
+    "history": "14f7040be7f20149",
+    "universe": "78a43b7f51b6e3c0",
+    "screens": "8088762c0b0a13e4"
    },
    {
     "year": 2027,
-    "games": "d940ba519fe69ccc",
-    "post": "d8d61c9182290757",
-    "champion": "Edmonton",
-    "rec": "4bb02ecdea8a6057",
-    "poll": "f42db0bf4e2e3248",
-    "heis": "3037d7d063062ee2",
-    "history": "fae493b08473a327",
-    "universe": "7690e09b9809a6f6",
-    "screens": "7122a492d9008bc2"
+    "games": "a986d1a0fde4bc78",
+    "post": "360325b68f15ad0a",
+    "champion": "Winnipeg",
+    "rec": "2d29a0c20c02c25a",
+    "poll": "671bf746691f88b6",
+    "heis": "f7b50f4e71410da8",
+    "history": "256e8c2ac098cbfc",
+    "universe": "6827df19d82b28c3",
+    "screens": "3c7ccc830ee476a9"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "f4ede87fa6f446a8",
-    "post": "2de886ea6804a9ea",
-    "champion": "Tampa Bay",
-    "rec": "620f41da9b551700",
-    "poll": "e94c4f65ebd10d83",
-    "heis": "6005be1aaeda77fc",
-    "history": "51565922d309b336",
-    "universe": "4128336bec6289a5",
-    "screens": "5af41fd7e5751129"
+    "games": "845a46b3d3513f7a",
+    "post": "4f273b4fa7b65cd6",
+    "champion": "Vegas",
+    "rec": "08e6a6d19e0f4c0f",
+    "poll": "691270f09f44457c",
+    "heis": "1ea073d3cd67b7e7",
+    "history": "9e232f5ea041ba38",
+    "universe": "f5a0f876d813a3fb",
+    "screens": "acb991f85d8251aa"
    },
    {
     "year": 2027,
-    "games": "3205fe8efe4a9de6",
-    "post": "2291d0d322215754",
-    "champion": "Edmonton",
-    "rec": "3c0a9ef92a0af99a",
-    "poll": "9f54b43d7220547a",
-    "heis": "032f3de685a34517",
-    "history": "4110e883cfdd4d62",
-    "universe": "a87783d6a30fd719",
-    "screens": "bece7837e0c4e452"
+    "games": "d7a7b968ad9e6585",
+    "post": "f22e43360658e5a6",
+    "champion": "Vancouver",
+    "rec": "1b48ecd3e9719cd9",
+    "poll": "d851936cff6a7995",
+    "heis": "9d245915fb633476",
+    "history": "897c1b5ce50150bf",
+    "universe": "c69c609e32714b77",
+    "screens": "d2e7d907b83b4c2b"
    }
   ],
   "schedules#60": [
    {
-    "all": "161b67f6b6b9acb5"
+    "all": "7fc0507fa118960c"
    }
   ]
  }

@@ -20,7 +20,7 @@ const big=G.LEAGUE.id==='nfl'?-100:-250;
 function play(seed,gap,who){
   const e=G.makeLiveGame(new G.RNG(seed),1700+gap,1700,'balanced','balanced',true);
   const seen={}; let guard=0;
-  while(guard++<400){const r=e.next(); if(r.done)return {win:r.h>r.a,seen};
+  while(guard++<1200){const r=e.next(); if(r.done)return {win:r.h>r.a,seen};
     if(r.ask){seen[r.ask.k]=true; const R=G.staffTake(r.ask,{mine:r.mine,theirs:r.theirs,q:r.q});
       const pick=(R.find(x=>x.who===who)||{}).pick||r.ask.opts[0][0]; e.reply(pick)}}
   return {win:false,seen};

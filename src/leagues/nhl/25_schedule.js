@@ -32,6 +32,7 @@ function nbaSchedule(rng,R,year){
       pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8));
       for(let i=0;i<pool.length;i++){const g=pool[i];
         if(busy.has(g.home)||busy.has(g.away))continue;
+        if(LEAGUE.skipIdle&&busy.size>=2*paceCap(pool.length+busy.size/2,daysLeft,rng))break;   // paced: the season's games spread to its last day
         busy.add(g.home); busy.add(g.away); left[g.home]--; left[g.away]--;
         out.push({week:d,home:g.home,away:g.away,conf:CONF[g.home]===CONF[g.away],neutral:false});
         pool.splice(i,1); i--;
@@ -78,10 +79,10 @@ function nhlWithReal(rng,byDiv,sideOf){
   }
   if(!pick)throw new Error("NHL 2026: couldn't balance home games around the real schedule");
   open.forEach(([x,y],i)=>{const tw=pick[i], on=tw===x?y:x; set(tw,on,2); set(on,tw,1)});
-  // the real games on their game days: day d is step floor(d/2), a team at most once a step
+  // the real games on their real dates (a game day is a calendar day)
   const out=[], busy={};
   REAL_NHL2026.slice().sort((p,q)=>p[0]-q[0]).forEach(([d,a,h,n])=>{
-    let w=Math.floor(d/2); while(busy[w+"|"+a]||busy[w+"|"+h])w++;
+    let w=d; while(busy[w+"|"+a]||busy[w+"|"+h])w++;                  // a game day a day: the real date
     busy[w+"|"+a]=busy[w+"|"+h]=true; out.push({week:w,home:h,away:a,conf:CONF[a]===CONF[h],neutral:!!n,real:true});
   });
   const first=1+Math.max(...out.map(g=>g.week));
@@ -95,7 +96,8 @@ function nhlWithReal(rng,byDiv,sideOf){
     const pool=rng.shuffle(games.slice()), rest=[]; let ok=true;
     for(let d=first;d<DAYS;d++){ const b=new Set(), daysLeft=DAYS-d;
       pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8));
-      for(let i=0;i<pool.length;i++){const g=pool[i]; if(b.has(g.home)||b.has(g.away))continue;
+      const cap=paceCap(pool.length,daysLeft,rng);
+      for(let i=0;i<pool.length;i++){const g=pool[i]; if(b.has(g.home)||b.has(g.away))continue; if(b.size>=2*cap)break;
         b.add(g.home); b.add(g.away); left[g.home]--; left[g.away]--;
         rest.push({week:d,home:g.home,away:g.away,conf:CONF[g.home]===CONF[g.away],neutral:false}); pool.splice(i,1); i--}
       if(NAMES.some(t=>left[t]>daysLeft-1)){ok=false;break} }
@@ -103,4 +105,7 @@ function nhlWithReal(rng,byDiv,sideOf){
   }
   throw new Error("NHL 2026: couldn't fit the rest of the season");
 }
+/* a day's share of the games left: about the average, give or take, so the
+   season runs to its last day (a daily schedule would otherwise pack them early) */
+function paceCap(left,daysLeft,rng){ return Math.max(1,Math.round(left/Math.max(1,daysLeft)*(0.75+0.5*rng.r()))) }
 LEAGUE.buildSchedule=nbaSchedule;

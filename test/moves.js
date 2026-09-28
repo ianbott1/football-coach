@@ -7,7 +7,7 @@ const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
 const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach.html');
 let bad=0,checks=0; const ok=(c,m)=>{checks++; if(!c){bad++; console.log('  FAIL '+m)}};
-const play=async (api,badly)=>{let g=0;while(api.SEA.phase!=='done'&&g++<200){if(badly)api.setPlan('safe');api.doAdvance();
+const play=async (api,badly)=>{let g=0;while(api.SEA.phase!=='done'&&g++<600){if(badly)api.setPlan('safe');api.doAdvance();
   const b=global.__nodes.hgo; if(/handwrap/.test(global.__nodes.app.innerHTML)&&b&&b.onclick)b.onclick();
   let n=0;while(api.live&&!api.live.done&&n++<800){if(api.live.ask){const o=api.live.ask.dp.opts;api.answerLive(o[badly?o.length-1:0][0])}else api.liveTick()}
   await new Promise(r=>setImmediate(r))}};

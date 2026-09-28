@@ -1,5 +1,5 @@
 {
- "fp": "f8c21bb964ffce77",
+ "fp": "95534f5cb8180f35",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -35,6 +35,11 @@
    "fp": "f8c21bb964ffce77",
    "from": "ce4c052b8bc712fc",
    "note": "The gameplan tip ('This choice is real') removed from every game; hockey: the NHL's 84-game matrix, regulation-wins tiebreak, OTL in schedules"
+  },
+  {
+   "fp": "95534f5cb8180f35",
+   "from": "f8c21bb964ffce77",
+   "note": "The last 'week' phrases in pro seasons ('that kind of night', injuries in game days)"
   }
  ],
  "result": {
@@ -61,7 +66,7 @@
     "heis": "8443e829701d0396",
     "history": "a4346fff0e9d2cf4",
     "universe": "12a031e87af30deb",
-    "screens": "d29db8e646ed294c"
+    "screens": "5d7ab6bc7cba2900"
    }
   ],
   "Detroit#777": [

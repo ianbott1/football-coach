@@ -5,7 +5,7 @@
    a salary cap (hard, at the real 2026-27 figure: $164.961M). */
 const NHL_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,8,29));       // Sept 29 to about April 10
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  for(let i=0;i<97;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+2)}   // a game day every two days, to Apr 8
+  for(let i=0;i<194;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+1)}   // every day, Sept 29 to Apr 10
   return out})();
 const NHL_K=+((typeof process!=="undefined"&&process.env&&process.env.NHL_K)||1.6);
 const NHL_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NHL_K),d]);
@@ -39,7 +39,8 @@ const LEAGUE={
     divisions:{},
     sides:{East:["ATL","MET"], West:["CEN","PAC"]}
   },
-  weeks:97,                                  // 97 game days two days apart, 84 games each
+  weeks:194,                                 // every calendar day, as the NHL plays (84 games each)
+  skipIdle:true,                              // the button plays through days you don't play
   dates:NHL_DATES,
   classes:[],
   classTag:c=>"Age "+c,

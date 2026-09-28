@@ -3,7 +3,7 @@ const fs=require('fs');const src=fs.readFileSync('test/golden.js','utf8');const 
 const api=m.exports.load(process.env.F||'dist/basketball-coach-pro.html'); api.newDynasty('Boston',21,'T');
 const pct=[], talent=[]; let stars={kept:0,lost:0,retired:0,n:0}, pays=[];
 for(let y=0;y<+(process.env.Y||8);y++){
-  const E=api.SEA; let g=0; while(E.phase!=='done'&&g++<200)E.advance();
+  const E=api.SEA; let g=0; while(E.phase!=='done'&&g++<600)E.advance();
   const p={}; api.NAMES.forEach(t=>{const [w,l]=E.rec[t]; p[t]=w/(w+l)}); pct.push(p);
   const before={}; api.NAMES.forEach(t=>before[t]=api.U.roster[t].filter(Boolean).map(x=>({n:x.n,p:x.p,r:x.r,age:x.age,yrs:x.k&&x.k.yrs})));
   api.openOffseason(); const O=api.S.off; if(O&&O.act.userOpen)O.move=api.S.myTeam; api.commitOffseason();
