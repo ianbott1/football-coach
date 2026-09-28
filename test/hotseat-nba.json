@@ -1,10 +1,15 @@
 {
- "fp": "1357dacd5f6141d6",
+ "fp": "26e73d5d96bc3ba3",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
    "from": null,
    "note": "First pro basketball hot-seat baseline: Boston and New York"
+  },
+  {
+   "fp": "26e73d5d96bc3ba3",
+   "from": "1357dacd5f6141d6",
+   "note": "A rating gap is worth more in the pro game (gapPerPoss .0006): records, titles and series against NBA history"
   }
  ],
  "out": [
@@ -14,20 +19,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "62-37",
+      "rec": "53-47",
       "result": "Lost in the conference finals",
-      "grade": "B+"
+      "grade": "B-"
      },
-     "book": "1d566a613eb012be"
+     "book": "33b05a6fa965604d"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "60-34",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "rec": "57-31",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "f7695f5f9c162fb4"
+     "book": "ad575f94af17073d"
     }
    ]
   },
@@ -37,20 +42,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "46-44",
-      "result": "Lost in the first round",
-      "grade": "C-"
+      "rec": "39-45",
+      "result": "Lost in the play-in",
+      "grade": "F"
      },
-     "book": "c5ce5cc24875d74c"
+     "book": "c445542691975910"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "56-37",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "rec": "68-31",
+      "result": "Lost in the conference finals",
+      "grade": "A-"
      },
-     "book": "cb9b396e889bef0a"
+     "book": "d1e50b6f9de2559f"
     }
    ]
   },
@@ -60,20 +65,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "50-42",
+      "rec": "53-39",
       "result": "Lost in the conference semifinals",
       "grade": "C+"
      },
-     "book": "a4b4fce990e0681d"
+     "book": "66f15dd287515d84"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "51-35",
-      "result": "Lost in the first round",
-      "grade": "C"
+      "rec": "43-41",
+      "result": "Lost in the play-in",
+      "grade": "D"
      },
-     "book": "5d80a64e5ce865a4"
+     "book": "06eb900f3c8fbc52"
     }
    ]
   }

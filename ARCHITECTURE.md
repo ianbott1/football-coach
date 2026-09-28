@@ -202,3 +202,14 @@ class years, free agency, trades, draft order by record, a division-based
 schedule, a 14-team playoff, a power ranking instead of a poll, MVP and
 All-Pro weights. Recruiting, graduation, bowls and the Heisman don't exist
 there. The cap is the largest single piece of work.
+
+## Known calibration gaps (measured)
+
+- Pro football: mean margin ~13 (NFL ~10-11). Making the late-lead 'sit'
+  mode score less only brought it to 12.5, and the same mode is your 'bleed
+  the clock' call in both football games, so it wasn't changed; the margin
+  comes mostly from mid-game scoring.
+- Pro basketball: first-round 2 v 7 (73%, real ~90) and 3 v 6 (66, ~78)
+  upsets too common (docs/NBA.md).
+- College basketball: 4 v 13 and 7 v 10 a few points upset-prone (within
+  tolerance, test/bb-march.js).
