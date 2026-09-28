@@ -103,6 +103,7 @@ class Season{
       const sh=eloUpdate(this.elo[win],this.elo[lose],Math.abs(fm),(win===a)&&!neutral,neutral);
       this.elo[win]+=sh; this.elo[lose]-=sh;
       this.rec[win][0]++; this.rec[lose][1]++;
+      if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
       if(this.roster){
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
@@ -120,12 +121,14 @@ class Season{
       const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+fh+fa)%11)/34))));
       return Object.assign({home:a,away:b,hp:fh,ap:fa,hh:hf(fh,fa),ah:hf(fa,fh),
         neutral:neutral,winner:win,loser:lose,margin:Math.abs(fm),
-        shift:Math.round(sh),drives:F.drives},extra||{});
+        shift:Math.round(sh),drives:F.drives},LEAGUE.tracksOT?{ot:F.ot||0,so:!!F.so}:{},extra||{});
     }
+    let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
+    if(LEAGUE.tracksOT)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"});   // hockey: sudden death in the playoffs
     const gs=playGame(this.rng,eloH,eloA,
       this.userTeam===a?plan:"balanced",
       this.userTeam===b?plan:"balanced",
-      isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null);
+      gopts);
     let hp=gs.h, ap=gs.a, m=hp-ap;
     if(m===0){ if(this.rng.r()<0.5)hp+=3; else ap+=3; m=hp-ap; }   // safety net only
     this.lastDrives=gs.drives;
@@ -134,6 +137,8 @@ class Season{
     const sh=eloUpdate(this.elo[win],this.elo[lose],Math.abs(m),(win===a)&&!neutral,neutral);
     this.elo[win]+=sh;this.elo[lose]-=sh;
     this.rec[win][0]++;this.rec[lose][1]++;
+    // leagues that count overtime losses (hockey): a point for losing in OT
+    if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
     if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
@@ -152,7 +157,7 @@ class Season{
     const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+hp+ap)%11)/34))));
     return Object.assign({home:a,away:b,hp:hp,ap:ap,
       hh:hf(hp,ap),ah:hf(ap,hp),neutral:neutral,
-      winner:win,loser:lose,margin:Math.abs(m),shift:Math.round(sh)},extra||{});
+      winner:win,loser:lose,margin:Math.abs(m),shift:Math.round(sh)},LEAGUE.tracksOT?{ot:gs.ot||0,so:!!gs.so}:{},extra||{});
   }
   advance(){
     this.prevRank=this.rankMap();

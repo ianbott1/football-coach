@@ -148,6 +148,7 @@ function finishLive(){
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
               drives:live.drives};
+  if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
   SEA.forcedList=SEA.forcedList||[];
   SEA.forcedList.push(played);
   // keep it in the save: a reload must replay this result, not re-simulate
@@ -363,6 +364,8 @@ function newDynasty(team,seed,coachName,roster){
 }
 
 /* ============ advance ============ */
+/* a team's record as text: W-L, or the league's own (hockey: W-L-OTL) */
+function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
 /* "Sim game": play this one game without watching it, whatever the setting.
    Shown beside the main button, in the bottom bar and in the desktop side
    panel (on a laptop the side panel is where the buttons are). */
@@ -1025,7 +1028,7 @@ function nextUpHTML(my,rk){
       h+=`<div class="grouphead">Next up</div>
         <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
         <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>
-        <div class="nrec">${pn.opp?SEA.rec[pn.opp][0]+"-"+SEA.rec[pn.opp][1]
+        <div class="nrec">${pn.opp?recStr(pn.opp)
           +" &middot; "+esc(LEAGUE.conf.names[CONF[pn.opp]])
           :"Matchup set when the round is played"}</div>
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
@@ -1053,7 +1056,7 @@ function nextUpHTML(my,rk){
       <div class="nextcard ${riv?'riv':''}">
       <div class="nlabel">${ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
-      <div class="nrec">${SEA.rec[opp][0]}-${SEA.rec[opp][1]} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
+      <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
         ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}</b> in the series${
@@ -1807,7 +1810,7 @@ function digestBlock(){
   }
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
-  h+=`<div class="bsub">Now ${SEA.rec[my][0]}-${SEA.rec[my][1]}${
+  h+=`<div class="bsub">Now ${recStr(my)}${
     rk[my]<=25?", ranked No. "+rk[my]:", unranked"}.</div></div>`;
   return h;
 }
@@ -1848,7 +1851,7 @@ function handoffView(){
     <div class="handlabel">Pass it over &middot; coach ${i} of ${n}</div>
     <div class="handname">${esc(c.career?c.career.name:"")}</div>
     <div class="handteam" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</div>
-    <div class="handrec">${SEA.rec[S.myTeam][0]}-${SEA.rec[S.myTeam][1]}${
+    <div class="handrec">${recStr(S.myTeam)}${
       SEA.poll.rankMap()[S.myTeam]?" &middot; No. "+SEA.poll.rankMap()[S.myTeam]:""}</div>
     <div class="handnote">${handoffNotes[S.myTeam]
       ?`You play ${esc(handoffNotes[S.myTeam].vs)} this week. ${esc(handoffNotes[S.myTeam].coach)} has set their plan; the game is played now, and each of you makes your own calls.`
