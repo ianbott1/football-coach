@@ -36,7 +36,6 @@ const AGGR = {
   sit:       {own:0.84, opp:0.90},
   urgent:    {own:1.00, opp:1.00}
 };
-const FEATURE_EDGE=0;
 function shotsIn(rng,lam){ return Math.max(0,Math.round(rng.gauss(lam,Math.sqrt(Math.max(lam,0.01))*HK.shotSd))) }
 function goalsFrom(rng,n,p){ let g=0; for(let i=0;i<n;i++)if(rng.r()<p)g++; return g }
 function intCall(lead){

@@ -1,29 +1,31 @@
-/* ============ game screens: basketball ============ */
-/* The scoreboard, the run of play in five-minute segments, the call screen
+/* ============ game screens: hockey ============ */
+/* The scoreboard, the run of play in ten-minute segments, the call screen
    with the staff's advice, and the replay view. */
-function segLabel(d){ return d.seg==="last"?"Last shot":segClock(d.seg) }
+function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function driveWord(d){
-  if(d.seg==="last")return d.made?(d.choice==="three"?"the three is GOOD":"the two is good, overtime"):"the shot won't go";
-  if(d.h===d.a)return "an even stretch, "+d.h+" apiece";
-  return (d.h>d.a?"home":"away")+" run, "+Math.max(d.h,d.a)+"-"+Math.min(d.h,d.a);
+  if(d.seg>=SEGS)return d.so?"decided in a shootout":"overtime winner";
+  if(!d.h&&!d.a)return "no goals";
+  return d.h===d.a?d.h+" goal"+(d.h>1?"s":"")+" apiece":(d.h>d.a?"home":"away")+" "+Math.max(d.h,d.a)+"-"+Math.min(d.h,d.a);
 }
 /* a segment in words, with names from the rosters */
 function driveScript(g,drives){
   const rng=new RNG(watchSeed(g));
   const RH=SEA.roster?SEA.roster[g.home]:null, RA=SEA.roster?SEA.roster[g.away]:null;
-  const nm=(R,i)=>R&&R[i]?R[i].n:"a guard";
+  const skater=R=>{ if(!R)return "a forward"; const pool=[0,1,2,0,1,2,3,4,6,7,8]; const p=R[pool[rng.int(pool.length)]]; return p?p.n:"a forward" };
   return drives.map(d=>{
-    if(d.seg==="last"){
-      const tm=d.side==="home"?g.home:g.away, R=d.side==="home"?RH:RA;
-      return {seg:d.seg,clock:"0:02",team:tm,pts:d.made?(d.choice==="three"?3:2):0,outcome:d.made?"GOOD":"MISS",
-        text:`${nm(R,rng.int(3))} ${d.choice==="three"?"pulls up from three":"drives for two"}: ${d.made?"good!":"no good."}`,h:d.sh,a:d.sa};
-    }
-    const homeRun=d.h>=d.a, tm=homeRun?g.home:g.away, R=homeRun?RH:RA, big=Math.max(d.h,d.a), small=Math.min(d.h,d.a);
-    const who=nm(R,rng.int(5)), pts=Math.max(2,Math.round(big*rng.range(0.3,0.6)));
-    const text=big-small>=8?`${tm} goes on a ${big}-${small} run, ${who} with ${pts}`
-      :big===small?`back and forth, ${big} apiece`
-      :rng.r()<0.5?`${tm} edges the stretch ${big}-${small}`:`${who} keeps ${tm} going, ${big}-${small} over five minutes`;
-    return {seg:d.seg,clock:segClock(d.seg),team:tm,pts:big,outcome:big-small>=8?"RUN":"",text:text,h:d.sh,a:d.sa};
+    if(d.seg>=SEGS){ const hw=d.sh>d.sa, tm=hw?g.home:g.away, R=hw?RH:RA;
+      return {seg:d.seg,clock:d.so?"SO":"OT",team:tm,pts:1,outcome:d.so?"SHOOTOUT":"OT GOAL",
+        text:d.so?`${tm} win it in the shootout, ${skater(R)} with the decider`:`${skater(R)} ends it in overtime for ${tm}`,h:d.sh,a:d.sa} }
+    const parts=[];
+    const say=(n,R,tm,side)=>{ for(let k=0;k<n;k++){ const pp=d.pp&&d.pp[side]&&k===0&&rng.r()<0.5;
+      parts.push(`${skater(R)} scores for ${tm}${pp?" on the power play":""}`) } };
+    say(d.h,RH,g.home,0); say(d.a,RA,g.away,1);
+    if(d.en)parts.push(d.en.kind==="empty"?`into the empty net for ${d.en.side==="home"?g.home:g.away}`:`the extra attacker pays off for ${d.en.side==="home"?g.home:g.away}`);
+    const sh=d.shots||[0,0];
+    const text=parts.length?parts.slice(0,3).join("; ")+(parts.length>3?`, and ${parts.length-3} more`:"")
+      :`no goals${sh[0]+sh[1]?`, shots ${sh[1]}-${sh[0]}`:""}`;
+    const big=Math.max(d.h,d.a), tm=d.h>=d.a?g.home:g.away;
+    return {seg:d.seg,clock:segClock(d.seg),team:tm,pts:big,outcome:d.en?(d.en.kind==="empty"?"EMPTY NET":"EXTRA ATTACKER"):(d.h+d.a?"GOAL":""),text:text,h:d.sh,a:d.sa};
   });
 }
 function liveScoreboard(){
@@ -31,7 +33,7 @@ function liveScoreboard(){
   const last=live.drives[live.drives.length-1];
   const tip=!live.drives.length;
   return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${tip?"TIP-OFF":esc(segLabel(last))}
+    <div class="wlabel"><span class="live"></span>${tip?"PUCK DROP":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
@@ -52,9 +54,9 @@ function liveView(){
   return `<div class="watchwrap">
     ${liveScoreboard()}
     ${fieldSVG(g,last,teamColor(g.home),teamColor(g.away),venue)}
-    <div class="fpos">${last?esc(segLabel(last))+" &middot; "+esc(venue):"Tip-off at "+esc(venue)}</div>
+    <div class="fpos">${last?esc(segLabel(last))+" &middot; "+esc(venue):"Puck drop at "+esc(venue)}</div>
     <div class="grouphead">Run of play</div>
-    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Waiting for the tip&hellip;</span></div>`}</div>
+    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Waiting for the puck drop&hellip;</span></div>`}</div>
     <div class="actionbar">
       <div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"
         aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
@@ -108,7 +110,7 @@ function watchView(){
   return `<div class="watchwrap">
     <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
       <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
-        :tip?`<span class="live"></span>TIP-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
+        :tip?`<span class="live"></span>PUCK DROP &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>${esc(cur.clock)}`}</div>
       <div class="wscore">
         <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
@@ -121,7 +123,7 @@ function watchView(){
       <span class="pq">${esc(e.clock)}</span>
       <div class="ptxt"><b>${esc(e.team)}</b> ${esc(e.text)}${e.outcome?` <span class="dtag sc">${esc(e.outcome)}</span>`:""}</div>
       <span class="pscore">${e.a}&ndash;${e.h}</span></div>`).join("")
-      ||`<div class="empty">${owlMark(40)}<span>Waiting for the tip&hellip;</span></div>`}</div>
+      ||`<div class="empty">${owlMark(40)}<span>Waiting for the puck drop&hellip;</span></div>`}</div>
     <div class="actionbar">
       ${done?`<button class="advance" id="wdone">Back to the season</button>`
       :`<div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"

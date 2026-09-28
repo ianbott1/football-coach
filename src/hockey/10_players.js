@@ -1,8 +1,8 @@
-/* ============ players: basketball ============ */
-/* Ten players per program: five starters and a backup at each spot. Team
-   strength comes from them, starters and bench together (the bench plays a
-   fifth of the minutes), so injuries, graduation, recruiting and depth all
-   move it through actual people. */
+/* ============ players: hockey ============ */
+/* Twelve players: a first unit (centre, two wings, two defencemen and the
+   starting goalie) and a player behind each (the depth lines, the third
+   pair, the backup goalie). Team strength comes from them, the goalie most
+   of all. */
 
 const PNAMES_F=["Marcus","Jalen","Trevor","DeAndre","Caleb","Xavier","Bryce","Amari","Cooper",
 "Isaiah","Rashaun","Tanner","Malik","Grayson","Devonte","Hunter","Elijah","Josiah","Keenan","Dontae",
@@ -13,80 +13,77 @@ const PNAMES_L=["Whitfield","Okonkwo","Barrera","Sanders","Colquitt","Adeyemi","
 "Mbeki","Vandenberg","Hollis","Guillory","Achebe","Kirkpatrick","Solano","Nwosu","Bettencourt",
 "Ratliff","Delacroix","Ivory","Sinclair","Ogunleye","Castillo","Thibodeaux","Marchetti","Ude",
 "Espinoza","Vann","Duckworth","Asante","Rios","Pettigrew","Oyelaran","Steadman","Cifuentes","Igwe",
-"Balogun","Tremblay","Norwood","Mensah","Quintero","Ashworth","Diallo","Buchanan","Lefevre","Odom",
+"Balogun","Tremblay","Lindqvist","Kovalenko","Bergeron","Makinen","Duchene","Karlsson","Norwood","Mensah","Quintero","Ashworth","Diallo","Buchanan","Lefevre","Odom",
 "Kponeh","Vasquez","Randle","Diabate","Petrovic","Kuminga","Sissoko","Harlan","Ellsworth"];
 
-/* position, share of team strength, backup dropoff, share of injuries */
+/* position, share of team strength, backup dropoff, share of injuries, and
+   how much the player behind him plays (depth lines about 30%; a backup
+   goalie starts about a fifth of games) */
 const POS=[
-  {p:"PG", w:0.22, drop:12, hz:0.20},
-  {p:"SG", w:0.20, drop:11, hz:0.20},
-  {p:"SF", w:0.20, drop:11, hz:0.20},
-  {p:"PF", w:0.19, drop:11, hz:0.20},
-  {p:"C",  w:0.19, drop:12, hz:0.20},
+  {p:"C",  w:0.17, drop:10, hz:0.20, bench:0.30},
+  {p:"LW", w:0.13, drop:9,  hz:0.19, bench:0.30},
+  {p:"RW", w:0.13, drop:9,  hz:0.19, bench:0.30},
+  {p:"D",  w:0.14, drop:9,  hz:0.19, bench:0.30},
+  {p:"D2", w:0.13, drop:9,  hz:0.18, bench:0.30},
+  {p:"G",  w:0.30, drop:12, hz:0.05, bench:0.22},
 ];
-const BENCH=0.20;                        // the bench's share of the minutes
+const BENCH=0.28;                        // an average, for anything that needs one number
 function pickInjuredPos(rng){
   let x=rng.r(), acc=0;
   for(let i=0;i<POS.length;i++){acc+=POS[i].hz; if(x<acc)return i}
   return POS.length-1;
 }
-/* rating <-> Elo, as in football: teamRating 45 -> 1150, 82 -> 2050 */
 const R_SLOPE=24.3, R_INT=56;
 const ratingToElo=r=>R_INT+R_SLOPE*r;
 const eloToRating=e=>(e-R_INT)/R_SLOPE;
 function playerName(rng){return rng.pick(PNAMES_F)+" "+rng.pick(PNAMES_L)}
-/* ten players: 0-4 start, 5-9 back up the same spot */
 const BK=i=>i+POS.length;
 function teamRating(roster){
   let s=0;
   POS.forEach((P,i)=>{const st=roster[i], bk=roster[BK(i)]||st;
-    s+=P.w*((1-BENCH)*st.r+BENCH*bk.r)});
+    s+=P.w*((1-P.bench)*st.r+P.bench*bk.r)});
   return s;
 }
 function rosterElo(roster){return ratingToElo(teamRating(roster))}
-/* Elo cost of losing a starter: his minutes go to the backup, and the
-   backup's to whoever is next (a walk-on's worth of drop) */
 function injuryCost(roster,idx){
   const P=POS[idx];
   if(!roster||!roster[BK(idx)])return -P.w*P.drop*R_SLOPE;
   const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
-  return -P.w*((1-BENCH)*gap+BENCH*6)*R_SLOPE;
+  return -P.w*((1-P.bench)*gap+P.bench*6)*R_SLOPE;
 }
+function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}
 
 /* ============ box scores ============ */
-const STAT_KEYS={PG:["pts","reb","ast","stl","blk","tpm"],SG:["pts","reb","ast","stl","blk","tpm"],
-  SF:["pts","reb","ast","stl","blk","tpm"],PF:["pts","reb","ast","stl","blk","tpm"],C:["pts","reb","ast","stl","blk","tpm"]};
+const SK=["goals","ast","pts","sog"];
+const STAT_KEYS={C:SK,LW:SK,RW:SK,D:SK,D2:SK,G:["sv","ga","so"]};
 function blankStats(pos){const o={g:0}; (STAT_KEYS[pos]||[]).forEach(k=>o[k]=0); return o}
-/* how a position's production splits: share of the starters' points,
-   rebounds, assists, steals, blocks, and threes */
-const ROLE={PG:{pts:0.22,reb:0.12,ast:0.40,stl:0.30,blk:0.05,tpm:0.28},
-            SG:{pts:0.25,reb:0.14,ast:0.20,stl:0.25,blk:0.07,tpm:0.34},
-            SF:{pts:0.22,reb:0.19,ast:0.16,stl:0.20,blk:0.13,tpm:0.24},
-            PF:{pts:0.17,reb:0.25,ast:0.13,stl:0.14,blk:0.30,tpm:0.10},
-            C: {pts:0.14,reb:0.30,ast:0.11,stl:0.11,blk:0.45,tpm:0.04}};
-/* one game's line for one starter, consistent with his rating and the score */
+/* each unit's share of the first unit's goals, assists and shots (depth
+   players account for the rest) */
+const ROLE={C:{goals:0.27,ast:0.26,sog:0.24},LW:{goals:0.25,ast:0.21,sog:0.22},RW:{goals:0.25,ast:0.21,sog:0.22},
+            D:{goals:0.12,ast:0.17,sog:0.17},D2:{goals:0.11,ast:0.15,sog:0.15}};
+/* one game's line for one first-unit player, consistent with his rating and the score */
 function gameStats(rng,pl,posIdx,forPts,oppPts,won){
-  const P=POS[posIdx].p, R=ROLE[P], q=(pl.r-60)/20;          // about -1 .. +1.5
-  const star=Math.max(0.55,1+q*0.35+rng.gauss(0,0.22));
-  const team={pts:forPts*(1-BENCH), reb:rng.gauss(36,4)*(1-BENCH), ast:forPts*0.19*(1-BENCH),
-              stl:rng.gauss(6.5,1.8)*(1-BENCH), blk:rng.gauss(3.6,1.4)*(1-BENCH), tpm:forPts*0.105*(1-BENCH)};
-  const s={};
-  Object.keys(R).forEach(k=>{s[k]=Math.max(0,Math.round(team[k]*R[k]*star+rng.gauss(0,k==="pts"?2.5:0.8)))});
-  if(s.tpm*3>s.pts)s.tpm=Math.floor(s.pts/3);
-  return s;
+  const P=POS[posIdx].p;
+  if(P==="G"){ const sa=Math.max(oppPts,Math.round(rng.gauss(29,4.5)));
+    return {sv:sa-oppPts, ga:oppPts, so:oppPts===0?1:0} }
+  const R=ROLE[P], q=(pl.r-60)/20, star=Math.max(0.5,1+q*0.45+rng.gauss(0,0.2)), first=1-POS[posIdx].bench;
+  const pick=(n,p)=>{let k=0;for(let i=0;i<n;i++)if(rng.r()<p)k++;return k};
+  const goals=pick(forPts,Math.min(0.9,R.goals*first*star));
+  const ast=pick(Math.round(forPts*1.7),Math.min(0.9,R.ast*first*star*0.55));
+  const sog=Math.max(goals,Math.round(rng.gauss(29*R.sog*first*star,1.2)));
+  return {goals:goals, ast:ast, pts:goals+ast, sog:sog};
 }
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
-/* season line, per game */
+/* a season line: hockey counts totals */
 function statLine(pos,s){
   if(!s||!s.g)return "";
-  const pg=k=>((s[k]||0)/s.g).toFixed(1);
-  if(pos==="PG")return `${pg("pts")} ppg, ${pg("ast")} apg, ${pg("reb")} rpg`;
-  if(pos==="PF"||pos==="C")return `${pg("pts")} ppg, ${pg("reb")} rpg, ${pg("blk")} bpg`;
-  return `${pg("pts")} ppg, ${pg("reb")} rpg, ${pg("tpm")} 3pm`;
+  if(pos==="G"){ const sa=(s.sv||0)+(s.ga||0), sv=sa?(s.sv/sa):0;
+    return `${sv.toFixed(3).replace(/^0/,"")} save %, ${((s.ga||0)/s.g).toFixed(2)} GAA${s.so?", "+s.so+" shutout"+(s.so===1?"":"s"):""}` }
+  return `${s.goals||0} goals, ${s.ast||0} assists, ${s.pts||0} points`;
 }
-/* award production, built from what a player actually did */
+/* award production, from what a player actually did */
 function statProd(pos,s){
   if(!s||!s.g)return 0;
-  // a rebound or a block counts nearly as much as an assist: bigs win awards too
-  return s.pts*0.9+s.reb*1.05+s.ast*0.95+s.stl*1.8+s.blk*2.0;
+  if(pos==="G"){ const sa=(s.sv||0)+(s.ga||0); return sa?Math.max(0,((s.sv/sa)-0.880)*1400)*Math.min(1,s.g/40):0 }
+  return (s.pts||0)+(s.goals||0)*0.4;
 }

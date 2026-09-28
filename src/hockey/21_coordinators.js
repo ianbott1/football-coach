@@ -1,11 +1,11 @@
-/* ============ assistants: basketball ============ */
+/* ============ assistants: hockey ============ */
 /* Two lead assistants per program, one for each end of the floor. They shift
    the team on the court and shape how their players develop, and the good
    ones get hired away. (The core calls them coordinators.) */
 const OFF_SHARE=0.50, DEF_SHARE=0.50;      // both ends count the same
 const STAFF_ELO=0.62;                      // Elo per point of assistant quality
-const OC_STYLE=["Motion offense","Pick-and-roll heavy","Five-out","Dribble drive","Post-up inside-out"];
-const DC_STYLE=["Pack line","Man-to-man pressure","2-3 zone","Full-court press","Switch everything"];
+const OC_STYLE=["Puck possession","Heavy forecheck","Stretch passes","Cycle and grind","Net-front traffic"];
+const DC_STYLE=["Neutral-zone trap","Man-on-man","Collapsing box","Aggressive gap control","Shot blocking"];
 function newCoordinator(rng,prestige,side,repBonus){
   const tier=Math.max(0,Math.min(1,(prestige-1150)/900));
   const q=rng.gauss(-20+tier*44+(repBonus||0), 24);

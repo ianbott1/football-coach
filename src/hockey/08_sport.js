@@ -1,36 +1,29 @@
-/* ============ sport: basketball ============ */
+/* ============ sport: hockey ============ */
 const SPORT={
-  id:"basketball",
-  word:"Basketball",
-  /* what the owl perches on in the logo: the rim, with the backboard behind
-     and the net below (the rim sits where football's crossbar does) */
-  perch:`<g fill="none" stroke="var(--sodium)" stroke-width="3.2" stroke-linejoin="round">
-      <rect x="12" y="7" width="48" height="34" rx="2"/><rect x="28" y="26" width="16" height="12"/>
+  id:"hockey",
+  word:"Hockey",
+  /* what the owl perches on in the logo: the crossbar of a goal, with the
+     net behind (the crossbar sits where football's does) */
+  perch:`<g fill="none" stroke="var(--bone)" stroke-width="1.1" opacity=".7">
+      <path d="M16 51 L22 62 M24 51 L28 63 M32 51 L34 64 M40 51 L38 64 M48 51 L44 63 M56 51 L50 62"/>
+      <path d="M17 55 H55 M19 59 H53"/>
     </g>
-    <path d="M36 41 V47" stroke="var(--sodium)" stroke-width="3" fill="none"/>
-    <g fill="none" stroke="var(--bone)" stroke-width="1.3" opacity=".75">
-      <path d="M21 51 L25 62 L29 52 L33 63 L36 52 L39 63 L43 52 L47 62 L51 51"/>
-      <path d="M24 57 H48"/>
-    </g>
-    <path d="M19 50 H53" stroke="#E4572E" stroke-width="4.4" stroke-linecap="round"/>
-    <ellipse cx="36" cy="67" rx="11.5" ry="2.6" fill="none" stroke="var(--line)" stroke-width="2.2"/>`,
+    <path d="M14 64 V50 H58 V64" fill="none" stroke="#D7263D" stroke-width="3.6" stroke-linejoin="round"/>
+    <ellipse cx="36" cy="66.5" rx="24" ry="2.4" fill="none" stroke="#7FB7E6" stroke-width="1.6" opacity=".8"/>`,
   staff:{
-    oc:{short:"OFF", long:"offensive assistant"},
-    dc:{short:"DEF", long:"defensive assistant"},
-    any:"assistant"
+    oc:{short:"OFF", long:"assistant coach, forwards"},
+    dc:{short:"DEF", long:"assistant coach, defence"},
+    any:"assistant coach"
   },
   /* a game worth a headline, or null */
   starLine(P,L){
     if(!L)return null;
-    const dd=[L.pts>=10,L.reb>=10,L.ast>=10].filter(Boolean).length;
-    let v=0,txt="";
-    if(dd>=3){v=150+L.pts;txt=`a triple-double: ${L.pts} points, ${L.reb} rebounds, ${L.ast} assists`}
-    else if(L.pts>=30){v=L.pts*3+L.reb;txt=`${L.pts} points${L.tpm>=5?", "+L.tpm+" of them from three":""}`}
-    else if(L.reb>=15){v=L.reb*5+L.pts;txt=`${L.pts} points and ${L.reb} rebounds`}
-    else if(L.ast>=10){v=L.ast*7+L.pts;txt=`${L.pts} points and ${L.ast} assists`}
-    else if(L.blk>=5){v=L.blk*14+L.pts;txt=`${L.blk} blocks`}
-    return v?{v:v,txt:txt}:null;
+    if(P==="G"){ if(L.so)return {v:120+L.sv,txt:`a ${L.sv}-save shutout`};
+      if(L.sv>=40)return {v:80+L.sv,txt:`${L.sv} saves`}; return null }
+    if(L.goals>=3)return {v:100+L.goals*20+L.ast*6,txt:`a hat trick${L.goals>3?" (and then some: "+L.goals+" goals)":""}${L.ast?" and "+L.ast+" assist"+(L.ast===1?"":"s"):""}`};
+    if(L.pts>=4)return {v:60+L.pts*12,txt:`${L.pts} points (${L.goals} goals, ${L.ast} assists)`};
+    return null;
   },
   riser:{l:"Rising assistant",
-    d:"The hottest assistant in the country. Could be the next great one, could be a lifer on someone else's bench."}
+    d:"The hottest assistant in the league. Could be the next great head coach, could be a lifer behind someone else's bench."}
 };

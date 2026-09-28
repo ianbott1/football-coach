@@ -76,34 +76,19 @@ function staffFace(who){
 /* Which option each of them would take, and what they'd say about it. */
 /* The Bears do not reason. They react. */
 const BEAR_YELL={
-  half:  [`Say something inspiring. We've forgotten how.`,
-          `New plan: score more baskets than them. You're welcome.`,
-          `LOUDER. Whatever we're doing, LOUDER.`,
-          `We want a dunk. We don't care who does it.`,
-          `We have notes. None of them are useful.`],
-  chase: [`PRESS. Press them into the SEA.`,
-          `Full court. Full effort. Full bears.`,
-          `We refuse to lose quietly. Absolutely refuse.`,
-          `Trap everything. Trap the referees if you have to.`,
-          `This is a personal insult to us specifically.`],
-  protect:[`MORE. We want MORE points.`,
-          `Dunk on them. Then dunk on them again.`,
-          `Holding the ball is for cowards and accountants.`,
-          `Sitting on a lead is how you get a lead taken.`,
-          `Keep scoring until someone makes us stop. Nobody can.`],
-  last:  [`THREE. Obviously three. Why is this even a question.`,
-          `Win it or lose it. Overtime is for the undecided.`,
-          `We were BORN to take this shot.`,
-          `Three points or nothing. Preferably three points.`],
-  distracted:[`CHOCOLATE CAKE!`,
-          `What did we do?`,
-          `COOKIES AND CREAM!`,
-          `Is there chocolate cake after? There should be chocolate cake after.`,
-          `What did we do? Did we do something? Was it us?`,
-          `We would like cookies and cream. Now. During the game.`,
-          `CHOCOLATE CAKE. That's our note. That's the whole note.`,
-          `Wait, what did we do?`,
-          `Cookies and cream and then whatever you decided. In that order.`]
+  push:  [`SEND EVERYONE. The goalie too, if he wants.`,
+          `Pinch! Pinch the D! Pinch everything!`,
+          `Shoot it from anywhere. The ice is ours.`,
+          `Twenty minutes is loads. We need about four of them.`],
+  lock:  [`Lock it down? We didn't come here to be locked.`,
+          `MORE GOALS. Goals are the whole point.`,
+          `Keep attacking. Bears don't trap.`],
+  pull:  [`Pull him NOW. Pull him yesterday.`,
+          `Six attackers. Seven if we can sneak one on.`,
+          `Empty net? Great. We'll be in their end anyway.`],
+  distracted:[`Is the Zamboni available for hire? Asking for a bear.`,
+          `We've been watching the organist. The organist is excellent.`,
+          `Did you know you can buy a whole goal? We may have bought a goal.`]
 };
 /* Pearl is a dog roughly one time in six. Unlike the Bears, her advice
    survives it — the dog bit wraps the read rather than replacing it, so you
@@ -136,34 +121,26 @@ function staffTake(dp, ctx){
   const diff = (ctx.mine||0)-(ctx.theirs||0);
   const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
   const R=[];
-  if(dp.k==="half"){
-    const down=diff<0;
-    R.push({who:"bears", pick: down?"push":"normal", line:bearYell("half",seed)});
-    R.push({who:"pearl", pick:"normal", line:pearlSay(down
-      ? `They're not playing badly! Let's just play a bit better.`
-      : `This is going great. Exactly as we are, please.`,seed)});
-    R.push({who:"capy", pick: down?"normal":"sit", line: down
-      ? `If I may \u2014 hurrying rarely mends a scoreline. It tends to lengthen it.`
-      : `We have, I think, got what we came for. I'd rather slow things down.`});
+  if(dp.k==="push"){
+    R.push({who:"bears", pick:"push", line:bearYell("push",seed)});
+    R.push({who:"pearl", pick: diff<=-2?"push":"normal", line:pearlSay(diff<=-2
+      ? `Two goals is a lot to find! Let's open it up a bit.`
+      : `It's one goal! Plenty of time. Keep playing our way.`,seed)});
+    R.push({who:"capy", pick:"normal", line:`Chasing, one finds, mostly produces goals at the other end.`});
   }
-  else if(dp.k==="chase"){
-    R.push({who:"bears", pick:"press", line:bearYell("chase",seed)});
-    R.push({who:"pearl", pick: diff<=-4 ? "press":"normal", line:pearlSay(diff<=-4
-      ? `More than a couple of baskets \u2014 let's go and get the ball back!`
-      : `It's one basket! We've got time. No need to panic.`,seed)});
-    R.push({who:"capy", pick:"normal", line:`A press, one rather suspects, is mostly a way of giving up layups quickly.`});
+  else if(dp.k==="lock"){
+    R.push({who:"bears", pick:"normal", line:bearYell("lock",seed)});
+    R.push({who:"pearl", pick: diff>=2?"sit":"normal", line:pearlSay(diff>=2
+      ? `We're two up! Let's make it boring and go home happy.`
+      : `One goal isn't enough to sit on. Keep going!`,seed)});
+    R.push({who:"capy", pick:"sit", line:`I would suggest fewer chances, both ways. Fewer chances, fewer disasters.`});
   }
-  else if(dp.k==="protect"){
-    R.push({who:"bears", pick:"keep", line:bearYell("protect",seed)});
-    R.push({who:"pearl", pick: diff>=7?"sit":"keep", line:pearlSay(diff>=7
-      ? `We're way ahead! Let's just use up the clock and go home happy.`
-      : `Whatever we did to get here \u2014 more of that, please.`,seed)});
-    R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
-  }
-  else if(dp.k==="last"){
-    R.push({who:"bears", pick:"three", line:bearYell("last",seed)});
-    R.push({who:"pearl", pick:"three", line:pearlSay(`A three wins it! Overtime is a whole other game, and they're tired too.`,seed)});
-    R.push({who:"capy", pick:"two", line:`It seems to me a two is the likelier shot. Overtime is, at least, not losing.`});
+  else if(dp.k==="pull"){
+    R.push({who:"bears", pick:"early", line:bearYell("pull",seed)});
+    R.push({who:"pearl", pick: diff<=-2?"early":"normal", line:pearlSay(diff<=-2
+      ? `Two goals needs time! Get him out early.`
+      : `One goal, the usual time. We've done this before.`,seed)});
+    R.push({who:"capy", pick:"normal", line:`An empty net, I'm afraid, rather invites them to score into it.`});
   }
   return R;
 }
@@ -173,17 +150,17 @@ function staffAside(kind, data){
   const L={
     depth:[["bears",`Play the kid. Chaos is a ladder.`],
            ["pearl",`He's waited so patiently for this. Let him play!`],
-           ["capy",`It seems to me changing the point guard mid-season rarely goes as people imagine.`]],
-    staff:[["bears",`FIRE HIM. At center court. During a timeout.`],
+           ["capy",`It seems to me changing the goalie mid-season rarely goes as people imagine.`]],
+    staff:[["bears",`FIRE HIM. At centre ice. During the anthem.`],
            ["pearl",`Everyone has bad seasons. Maybe he just needs a bit of help.`],
            ["capy",`I do believe I'd want to be very sure before we start pulling things apart.`]],
     win:  [["bears",`WE ARE UNSTOPPABLE. Say it back to us.`],
            ["pearl",`I'm SO proud of them. Every single one.`],
            ["capy",`Lovely. Though I am, I confess, already a little worried about next week.`]],
-    loss: [["bears",`Rigged. Absolutely rigged. We're appealing.`],
+    loss: [["bears",`Rigged. The goal was offside. We're appealing.`],
            ["pearl",`It's alright! There's another one next week.`],
            ["capy",`I did rather have a feeling. I didn't want to say.`]],
-    title:[["bears",`RINGS. RINGS FOR THE BEARS. We did most of it.`],
+    title:[["bears",`THE CUP. We are drinking from THE CUP.`],
            ["pearl",`Look at them all crying. It's the loveliest thing.`],
            ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]]
   };
