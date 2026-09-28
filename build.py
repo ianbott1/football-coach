@@ -21,7 +21,7 @@ import os, glob, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC  = os.path.join(HERE, "src")
-OUTNAME = {"cfb": "football-coach.html", "nfl": "football-coach-pro.html", "ncaab": "basketball-coach.html", "nba": "basketball-coach-pro.html"}
+OUTNAME = {"cfb": "football-coach.html", "nfl": "football-coach-pro.html", "ncaab": "basketball-coach.html", "nba": "basketball-coach-pro.html", "nhl": "hockey-coach-pro.html"}
 
 def build(league="cfb"):
     ldir = os.path.join(SRC, "leagues", league)

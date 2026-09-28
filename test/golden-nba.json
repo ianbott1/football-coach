@@ -1,5 +1,5 @@
 {
- "fp": "c1ac47faf1e59711",
+ "fp": "ce4c052b8bc712fc",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -25,6 +25,11 @@
    "fp": "c1ac47faf1e59711",
    "from": "6566e15a0375f3c7",
    "note": "Sim game stays visible after a finished game (it hid whenever a live game existed, even a finished one)"
+  },
+  {
+   "fp": "ce4c052b8bc712fc",
+   "from": "c1ac47faf1e59711",
+   "note": "Pro leagues: game days not weeks, a number on the top ten only, 'The night that was'; hockey records W-L-OTL and a points column"
   }
  ],
  "result": {
@@ -39,7 +44,7 @@
     "heis": "d65be65f2863d2f4",
     "history": "f25ac99b15068fb1",
     "universe": "e867b2b7c18b0197",
-    "screens": "a9dde27ca526539d"
+    "screens": "e62bcdc20f9defd1"
    },
    {
     "year": 2027,
@@ -51,7 +56,7 @@
     "heis": "8443e829701d0396",
     "history": "a4346fff0e9d2cf4",
     "universe": "12a031e87af30deb",
-    "screens": "541e21718ac963d3"
+    "screens": "0065717550311d29"
    }
   ],
   "Detroit#777": [
@@ -65,7 +70,7 @@
     "heis": "a34ff66d88be5fdc",
     "history": "696737dc492fafd5",
     "universe": "66d8bb447215cf18",
-    "screens": "b06b49b6e0e88b7e"
+    "screens": "04c23e77a7ac8adc"
    },
    {
     "year": 2027,
@@ -77,7 +82,7 @@
     "heis": "e4580e67bdf34bcd",
     "history": "05141294ff2b8146",
     "universe": "8a54e0d312b50d68",
-    "screens": "f2c68d2b9ef818db"
+    "screens": "ca109c937a0b76b5"
    }
   ],
   "schedules#60": [

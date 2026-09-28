@@ -1,0 +1,86 @@
+{
+ "fp": "6a8256fbb0bd3534",
+ "log": [
+  {
+   "fp": "53981de08c69aade",
+   "from": null,
+   "note": "First pro hockey hot-seat baseline: Boston and Montreal"
+  },
+  {
+   "fp": "6a8256fbb0bd3534",
+   "from": "53981de08c69aade",
+   "note": "Same results; the stored standings text is now W-L-OTL with a points column"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "50-39",
+      "result": "Lost in the first round",
+      "grade": "A-"
+     },
+     "book": "df1106848de25056"
+    },
+    {
+     "team": "Montreal",
+     "last": {
+      "rec": "52-54",
+      "result": "Lost in the Stanley Cup Final",
+      "grade": "A"
+     },
+     "book": "cc920e2c572f9c5e"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "40-42",
+      "result": "Losing season",
+      "grade": "C"
+     },
+     "book": "743291b1dd6c2f1d"
+    },
+    {
+     "team": "Montreal",
+     "last": {
+      "rec": "51-38",
+      "result": "Lost in the first round",
+      "grade": "A-"
+     },
+     "book": "28b4d19b9278209e"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "32-50",
+      "result": "Losing season",
+      "grade": "F"
+     },
+     "book": "30e73ca3b4f71180"
+    },
+    {
+     "team": "Montreal",
+     "last": {
+      "rec": "51-38",
+      "result": "Lost in the first round",
+      "grade": "A-"
+     },
+     "book": "955bab7299c21706"
+    }
+   ]
+  }
+ ]
+}

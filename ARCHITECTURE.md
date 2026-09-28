@@ -213,3 +213,7 @@ there. The cap is the largest single piece of work.
   upsets too common (docs/NBA.md).
 - College basketball: 4 v 13 and 7 v 10 a few points upset-prone (within
   tolerance, test/bb-march.js).
+- Pro basketball and pro hockey: a few 'week' phrases remain outside the
+  digest (hot-seat hand-overs, some setting descriptions).
+- Pro hockey: year-to-year correlation of records 0.40 (the NHL's, by my
+  estimate, ~0.5); the rare season above the real 135-point record.

@@ -1,0 +1,74 @@
+{
+ "fp": "404165c33d796334",
+ "log": [
+  {
+   "fp": "63ab31cc9ed9a902",
+   "from": null,
+   "note": "First pro hockey baseline: Boston and Edmonton"
+  },
+  {
+   "fp": "404165c33d796334",
+   "from": "63ab31cc9ed9a902",
+   "note": "Pro leagues: game days not weeks, a number on the top ten only, 'The night that was'; hockey records W-L-OTL and a points column"
+  }
+ ],
+ "result": {
+  "Boston#1": [
+   {
+    "year": 2026,
+    "games": "98025d8328350f02",
+    "post": "3a165b361e5a6a53",
+    "champion": "Toronto",
+    "rec": "1beffb9c1bc4ab87",
+    "poll": "ce9ea1799f52484d",
+    "heis": "99213acfd6f55514",
+    "history": "40ad1a3701978980",
+    "universe": "f22c2bf9090cf55e",
+    "screens": "b1629b222e8a5067"
+   },
+   {
+    "year": 2027,
+    "games": "be0e13efe36d2943",
+    "post": "398507e3cb338c19",
+    "champion": "Minnesota",
+    "rec": "9268584686c1a9f7",
+    "poll": "27ad1b63b9c5bee2",
+    "heis": "e5a7a5fe606dfcba",
+    "history": "6cdf18b704b5cb5c",
+    "universe": "ed5b2b0c503563d0",
+    "screens": "942ffdb0ac74716e"
+   }
+  ],
+  "Edmonton#777": [
+   {
+    "year": 2026,
+    "games": "3c9b564fbc7efaa3",
+    "post": "68168e1d58e824aa",
+    "champion": "Tampa Bay",
+    "rec": "7ca12bdcd49cf996",
+    "poll": "8571fe49f68b6211",
+    "heis": "bd410a4f5ec7acf7",
+    "history": "3e60f311b41c8931",
+    "universe": "3cb57a41d68905c5",
+    "screens": "34c821b220baa0bb"
+   },
+   {
+    "year": 2027,
+    "games": "ba2fde34fe145a4f",
+    "post": "aec9aef36d1f2179",
+    "champion": "Vancouver",
+    "rec": "f1fba3c4618bf4f1",
+    "poll": "bd1b0ac62e31b32c",
+    "heis": "2484e11bda0efd83",
+    "history": "922e938873f319c6",
+    "universe": "925e79cd76b640a5",
+    "screens": "ca2ae1cb959c37b4"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "f5a5b5fe7cbc2c1e"
+   }
+  ]
+ }
+}
