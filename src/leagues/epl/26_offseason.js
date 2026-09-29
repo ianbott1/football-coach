@@ -269,7 +269,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       peak:p.peak||p.r,yrs:p.yrsHere||1,draft:p.draft||null,
       line:LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}),why:why,
       // career totals with the franchise, for its leaders (six numbers)
-      car:p.car?{goals:p.car.goals||0,ast:p.car.ast||0,pts:p.car.pts||0,sog:p.car.sog||0,sv:p.car.sv||0,so:p.car.so||0}:null});
+      car:p.car?{goals:p.car.goals||0,ast:p.car.ast||0,cs:p.car.cs||0,sv:p.car.sv||0,g:p.car.g||0}:null});
     if(u.alumni[t].length>40){u.alumni[t].sort((a,b)=>b.peak-a.peak);u.alumni[t].length=40}
   };
 

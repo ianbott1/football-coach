@@ -75,6 +75,7 @@ const LEAGUE={
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
     week:"night",                                // the digest: "The night that was"
+    tagline:"Build a franchise. Win it all.",
     gameName:"Pro Basketball Coach", eyebrow:"Pro",
     site:"Pro Basketball Coach: ianbott1.github.io/football-coach",
     tiers:[

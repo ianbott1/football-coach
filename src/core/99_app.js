@@ -2221,7 +2221,7 @@ function renderTitle(){
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
     </div>
     <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
-    <div class="tagline">Build a program. Win it all.</div>
+    <div class="tagline">${esc(LEAGUE.text.tagline||"Build a program. Win it all.")}</div>
     <div class="slots">${slots.map(s=>s.empty
       ? `<button class="slot empty" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>

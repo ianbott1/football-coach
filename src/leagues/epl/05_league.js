@@ -74,6 +74,7 @@ const LEAGUE={
     ranking:"the table", top:"the table", entered:"Up to ",
     orgNote:base=>`Club stature is the slow-moving baseline &mdash; support, revenue, history. Measured
       against where each club stood in ${base}.`,
+    tagline:"Build a club. Win the league.",
     gameName:"Football Manager Coach", eyebrow:"English",
     site:"Football Manager Coach: ianbott1.github.io/football-coach",
     week:"weekend",
