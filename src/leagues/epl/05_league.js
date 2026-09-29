@@ -7,12 +7,14 @@ const EPL_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,7,15));       // Sa
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   for(let i=0;i<46;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+(i===18||i===19?4:6))}
   return out})();
+const EPL_K=+((typeof process!=="undefined"&&process.env&&process.env.EPL_K)||2.8);
+const EPL_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1560+(e-1560)*EPL_K),d]);   // spread around the middle (calibrated)
 const LEAGUE={
   id:"epl",
   name:"English Football",
   draws:true,                                 // a point for a draw, three for a win
   /* [club, starting strength (a prior: roughly last season's standing), division] */
-  teams:[
+  teams:EPL_SPREAD([
 ["Arsenal",1780,"PL"],["Aston Villa",1690,"PL"],["Bournemouth",1640,"PL"],["Brentford",1610,"PL"],
 ["Brighton",1640,"PL"],["Chelsea",1720,"PL"],["Coventry City",1540,"PL"],["Crystal Palace",1620,"PL"],
 ["Everton",1600,"PL"],["Fulham",1600,"PL"],["Hull City",1510,"PL"],["Ipswich Town",1530,"PL"],
@@ -24,7 +26,7 @@ const LEAGUE={
 ["Portsmouth",1390,"CH"],["Preston North End",1400,"CH"],["Queens Park Rangers",1410,"CH"],["Sheffield United",1440,"CH"],
 ["Southampton",1480,"CH"],["Stoke City",1420,"CH"],["Swansea City",1440,"CH"],["Watford",1420,"CH"],
 ["West Bromwich Albion",1450,"CH"],["West Ham United",1510,"CH"],["Wolverhampton Wanderers",1500,"CH"],["Wrexham",1420,"CH"]
-  ],
+  ]),
   colors:{"Arsenal":"#EF0107","Aston Villa":"#670E36","Bournemouth":"#DA291C","Brentford":"#E30613","Brighton":"#0057B8",
     "Chelsea":"#034694","Coventry City":"#59CBE8","Crystal Palace":"#1B458F","Everton":"#003399","Fulham":"#111111",
     "Hull City":"#F5A12D","Ipswich Town":"#3A64A3","Leeds United":"#FFCD00","Liverpool":"#C8102E","Manchester City":"#6CABDD",
@@ -43,9 +45,9 @@ const LEAGUE={
   weeks:46, dates:EPL_DATES,
   classes:[], classTag:c=>"Age "+c, bowls:[],
   draftTeams:["the academy"],
-  awards:{mvp:"Player of the Season", weights:{GK:1,D:1,D2:1,M:1,F:1,F2:1},
-    premium:{GK:0.9,D:0.92,D2:0.9,M:1.02,F:1.06,F2:1.04}},
-  tuning:{hfa:120, gapScale:1, pFloor:1250, pCeil:1900, talentSteps:12, sc:{}},
+  awards:{mvp:"Player of the Season", weights:{GK:1,CB:1,FB:1,CM:1,W:1,ST:1},
+    premium:{GK:0.88,CB:0.9,FB:0.88,CM:1.02,W:1.04,ST:1.08}},
+  tuning:{hfa:120, gapScale:1, pFloor:1000, pCeil:2300, talentSteps:12, sc:{}},
   venues:{},
   schedule:{games:38},
   playoff:{size:6, perSide:6, byes:0},

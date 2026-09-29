@@ -1,8 +1,7 @@
-/* ============ players: hockey ============ */
-/* Twelve players: a first unit (centre, two wings, two defencemen and the
-   starting goalie) and a player behind each (the depth lines, the third
-   pair, the backup goalie). Team strength comes from them, the goalie most
-   of all. */
+/* ============ players: soccer ============ */
+/* A squad as six units, each a first-choice player and one behind him:
+   goalkeeper, centre-backs, full-backs, midfield, wingers, striker. The bench
+   plays about a quarter of the time (rotation, substitutes, injuries). */
 
 const PNAMES_F=["Marcus","Jalen","Trevor","DeAndre","Caleb","Xavier","Bryce","Amari","Cooper",
 "Isaiah","Rashaun","Tanner","Malik","Grayson","Devonte","Hunter","Elijah","Josiah","Keenan","Dontae",
@@ -16,18 +15,16 @@ const PNAMES_L=["Whitfield","Okonkwo","Barrera","Sanders","Colquitt","Adeyemi","
 "Balogun","Tremblay","Lindqvist","Kovalenko","Bergeron","Makinen","Duchene","Karlsson","Norwood","Mensah","Quintero","Ashworth","Diallo","Buchanan","Lefevre","Odom",
 "Kponeh","Vasquez","Randle","Diabate","Petrovic","Kuminga","Sissoko","Harlan","Ellsworth"];
 
-/* position, share of team strength, backup dropoff, share of injuries, and
-   how much the player behind him plays (depth lines about 30%; a backup
-   goalie starts about a fifth of games) */
+/* unit, share of team strength, backup dropoff, share of injuries, bench share */
 const POS=[
-  {p:"C",  w:0.17, drop:10, hz:0.20, bench:0.30},
-  {p:"LW", w:0.13, drop:9,  hz:0.19, bench:0.30},
-  {p:"RW", w:0.13, drop:9,  hz:0.19, bench:0.30},
-  {p:"D",  w:0.14, drop:9,  hz:0.19, bench:0.30},
-  {p:"D2", w:0.13, drop:9,  hz:0.18, bench:0.30},
-  {p:"G",  w:0.30, drop:12, hz:0.05, bench:0.22},
+  {p:"GK", w:0.14, drop:12, hz:0.05, bench:0.10},
+  {p:"CB", w:0.18, drop:9,  hz:0.19, bench:0.25},
+  {p:"FB", w:0.14, drop:8,  hz:0.19, bench:0.28},
+  {p:"CM", w:0.22, drop:9,  hz:0.21, bench:0.28},
+  {p:"W",  w:0.15, drop:9,  hz:0.18, bench:0.32},
+  {p:"ST", w:0.17, drop:10, hz:0.18, bench:0.28},
 ];
-const BENCH=0.28;                        // an average, for anything that needs one number
+const BENCH=0.25;                        // an average, for anything that needs one number
 function pickInjuredPos(rng){
   let x=rng.r(), acc=0;
   for(let i=0;i<POS.length;i++){acc+=POS[i].hz; if(x<acc)return i}
@@ -54,36 +51,30 @@ function injuryCost(roster,idx){
 function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}
 
 /* ============ box scores ============ */
-const SK=["goals","ast","pts","sog"];
-const STAT_KEYS={C:SK,LW:SK,RW:SK,D:SK,D2:SK,G:["sv","ga","so"]};
+const OUT=["goals","ast","shots"];
+const STAT_KEYS={GK:["sv","ga","cs"],CB:OUT.concat(["cs"]),FB:OUT.concat(["cs"]),CM:OUT,W:OUT,ST:OUT};
 function blankStats(pos){const o={g:0}; (STAT_KEYS[pos]||[]).forEach(k=>o[k]=0); return o}
-/* each unit's share of the first unit's goals, assists and shots (depth
-   players account for the rest) */
-const ROLE={C:{goals:0.27,ast:0.26,sog:0.24},LW:{goals:0.25,ast:0.21,sog:0.22},RW:{goals:0.25,ast:0.21,sog:0.22},
-            D:{goals:0.12,ast:0.17,sog:0.17},D2:{goals:0.11,ast:0.15,sog:0.15}};
-/* one game's line for one first-unit player, consistent with his rating and the score */
+/* each first-choice player's share of the team's goals, assists and shots */
+const ROLE={CB:{goals:0.06,ast:0.04,shots:0.07},FB:{goals:0.05,ast:0.14,shots:0.08},CM:{goals:0.16,ast:0.24,shots:0.20},
+            W:{goals:0.22,ast:0.24,shots:0.24},ST:{goals:0.36,ast:0.12,shots:0.28}};
 function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const P=POS[posIdx].p;
-  if(P==="G"){ const sa=Math.max(oppPts,Math.round(rng.gauss(29,4.5)));
-    return {sv:sa-oppPts, ga:oppPts, so:oppPts===0?1:0} }
+  if(P==="GK"){ const sa=Math.max(oppPts,Math.round(rng.gauss(4.4,1.8)+oppPts)); return {sv:sa-oppPts, ga:oppPts, cs:oppPts===0?1:0} }
   const R=ROLE[P], q=(pl.r-60)/20, star=Math.max(0.5,1+q*0.45+rng.gauss(0,0.2)), first=1-POS[posIdx].bench;
   const pick=(n,p)=>{let k=0;for(let i=0;i<n;i++)if(rng.r()<p)k++;return k};
   const goals=pick(forPts,Math.min(0.9,R.goals*first*star));
-  const ast=pick(Math.round(forPts*1.7),Math.min(0.9,R.ast*first*star*0.55));
-  const sog=Math.max(goals,Math.round(rng.gauss(29*R.sog*first*star,1.2)));
-  return {goals:goals, ast:ast, pts:goals+ast, sog:sog};
+  const ast=pick(forPts,Math.min(0.9,R.ast*first*star*0.9));
+  const shots=Math.max(goals,Math.round(rng.gauss(12*R.shots*first*star,0.8)));
+  const o={goals:goals, ast:ast, shots:shots}; if(P==="CB"||P==="FB")o.cs=oppPts===0?1:0; return o;
 }
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
-/* a season line: hockey counts totals */
 function statLine(pos,s){
   if(!s||!s.g)return "";
-  if(pos==="G"){ const sa=(s.sv||0)+(s.ga||0), sv=sa?(s.sv/sa):0;
-    return `${sv.toFixed(3).replace(/^0/,"")} save %, ${((s.ga||0)/s.g).toFixed(2)} GAA${s.so?", "+s.so+" shutout"+(s.so===1?"":"s"):""}` }
-  return `${s.goals||0} goals, ${s.ast||0} assists, ${s.pts||0} points`;
+  if(pos==="GK")return `${s.cs||0} clean sheet${s.cs===1?"":"s"}, ${s.sv||0} saves in ${s.g} games`;
+  return `${s.goals||0} goal${s.goals===1?"":"s"}, ${s.ast||0} assist${s.ast===1?"":"s"} in ${s.g} games`;
 }
-/* award production, from what a player actually did */
 function statProd(pos,s){
   if(!s||!s.g)return 0;
-  if(pos==="G"){ const sa=(s.sv||0)+(s.ga||0); return sa?Math.max(0,((s.sv/sa)-0.880)*1400)*Math.min(1,s.g/40):0 }
-  return (s.pts||0)+(s.goals||0)*0.4;
+  if(pos==="GK")return (s.cs||0)*3+(s.sv||0)*0.25;
+  return (s.goals||0)*3+(s.ast||0)*2+(s.cs||0)*(pos==="CB"?1.5:1);
 }

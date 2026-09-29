@@ -8,7 +8,17 @@
      5. free agency, under a hard salary cap
      6. empty spots are filled with replacement-level players
    Salaries are in millions and cover the twenty players the sim tracks. */
-const NFL_CAP=104;                          // the NHL's 2026-27 cap, $104M: a true hard cap
+const NFL_CAP=320;                          // the richest club's budget (English football has no cap)
+/* Each club's wage budget, in millions a year: its stature and its division.
+   Premier League clubs about 90-320, Championship clubs about 20-60; a
+   relegated club keeps a parachute (55% of its top-flight budget, fading
+   over two summers), as the Premier League pays its relegated clubs. */
+function budgetOf(u,t){
+  const s=(u&&u.program&&u.program[t])||1500, pl=CONF[t]==="PL";
+  let b=pl?Math.max(90,Math.min(320,90+(s-1500)*1.0)):Math.max(20,Math.min(60,20+(s-1350)*0.25));
+  if(!pl&&u&&u.chute&&u.chute[t])b=Math.max(b,u.chute[t]);
+  return Math.round(b);
+}
 /* no exceptions in hockey: re-signing your own players fits under the cap too */
 const TAX_LINE=NFL_CAP;
 /* How well run a franchise is, from its slow-moving strength: good
@@ -19,23 +29,24 @@ const TAX_LINE=NFL_CAP;
 const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1500)/(+((typeof process!=="undefined"&&process.env&&process.env.NBA_OE)||100))));
 const AGE_SHIFT={};                           // every position ages alike
 const POS_PAY={};                             // and is paid alike
-const MAX_DEAL=Math.round(NFL_CAP*0.20*10)/10; // a max contract: 20% of the cap ($20.8M)
+const MAX_DEAL=25;                            // the top wages, about 25 a year
 
 function nflAsk(r,pos,age){
   const x=Math.max(0,(r-55)/35);
   // scaled to this league's ratings: a typical starter (~64) about $15M, a
   // star (77+) the max, so payrolls sit near the cap and it binds
-  let s=Math.min(MAX_DEAL,(0.85+40*Math.pow(x,1.5))*(POS_PAY[pos]||1));   // $850K up to the max; payrolls between the floor and the cap
+  let s=Math.min(MAX_DEAL,(0.5+60*Math.pow(x,1.8))*(POS_PAY[pos]||1));    // wages: a squad player to a star
   const a=age-(AGE_SHIFT[pos]||0);
   if(a>=31)s*=0.78; else if(a>=29)s*=0.9;
-  return Math.round(Math.max(0.85,s)*100)/100;
+  return Math.round(Math.max(0.5,s)*100)/100;
 }
 function nflYears(age,pos){const a=age-(AGE_SHIFT[pos]||0); return a<=26?4:a<=29?3:a<=31?2:1}
 function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
 const ROOKIE_ROOM=2;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
-function nflResignPlan(R){
+function nflResignPlan(R,cap){
+  cap=cap||TAX_LINE;
   const exp=[], keep={}; let pay=0;
   R.forEach((p,i)=>{if(!p)return;
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
@@ -43,7 +54,7 @@ function nflResignPlan(R){
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players (the pros' bar was 66 for a starter)
     const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12)&&p.age<=33;
-    keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;      // your own players: up to the tax line
+    keep[i]=worth&&pay+ask<=cap-ROOKIE_ROOM;           // within the club's budget
     if(keep[i])pay+=ask;
   });
   return keep;
@@ -143,7 +154,7 @@ function nflFreeAgentPreview(u,myTeam,users){
   const out=[];
   NAMES.forEach(t=>{
     if(t===myTeam)return;
-    const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R);
+    const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R,budgetOf(u,t));
     R.forEach((p,i)=>{ if(!p||p.k.yrs>1||plan[i])return;
       if(p.r<58||p.age>=33)return;                  // likely to retire or go unsigned
       out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
@@ -234,7 +245,10 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // promotion and relegation: three down, the top two and the play-off winner up
   if(typeof SEA!=="undefined"&&SEA&&SEA.po&&SEA.po.down){
     u.conf=u.conf||{}; NAMES.forEach(t=>{if(!u.conf[t])u.conf[t]=CONF[t]});
-    SEA.po.down.forEach(t=>u.conf[t]="CH"); SEA.po.up.forEach(t=>u.conf[t]="PL");
+    u.chute=u.chute||{};
+    Object.keys(u.chute).forEach(t=>{u.chute[t]=Math.round(u.chute[t]*0.6); if(u.chute[t]<25)delete u.chute[t]});
+    SEA.po.down.forEach(t=>{u.chute[t]=Math.round(budgetOf(u,t)*0.55)});      // the parachute, before the drop
+    SEA.po.down.forEach(t=>u.conf[t]="CH"); SEA.po.up.forEach(t=>{u.conf[t]="PL"; delete u.chute[t]});
     u.moved={year:u.year,down:SEA.po.down.slice(),up:SEA.po.up.slice()};
     syncConf(u);
   }
@@ -260,7 +274,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
 
   NAMES.forEach(t=>{
     const before=u.program[t], c=u.coach[t], R=u.roster[t], ch=chFor(t);
-    const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R);
+    const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R,budgetOf(u,t));
     // the organisation moves slowly: results nudge it, they don't define it
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
     u.program[t]=Math.max(1480,Math.min(1920,u.program[t]));
@@ -346,7 +360,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // a draft class can tip a team over: release the worst-value backups until it fits
   NAMES.forEach(t=>{
     const R=u.roster[t];
-    while(payroll(R)>TAX_LINE){
+    while(payroll(R)>budgetOf(u,t)){
       let wi=-1,wv=-1;
       R.forEach((p,i)=>{if(!p||i<POS.length)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});
       if(wi<0){ // only starters left over: the most overpaid starter goes
@@ -371,7 +385,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const cost=Math.round(p.ask*1.1*10)/10;
       const bk=R[BK(p.i)];
       if(bk&&bk.keep){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`no room at ${pos}: it would cut ${bk.n}, whom you just signed`});return}
-      if(payroll(R)+cost>NFL_CAP){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
+      if(payroll(R)+cost>budgetOf(u,t)){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
       p.signed=true; p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       p.keep=true;                                  // not to be cut again this offseason
       const out=nflPlace(R,p);
@@ -393,7 +407,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const pull={}; NAMES.forEach(t=>pull[t]=elo[t]+rng.gauss(0,+((typeof process!=="undefined"&&process.env&&process.env.NBA_FAN)||45)));
     const shoppers=NAMES.slice().sort((a,b)=>pull[b]-pull[a]);
     shoppers.forEach(t=>{
-      const R=u.roster[t], st=styleOf(t), room=NFL_CAP*limit[st]-payroll(R);
+      const R=u.roster[t], st=styleOf(t), room=budgetOf(u,t)*limit[st]-payroll(R);
       let best=null,bv=0;
       pool.forEach(p=>{if(p.signed||p.age>maxAge[st]||p.from===t)return;
         const bk=R[BK(p.i)]; if(bk&&bk.keep)return;    // would cut a target you just signed
@@ -435,7 +449,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     cap:Object.fromEntries(NAMES.map(t=>[t,Math.round(payroll(u.roster[t])*10)/10]))};
 }
 
-LEAGUE.cap=NFL_CAP; LEAGUE.taxLine=TAX_LINE;
+LEAGUE.cap=NFL_CAP; LEAGUE.taxLine=TAX_LINE; LEAGUE.budgetOf=budgetOf;
 LEAGUE.offseason={
   newRoster:nflRoster,
   run:nflRun,
@@ -443,7 +457,7 @@ LEAGUE.offseason={
      starters worth keeping, spend in free agency like a middling team, draft
      the best player available */
   open(u,t,wins){
-    const R=u.roster[t], resign=nflResignPlan(R), asks={};
+    const R=u.roster[t], resign=nflResignPlan(R,budgetOf(u,t)), asks={};
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
     nflDraftClass(u,t);                              // made now, so the screen can show it
     return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null}};

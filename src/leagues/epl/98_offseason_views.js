@@ -222,13 +222,12 @@ function offseasonScreen(){
   const step=(A.userOpen||S.off.poach.length)?1:0, n=k=>step+k;
   // the roster you'd carry into the new year, and what it costs
   const R=U.roster[S.myTeam], expiring=Object.keys(P.asks||{}).map(Number);
-  const pay=nflPlannedPay(), room=LEAGUE.cap-pay;
+  const cap=LEAGUE.budgetOf(U,S.myTeam), pay=nflPlannedPay(), room=cap-pay;
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign go to free agency, where another team can take them. Rookies and free agents are added afterwards, inside whatever cap room you leave.");
-  const tax=LEAGUE.taxLine||LEAGUE.cap;
-  h+=`<div class="budgetleft ${pay<=tax?'done':''}">Payroll $${pay.toFixed(1)}M &middot; cap $${LEAGUE.cap}M &middot; ${
-    room>=0?"$"+room.toFixed(1)+"M room":"$"+(-room).toFixed(1)+"M over the cap"}</div>`;
-  if(tax>LEAGUE.cap)h+=`<div class="note">You can go over the cap to re-sign your own players, up to the $${tax}M tax line. Over the cap, you can't sign other teams' free agents.</div>`;
+  h+=`<div class="budgetleft ${pay<=cap?'done':''}">Wages &pound;${pay.toFixed(1)}M a year &middot; budget &pound;${cap}M &middot; ${
+    room>=0?"&pound;"+room.toFixed(1)+"M to spend":"&pound;"+(-room).toFixed(1)+"M over budget"}</div>`;
+  h+=`<div class="note">No salary cap in English football: the budget is what the club earns. The Premier League earns far more, and a relegated club keeps a parachute for two summers.</div>`;
   if(!expiring.length)h+=`<div class="note">Nobody's contract is up this year.</div>`;
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];
     return `<div class="cand ${on?'on':''}" data-resign="${i}">
@@ -263,7 +262,7 @@ Object.assign(LEAGUE.ui,{
   offseasonBlock(){
     if(!S.off)return null;
     // your own players may take you over the cap, up to the tax line
-    const over=nflPlannedPay()-(LEAGUE.taxLine||LEAGUE.cap);
+    const over=nflPlannedPay()-LEAGUE.budgetOf(U,S.myTeam);
     return over>0?"Over the tax line by $"+over.toFixed(1)+"M":null;
   },
   bindOffseason(){
