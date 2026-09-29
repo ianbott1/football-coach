@@ -1,0 +1,81 @@
+{
+ "fp": "c1107982fbe7a3e2",
+ "log": [
+  {
+   "fp": "c1107982fbe7a3e2",
+   "from": null,
+   "note": "First English football hot-seat baseline: Arsenal, Tottenham"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "Arsenal",
+     "last": {
+      "rec": "26-6",
+      "result": "PREMIER LEAGUE CHAMPIONS",
+      "grade": "A+"
+     },
+     "book": "7ba5449aeb1d7063"
+    },
+    {
+     "team": "Tottenham Hotspur",
+     "last": {
+      "rec": "11-14",
+      "result": "Finished 14th in the Premier League",
+      "grade": "C+"
+     },
+     "book": "786c60b420d13ad9"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "Arsenal",
+     "last": {
+      "rec": "18-11",
+      "result": "Finished 6th in the Premier League",
+      "grade": "C+"
+     },
+     "book": "20c9dc739b5c2f10"
+    },
+    {
+     "team": "Tottenham Hotspur",
+     "last": {
+      "rec": "11-20",
+      "result": "Finished 16th in the Premier League",
+      "grade": "C"
+     },
+     "book": "2c1ad0567a75f835"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "Arsenal",
+     "last": {
+      "rec": "21-9",
+      "result": "Finished 3rd in the Premier League",
+      "grade": "B"
+     },
+     "book": "4b3e8eb5f8610f55"
+    },
+    {
+     "team": "Tottenham Hotspur",
+     "last": {
+      "rec": "16-12",
+      "result": "Finished 10th in the Premier League",
+      "grade": "B-"
+     },
+     "book": "43f6f721c3a8dd31"
+    }
+   ]
+  }
+ ]
+}

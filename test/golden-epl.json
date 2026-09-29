@@ -1,0 +1,69 @@
+{
+ "fp": "9acb4f945f66e828",
+ "log": [
+  {
+   "fp": "9acb4f945f66e828",
+   "from": null,
+   "note": "First English football baseline: Arsenal, Wrexham"
+  }
+ ],
+ "result": {
+  "Arsenal#1": [
+   {
+    "year": 2026,
+    "games": "e8441f5e6595ea86",
+    "post": "e04c40a7fecd9859",
+    "champion": "Arsenal",
+    "rec": "366fe8efad79dc07",
+    "poll": "d6e873667ad57bfe",
+    "heis": "8f79fd99d75d1f06",
+    "history": "26658177482e3904",
+    "universe": "659e378eaeb60137",
+    "screens": "7e0a1469123de29b"
+   },
+   {
+    "year": 2027,
+    "games": "a4fcf4ff5315db42",
+    "post": "cf597eef40b75fda",
+    "champion": "Manchester City",
+    "rec": "f29ffcabf15191a8",
+    "poll": "d7df446a46e393f0",
+    "heis": "5296bbeb1990a249",
+    "history": "5843c0463d59af1a",
+    "universe": "1b6651f187b96c4a",
+    "screens": "48a5ed1b93609caa"
+   }
+  ],
+  "Wrexham#777": [
+   {
+    "year": 2026,
+    "games": "58ee5343bf54e651",
+    "post": "c422ad8c9a1942c6",
+    "champion": "Aston Villa",
+    "rec": "71cb556107dc39cf",
+    "poll": "ffd5f4e65edf435e",
+    "heis": "9697719ed81190e0",
+    "history": "6cbc65d2fe8aad99",
+    "universe": "f0837aa2b2b42b23",
+    "screens": "f18f0ba281b64781"
+   },
+   {
+    "year": 2027,
+    "games": "3870613ef24eabab",
+    "post": "a4043750771671f9",
+    "champion": "Arsenal",
+    "rec": "dd34fd6c53ec6ada",
+    "poll": "9014862bb87a14a7",
+    "heis": "104990fbed1a9e4a",
+    "history": "076cbaa39d0e836c",
+    "universe": "fcaae7d44b5ff6ed",
+    "screens": "d27711c2deb55140"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "af02dc345ecd564e"
+   }
+  ]
+ }
+}

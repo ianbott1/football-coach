@@ -22,8 +22,10 @@ for(let y=0;y<2;y++){let g=0;while(api.SEA.phase!=='done'&&g++<600){api.doAdvanc
 pages.push(['team pages',api.teamPages().join('')]);
 // after two seasons the record book has basketball leaders and career lines
 { const prog=api.view('dyn','program').replace(/<[^>]+>/g,' ');
-  if(!/Goals/.test(prog)||!/\d[\d,]* goals/.test(prog)){console.log('MISMATCH the record book has no football leaders or career lines');process.exit(1)} }
-const W=/\b(field goals?|end zone|Heisman|Super Bowl|touchdowns?|quarterbacks?|QB|yards?|NFL|baskets?|rebounds?|dribbl\w*|tip-?off|court|NBA|play-in|three-pointers?|free throws?|layups?|point guards?|pucks?|goalies?|Stanley Cup|wild cards?|power plays?|NHL|OTL|periods?|shootouts?|hat trick|coordinators?|side of the ball|Game day)\b/gi;   // ("Slow it down and" is basketball)
+  // (only once someone with goals has left: squads turn over slowly)
+  const gone=((api.U.alumni||{})[api.S.myTeam]||[]).some(a=>a.car&&a.car.goals>0);
+  if(gone&&(!/Goals/.test(prog)||!/\d[\d,]* goals/.test(prog))){console.log('MISMATCH the record book has no football leaders or career lines');process.exit(1)} }
+const W=/\b(field goals?|end zone|Heisman|Super Bowl|touchdowns?|quarterbacks?|QB|yards?|NFL|baskets?|rebounds?|dribbl\w*|tip-?off|court|NBA|play-in|three-pointers?|free throws?|layups?|point guards?|pucks?|goalies?|Stanley Cup|wild cards?|power plays?|NHL|OTL|periods?|shootouts?|hat trick|coordinators?|side of the ball|Game day|skate|rinks?|intermissions?|overtime|zamboni|centre ice)\b/gi;   // ("Slow it down and" is basketball)
 const hits={};pages.forEach(([lab,h])=>{const t=h.replace(/<[^>]+>/g,' ');let mm;while((mm=W.exec(t))){const k=mm[0].toLowerCase();const ctx=t.slice(Math.max(0,mm.index-50),mm.index+40).replace(/\s+/g,' ');(hits[k]=hits[k]||[]).push(lab+': ...'+ctx+'...')}});
 Object.keys(hits).forEach(k=>{console.log(k,'x'+hits[k].length);[...new Set(hits[k])].slice(0,2).forEach(x=>console.log('    ',x.slice(0,150)))});
 if(pages.some(p=>p[1]==='CRASH-MARK: no reveal')){console.log('MISMATCH the Selection Sunday reveal is missing');process.exit(1)}

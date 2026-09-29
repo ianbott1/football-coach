@@ -1,31 +1,27 @@
-/* ============ game screens: hockey ============ */
-/* The scoreboard, the run of play in ten-minute segments, the call screen
+/* ============ game screens: soccer ============ */
+/* The scoreboard, the run of play in fifteen-minute segments, the call screen
    with the staff's advice, and the replay view. */
-function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
+function segLabel(d){ return d.seg>=SEGS?(d.so?"Penalties":"Extra time"):segClock(d.seg) }
 function driveWord(d){
-  if(d.seg>=SEGS)return d.so?"decided in a shootout":"overtime winner";
+  if(d.seg>=SEGS)return d.so?"decided on penalties":"extra time";
   if(!d.h&&!d.a)return "no goals";
-  return d.h===d.a?d.h+" goal"+(d.h>1?"s":"")+" apiece":(d.h>d.a?"home":"away")+" "+Math.max(d.h,d.a)+"-"+Math.min(d.h,d.a);
+  return d.h===d.a?d.h+" goal"+(d.h>1?"s":"")+" each":(d.h>d.a?"home":"away")+" "+Math.max(d.h,d.a)+"-"+Math.min(d.h,d.a);
 }
-/* a segment in words, with names from the rosters */
+/* a segment in words, scorers from the squads */
 function driveScript(g,drives){
   const rng=new RNG(watchSeed(g));
   const RH=SEA.roster?SEA.roster[g.home]:null, RA=SEA.roster?SEA.roster[g.away]:null;
-  const skater=R=>{ if(!R)return "a forward"; const pool=[0,1,2,0,1,2,3,4,6,7,8]; const p=R[pool[rng.int(pool.length)]]; return p?p.n:"a forward" };
+  const scorer=R=>{ if(!R)return "a forward"; const pool=[5,5,5,4,4,3,3,2,1,11,10,9]; const p=R[pool[rng.int(pool.length)]]; return p?p.n:"a forward" };
   return drives.map(d=>{
-    if(d.seg>=SEGS){ const hw=d.sh>d.sa, tm=hw?g.home:g.away, R=hw?RH:RA;
-      return {seg:d.seg,clock:d.so?"SO":"OT",team:tm,pts:1,outcome:d.so?"SHOOTOUT":"OT GOAL",
-        text:d.so?`${tm} win it in the shootout, ${skater(R)} with the decider`:`${skater(R)} ends it in overtime for ${tm}`,h:d.sh,a:d.sa} }
+    if(d.seg>=SEGS){ const hw=d.pens?d.pens==="home":d.sh>d.sa, tm=hw?g.home:g.away, R=hw?RH:RA;
+      return {seg:d.seg,clock:d.so?"PENS":"ET",team:tm,pts:1,outcome:d.so?"PENALTIES":"EXTRA TIME",
+        text:d.so?`${tm} win it on penalties, ${scorer(R)} with the decisive kick`:`${scorer(R)} wins it in extra time for ${tm}`,h:d.sh,a:d.sa} }
     const parts=[];
-    const say=(n,R,tm,side)=>{ for(let k=0;k<n;k++){ const pp=d.pp&&d.pp[side]&&k===0&&rng.r()<0.5;
-      parts.push(`${skater(R)} scores for ${tm}${pp?" on the power play":""}`) } };
-    say(d.h,RH,g.home,0); say(d.a,RA,g.away,1);
-    if(d.en)parts.push(d.en.kind==="empty"?`into the empty net for ${d.en.side==="home"?g.home:g.away}`:`the extra attacker pays off for ${d.en.side==="home"?g.home:g.away}`);
-    const sh=d.shots||[0,0];
-    const text=parts.length?parts.slice(0,3).join("; ")+(parts.length>3?`, and ${parts.length-3} more`:"")
-      :`no goals${sh[0]+sh[1]?`, shots ${sh[1]}-${sh[0]}`:""}`;
+    const say=(n,R,tm)=>{ for(let k=0;k<n;k++)parts.push(`${scorer(R)} scores for ${tm}`) };
+    say(d.h,RH,g.home); say(d.a,RA,g.away);
+    const text=parts.length?parts.slice(0,3).join("; ")+(parts.length>3?`, and ${parts.length-3} more`:""):"no goals";
     const big=Math.max(d.h,d.a), tm=d.h>=d.a?g.home:g.away;
-    return {seg:d.seg,clock:segClock(d.seg),team:tm,pts:big,outcome:d.en?(d.en.kind==="empty"?"EMPTY NET":"EXTRA ATTACKER"):(d.h+d.a?"GOAL":""),text:text,h:d.sh,a:d.sa};
+    return {seg:d.seg,clock:segClock(d.seg),team:tm,pts:big,outcome:d.h+d.a?"GOAL":"",text:text,h:d.sh,a:d.sa};
   });
 }
 function liveScoreboard(){
@@ -33,7 +29,7 @@ function liveScoreboard(){
   const last=live.drives[live.drives.length-1];
   const tip=!live.drives.length;
   return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${tip?"PUCK DROP":esc(segLabel(last))}
+    <div class="wlabel"><span class="live"></span>${tip?"KICK-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
@@ -54,9 +50,9 @@ function liveView(){
   return `<div class="watchwrap">
     ${liveScoreboard()}
     ${fieldSVG(g,last,teamColor(g.home),teamColor(g.away),venue)}
-    <div class="fpos">${last?esc(segLabel(last))+" &middot; "+esc(venue):"Puck drop at "+esc(venue)}</div>
+    <div class="fpos">${last?esc(segLabel(last))+" &middot; "+esc(venue):"Kick-off at "+esc(venue)}</div>
     <div class="grouphead">Run of play</div>
-    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Waiting for the puck drop&hellip;</span></div>`}</div>
+    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Waiting for kick-off&hellip;</span></div>`}</div>
     <div class="actionbar">
       <div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"
         aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
@@ -110,7 +106,7 @@ function watchView(){
   return `<div class="watchwrap">
     <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
       <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
-        :tip?`<span class="live"></span>PUCK DROP &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
+        :tip?`<span class="live"></span>KICK-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>${esc(cur.clock)}`}</div>
       <div class="wscore">
         <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
@@ -123,7 +119,7 @@ function watchView(){
       <span class="pq">${esc(e.clock)}</span>
       <div class="ptxt"><b>${esc(e.team)}</b> ${esc(e.text)}${e.outcome?` <span class="dtag sc">${esc(e.outcome)}</span>`:""}</div>
       <span class="pscore">${e.a}&ndash;${e.h}</span></div>`).join("")
-      ||`<div class="empty">${owlMark(40)}<span>Waiting for the puck drop&hellip;</span></div>`}</div>
+      ||`<div class="empty">${owlMark(40)}<span>Waiting for kick-off&hellip;</span></div>`}</div>
     <div class="actionbar">
       ${done?`<button class="advance" id="wdone">Back to the season</button>`
       :`<div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"

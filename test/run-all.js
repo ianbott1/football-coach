@@ -9,7 +9,7 @@ const {spawn,execFileSync}=require('child_process'), path=require('path'), fs=re
 const ROOT=path.join(__dirname,'..'), D=f=>path.join(ROOT,'dist',f);
 const quick=process.argv.includes('--quick');
 const G={cfb:'football-coach.html', nfl:'football-coach-pro.html', ncaab:'basketball-coach.html',
-         nba:'basketball-coach-pro.html', nhl:'hockey-coach-pro.html'};
+         nba:'basketball-coach-pro.html', nhl:'hockey-coach-pro.html', epl:'football-manager.html'};
 const T=[];
 const add=(name,args,opt={})=>T.push(Object.assign({name,args,timeout:600000},opt));   // one CPU, four at a time
 // in every game
@@ -20,8 +20,8 @@ for(const [lg,f] of Object.entries(G)){
   add(`reload ${lg}`,['reload.js',D(f)]);
 }
 // across games
-add('saves (all five)',['saves.js']); add('layouts (all five)',['layouts.js']);
-add('sim and skip (all five)',['sim-and-skip.js']); add('goals and seat badge',['goals.js']);
+add('saves (all six)',['saves.js']); add('layouts (all six)',['layouts.js']);
+add('sim and skip (all six)',['sim-and-skip.js']); add('goals and seat badge',['goals.js']);
 add('migrate old saves (college football)',['migrate.js']);
 // college football
 add('h2h (cfb)',['h2h.js',D(G.cfb)]); add('moves (cfb)',['moves.js',D(G.cfb)]);
@@ -40,10 +40,12 @@ add('NBA history (nba)',['nba-history.js','2','100'],{long:true});
 // pro hockey
 add('playoffs (nhl)',['nhl-playoffs.js','3']); add('clinch marks (nhl)',['nhl-clinch.js','4']);
 add('screens (nhl)',['nhl-screens.js']); add('NHL history (nhl)',['nhl-history.js','2','60'],{long:true});
+// English football
+add('rules (epl)',['epl-rules.js','4']); add('screens (epl)',['epl-screens.js']);
 
 (async()=>{
   const t0=Date.now();
-  process.stdout.write('building all five games... ');
+  process.stdout.write('building all six games... ');
   for(const lg of Object.keys(G))execFileSync('python3',['build.py',lg],{cwd:ROOT,stdio:'ignore'});
   console.log('done');
   const todo=T.filter(t=>!(quick&&t.long)), results=[];

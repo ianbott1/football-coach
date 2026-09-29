@@ -4,8 +4,8 @@
    ones get hired away. (The core calls them coordinators.) */
 const OFF_SHARE=0.50, DEF_SHARE=0.50;      // both ends count the same
 const STAFF_ELO=0.62;                      // Elo per point of assistant quality
-const OC_STYLE=["Puck possession","Heavy forecheck","Stretch passes","Cycle and grind","Net-front traffic"];
-const DC_STYLE=["Neutral-zone trap","Man-on-man","Collapsing box","Aggressive gap control","Shot blocking"];
+const OC_STYLE=["Possession play","Gegenpressing","Direct and quick","Wing play and crosses","Build from the back"];
+const DC_STYLE=["High press","Low block","Zonal marking","Man-marking","Offside trap"];
 function newCoordinator(rng,prestige,side,repBonus){
   const tier=Math.max(0,Math.min(1,(prestige-1150)/900));
   const q=rng.gauss(-20+tier*44+(repBonus||0), 24);

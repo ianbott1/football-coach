@@ -76,19 +76,19 @@ function staffFace(who){
 /* Which option each of them would take, and what they'd say about it. */
 /* The Bears do not reason. They react. */
 const BEAR_YELL={
-  push:  [`SEND EVERYONE. The goalie too, if he wants.`,
+  push:  [`SEND EVERYONE. The goalkeeper too, if he wants.`,
           `Pinch! Pinch the D! Pinch everything!`,
           `Shoot it from anywhere. The ice is ours.`,
           `Twenty minutes is loads. We need about four of them.`],
-  lock:  [`Lock it down? We didn't come here to be locked.`,
+  lock:  [`Park the bus? We didn't come here to park.`,
           `MORE GOALS. Goals are the whole point.`,
           `Keep attacking. Bears don't trap.`],
   pull:  [`Pull him NOW. Pull him yesterday.`,
           `Six attackers. Seven if we can sneak one on.`,
           `Empty net? Great. We'll be in their end anyway.`],
-  distracted:[`Is the Zamboni available for hire? Asking for a bear.`,
-          `We've been watching the organist. The organist is excellent.`,
-          `Did you know you can buy a whole goal? We may have bought a goal.`]
+  distracted:[`Can we sit in the dugout? The dugout looks comfy.`,
+          `We've been watching the ball boys. Very professional.`,
+          `Did you know you can buy a corner flag? We may have bought a corner flag.`]
 };
 /* Pearl is a dog roughly one time in six. Unlike the Bears, her advice
    survives it — the dog bit wraps the read rather than replacing it, so you
@@ -118,30 +118,15 @@ function bearYell(kind, seed){
 }
 
 function staffTake(dp, ctx){
-  const diff = (ctx.mine||0)-(ctx.theirs||0);
-  const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
-  const R=[];
-  if(dp.k==="push"){
-    R.push({who:"bears", pick:"push", line:bearYell("push",seed)});
-    R.push({who:"pearl", pick: diff<=-2?"push":"normal", line:pearlSay(diff<=-2
-      ? `Two goals is a lot to find! Let's open it up a bit.`
-      : `It's one goal! Plenty of time. Keep playing our way.`,seed)});
-    R.push({who:"capy", pick:"normal", line:`Chasing, one finds, mostly produces goals at the other end.`});
-  }
-  else if(dp.k==="lock"){
-    R.push({who:"bears", pick:"normal", line:bearYell("lock",seed)});
-    R.push({who:"pearl", pick: diff>=2?"sit":"normal", line:pearlSay(diff>=2
-      ? `We're two up! Let's make it boring and go home happy.`
-      : `One goal isn't enough to sit on. Keep going!`,seed)});
-    R.push({who:"capy", pick:"sit", line:`I would suggest fewer chances, both ways. Fewer chances, fewer disasters.`});
-  }
-  else if(dp.k==="pull"){
-    R.push({who:"bears", pick:"early", line:bearYell("pull",seed)});
-    R.push({who:"pearl", pick: diff<=-2?"early":"normal", line:pearlSay(diff<=-2
-      ? `Two goals needs time! Get him out early.`
-      : `One goal, the usual time. We've done this before.`,seed)});
-    R.push({who:"capy", pick:"normal", line:`An empty net, I'm afraid, rather invites them to score into it.`});
-  }
+  const diff=(ctx.mine||0)-(ctx.theirs||0), seed=(ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0), R=[];
+  const behind=diff<0, ahead=diff>0, o=dp.opts.map(x=>x[0]);
+  const bold=o.indexOf("push")>=0?"push":o.indexOf("win")>=0?"win":"normal";
+  const safe=o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":"normal";
+  R.push({who:"bears", pick:bold, line:bearYell(behind?"push":ahead?"lock":"pull",seed)});
+  R.push({who:"pearl", pick: behind?(diff<=-2||dp.k==="late"?"push":"normal"):ahead?(diff>=2?"sit":"normal"):(o.indexOf("win")>=0?"win":"normal"),
+    line:pearlSay(behind?"We need a goal! Let's go and get it.":ahead?"Let's be sensible and see this out!":"A draw's a point, but a win's three! Let's be brave.",seed)});
+  R.push({who:"capy", pick:safe, line:behind?"Chasing a game, one finds, mostly concedes on the break.":
+    ahead?"I would suggest keeping what we have.":"A point, I do believe, is a point."});
   return R;
 }
 
@@ -150,17 +135,17 @@ function staffAside(kind, data){
   const L={
     depth:[["bears",`Play the kid. Chaos is a ladder.`],
            ["pearl",`He's waited so patiently for this. Let him play!`],
-           ["capy",`It seems to me changing the goalie mid-season rarely goes as people imagine.`]],
-    staff:[["bears",`FIRE HIM. At centre ice. During the anthem.`],
+           ["capy",`It seems to me changing the goalkeeper mid-season rarely goes as people imagine.`]],
+    staff:[["bears",`SACK HIM. At half-time. On the pitch.`],
            ["pearl",`Everyone has bad seasons. Maybe he just needs a bit of help.`],
            ["capy",`I do believe I'd want to be very sure before we start pulling things apart.`]],
     win:  [["bears",`WE ARE UNSTOPPABLE. Say it back to us.`],
            ["pearl",`I'm SO proud of them. Every single one.`],
            ["capy",`Lovely. Though I am, I confess, already a little worried about next week.`]],
-    loss: [["bears",`Rigged. The goal was offside. We're appealing.`],
+    loss: [["bears",`Rigged. That was offside. We're appealing to VAR.`],
            ["pearl",`It's alright! There's another one next week.`],
            ["capy",`I did rather have a feeling. I didn't want to say.`]],
-    title:[["bears",`THE CUP. We are drinking from THE CUP.`],
+    title:[["bears",`THE TROPHY. We are lifting THE TROPHY.`],
            ["pearl",`Look at them all crying. It's the loveliest thing.`],
            ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]]
   };

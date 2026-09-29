@@ -129,19 +129,17 @@ function offseasonBanner(){
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
-    <div class="bsub">${esc(last.champion)} won the Stanley Cup.
+    <div class="bsub">${esc(last.champion)} won the Premier League.
       ${(last.coaching.hires||[]).length} teams hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
       const mine=(X.draft||[]).filter(d=>d.team===my);
       if(!mine.length)return "";
-      return `<div class="grouphead">Draft &mdash; ${last.year+1}</div>`+
+      return `<div class="grouphead">Academy graduates &mdash; ${last.year+1}</div>`+
         mine.map(d=>`<div class="drow">
-          <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
           <div class="fmain"><div class="fname">${esc(d.n)}
             <span class="dpos">${esc(d.p)}</span></div>
-          <div class="fnote">${esc(d.from)} &middot; rated ${d.r}, ceiling ${d.pot}${d.made?"":" &middot; practice squad"}</div></div>
-          <span class="dovr">#${d.d.overall}</span></div>`).join("");
+          <div class="fnote">rated ${d.r}, ceiling ${d.pot} &middot; ${d.made?"into the squad":"not ready: let go"}</div></div></div>`).join("");
     })()}
     <button class="cardbtn" data-card="${S.history.length-1}">Season card &mdash; share ${last.year}</button>
     </div>`;
@@ -160,7 +158,7 @@ function offseasonScreen(){
       <div><div class="btitle" style="margin:0">${last.rec[my][0]}-${last.rec[my][1]}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
-    <div class="bsub">${esc(last.champion)} won the Stanley Cup.
+    <div class="bsub">${esc(last.champion)} won the Premier League.
     ${A.hires.length} teams changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
@@ -242,12 +240,8 @@ function offseasonScreen(){
     <div class="fname">${esc(FA[k].l)}</div><div class="cdesc">${esc(FA[k].d)}</div></div>`).join("");
   h+=nflTargetsHTML(P,room);
   h+=nflTradeHTML(P);
-  h+=`<div class="grouphead">${n(3)}. The draft</div>`;
-  h+=`<div class="note">You pick ${nflPickSlot()} in each round.</div>`;
-  const DR=LEAGUE.offseason.draftStyles;
-  h+=Object.keys(DR).map(k=>`<div class="opt ${P.draft===k?'on':''}" data-draft="${k}">
-    <div class="fname">${esc(DR[k].l)}</div><div class="cdesc">${esc(DR[k].d)}</div></div>`).join("");
-  h+=nflBoardHTML(P);
+  h+=`<div class="grouphead">${n(3)}. The academy</div>`;
+  h+=`<div class="note">No draft in English football: one or two youngsters come through your academy each summer, better at a bigger club. They join as backups if they're better than who's there.</div>`;
   h+=`<div class="grouphead">${n(4)}. Team philosophy</div>`;
   h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
     <div class="fname">${esc(PHILOSOPHY[k].l)}</div>

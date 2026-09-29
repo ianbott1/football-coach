@@ -265,7 +265,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   u.alumni=u.alumni||{};
   const leave=(t,p,why)=>{
     u.alumni[t]=u.alumni[t]||[];
-    u.alumni[t].push({n:p.n,p:p.p,from:p.joined||u.year-(p.yrsHere||1),to:u.year,
+    u.alumni[t].push({n:p.n,p:p.p,from:Math.min(u.year,p.joined||u.year-(p.yrsHere||1)),to:u.year,
       peak:p.peak||p.r,yrs:p.yrsHere||1,draft:p.draft||null,
       line:LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}),why:why,
       // career totals with the franchise, for its leaders (six numbers)
@@ -329,36 +329,24 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   Object.keys(U_CH).forEach(t=>{const ch=U_CH[t]; if(ch&&ch.trade)nflApplyTrade(u,t,ch.trade,rep,leave,pool)});
   NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
 
-  // 4. the draft
-  const order=nflDraftOrder(rec,elo,rng);
-  // the class shown on the offseason screen (a copy: the class itself isn't consumed)
-  const prospects=nflDraftClass(u).list.map(p=>Object.assign({},p));
-  delete u.draftClass;
+  // 4. the academy: English football has no draft. Each club brings through
+  // one or two youngsters (17-19), better at bigger clubs; they join as
+  // backups where they beat the one there, and are let go otherwise.
   const picks=[];
-  for(let rd=1;rd<=2;rd++)order.forEach((t,k)=>{
-    const R=u.roster[t], ch=chFor(t), overall=(rd-1)*32+k+1;
-    const style=(ch&&ch.draft)||"bpa";
-    const score=p=>style==="need"?nflGain(R,p)*1.6+p.r*0.3
-                  :style==="upside"?p.pot*1.2+p.r*0.2+nflGain(R,p)*0.3
-                  :p.r+(p.pot-p.r)*0.45+nflGain(R,p)*0.5;
-    const scout=2.5-orgEdge(u,t)*1.4;                  // how often a team misjudges a prospect
-    let bi=0,bs=-1e9; prospects.forEach((p,i)=>{if(p.taken)return; const s=score(p)+rng.gauss(0,scout); if(s>bs){bs=s;bi=i}});
-    // a coach's own board comes first: the highest player on it still there
-    const board=(ch&&ch.board)||[];
-    const mine=board.map(id=>prospects.findIndex(p=>p.pid===id&&!p.taken)).find(i=>i>=0);
-    if(mine!==undefined)bi=mine;
-    const p=prospects[bi]; p.taken=true;
-    p.draft={round:rd,pick:k+1,overall:overall,team:t,year:u.year};
-    p.k={sal:rookieSal(overall),yrs:4}; p.joined=u.year+1; p.drafted=true;
-    const g=nflGain(R,p);
-    const made=g>0.6||!R[p.i]||!R[BK(p.i)];
-    if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"draft"});
-      if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")}}
-    rep.drafted[t].push({n:p.n,p:p.p,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made});
-    picks.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made,pid:p.pid});
+  NAMES.forEach(t=>{
+    const R=u.roster[t], n=1+(rng.r()<0.5?1:0), base=eloToRating(u.program[t]||1500);
+    for(let k=0;k<n;k++){
+      const i=rng.int(POS.length), p=nflPlayer(rng,base-rng.range(6,12),17+rng.int(3),i);
+      p.pot=Math.min(99,Math.round(p.r+rng.range(8,20))); p.k={sal:0.5,yrs:3}; p.joined=u.year+1; p.academy=true;
+      const made=nflGain(R,p)>0.6||!R[p.i]||!R[BK(p.i)];
+      if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"academy"});
+        if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")}}
+      rep.drafted[t].push({n:p.n,p:p.p,r:p.r,pot:p.pot,from:"the academy",made:made});
+      picks.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:"the academy",made:made});
+    }
   });
 
-  // a draft class can tip a team over: release the worst-value backups until it fits
+  // the academy's wages can tip a club over: release the worst-value backups until it fits
   NAMES.forEach(t=>{
     const R=u.roster[t];
     while(payroll(R)>budgetOf(u,t)){
@@ -513,19 +501,21 @@ LEAGUE.goals={
 LEAGUE.historyExtras=function(sea,off,my){
   const C=off.contracts||{};
   return {id:"nfl",
-    draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my||d.d.round===1&&d.d.pick<=10)
+    draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my)            // your academy graduates
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
-    payroll:off.cap?off.cap[my]:null};
+    payroll:off.cap?off.cap[my]:null,
+    // every club's season in words, frozen before promotion and relegation moved anyone
+    res:(typeof SEA!=="undefined"&&SEA)?Object.fromEntries(NAMES.map(t=>[t,SEA.seasonResult(t)])):null};
 };
-LEAGUE.migrateHistory=function(h){return {id:"nfl"}};
+LEAGUE.migrateHistory=function(h){return {id:"epl"}};
 LEAGUE.seasonLine=function(h,t,r,seed){
-  if(h.pnote&&h.pnote[t])return h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
+  const res=h.league&&h.league.res&&h.league.res[t];
+  if(res)return res.charAt(0)+res.slice(1).replace(/^(REMIER LEAGUE CHAMPIONS|HAMPIONSHIP WINNERS)/,m=>m.toLowerCase());
   if(h.champion===t)return "Premier League champions";
-  if(seed)return "Playoffs, No. "+seed+" seed";
-  return r[0]>r[1]?"Missed the playoffs":"Losing season";
+  return "";
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;

@@ -31,12 +31,15 @@ extendSeason({
     return this._gg[t];
   },
   _tb(x,y){ const X=this.gfga(x), Y=this.gfga(y);
-    return this.pts(y)-this.pts(x)||(Y[0]-Y[1])-(X[0]-X[1])||Y[0]-X[0]||this.elo[y]-this.elo[x] },
+    const E=this.regElo||this.elo;
+    return this.pts(y)-this.pts(x)||(Y[0]-Y[1])-(X[0]-X[1])||Y[0]-X[0]||E[y]-E[x] },
   sideOf(t){return CONF[t]==="PL"?"Premier League":"Championship"},
   table(d){return NAMES.filter(t=>CONF[t]===d).sort((a,b)=>this._tb(a,b))},
   seedsNow(){return {"Premier League":this.table("PL"),"Championship":this.table("CH")}},
   _seed(){
     if(this.po.seeds)return;
+    if(!this.regRec)this.regRec=JSON.parse(JSON.stringify(this.rec));      // the table stops here
+    if(!this.regElo)this.regElo=Object.assign({},this.elo);
     const pl=this.table("PL"), ch=this.table("CH");
     this.champs.PL=pl[0]; this.champs.CH=ch[0];
     this.po.seeds=ch.slice(2,8);                        // third to eighth

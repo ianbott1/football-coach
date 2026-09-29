@@ -54,8 +54,9 @@ const LEAGUE={
   stepLabel:w=>`Matchday ${w+1}`,
   rankTop:6,
   /* W-D-L and points: three a win, one a draw */
-  recText(t,sea,r){ const [w,l]=r||sea.rec[t], d=(sea.drw&&sea.drw[t])||0; return `${w}-${d}-${l}` },
-  points(t,sea){ const [w]=sea.rec[t], d=(sea.drw&&sea.drw[t])||0; return 3*w+d },
+  // the league's record: play-off games don't count in the table
+  recText(t,sea,r){ const [w,l]=r||(sea.regRec||sea.rec)[t], d=(sea.drw&&sea.drw[t])||0; return `${w}-${d}-${l}` },
+  points(t,sea){ const [w]=(sea.regRec||sea.rec)[t], d=(sea.drw&&sea.drw[t])||0; return 3*w+d },
   standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
   /* the owl in a scarf, club colours */
   art:{owlExtra:`
