@@ -70,7 +70,15 @@ extendSeason({
   postMatchup(team){return this._nextFor(team)},
   postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:m.neutral}},
   mySeries(){return null},
+  /* a club's season, frozen once the season is over: promotion and relegation
+     move clubs between divisions before the history is written */
   seasonResult(my){
+    if(this._res&&this._res[my])return this._res[my];
+    const r=this._result(my);
+    if(this.phase==="done")(this._res=this._res||{})[my]=r;
+    return r;
+  },
+  _result(my){
     this._seed();
     const d=CONF[my], tb=this.table(d), pos=tb.indexOf(my)+1, ord=n=>n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th");
     if(d==="PL"){ if(pos===1)return "PREMIER LEAGUE CHAMPIONS"; if(pos>=18)return `Relegated (${ord(pos)})`; return `Finished ${ord(pos)} in the Premier League` }

@@ -244,6 +244,7 @@ function nflPlace(roster,p){
 function nflRun(u,rng,healthy,elo,rec,choices){
   // promotion and relegation: three down, the top two and the play-off winner up
   if(typeof SEA!=="undefined"&&SEA&&SEA.po&&SEA.po.down){
+    NAMES.forEach(t=>SEA.seasonResult(t));                 // freeze every club's season first
     u.conf=u.conf||{}; NAMES.forEach(t=>{if(!u.conf[t])u.conf[t]=CONF[t]});
     u.chute=u.chute||{};
     Object.keys(u.chute).forEach(t=>{u.chute[t]=Math.round(u.chute[t]*0.6); if(u.chute[t]<25)delete u.chute[t]});
@@ -473,27 +474,37 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
-  /* what the job demands, by franchise strength: wins over 84 games, and a
-     par for the playoffs (how far the job expects you to go) */
+  /* what the board wants, by stature: a target position and, for the
+     Championship, promotion. Grades come from where you finish. */
   expectations(p){
-    if(p>=1600)return {w:50,par:2.2,l:"Built to win now. A conference final is the floor.",t:"CONTEND"};
-    if(p>=1540)return {w:45,par:1.3,l:"Make the playoffs and win a round.",t:"WIN A ROUND"};
-    if(p>=1480)return {w:41,par:0.4,l:"Get into the playoffs, a wild card if that's what it takes.",t:"MAKE THE PLAYOFFS"};
-    if(p>=1420)return {w:34,par:0,l:"Draft well and show progress. Thirty-five wins would be a statement.",t:"REBUILD"};
-    return {w:27,par:0,l:"The bottom of the league. Twenty-five wins would be real movement.",t:"START OVER"};
+    // p is the club's stature; the division comes from where it plays now (the user's club)
+    const inPL=typeof S!=="undefined"&&S&&CONF[S.myTeam]==="PL";
+    if(inPL){
+      if(p>=1890)return {w:0,pos:4,par:1,l:"Win the league, or at least finish in the top four.",t:"TOP FOUR"};
+      if(p>=1760)return {w:0,pos:7,par:0.6,l:"A European place: the top seven.",t:"EUROPE"};
+      if(p>=1600)return {w:0,pos:10,par:0.3,l:"The top half.",t:"TOP HALF"};
+      return {w:0,pos:17,par:0,l:"Stay up. Nothing else matters.",t:"SURVIVE"};
+    }
+    if(p>=1500)return {w:0,pos:2,par:1,l:"Promotion, automatically if you can.",t:"GO UP"};
+    if(p>=1380)return {w:0,pos:8,par:0.4,l:"The play-offs.",t:"PLAY-OFFS"};
+    return {w:0,pos:14,par:0,l:"A solid season, and build.",t:"BUILD"};
   },
-  isTitle(result){ return /STANLEY CUP CHAMPIONS/i.test(result) },
-  firstTitle:"First championship of your tenure.",
+  isTitle(result){ return /PREMIER LEAGUE CHAMPIONS/.test(result) },
+  firstTitle:"The club's first league title under you.",
   grade(wins,losses,result,exp){
-    // no result yet (a season in progress, as the seat badge asks): the playoffs at par
-    const po=!result?(exp.par||0):/STANLEY CUP CHAMPIONS/i.test(result)?5:/Stanley Cup Final/.test(result)?3.6:/conference final/.test(result)?2.6:
-      /second round/.test(result)?1.7:/first round/.test(result)?0.9:/Made the playoffs/.test(result)?0.9:-(exp.par>=0.4?0.8:0);
-    let s=(wins-exp.w)*0.13+po-(exp.par||0);
-    if(wins<losses)s-=(exp.w>=41?0.8:0.2);
+    // no result yet: a season in progress, on course
+    if(!result)return {g:"B",l:"About what was expected.",miss:false};
+    const pos=+((result.match(/(\d+)(st|nd|rd|th)/)||[])[1]||0);
+    let s;
+    if(/PREMIER LEAGUE CHAMPIONS/.test(result))s=4.5;
+    else if(/CHAMPIONSHIP WINNERS|Promoted/.test(result))s=exp.pos<=2?1.6:3.2;
+    else if(/play-off final/.test(result))s=exp.pos<=2?-0.6:1.0;
+    else if(/Relegated/.test(result))s=-4;
+    else s=(exp.pos-pos)*0.35;
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
             s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
     const l=s>=2.6?"Far beyond what anyone expected.":s>=0.9?"Ahead of schedule.":
-            s>=-0.6?"About what was expected.":s>=-2.2?"Short of the mark.":"A bad year, and everyone knows it.";
+            s>=-0.6?"About what was expected.":s>=-2.2?"Short of the mark.":"A bad season, and everyone knows it.";
     return {g:g,l:l,miss:s<-0.6};
   }
 };
@@ -512,7 +523,7 @@ LEAGUE.historyExtras=function(sea,off,my){
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};
 LEAGUE.seasonLine=function(h,t,r,seed){
   if(h.pnote&&h.pnote[t])return h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
-  if(h.champion===t)return "Stanley Cup champions";
+  if(h.champion===t)return "Premier League champions";
   if(seed)return "Playoffs, No. "+seed+" seed";
   return r[0]>r[1]?"Missed the playoffs":"Losing season";
 };

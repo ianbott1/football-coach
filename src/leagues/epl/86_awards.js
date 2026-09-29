@@ -23,6 +23,7 @@ extendSeason({
       if(pl&&(pl.st||0)>=8)all.push({t:t,n:pl.n,p:pl.p,r:pl.r,c:pl.c,
         prod:pl.prod||0,line:statLine(pl.p,pl.st2),rec:this.rec[t][0]+"-"+this.rec[t][1]});
     }));
+    for(let i=all.length-1;i>=0;i--)if(CONF[all[i].t]!=="PL")all.splice(i,1);   // the Premier League's award
     // measured against the position: production over the typical production
     // of that position's best eight, then the voters' premium for the
     // position (LEAGUE.awards.premium). By raw production a quarterback won
