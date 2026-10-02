@@ -1,5 +1,5 @@
 {
- "fp": "78899139b642ea83",
+ "fp": "8e897a46f7f8c1c7",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -15,59 +15,64 @@
    "fp": "78899139b642ea83",
    "from": "78899139b642ea83",
    "note": "Tier labels to rank 164; expectations before a club is chosen"
+  },
+  {
+   "fp": "8e897a46f7f8c1c7",
+   "from": "78899139b642ea83",
+   "note": "Soccer Coach: home first, momentum bar, W/D/L odds, draws as D, target positions; stature kept to the league's range (was clamped 1480-1920); its own job market"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "79d38c7f44d24484",
-    "post": "c97f4410a00db20c",
+    "games": "71fe9f63f6564106",
+    "post": "238c539ed20ac11f",
     "champion": "Arsenal",
-    "rec": "dba86cc1b76efa2e",
-    "poll": "e5be244c65940b5a",
-    "heis": "beef1a225e668215",
-    "history": "35d90ff55e8bf508",
-    "universe": "8bef9660c9f46f0c",
-    "screens": "7d6945d9b53f48fc"
+    "rec": "671be703aaed4677",
+    "poll": "409812e7d1c4c816",
+    "heis": "ad280a1f85e9d209",
+    "history": "17c6f6c38e26f41c",
+    "universe": "596605282a941c27",
+    "screens": "8ef4c195e1d3db1c"
    },
    {
     "year": 2027,
-    "games": "cbe1e8d358bb449d",
-    "post": "cf96dfe2d9c8e68d",
+    "games": "05851d24260098b5",
+    "post": "f0bf79436130f868",
     "champion": "Manchester City",
-    "rec": "fa6445d40c8a32be",
-    "poll": "ac357abaf46fcc14",
-    "heis": "9320c3874248aeae",
-    "history": "d9e1c7194e89986f",
-    "universe": "b519f0660dbeaa30",
-    "screens": "a7d11df9bd273c8e"
+    "rec": "30cdc36d719b880a",
+    "poll": "b8a593a83b334e3d",
+    "heis": "8b043796d326653f",
+    "history": "141b7caa5d0bbccd",
+    "universe": "ab8bdd67be2c6c74",
+    "screens": "9f575bbec745d47a"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "7133b37aa9ad33e4",
-    "post": "f6333a9598c1a3a9",
+    "games": "08d1073134545fe5",
+    "post": "3662018d76ead6f5",
     "champion": "Arsenal",
-    "rec": "919356cfb5cb992e",
-    "poll": "dc900c0c81859a25",
-    "heis": "043861247646650f",
-    "history": "20c843b9fe0b1de2",
-    "universe": "d89e08f4fc88a4ab",
-    "screens": "d76c429ed472206f"
+    "rec": "385404a2328dc023",
+    "poll": "3d5045222d52f01e",
+    "heis": "19827f5da314b95a",
+    "history": "7d19c4d96f556f83",
+    "universe": "a36e0df9758e463a",
+    "screens": "ffc8b1c7b84f57a1"
    },
    {
     "year": 2027,
-    "games": "e2ad4040c2bc87e9",
-    "post": "0c930f0c57c5de84",
-    "champion": "Liverpool",
-    "rec": "bf71acb14694437c",
-    "poll": "181fef0b3de315cb",
-    "heis": "2516d12e053066b3",
-    "history": "790afc3a9416bcd7",
-    "universe": "3746a749c4e6b3ad",
-    "screens": "8bfb622359613cf4"
+    "games": "16d941fef1873c7c",
+    "post": "9f8948e5da4aded3",
+    "champion": "Manchester City",
+    "rec": "8094228544a19097",
+    "poll": "90df4f233bfc7231",
+    "heis": "af84bfcc78c85dde",
+    "history": "b901cd36afeab396",
+    "universe": "1bc9773be2804e8f",
+    "screens": "253e6e2f68047f81"
    }
   ],
   "schedules#60": [

@@ -32,9 +32,20 @@ function liveScoreboard(){
     <div class="wlabel"><span class="live"></span>${tip?"KICK-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
     <div class="wscore">
-      <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
       <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span><span class="wn">${H}</span></div>
-    </div></div>`;
+      <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
+    </div>${momentumHTML(g,live.drives)}</div>`;
+}
+/* the momentum bar: a bar for each fifteen minutes, above the line for the
+   home side when it was on top, below for the away side; the size is how much */
+function momentumHTML(g,drives){
+  const segs=drives.filter(d=>typeof d.mom==="number");
+  const hc=teamInk(g.home), ac=teamInk(g.away), W=300, H=44, mid=H/2, bw=W/6;
+  const bars=segs.map((d,i)=>{ const v=d.mom-0.5, h=Math.min(mid-2,Math.abs(v)*2*(mid-2)+1.5);
+    return `<rect x="${(i*bw+3).toFixed(1)}" y="${(v>=0?mid-h:mid).toFixed(1)}" width="${(bw-6).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${v>=0?hc:ac}"/>`}).join("");
+  return `<div class="mom"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Momentum">
+    <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="var(--line)" stroke-width="1"/>${bars}</svg>
+    <div class="momkey"><span style="color:${hc}">${esc(g.home)}</span><span>momentum</span><span style="color:${ac}">${esc(g.away)}</span></div></div>`;
 }
 function playsHTML(list,my,g){
   return list.slice().reverse().map(d=>{
@@ -42,7 +53,7 @@ function playsHTML(list,my,g){
     return `<div class="play ${tm===my?'mine':''}">
       <span class="pq">${esc(segLabel(d))}</span>
       <div class="ptxt"><b>${esc(tm)}</b> ${esc(driveWord(d))}</div>
-      <span class="pscore">${d.sa}&ndash;${d.sh}</span></div>`}).join("");
+      <span class="pscore">${d.sh}&ndash;${d.sa}</span></div>`}).join("");
 }
 function liveView(){
   const g=live.g, my=S.myTeam, last=live.drives[live.drives.length-1]||null;

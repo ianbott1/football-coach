@@ -13,6 +13,14 @@ const LEAGUE={
   id:"epl",
   name:"English Football",
   draws:true,                                 // a point for a draw, three for a win
+  homeFirst:true,                             // results read home first, as in Britain
+  /* win, draw and loss, from the engine's own scoring model (Poisson) */
+  wdl(me,opp,atHome,neutral){
+    const hfa=neutral?0:(atHome?1:-1)*LEAGUE.tuning.hfa, e=(SEA.elo[me]+hfa-SEA.elo[opp])*SC.edge;
+    const lm=SC.goals*Math.exp(e/2), lo=SC.goals*Math.exp(-e/2), P=(l,k)=>{let p=Math.exp(-l);for(let i=1;i<=k;i++)p*=l/i;return p};
+    let w=0,d=0; for(let i=0;i<10;i++)for(let j=0;j<10;j++){const p=P(lm,i)*P(lo,j); if(i>j)w+=p; else if(i===j)d+=p}
+    return [w,d,1-w-d];
+  },
   /* [club, starting strength, division]: the 2026-27 pyramid, tiers 1-6
      (data/england_2026_27.py). Strength bands by tier, overlapping a little
      (a promoted club is near the bottom of the division it joins): Premier
@@ -72,8 +80,8 @@ const LEAGUE={
     orgNote:base=>`Club stature is the slow-moving baseline &mdash; support, revenue, history. Measured
       against where each club stood in ${base}.`,
     tagline:"Build a club. Win the league.",
-    gameName:"Football Coach", eyebrow:"English",
-    site:"Football Coach: ianbott1.github.io/football-coach",
+    gameName:"Soccer Coach", eyebrow:"English",
+    site:"Soccer Coach: ianbott1.github.io/football-coach",
     week:"weekend",
     tiers:[
       {max:4,   l:"Title challenger", d:"Win the league, or at least finish in the top four.",c:"flag"},

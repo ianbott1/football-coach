@@ -80,7 +80,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
     const gH=poisson(rng,lamH), gA=poisson(rng,lamA);
     st.h+=gH; st.a+=gA;
     st.lines.h.sog+=gH+poisson(rng,lamH*3.2); st.lines.a.sog+=gA+poisson(rng,lamA*3.2);
-    const d={seg:s,h:gH,a:gA,sh:st.h,sa:st.a,shots:[0,0],pp:[false,false],en:null,ot:0};
+    // momentum: the home side's share of the play in this spell (its scoring rate
+    // against the other's), with some noise: a side can dominate without scoring
+    const mom=Math.max(0.12,Math.min(0.88,lamH/(lamH+lamA)+rng.gauss(0,0.07)));
+    const d={seg:s,h:gH,a:gA,sh:st.h,sa:st.a,shots:[0,0],pp:[false,false],en:null,ot:0,mom:mom};
     st.drives.push(d); return d;
   };
   const extraTime=()=>{

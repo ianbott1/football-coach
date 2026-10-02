@@ -9,7 +9,7 @@ const {spawn,execFileSync}=require('child_process'), path=require('path'), fs=re
 const ROOT=path.join(__dirname,'..'), D=f=>path.join(ROOT,'dist',f);
 const quick=process.argv.includes('--quick');
 const G={cfb:'football-coach.html', nfl:'football-coach-pro.html', ncaab:'basketball-coach.html',
-         nba:'basketball-coach-pro.html', nhl:'hockey-coach-pro.html', epl:'football-coach-england.html'};
+         nba:'basketball-coach-pro.html', nhl:'hockey-coach-pro.html', epl:'soccer-coach.html'};
 const T=[];
 const add=(name,args,opt={})=>T.push(Object.assign({name,args,timeout:600000},opt));   // one CPU, four at a time
 // in every game

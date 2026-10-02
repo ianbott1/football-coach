@@ -1,7 +1,7 @@
 /* ============ sport: hockey ============ */
 const SPORT={
   id:"soccer",
-  word:"Football",
+  word:"Soccer",
   /* the owl on the crossbar of a goal, net behind (the bar where football's is) */
   perch:`<g fill="none" stroke="var(--bone)" stroke-width="1" opacity=".7">
       <path d="M12 51 L18 63 M20 51 L24 64 M28 51 L30 65 M36 51 L36 65 M44 51 L42 65 M52 51 L48 64 M60 51 L54 63"/>

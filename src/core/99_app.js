@@ -374,6 +374,7 @@ function newDynasty(team,seed,coachName,roster){
    game days) in the long pro seasons */
 function WK(){ return LEAGUE.text.week||"week" }
 function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
+function ordinal(n){return n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th")}
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
 /* how many ranked teams wear a number: the top 25 in college, fewer in a 30-team league */
@@ -485,8 +486,9 @@ function openOffseason(){
   const staffCands={};
   if(A.staffOpen&&A.staffOpen.oc)staffCands.oc=coordCandidates(rng,U.program[my],"oc",C.rep);
   if(A.staffOpen&&A.staffOpen.dc)staffCands.dc=coordCandidates(rng,U.program[my],"dc",C.rep);
-  const jobs=A.userOpen?jobMarket(U,rng,C.rep,A.openJobs,my):[];
-  const poach=A.userOpen?[]:poachOffers(U,rng,C.rep,A.openJobs,my);
+  // a league can run its own market (soccer: relative to your club, not fixed bands)
+  const jobs=A.userOpen?(LEAGUE.jobMarket?LEAGUE.jobMarket(U,rng,C.rep,A.openJobs,my,!!A.fired):jobMarket(U,rng,C.rep,A.openJobs,my)):[];
+  const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,A.openJobs,my):poachOffers(U,rng,C.rep,A.openJobs,my));
   const LO=LEAGUE.offseason.open(U,my,SEA.rec[my][0]);   // the league's own choices
   S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:LO.pool,staff:staffCands,
     picks:Object.assign({phil:(U.phil||"balanced"),oc:null,dc:null},LO.picks),
@@ -622,11 +624,13 @@ function gameLine(g,mine){
   if(g.site)chips.push(`<span class="chip ttl">${esc(g.site)}</span>`);
   if(ups&&best<=RANK_TOP)chips.push(`<span class="chip up">Upset</span>`);
   if(g.neutral&&!g.site&&!g.title)chips.push(`<span class="chip">Neutral</span>`);
-  if(g.margin<=3)chips.push(`<span class="chip">One score</span>`);
+  if(LEAGUE.draws){ if(g.draw)chips.push(`<span class="chip">Draw</span>`); else if(g.margin<=1)chips.push(`<span class="chip">One goal</span>`) }
+  else if(g.margin<=3)chips.push(`<span class="chip">One score</span>`);
   const rv=LEAGUE.rivals.name(g.home,g.away);
   if(rv)chips.push(`<span class="chip riv">${esc(rv)}</span>`);
   return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
-    ${side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)}${side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
+    ${LEAGUE.homeFirst?side(g.home,g.hp,g.hrank,hw&&!g.draw,g.hseed,g.hrec)+side(g.away,g.ap,g.arank,!hw&&!g.draw,g.aseed,g.arec)
+      :side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)+side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
     ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}</div></article>`;
 }
 
@@ -746,6 +750,15 @@ function heroResult(){
 
 
 /* ============ what's at stake ============ */
+/* the odds line: one number, or (a league with draws) win, draw and loss */
+function oddsHTML(me,opp,atHome,neutral,wp){
+  if(LEAGUE.wdl){ const [w,d,l]=LEAGUE.wdl(me,opp,atHome,neutral), P=x=>Math.round(x*100);
+    return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
+      <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span></div>` }
+  return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
+        <span class="opct">${Math.round(wp*100)}%</span>
+        <span class="olab">win probability</span></div>`;
+}
 function winProb(me,opp,atHome,neutral){
   const v=t=>(SEA.hfa&&SEA.hfa[t])||LEAGUE.tuning.hfa;
   const hfa=neutral?0:(atHome?v(me):-v(opp));
@@ -963,6 +976,7 @@ function teamCardHTML(my,rk,co){
       const need=Math.max(0,e.w-w);
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
+          :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
           :need===0?`Target of ${e.w} wins already met.`
           :need>left+postMax?`${e.w} wins is out of reach now.`
           :need>left?`${need} more win${need===1?"":"s"} from the ${e.w} expected: it will take a postseason run.`
@@ -1089,9 +1103,7 @@ function nextUpHTML(my,rk){
           : esc(ser.streak.team)+" has won "+ser.streak.n+" straight"}`:""}
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
       </div>`:""}
-      <div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
-        <span class="opct">${Math.round(wp*100)}%</span>
-        <span class="olab">win probability</span></div>
+      ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
       ${st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
         <span class="sline">${x.l}</span></div>`).join("")}
       ${planPickerHTML(wp)}</div>`;
@@ -1116,8 +1128,8 @@ function scheduleHTML(team,compact){
     if(played){
       const won=g.winner===team;
       const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
-      const otl=!won&&g.ot;                            // hockey: a point for losing in overtime
-      rows.push(`<div class="srow"><span class="spos ${won?'wl-w':otl?'wl-o':'wl-l'}">${won?"W":otl?"OTL":"L"}</span>
+      const otl=!won&&g.ot, drew=!!g.draw;             // hockey: a point for losing in overtime; soccer: a draw
+      rows.push(`<div class="srow"><span class="spos ${won?'wl-w':drew||otl?'wl-o':'wl-l'}">${won?"W":drew?"D":otl?"OTL":"L"}</span>
         <span class="steam">${g.home===team?"vs":"at"} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
           riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sconf">${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span></div>`);

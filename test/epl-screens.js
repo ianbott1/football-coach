@@ -4,10 +4,10 @@
      node test/bb-screens.js [file.html]   last line: MATCH or MISMATCH */
 const fs=require('fs'),path=require('path');const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
 (async()=>{
-const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach-england.html'); const api=m.exports.load(file);
+const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','soccer-coach.html'); const api=m.exports.load(file);
 // the title screen, before a career starts: it must be English football's
 const title=api.titleHTML();
-if(!/wm-a">Football</.test(title)||/\b(Heisman|NFL|NBA|NHL|Stanley Cup|pucks?|goalies?|baskets?|touchdowns?|quarterbacks?)\b/i.test(title.replace(/<[^>]+>/g,' '))){console.log('MISMATCH the title screen isn\'t football\'s: '+title.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,120));process.exit(1)}
+if(!/wm-a">Soccer</.test(title)||/\b(Heisman|NFL|NBA|NHL|Stanley Cup|pucks?|goalies?|baskets?|touchdowns?|quarterbacks?)\b/i.test(title.replace(/<[^>]+>/g,' '))){console.log('MISMATCH the title screen isn\'t football\'s: '+title.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,120));process.exit(1)}
 api.newDynasty(process.env.TEAM||'Arsenal',5,'T');
 const pages=[['title',title]]; const grab=(lab)=>pages.push([lab,(global.__nodes.app?global.__nodes.app.innerHTML:'')]);
 for(let y=0;y<2;y++){let g=0;while(api.SEA.phase!=='done'&&g++<600){api.doAdvance();grab('step '+api.SEA.phase);

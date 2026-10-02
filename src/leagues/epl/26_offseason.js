@@ -301,7 +301,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R,budgetOf(u,t));
     // the organisation moves slowly: results nudge it, they don't define it
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
-    u.program[t]=Math.max(1480,Math.min(1920,u.program[t]));
+    u.program[t]=Math.max(LEAGUE.tuning.pFloor,Math.min(LEAGUE.tuning.pCeil,u.program[t]));   // the league's own range (was pro football's 1480-1920)
     c.t++;
     // 1. contracts that end now
     for(let i=0;i<R.length;i++){
@@ -546,3 +546,38 @@ LEAGUE.seasonLine=function(h,t,r,seed){
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;
+
+/* The job market, relative to your club (clubs range from ~940 in tier 6 to
+   ~2180 at the top, so fixed bands like college football's don't fit).
+   Sacked: clubs a step or two down, and some at your level. Out of contract:
+   around your level, higher only as your reputation grows. Big clubs come
+   calling only after strong seasons. There are always at least two jobs:
+   if no vacancy fits, the search widens downwards (clubs that would take a
+   chance on you, whether or not they've just sacked someone). */
+LEAGUE.jobMarket=function(u,rng,rep,openings,current,sacked){
+  const mine=u.program[current]||1100, tierOf=t=>DIVS[CONF[t]].tier, myT=tierOf(current);
+  const lo=mine-(sacked?320:220), hi=mine+(sacked?40:60)+Math.max(0,rep)*5;
+  // the division counts too: sacked, your tier or up to two below; out of
+  // contract, a tier either side (up a tier only with a real reputation)
+  const tOk=t=>{const d=tierOf(t)-myT; return sacked?(d>=0&&d<=2):(d>=(rep>=15?-1:0)&&d<=1)};
+  const fit=t=>t!==current&&tOk(t)&&u.program[t]>=lo&&u.program[t]<=hi;
+  let opts=openings.filter(fit);
+  if(opts.length<2){                                     // widen: any club in range, nearest your level first
+    const more=NAMES.filter(t=>fit(t)&&opts.indexOf(t)<0).sort((a,b)=>Math.abs(u.program[a]-mine)-Math.abs(u.program[b]-mine));
+    opts=opts.concat(more.slice(0,3-opts.length));
+  }
+  if(opts.length<2){                                     // still nothing: lower down
+    const lower=NAMES.filter(t=>t!==current&&tierOf(t)>=myT&&u.program[t]<mine).sort((a,b)=>u.program[b]-u.program[a]);
+    opts=opts.concat(lower.filter(t=>opts.indexOf(t)<0).slice(0,2));
+  }
+  opts.sort((a,b)=>u.program[b]-u.program[a]);
+  const picked=[opts[0],opts[Math.floor(opts.length/2)],opts[opts.length-1]].filter(Boolean);
+  return [...new Set(picked)].slice(0,3);
+};
+LEAGUE.poachOffers=function(u,rng,rep,openings,current){
+  if(rep<25)return [];                                   // only after strong seasons
+  const mine=u.program[current]||1100;
+  const myT=DIVS[CONF[current]].tier;
+  return openings.filter(t=>t!==current&&DIVS[CONF[t]].tier>=myT-1&&u.program[t]>mine+80&&u.program[t]<=mine+150+rep*4)
+    .sort((a,b)=>u.program[b]-u.program[a]).slice(0,2);
+};

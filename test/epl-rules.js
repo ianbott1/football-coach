@@ -8,7 +8,7 @@ const fs=require('fs'),path=require('path');
 const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
 const N=+(process.argv.find(a=>/^\d+$/.test(a))||4);
-const api=m.exports.load(path.join(__dirname,'..','dist','football-coach-england.html'));
+const api=m.exports.load(path.join(__dirname,'..','dist','soccer-coach.html'));
 const DIVS={PL:{up:0,po:null,down:3},CH:{up:2,po:[3,8],down:3},L1:{up:2,po:[3,6],down:4},L2:{up:3,po:[4,7],down:2},
             NL:{up:1,po:[2,7],down:4},NN:{up:1,po:[2,7],down:0},NS:{up:1,po:[2,7],down:0}};
 const SIZE={PL:20,CH:24,L1:24,L2:24,NL:24,NN:24,NS:24}, ABOVE={CH:"PL",L1:"CH",L2:"L1",NL:"L2",NN:"NL",NS:"NL"};
