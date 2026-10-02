@@ -8,7 +8,7 @@ const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
 const D=f=>path.join(__dirname,'..','dist',f);
 let bad=0,checks=0,drawn=0; const ok=(c,msg)=>{checks++; if(!c){bad++; if(bad<=10)console.log('  FAIL '+msg)}};
-for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Kansas City'],['basketball-coach.html','Duke'],['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston'],['football-manager.html','Arsenal']]){
+for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Kansas City'],['basketball-coach.html','Duke'],['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston'],['football-coach-england.html','Arsenal']]){
   for(const w of [390,1280]){
     const api=mk()(D(file)); global.window.scrollTo=()=>{}; global.window.innerWidth=w; api.newDynasty(team,4,'T');
     const where=`${file.replace('.html','')} at ${w}px`;

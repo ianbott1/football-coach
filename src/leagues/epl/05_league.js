@@ -13,20 +13,15 @@ const LEAGUE={
   id:"epl",
   name:"English Football",
   draws:true,                                 // a point for a draw, three for a win
-  /* [club, starting strength (a prior: roughly last season's standing), division] */
-  teams:EPL_SPREAD([
-["Arsenal",1780,"PL"],["Aston Villa",1690,"PL"],["Bournemouth",1640,"PL"],["Brentford",1610,"PL"],
-["Brighton",1640,"PL"],["Chelsea",1720,"PL"],["Coventry City",1540,"PL"],["Crystal Palace",1620,"PL"],
-["Everton",1600,"PL"],["Fulham",1600,"PL"],["Hull City",1510,"PL"],["Ipswich Town",1530,"PL"],
-["Leeds United",1580,"PL"],["Liverpool",1740,"PL"],["Manchester City",1780,"PL"],["Manchester United",1700,"PL"],
-["Newcastle United",1690,"PL"],["Nottingham Forest",1610,"PL"],["Sunderland",1620,"PL"],["Tottenham Hotspur",1620,"PL"],
-["Birmingham City",1450,"CH"],["Blackburn Rovers",1410,"CH"],["Bolton Wanderers",1380,"CH"],["Bristol City",1430,"CH"],
-["Burnley",1500,"CH"],["Cardiff City",1380,"CH"],["Charlton Athletic",1400,"CH"],["Derby County",1400,"CH"],
-["Lincoln City",1360,"CH"],["Middlesbrough",1460,"CH"],["Millwall",1420,"CH"],["Norwich City",1430,"CH"],
-["Portsmouth",1390,"CH"],["Preston North End",1400,"CH"],["Queens Park Rangers",1410,"CH"],["Sheffield United",1440,"CH"],
-["Southampton",1480,"CH"],["Stoke City",1420,"CH"],["Swansea City",1440,"CH"],["Watford",1420,"CH"],
-["West Bromwich Albion",1450,"CH"],["West Ham United",1510,"CH"],["Wolverhampton Wanderers",1500,"CH"],["Wrexham",1420,"CH"]
-  ]),
+  /* [club, starting strength, division]: the 2026-27 pyramid, tiers 1-6
+     (data/england_2026_27.py). Strength bands by tier, overlapping a little
+     (a promoted club is near the bottom of the division it joins): Premier
+     League from last season's standing (spread 2.8x), the Championship's
+     mapped onto 1420-1640, the lower tiers by stadium capacity (log), a
+     little extra for clubs lately in the top flight. */
+  teams:[["Arsenal",2176,"PL"],["Aston Villa",1924,"PL"],["Bournemouth",1784,"PL"],["Brentford",1700,"PL"],["Brighton",1784,"PL"],["Chelsea",2008,"PL"],["Coventry City",1504,"PL"],["Crystal Palace",1728,"PL"],["Everton",1672,"PL"],["Fulham",1672,"PL"],["Hull City",1420,"PL"],["Ipswich Town",1476,"PL"],["Leeds United",1616,"PL"],["Liverpool",2064,"PL"],["Manchester City",2176,"PL"],["Manchester United",1952,"PL"],["Newcastle United",1924,"PL"],["Nottingham Forest",1700,"PL"],["Sunderland",1728,"PL"],["Tottenham Hotspur",1728,"PL"],["Birmingham City",1552,"CH"],["Blackburn Rovers",1493,"CH"],["Bolton Wanderers",1449,"CH"],["Bristol City",1523,"CH"],["Burnley",1625,"CH"],["Cardiff City",1449,"CH"],["Charlton Athletic",1479,"CH"],["Derby County",1479,"CH"],["Lincoln City",1420,"CH"],["Middlesbrough",1567,"CH"],["Millwall",1508,"CH"],["Norwich City",1523,"CH"],["Portsmouth",1464,"CH"],["Preston North End",1479,"CH"],["Queens Park Rangers",1493,"CH"],["Sheffield United",1537,"CH"],["Southampton",1596,"CH"],["Stoke City",1508,"CH"],["Swansea City",1537,"CH"],["Watford",1508,"CH"],["West Bromwich Albion",1552,"CH"],["West Ham United",1640,"CH"],["Wolverhampton Wanderers",1625,"CH"],["Wrexham",1508,"CH"],["AFC Wimbledon",1337,"L1"],["Barnsley",1422,"L1"],["Blackpool",1390,"L1"],["Bradford City",1427,"L1"],["Bromley",1300,"L1"],["Burton Albion",1311,"L1"],["Cambridge United",1324,"L1"],["Doncaster Rovers",1383,"L1"],["Huddersfield Town",1445,"L1"],["Leicester City",1541,"L1"],["Leyton Orient",1338,"L1"],["Luton Town",1412,"L1"],["Mansfield Town",1345,"L1"],["Milton Keynes Dons",1446,"L1"],["Notts County",1407,"L1"],["Oxford United",1365,"L1"],["Peterborough United",1372,"L1"],["Plymouth Argyle",1398,"L1"],["Reading",1445,"L1"],["Sheffield Wednesday",1490,"L1"],["Stevenage",1317,"L1"],["Stockport County",1352,"L1"],["Wigan Athletic",1428,"L1"],["Wycombe Wanderers",1349,"L1"],["Accrington Stanley",1208,"L2"],["Barnet",1228,"L2"],["Bristol Rovers",1305,"L2"],["Cheltenham Town",1238,"L2"],["Chesterfield",1285,"L2"],["Colchester United",1280,"L2"],["Crawley Town",1219,"L2"],["Crewe Alexandra",1281,"L2"],["Exeter City",1256,"L2"],["Fleetwood Town",1205,"L2"],["Gillingham",1296,"L2"],["Grimsby Town",1267,"L2"],["Newport County",1251,"L2"],["Northampton Town",1256,"L2"],["Oldham Athletic",1314,"L2"],["Port Vale",1340,"L2"],["Rochdale",1282,"L2"],["Rotherham United",1301,"L2"],["Salford City",1200,"L2"],["Shrewsbury Town",1278,"L2"],["Swindon Town",1332,"L2"],["Tranmere Rovers",1340,"L2"],["Walsall",1293,"L2"],["York City",1260,"L2"],["AFC Fylde",1126,"NL"],["Aldershot Town",1141,"NL"],["Altrincham",1148,"NL"],["Barrow",1133,"NL"],["Boreham Wood",1102,"NL"],["Boston United",1112,"NL"],["Carlisle United",1220,"NL"],["Eastleigh",1115,"NL"],["FC Halifax Town",1173,"NL"],["Forest Green Rovers",1113,"NL"],["Gateshead",1184,"NL"],["Harrogate Town",1111,"NL"],["Hartlepool United",1149,"NL"],["Hornchurch",1080,"NL"],["Kidderminster Harriers",1132,"NL"],["Scunthorpe United",1162,"NL"],["Solihull Moors",1119,"NL"],["Southend United",1188,"NL"],["Sutton United",1111,"NL"],["Tamworth",1103,"NL"],["Wealdstone",1093,"NL"],["Woking",1127,"NL"],["Worthing",1091,"NL"],["Yeovil Town",1166,"NL"],["AFC Telford United",1066,"NN"],["Bedford Town",969,"NN"],["Brackley Town",989,"NN"],["Buxton",1041,"NN"],["Chester",1046,"NN"],["Chorley",1010,"NN"],["Darlington",981,"NN"],["Harborough Town",940,"NN"],["Hebburn Town",969,"NN"],["Hednesford Town",1060,"NN"],["Hereford",1042,"NN"],["King's Lynn Town",1100,"NN"],["Macclesfield",1043,"NN"],["Marine",969,"NN"],["Merthyr Town",1007,"NN"],["Morecambe",1069,"NN"],["Oxford City",989,"NN"],["Radcliffe",989,"NN"],["Scarborough Athletic",980,"NN"],["South Shields",1007,"NN"],["Southport",1059,"NN"],["Spalding United",955,"NN"],["Spennymoor Town",1016,"NN"],["Worksop Town",985,"NN"],["AFC Totton",988,"NS"],["Billericay Town",1008,"NS"],["Braintree Town",1033,"NS"],["Chelmsford City",1008,"NS"],["Chesham United",1055,"NS"],["Dagenham & Redbridge",1081,"NS"],["Dorking Wanderers",1034,"NS"],["Dover Athletic",1090,"NS"],["Ebbsfleet United",1050,"NS"],["Farnborough",1100,"NS"],["Farnham Town",946,"NS"],["Folkestone Invicta",1026,"NS"],["Hampton & Richmond Borough",1008,"NS"],["Hemel Hempstead Town",994,"NS"],["Horsham",988,"NS"],["Maidenhead United",1026,"NS"],["Maidstone United",1032,"NS"],["Salisbury",1055,"NS"],["Slough Town",988,"NS"],["Tonbridge Angels",988,"NS"],["Torquay United",1090,"NS"],["Truro City",1012,"NS"],["Walton & Hersham",940,"NS"],["Weston-super-Mare",1008,"NS"]],
+  /* where a club relegated from the National League goes: North or South */
+  region:{"AFC Fylde":"N","Aldershot Town":"S","Altrincham":"N","Barrow":"N","Boreham Wood":"S","Boston United":"N","Carlisle United":"N","Eastleigh":"S","FC Halifax Town":"N","Forest Green Rovers":"S","Gateshead":"N","Harrogate Town":"N","Hartlepool United":"N","Hornchurch":"S","Kidderminster Harriers":"N","Scunthorpe United":"N","Solihull Moors":"N","Southend United":"S","Sutton United":"S","Tamworth":"N","Wealdstone":"S","Woking":"S","Worthing":"S","Yeovil Town":"S","AFC Telford United":"N","Bedford Town":"N","Brackley Town":"N","Buxton":"N","Chester":"N","Chorley":"N","Darlington":"N","Harborough Town":"N","Hebburn Town":"N","Hednesford Town":"N","Hereford":"N","King's Lynn Town":"N","Macclesfield":"N","Marine":"N","Merthyr Town":"N","Morecambe":"N","Oxford City":"N","Radcliffe":"N","Scarborough Athletic":"N","South Shields":"N","Southport":"N","Spalding United":"N","Spennymoor Town":"N","Worksop Town":"N","AFC Totton":"S","Billericay Town":"S","Braintree Town":"S","Chelmsford City":"S","Chesham United":"S","Dagenham & Redbridge":"S","Dorking Wanderers":"S","Dover Athletic":"S","Ebbsfleet United":"S","Farnborough":"S","Farnham Town":"S","Folkestone Invicta":"S","Hampton & Richmond Borough":"S","Hemel Hempstead Town":"S","Horsham":"S","Maidenhead United":"S","Maidstone United":"S","Salisbury":"S","Slough Town":"S","Tonbridge Angels":"S","Torquay United":"S","Truro City":"S","Walton & Hersham":"S","Weston-super-Mare":"S","Arsenal":"S","Chelsea":"S","Crystal Palace":"S","Brentford":"S","Brighton":"S","Bournemouth":"S","Fulham":"S","Tottenham Hotspur":"S","Ipswich Town":"S","Southampton":"S","Portsmouth":"S","Charlton Athletic":"S","Millwall":"S","Queens Park Rangers":"S","Watford":"S","Norwich City":"S","Bristol City":"S","Swansea City":"S","Cardiff City":"S","West Ham United":"S","AFC Wimbledon":"S","Bromley":"S","Cambridge United":"S","Leyton Orient":"S","Luton Town":"S","Milton Keynes Dons":"S","Oxford United":"S","Peterborough United":"S","Plymouth Argyle":"S","Reading":"S","Stevenage":"S","Wycombe Wanderers":"S","Barnet":"S","Bristol Rovers":"S","Cheltenham Town":"S","Colchester United":"S","Crawley Town":"S","Exeter City":"S","Gillingham":"S","Newport County":"S","Northampton Town":"S","Swindon Town":"S"},
   colors:{"Arsenal":"#EF0107","Aston Villa":"#670E36","Bournemouth":"#DA291C","Brentford":"#E30613","Brighton":"#0057B8",
     "Chelsea":"#034694","Coventry City":"#59CBE8","Crystal Palace":"#1B458F","Everton":"#003399","Fulham":"#111111",
     "Hull City":"#F5A12D","Ipswich Town":"#3A64A3","Leeds United":"#FFCD00","Liverpool":"#C8102E","Manchester City":"#6CABDD",
@@ -38,16 +33,18 @@ const LEAGUE={
     "Stoke City":"#E03A3E","Swansea City":"#121212","Watford":"#FBEE23","West Bromwich Albion":"#122F67",
     "West Ham United":"#7A263A","Wolverhampton Wanderers":"#FDB913","Wrexham":"#D71920"},
   conf:{
-    names:{PL:"Premier League",CH:"Championship"},
-    order:["PL","CH"], display:["PL","CH"], autoBidPool:[], divisions:{},
-    sides:{"Premier League":["PL"],"Championship":["CH"]}
+    names:{PL:"Premier League",CH:"Championship",L1:"League One",L2:"League Two",NL:"National League",
+      NN:"National League North",NS:"National League South"},
+    order:["PL","CH","L1","L2","NL","NN","NS"], display:["PL","CH","L1","L2","NL","NN","NS"], autoBidPool:[], divisions:{},
+    sides:{"Premier League":["PL"],"Championship":["CH"],"League One":["L1"],"League Two":["L2"],
+      "National League":["NL"],"National League North":["NN"],"National League South":["NS"]}
   },
   weeks:46, dates:EPL_DATES,
   classes:[], classTag:c=>"Age "+c, bowls:[],
   draftTeams:["the academy"],
   awards:{mvp:"Player of the Season", weights:{GK:1,CB:1,FB:1,CM:1,W:1,ST:1},
     premium:{GK:0.88,CB:0.9,FB:0.88,CM:1.02,W:1.04,ST:1.08}},
-  tuning:{hfa:120, gapScale:1, pFloor:1000, pCeil:2300, talentSteps:12, sc:{}},
+  tuning:{hfa:120, gapScale:1, pFloor:700, pCeil:2300, talentSteps:12, sc:{}},
   venues:{},
   schedule:{games:38},
   playoff:{size:6, perSide:6, byes:0},
@@ -70,21 +67,21 @@ const LEAGUE={
     org:"Club", orgs:"clubs", group:"Division", rank:"Position",
     groupShort:"Div",
     standingsNote:`<div class="note">Record W-D-L: three points a win, one a draw; then goal difference, then
-      goals scored. The Premier League's bottom three go down. In the Championship the top two go up, and
-      third to eighth play off for the last place, the final at Wembley.</div>`,
+      goals scored. Each division's promotion, play-off and relegation places are marked on its table.</div>`,
     ranking:"the table", top:"the table", entered:"Up to ",
     orgNote:base=>`Club stature is the slow-moving baseline &mdash; support, revenue, history. Measured
       against where each club stood in ${base}.`,
     tagline:"Build a club. Win the league.",
-    gameName:"Football Manager Coach", eyebrow:"English",
-    site:"Football Manager Coach: ianbott1.github.io/football-coach",
+    gameName:"Football Coach", eyebrow:"English",
+    site:"Football Coach: ianbott1.github.io/football-coach",
     week:"weekend",
     tiers:[
-      {max:4,  l:"Title challenger", d:"Win the league, or at least finish in the top four.",c:"flag"},
-      {max:8,  l:"Europe",            d:"A top-seven finish and a European place.",c:"sod"},
-      {max:17, l:"Mid-table",         d:"The top half would be a good season.",c:"turf",rec:true},
-      {max:20, l:"Survival",          d:"Stay up. Nothing else matters.",c:"vote"},
-      {max:99, l:"Championship",      d:"Win promotion, or build towards it.",c:"muted"}
+      {max:4,   l:"Title challenger", d:"Win the league, or at least finish in the top four.",c:"flag"},
+      {max:8,   l:"Europe",           d:"A top-seven finish and a European place.",c:"sod"},
+      {max:17,  l:"Premier League",   d:"The top flight: stay there.",c:"turf",rec:true},
+      {max:44,  l:"Championship",     d:"One step from the Premier League.",c:"vote"},
+      {max:92,  l:"Football League",  d:"League One and League Two: the professional game.",c:"muted"},
+      {max:999, l:"Non-league",       d:"The National League and below: start here and climb.",c:"muted"}
     ],
     intro:[
       {h:"The job is yours until it isn't",

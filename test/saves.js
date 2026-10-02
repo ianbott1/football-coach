@@ -8,7 +8,7 @@
      node test/saves.js      last line: MATCH or MISMATCH */
 const fs=require('fs'),path=require('path');
 const D=f=>path.join(__dirname,'..','dist',f);
-const GAMES={cfb:D('football-coach.html'),nfl:D('football-coach-pro.html'),ncaab:D('basketball-coach.html'),nba:D('basketball-coach-pro.html'),nhl:D('hockey-coach-pro.html'),epl:D('football-manager.html')};
+const GAMES={cfb:D('football-coach.html'),nfl:D('football-coach-pro.html'),ncaab:D('basketball-coach.html'),nba:D('basketball-coach-pro.html'),nhl:D('hockey-coach-pro.html'),epl:D('football-coach-england.html')};
 const src=fs.readFileSync(path.join(__dirname,'storage.js'),'utf8');
 let bad=0; const ok=(c,m)=>{console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++};
 function boot(file,LS){

@@ -1,68 +1,78 @@
 {
- "fp": "9acb4f945f66e828",
+ "fp": "78899139b642ea83",
  "log": [
   {
    "fp": "9acb4f945f66e828",
    "from": null,
    "note": "First English football baseline: Arsenal, Wrexham"
+  },
+  {
+   "fp": "78899139b642ea83",
+   "from": "9acb4f945f66e828",
+   "note": "The whole English pyramid (tiers 1-6, 164 clubs): Arsenal and Wrexham"
+  },
+  {
+   "fp": "78899139b642ea83",
+   "from": "78899139b642ea83",
+   "note": "Tier labels to rank 164; expectations before a club is chosen"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "e8441f5e6595ea86",
-    "post": "e04c40a7fecd9859",
+    "games": "79d38c7f44d24484",
+    "post": "c97f4410a00db20c",
     "champion": "Arsenal",
-    "rec": "366fe8efad79dc07",
-    "poll": "d6e873667ad57bfe",
-    "heis": "8f79fd99d75d1f06",
-    "history": "26658177482e3904",
-    "universe": "659e378eaeb60137",
-    "screens": "7e0a1469123de29b"
+    "rec": "dba86cc1b76efa2e",
+    "poll": "e5be244c65940b5a",
+    "heis": "beef1a225e668215",
+    "history": "35d90ff55e8bf508",
+    "universe": "8bef9660c9f46f0c",
+    "screens": "7d6945d9b53f48fc"
    },
    {
     "year": 2027,
-    "games": "a4fcf4ff5315db42",
-    "post": "cf597eef40b75fda",
+    "games": "cbe1e8d358bb449d",
+    "post": "cf96dfe2d9c8e68d",
     "champion": "Manchester City",
-    "rec": "f29ffcabf15191a8",
-    "poll": "d7df446a46e393f0",
-    "heis": "5296bbeb1990a249",
-    "history": "5843c0463d59af1a",
-    "universe": "1b6651f187b96c4a",
-    "screens": "48a5ed1b93609caa"
+    "rec": "fa6445d40c8a32be",
+    "poll": "ac357abaf46fcc14",
+    "heis": "9320c3874248aeae",
+    "history": "d9e1c7194e89986f",
+    "universe": "b519f0660dbeaa30",
+    "screens": "a7d11df9bd273c8e"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "58ee5343bf54e651",
-    "post": "c422ad8c9a1942c6",
-    "champion": "Aston Villa",
-    "rec": "71cb556107dc39cf",
-    "poll": "ffd5f4e65edf435e",
-    "heis": "9697719ed81190e0",
-    "history": "6cbc65d2fe8aad99",
-    "universe": "f0837aa2b2b42b23",
-    "screens": "f18f0ba281b64781"
+    "games": "7133b37aa9ad33e4",
+    "post": "f6333a9598c1a3a9",
+    "champion": "Arsenal",
+    "rec": "919356cfb5cb992e",
+    "poll": "dc900c0c81859a25",
+    "heis": "043861247646650f",
+    "history": "20c843b9fe0b1de2",
+    "universe": "d89e08f4fc88a4ab",
+    "screens": "d76c429ed472206f"
    },
    {
     "year": 2027,
-    "games": "3870613ef24eabab",
-    "post": "a4043750771671f9",
-    "champion": "Arsenal",
-    "rec": "dd34fd6c53ec6ada",
-    "poll": "9014862bb87a14a7",
-    "heis": "104990fbed1a9e4a",
-    "history": "076cbaa39d0e836c",
-    "universe": "fcaae7d44b5ff6ed",
-    "screens": "d27711c2deb55140"
+    "games": "e2ad4040c2bc87e9",
+    "post": "0c930f0c57c5de84",
+    "champion": "Liverpool",
+    "rec": "bf71acb14694437c",
+    "poll": "181fef0b3de315cb",
+    "heis": "2516d12e053066b3",
+    "history": "790afc3a9416bcd7",
+    "universe": "3746a749c4e6b3ad",
+    "screens": "8bfb622359613cf4"
    }
   ],
   "schedules#60": [
    {
-    "all": "af02dc345ecd564e"
+    "all": "5a9cccd291e64545"
    }
   ]
  }

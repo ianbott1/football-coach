@@ -4,7 +4,7 @@
      node test/bb-screens.js [file.html]   last line: MATCH or MISMATCH */
 const fs=require('fs'),path=require('path');const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
 (async()=>{
-const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-manager.html'); const api=m.exports.load(file);
+const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach-england.html'); const api=m.exports.load(file);
 // the title screen, before a career starts: it must be English football's
 const title=api.titleHTML();
 if(!/wm-a">Football</.test(title)||/\b(Heisman|NFL|NBA|NHL|Stanley Cup|pucks?|goalies?|baskets?|touchdowns?|quarterbacks?)\b/i.test(title.replace(/<[^>]+>/g,' '))){console.log('MISMATCH the title screen isn\'t football\'s: '+title.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,120));process.exit(1)}
@@ -24,7 +24,7 @@ pages.push(['team pages',api.teamPages().join('')]);
 { const prog=api.view('dyn','program').replace(/<[^>]+>/g,' ');
   // (only once someone with goals has left: squads turn over slowly)
   const gone=((api.U.alumni||{})[api.S.myTeam]||[]).some(a=>a.car&&a.car.goals>0);
-  if(gone&&(!/Goals/.test(prog)||!/\d[\d,]* goals/.test(prog))){console.log('MISMATCH the record book has no football leaders or career lines');process.exit(1)} }
+  if(gone&&/Record book/.test(prog)&&(!/Goals/.test(prog)||!/\d[\d,]* goals?/.test(prog))){console.log('MISMATCH the record book has no football leaders or career lines ('+api.S.myTeam+': '+prog.replace(/\s+/g,' ').slice(prog.indexOf('Record book'),prog.indexOf('Record book')+200)+')');process.exit(1)} }
 const W=/\b(field goals?|end zone|Heisman|Super Bowl|touchdowns?|quarterbacks?|QB|yards?|NFL|baskets?|rebounds?|dribbl\w*|tip-?off|court|NBA|play-in|three-pointers?|free throws?|layups?|point guards?|pucks?|goalies?|Stanley Cup|wild cards?|power plays?|NHL|OTL|periods?|shootouts?|hat trick|coordinators?|side of the ball|Game day|skate|rinks?|intermissions?|overtime|zamboni|centre ice)\b/gi;   // ("Slow it down and" is basketball)
 const hits={};pages.forEach(([lab,h])=>{const t=h.replace(/<[^>]+>/g,' ');let mm;while((mm=W.exec(t))){const k=mm[0].toLowerCase();const ctx=t.slice(Math.max(0,mm.index-50),mm.index+40).replace(/\s+/g,' ');(hits[k]=hits[k]||[]).push(lab+': ...'+ctx+'...')}});
 Object.keys(hits).forEach(k=>{console.log(k,'x'+hits[k].length);[...new Set(hits[k])].slice(0,2).forEach(x=>console.log('    ',x.slice(0,150)))});

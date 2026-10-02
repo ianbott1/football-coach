@@ -14,10 +14,13 @@ const NFL_CAP=320;                          // the richest club's budget (Englis
    relegated club keeps a parachute (55% of its top-flight budget, fading
    over two summers), as the Premier League pays its relegated clubs. */
 function budgetOf(u,t){
-  const s=(u&&u.program&&u.program[t])||1500, pl=CONF[t]==="PL";
-  let b=pl?Math.max(90,Math.min(320,90+(s-1500)*1.0)):Math.max(20,Math.min(60,20+(s-1350)*0.25));
-  if(!pl&&u&&u.chute&&u.chute[t])b=Math.max(b,u.chute[t]);
-  return Math.round(b);
+  const s=(u&&u.program&&u.program[t])||1500, d=CONF[t];
+  // per tier: a floor, a ceiling, and how fast stature lifts it (millions a year)
+  const B={PL:[90,320,1500,1.0],CH:[20,60,1420,0.18],L1:[5,18,1300,0.055],L2:[2,6,1200,0.028],
+           NL:[0.8,3,1080,0.016],NN:[0.5,1.6,940,0.0075],NS:[0.5,1.6,940,0.0075]}[d]||[1,5,1100,0.02];
+  let b=Math.max(B[0],Math.min(B[1],B[0]+(s-B[2])*B[3]));
+  if(d!=="PL"&&u&&u.chute&&u.chute[t])b=Math.max(b,u.chute[t]);
+  return Math.round(b*100)/100;
 }
 /* no exceptions in hockey: re-signing your own players fits under the cap too */
 const TAX_LINE=NFL_CAP;
@@ -35,10 +38,12 @@ function nflAsk(r,pos,age){
   const x=Math.max(0,(r-55)/35);
   // scaled to this league's ratings: a typical starter (~64) about $15M, a
   // star (77+) the max, so payrolls sit near the cap and it binds
-  let s=Math.min(MAX_DEAL,(0.5+60*Math.pow(x,1.8))*(POS_PAY[pos]||1));    // wages: a squad player to a star
+  // wages on one scale, the pyramid's: a star ~25 a year, a Championship regular
+  // ~1, a League Two regular ~0.3, a tier-6 part-timer ~0.05
+  let s=Math.min(MAX_DEAL,25*Math.exp((r-84)/7.5)*(POS_PAY[pos]||1));
   const a=age-(AGE_SHIFT[pos]||0);
   if(a>=31)s*=0.78; else if(a>=29)s*=0.9;
-  return Math.round(Math.max(0.5,s)*100)/100;
+  return Math.round(Math.max(0.02,s)*1000)/1000;
 }
 function nflYears(age,pos){const a=age-(AGE_SHIFT[pos]||0); return a<=26?4:a<=29?3:a<=31?2:1}
 function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
@@ -64,7 +69,7 @@ function nflPlayer(rng,target,age,posIdx){
   const P=POS[posIdx].p, a=age-(AGE_SHIFT[P]||0);
   // young players sit below the level they'll reach; veterans at or past it
   const ageAdj=a<=23?-5:a<=25?-2:a<=29?1:a<=31?0:-3;
-  const r=Math.round(Math.max(40,Math.min(97,rng.gauss(target+ageAdj,5))));
+  const r=Math.round(Math.max(20,Math.min(97,rng.gauss(target+ageAdj,5))));   // the pyramid runs low
   const room=a<=23?rng.gauss(9,4):a<=25?rng.gauss(5,3):a<=27?rng.gauss(2,1.5):0;
   const pot=Math.round(Math.max(r,Math.min(99,r+room)));
   return {n:playerName(rng),p:P,i:posIdx,c:age,age:age,r:r,pot:pot,hz:0,prod:0,st:0,
@@ -242,15 +247,33 @@ function nflPlace(roster,p){
 }
 
 function nflRun(u,rng,healthy,elo,rec,choices){
-  // promotion and relegation: three down, the top two and the play-off winner up
-  if(typeof SEA!=="undefined"&&SEA&&SEA.po&&SEA.po.down){
+  // promotion and relegation down the pyramid: at each boundary the upper
+  // division's relegated go down and the lower division's promoted go up; the
+  // National League's relegated go North or South by region, evened to 24 each
+  if(typeof SEA!=="undefined"&&SEA&&SEA.po&&SEA.po.PL){
     NAMES.forEach(t=>SEA.seasonResult(t));                 // freeze every club's season first
     u.conf=u.conf||{}; NAMES.forEach(t=>{if(!u.conf[t])u.conf[t]=CONF[t]});
     u.chute=u.chute||{};
     Object.keys(u.chute).forEach(t=>{u.chute[t]=Math.round(u.chute[t]*0.6); if(u.chute[t]<25)delete u.chute[t]});
-    SEA.po.down.forEach(t=>{u.chute[t]=Math.round(budgetOf(u,t)*0.55)});      // the parachute, before the drop
-    SEA.po.down.forEach(t=>u.conf[t]="CH"); SEA.po.up.forEach(t=>{u.conf[t]="PL"; delete u.chute[t]});
-    u.moved={year:u.year,down:SEA.po.down.slice(),up:SEA.po.up.slice()};
+    const P=SEA.po, move={};
+    P.PL.down.forEach(t=>{u.chute[t]=Math.round(budgetOf(u,t)*0.55)});      // the parachute, before the drop
+    [["PL","CH"],["CH","L1"],["L1","L2"],["L2","NL"]].forEach(([hi,lo])=>{
+      P[hi].down.forEach(t=>move[t]=lo); P[lo].up.forEach(t=>move[t]=hi) });
+    P.NN.up.concat(P.NS.up).forEach(t=>move[t]="NL");
+    P.NL.down.forEach(t=>move[t]=(LEAGUE.region[t]==="S"?"NS":"NN"));
+    Object.keys(move).forEach(t=>{ u.conf[t]=move[t]; if(move[t]==="PL")delete u.chute[t] });
+    // keep North and South at 24, as the FA does: move a club on the border
+    // (the Midlands) across, not one of the relegated
+    const cnt=d=>NAMES.filter(t=>u.conf[t]===d).length;
+    const border={NN:["Bedford Town","Brackley Town","Oxford City","Hereford","Merthyr Town","Harborough Town","Hednesford Town",
+                      "Kidderminster Harriers","Solihull Moors","Tamworth","AFC Telford United","Spalding United","King's Lynn Town","Boston United"],
+                  NS:["Chesham United","Hemel Hempstead Town","Weston-super-Mare","Forest Green Rovers","Braintree Town","Chelmsford City","Maidenhead United"]};
+    let guard=0; while(cnt("NN")!==cnt("NS")&&guard++<4){
+      const from=cnt("NN")>cnt("NS")?"NN":"NS", to=from==="NN"?"NS":"NN";
+      const cand=border[from].filter(t=>u.conf[t]===from&&!move[t]);
+      const t=cand.length?cand[0]:NAMES.find(x=>u.conf[x]===from&&!move[x]); if(!t)break;
+      u.conf[t]=to; move[t]=to }
+    u.moved={year:u.year,moves:move};
     syncConf(u);
   }
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
@@ -307,7 +330,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       if(a<=25&&rng.r()<+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07)){
         const leap=rng.range(4,9); p.pot=Math.max(p.pot,Math.round(p.r+g+leap+2)); g+=leap; p.leap=u.year;
       }
-      p.r=Math.round(Math.max(35,Math.min(g>0?p.pot:99,p.r+g)));
+      p.r=Math.round(Math.max(20,Math.min(g>0?p.pot:99,p.r+g)));
       if(a>=27)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
       p.peak=Math.max(p.peak||0,p.r);
     });
@@ -462,20 +485,24 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
-  /* what the board wants, by stature: a target position and, for the
-     Championship, promotion. Grades come from where you finish. */
+  /* what the board wants: by division and the club's stature within it */
   expectations(p){
-    // p is the club's stature; the division comes from where it plays now (the user's club)
-    const inPL=typeof S!=="undefined"&&S&&CONF[S.myTeam]==="PL";
-    if(inPL){
-      if(p>=1890)return {w:0,pos:4,par:1,l:"Win the league, or at least finish in the top four.",t:"TOP FOUR"};
-      if(p>=1760)return {w:0,pos:7,par:0.6,l:"A European place: the top seven.",t:"EUROPE"};
-      if(p>=1600)return {w:0,pos:10,par:0.3,l:"The top half.",t:"TOP HALF"};
+    // the division: your club's; before you have one, the tier the stature fits
+    let d=(typeof S!=="undefined"&&S&&S.myTeam&&CONF[S.myTeam])||null;
+    if(!d)d=p>=1640?"PL":p>=1420?"CH":p>=1300?"L1":p>=1200?"L2":p>=1080?"NL":"NN";
+    const band={PL:[1420,2176],CH:[1420,1640],L1:[1300,1540],L2:[1200,1340],NL:[1080,1220],NN:[940,1100],NS:[940,1100]}[d];
+    const z=(p-band[0])/(band[1]-band[0]), name=LEAGUE.conf.names[d];
+    if(d==="PL"){
+      if(z>=0.85)return {w:0,pos:4,par:1,l:"Win the league, or at least finish in the top four.",t:"TOP FOUR"};
+      if(z>=0.6)return {w:0,pos:7,par:0.6,l:"A European place: the top seven.",t:"EUROPE"};
+      if(z>=0.35)return {w:0,pos:10,par:0.3,l:"The top half.",t:"TOP HALF"};
       return {w:0,pos:17,par:0,l:"Stay up. Nothing else matters.",t:"SURVIVE"};
     }
-    if(p>=1500)return {w:0,pos:2,par:1,l:"Promotion, automatically if you can.",t:"GO UP"};
-    if(p>=1380)return {w:0,pos:8,par:0.4,l:"The play-offs.",t:"PLAY-OFFS"};
-    return {w:0,pos:14,par:0,l:"A solid season, and build.",t:"BUILD"};
+    const R=DIVS[d], poEnd=R.po?R.po[1]:R.up, bottom=24-(R.down||0);
+    if(z>=0.75)return {w:0,pos:Math.max(1,R.up),par:1,l:`Promotion out of the ${name}.`,t:"GO UP"};
+    if(z>=0.5)return {w:0,pos:poEnd,par:0.5,l:`The ${name} play-offs.`,t:"PLAY-OFFS"};
+    if(z>=0.2)return {w:0,pos:12,par:0.2,l:"A solid season in mid-table.",t:"MID-TABLE"};
+    return R.down?{w:0,pos:bottom,par:0,l:`Stay up: out of the bottom ${R.down}.`,t:"SURVIVE"}:{w:0,pos:18,par:0,l:"A solid season.",t:"BUILD"};
   },
   isTitle(result){ return /PREMIER LEAGUE CHAMPIONS/.test(result) },
   firstTitle:"The club's first league title under you.",
@@ -485,7 +512,7 @@ LEAGUE.goals={
     const pos=+((result.match(/(\d+)(st|nd|rd|th)/)||[])[1]||0);
     let s;
     if(/PREMIER LEAGUE CHAMPIONS/.test(result))s=4.5;
-    else if(/CHAMPIONSHIP WINNERS|Promoted/.test(result))s=exp.pos<=2?1.6:3.2;
+    else if(/CHAMPIONS, promoted|Promoted/.test(result))s=exp.pos<=3?1.6:3.2;
     else if(/play-off final/.test(result))s=exp.pos<=2?-0.6:1.0;
     else if(/Relegated/.test(result))s=-4;
     else s=(exp.pos-pos)*0.35;

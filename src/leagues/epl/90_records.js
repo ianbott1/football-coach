@@ -8,7 +8,7 @@ function nflCareerLine(a){
   if(!c)return yrs;
   const n=x=>(x||0).toLocaleString();
   if(a.p==="GK")return c.cs?`${n(c.cs)} clean sheets in ${yrs}`:yrs;
-  return (c.goals||c.ast)?`${n(c.goals)} goals, ${n(c.ast)} assists in ${yrs}`:yrs;
+  return (c.goals||c.ast)?`${n(c.goals)} goal${c.goals===1?"":"s"}, ${n(c.ast)} assist${c.ast===1?"":"s"} in ${yrs}`:yrs;
 }
 const NFL_LEADERS=[
   {k:"goals",label:"Goals"},{k:"ast",label:"Assists"},{k:"cs",label:"Clean sheets"},{k:"sv",label:"Saves"}
