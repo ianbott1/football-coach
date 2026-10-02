@@ -44,3 +44,31 @@ stakes, and a career can start at a Championship club and go up.
 4. The offseason: wages, transfers, youth, the owner's expectations (a top-
    four club and a promoted club want very different things).
 5. Tests and calibration against English football's history.
+
+## The full pyramid (next): tiers 1-6, 164 clubs
+
+Asked for: every English league, starting at the bottom. Football Manager's
+standard game makes England playable to tier 6, and so will this:
+Premier League (20), Championship, League One, League Two, National League,
+National League North and South (24 each). Clubs, capacities and the 2026-27
+rules are in data/england_2026_27.py (from Wikipedia's 2026-27 season pages).
+
+Rules (2026-27): Championship 2 up + play-offs 3-8, 3 down; League One 2 up
++ play-offs 3-6, 4 down; League Two 3 up + play-offs 4-7, 2 down; National
+League 1 up + play-offs 2-7, 4 down (to North or South by region); North and
+South 1 up + play-offs 2-7, bottom 4 reprieved (step 3 isn't in the game).
+Play-off formats: four teams (semis 1 v 4, 2 v 3, final) and six (two
+eliminators, then the top two seeds in the semis, final).
+
+Design to do:
+- Strength by tier, compressed so tier 6 still has a rating spread (0-99):
+  roughly Premier League ratings 64-86, Championship 58-66, League One 54-60,
+  League Two 50-55, National League 44-50, North/South 38-44; within a tier,
+  stature from capacity and history. (Today's 2.8x Premier League spread would
+  put tier 6 below the scale.)
+- Wages on an exponential scale: a star ~25m a year, a League Two regular
+  ~0.3m, a tier-6 part-timer ~0.02-0.05m; budgets per tier to match.
+- One play-off routine for both formats; promotion and relegation as a chain
+  from the top down; the National League's relegated sent North or South.
+- The career: start anywhere, including tier 6; job offers come from clubs a
+  tier or two above or below your record.
