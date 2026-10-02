@@ -16,8 +16,8 @@ const NFL_CAP=320;                          // the richest club's budget (Englis
 function budgetOf(u,t){
   const s=(u&&u.program&&u.program[t])||1500, d=CONF[t];
   // per tier: a floor, a ceiling, and how fast stature lifts it (millions a year)
-  const B={PL:[90,320,1500,1.0],CH:[20,60,1420,0.18],L1:[5,18,1300,0.055],L2:[2,6,1200,0.028],
-           NL:[0.8,3,1080,0.016],NN:[0.5,1.6,940,0.0075],NS:[0.5,1.6,940,0.0075]}[d]||[1,5,1100,0.02];
+  const B={PL:[90,320,1500,1.0],CH:[20,60,1300,0.1],L1:[5,18,1150,0.032],L2:[2,6,1050,0.0115],
+           NL:[0.8,3,950,0.0063],NN:[0.5,1.6,820,0.0031],NS:[0.5,1.6,820,0.0031]}[d]||[1,5,1100,0.02];
   let b=Math.max(B[0],Math.min(B[1],B[0]+(s-B[2])*B[3]));
   if(d!=="PL"&&u&&u.chute&&u.chute[t])b=Math.max(b,u.chute[t]);
   return Math.round(b*100)/100;
@@ -489,8 +489,8 @@ LEAGUE.goals={
   expectations(p){
     // the division: your club's; before you have one, the tier the stature fits
     let d=(typeof S!=="undefined"&&S&&S.myTeam&&CONF[S.myTeam])||null;
-    if(!d)d=p>=1640?"PL":p>=1420?"CH":p>=1300?"L1":p>=1200?"L2":p>=1080?"NL":"NN";
-    const band={PL:[1420,2176],CH:[1420,1640],L1:[1300,1540],L2:[1200,1340],NL:[1080,1220],NN:[940,1100],NS:[940,1100]}[d];
+    if(!d)d=p>=1700?"PL":p>=1450?"CH":p>=1300?"L1":p>=1180?"L2":p>=1060?"NL":"NN";
+    const band={PL:[1420,2176],CH:[1300,1700],L1:[1150,1560],L2:[1050,1400],NL:[950,1300],NN:[820,1180],NS:[820,1180]}[d];
     const z=(p-band[0])/(band[1]-band[0]), name=LEAGUE.conf.names[d];
     if(d==="PL"){
       if(z>=0.85)return {w:0,pos:4,par:1,l:"Win the league, or at least finish in the top four.",t:"TOP FOUR"};

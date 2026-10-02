@@ -687,6 +687,7 @@ function liveRec(team){
   if(reveal!=="half")return [w,l];
   const g=heroGame();
   if(!g||(g.home!==team&&g.away!==team))return [w,l];
+  if(g.draw)return [w,l];                                  // a draw: neither column
   return g.winner===team?[w-1,l]:[w,l-1];
 }
 
@@ -695,6 +696,7 @@ function liveConf(team){
   if(reveal!=="half")return [w,l];
   const g=heroGame();
   if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l];
+  if(g.draw)return [w,l];
   return g.winner===team?[w-1,l]:[w,l-1];
 }
 
@@ -741,8 +743,8 @@ function heroResult(){
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>
     <div class="hfoot">Second half under way&hellip;</div></div>`;
-  return `<div class="hero ${won?'win':'loss'}" style="--tc:${teamInk(my)}">
-    <div class="hlabel">FINAL &middot; ${won?"WIN":"LOSS"}${label?" &middot; "+esc(label):""}</div>
+  return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
+    <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>${move}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
@@ -1236,7 +1238,8 @@ function weekNews(W){
     const oppR=mg.home===my?mg.arank:mg.hrank;
     const v=(list)=>vary(list,"you"+opp);
     let b;
-    if(won&&oppR<=25)b=v(LEAGUE.text.rankedWin);
+    if(mg.draw)b=v([`A point. Take it and move on.`,`Shared spoils.`,`Honours even.`,`A point gained, or two dropped: depends who you ask.`]);
+    else if(won&&oppR<=25)b=v(LEAGUE.text.rankedWin);
     else if(won&&mg.margin>=28)b=v([`Never in doubt.`,`Over by halftime.`,`A statement, if anyone was listening.`]);
     else if(won&&mg.margin<=3)b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
     else if(won)b=v([`Business handled.`,`A solid day's work.`,`No drama. Next.`]);
@@ -1842,7 +1845,7 @@ function digestBlock(){
     const won=g.winner===my, opp=g.home===my?g.away:g.home;
     const ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
     rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
-      <span class="dres ${won?'w':g.ot?'o':'l'}">${won?"W":g.ot?"OTL":"L"} ${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span>
+      <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span>
       <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`);
   }
   h+=`<div class="digest">${rows.join("")}</div>`;

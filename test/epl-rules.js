@@ -31,6 +31,10 @@ for(let y=0;y<N;y++){
     T.slice(0,R.up).concat(P.winner?[P.winner]:[]).forEach(t=>expectMove[t]=ABOVE[d]||d);
     if(R.down)T.slice(-R.down).forEach(t=>expectMove[t]=d==='NL'?'NN|NS':({PL:'CH',CH:'L1',L1:'L2',L2:'NL'})[d]);
   });
+  // your draws show as D in the schedule, never L
+  { const my=api.S.myTeam, drawn=E.weeks.slice(0,46).filter(w=>w.games.some(x=>x.draw&&(x.home===my||x.away===my))).length;
+    const sch=api.view('team','schedule'), Ds=(sch.match(/>D<\/span>/g)||[]).length;
+    ok(Ds===drawn, `${yr}: ${drawn} draws for ${my}, ${Ds} shown as D in the schedule`) }
   api.openOffseason(); const O=api.S.off; if(O&&O.act.userOpen)O.move=api.S.myTeam; api.commitOffseason();
   Object.keys(expectMove).forEach(t=>ok(expectMove[t].split('|').indexOf(C(t))>=0, `${yr}: ${t} should be in ${expectMove[t]}, is in ${C(t)}`));
   Object.keys(SIZE).forEach(d=>ok(api.NAMES.filter(t=>C(t)===d).length===SIZE[d], `${yr} ${d}: wrong size after the summer`));
