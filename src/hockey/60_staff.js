@@ -86,6 +86,10 @@ const BEAR_YELL={
   pull:  [`Pull him NOW. Pull him yesterday.`,
           `Six attackers. Seven if we can sneak one on.`,
           `Empty net? Great. We'll be in their end anyway.`],
+  read:  [`Go fast. Go FAST. Pass it to the fast one.`,
+          `Stretch passes! Long ones! Over everyone!`],
+  goalie:[`He's our goalie. Bears are loyal. Mostly.`,
+          `Keep him in. We like his pads.`],
   distracted:[`Is the Zamboni available for hire? Asking for a bear.`,
           `We've been watching the organist. The organist is excellent.`,
           `Did you know you can buy a whole goal? We may have bought a goal.`]
@@ -117,30 +121,48 @@ function bearYell(kind, seed){
   return pool[n%pool.length];
 }
 
+const PEARL_SYS={
+  forecheck:"They keep pinning us in our own end! That's a forecheck. Stretch passes, beat the first man!",
+  trap:"We can't get through the middle at all! It's a trap. Dump it in and chase!",
+  cycle:"They're grinding it low behind our net all night! Collapse and take away the slot!"
+};
 function staffTake(dp, ctx){
   const diff = (ctx.mine||0)-(ctx.theirs||0);
   const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
   const R=[];
-  if(dp.k==="push"){
+  if(dp.k==="read"){
+    R.push({who:"bears", pick:"stretch", line:bearYell("read",seed)});
+    R.push({who:"pearl", pick:dp.pearl&&SYSTEM[dp.pearl]?SYSTEM[dp.pearl].counter:"normal",
+      line:pearlSay(dp.pearl&&PEARL_SYS[dp.pearl]?"I just saw it! "+PEARL_SYS[dp.pearl]:"I haven't seen enough to say!",seed)});
+    R.push({who:"capy", pick:"collapse", line:`It seems to me protecting the slot rarely hurts. I have not, I admit, studied their system.`});
+  }
+  else if(dp.k==="goalie"){
+    R.push({who:"bears", pick:"keep", line:bearYell("goalie",seed)});
+    R.push({who:"pearl", pick:dp.pearl?"swap":"keep", line:pearlSay(dp.pearl
+      ? `That last one was SOFT. He's not himself tonight. Give the other one a go!`
+      : `That last one wasn't his fault! Keep him in.`,seed)});
+    R.push({who:"capy", pick:"normal", line:`Changing goalies, I find, mostly changes who gets blamed. I'd leave it with the assistant.`});
+  }
+  else if(dp.k==="push"){
     R.push({who:"bears", pick:"push", line:bearYell("push",seed)});
-    R.push({who:"pearl", pick: diff<=-2?"push":"normal", line:pearlSay(diff<=-2
+    R.push({who:"pearl", pick: diff<=-2?"push":"keep", line:pearlSay(diff<=-2
       ? `Two goals is a lot to find! Let's open it up a bit.`
       : `It's one goal! Plenty of time. Keep playing our way.`,seed)});
-    R.push({who:"capy", pick:"normal", line:`Chasing, one finds, mostly produces goals at the other end.`});
+    R.push({who:"capy", pick:"keep", line:`Chasing, one finds, mostly produces goals at the other end.`});
   }
   else if(dp.k==="lock"){
-    R.push({who:"bears", pick:"normal", line:bearYell("lock",seed)});
-    R.push({who:"pearl", pick: diff>=2?"sit":"normal", line:pearlSay(diff>=2
+    R.push({who:"bears", pick:"keep", line:bearYell("lock",seed)});
+    R.push({who:"pearl", pick: diff>=2?"sit":"keep", line:pearlSay(diff>=2
       ? `We're two up! Let's make it boring and go home happy.`
       : `One goal isn't enough to sit on. Keep going!`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would suggest fewer chances, both ways. Fewer chances, fewer disasters.`});
   }
   else if(dp.k==="pull"){
     R.push({who:"bears", pick:"early", line:bearYell("pull",seed)});
-    R.push({who:"pearl", pick: diff<=-2?"early":"normal", line:pearlSay(diff<=-2
+    R.push({who:"pearl", pick: diff<=-2?"early":"late", line:pearlSay(diff<=-2
       ? `Two goals needs time! Get him out early.`
       : `One goal, the usual time. We've done this before.`,seed)});
-    R.push({who:"capy", pick:"normal", line:`An empty net, I'm afraid, rather invites them to score into it.`});
+    R.push({who:"capy", pick:"late", line:`An empty net, I'm afraid, rather invites them to score into it.`});
   }
   return R;
 }

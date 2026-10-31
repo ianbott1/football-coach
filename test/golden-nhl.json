@@ -1,5 +1,5 @@
 {
- "fp": "5f3c3ac49d654506",
+ "fp": "d23c7ff230c52e3e",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -30,59 +30,64 @@
    "fp": "5f3c3ac49d654506",
    "from": "63755b785baf1796",
    "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
+  },
+  {
+   "fp": "d23c7ff230c52e3e",
+   "from": "5f3c3ac49d654506",
+   "note": "Hockey: five-minute spells, systems and answers, goalie nights, named events; calls you read from the numbers"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "9dd8ac2c86ffe294",
-    "post": "196d5c39df1e6ffd",
-    "champion": "Los Angeles",
-    "rec": "f6d2fd5b70a57cb4",
-    "poll": "1970c0c57821eefd",
-    "heis": "fa744f12968703d6",
-    "history": "8b7f43dd87596075",
-    "universe": "78a43b7f51b6e3c0",
-    "screens": "72b94da7d5311d41"
+    "games": "71bd40647194bdd9",
+    "post": "d080cc5dc4270f34",
+    "champion": "Vancouver",
+    "rec": "2e6bca990762272f",
+    "poll": "afe666172ada5fe8",
+    "heis": "442e84bddce94699",
+    "history": "7b6c8bde060d99ad",
+    "universe": "9f4b3352bfeaf03a",
+    "screens": "670350521d5cdb96"
    },
    {
     "year": 2027,
-    "games": "a986d1a0fde4bc78",
-    "post": "360325b68f15ad0a",
-    "champion": "Winnipeg",
-    "rec": "2d29a0c20c02c25a",
-    "poll": "671bf746691f88b6",
-    "heis": "f7b50f4e71410da8",
-    "history": "ebf65867f1c15780",
-    "universe": "6827df19d82b28c3",
-    "screens": "e7c9b8e69d44b071"
+    "games": "39125eb96078523f",
+    "post": "2625dd30b1abdda8",
+    "champion": "St. Louis",
+    "rec": "5d397f54d1489610",
+    "poll": "cfa7f988ebf9af41",
+    "heis": "8ac2adc1ebcd2a1e",
+    "history": "7a097b1a5f134c3a",
+    "universe": "dd7aa0993e05a37a",
+    "screens": "85c95b98a9a89272"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "845a46b3d3513f7a",
-    "post": "4f273b4fa7b65cd6",
-    "champion": "Vegas",
-    "rec": "08e6a6d19e0f4c0f",
-    "poll": "691270f09f44457c",
-    "heis": "1ea073d3cd67b7e7",
-    "history": "abdc92deb540220f",
-    "universe": "f5a0f876d813a3fb",
-    "screens": "0f182837ddfd4067"
+    "games": "46939018742b4890",
+    "post": "59ba6b4e50d31639",
+    "champion": "Minnesota",
+    "rec": "53aa70193f4ac457",
+    "poll": "03a50edf68bcb893",
+    "heis": "ecdb7a9cde402f0d",
+    "history": "ddc3378aae261913",
+    "universe": "feadbfd95f6428b5",
+    "screens": "d5281c6c7a0922d8"
    },
    {
     "year": 2027,
-    "games": "d7a7b968ad9e6585",
-    "post": "f22e43360658e5a6",
-    "champion": "Vancouver",
-    "rec": "1b48ecd3e9719cd9",
-    "poll": "d851936cff6a7995",
-    "heis": "9d245915fb633476",
-    "history": "4c0e486d0a6fee15",
-    "universe": "c69c609e32714b77",
-    "screens": "5bdc302c9f6c1f95"
+    "games": "02c3d15d18a9b263",
+    "post": "e5f1d6b1ede4559e",
+    "champion": "New Jersey",
+    "rec": "b725ab1ac2ba740d",
+    "poll": "c1c534f49cc5ab81",
+    "heis": "272a98b2e3ae00f3",
+    "history": "7b276e45245b9eb1",
+    "universe": "01a9045bb75f2af6",
+    "screens": "822999581e689ce9"
    }
   ],
   "schedules#60": [

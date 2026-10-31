@@ -15,25 +15,14 @@ function isBigGame(g,team,seaRankMap,rivalName){
   if(g.margin<=1)return true;
   return false;
 }
-/* where the clock stands after segment s: "1st 10:00" ... "3rd 0:00", OT, SO */
+/* where the clock stands after spell s: "1st 15:00" ... "3rd 0:00", OT, SO */
 function segClock(s){
   if(s===SEGS)return "OT";
   if(s>SEGS)return "SO";
-  const per=["1st","2nd","3rd"][Math.floor(s/2)];
-  return per+" "+(s%2?"0:00":"10:00");
+  const per=["1st","2nd","3rd"][Math.floor(s/4)];
+  return per+" "+[15,10,5,0][s%4]+":00";
 }
-/* a game without a recorded log (the computer's games): segments that add up
-   to the final score */
-function gameScript(g,rosterHome,rosterAway,seed){
-  const rng=new RNG(seed), n=SEGS, out=[];
-  const split=(tot)=>{const v=Array.from({length:n},()=>0); for(let i=0;i<tot;i++)v[rng.int(n)]++; return v};
-  // overtime games: regulation ends level, the winner's extra goal comes after
-  const reg=g.ot?Math.min(g.hp,g.ap):null;
-  const hs=split(reg!==null?reg:g.hp), as=split(reg!==null?reg:g.ap); let sh=0,sa=0;
-  for(let s=0;s<n;s++){sh+=hs[s]; sa+=as[s]; out.push({seg:s,h:hs[s],a:as[s],sh:sh,sa:sa,shots:[0,0],pp:[false,false]})}
-  if(reg!==null)out.push({seg:SEGS,sh:g.hp,sa:g.ap,ot:1,so:!!g.so,h:g.hp-reg,a:g.ap-reg,shots:[0,0],pp:[false,false]});
-  return driveScript(g,out);
-}
+/* gameScript (a computer game's replay) lives with the screens, 75_screens.js */
 /* the rink: each end in its team's colour, the clock as six bars */
 function fieldSVG(g,cur,homeColor,awayColor,venue){
   const segs=cur&&typeof cur.seg==="number"?Math.min(SEGS,cur.seg+1):cur?SEGS:0;
