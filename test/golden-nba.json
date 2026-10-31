@@ -1,5 +1,5 @@
 {
- "fp": "95534f5cb8180f35",
+ "fp": "75068e003c50d68f",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -40,6 +40,11 @@
    "fp": "95534f5cb8180f35",
    "from": "f8c21bb964ffce77",
    "note": "The last 'week' phrases in pro seasons ('that kind of night', injuries in game days)"
+  },
+  {
+   "fp": "75068e003c50d68f",
+   "from": "95534f5cb8180f35",
+   "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
   }
  ],
  "result": {
@@ -54,7 +59,7 @@
     "heis": "d65be65f2863d2f4",
     "history": "f25ac99b15068fb1",
     "universe": "e867b2b7c18b0197",
-    "screens": "04b7f920fc7ee3e3"
+    "screens": "7f985e4dc0ae38d8"
    },
    {
     "year": 2027,
@@ -66,7 +71,7 @@
     "heis": "8443e829701d0396",
     "history": "a4346fff0e9d2cf4",
     "universe": "12a031e87af30deb",
-    "screens": "5d7ab6bc7cba2900"
+    "screens": "626d51bb80d57b3b"
    }
   ],
   "Detroit#777": [
@@ -80,7 +85,7 @@
     "heis": "a34ff66d88be5fdc",
     "history": "696737dc492fafd5",
     "universe": "66d8bb447215cf18",
-    "screens": "eceb697da3f68545"
+    "screens": "32feb73a65a29311"
    },
    {
     "year": 2027,
@@ -92,7 +97,7 @@
     "heis": "e4580e67bdf34bcd",
     "history": "05141294ff2b8146",
     "universe": "8a54e0d312b50d68",
-    "screens": "d08cf4913e55c180"
+    "screens": "5555cda408efdc17"
    }
   ],
   "schedules#60": [

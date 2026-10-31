@@ -97,17 +97,19 @@ extendSeason({
     return r;
   },
   _result(my){
+    // "the Championship", "the National League", but "League One"
+    const theDiv=k=>{const n=LEAGUE.conf.names[k];return /^League /.test(n)?n:"the "+n};
     this._seed();
-    const d=CONF[my], R=DIVS[d], P=this.po[d], name=LEAGUE.conf.names[d], tb=this.table(d), pos=tb.indexOf(my)+1;
+    const d=CONF[my], R=DIVS[d], P=this.po[d], name=theDiv(d), N=LEAGUE.conf.names[d], tb=this.table(d), pos=tb.indexOf(my)+1;
     const ord=n=>n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th");
     if(d==="PL"){ if(pos===1)return "PREMIER LEAGUE CHAMPIONS"; if(pos>tb.length-R.down)return `Relegated (${ord(pos)})`; return `Finished ${ord(pos)} in the Premier League` }
-    if(pos===1)return `${name.toUpperCase()} CHAMPIONS, promoted`;
-    if(pos<=R.up)return `Promoted (${ord(pos)} in the ${name})`;
-    if(P.winner===my)return `Promoted through the ${name} play-offs`;
-    if(P.rounds.po3.some(g=>g.loser===my))return `Lost the ${name} play-off final`;
-    if(this.seeds[my])return `Lost in the ${name} play-offs (${ord(pos)})`;
-    if(R.down&&pos>tb.length-R.down)return `Relegated from the ${name} (${ord(pos)})`;
-    return `Finished ${ord(pos)} in the ${name}`;
+    if(pos===1)return `${LEAGUE.conf.names[d].toUpperCase()} CHAMPIONS, promoted`;
+    if(pos<=R.up)return `Promoted (${ord(pos)} in ${name})`;
+    if(P.winner===my)return `Promoted through the ${N} play-offs`;
+    if(P.rounds.po3.some(g=>g.loser===my))return `Lost the ${N} play-off final`;
+    if(this.seeds[my])return `Lost in the ${N} play-offs (${ord(pos)})`;
+    if(R.down&&pos>tb.length-R.down)return `Relegated from ${name} (${ord(pos)})`;
+    return `Finished ${ord(pos)} in ${name}`;
   },
   postRecord(){
     const post={}, pnote={}; const bump=(t,w)=>{post[t]=post[t]||[0,0];post[t][w?0:1]++};

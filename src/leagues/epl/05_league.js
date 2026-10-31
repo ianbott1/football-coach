@@ -58,6 +58,9 @@ const LEAGUE={
   schedule:{games:38},
   playoff:{size:6, perSide:6, byes:0},
   stepLabel:w=>`Matchday ${w+1}`,
+  myGameLabel:n=>`Matchday ${n}`,              // your matchday: the Premier League skips weeks
+  position:t=>SEA&&SEA.table?SEA.table(CONF[t]).indexOf(t)+1:0,  // table position, not a ranking
+  positionLine:t=>`${ordinal(LEAGUE.position(t))} in ${LEAGUE.conf.names[CONF[t]]}`,
   rankTop:6,
   /* W-D-L and points: three a win, one a draw */
   // the league's record: play-off games don't count in the table

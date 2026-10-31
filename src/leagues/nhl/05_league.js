@@ -11,6 +11,7 @@ const NHL_K=+((typeof process!=="undefined"&&process.env&&process.env.NHL_K)||1.
 const NHL_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NHL_K),d]);
 const LEAGUE={
   id:"nhl",
+  rankAll:true,                                 // a power ranking numbers every team
   name:"Pro Hockey",
   tracksOT:true,                              // a point for an overtime or shootout loss
   /* [team, starting strength (a prior, not standings), division] */
@@ -67,7 +68,8 @@ const LEAGUE={
   // the regular season's record: playoff games don't count in the standings
   recText(t,sea,r){ const [w,l]=r||(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return `${w}-${l-o}-${o}` },
   standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
-  stepLabel:w=>`Game day ${w+1}`,               // a pro season is game days, not weeks
+  stepLabel:w=>`Game day ${w+1}`,
+  myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day               // a pro season is game days, not weeks
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty-two
   points(t,sea){ const [w]=(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return 2*w+o },
 
@@ -81,7 +83,7 @@ const LEAGUE={
       shootout. The top three in each division make the playoffs, plus two wild cards in each conference.
       <b>z</b> clinched the conference &middot; <b>y</b> clinched the division &middot; <b>x</b> clinched a
       playoff place &middot; <b>e</b> eliminated.</div>`,
-    ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
+    ranking:"the rankings", top:"the rankings", entered:"Up to No. ", dropped:"Out of the top ten",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
     week:"night",                                // the digest: "The night that was"

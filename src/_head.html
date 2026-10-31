@@ -23,11 +23,12 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .mast p{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5}
 .stick{position:sticky;top:0;z-index:20;background:rgba(16,19,28,.97);
  backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:11px 16px 9px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 16px 9px}
+.tb-left{min-width:0;flex:1 1 auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .tb-yr{font-family:var(--mono);font-size:11px;color:var(--sodium);letter-spacing:.14em}
 .tb-team{font-family:var(--cond);font-size:21px;font-weight:700;text-transform:uppercase;
  margin-left:9px;letter-spacing:.01em}
-.tb-right{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.tb-right{font-family:var(--mono);font-size:13px;color:var(--muted);flex:none;white-space:nowrap}
 .tb-rk{color:var(--sodium);margin-left:6px}
 .tabs{display:flex;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
@@ -241,7 +242,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .imeta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.08em}
 .stats{display:flex;gap:8px;margin-top:14px}
 .stats>div{flex:1;text-align:center;border:1px solid var(--line);padding:9px 4px}
-.stats b{display:block;font-family:var(--cond);font-size:25px;font-weight:700}
+.stats b{display:block;font-family:var(--cond);font-size:clamp(18px,5.6vw,25px);font-weight:700;white-space:nowrap}
 .stats span{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.12em;
  text-transform:uppercase}
 .injrow{display:flex;gap:10px;align-items:center;padding:8px 16px;
@@ -733,6 +734,25 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .frow.zone-ucl{box-shadow:inset 3px 0 0 #2F6FB5}.frow.zone-up{box-shadow:inset 3px 0 0 var(--turf)}
 .frow.zone-po{box-shadow:inset 3px 0 0 var(--sodium)}.frow.zone-down{box-shadow:inset 3px 0 0 var(--flag)}
 /* the momentum bar (soccer) */
+.evid{margin:12px 16px 0;padding:12px 14px;border:1px solid var(--line);background:var(--panel2)}
+.evh{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);margin-bottom:8px}
+.evh span{color:var(--muted);float:right;letter-spacing:.06em}
+.evr{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid rgba(42,49,69,.55);font-size:13.5px}
+.evr .evv{font-family:var(--mono);color:var(--bone)}
+.evr.hi .evv,.evr.lo .evv{color:var(--sodium);font-weight:700}
+.evr.hi .evk::after{content:" \25B2";color:var(--sodium);font-size:10px}
+.evr.lo .evk::after{content:" \25BC";color:var(--sodium);font-size:10px}
+.evn{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.4}
+.flankbar{display:flex;align-items:center;gap:10px;font-size:13px}
+.flankbar i{flex:1;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--sodium) var(--l),var(--line) var(--l))}
+.sstrip{display:flex;justify-content:center;gap:22px;font-family:var(--mono);font-size:12px;color:var(--bone);margin:0 16px 6px}
+.sstrip i{font-style:normal;color:var(--muted);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin:0 5px}
+.play.goalrow{background:rgba(244,166,58,.16)}
+.play.goalrow .ptxt{font-weight:600}
+.play.cue .ptxt{color:#B4BCCB;font-style:italic}
+.dtag.rd{color:#fff;background:var(--flag);border-color:var(--flag)}
+.dtag.yl{color:#14171F;background:#F2C94C;border-color:#F2C94C}
+.callbtn small{display:block;font-family:var(--sans,inherit);font-size:11.5px;font-weight:400;letter-spacing:0;text-transform:none;opacity:.75;margin-top:3px}
 .mom{margin:8px 0 2px}.mom svg{width:100%;height:44px;display:block}
 .obar.wdl b{display:inline-block;height:100%;background:var(--muted);opacity:.55}
 .momkey{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}

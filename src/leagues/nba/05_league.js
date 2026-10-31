@@ -11,6 +11,7 @@ const NBA_K=+((typeof process!=="undefined"&&process.env&&process.env.NBA_K)||2.
 const NBA_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NBA_K),d]);
 const LEAGUE={
   id:"nba",
+  rankAll:true,                                 // a power ranking numbers every team
   name:"Pro Basketball",
 
   /* [franchise, starting strength (a prior, not standings), division];
@@ -55,7 +56,8 @@ const LEAGUE={
         toBase:0.135,gapPerPoss:+((typeof process!=="undefined"&&process.env&&process.env.NBA_GAP)||0.0006),garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
   venues:{"Denver":6,"Utah":5,"Golden State":3,"Boston":3,"Oklahoma City":3,"Brooklyn":-3,"LA Clippers":-2,"Washington":-2},
   schedule:{games:82},
-  stepLabel:w=>`Game day ${w+1}`,               // a pro season is game days, not weeks
+  stepLabel:w=>`Game day ${w+1}`,
+  myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day               // a pro season is game days, not weeks
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty
   playoff:{size:16, perSide:8, byes:0, playIn:true},
   /* the baby owl, suited up for the pros: a headband and a jersey number */
@@ -71,7 +73,7 @@ const LEAGUE={
     standingsNote:`<div class="note">Overall record, then division record. The top six in each conference
       go straight to the playoffs; 7 to 10 play in. <b>z</b> clinched the top seed &middot; <b>y</b> clinched
       the division &middot; <b>x</b> clinched a top-six place &middot; <b>e</b> eliminated.</div>`,
-    ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
+    ranking:"the rankings", top:"the rankings", entered:"Up to No. ", dropped:"Out of the top ten",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
     week:"night",                                // the digest: "The night that was"

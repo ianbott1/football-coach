@@ -61,7 +61,7 @@ function seasonCardSVG(h, team){
       letter-spacing="3">${esc(big)}</text>
 
     ${stat(210,"CONFERENCE",c.confRec||"—")}
-    ${stat(540,"POLL", h.rank?("#"+h.rank):"NR")}
+    ${stat(540,(LEAGUE.text.rank||"Poll").toUpperCase(), h.pos?ordinal(h.pos):h.rank?("#"+h.rank):"NR")}
     ${stat(870,"TITLES", String(c.titles||0))}
 
     <rect x="64" y="838" width="${CARD_W-128}" height="3" fill="#2A3145"/>
@@ -85,6 +85,7 @@ function seasonCardText(h, team){
   const bits=[`${team} ${h.rec} (${c.confRec} ${c.conf})`];
   if(h.champion===team)bits.push(LEAGUE.text.champions.toUpperCase());
   else if(h.honours.group)bits.push(`${c.conf} champions`);
+  else if(h.pos)bits.push(h.result);
   else if(h.rank)bits.push(`finished No. ${h.rank}`);
   if(c.bestWin)bits.push(`beat ${c.bestWin.rank?"No. "+c.bestWin.rank+" ":""}${c.bestWin.opp} ${c.bestWin.score}`);
   return `${c.coach}, ${h.year}. ${bits.join(" \u2014 ")}. ${LEAGUE.text.site}`;

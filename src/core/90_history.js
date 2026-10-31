@@ -31,18 +31,21 @@ function seasonEntry(my){
   const bestWin=myGames.filter(g=>g.winner===my)
     .sort((x,y)=>(x.home===my?(x.arank||999):(x.hrank||999))-(y.home===my?(y.arank||999):(y.hrank||999)))[0];
   const bwOpp=bestWin?(bestWin.home===my?bestWin.away:bestWin.home):null;
-  const bwRank=bestWin?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
+  // a league with a table has no rankings to quote: positions instead
+  const POS=!!LEAGUE.position;
+  const bwRank=bestWin&&!POS?(bestWin.home===my?bestWin.arank:bestWin.hrank):null;
   const hon=SEA.honours(my), seeds=SEA.postRecord().cfpOf;
-  return {v:HISTORY_V, year:SEA.year, team:my,
-    rec:SEA.rec[my][0]+"-"+SEA.rec[my][1], rank:rk[my],
+  return Object.assign({v:HISTORY_V, year:SEA.year, team:my,
+    rec:recStr(my), rank:POS?null:rk[my],
     result:result, grade:gr.g, gradeLine:gr.l, miss:!!gr.miss,
     champion:SEA.champion,
     honours:{title:SEA.champion===my, group:hon.conf, seed:seeds[my]||null},
     group:{key:CONF[my], name:LEAGUE.conf.names[CONF[my]]||"",
-           rec:SEA.confrec[my][0]+"-"+SEA.confrec[my][1]},
+           rec:POS?recStr(my):SEA.confrec[my][0]+"-"+SEA.confrec[my][1]},
     bestWin: bwOpp?{opp:bwOpp,rank:bwRank||null,
       score:(bestWin.home===my?bestWin.hp+"-"+bestWin.ap:bestWin.ap+"-"+bestWin.hp)}:null,
-    coach:{name:S.career.name, titles:S.career.titles, seasons:S.history.length+1}};
+    coach:{name:S.career.name, titles:S.career.titles, seasons:S.history.length+1}},
+    POS?{pos:LEAGUE.position(my)}:{});
 }
 
 /* ---- old saves ---- */

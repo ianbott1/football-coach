@@ -1,5 +1,5 @@
 {
- "fp": "18951c6b463204e2",
+ "fp": "d642d925ad2a0980",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -25,6 +25,11 @@
    "fp": "18951c6b463204e2",
    "from": "3fcd8c6d541629c1",
    "note": "A game day every calendar day: real Oct-Nov dates exact; days without your game played through (off in hot seat)"
+  },
+  {
+   "fp": "d642d925ad2a0980",
+   "from": "18951c6b463204e2",
+   "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
   }
  ],
  "out": [
@@ -34,20 +39,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "28-56",
+      "rec": "28-38-18",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "4461251ce7d34f62"
+     "book": "b9cf639e3ecb0200"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "60-48",
+      "rec": "45-25-14",
       "result": "Lost in the Stanley Cup Final",
       "grade": "A+"
      },
-     "book": "6bc06ab42ab44488"
+     "book": "065beb3b0879aad8"
     }
    ]
   },
@@ -57,20 +62,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "24-60",
+      "rec": "24-48-12",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "9dd743ac613d0ffa"
+     "book": "0c6f33c625d4d4e1"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "46-44",
+      "rec": "44-30-10",
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "e06fee48b21a62a7"
+     "book": "9051f69a90f8db4c"
     }
    ]
   },
@@ -80,20 +85,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "37-47",
+      "rec": "37-32-15",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "09c078322b63838c"
+     "book": "cb815afe261b048e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "35-49",
+      "rec": "35-34-15",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "9ea16adc421cc0bf"
+     "book": "f06a9ebde7568222"
     }
    ]
   }

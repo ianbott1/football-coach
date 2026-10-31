@@ -1,5 +1,5 @@
 {
- "fp": "665c3a3b3d3911a6",
+ "fp": "1890288be3df09a6",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -30,6 +30,11 @@
    "fp": "665c3a3b3d3911a6",
    "from": "06fc614111cb6f86",
    "note": "Fixture venues alternate (Berger): no club 23 straight at home or away"
+  },
+  {
+   "fp": "1890288be3df09a6",
+   "from": "665c3a3b3d3911a6",
+   "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
   }
  ],
  "result": {
@@ -42,9 +47,9 @@
     "rec": "fe8054aa5421c077",
     "poll": "16f7eb225b105c6c",
     "heis": "a768470a491ee872",
-    "history": "04f6244fe02e16d0",
+    "history": "cc0be4fedefd4e83",
     "universe": "d18bff05786f66ad",
-    "screens": "1a3e862b97bc0a2d"
+    "screens": "b1433d1fd65896d7"
    },
    {
     "year": 2027,
@@ -54,9 +59,9 @@
     "rec": "02ee70e8c5dae15d",
     "poll": "bb5a8ce020d45ee2",
     "heis": "be6549f7a0993672",
-    "history": "658abe96efa96062",
+    "history": "8380769e6db9d2dc",
     "universe": "f9ef16f60c659c03",
-    "screens": "dcbf42ade4aaa588"
+    "screens": "707a297d2a7a920d"
    }
   ],
   "Wrexham#777": [
@@ -68,9 +73,9 @@
     "rec": "85b501c940f210f1",
     "poll": "47048b1ecd0970bc",
     "heis": "0c7494eff2a38136",
-    "history": "9760c497a57aa09f",
+    "history": "9438ef9a6cb5ccc6",
     "universe": "d891c13545c796bc",
-    "screens": "82f4167830ae718f"
+    "screens": "c2ff986dbcadbbee"
    },
    {
     "year": 2027,
@@ -80,9 +85,9 @@
     "rec": "9027568687f94bc1",
     "poll": "3a8044f9a20894b9",
     "heis": "a4b3f5e5896679e1",
-    "history": "c59d93d15fa5e128",
+    "history": "5ea3e352e4383a15",
     "universe": "60e60cdfb9d9cbdd",
-    "screens": "eaa83ab3f25c044d"
+    "screens": "2c978e742a885396"
    }
   ],
   "schedules#60": [

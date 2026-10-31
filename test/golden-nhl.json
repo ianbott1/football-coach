@@ -1,5 +1,5 @@
 {
- "fp": "63755b785baf1796",
+ "fp": "5f3c3ac49d654506",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -25,6 +25,11 @@
    "fp": "63755b785baf1796",
    "from": "7ef87e115bdb7737",
    "note": "A game day every calendar day: the real Sept 29 - Nov 29 games on their real dates; the rest paced to Apr 10; days without your game played through"
+  },
+  {
+   "fp": "5f3c3ac49d654506",
+   "from": "63755b785baf1796",
+   "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
   }
  ],
  "result": {
@@ -37,9 +42,9 @@
     "rec": "f6d2fd5b70a57cb4",
     "poll": "1970c0c57821eefd",
     "heis": "fa744f12968703d6",
-    "history": "14f7040be7f20149",
+    "history": "8b7f43dd87596075",
     "universe": "78a43b7f51b6e3c0",
-    "screens": "8088762c0b0a13e4"
+    "screens": "72b94da7d5311d41"
    },
    {
     "year": 2027,
@@ -49,9 +54,9 @@
     "rec": "2d29a0c20c02c25a",
     "poll": "671bf746691f88b6",
     "heis": "f7b50f4e71410da8",
-    "history": "256e8c2ac098cbfc",
+    "history": "ebf65867f1c15780",
     "universe": "6827df19d82b28c3",
-    "screens": "3c7ccc830ee476a9"
+    "screens": "e7c9b8e69d44b071"
    }
   ],
   "Edmonton#777": [
@@ -63,9 +68,9 @@
     "rec": "08e6a6d19e0f4c0f",
     "poll": "691270f09f44457c",
     "heis": "1ea073d3cd67b7e7",
-    "history": "9e232f5ea041ba38",
+    "history": "abdc92deb540220f",
     "universe": "f5a0f876d813a3fb",
-    "screens": "acb991f85d8251aa"
+    "screens": "0f182837ddfd4067"
    },
    {
     "year": 2027,
@@ -75,9 +80,9 @@
     "rec": "1b48ecd3e9719cd9",
     "poll": "d851936cff6a7995",
     "heis": "9d245915fb633476",
-    "history": "897c1b5ce50150bf",
+    "history": "4c0e486d0a6fee15",
     "universe": "c69c609e32714b77",
-    "screens": "d2e7d907b83b4c2b"
+    "screens": "5bdc302c9f6c1f95"
    }
   ],
   "schedules#60": [

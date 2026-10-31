@@ -129,6 +129,7 @@ function liveTick(){
   }
 }
 function liveGap(){
+  if(typeof liveGapFor==="function")return liveGapFor(live,speedMult());   // the sport paces it (soccer: by what happened)
   const n=DRIVES_PER_TEAM*2;
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
 }
@@ -379,6 +380,12 @@ function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
 /* how many ranked teams wear a number: the top 25 in college, fewer in a 30-team league */
 const RANK_TOP=(LEAGUE.rankTop||25);
+/* where a team stands, in a word: table position where the league has a
+   table (soccer: "7th"), otherwise its number if it wears one */
+function standTag(t,rk){
+  if(LEAGUE.position){const p=LEAGUE.position(t);return p?ordinal(p):"\u2014"}
+  return rk[t]<=RANK_TOP||LEAGUE.rankAll?"#"+rk[t]:"NR";
+}
 /* "Sim game": play this one game without watching it, whatever the setting.
    Shown beside the main button, in the bottom bar and in the desktop side
    panel (on a laptop the side panel is where the buttons are). */
@@ -559,11 +566,13 @@ function endSeason(rng,choices,act,seasonTeam){
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
     S.calls=keep; }
   if(U.coach[S.myTeam])U.coach[S.myTeam].q=Math.round(Math.max(-40,Math.min(60,S.career.rep*0.62)));
+  // the entry is written before the offseason runs: promotion, relegation
+  // and realignment move teams, and the season belongs to the group it was played in
+  const entry=seasonEntry(my);
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
   const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my],my);
-  const entry=seasonEntry(my);
   S.history.push(Object.assign(entry,{
     miles:miles, exp:exp.t, program:Math.round(U.program[my]),
     teams:teamRows, top10:SEA.poll.order().slice(0,10),
@@ -717,7 +726,10 @@ function heroResult(){
   let g=null,label="";
   if(flash&&flash.type==="week"){
     const W=SEA.weeks[flash.step];
-    if(W){g=W.games.find(x=>x.home===my||x.away===my);label=W.label}
+    if(W){g=W.games.find(x=>x.home===my||x.away===my);label=W.label;
+      // leagues that number steps by calendar day name your game by your count
+      if(g&&LEAGUE.myGameLabel)label=LEAGUE.myGameLabel(SEA.weeks.slice(0,flash.step+1)
+        .filter(w=>w.games.some(x=>x.home===my||x.away===my)).length)}
   }else if(flash&&flash.type==="post"){
     const pools=SEA.postPools();
     for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f){g=f;break}}
@@ -732,12 +744,14 @@ function heroResult(){
   let move="";
   if(pv&&pv[my]){
     const d=pv[my]-cur[my];
-    if(cur[my]<=25&&pv[my]>25)move=`<div class="hmove up">${LEAGUE.text.entered}${cur[my]}</div>`;
-    else if(cur[my]>25&&pv[my]<=25)move=`<div class="hmove dn">Dropped out of the poll</div>`;
-    else if(cur[my]<=25&&d>0)move=`<div class="hmove up">&#9650; Up ${d} to #${cur[my]}</div>`;
-    else if(cur[my]<=25&&d<0)move=`<div class="hmove dn">&#9660; Down ${-d} to #${cur[my]}</div>`;
-    else if(cur[my]<=25)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
+    const T=RANK_TOP;
+    if(cur[my]<=T&&pv[my]>T)move=`<div class="hmove up">${LEAGUE.text.entered}${cur[my]}</div>`;
+    else if(cur[my]>T&&pv[my]<=T)move=`<div class="hmove dn">${LEAGUE.text.dropped||"Dropped out of the poll"}</div>`;
+    else if(cur[my]<=T&&d>0)move=`<div class="hmove up">&#9650; Up ${d} to #${cur[my]}</div>`;
+    else if(cur[my]<=T&&d<0)move=`<div class="hmove dn">&#9660; Down ${-d} to #${cur[my]}</div>`;
+    else if(cur[my]<=T)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
   }
+  if(LEAGUE.position&&LEAGUE.positionLine)move=`<div class="hmove flat">${LEAGUE.positionLine(my)}</div>`;
   if(half)return `<div class="hero half">
     <div class="hlabel"><span class="live"></span>HALFTIME${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
@@ -955,8 +969,9 @@ function teamCardHTML(my,rk,co){
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[my]])} &middot; ${SEA.year} season</div>
     <div class="stats">
       <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
-      <div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>
-      <div><b>${reveal==="half"?"&mdash;":(rk[my]<=25?"#"+rk[my]:"NR")}</b><span>${LEAGUE.text.rank}</span></div>
+      ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
+        :`<div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
+      <div><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${co.t<=0?"first season":"year "+(co.t+1)}
@@ -1569,7 +1584,8 @@ function teamCard(t){
   let h=`<div class="idcard" style="border-left:4px solid ${teamInk(t)}">
     <div class="iname" style="color:${teamInk(t)}">${esc(t)}</div>
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[t]])} &middot; currently
-      ${A.now<=25?"ranked #"+A.now:"unranked ("+A.now+"th)"}</div>
+      ${LEAGUE.position?ordinal(LEAGUE.position(t))+" in "+esc(LEAGUE.conf.names[CONF[t]])
+        :A.now<=RANK_TOP?"ranked #"+A.now:"unranked ("+ordinal(A.now)+")"}</div>
     <div class="stats">
       <div><b>${A.w}-${A.l}</b><span>All-time</span></div>
       <div><b>${A.pct!==null?A.pct.toFixed(3).replace(/^0/,""):"\u2013"}</b><span>Win %</span></div>
@@ -1642,7 +1658,7 @@ function teamCard(t){
     <span class="yr">${r.year}</span>
     ${r.grade?`<span class="ygrade">${esc(r.grade)}</span>`:""}
     <div class="ymain"><div class="yrec">${r.rec}
-      <span class="yrank">${r.rank<=25?"final #"+r.rank:"unranked"}</span></div>
+      <span class="yrank">${r.rank<=RANK_TOP?"final #"+r.rank:"unranked"}</span></div>
     <div class="yres">${esc(r.res)}${r.conf?" &middot; "+esc(r.conf)+" champion":""}${
       r.coach?' &middot; <span class="coachtag">new coach hired</span>':""}</div></div>
     ${has?`<button class="ycard" data-card="${idx}" title="Season card">&#8599;</button>`:""}
@@ -1705,7 +1721,7 @@ function dynastyView(){
         <div class="fmain"><div class="fname">${esc(t)}${t===my?' <span class="youtag">YOU</span>':''}</div>
         <div class="fnote">${bits.join(" &middot; ")}</div></div>
         <div class="tstat"><span class="trec">${A.w}-${A.l}</span>
-        <span class="trk">${A.now<=25?"#"+A.now:"NR"}</span></div></div>`;
+        <span class="trk">${standTag(t,{[t]:A.now})}</span></div></div>`;
     }).join("");
     return h;
   }
@@ -1851,7 +1867,8 @@ function digestBlock(){
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
   h+=`<div class="bsub">Now ${recStr(my)}${
-    rk[my]<=25?", ranked No. "+rk[my]:", unranked"}.</div></div>`;
+    LEAGUE.position?", "+ordinal(LEAGUE.position(my))+" in "+esc(LEAGUE.conf.names[CONF[my]])
+      :rk[my]<=RANK_TOP?", ranked No. "+rk[my]:", unranked"}.</div></div>`;
   return h;
 }
 
@@ -2015,7 +2032,7 @@ function render(){
         <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
           <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
         <div class="tb-right">${recFmt(my,liveRec(my))}
-          ${reveal==="half"?"":(rk[my]<=25?`<span class="tb-rk">#${rk[my]}</span>`:"")}
+          ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>
           <button class="reset" id="rst" title="Start over">&#8635;</button></div>

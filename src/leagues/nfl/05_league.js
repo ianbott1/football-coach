@@ -5,6 +5,7 @@
    a draft run in reverse order of finish, contracts and a salary cap. */
 const LEAGUE={
   id:"nfl",
+  rankAll:true,                                 // a power ranking numbers every team
   name:"Pro Football",
 
   /* [franchise, starting strength, division] */
@@ -96,7 +97,7 @@ const LEAGUE={
     standingsNote:`<div class="note">Overall record, then division record. Amber marks the division leader.
       <b>z</b> clinched the bye &middot; <b>y</b> clinched the division &middot; <b>x</b> clinched
       a playoff spot &middot; <b>e</b> eliminated.</div>`,
-    ranking:"the rankings", top:"the rankings", entered:"Up to No. ",
+    ranking:"the rankings", top:"the rankings", entered:"Up to No. ", dropped:"Out of the rankings",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
     tagline:"Build a franchise. Win it all.",
