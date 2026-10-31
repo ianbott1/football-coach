@@ -227,3 +227,12 @@ function watchView(){
         <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>`}
     </div></div>`;
 }
+
+/* ---- after the game: were your reads right? ---- */
+function readText(e){
+  if(e.k==="read")return e.right?`Your read was right: they were playing ${SYSTEM[e.truth].l}.`
+    :`They were playing ${SYSTEM[e.truth].l}: the answer was "${ANSWERS[SYSTEM[e.truth].counter].l}".`;
+  if(e.k==="goalie")return e.truth==="off"?(e.right?"Right call: your goalie really was having a bad night.":"Your goalie really was off tonight: pulling him was right.")
+    :(e.right?"Right call: he'd been unlucky, not bad.":"He'd just been unlucky: the backup was a step down.");
+  return "";
+}

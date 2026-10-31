@@ -1,5 +1,5 @@
 {
- "fp": "0f17d45f02d64c01",
+ "fp": "0d881169bac71f2a",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -50,6 +50,11 @@
    "fp": "0f17d45f02d64c01",
    "from": "c096db37010529c0",
    "note": "Sim ahead: one menu (next game, 5/10/20 games, next big game, end of season) with stops; big games in 82-game leagues are top-five sides"
+  },
+  {
+   "fp": "0d881169bac71f2a",
+   "from": "0f17d45f02d64c01",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "result": {
@@ -62,21 +67,21 @@
     "rec": "b8dff52352398fa4",
     "poll": "9d11e28b9d2a32e2",
     "heis": "442e84bddce94699",
-    "history": "bdb28eb017b804f7",
-    "universe": "a2c380c9df16ff4e",
-    "screens": "ecef38d3cd419182"
+    "history": "ab2dfacdc776ff75",
+    "universe": "1f0b543f3139c3a3",
+    "screens": "cd85998ee4af1ff8"
    },
    {
     "year": 2027,
-    "games": "68071edd854c796f",
-    "post": "0f1388fcb18ee0c3",
-    "champion": "St. Louis",
-    "rec": "cac5279e2276a8b7",
-    "poll": "1918db087a5f4a39",
-    "heis": "8048fef75d1be0ca",
-    "history": "b3e92789551b5ab6",
-    "universe": "c657229cc2a4d886",
-    "screens": "ee64d2825afecf3f"
+    "games": "59fd3b868b2ced8d",
+    "post": "6e0299701b4b72e9",
+    "champion": "Dallas",
+    "rec": "5c5becb173f9b1d6",
+    "poll": "fc4d89a6550d379c",
+    "heis": "171df37b0e7003e2",
+    "history": "7018733250560c02",
+    "universe": "50beddf31f35b7b6",
+    "screens": "3cbcd32cb1d2f60e"
    }
   ],
   "Edmonton#777": [
@@ -88,21 +93,21 @@
     "rec": "08e10dde1c371f19",
     "poll": "8fd4ec7855614831",
     "heis": "ecdb7a9cde402f0d",
-    "history": "c34ada104fce02c8",
-    "universe": "f7460c11c2c9d079",
-    "screens": "4e69a14f77d5f173"
+    "history": "9517aaacb4a75756",
+    "universe": "52bd65cce21345e4",
+    "screens": "88be0b21447d3c54"
    },
    {
     "year": 2027,
-    "games": "b0a0f1e83c6b2d60",
-    "post": "9f04cc331c530ea0",
-    "champion": "Florida",
-    "rec": "655613894da2c455",
-    "poll": "5b6c3f98cfa50f4b",
-    "heis": "f2f5d48668d871e0",
-    "history": "ba1719cdfe5d873b",
-    "universe": "49d58b0bf266d4dd",
-    "screens": "27397fefe318bd53"
+    "games": "a379debb09c72cf0",
+    "post": "6f6aa4ad39d936d2",
+    "champion": "Buffalo",
+    "rec": "0914ad26f44a2edc",
+    "poll": "80a9fe7c31440105",
+    "heis": "76314a0b23cf1963",
+    "history": "d20a773fa1be64a5",
+    "universe": "a0f930ebad36b186",
+    "screens": "0f73635364a6ea85"
    }
   ],
   "schedules#60": [

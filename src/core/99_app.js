@@ -16,7 +16,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured",
-                    "history","expNow"];
+                    "history","expNow","readTally"];
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -157,6 +157,11 @@ function finishLive(){
               theirs:(meHome?live.eng.a:live.eng.h),
               drives:live.drives};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
+  // your reads, and whether they were right (sports whose engines keep a log)
+  if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
+    if(R.length){ played.reads=R.map(x=>({k:x.k,pick:x.pick,truth:x.truth,right:x.right}));
+      const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
+      R.forEach(x=>{T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -509,6 +514,9 @@ function openOffseason(){
   const titles=SEA.honours(my);
   C.rep=C.rep*0.94;                       // reputations fade, good and bad
   C.rep+=repDelta(SEA.rec[my][0],SEA.rec[my][1],exp.w,U.program[my],titles);
+  // the board's objectives: each one met is worth reputation
+  const om=objectivesMet(my); C.rep+=OBJ_REP*om;
+  C.objLog=(C.objLog||[]).concat([{year:SEA.year,team:my,met:om,of:seasonObjectives(my).length}]);
   C.rep=Math.max(-48,Math.min(80,C.rep));
   C.w+=SEA.rec[my][0]; C.l+=SEA.rec[my][1];
   if(titles.natl)C.titles++; if(titles.conf)C.confs++;
@@ -787,8 +795,17 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}${g.cup?" &middot; "+esc(g.title):""}</div>${move}${cupG?cupLineHTML(cupG,my):""}
+    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}${g.cup?" &middot; "+esc(g.title):""}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
+}
+/* your reads in this week's live games, right or wrong, and the season's tally */
+function readsHTML(step){
+  if(step===undefined||step===null||typeof readText!=="function"||!S.played)return "";
+  const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&p.reads);
+  const R=[].concat(...P.map(p=>p.reads)); if(!R.length)return "";
+  const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
+  return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
+    ${Y&&Y.n>=3?`<div class="readtally">Reading the game this season: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -997,7 +1014,8 @@ function myTeamView(){
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
   if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
-    (reveal==="half"?"":nextUpHTML(my,rk))}
+    (reveal==="half"?"":nextUpHTML(my,rk)+objectivesHTML(my))}
+  else if(reveal!=="half")h+=objectivesHTML(my);
   h+=(reveal==="half"?"":seasonLogHTML(my));
   return h;
 }
@@ -1748,6 +1766,7 @@ function dynastyView(){
         <span class="stopyr">${s.from}${s.to&&s.to>s.from?"\u2013"+s.to:s.to?"":"\u2013"}</span>
         <span class="stoprec">${s.w}-${s.l}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
       </div>`).join("")}</div>`;
+    h+=cabinetHTML();
     h+=teamCard(my);
     h+=`<div class="seedrow"><div class="seedbox seedshow">SEED ${S.seed}</div>
       <span class="seedhint">Anyone starting with this seed gets the identical universe.
@@ -2162,7 +2181,7 @@ function render(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         SEA.buttonLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${inOff?LEAGUE.ui.offseasonScreen():
+    <main id="view">${(checkAchievements(),achToastHTML())}${inOff?LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
       (view==="team"?myTeamView():view==="scores"?scoresView():

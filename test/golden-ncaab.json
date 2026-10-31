@@ -1,5 +1,5 @@
 {
- "fp": "c57dc40428d74953",
+ "fp": "132611bb3f737ec0",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -115,6 +115,11 @@
    "fp": "c57dc40428d74953",
    "from": "0a9d135e68ddff29",
    "note": "Sim ahead: one menu (next game, 5/10/20 games, next big game, end of season) with stops; big games in 82-game leagues are top-five sides"
+  },
+  {
+   "fp": "132611bb3f737ec0",
+   "from": "c57dc40428d74953",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "result": {
@@ -127,9 +132,9 @@
     "rec": "a1f5621550bbc90b",
     "poll": "eb7218217b163ec6",
     "heis": "a07fa10837ea63bd",
-    "history": "b4c05994b1c6172c",
-    "universe": "53c6acc4af15004d",
-    "screens": "48f77fda1f7d9a96"
+    "history": "ffb9d78f3c7f7c37",
+    "universe": "c1bdbfb38ff19dee",
+    "screens": "9269cde097ebde22"
    },
    {
     "year": 2027,
@@ -139,9 +144,9 @@
     "rec": "2f54bcdc39388baa",
     "poll": "d282c27ba174e1f0",
     "heis": "bcb859497400b5a9",
-    "history": "ae73e295373e04fc",
-    "universe": "ba1b0368fcd6178a",
-    "screens": "f52e1e71ef93d4f6"
+    "history": "405ac054f36c89fb",
+    "universe": "8e70b9f94948b1f7",
+    "screens": "065b5511a4f1e154"
    }
   ],
   "Coppin State#2024": [
@@ -153,21 +158,21 @@
     "rec": "0717439354e0b177",
     "poll": "1b1c475bb4f6c91d",
     "heis": "79e19a7b8769bb45",
-    "history": "70f5225a11c2b030",
-    "universe": "161e89c63f7ebc60",
-    "screens": "3b7495b4be3f6443"
+    "history": "89d6b0401cb53f20",
+    "universe": "a3d85236e8600b48",
+    "screens": "6262e753966c382a"
    },
    {
     "year": 2027,
-    "games": "d3e6a659db9f080d",
+    "games": "20c873d988053bba",
     "post": "0cfe1d79b53cd86a",
     "champion": "Kansas",
     "rec": "83aa4ae22bf72268",
-    "poll": "13d5f27a285a7e4b",
+    "poll": "e34d1652f28c5a7d",
     "heis": "8ec38204f2737426",
-    "history": "e182a69c7cd8e025",
-    "universe": "0b727f24486a2b6f",
-    "screens": "dd38a563ed802454"
+    "history": "987ba0167e10368c",
+    "universe": "b30becda3661b6ee",
+    "screens": "9f0051668a2cafd6"
    }
   ],
   "Gonzaga#777": [
@@ -179,21 +184,21 @@
     "rec": "201f0beb74f79f67",
     "poll": "6b25a4349d35c0fd",
     "heis": "c9db7b71d8cb9ff5",
-    "history": "51feba7c23db0c99",
-    "universe": "f782d7238ff61480",
-    "screens": "f8754c5a1450f60b"
+    "history": "d529965f701b017d",
+    "universe": "75e102f9ce262e29",
+    "screens": "5c51bcd8dd38d009"
    },
    {
     "year": 2027,
-    "games": "f683b8077f357157",
+    "games": "b0c65731a8a924b3",
     "post": "d5a8771e53965c0a",
     "champion": "Butler",
     "rec": "bbd8a81118ddba8f",
     "poll": "5fb80326e86f14d4",
     "heis": "04f4f64ed7dc6b23",
-    "history": "2541e885ec6898e4",
-    "universe": "dc4954653c3fe7f9",
-    "screens": "36cfc7829afd13b5"
+    "history": "ee6d70930436fc4b",
+    "universe": "39808ce949b7a3e5",
+    "screens": "db63a2174de88664"
    }
   ],
   "schedules#60": [

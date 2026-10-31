@@ -1,5 +1,5 @@
 {
- "fp": "0e8fcdd1fbf029df",
+ "fp": "250f8de60424ba81",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -65,6 +65,11 @@
    "fp": "0e8fcdd1fbf029df",
    "from": "1bcc1052d28d43ff",
    "note": "Sim ahead: one menu (next game, 5/10/20 games, next big game, end of season) with stops; big games in 82-game leagues are top-five sides"
+  },
+  {
+   "fp": "250f8de60424ba81",
+   "from": "0e8fcdd1fbf029df",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "result": {
@@ -79,7 +84,7 @@
     "heis": "e4f2c9d16293c01f",
     "history": "d35e40908f961bb5",
     "universe": "8c1da501ae958c94",
-    "screens": "67a8f18180674185"
+    "screens": "74f5babda8a91784"
    },
    {
     "year": 2027,
@@ -89,9 +94,9 @@
     "rec": "cc7bccc30cc8e278",
     "poll": "c8ecc51f4b904cde",
     "heis": "756e06562ffc95b3",
-    "history": "7993331f7afe9134",
-    "universe": "7636e1f42f607669",
-    "screens": "d9c4c249d33a634a"
+    "history": "b6b4fdca54b7ba80",
+    "universe": "11402e8ddc3f6d21",
+    "screens": "3925bb426e8bc56d"
    }
   ],
   "Wrexham#777": [
@@ -105,7 +110,7 @@
     "heis": "1a60e3a07644f048",
     "history": "73a43ae62607953c",
     "universe": "306b8fa0bb0a9d27",
-    "screens": "8903e36f2e622b2f"
+    "screens": "3d637003ac78b491"
    },
    {
     "year": 2027,
@@ -117,7 +122,7 @@
     "heis": "4a0e210760fa2d92",
     "history": "5d0d661f0fd8e614",
     "universe": "65fa79cafc3d946f",
-    "screens": "aa498500aa9fd6d7"
+    "screens": "09cbfe3e351eb48d"
    }
   ],
   "schedules#60": [

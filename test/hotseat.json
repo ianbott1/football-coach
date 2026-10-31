@@ -1,5 +1,5 @@
 {
- "fp": "5d2782438bd59aab",
+ "fp": "c1f025f2fe03a4ff",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -65,6 +65,11 @@
    "fp": "5d2782438bd59aab",
    "from": "5d2782438bd59aab",
    "note": "A Sim it button (all games); basketball conference tournaments take every team"
+  },
+  {
+   "fp": "c1f025f2fe03a4ff",
+   "from": "5d2782438bd59aab",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "out": [
@@ -78,7 +83,7 @@
       "result": "Won the ReliaQuest Bowl",
       "grade": "B-"
      },
-     "book": "4f53435c615df853"
+     "book": "cb480f3f632af1f5"
     },
     {
      "team": "Rice",
@@ -87,7 +92,7 @@
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "d482dc9e491d7baa"
+     "book": "c6f5ed07e3c294c1"
     }
    ]
   },
@@ -101,7 +106,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A-"
      },
-     "book": "f1fa4bd60f7453c3"
+     "book": "b43a910c26bbc05d"
     },
     {
      "team": "Rice",
@@ -110,7 +115,7 @@
       "result": "No bowl game",
       "grade": "C"
      },
-     "book": "91cca027e34c83bd"
+     "book": "f14559dedebed92e"
     }
    ]
   },
@@ -124,7 +129,7 @@
       "result": "Eliminated in the first round",
       "grade": "C"
      },
-     "book": "d3581a440691db58"
+     "book": "a2de458d761a0af9"
     },
     {
      "team": "Rice",
@@ -133,7 +138,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "3116d00ec969bec0"
+     "book": "dc065c5341049e71"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "aed761d97562d564",
+ "fp": "5f3d19d77e47dbc1",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -35,6 +35,11 @@
    "fp": "aed761d97562d564",
    "from": "d642d925ad2a0980",
    "note": "Hockey: five-minute spells, systems and answers, goalie nights, named events; calls you read from the numbers"
+  },
+  {
+   "fp": "5f3d19d77e47dbc1",
+   "from": "aed761d97562d564",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "out": [
@@ -57,7 +62,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "35fcbcd2a6465116"
+     "book": "76057dc504240b1e"
     }
    ]
   },
@@ -67,20 +72,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "36-39-9",
+      "rec": "40-37-7",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "58cfd3c96d8ea775"
+     "book": "71d7eb974e6bb407"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "49-28-7",
+      "rec": "48-30-6",
       "result": "Lost in the first round",
       "grade": "A-"
      },
-     "book": "9ce7a7439fb36058"
+     "book": "644a6ee127219c6a"
     }
    ]
   },
@@ -90,20 +95,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-32-14",
+      "rec": "33-38-13",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "F"
      },
-     "book": "640fd31888a3f859"
+     "book": "945c17b295f6b5d7"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "36-38-10",
+      "rec": "39-35-10",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "107f0c5729b6ac15"
+     "book": "523e48603dde3372"
     }
    ]
   }

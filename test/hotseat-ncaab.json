@@ -1,5 +1,5 @@
 {
- "fp": "4ea84e7bf9ea9ce2",
+ "fp": "9af4ff3e47e9a2b9",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -70,6 +70,11 @@
    "fp": "4ea84e7bf9ea9ce2",
    "from": "bb3c5ebf0f279e99",
    "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
+  },
+  {
+   "fp": "9af4ff3e47e9a2b9",
+   "from": "4ea84e7bf9ea9ce2",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "out": [
@@ -83,7 +88,7 @@
       "result": "Lost in the Elite Eight",
       "grade": "A"
      },
-     "book": "3056e782b293ad37"
+     "book": "8d9387f8898c0721"
     },
     {
      "team": "North Carolina",
@@ -92,7 +97,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "A-"
      },
-     "book": "7b2a1df2b7fe25bf"
+     "book": "456971bb8d30a3b6"
     }
    ]
   },
@@ -102,20 +107,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "30-7",
-      "result": "Lost in the Elite Eight",
-      "grade": "A"
+      "rec": "28-7",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "f1b1785e075ca399"
+     "book": "253ca78205309057"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "23-11",
-      "result": "Lost in the Second Round",
-      "grade": "C+"
+      "rec": "21-11",
+      "result": "Lost in the First Round",
+      "grade": "C"
      },
-     "book": "af7c52b6546cc6b3"
+     "book": "2bcb5775e8fb02d7"
     }
    ]
   },
@@ -125,20 +130,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "15-15",
-      "result": "Missed the NCAA tournament",
-      "grade": "F"
+      "rec": "30-6",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "1d6836bc3a4e672e"
+     "book": "eaa3563bd0e07128"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "37-2",
+      "rec": "33-6",
       "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "d5ae3956d0c27610"
+     "book": "2a0a43f7523c8a94"
     }
    ]
   }

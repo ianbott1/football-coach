@@ -192,3 +192,10 @@ function watchView(){
         <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>`}
     </div></div>`;
 }
+
+/* ---- after the game: were your reads right? ---- */
+function readText(e){
+  if(e.k==="read")return e.right?`Your read was right: they were ${STYLE[e.truth].l}.`
+    :`They were ${STYLE[e.truth].l}: the answer was "${DEFENCES[STYLE[e.truth].answer].l}".`;
+  return "";
+}

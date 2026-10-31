@@ -217,8 +217,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
     }
     st.drives.push({seg:SEGS,sh:st.h,sa:st.a,ot:st.ot,so:st.so,h:0,a:0,shots:[0,0],pp:[false,false],ev:ev});
   };
+  st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
+    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t}) }
+    if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v])X.ans=v; else readIt(side,0.45); return }
     if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal")cpuGoalie(side); return }
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; return }

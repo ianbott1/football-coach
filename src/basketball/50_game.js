@@ -284,8 +284,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
     if(s>=1&&s<=3&&!X.asked1&&X.f>=BB.foulOut-3)return 1;
     if(s>=4&&s<=6&&!X.asked2&&X.f>=BB.foulOut-2)return 2; return 0 };
   const sitStar=(X,half)=>{ X.sitTo=half===1?4:6 };
+  st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
+    if(dp.k==="read"&&DEFENCES[v]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:v,truth:t,right:DEFENCES[v].beats===t}) }
     if(dp.k==="read"){ if(DEFENCES[v])X.def=v; else readIt(side,dp.stage===2?0.3:0.45); return }
     if(dp.k==="fouls"){ if(v!=="play")sitStar(X,dp.half); return }
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }

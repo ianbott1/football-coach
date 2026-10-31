@@ -1,5 +1,5 @@
 {
- "fp": "2e50894917024226",
+ "fp": "92984937b554a039",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -45,6 +45,11 @@
    "fp": "2e50894917024226",
    "from": "91c289eca070d1cb",
    "note": "The FA Cup: every club, midweek ties played live (hot seat too); schedule shows every game in a week; draws don't count as losses in streaks"
+  },
+  {
+   "fp": "92984937b554a039",
+   "from": "2e50894917024226",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "out": [
@@ -67,7 +72,7 @@
       "result": "Finished 9th in the Premier League",
       "grade": "B"
      },
-     "book": "c6b4ed4455857e23"
+     "book": "cfcb24a64bf675e5"
     }
    ]
   },
@@ -90,7 +95,7 @@
       "result": "Finished 13th in the Premier League",
       "grade": "C+"
      },
-     "book": "0ed627634a2dd7c0"
+     "book": "56fa2c7b04fd53df"
     }
    ]
   },
@@ -113,7 +118,7 @@
       "result": "Finished 13th in the Premier League",
       "grade": "C+"
      },
-     "book": "cc812bccec83e54e"
+     "book": "bf81384c135f57e7"
     }
    ]
   }

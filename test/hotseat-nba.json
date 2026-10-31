@@ -1,5 +1,5 @@
 {
- "fp": "ce3404d664e8dd93",
+ "fp": "5d28ac71fe18c521",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -20,6 +20,11 @@
    "fp": "ce3404d664e8dd93",
    "from": "ce3404d664e8dd93",
    "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
+  },
+  {
+   "fp": "5d28ac71fe18c521",
+   "from": "ce3404d664e8dd93",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "out": [
@@ -42,7 +47,7 @@
       "result": "Lost in the conference finals",
       "grade": "B+"
      },
-     "book": "0465b056fa9775ba"
+     "book": "b7825da0a26c4130"
     }
    ]
   },
@@ -56,7 +61,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "7c04dbb55eeb3f2a"
+     "book": "fe5fbefbd2f0d14a"
     },
     {
      "team": "New York",
@@ -65,7 +70,7 @@
       "result": "Lost in the conference semifinals",
       "grade": "B"
      },
-     "book": "abd334e1ff9735c3"
+     "book": "e8f3187b0996ad1a"
     }
    ]
   },
@@ -75,20 +80,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-41",
-      "result": "Lost in the play-in",
-      "grade": "D"
+      "rec": "25-57",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "e9a7d9930ab769be"
+     "book": "70d2c6216d17151a"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "89-12",
-      "result": "NBA CHAMPIONS",
+      "rec": "86-18",
+      "result": "Lost in the NBA Finals",
       "grade": "A+"
      },
-     "book": "f6a4a4b2ebc0b153"
+     "book": "7f661ae3e4606e57"
     }
    ]
   }

@@ -246,8 +246,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
   // your assistant makes the other change: the most tired unit
   const assistantSub=(side)=>{ const X=st.S[side]; const u=[0,1,2].reduce((a,b)=>X.E[b]<X.E[a]?b:a,0);
     X.E[u]=1; X.subs++; if(u===0)X.booked=0 };
+  st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
+    if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t}) }
+    if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak; st.log.push({side:side,k:"flank",pick:v,truth:t,right:v===t}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
     if(dp.k==="read"){ if(v&&COUNTERS[v])X.ctr=v; else assistantRead(side,dp.stage); return }
     if(dp.k==="subs"){

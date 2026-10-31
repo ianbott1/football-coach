@@ -1,5 +1,5 @@
 {
- "fp": "f4550e2320e47458",
+ "fp": "006eb7489d659c2e",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -80,6 +80,11 @@
    "fp": "f4550e2320e47458",
    "from": "421dac5f9b9f3e30",
    "note": "Season one plays the real 2026 NFL schedule (nflverse); later seasons the formula"
+  },
+  {
+   "fp": "006eb7489d659c2e",
+   "from": "f4550e2320e47458",
+   "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
   }
  ],
  "out": [
@@ -125,7 +130,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "6bba4767928d3bd9"
+     "book": "3be8fb2e43a8d454"
     }
    ]
   },
@@ -139,16 +144,16 @@
       "result": "Lost in the divisional round",
       "grade": "B+"
      },
-     "book": "ef05f41d4560f054"
+     "book": "046674699f65ee90"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "13-4",
-      "result": "Lost the conference championship",
+      "rec": "15-2",
+      "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "4792b97e8b205a3e"
+     "book": "c300e5086cd18544"
     }
    ]
   }

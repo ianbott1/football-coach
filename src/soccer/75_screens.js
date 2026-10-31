@@ -248,3 +248,12 @@ function watchView(){
         <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>`}
     </div></div>`;
 }
+
+/* ---- after the game: were your reads right? ---- */
+function readText(e){
+  if(e.k==="read")return e.right?`Your read was right: they were ${APPROACH[e.truth].l}.`
+    :`They were ${APPROACH[e.truth].l}: the answer was "${COUNTERS[APPROACH[e.truth].counter].l}".`;
+  if(e.k==="flank")return e.right?`Right flank: their ${e.truth}-back was the weak one.`
+    :`Their weak side was the ${e.truth} flank, not the ${e.pick}.`;
+  return "";
+}
