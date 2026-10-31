@@ -1,5 +1,5 @@
 {
- "fp": "3ca020633a329f9c",
+ "fp": "91c289eca070d1cb",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -30,6 +30,16 @@
    "fp": "3ca020633a329f9c",
    "from": "9fa935b8a8479a01",
    "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
+  },
+  {
+   "fp": "91c289eca070d1cb",
+   "from": "3ca020633a329f9c",
+   "note": "Soccer: five-minute spells, approaches and counters, the flank, named events; calls you read from the numbers"
+  },
+  {
+   "fp": "91c289eca070d1cb",
+   "from": "91c289eca070d1cb",
+   "note": "Soccer: five-minute spells, approaches and counters, the flank, named events; calls you read from the numbers"
   }
  ],
  "out": [
@@ -39,20 +49,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "24-8-6",
-      "result": "Finished 2nd in the Premier League",
-      "grade": "B"
+      "rec": "21-7-10",
+      "result": "Finished 4th in the Premier League",
+      "grade": "B-"
      },
-     "book": "db567d73452fad2a"
+     "book": "b3c0b2722bbce541"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-10-17",
-      "result": "Finished 15th in the Premier League",
-      "grade": "C"
+      "rec": "10-8-20",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "1ac95cc77fe4fb08"
+     "book": "e37fecb6e25e9a31"
     }
    ]
   },
@@ -62,20 +72,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "22-7-9",
-      "result": "Finished 4th in the Premier League",
-      "grade": "B-"
+      "rec": "14-16-8",
+      "result": "Finished 6th in the Premier League",
+      "grade": "C+"
      },
-     "book": "09c071f1b4a7284e"
+     "book": "05a6ae7f55468350"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-8-19",
-      "result": "Finished 14th in the Premier League",
+      "rec": "13-10-15",
+      "result": "Finished 12th in the Premier League",
       "grade": "C+"
      },
-     "book": "57f89cef35934485"
+     "book": "1b0f8925f9c57b46"
     }
    ]
   },
@@ -85,20 +95,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "23-9-6",
-      "result": "PREMIER LEAGUE CHAMPIONS",
-      "grade": "A+"
+      "rec": "21-8-9",
+      "result": "Finished 3rd in the Premier League",
+      "grade": "B"
      },
-     "book": "2d1684b4f738bf88"
+     "book": "ece135111d11d18f"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
       "rec": "15-8-15",
-      "result": "Finished 8th in the Premier League",
+      "result": "Finished 9th in the Premier League",
       "grade": "B"
      },
-     "book": "eaa310211b5dc02c"
+     "book": "d17c61717dd66a86"
     }
    ]
   }

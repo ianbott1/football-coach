@@ -1,5 +1,5 @@
 {
- "fp": "1890288be3df09a6",
+ "fp": "20e97c7e2b25e763",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -35,59 +35,69 @@
    "fp": "1890288be3df09a6",
    "from": "665c3a3b3d3911a6",
    "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
+  },
+  {
+   "fp": "20e97c7e2b25e763",
+   "from": "1890288be3df09a6",
+   "note": "Soccer: five-minute spells, approaches and counters, the flank, named events; calls you read from the numbers"
+  },
+  {
+   "fp": "20e97c7e2b25e763",
+   "from": "20e97c7e2b25e763",
+   "note": "Soccer: five-minute spells, approaches and counters, the flank, named events; calls you read from the numbers"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "bd087757851c8245",
-    "post": "536bdb9aaa9b6f99",
-    "champion": "Arsenal",
-    "rec": "fe8054aa5421c077",
-    "poll": "16f7eb225b105c6c",
-    "heis": "a768470a491ee872",
-    "history": "cc0be4fedefd4e83",
-    "universe": "d18bff05786f66ad",
-    "screens": "b1433d1fd65896d7"
+    "games": "3831cbbb3468ddc5",
+    "post": "530b124f2b5bf6a8",
+    "champion": "Manchester City",
+    "rec": "57c8865bcedc05cf",
+    "poll": "3781c0fc2473931f",
+    "heis": "55d506ffc7fe7bfe",
+    "history": "d65939b1d2e30710",
+    "universe": "ffc1384b7f0bde7b",
+    "screens": "7e98f202e04fab32"
    },
    {
     "year": 2027,
-    "games": "0b5973e530718a33",
-    "post": "c0efd2b9b4c73ab5",
-    "champion": "Arsenal",
-    "rec": "02ee70e8c5dae15d",
-    "poll": "bb5a8ce020d45ee2",
-    "heis": "be6549f7a0993672",
-    "history": "8380769e6db9d2dc",
-    "universe": "f9ef16f60c659c03",
-    "screens": "707a297d2a7a920d"
+    "games": "61c4fb2290208289",
+    "post": "817287aee33b24fa",
+    "champion": "Manchester City",
+    "rec": "30899902d4cb8c41",
+    "poll": "b7e3994683ad28fd",
+    "heis": "f28ca5913ae5d28b",
+    "history": "e56c3915eb5fec39",
+    "universe": "b0d931d892ebeeaa",
+    "screens": "441013cdfc1ad578"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "d4305bb26cf985e4",
-    "post": "ad271a95a1b1589c",
+    "games": "4bcc64b379a2463c",
+    "post": "f28782a64a0b6f64",
     "champion": "Arsenal",
-    "rec": "85b501c940f210f1",
-    "poll": "47048b1ecd0970bc",
-    "heis": "0c7494eff2a38136",
-    "history": "9438ef9a6cb5ccc6",
-    "universe": "d891c13545c796bc",
-    "screens": "c2ff986dbcadbbee"
+    "rec": "9a8b520959ecd0fb",
+    "poll": "f1048ed7c595a99c",
+    "heis": "e030f45d81b7c5fb",
+    "history": "f7476907f3ff711f",
+    "universe": "81027896a1ed408a",
+    "screens": "4007926d67198a6a"
    },
    {
     "year": 2027,
-    "games": "283f95a09206dd91",
-    "post": "ad3d8e7aa0c0f832",
+    "games": "fe923a6a6e0a8afd",
+    "post": "4df6cfa434b29bd5",
     "champion": "Arsenal",
-    "rec": "9027568687f94bc1",
-    "poll": "3a8044f9a20894b9",
-    "heis": "a4b3f5e5896679e1",
-    "history": "5ea3e352e4383a15",
-    "universe": "60e60cdfb9d9cbdd",
-    "screens": "2c978e742a885396"
+    "rec": "26aec05d9bf2ef7d",
+    "poll": "94a8135b549f2c2c",
+    "heis": "adfa54e343de925d",
+    "history": "024ddb89ae8c1d9b",
+    "universe": "b11162d3b2e50fee",
+    "screens": "7caa827ba5d7a906"
    }
   ],
   "schedules#60": [

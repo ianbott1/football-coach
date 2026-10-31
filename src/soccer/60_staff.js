@@ -73,31 +73,34 @@ function staffFace(who){
   </svg>`;
 }
 
-/* Which option each of them would take, and what they'd say about it. */
-/* The Bears do not reason. They react. */
+/* Which option each of them would take, and what they'd say about it.
+   The Bears attack. Pearl reads the latest thing she saw: often right, never
+   the whole picture. The Capybara would rather not. */
 const BEAR_YELL={
   push:  [`SEND EVERYONE. The goalkeeper too, if he wants.`,
-          `Pinch! Pinch the D! Pinch everything!`,
-          `Shoot it from anywhere. The ice is ours.`,
-          `Twenty minutes is loads. We need about four of them.`],
+          `Shoot from anywhere. Shoot from the car park.`,
+          `Fifteen minutes is loads. We need about four of them.`],
   lock:  [`Park the bus? We didn't come here to park.`,
           `MORE GOALS. Goals are the whole point.`,
-          `Keep attacking. Bears don't trap.`],
-  pull:  [`Pull him NOW. Pull him yesterday.`,
-          `Six attackers. Seven if we can sneak one on.`,
-          `Empty net? Great. We'll be in their end anyway.`],
+          `Keep attacking. Bears don't defend. We've checked.`],
+  level: [`Draws are for people with small hearts.`,
+          `WIN IT. Then win another one.`],
+  read:  [`Go long. Go LONG. Kick it at their house.`,
+          `Long balls! The longest! Over everyone!`,
+          `Hoof it. We read that's a real football word.`],
+  flank: [`LEFT. Always left. Left is where the snacks are.`,
+          `Down the left, like we planned. We did not plan.`],
   distracted:[`Can we sit in the dugout? The dugout looks comfy.`,
           `We've been watching the ball boys. Very professional.`,
           `Did you know you can buy a corner flag? We may have bought a corner flag.`]
 };
 /* Pearl is a dog roughly one time in six. Unlike the Bears, her advice
-   survives it — the dog bit wraps the read rather than replacing it, so you
-   never lose the balanced opinion just because a squirrel went past. */
+   survives it: the dog bit wraps the read rather than replacing it. */
 const PEARL_BEFORE=[`Woof! `,`SQUIRREL. `,`Ooh, ooh, ooh! `,
   `Was that the treat bag? ... Anyway. `,`Someone's at the door! ... No. False alarm. `];
 const PEARL_AFTER=[` Woof!`,` (Tail going. Very hard.)`,` Can we go outside after?`,
   ` Also, is it dinner? It smells like dinner.`,` I'm going to spin in a circle about this.`,
-  ` Ball. BALL. Sorry \u2014 the actual ball. Carry on.`];
+  ` Ball. BALL. Sorry, the actual ball. Carry on.`];
 function pearlSay(line, seed){
   const n=Math.abs(seed|0);
   if(n%6!==1)return line;
@@ -105,24 +108,38 @@ function pearlSay(line, seed){
     ? PEARL_BEFORE[Math.floor(n/6)%PEARL_BEFORE.length]+line
     : line+PEARL_AFTER[Math.floor(n/6)%PEARL_AFTER.length];
 }
-
 function bearYell(kind, seed){
   const n=Math.abs(seed|0);
-  // roughly one call in four, they lose the thread entirely
-  if(n%4===2){
-    const d=BEAR_YELL.distracted;
-    return d[Math.floor(n/4)%d.length];
-  }
-  const pool=BEAR_YELL[kind]||BEAR_YELL.half;
+  if(n%4===2){ const d=BEAR_YELL.distracted; return d[Math.floor(n/4)%d.length] }
+  const pool=BEAR_YELL[kind]||BEAR_YELL.push;
   return pool[n%pool.length];
 }
-
+const PEARL_READ={
+  press:"They keep winning it back in our half! That's a press. Go long over it!",
+  block:"They're all sitting behind the ball. Let's stretch them and get crosses in!",
+  wing:"Everything's coming down the wings. Let's double up out there!",
+  direct:"They just keep kicking it long! Drop off and win the second balls!"
+};
 function staffTake(dp, ctx){
   const diff=(ctx.mine||0)-(ctx.theirs||0), seed=(ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0), R=[];
   const behind=diff<0, ahead=diff>0, o=dp.opts.map(x=>x[0]);
+  if(dp.k==="read"){
+    const p=dp.pearl&&APPROACH[dp.pearl]?APPROACH[dp.pearl].counter:"normal";
+    R.push({who:"bears", pick:"long", line:bearYell("read",seed)});
+    R.push({who:"pearl", pick:p, line:pearlSay(dp.pearl&&PEARL_READ[dp.pearl]?"I just saw it! "+PEARL_READ[dp.pearl]:"I haven't seen enough yet. Let the assistant decide!",seed)});
+    R.push({who:"capy", pick:"second", line:"It seems to me dropping off a little rarely hurts anyone. Though I confess I haven't looked at the numbers."});
+    return R;
+  }
+  if(dp.k==="flank"){
+    const p=dp.pearl==="left"||dp.pearl==="right"?dp.pearl:"normal";
+    R.push({who:"bears", pick:"left", line:bearYell("flank",seed)});
+    R.push({who:"pearl", pick:p, line:pearlSay(p==="normal"?"I couldn't tell, honestly. Both sides look the same to me!":`We just got through on the ${p} again! Go ${p}!`,seed)});
+    R.push({who:"capy", pick:"normal", line:"I would leave the shape alone. A count of attacks is, I believe, a small and noisy thing."});
+    return R;
+  }
   const bold=o.indexOf("push")>=0?"push":o.indexOf("win")>=0?"win":"normal";
-  const safe=o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":"normal";
-  R.push({who:"bears", pick:bold, line:bearYell(behind?"push":ahead?"lock":"pull",seed)});
+  const safe=o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":o.indexOf("keep")>=0?"keep":"normal";
+  R.push({who:"bears", pick:bold, line:bearYell(behind?"push":ahead?"lock":"level",seed)});
   R.push({who:"pearl", pick: behind?(diff<=-2||dp.k==="late"?"push":"normal"):ahead?(diff>=2?"sit":"normal"):(o.indexOf("win")>=0?"win":"normal"),
     line:pearlSay(behind?"We need a goal! Let's go and get it.":ahead?"Let's be sensible and see this out!":"A draw's a point, but a win's three! Let's be brave.",seed)});
   R.push({who:"capy", pick:safe, line:behind?"Chasing a game, one finds, mostly concedes on the break.":
