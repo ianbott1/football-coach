@@ -75,6 +75,8 @@ class Season{
   }
   _resolve(a,b,neutral,extra){
     let sd=1, edge=0;
+    // a cup tie: a knockout, and nothing to do with anyone's league record
+    const cup=!!(extra&&extra.cup);
     if(this.userTeam===a||this.userTeam===b){
       const P=PLANS[this.plan]||PLANS.balanced;
       sd=P.sd;
@@ -115,7 +117,7 @@ class Season{
       else{
         fsh=eloUpdate(this.elo[win],this.elo[lose],Math.max(1,Math.abs(fm)),(win===a)&&!neutral,neutral);
         this.elo[win]+=fsh; this.elo[lose]-=fsh;
-        this.rec[win][0]++; this.rec[lose][1]++;
+        if(!cup){this.rec[win][0]++; this.rec[lose][1]++}
       }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
       if(this.roster){
@@ -139,7 +141,7 @@ class Season{
         LEAGUE.draws?{draw:fdraw,pens:fpens}:{},extra||{});
     }
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
-    if(LEAGUE.tracksOT||LEAGUE.draws)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"});   // hockey: sudden death; soccer: extra time and penalties
+    if(LEAGUE.tracksOT||LEAGUE.draws)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
     const gs=playGame(this.rng,eloH,eloA,
       this.userTeam===a?plan:"balanced",
       this.userTeam===b?plan:"balanced",
@@ -157,7 +159,7 @@ class Season{
     else{
       sh=eloUpdate(this.elo[win],this.elo[lose],Math.max(1,Math.abs(m)),(win===a)&&!neutral,neutral);
       this.elo[win]+=sh;this.elo[lose]-=sh;
-      this.rec[win][0]++;this.rec[lose][1]++;
+      if(!cup){this.rec[win][0]++;this.rec[lose][1]++}
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
@@ -192,7 +194,7 @@ class Season{
   _week(){
     const w=this.step, prev=this.rankMap(), out=[];
     this.sched.filter(g=>g.week===w).forEach(g=>{
-      const r=this._resolve(g.home,g.away,g.neutral,{conf:g.conf});
+      const r=this._resolve(g.home,g.away,g.neutral,g.cup?{conf:false,cup:true,title:g.title,site:g.site}:{conf:g.conf});
       if(g.conf&&!r.draw){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
       r.hrank=prev[g.home];r.arank=prev[g.away];
       r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];
@@ -206,7 +208,10 @@ class Season{
     out.sort((a,b)=>Math.min(a.hrank,a.arank)-Math.min(b.hrank,b.arank));
     this.weeks.push({label:LEAGUE.stepLabel?LEAGUE.stepLabel(w):`Week ${w+1}`,date:LEAGUE.dates[w],games:out,
       poll:this.top25(prev),standings:this.standings(prev)});
+    if(LEAGUE.afterWeek)LEAGUE.afterWeek(this,w);   // a league's own between-weeks business (soccer: the next cup draw)
   }
+  /* every game a team has in a step (a cup week can bring two) */
+  gamesFor(team,step){ return this.sched.filter(g=>g.week===step&&(g.home===team||g.away===team)) }
   top25(prev){
     return this.poll.order().slice(0,25).map((t,i)=>({
       rank:i+1,team:t,conf:CONF[t],rec:this.rec[t][0]+"-"+this.rec[t][1],

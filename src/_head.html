@@ -390,7 +390,9 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  line-height:1;padding:3px 7px;margin-left:9px;cursor:pointer;border-radius:2px}
 .reset:hover{color:var(--sodium);border-color:var(--sodium)}
 .seedshow{color:var(--sodium);text-align:center}
-.subtabs{display:flex;gap:6px;padding:4px 16px 12px}
+.subtabs{display:flex;gap:6px;padding:4px 16px 12px;overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs .subtab{flex-shrink:0;min-width:min-content}
 .subtab{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.07em;
  text-transform:uppercase;padding:8px 4px;border:1px solid var(--line);background:none;
  color:var(--muted);cursor:pointer}
@@ -765,6 +767,9 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 /* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
 @media(max-width:480px){.tb-yr{display:none}.tb-team{margin-left:0;font-size:19px}
  .tb-right .reset{padding:4px 7px;margin-left:4px}.tb-right{font-size:12px}}
+.cupw{font-weight:700;color:var(--bone)}
+.cupsc{font-family:var(--mono);font-size:12px;color:var(--sodium);margin:0 4px}
+.nextcard.cupcard{border-color:#C9A227;background:linear-gradient(180deg,rgba(201,162,39,.10),transparent)}
 .mom{margin:8px 0 2px}.mom svg{width:100%;height:44px;display:block}
 .obar.wdl b{display:inline-block;height:100%;background:var(--muted);opacity:.55}
 .momkey{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}

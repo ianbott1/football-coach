@@ -111,7 +111,12 @@ function confetti(colors){
 /* once per season, when it ends in a title or a promotion */
 const celebrated={};                 // this session: a reload may celebrate again, which is fine
 function celebrateIfDue(){
-  if(!SEA||SEA.phase!=="done"||!S.myTeam)return;
+  if(!SEA||!S.myTeam)return;
+  // a trophy won mid-season (soccer's FA Cup): the moment it's won
+  const tn=LEAGUE.trophyNow&&LEAGUE.trophyNow(SEA,S.myTeam);
+  if(tn){ const k2=SEA.year+":"+tn.key+":"+S.myTeam; if(!celebrated[k2]){ celebrated[k2]=true;
+    sfx("title"); buzz([80,50,80,50,200]); confetti([teamInk(S.myTeam),teamColor(S.myTeam),"#C9A227","#E9E5DA"]) } }
+  if(SEA.phase!=="done")return;
   const k=SEA.year+":"+S.myTeam; if(celebrated[k])return;
   const res=SEA.seasonResult(S.myTeam)||"";
   const big=SEA.champion===S.myTeam||/CHAMPIONS|[Pp]romoted/.test(res);

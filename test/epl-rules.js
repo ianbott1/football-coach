@@ -18,12 +18,12 @@ for(let y=0;y<N;y++){
   const E=api.SEA; let g=0; while(E.phase!=='done'&&g++<100)E.advance();
   const yr=E.year, C=t=>api.CONF[t], per={};
   Object.keys(SIZE).forEach(d=>ok(api.NAMES.filter(t=>C(t)===d).length===SIZE[d], `${yr} ${d}: wrong size`));
-  E.weeks.slice(0,46).forEach(w=>w.games.forEach(x=>{[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1); games++; if(x.draw)draws++;
+  E.weeks.slice(0,46).forEach(w=>w.games.filter(x=>!x.cup).forEach(x=>{[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1); games++; if(x.draw)draws++;
     ok(C(x.home)===C(x.away), `${yr}: a cross-division league game`)}));
   ok(api.NAMES.every(t=>per[t]===(C(t)==='PL'?38:46)), `${yr}: not 38 and 46 games each`);
   // venues alternate: half at home, never more than two in a row at home or away
   { const last={},run={},mx={},home={};
-    E.weeks.slice(0,46).forEach(w=>w.games.forEach(x=>[[x.home,1],[x.away,0]].forEach(([t,v])=>{
+    E.weeks.slice(0,46).forEach(w=>w.games.filter(x=>!x.cup).forEach(x=>[[x.home,1],[x.away,0]].forEach(([t,v])=>{
       run[t]=last[t]===v?run[t]+1:1; last[t]=v; mx[t]=Math.max(mx[t]||0,run[t]); home[t]=(home[t]||0)+v})));
     const worst=api.NAMES.reduce((a,t)=>mx[t]>mx[a]?t:a);
     ok(mx[worst]<=2, `${yr}: ${worst} plays ${mx[worst]} in a row at the same venue`);
@@ -39,7 +39,7 @@ for(let y=0;y<N;y++){
     if(R.down)T.slice(-R.down).forEach(t=>expectMove[t]=d==='NL'?'NN|NS':({PL:'CH',CH:'L1',L1:'L2',L2:'NL'})[d]);
   });
   // your draws show as D in the schedule, never L
-  { const my=api.S.myTeam, drawn=E.weeks.slice(0,46).filter(w=>w.games.some(x=>x.draw&&(x.home===my||x.away===my))).length;
+  { const my=api.S.myTeam, drawn=E.weeks.slice(0,46).filter(w=>w.games.some(x=>!x.cup&&x.draw&&(x.home===my||x.away===my))).length;
     const sch=api.view('team','schedule'), Ds=(sch.match(/>D<\/span>/g)||[]).length;
     ok(Ds===drawn, `${yr}: ${drawn} draws for ${my}, ${Ds} shown as D in the schedule`) }
   api.openOffseason(); const O=api.S.off; if(O&&O.act.userOpen)O.move=api.S.myTeam; api.commitOffseason();

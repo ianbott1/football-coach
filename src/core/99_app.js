@@ -76,14 +76,14 @@ function liveSeed(step){
   return ((S.seasonSeed^0x9E37)+step*7919)>>>0;
 }
 
-function startLive(g,step){
+function startLive(g,step,slot){
   const oj=isHotSeat()?coachIndexOf(opponentOf(g)):-1;
   const h2h=oj>=0&&oj<(S.turn||0);                 // an earlier coach waited for this one
   const e=h2h?h2hElo(g,step,oj):SEA.matchupElo(g,plan);
   const rng=new RNG(liveSeed(step));
   const userIsHome=(g.home===S.myTeam);
   const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):"balanced";
-  live={g:g, step:step,
+  live={g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
         eng:makeLiveGame(rng,e.h,e.a,
               userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
               h2h?{home:true,away:true}:userIsHome,
@@ -95,7 +95,7 @@ function startLive(g,step){
         paused:(S.watchStep===true), userIsHome:userIsHome,
         h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
   // replay any answers already recorded for this week
-  live.replay=((S.calls&&S.calls[callKey(step)])||[]).slice();
+  live.replay=((S.calls&&S.calls[live.ckey])||[]).slice();
   live.ri=0;
   reveal=null; watch=null;
   liveTick();
@@ -141,7 +141,7 @@ function liveGap(){
 }
 function answerLive(v){
   S.calls=S.calls||{};
-  const k=callKey(live.step);
+  const k=live.ckey||callKey(live.step);
   S.calls[k]=(S.calls[k]||[]).concat([v]);
   live.replay.push(v); live.ri=live.replay.length;
   live.eng.reply(v);
@@ -169,6 +169,15 @@ function finishLive(){
   const step=live.step;
   live.result={hp:live.eng.h,ap:live.eng.a,
                mine:(g.home===S.myTeam?live.eng.h:live.eng.a)};
+  // a second game of yours this step (a midweek cup tie): play it live too.
+  // In a hot seat, a tie against a coach who comes later this turn waits for
+  // them (they play it, both calling), as league meetings do
+  if(SEA.phase==="week"&&SEA.gamesFor){
+    const mine=SEA.gamesFor(S.myTeam,step), done=(S.played[pk]||[]).filter(p=>p.team===S.myTeam).length;
+    if(mine.length>done){ const nx=mine[done];
+      if(isHotSeat()&&coachIndexOf(opponentOf(nx))>(S.turn||0))handoffNotes[opponentOf(nx)]={vs:S.myTeam, coach:S.career.name};
+      else { live=null; save(); startLive(nx,step,done); return } }
+  }
   // in a hot seat, hand over before the week is resolved
   if(isHotSeat() && (S.turn||0) < coachCount()-1){
     stashCoach();
@@ -193,6 +202,7 @@ function resolveWeek(step){
 }
 
 function endLive(){
+  const was=live;                              // finishing can start your next game (a cup tie): keep that one
   if(live&&live.timer)clearTimeout(live.timer);
   if(live&&!live.done){                        // skip: run the rest instantly
     live.skipped=true;
@@ -203,13 +213,13 @@ function endLive(){
       // a skipped game's remaining calls take the neutral option (the last:
       // stay the course, play it straight), not the aggressive first one
       if(r.ask){ const v=r.ask.opts[r.ask.opts.length-1][0]; live.eng.reply(v);
-        S.calls=S.calls||{};const k=callKey(live.step);
+        S.calls=S.calls||{};const k=live.ckey||callKey(live.step);
         S.calls[k]=(S.calls[k]||[]).concat([v]); continue }
       live.drives.push(r.drive);
     }
     finishLive();
   }
-  live=null; render();
+  if(live===was)live=null; render();
 }
 let wide=false;
 function isWide(){try{return window.innerWidth>=1024}catch(e){return false}}
@@ -256,9 +266,12 @@ function rebuild(){
     if(S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
     if(S.fires&&S.fires[i])S.fires[i].forEach(sd=>SEA.fireCoordinator(S.myTeam,sd));
     const ans=(S.calls&&S.calls[callKey(i,SEA.year)])||[]; let ai=0;
-    SEA.decideHook=ans.length?(()=>ans[ai++]||"normal"):null;
-    SEA.plan=(S.plans&&S.plans[i])||"balanced";
     const pl=S.played&&S.played[callKey(i,SEA.year)];
+    // recorded answers replay a game only for old saves that kept no live
+    // results; where results are kept, any other game of yours that step
+    // (a cup tie simulated in a hot seat) was played without them
+    SEA.decideHook=(ans.length&&!(pl&&pl.length))?(()=>ans[ai++]||"normal"):null;
+    SEA.plan=(S.plans&&S.plans[i])||"balanced";
     SEA.forcedList=pl?JSON.parse(JSON.stringify(pl)):[];
     SEA.advance();
     SEA.forcedList=[]; SEA.forced=null;
@@ -426,14 +439,19 @@ function doAdvance(){
   SEA.userTeam=S.myTeam;
   SEA.featured=(S.featured===undefined?null:S.featured);
   SEA.plan=plan;
-  const ug=(SEA.phase==="week")?SEA.nextGame(S.myTeam)
+  // your first game this step not yet played (a cup week has two; a reload
+  // between them picks up at the second)
+  const doneN=(S.played&&S.played[callKey(before)]||[]).filter(p=>p.team===S.myTeam).length;
+  const mineNow=(SEA.phase==="week"&&SEA.gamesFor)?SEA.gamesFor(S.myTeam,before):null;
+  if(mineNow&&doneN&&doneN>=mineNow.length&&!isHotSeat()){ resolveWeek(before); return }
+  const ug=(SEA.phase==="week")?(mineNow?mineNow[doneN]||null:SEA.nextGame(S.myTeam))
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
   const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never" && !simOnce;
   // meeting a coach who comes later this turn: they play it, with both of you calling
   const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
   if(wantLive && !live && laterRival){ handoffNotes[opponentOf(ug)]={vs:S.myTeam, coach:S.career.name}; }
   else if(wantLive && !live){
-    startLive(ug, before);
+    startLive(ug, before, mineNow?doneN:0);
     return;                                    // the game is played in the viewer
   }
   // no live game to play (a bye, or watching turned off): still hand over
@@ -731,10 +749,11 @@ function heroGame(){
 
 function heroResult(){
   const my=S.myTeam;
-  let g=null,label="";
+  let g=null,label="",cupG=null;
   if(flash&&flash.type==="week"){
     const W=SEA.weeks[flash.step];
-    if(W){g=W.games.find(x=>x.home===my||x.away===my);label=W.label;
+    if(W){g=W.games.find(x=>!x.cup&&(x.home===my||x.away===my))||W.games.find(x=>x.home===my||x.away===my);label=W.label;
+      cupG=W.games.find(x=>x.cup&&x!==g&&(x.home===my||x.away===my))||null;
       // leagues that number steps by calendar day name your game by your count
       if(g&&LEAGUE.myGameLabel)label=LEAGUE.myGameLabel(SEA.weeks.slice(0,flash.step+1)
         .filter(w=>w.games.some(x=>x.home===my||x.away===my)).length)}
@@ -768,8 +787,16 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>${move}
+    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}${g.cup?" &middot; "+esc(g.title):""}</div>${move}${cupG?cupLineHTML(cupG,my):""}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
+}
+/* a cup tie in the same week as the headline game: one line under it */
+function cupLineHTML(g,my){
+  const won=g.winner===my, opp=g.home===my?g.away:g.home, ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
+  const pens=g.pens?" on penalties":"";
+  const nextR=LEAGUE.cup&&LEAGUE.cup.rounds[g.round+1];
+  return `<div class="hmove ${won?'up':'dn'}">${esc(g.title)}: ${won?"beat":"lost to"} ${esc(opp)} ${ms}-${os}${pens}${
+    won?(nextR?" &middot; into the "+esc(nextR.name):" &middot; CUP WINNERS"):" &middot; out"}</div>`;
 }
 
 
@@ -803,8 +830,9 @@ function confPosition(t){
 function streakOf(t){
   let n=0,won=null;
   for(let i=SEA.weeks.length-1;i>=0;i--){
-    const g=SEA.weeks[i].games.find(x=>x.home===t||x.away===t);
+    const g=SEA.weeks[i].games.find(x=>!x.cup&&(x.home===t||x.away===t));
     if(!g)continue;
+    if(g.draw)break;                      // a draw ends a run either way (it was counted as a loss)
     const w=g.winner===t;
     if(won===null)won=w;
     if(w!==won)break;
@@ -833,8 +861,11 @@ function stakesFor(ng){
       l:`${riv[0].toUpperCase()+riv.slice(1)} is on the line.${extra}`});
   }
 
-  if(l===0&&w>=4)out.push({p:90,tag:"UNBEATEN",
+  const dr=(SEA.drw&&SEA.drw[my])||0;
+  if(l===0&&w>=4&&!dr)out.push({p:90,tag:"UNBEATEN",
     l:`${w}-0 and counting. A perfect season is still live.`});
+  else if(l===0&&w+dr>=6&&dr)out.push({p:88,tag:"UNBEATEN",
+    l:`Unbeaten: ${recStr(my)}. Nobody has found a way past you yet.`});
 
   out.push(...LEAGUE.ui.stakes({my:my,opp:opp,rk:rk,wk:wk,left:left,w:w,l:l,cp:cp}));
   const st=streakOf(my);
@@ -1133,6 +1164,20 @@ function nextUpHTML(my,rk){
         <span class="sline">${x.l}</span></div>`).join("")}
       ${planPickerHTML(wp)}</div>`;
   }
+  // a cup tie this week too (soccer's FA Cup): its own card, midweek
+  if(SEA.phase==="week"&&SEA.gamesFor&&LEAGUE.cup){
+    SEA.gamesFor(my,SEA.step).filter(x=>x!==ng&&x.cup).forEach(cg=>{
+      const opp=cg.home===my?cg.away:cg.home, wp=winProb(my,opp,cg.home===my,cg.neutral);
+      const line=LEAGUE.cup.stake?LEAGUE.cup.stake(my,opp,cg):"";
+      h+=`<div class="grouphead">Midweek &mdash; ${esc(LEAGUE.cup.date(SEA.step))}</div>
+        <div class="nextcard cupcard">
+        <div class="nlabel">${esc(cg.title.toUpperCase())} &middot; ${cg.neutral?"AT "+esc((cg.site||"").toUpperCase()):cg.home===my?"HOME vs":"AWAY at"}</div>
+        <div class="nopp">${TL(opp)}</div>
+        <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
+        ${oddsHTML(my,opp,cg.home===my,cg.neutral,wp)}
+        <div class="stake"><span class="stag">FA CUP</span><span class="sline">${line} Level after ninety: extra time, then penalties.</span></div></div>`;
+    });
+  }
   return h;
 }
 
@@ -1142,11 +1187,13 @@ function scheduleHTML(team,compact){
   for(let w=0;w<LEAGUE.weeks;w++){
     const W=SEA.weeks[w];
     const played=!!W;
-    const g=played?W.games.find(x=>x.home===team||x.away===team)
-                  :SEA.sched.find(x=>x.week===w&&(x.home===team||x.away===team));
+    // every game of yours that week: the league game first, then a cup tie
+    const all=(played?W.games:SEA.sched.filter(x=>x.week===w)).filter(x=>x.home===team||x.away===team)
+      .sort((x,y)=>(x.cup?1:0)-(y.cup?1:0));
     const label=`Wk ${w+1}`;
-    if(!g){rows.push(`<div class="srow byerow"><span class="spos">&ndash;</span>
+    if(!all.length){rows.push(`<div class="srow byerow"><span class="spos">&ndash;</span>
       <span class="steam">Bye week</span><span class="sconf byelbl">${label}</span></div>`);continue}
+    all.forEach(g=>{
     const opp=g.home===team?g.away:g.home;
     const rk=SEA.poll.rankMap()[opp];
     const riv=LEAGUE.rivals.name(team,opp);
@@ -1155,15 +1202,16 @@ function scheduleHTML(team,compact){
       const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
       const otl=!won&&g.ot, drew=!!g.draw;             // hockey: a point for losing in overtime; soccer: a draw
       rows.push(`<div class="srow"><span class="spos ${won?'wl-w':drew||otl?'wl-o':'wl-l'}">${won?"W":drew?"D":otl?"OTL":"L"}</span>
-        <span class="steam">${g.home===team?"vs":"at"} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
-          riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
-        <span class="sconf">${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span></div>`);
+        <span class="steam">${g.home===team?"vs":g.cup&&g.neutral?"v":"at"} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
+          g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
+        <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${label.replace("Wk ","")}</span>
-        <span class="steam">${g.home===team?"vs":"at"} ${rkTag(rk)}${TL(opp)}${
-          riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
-        <span class="sall">${esc(LEAGUE.dates[w]||"")}</span></div>`);
+        <span class="steam">${g.home===team?"vs":g.cup&&g.neutral?"v":"at"} ${rkTag(rk)}${TL(opp)}${
+          g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
+        <span class="sall">${esc(g.cup&&LEAGUE.cup?LEAGUE.cup.date(w):LEAGUE.dates[w]||"")}</span></div>`);
     }
+    });
   }
   // postseason
   const post=SEA.postGamesFor(team);

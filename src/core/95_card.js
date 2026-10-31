@@ -87,6 +87,7 @@ function seasonCardText(h, team){
   else if(h.honours.group)bits.push(`${c.conf} champions`);
   else if(h.pos)bits.push(h.result);
   else if(h.rank)bits.push(`finished No. ${h.rank}`);
+  if(LEAGUE.cardLine){ const x=LEAGUE.cardLine(h,team); if(x)bits.push(x) }   // a league's own honour (soccer: the FA Cup)
   if(c.bestWin)bits.push(`beat ${c.bestWin.rank?"No. "+c.bestWin.rank+" ":""}${c.bestWin.opp} ${c.bestWin.score}`);
   return `${c.coach}, ${h.year}. ${bits.join(" \u2014 ")}. ${LEAGUE.text.site}`;
 }

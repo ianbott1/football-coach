@@ -535,7 +535,9 @@ LEAGUE.historyExtras=function(sea,off,my){
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     payroll:off.cap?off.cap[my]:null,
     // every club's season in words, frozen before promotion and relegation moved anyone
-    res:(typeof SEA!=="undefined"&&SEA)?Object.fromEntries(NAMES.map(t=>[t,SEA.seasonResult(t)])):null};
+    res:(typeof SEA!=="undefined"&&SEA)?Object.fromEntries(NAMES.map(t=>[t,SEA.seasonResult(t)])):null,
+    // the FA Cup: who won it, who they beat, and how far you went
+    cup:(sea&&sea.cup)?{winner:sea.cup.winner, finalist:sea.cup.finalist, mine:cupFate(sea,my)}:null};
 };
 LEAGUE.migrateHistory=function(h){return {id:"epl"}};
 LEAGUE.seasonLine=function(h,t,r,seed){

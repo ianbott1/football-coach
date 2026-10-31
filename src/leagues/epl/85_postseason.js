@@ -35,7 +35,7 @@ extendSeason({
   pts(t){return LEAGUE.points(t,this)},
   gfga(t){
     if(this._gAt!==this.step){ this._gg={}; NAMES.forEach(x=>this._gg[x]=[0,0]);
-      this.weeks.slice(0,LEAGUE.weeks).forEach(w=>w.games.forEach(g=>{
+      this.weeks.slice(0,LEAGUE.weeks).forEach(w=>w.games.forEach(g=>{ if(g.cup)return;   // the table is league games only
         this._gg[g.home][0]+=g.hp; this._gg[g.home][1]+=g.ap; this._gg[g.away][0]+=g.ap; this._gg[g.away][1]+=g.hp }));
       this._gAt=this.step }
     return this._gg[t];

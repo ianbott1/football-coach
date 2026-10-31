@@ -23,12 +23,42 @@ function eplTable(d){
 }
 function eplRankingView(){
   const d=eplTab||CONF[S.myTeam];
-  return `<div class="dateline"><h2>The table</h2><span>${SEA.year}</span></div>
-    <div class="subtabs">${DIV_ORDER.map(k=>`<button class="subtab" data-et="${k}" aria-pressed="${d===k}">${esc(LEAGUE.conf.names[k].replace("National League ","NL "))}</button>`).join("")}</div>`+
+  const tabs=`<div class="subtabs"><button class="subtab" data-et="CUP" aria-pressed="${d==="CUP"}">FA Cup</button>${DIV_ORDER.map(k=>`<button class="subtab" data-et="${k}" aria-pressed="${d===k}">${esc(LEAGUE.conf.names[k].replace("National League ","NL "))}</button>`).join("")}</div>`;
+  if(d==="CUP")return `<div class="dateline"><h2>The FA Cup</h2><span>${SEA.year}</span></div>`+tabs+cupView();
+  return `<div class="dateline"><h2>The table</h2><span>${SEA.year}</span></div>`+tabs+
     eplTable(d)+`<div class="note">Points, then goal difference, then goals scored.</div>`;
 }
+/* the FA Cup: where you stand, the latest round in full, the shocks before it */
+function cupView(){
+  const C=SEA.cup, my=S.myTeam; if(!C)return "";
+  const tier=t=>DIVS[CONF[t]].tier, R=CUP_ROUNDS;
+  const fate=cupFate(SEA,my);
+  const enter=tier(my)<=2?"the third round":tier(my)<=4?"the first round":tier(my)===5?"the fourth qualifying round":"the third qualifying round";
+  let h=`<div class="note">${fate?`<b>${esc(fate==="Winners"?"FA Cup winners.":fate+".")}</b>`
+    :C.next!==undefined&&C.draws[C.next]&&C.draws[C.next].some(p=>p.indexOf(my)>=0)?`<b>Still in it:</b> ${esc(R[C.next].name)} next.`
+    :`You enter in ${enter}.`} Ties are midweek; level after ninety minutes, extra time and penalties. Semi-finals and the final at Wembley.</div>`;
+  if(C.winner)h+=`<div class="note"><b>${esc(C.winner)}</b> win the FA Cup${C.finalist?", beating "+esc(C.finalist)+" in the final":""}.</div>`;
+  const row=(g,pair)=>{ const hm=g?g.home:pair[0], aw=g?g.away:pair[1], mine=hm===my||aw===my;
+    const sc=g?`${g.hp}&ndash;${g.ap}${g.pens?" p":""}`:"v";
+    const shock=g&&tier(g.winner)-tier(g.loser)>=2;
+    return `<div class="frow ${mine?'mine':''}"><div class="fmain"><div class="fname">
+      <span class="${g&&g.winner===hm?'cupw':''}">${TL(hm)}</span> <span class="cupsc">${sc}</span> <span class="${g&&g.winner===aw?'cupw':''}">${TL(aw)}</span></div>
+      <div class="fnote">${esc(LEAGUE.conf.names[CONF[hm]])} v ${esc(LEAGUE.conf.names[CONF[aw]])}${shock?" &middot; <b>giant-killing</b>":""}</div></div></div>` };
+  for(let i=R.length-1;i>=0;i--){
+    const drawn=C.draws[i]; if(!drawn)continue;
+    const played=C.played[i];
+    const latest=i===C.next||(C.winner&&i===R.length-1);
+    let list=drawn.map((p,j)=>row(played?played.find(x=>x.home===p[0]&&x.away===p[1]):null,p));
+    if(!latest){ // earlier rounds: your tie and the shocks
+      list=drawn.map((p,j)=>{ const g=played&&played.find(x=>x.home===p[0]&&x.away===p[1]);
+        return (p.indexOf(my)>=0||(g&&tier(g.winner)-tier(g.loser)>=2))?row(g,p):"" }).filter(Boolean);
+      if(!list.length)continue }
+    h+=`<div class="grouphead">${esc(R[i].name.replace(/^./,c=>c.toUpperCase()))}${latest&&!played?" &middot; the draw":""}${!latest?" &middot; your tie and the shocks":""}</div>`+list.join("");
+  }
+  return h;
+}
 function eplBracket(){
-  SEA._seed(); const d=eplTab&&DIVS[eplTab].po?eplTab:(DIVS[CONF[S.myTeam]].po?CONF[S.myTeam]:"CH");
+  SEA._seed(); const d=eplTab&&DIVS[eplTab]&&DIVS[eplTab].po?eplTab:(DIVS[CONF[S.myTeam]].po?CONF[S.myTeam]:"CH");
   const P=SEA.po[d], R=P.rounds, S2=P.seeds, six=S2.length===6, sd=t=>SEA.seeds[t];
   const box=(g,a,b)=>g?bgame(g):bgame(null,a?{t:a,s:sd(a)}:null,b?{t:b,s:sd(b)}:null);
   const col=(t,items)=>`<div class="bcol"><div class="bhead">${t}</div><div class="bgames">${items.join("")}</div></div>`;
