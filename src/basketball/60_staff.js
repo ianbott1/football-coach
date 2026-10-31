@@ -95,6 +95,8 @@ const BEAR_YELL={
           `Win it or lose it. Overtime is for the undecided.`,
           `We were BORN to take this shot.`,
           `Three points or nothing. Preferably three points.`],
+  read:  [`Trap EVERYONE. Trap the mascot.`,
+          `Blitz! Blitz! We don't know what it means but BLITZ!`],
   distracted:[`CHOCOLATE CAKE!`,
           `What did we do?`,
           `COOKIES AND CREAM!`,
@@ -132,32 +134,43 @@ function bearYell(kind, seed){
   return pool[n%pool.length];
 }
 
+const PEARL_STYLE={
+  threes:"They're just chucking threes! Run them off the line!",
+  paint:"Everything's going inside! Pack the paint!",
+  pnr:"Screen, screen, screen! Trap the ball handler!"
+};
 function staffTake(dp, ctx){
   const diff = (ctx.mine||0)-(ctx.theirs||0);
   const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
   const R=[];
-  if(dp.k==="half"){
+  if(dp.k==="read"){
+    R.push({who:"bears", pick:"trap", line:bearYell("read",seed)});
+    R.push({who:"pearl", pick:dp.pearl&&STYLE[dp.pearl]?STYLE[dp.pearl].answer:"normal",
+      line:pearlSay(dp.pearl&&PEARL_STYLE[dp.pearl]?"I just saw it! "+PEARL_STYLE[dp.pearl]:"I haven't seen enough to say!",seed)});
+    R.push({who:"capy", pick:"pack", line:`It seems to me protecting the rim rarely hurts. I haven't, I confess, looked at the shot chart.`});
+  }
+  else if(dp.k==="half"){
     const down=diff<0;
-    R.push({who:"bears", pick: down?"push":"normal", line:bearYell("half",seed)});
-    R.push({who:"pearl", pick:"normal", line:pearlSay(down
+    R.push({who:"bears", pick: down?"push":"keep", line:bearYell("half",seed)});
+    R.push({who:"pearl", pick:"keep", line:pearlSay(down
       ? `They're not playing badly! Let's just play a bit better.`
       : `This is going great. Exactly as we are, please.`,seed)});
-    R.push({who:"capy", pick: down?"normal":"sit", line: down
-      ? `If I may \u2014 hurrying rarely mends a scoreline. It tends to lengthen it.`
+    R.push({who:"capy", pick: down?"keep":"sit", line: down
+      ? `If I may: hurrying rarely mends a scoreline. It tends to lengthen it.`
       : `We have, I think, got what we came for. I'd rather slow things down.`});
   }
   else if(dp.k==="chase"){
     R.push({who:"bears", pick:"press", line:bearYell("chase",seed)});
-    R.push({who:"pearl", pick: diff<=-4 ? "press":"normal", line:pearlSay(diff<=-4
-      ? `More than a couple of baskets \u2014 let's go and get the ball back!`
+    R.push({who:"pearl", pick: diff<=-4 ? "press":"keep", line:pearlSay(diff<=-4
+      ? `More than a couple of baskets! Let's go and get the ball back!`
       : `It's one basket! We've got time. No need to panic.`,seed)});
-    R.push({who:"capy", pick:"normal", line:`A press, one rather suspects, is mostly a way of giving up layups quickly.`});
+    R.push({who:"capy", pick:"keep", line:`A press, one rather suspects, is mostly a way of giving up layups quickly.`});
   }
   else if(dp.k==="protect"){
     R.push({who:"bears", pick:"keep", line:bearYell("protect",seed)});
     R.push({who:"pearl", pick: diff>=7?"sit":"keep", line:pearlSay(diff>=7
       ? `We're way ahead! Let's just use up the clock and go home happy.`
-      : `Whatever we did to get here \u2014 more of that, please.`,seed)});
+      : `Whatever we did to get here: more of that, please.`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
   else if(dp.k==="last"){

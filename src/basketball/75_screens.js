@@ -1,66 +1,127 @@
 /* ============ game screens: basketball ============ */
-/* The scoreboard, the run of play in five-minute segments, the call screen
-   with the staff's advice, and the replay view. */
-function segLabel(d){ return d.seg==="last"?"Last shot":segClock(d.seg) }
-function driveWord(d){
-  if(d.seg==="last")return d.made?(d.choice==="three"?"the three is GOOD":"the two is good, overtime"):"the shot won't go";
-  if(d.h===d.a)return "an even stretch, "+d.h+" apiece";
-  return (d.h>d.a?"home":"away")+" run, "+Math.max(d.h,d.a)+"-"+Math.min(d.h,d.a);
+/* The scoreboard (visitors first, as on any arena's clock), the run of play
+   segment by segment with names, the shot chart each read is made from, the
+   call screen with the staff's advice, and the replay view. */
+
+/* ---- names ---- */
+function bbPlayer(team,i,u){
+  const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
+  const p=R[i], b=R[BK(i)]; const pick=(b&&(u%10)<2)?b:p; return pick?pick.n:null;
 }
-/* a segment in words, with names from the rosters */
-function driveScript(g,drives){
-  const rng=new RNG(watchSeed(g));
-  const RH=SEA.roster?SEA.roster[g.home]:null, RA=SEA.roster?SEA.roster[g.away]:null;
-  const nm=(R,i)=>R&&R[i]?R[i].n:"a guard";
-  return drives.map(d=>{
-    if(d.seg==="last"){
-      const tm=d.side==="home"?g.home:g.away, R=d.side==="home"?RH:RA;
-      return {seg:d.seg,clock:"0:02",team:tm,pts:d.made?(d.choice==="three"?3:2):0,outcome:d.made?"GOOD":"MISS",
-        text:`${nm(R,rng.int(3))} ${d.choice==="three"?"pulls up from three":"drives for two"}: ${d.made?"good!":"no good."}`,h:d.sh,a:d.sa};
-    }
-    const homeRun=d.h>=d.a, tm=homeRun?g.home:g.away, R=homeRun?RH:RA, big=Math.max(d.h,d.a), small=Math.min(d.h,d.a);
-    const who=nm(R,rng.int(5)), pts=Math.max(2,Math.round(big*rng.range(0.3,0.6)));
-    const text=big-small>=8?`${tm} goes on a ${big}-${small} run, ${who} with ${pts}`
-      :big===small?`back and forth, ${big} apiece`
-      :rng.r()<0.5?`${tm} edges the stretch ${big}-${small}`:`${who} keeps ${tm} going, ${big}-${small} over five minutes`;
-    return {seg:d.seg,clock:segClock(d.seg),team:tm,pts:big,outcome:big-small>=8?"RUN":"",text:text,h:d.sh,a:d.sa};
+function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
+  let best=0; for(let i=1;i<5;i++)if(R[i]&&R[best]&&R[i].r>R[best].r)best=i; return R[best]?R[best].n:"his star" }
+const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+const ordw=n=>["","first","second","third","fourth","fifth","sixth"][n]||n+"th";
+const BB_CUE={
+  threes:["{t} letting it fly from deep again","Another kick-out three for {t}","{t} spacing the floor and hunting threes"],
+  paint:["{t} pound it inside again","{t} living in the paint","Another post touch for {t}"],
+  pnr:["{t} run high pick-and-roll again","Ball screen, ball screen: {t} keep running it","{t} attack off the high screen"]
+};
+function pickOf(a,u){return a[u%a.length]}
+function bbEventText(g,e){
+  const tm=e.side==="home"?g.home:g.away, u=e.u||0;
+  if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
+  if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
+  if(e.k==="foul"){ const n=bbStar(tm); return {team:tm,tag:e.f>=BB.foulOut-2?"FOULS":"",text:`${n} picks up his ${ordw(e.f)} foul`} }
+  if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }
+  if(e.k==="out"){ return {team:tm,tag:"FOULED OUT",text:`${bbStar(tm)} has fouled out`} }
+  if(e.k==="cue")return {team:tm,tag:"",text:pickOf(BB_CUE[e.cue],u).replace("{t}",tm),cue:true};
+  return {team:tm,tag:"",text:""};
+}
+const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
+function segLabel(d){ return d.seg==="last"?"Last shot":segClock(d.seg) }
+function rowsOf(g,drives){
+  const rows=[];
+  drives.forEach(d=>{
+    if(d.seg==="last"){ const tm=d.side==="home"?g.home:g.away;
+      rows.push({m:"0:02",team:tm,tag:d.made?"GOOD":"MISS",text:`${bbPlayer(tm,0,7)||"The point guard"} ${d.choice==="three"?"pulls up from three":"drives for two"}: ${d.made?"good!":"no good."}`,h:d.sh,a:d.sa,goal:d.made});
+      return }
+    const lab=segClock(d.seg);
+    (d.ev||[]).filter(shown).forEach(e=>{ const t=bbEventText(g,e); rows.push({m:lab,team:t.team,tag:t.tag,text:t.text,h:d.sh,a:d.sa,cue:t.cue}) });
+    const run=Math.abs(d.h-d.a)>=8, tm=d.h>=d.a?g.home:g.away;
+    rows.push({m:lab,team:run?tm:"",tag:run?"RUN":"",text:run?`a ${Math.max(d.h,d.a)}-${Math.min(d.h,d.a)} stretch`:`${d.h}-${d.a} stretch, ${g.home} first`,h:d.sh,a:d.sa,seg:true,run:run});
   });
+  return rows;
+}
+function driveScript(g,drives){ return rowsOf(g,drives).map(r=>({clock:r.m,team:r.team,outcome:r.tag,text:r.text,h:r.h,a:r.a,cue:r.cue,seg:r.seg})) }
+/* a computer game: eight segments that add up to the final score */
+function gameScript(g,rosterHome,rosterAway,seed){
+  const rng=new RNG(seed), n=8, out=[];
+  const split=(tot)=>{const w=Array.from({length:n},()=>0.6+rng.r()); const W=w.reduce((a,b)=>a+b,0);
+    const v=w.map(x=>Math.floor(tot*x/W)); let r=tot-v.reduce((a,b)=>a+b,0); while(r-->0)v[rng.int(n)]++; return v};
+  const hs=split(g.hp), as=split(g.ap); let sh=0,sa=0;
+  for(let s=0;s<n;s++){sh+=hs[s]; sa+=as[s];
+    const ev=rng.r()<0.4?[{side:rng.r()<0.5?"home":"away",k:"three",n:1,u:rng.int(100)}]:[];
+    out.push({seg:s,h:hs[s],a:as[s],sh:sh,sa:sa,ev:ev})}
+  return driveScript(g,out);
+}
+function liveGapFor(L,mult){
+  const d=L.drives[L.drives.length-1];
+  const n=d&&d.ev?d.ev.filter(shown).length:0;
+  return Math.max(110,Math.round((1500+n*450)*0.52/mult));
+}
+
+/* ---- the scoreboard: visitors first ---- */
+function scoreTop(g,H,A,label,cls,extra){
+  return `<div class="wtop ${cls||""}">
+    <div class="wlabel">${label}</div>
+    <div class="wscore">
+      <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
+      <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span><span class="wn">${H}</span></div>
+    </div>${extra||""}</div>`;
+}
+/* the flow: the lead after each segment, a line above the middle for the visitors */
+function flowSVG(g,drives){
+  const segs=drives.filter(d=>typeof d.seg==="number"), W=300, H=44, mid=H/2, n=Math.max(8,segs.length), bw=W/n;
+  const ac=teamInk(g.away), hc=teamInk(g.home);
+  const bars=segs.map((d,i)=>{ const v=d.a-d.h, h=Math.min(mid-2,Math.abs(v)*1.2+1);
+    return `<rect x="${(i*bw+2).toFixed(1)}" y="${(v>=0?mid-h:mid).toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill="${v>=0?ac:hc}"/>`}).join("");
+  return `<div class="mom"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Each stretch">
+    <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="var(--line)"/>
+    <line x1="${W/2}" y1="2" x2="${W/2}" y2="${H-2}" stroke="var(--line)" stroke-dasharray="2 3"/>${bars}</svg>
+    <div class="momkey"><span style="color:${ac}">${esc(g.away)}</span><span>each stretch</span><span style="color:${hc}">${esc(g.home)}</span></div></div>`;
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
-  const tip=!live.drives.length;
-  return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${tip?"TIP-OFF":esc(segLabel(last))}
-      ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
-    <div class="wscore">
-      <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
-      <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span><span class="wn">${H}</span></div>
-    </div></div>`;
+  const lab=`<span class="live"></span>${!live.drives.length?"TIP-OFF":esc(segLabel(last))}
+      ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
+  return scoreTop(g,H,A,lab,"",flowSVG(g,live.drives));
 }
-function playsHTML(list,my,g){
-  return list.slice().reverse().map(d=>{
-    const tm=d.seg==="last"?(d.side==="home"?g.home:g.away):(d.h>=d.a?g.home:g.away);
-    return `<div class="play ${tm===my?'mine':''}">
-      <span class="pq">${esc(segLabel(d))}</span>
-      <div class="ptxt"><b>${esc(tm)}</b> ${esc(driveWord(d))}</div>
-      <span class="pscore">${d.sa}&ndash;${d.sh}</span></div>`}).join("");
+
+/* ---- the evidence ---- */
+function evidenceHTML(g,my,d,dp){
+  if(dp.k!=="read"||!d||!d.T)return "";
+  const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
+  const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
+  return `<div class="evid"><div class="evh">How ${esc(g[opp])} are scoring <span>per quarter</span></div>
+    <div class="evr ${share>=45?'hi':share<=31?'lo':''}"><span class="evk">Shots from three</span><span class="evv">${share}% (${T.tpa} of ${T.fga})</span></div>
+    <div class="evr"><span class="evk">Points in the paint</span><span class="evv">${paint}</span></div>
+    <div class="evr ${T.pnr/n>=3.4?'hi':''}"><span class="evk">Pick-and-rolls run</span><span class="evv">${scr}</span></div>
+    <div class="evn">League average: 38% of shots from three, 4.4 pick-and-rolls a quarter. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
+}
+
+/* ---- the run of play ---- */
+function playsHTML(drives,my,g,limit){
+  let rows=rowsOf(g,drives); if(limit)rows=rows.slice(-limit);
+  return rows.slice().reverse().map(r=>`<div class="play ${r.team===my?'mine':''} ${r.goal||r.run?'goalrow':''} ${r.cue?'cue':''} ${r.seg&&!r.run?'cue':''}">
+      <span class="pq">${esc(r.m)}</span>
+      <div class="ptxt">${r.team?`<b>${esc(r.team)}</b> `:""}${esc(r.text)}${r.tag?` <span class="dtag ${/RUN|GOOD/.test(r.tag)?'sc':/OUT|MISS/.test(r.tag)?'rd':'yl'}">${esc(r.tag)}</span>`:""}</div>
+      <span class="pscore">${r.a}&ndash;${r.h}</span></div>`).join("");
 }
 function liveView(){
-  const g=live.g, my=S.myTeam, last=live.drives[live.drives.length-1]||null;
+  const g=live.g, my=S.myTeam;
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   return `<div class="watchwrap">
     ${liveScoreboard()}
-    ${fieldSVG(g,last,teamColor(g.home),teamColor(g.away),venue)}
-    <div class="fpos">${last?esc(segLabel(last))+" &middot; "+esc(venue):"Tip-off at "+esc(venue)}</div>
     <div class="grouphead">Run of play</div>
-    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Waiting for the tip&hellip;</span></div>`}</div>
+    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Tip-off at ${esc(venue)}&hellip;</span></div>`}</div>
     <div class="actionbar">
       <div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"
         aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
       <div class="wctl">
         <button class="wbtn" id="wpause">${live.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
-        <button class="wbtn ${live.paused?'hot':''}" id="wstep">Next five minutes &rarr;</button>
+        <button class="wbtn ${live.paused?'hot':''}" id="wstep">Next stretch &rarr;</button>
         <button class="wbtn" id="wskip">Skip</button>
       </div>
       <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>
@@ -68,28 +129,32 @@ function liveView(){
 }
 function liveCallView(){
   const dp=live.ask.dp, g=live.g, my=live.ask.team||S.myTeam;
-  const mine=live.ask.mine, theirs=live.ask.theirs;
+  const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
-    :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call \u00b7 "+my);
+    :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
+  const desc=o=>dp.k==="read"&&DEFENCES[o]?DEFENCES[o].d:"";
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
       <div class="wlabel">${whose}</div>
       <div class="calltitle">${esc(dp.h)}</div>
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
-      <div class="callsub">${esc(dp.b)}</div>
+      <div class="callsub">${esc(dp.b||"")}</div>
     </div>
+    ${evidenceHTML(g,my,last,dp)}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
         <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
-      `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
+      `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${desc(o[0])?`<small>${esc(desc(o[0]))}</small>`:""}</button>`).join("")}</div>
     <div class="grouphead">Run of play</div>
-    <div class="plays">${playsHTML(live.drives.slice(-6),my,g)}</div>
+    <div class="plays">${playsHTML(live.drives,my,g,5)}</div>
   </div>`;
 }
+
+/* ---- replays ---- */
 function startWatch(g){
   if(!g||!SEA.roster)return;
   const drives=(g.drives&&g.drives.length)?g.drives:null;
@@ -104,22 +169,15 @@ function watchView(){
   const cur=upto[upto.length-1]||null;
   const H=cur?cur.h:0, A=cur?cur.a:0, done=watch.i>=watch.script.length, tip=watch.i<0;
   const mine=(g.home===my)?H:A, theirs=(g.home===my)?A:H;
-  const venue=g.neutral?(g.site||"neutral site"):g.home;
-  return `<div class="watchwrap">
-    <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
-      <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
+  const lab=done?`FINAL${g.ot?" / OT":""} &middot; ${mine>theirs?"WIN":"LOSS"}`
         :tip?`<span class="live"></span>TIP-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
-        :`<span class="live"></span>${esc(cur.clock)}`}</div>
-      <div class="wscore">
-        <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span><span class="wn">${A}</span></div>
-        <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span><span class="wn">${H}</span></div>
-      </div>
-    </div>
-    ${fieldSVG(g,cur,teamColor(g.home),teamColor(g.away),venue)}
+        :`<span class="live"></span>${esc(cur.clock)}`;
+  return `<div class="watchwrap">
+    ${scoreTop(g,H,A,lab,done?(mine>theirs?'win':'loss'):'')}
     <div class="grouphead">Run of play</div>
-    <div class="plays">${upto.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''}">
+    <div class="plays">${upto.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''} ${/RUN|GOOD/.test(e.outcome||"")?'goalrow':''} ${e.cue||(e.seg&&!e.outcome)?'cue':''}">
       <span class="pq">${esc(e.clock)}</span>
-      <div class="ptxt"><b>${esc(e.team)}</b> ${esc(e.text)}${e.outcome?` <span class="dtag sc">${esc(e.outcome)}</span>`:""}</div>
+      <div class="ptxt">${e.team?`<b>${esc(e.team)}</b> `:""}${esc(e.text)}${e.outcome?` <span class="dtag ${/RUN|GOOD/.test(e.outcome)?'sc':/OUT|MISS/.test(e.outcome)?'rd':'yl'}">${esc(e.outcome)}</span>`:""}</div>
       <span class="pscore">${e.a}&ndash;${e.h}</span></div>`).join("")
       ||`<div class="empty">${owlMark(40)}<span>Waiting for the tip&hellip;</span></div>`}</div>
     <div class="actionbar">
@@ -128,7 +186,7 @@ function watchView(){
           aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
         <div class="wctl">
           <button class="wbtn" id="wpause">${watch.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
-          <button class="wbtn ${watch.paused?'hot':''}" id="wstep">Next five minutes &rarr;</button>
+          <button class="wbtn ${watch.paused?'hot':''}" id="wstep">Next &rarr;</button>
           <button class="wbtn" id="wskip">Skip</button>
         </div>
         <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>`}

@@ -1,5 +1,5 @@
 {
- "fp": "aedf0c4e0c22a593",
+ "fp": "178642329c00eae9",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -95,85 +95,95 @@
    "fp": "aedf0c4e0c22a593",
    "from": "4f14f7d0051b44e7",
    "note": "The gameplan tip ('This choice is real') removed from every game; hockey: the NHL's 84-game matrix, regulation-wins tiebreak, OTL in schedules"
+  },
+  {
+   "fp": "f09b652f6ead65b6",
+   "from": "aedf0c4e0c22a593",
+   "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
+  },
+  {
+   "fp": "178642329c00eae9",
+   "from": "f09b652f6ead65b6",
+   "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "f29d7690d1c76deb",
-    "post": "b5c51d1acbc53c33",
-    "champion": "South Carolina",
-    "rec": "5208ac8b43f34613",
-    "poll": "3f8457e7080b9ced",
-    "heis": "63c51af92f20ba26",
-    "history": "80e202bb52a03379",
-    "universe": "41857a67b0f011d5",
-    "screens": "79e472a5b5d3005e"
+    "games": "71d9efa469e1e203",
+    "post": "a12587849748ff89",
+    "champion": "Baylor",
+    "rec": "a1f5621550bbc90b",
+    "poll": "eb7218217b163ec6",
+    "heis": "a07fa10837ea63bd",
+    "history": "b4c05994b1c6172c",
+    "universe": "53c6acc4af15004d",
+    "screens": "77c2b03a83b4545e"
    },
    {
     "year": 2027,
-    "games": "a89eb9bbb8112678",
-    "post": "6f5c686e00268081",
-    "champion": "Wisconsin",
-    "rec": "a9ed957c00412e81",
-    "poll": "7b226f32f3b212b5",
-    "heis": "d2fc886b06536da3",
-    "history": "7629e08546fd2110",
-    "universe": "ce43b011b2439043",
-    "screens": "ca98733df46e93e8"
+    "games": "b127308325f9133f",
+    "post": "75d6a54709445712",
+    "champion": "Clemson",
+    "rec": "2f54bcdc39388baa",
+    "poll": "d282c27ba174e1f0",
+    "heis": "bcb859497400b5a9",
+    "history": "ae73e295373e04fc",
+    "universe": "ba1b0368fcd6178a",
+    "screens": "8d516150775d3306"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "923c83c4d3e7fec1",
-    "post": "34797444f0cdf7b2",
+    "games": "1856f376fb927545",
+    "post": "b9fce6a4a5d68c17",
     "champion": "Kansas",
-    "rec": "acd9846afd56d900",
-    "poll": "f39d248d536694cb",
-    "heis": "1259105979116d86",
-    "history": "6964eb5b2c02a27d",
-    "universe": "72554d8e5babe4d8",
-    "screens": "360840508c934c27"
+    "rec": "0717439354e0b177",
+    "poll": "1b1c475bb4f6c91d",
+    "heis": "79e19a7b8769bb45",
+    "history": "70f5225a11c2b030",
+    "universe": "161e89c63f7ebc60",
+    "screens": "214a98b90dd57f97"
    },
    {
     "year": 2027,
-    "games": "1ff6b177de9d1dd1",
-    "post": "285753602691fb2f",
-    "champion": "Alabama",
-    "rec": "6e140a127ce1c44d",
-    "poll": "abf6d4ebd1d028f8",
-    "heis": "aef0cc1da07e25cd",
-    "history": "d7f8450ca98da18a",
-    "universe": "78fed89a9b63e3ef",
-    "screens": "64ed1200f5227297"
+    "games": "d3e6a659db9f080d",
+    "post": "0cfe1d79b53cd86a",
+    "champion": "Kansas",
+    "rec": "83aa4ae22bf72268",
+    "poll": "13d5f27a285a7e4b",
+    "heis": "8ec38204f2737426",
+    "history": "e182a69c7cd8e025",
+    "universe": "0b727f24486a2b6f",
+    "screens": "90630b741886fdfb"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "c8f75445db808edf",
-    "post": "9bfd3a1d45ff6bbb",
-    "champion": "Kentucky",
-    "rec": "432a14cefc0962ef",
-    "poll": "632bb9da1f459ccf",
-    "heis": "c30dde17209a314e",
-    "history": "57c76cfb71488fbb",
-    "universe": "1377641d18d80969",
-    "screens": "92268915c1025e2e"
+    "games": "f414bc1ace2f28ba",
+    "post": "d596ece82f724579",
+    "champion": "Arkansas",
+    "rec": "201f0beb74f79f67",
+    "poll": "6b25a4349d35c0fd",
+    "heis": "c9db7b71d8cb9ff5",
+    "history": "51feba7c23db0c99",
+    "universe": "f782d7238ff61480",
+    "screens": "f3d6345e62628787"
    },
    {
     "year": 2027,
-    "games": "2c3cb2cc1ee79b30",
-    "post": "d299dbbc0945d880",
-    "champion": "Arizona",
-    "rec": "8faa9382d6477358",
-    "poll": "09dd9155cc48f610",
-    "heis": "a1e27e7b5f453d11",
-    "history": "fcbb22b4f653421a",
-    "universe": "15e38526bc8f75ba",
-    "screens": "e6318d57ac7ff593"
+    "games": "f683b8077f357157",
+    "post": "d5a8771e53965c0a",
+    "champion": "Butler",
+    "rec": "bbd8a81118ddba8f",
+    "poll": "5fb80326e86f14d4",
+    "heis": "04f4f64ed7dc6b23",
+    "history": "2541e885ec6898e4",
+    "universe": "dc4954653c3fe7f9",
+    "screens": "e2f99d1794048d44"
    }
   ],
   "schedules#60": [

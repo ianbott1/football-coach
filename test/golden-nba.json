@@ -1,5 +1,5 @@
 {
- "fp": "75068e003c50d68f",
+ "fp": "e1a6a388a10ae3be",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -45,59 +45,69 @@
    "fp": "75068e003c50d68f",
    "from": "95534f5cb8180f35",
    "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
+  },
+  {
+   "fp": "e1a6a388a10ae3be",
+   "from": "75068e003c50d68f",
+   "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
+  },
+  {
+   "fp": "e1a6a388a10ae3be",
+   "from": "e1a6a388a10ae3be",
+   "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "b1c0f0a27798dc7b",
-    "post": "31e7278761b2652f",
-    "champion": "Minnesota",
-    "rec": "914781dfcad3925c",
-    "poll": "fe56b4b47243fa9d",
-    "heis": "d65be65f2863d2f4",
-    "history": "f25ac99b15068fb1",
-    "universe": "e867b2b7c18b0197",
-    "screens": "7f985e4dc0ae38d8"
+    "games": "3c70cec20ea5a526",
+    "post": "1b6da67449e4329d",
+    "champion": "New York",
+    "rec": "594d821a92f2047d",
+    "poll": "ce4eb2ac1eaab234",
+    "heis": "fcf8ab6cab4f0fc2",
+    "history": "7e9f9d9d403b0585",
+    "universe": "5388ade8c9aafbe8",
+    "screens": "7f699049159965f4"
    },
    {
     "year": 2027,
-    "games": "290387aeba485998",
-    "post": "26ec463cd8c9646c",
+    "games": "75e13fd6c713d411",
+    "post": "2efe2598fefce5a5",
     "champion": "Oklahoma City",
-    "rec": "0b7254aa29878e73",
-    "poll": "2b46086e8c31967e",
-    "heis": "8443e829701d0396",
-    "history": "a4346fff0e9d2cf4",
-    "universe": "12a031e87af30deb",
-    "screens": "626d51bb80d57b3b"
+    "rec": "98137c42dfb45eea",
+    "poll": "5980f8b6aa05fc3c",
+    "heis": "83d0fdef67245b15",
+    "history": "a8631c6fe312520d",
+    "universe": "b77c5e0f0f35c372",
+    "screens": "664ccda26a4d3983"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "9903f010bdf26e87",
-    "post": "08b7364d05948c7d",
-    "champion": "Houston",
-    "rec": "24c7c551f0f34fd3",
-    "poll": "c222ec86ac346f5d",
-    "heis": "a34ff66d88be5fdc",
-    "history": "696737dc492fafd5",
-    "universe": "66d8bb447215cf18",
-    "screens": "32feb73a65a29311"
+    "games": "862630b8e3f510bd",
+    "post": "538ee27c366d5cac",
+    "champion": "Oklahoma City",
+    "rec": "1fa232fe532ae368",
+    "poll": "856a03617b97b186",
+    "heis": "079e7841cbfe0008",
+    "history": "6fc42ade3a575dbf",
+    "universe": "f8ac42c33f2668bf",
+    "screens": "14efeb1bef1fb5bf"
    },
    {
     "year": 2027,
-    "games": "c391381601a61a26",
-    "post": "e1921ecc03b5db75",
-    "champion": "Houston",
-    "rec": "fe197bc7fcecbb19",
-    "poll": "c6318c5d639eef58",
-    "heis": "e4580e67bdf34bcd",
-    "history": "05141294ff2b8146",
-    "universe": "8a54e0d312b50d68",
-    "screens": "5555cda408efdc17"
+    "games": "a198b885cbbd9872",
+    "post": "f0ad9390abd03054",
+    "champion": "Denver",
+    "rec": "b512f59533bfb08b",
+    "poll": "a75dff291ab2b57e",
+    "heis": "b1d0b15610447f60",
+    "history": "60b5c770a1922b4b",
+    "universe": "a41f30915c3b8f44",
+    "screens": "4a4d5ac05495e487"
    }
   ],
   "schedules#60": [

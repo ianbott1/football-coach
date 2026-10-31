@@ -1,5 +1,5 @@
 {
- "fp": "3d1a6665a2d79e6d",
+ "fp": "4ea84e7bf9ea9ce2",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -60,6 +60,16 @@
    "fp": "3d1a6665a2d79e6d",
    "from": "9dd4a32b21f45c2f",
    "note": "The transfer portal; basketball assistant wording on the offseason screen"
+  },
+  {
+   "fp": "bb3c5ebf0f279e99",
+   "from": "3d1a6665a2d79e6d",
+   "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
+  },
+  {
+   "fp": "4ea84e7bf9ea9ce2",
+   "from": "bb3c5ebf0f279e99",
+   "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
   }
  ],
  "out": [
@@ -69,20 +79,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "27-7",
-      "result": "Lost in the Second Round",
-      "grade": "B"
+      "rec": "32-3",
+      "result": "Lost in the Elite Eight",
+      "grade": "A"
      },
-     "book": "582ba664923f1e57"
+     "book": "3056e782b293ad37"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "33-2",
-      "result": "Lost in the Second Round",
+      "rec": "29-7",
+      "result": "Lost in the Sweet 16",
       "grade": "A-"
      },
-     "book": "e6cec894bab04237"
+     "book": "7b2a1df2b7fe25bf"
     }
    ]
   },
@@ -92,20 +102,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "29-8",
-      "result": "Lost in the Sweet 16",
-      "grade": "A-"
+      "rec": "30-7",
+      "result": "Lost in the Elite Eight",
+      "grade": "A"
      },
-     "book": "1f7bf7ed86fcb5f9"
+     "book": "f1b1785e075ca399"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "21-10",
-      "result": "Lost in the First Round",
-      "grade": "C"
+      "rec": "23-11",
+      "result": "Lost in the Second Round",
+      "grade": "C+"
      },
-     "book": "a4d72fc0c99b82f5"
+     "book": "af7c52b6546cc6b3"
     }
    ]
   },
@@ -115,20 +125,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-6",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "15-15",
+      "result": "Missed the NCAA tournament",
+      "grade": "F"
      },
-     "book": "93c3cc2b903da911"
+     "book": "1d6836bc3a4e672e"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "30-3",
-      "result": "Lost in the Second Round",
-      "grade": "A-"
+      "rec": "37-2",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "cfecbed3175fb058"
+     "book": "d5ae3956d0c27610"
     }
    ]
   }
