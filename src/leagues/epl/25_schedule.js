@@ -1,7 +1,8 @@
 /* ============ schedule: English football ============ */
 /* A double round robin in each division: everyone plays everyone home and
    away (the circle method; the second half mirrors the first with home and
-   away swapped; a new order each season). The 24-club divisions play all 46
+   away swapped; a new order each season; never more than two in a row at
+   home or away). The 24-club divisions play all 46
    Saturdays from mid-August; the Premier League's 38 rounds start the second
    week (22 August) and skip seven weeks through the season (international
    breaks, cup weekends). */
@@ -9,7 +10,12 @@ function roundRobin(rng,teams){
   const T=rng.shuffle(teams.slice()); if(T.length%2)T.push(null);
   const n=T.length, rounds=[];
   for(let r=0;r<n-1;r++){ const rd=[];
-    for(let i=0;i<n/2;i++){ const a=T[i], b=T[n-1-i]; if(a&&b)rd.push((r+i)%2?[a,b]:[b,a]) }
+    // Berger venues: the fixed club alternates; for the rest the top row is at
+    // home on even rounds. Clubs move rows as the circle turns, so no club
+    // plays more than two in a row at home or away. ((r+i)%2 kept a club's
+    // venue fixed while it stayed in one row: 23 straight home games.)
+    for(let i=0;i<n/2;i++){ const a=T[i], b=T[n-1-i];
+      if(a&&b)rd.push(i===0 ? (r%2?[a,b]:[b,a]) : (r%2?[b,a]:[a,b])) }
     rounds.push(rd); T.splice(1,0,T.pop());
   }
   return rounds.concat(rounds.map(rd=>rd.map(([h,a])=>[a,h])));

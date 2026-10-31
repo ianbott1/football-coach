@@ -21,6 +21,13 @@ for(let y=0;y<N;y++){
   E.weeks.slice(0,46).forEach(w=>w.games.forEach(x=>{[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1); games++; if(x.draw)draws++;
     ok(C(x.home)===C(x.away), `${yr}: a cross-division league game`)}));
   ok(api.NAMES.every(t=>per[t]===(C(t)==='PL'?38:46)), `${yr}: not 38 and 46 games each`);
+  // venues alternate: half at home, never more than two in a row at home or away
+  { const last={},run={},mx={},home={};
+    E.weeks.slice(0,46).forEach(w=>w.games.forEach(x=>[[x.home,1],[x.away,0]].forEach(([t,v])=>{
+      run[t]=last[t]===v?run[t]+1:1; last[t]=v; mx[t]=Math.max(mx[t]||0,run[t]); home[t]=(home[t]||0)+v})));
+    const worst=api.NAMES.reduce((a,t)=>mx[t]>mx[a]?t:a);
+    ok(mx[worst]<=2, `${yr}: ${worst} plays ${mx[worst]} in a row at the same venue`);
+    ok(api.NAMES.every(t=>home[t]===per[t]/2), `${yr}: a club without half its games at home`) }
   ok(api.NAMES.every(t=>E.pts(t)===3*(E.regRec||E.rec)[t][0]+((E.drw||{})[t]||0)), `${yr}: points aren't 3 a win and 1 a draw`);
   const expectMove={};
   Object.keys(DIVS).forEach(d=>{ const R=DIVS[d], T=E.table(d), P=E.po[d];

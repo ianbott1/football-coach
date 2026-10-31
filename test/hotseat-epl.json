@@ -1,5 +1,5 @@
 {
- "fp": "e6c4219159e47983",
+ "fp": "9fa935b8a8479a01",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -20,6 +20,11 @@
    "fp": "e6c4219159e47983",
    "from": "e1e967efa7139fab",
    "note": "Draws everywhere they're shown; wider strength bands below the Premier League (strength predicts the table)"
+  },
+  {
+   "fp": "9fa935b8a8479a01",
+   "from": "e6c4219159e47983",
+   "note": "Fixture venues alternate (Berger): no club 23 straight at home or away"
   }
  ],
  "out": [
@@ -29,20 +34,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-6",
-      "result": "Finished 3rd in the Premier League",
+      "rec": "24-6",
+      "result": "Finished 2nd in the Premier League",
       "grade": "B"
      },
-     "book": "5290a2b395115409"
+     "book": "30994b8df329b94f"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "18-11",
-      "result": "Finished 7th in the Premier League",
-      "grade": "B+"
+      "rec": "11-17",
+      "result": "Finished 15th in the Premier League",
+      "grade": "C"
      },
-     "book": "27a1ef51557b23c9"
+     "book": "95870ee72524ed9c"
     }
    ]
   },
@@ -52,20 +57,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "17-11",
-      "result": "Finished 6th in the Premier League",
-      "grade": "C+"
+      "rec": "22-9",
+      "result": "Finished 4th in the Premier League",
+      "grade": "B-"
      },
-     "book": "352238af6b955ee3"
+     "book": "2e7d0155a1ff7aa1"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-18",
+      "rec": "11-19",
       "result": "Finished 14th in the Premier League",
       "grade": "C+"
      },
-     "book": "9e0614efac99cc62"
+     "book": "bc720fd729fb8bdc"
     }
    ]
   },
@@ -75,20 +80,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "24-7",
+      "rec": "23-6",
       "result": "PREMIER LEAGUE CHAMPIONS",
       "grade": "A+"
      },
-     "book": "bd845bb910738ef3"
+     "book": "f5c8c385658fc3a0"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "14-18",
-      "result": "Finished 12th in the Premier League",
-      "grade": "C+"
+      "rec": "15-15",
+      "result": "Finished 8th in the Premier League",
+      "grade": "B"
      },
-     "book": "1cc144ca7e93ac1e"
+     "book": "2a5cd2b45682186f"
     }
    ]
   }
