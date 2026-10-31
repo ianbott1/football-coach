@@ -1,5 +1,5 @@
 {
- "fp": "c096db37010529c0",
+ "fp": "0f17d45f02d64c01",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -45,6 +45,11 @@
    "fp": "c096db37010529c0",
    "from": "c8db5e6c176f0c48",
    "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
+  },
+  {
+   "fp": "0f17d45f02d64c01",
+   "from": "c096db37010529c0",
+   "note": "Sim ahead: one menu (next game, 5/10/20 games, next big game, end of season) with stops; big games in 82-game leagues are top-five sides"
   }
  ],
  "result": {
@@ -59,7 +64,7 @@
     "heis": "442e84bddce94699",
     "history": "bdb28eb017b804f7",
     "universe": "a2c380c9df16ff4e",
-    "screens": "8be40fcad3c6cf36"
+    "screens": "ecef38d3cd419182"
    },
    {
     "year": 2027,
@@ -71,7 +76,7 @@
     "heis": "8048fef75d1be0ca",
     "history": "b3e92789551b5ab6",
     "universe": "c657229cc2a4d886",
-    "screens": "1798611126b11703"
+    "screens": "ee64d2825afecf3f"
    }
   ],
   "Edmonton#777": [
@@ -85,7 +90,7 @@
     "heis": "ecdb7a9cde402f0d",
     "history": "c34ada104fce02c8",
     "universe": "f7460c11c2c9d079",
-    "screens": "66fff1306795a051"
+    "screens": "4e69a14f77d5f173"
    },
    {
     "year": 2027,
@@ -97,7 +102,7 @@
     "heis": "f2f5d48668d871e0",
     "history": "ba1719cdfe5d873b",
     "universe": "49d58b0bf266d4dd",
-    "screens": "66a4680e8b57eb95"
+    "screens": "27397fefe318bd53"
    }
   ],
   "schedules#60": [

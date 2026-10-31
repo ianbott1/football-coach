@@ -1871,7 +1871,7 @@ function weekWeight(w){
   const opp=g.home===my?g.away:g.home;
   if(LEAGUE.rivals.name(my,opp))return 3;
   const rk=SEA.poll.rankMap()[opp];
-  if(rk<=25)return 3;
+  if(rk<=(LEAGUE.bigTop||RANK_TOP))return 3;   // a top side: the top 25 in college, the top ten (five over 82 games) in the pros
   if(w>=LEAGUE.weeks-3)return 2;
   const wp=winProb(my,opp,g.home===my,g.neutral);
   if(wp>0.30&&wp<0.70)return 2;
@@ -1905,21 +1905,78 @@ function simAhead(){
   reveal=null; save(); render();
 }
 
+/* ---- sim ahead: as far as you like, stopping when something needs you ---- */
+let simSheet=false;
+const SIM_STOPS=[["big","A big game is next (a rival, a top side, a cup tie)"],["slide","We lose three in a row"],
+  ["hurt","One of our players gets hurt"],["decide","Something needs a decision"]];
+function simStops(){ if(!S.simStops)S.simStops={big:true,slide:true,hurt:true,decide:true}; return S.simStops }
+function myGamesIn(w){ const my=S.myTeam; return SEA.gamesFor?SEA.gamesFor(my,w):SEA.sched.filter(g=>g.week===w&&(g.home===my||g.away===my)) }
+/* the step after your nth game from here */
+function afterGames(n){ let c=0; for(let w=SEA.step;w<LEAGUE.weeks;w++){ c+=myGamesIn(w).length; if(c>=n)return w+1 } return LEAGUE.weeks }
+function simTargets(){
+  if(SEA.phase!=="week"||isHotSeat()||(live&&!live.done))return [];
+  const out=[{k:"g1",l:"Your next game",to:afterGames(1)}];
+  [5,10,20].forEach(n=>{ const t=afterGames(n); if(t<LEAGUE.weeks&&t>out[out.length-1].to)out.push({k:"g"+n,l:`${n} games`,to:t}) });
+  const big=nextBigWeek();
+  if(big>SEA.step+1&&big<LEAGUE.weeks){ const g=myGamesIn(big)[0]; const opp=g?(g.home===S.myTeam?g.away:g.home):null;
+    out.push({k:"big",l:`To the next big game${opp?": "+opp:""}`,to:big}) }
+  out.push({k:"end",l:"To the end of the regular season",to:LEAGUE.weeks});
+  return out;
+}
+const SIM_WHY={big:"A big game is next.",slide:"Three defeats in a row: worth a look.",hurt:"One of your players is hurt.",decide:"Something needs a decision."};
+function hurtCount(t){ return SEA.talent.active(t).length }
+function attnCount(t){ return (attentionHTML(t).match(/class="attn"/g)||[]).length }
+function simRun(to){
+  const my=S.myTeam, from=SEA.step, stops=simStops();
+  let why=null;
+  S.plans=S.plans||{};
+  while(SEA.phase==="week"&&SEA.step<to){
+    // before your game: is it one you'd want to play yourself?
+    if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
+    const h0=hurtCount(my), a0=attnCount(my), st0=streakOf(my);
+    S.plans[SEA.step]="balanced"; SEA.plan="balanced";
+    SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured);
+    SEA.advance(); S.steps++;
+    if(SEA.phase!=="week")break;
+    // after it: did something happen you'd want to know about now?
+    const st=streakOf(my);
+    if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=st.n)){why="slide";break}
+    if(stops.hurt&&hurtCount(my)>h0){why="hurt";break}
+    if(stops.decide&&attnCount(my)>a0){why="decide";break}
+  }
+  simSheet=false;
+  flash={type:"digest",from:from,to:SEA.step,why:why};
+  reveal=null; save(); render();
+}
+function simSheetHTML(){
+  const T=simTargets(), st=simStops();
+  return `<div class="simsheet" role="dialog" aria-label="Sim ahead"><div class="simbox">
+    <div class="simhead">Sim ahead<button class="closebtn" id="simclose">Close</button></div>
+    <div class="simnote">Your games are played by your assistant, as the computer would. You can take over at any point.</div>
+    <div class="simgo">${T.map(t=>`<button class="advance simto" data-simto="${t.to}">${esc(t.l)}</button>`).join("")}</div>
+    <div class="grouphead" style="border:none;padding-left:0">Stop early if</div>
+    ${SIM_STOPS.map(([k,l])=>`<label class="simstop"><input type="checkbox" data-simstop="${k}" ${st[k]?"checked":""}> ${esc(l)}</label>`).join("")}
+  </div></div>`;
+}
+
 function digestBlock(){
   const my=S.myTeam;
-  let h=`<div class="banner"><div class="bkick">Weeks ${flash.from+1}&ndash;${flash.to} simulated</div>`;
-  const rows=[];
+  const rows=[]; let n=0;
   for(let i=flash.from;i<flash.to;i++){
     const W=SEA.weeks[i]; if(!W)continue;
-    const g=W.games.find(x=>x.home===my||x.away===my);
-    if(!g){rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
+    const gs=W.games.filter(x=>x.home===my||x.away===my).sort((x,y)=>(x.cup?1:0)-(y.cup?1:0));
+    if(!gs.length){ if(!LEAGUE.skipIdle)rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
       <span class="dres bye">Bye</span></div>`);continue}
+    gs.forEach(g=>{ n++;
     const won=g.winner===my, opp=g.home===my?g.away:g.home;
     const ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
-    rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
-      <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.ot?(g.so?" SO":" OT"):""}</span>
-      <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`);
+    const gl=LEAGUE.myGameLabel?LEAGUE.myGameLabel(SEA.weeks.slice(0,i+1).reduce((c,w2)=>c+w2.games.filter(x=>!x.cup&&(x.home===my||x.away===my)).length,0)):W.label;
+    rows.push(`<div class="drow"><span class="dwk">${g.cup?"Cup":gl}</span>
+      <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span>
+      <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`) });
   }
+  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle?n+" game"+(n===1?"":"s"):"Weeks "+(flash.from+1)+"&ndash;"+flash.to} simulated</div>`;
+  if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
   h+=`<div class="bsub">Now ${recStr(my)}${
@@ -2103,8 +2160,7 @@ function render(){
     <div class="cols">
     ${wide&&!inOff?`<aside id="side">${teamPanel()}
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
-        SEA.buttonLabel()}</button>${simGameButton("simone2")}${(()=>{const sk=canSkip();return sk?
-        `<button class="skip" id="skip2">Sim ${sk.n} weeks &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
+        SEA.buttonLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
     <main id="view">${inOff?LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
@@ -2113,8 +2169,7 @@ function render(){
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?standingsView():dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
-      ${(()=>{const sk=canSkip();return sk?`<button class="skip" id="skip">Sim ${sk.n} weeks
-        &rarr; ${esc(sk.opp||"the run-in")}</button>`:""})()}
+      ${simTargets().length>1&&!(live&&!live.done)?`<button class="skip" id="skip">Sim ahead&hellip;</button>`:""}
       ${(()=>{ if(inOff||done||(S.watchMode||"all")==="never"||prefersReduced()||(live&&!live.done))return "";
         const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
         return ug?`<button class="skip" id="simone">Sim game</button>`:""})()}
@@ -2146,7 +2201,7 @@ function render(){
     const p=df.selectionStart; render();
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
   document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
-  const sb=el("skip"); if(sb)sb.onclick=()=>{simAhead();window.scrollTo({top:0})};
+  // (the bottom bar's Sim ahead button is bound with skip2, above)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
   const sn=el("snd"); if(sn)sn.onclick=()=>{S.sound=!soundOn(); save(); if(soundOn())sfx("tap"); render()};
   celebrateIfDue();
@@ -2165,7 +2220,13 @@ function render(){
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
   const a2=el("adv2"); if(a2)a2.onclick=advance;
-  const s2=el("skip2"); if(s2)s2.onclick=()=>simAhead();
+  ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=()=>{simSheet=true;render()} });
+  if(simSheet){
+    el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
+    const c=el("simclose"); if(c)c.onclick=()=>{simSheet=false;render()};
+    document.querySelectorAll("[data-simto]").forEach(b=>b.onclick=()=>{simRun(+b.dataset.simto); window.scrollTo({top:0,behavior:"auto"})});
+    document.querySelectorAll("[data-simstop]").forEach(b=>b.onchange=()=>{simStops()[b.dataset.simstop]=b.checked; save()});
+  }
   ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=()=>{
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});

@@ -1,5 +1,5 @@
 {
- "fp": "0a9d135e68ddff29",
+ "fp": "c57dc40428d74953",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -110,6 +110,11 @@
    "fp": "0a9d135e68ddff29",
    "from": "178642329c00eae9",
    "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
+  },
+  {
+   "fp": "c57dc40428d74953",
+   "from": "0a9d135e68ddff29",
+   "note": "Sim ahead: one menu (next game, 5/10/20 games, next big game, end of season) with stops; big games in 82-game leagues are top-five sides"
   }
  ],
  "result": {
@@ -124,7 +129,7 @@
     "heis": "a07fa10837ea63bd",
     "history": "b4c05994b1c6172c",
     "universe": "53c6acc4af15004d",
-    "screens": "ae5501677478ac3a"
+    "screens": "48f77fda1f7d9a96"
    },
    {
     "year": 2027,
@@ -136,7 +141,7 @@
     "heis": "bcb859497400b5a9",
     "history": "ae73e295373e04fc",
     "universe": "ba1b0368fcd6178a",
-    "screens": "e1e3af830e647279"
+    "screens": "f52e1e71ef93d4f6"
    }
   ],
   "Coppin State#2024": [
@@ -150,7 +155,7 @@
     "heis": "79e19a7b8769bb45",
     "history": "70f5225a11c2b030",
     "universe": "161e89c63f7ebc60",
-    "screens": "808d97f991bf565e"
+    "screens": "3b7495b4be3f6443"
    },
    {
     "year": 2027,
@@ -162,7 +167,7 @@
     "heis": "8ec38204f2737426",
     "history": "e182a69c7cd8e025",
     "universe": "0b727f24486a2b6f",
-    "screens": "ae1c3d757b9dc168"
+    "screens": "dd38a563ed802454"
    }
   ],
   "Gonzaga#777": [
@@ -176,7 +181,7 @@
     "heis": "c9db7b71d8cb9ff5",
     "history": "51feba7c23db0c99",
     "universe": "f782d7238ff61480",
-    "screens": "f47062abb15cb9f8"
+    "screens": "f8754c5a1450f60b"
    },
    {
     "year": 2027,
@@ -188,7 +193,7 @@
     "heis": "04f4f64ed7dc6b23",
     "history": "2541e885ec6898e4",
     "universe": "dc4954653c3fe7f9",
-    "screens": "dbb80c47d0b2366f"
+    "screens": "36cfc7829afd13b5"
    }
   ],
   "schedules#60": [

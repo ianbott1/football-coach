@@ -1,5 +1,5 @@
 {
- "fp": "dbc75eecc1a0aa43",
+ "fp": "cbb34bc99b665392",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -109,6 +109,11 @@
    "fp": "dbc75eecc1a0aa43",
    "from": "1523215423dd4f0a",
    "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
+  },
+  {
+   "fp": "cbb34bc99b665392",
+   "from": "dbc75eecc1a0aa43",
+   "note": "Sim ahead: one menu (next game, 5/10/20 games, next big game, end of season) with stops; big games in 82-game leagues are top-five sides"
   }
  ],
  "result": {
@@ -123,7 +128,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "2d03e5d872291c88",
     "universe": "e79095527cedb7a2",
-    "screens": "970cde6e8b6d9e31"
+    "screens": "c89bd2730013c7a4"
    },
    {
     "year": 2027,
@@ -135,7 +140,7 @@
     "heis": "5c947393c6f7ab04",
     "history": "54e86afb05b51bb6",
     "universe": "7984b671b6b8445c",
-    "screens": "7bcd63c878820d86"
+    "screens": "0f2979cf3a7869c1"
    },
    {
     "year": 2028,
@@ -147,7 +152,7 @@
     "heis": "cea69a0c24106e1c",
     "history": "0fbedd73deeb837b",
     "universe": "10c0a14a142936e0",
-    "screens": "a388914e64c77ed0"
+    "screens": "3d2b9593c7204c9c"
    },
    {
     "year": 2029,
@@ -159,7 +164,7 @@
     "heis": "86c27997c3fd52ed",
     "history": "534eefba20e56b1b",
     "universe": "e03443c50faacd3b",
-    "screens": "bfbe4a6c992077d5"
+    "screens": "a7ec37b5f56051eb"
    }
   ],
   "Rice#2024": [
@@ -173,7 +178,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "47a3992938d6c060"
+    "screens": "cf764ce220445f81"
    },
    {
     "year": 2027,
@@ -185,7 +190,7 @@
     "heis": "4e4319a44375c65b",
     "history": "badebf2c925eda97",
     "universe": "d27a590dd69db4c8",
-    "screens": "1b3e2820b07c77d0"
+    "screens": "c2b6390584bf00e1"
    },
    {
     "year": 2028,
@@ -197,7 +202,7 @@
     "heis": "f4929038beaf492f",
     "history": "c4907f846de53b96",
     "universe": "739fe69b302c434d",
-    "screens": "0a77365d5dd1be78"
+    "screens": "4637bb49ce6d57a2"
    },
    {
     "year": 2029,
@@ -209,7 +214,7 @@
     "heis": "aacb35d7197a5573",
     "history": "85bae84c3194d8be",
     "universe": "fd8e222efc417852",
-    "screens": "8e15e3588794590d"
+    "screens": "6ec10abbf14dc9f6"
    }
   ],
   "Oregon#777": [
@@ -223,7 +228,7 @@
     "heis": "fde104829f9687a1",
     "history": "9316d1f06af839c7",
     "universe": "be152d1e2f6220f0",
-    "screens": "b6c4f8b3d576bf95"
+    "screens": "8b7d8a06c46b4c76"
    },
    {
     "year": 2027,
@@ -235,7 +240,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "4b04326b2389c1ec"
+    "screens": "0049cb98060ec252"
    },
    {
     "year": 2028,
@@ -247,7 +252,7 @@
     "heis": "8bc8df1a03879f2f",
     "history": "e5ded2f68e112df9",
     "universe": "10e4f661e0c5e66f",
-    "screens": "7ec4277b67d34de8"
+    "screens": "f9229673a7b83140"
    }
   ],
   "Kent State#31337": [
@@ -261,7 +266,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "74007a0db2a63521",
     "universe": "e22d53c083f084ff",
-    "screens": "45b9c5879685119f"
+    "screens": "2b38171bbdcbface"
    },
    {
     "year": 2027,
@@ -273,7 +278,7 @@
     "heis": "e3afac23d3079708",
     "history": "4929007a1d5ff808",
     "universe": "8b8561c010c5d7ce",
-    "screens": "865d073b2db1d8d6"
+    "screens": "db481c15c1b934df"
    },
    {
     "year": 2028,
@@ -285,7 +290,7 @@
     "heis": "1631e759996121aa",
     "history": "f34fa1d94fa7d861",
     "universe": "c6dadac000888428",
-    "screens": "8c05aa8caa0816c5"
+    "screens": "c70adac11f45898e"
    }
   ],
   "schedules#60": [

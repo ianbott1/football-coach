@@ -21,7 +21,7 @@ for(const [lg,f] of Object.entries(G)){
 }
 // across games
 add('saves (all six)',['saves.js']); add('layouts (all six)',['layouts.js']);
-add('sim and skip (all six)',['sim-and-skip.js']); add('goals and seat badge',['goals.js']);
+add('sim and skip (all six)',['sim-and-skip.js']); add('sim ahead (all six)',['sim-ahead.js']); add('goals and seat badge',['goals.js']);
 add('migrate old saves (college football)',['migrate.js']);
 // college football
 add('h2h (cfb)',['h2h.js',D(G.cfb)]); add('moves (cfb)',['moves.js',D(G.cfb)]);

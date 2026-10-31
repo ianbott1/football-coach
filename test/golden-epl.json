@@ -1,5 +1,5 @@
 {
- "fp": "1bcc1052d28d43ff",
+ "fp": "0e8fcdd1fbf029df",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -60,6 +60,11 @@
    "fp": "1bcc1052d28d43ff",
    "from": "1bcc1052d28d43ff",
    "note": "The FA Cup: every club, midweek ties played live (hot seat too); schedule shows every game in a week; draws don't count as losses in streaks"
+  },
+  {
+   "fp": "0e8fcdd1fbf029df",
+   "from": "1bcc1052d28d43ff",
+   "note": "Sim ahead: one menu (next game, 5/10/20 games, next big game, end of season) with stops; big games in 82-game leagues are top-five sides"
   }
  ],
  "result": {
@@ -74,7 +79,7 @@
     "heis": "e4f2c9d16293c01f",
     "history": "d35e40908f961bb5",
     "universe": "8c1da501ae958c94",
-    "screens": "7465ec47fc51cf4d"
+    "screens": "67a8f18180674185"
    },
    {
     "year": 2027,
@@ -86,7 +91,7 @@
     "heis": "756e06562ffc95b3",
     "history": "7993331f7afe9134",
     "universe": "7636e1f42f607669",
-    "screens": "0ee10c8849198633"
+    "screens": "d9c4c249d33a634a"
    }
   ],
   "Wrexham#777": [
@@ -100,7 +105,7 @@
     "heis": "1a60e3a07644f048",
     "history": "73a43ae62607953c",
     "universe": "306b8fa0bb0a9d27",
-    "screens": "278b318cd406b99f"
+    "screens": "8903e36f2e622b2f"
    },
    {
     "year": 2027,
@@ -112,7 +117,7 @@
     "heis": "4a0e210760fa2d92",
     "history": "5d0d661f0fd8e614",
     "universe": "65fa79cafc3d946f",
-    "screens": "e41dc112ba9c864b"
+    "screens": "aa498500aa9fd6d7"
    }
   ],
   "schedules#60": [

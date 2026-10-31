@@ -70,6 +70,7 @@ const LEAGUE={
   standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
   stepLabel:w=>`Game day ${w+1}`,
   myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day               // a pro season is game days, not weeks
+  bigTop:5,                                   // a big game in an 82-game season: a top-five side
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty-two
   points(t,sea){ const [w]=(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return 2*w+o },
 

@@ -58,6 +58,7 @@ const LEAGUE={
   schedule:{games:82},
   stepLabel:w=>`Game day ${w+1}`,
   myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day
+  bigTop:5,                                   // a big game in an 82-game season: a top-five side
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty
   playoff:{size:16, perSide:8, byes:0, playIn:true},
   /* the baby owl, suited up for the pros: a headband and a jersey number */
