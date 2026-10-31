@@ -88,6 +88,7 @@ const LEAGUE={
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
     week:"night",                                // the digest: "The night that was"
+    pickIntro:"Every franchise is a different job with different expectations. Win with a contender and it's what they pay you for; win with a rebuild and you'll have your pick of the jobs.",
     tagline:"Build a franchise. Win it all.",
     gameName:"Pro Hockey Coach", eyebrow:"Pro",
     site:"Pro Hockey Coach: ianbott1.github.io/football-coach",

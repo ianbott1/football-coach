@@ -100,6 +100,7 @@ const LEAGUE={
     ranking:"the rankings", top:"the rankings", entered:"Up to No. ", dropped:"Out of the rankings",
     orgNote:base=>`Franchise strength is the slow-moving baseline &mdash; ownership, facilities,
       front office. Measured against where each franchise stood in ${base}.`,
+    pickIntro:"Every franchise is a different job with different expectations. Win with a contender and it's what they pay you for; win with a rebuild and you'll have your pick of the jobs.",
     tagline:"Build a franchise. Win it all.",
     gameName:"Pro Football Coach", eyebrow:"Pro",
     site:"Pro Football Coach: ianbott1.github.io/football-coach",

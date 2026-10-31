@@ -499,7 +499,7 @@ LEAGUE.goals={
       return {w:0,pos:17,par:0,l:"Stay up. Nothing else matters.",t:"SURVIVE"};
     }
     const R=DIVS[d], poEnd=R.po?R.po[1]:R.up, bottom=24-(R.down||0);
-    if(z>=0.75)return {w:0,pos:Math.max(1,R.up),par:1,l:`Promotion out of the ${name}.`,t:"GO UP"};
+    if(z>=0.75)return {w:0,pos:Math.max(1,R.up),par:1,l:`Promotion out of ${/^League /.test(name)?name:"the "+name}.`,t:"GO UP"};
     if(z>=0.5)return {w:0,pos:poEnd,par:0.5,l:`The ${name} play-offs.`,t:"PLAY-OFFS"};
     if(z>=0.2)return {w:0,pos:12,par:0.2,l:"A solid season in mid-table.",t:"MID-TABLE"};
     return R.down?{w:0,pos:bottom,par:0,l:`Stay up: out of the bottom ${R.down}.`,t:"SURVIVE"}:{w:0,pos:18,par:0,l:"A solid season.",t:"BUILD"};

@@ -83,6 +83,7 @@ const LEAGUE={
     ranking:"the table", top:"the table", entered:"Up to ",
     orgNote:base=>`Club stature is the slow-moving baseline &mdash; support, revenue, history. Measured
       against where each club stood in ${base}.`,
+    pickIntro:"Every club is a different job with different expectations. Win at a giant and it's what they pay you for; win at a club nobody expects anything of and you'll have your pick of the jobs.",
     tagline:"Build a club. Win the league.",
     gameName:"Soccer Coach", eyebrow:"English",
     site:"Soccer Coach: ianbott1.github.io/football-coach",

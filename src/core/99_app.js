@@ -798,6 +798,11 @@ function heroResult(){
     <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}${g.cup?" &middot; "+esc(g.title):""}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
+/* the first few reads: how to read the panel */
+function firstReadTip(){
+  if(S.readTally&&S.readTally.n>=3)return "";
+  return `<div class="evtip">First reads: look for the number marked &#9650; or &#9660;, well away from the league average. That's how they're playing. Pick the answer that beats it, then see if you were right after the game.</div>`;
+}
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){
   if(step===undefined||step===null||typeof readText!=="function"||!S.played)return "";
@@ -2386,6 +2391,28 @@ function owlMark(size){
 
 const OWL_LINE="Baby Owl genius "+SPORT.word.toLowerCase()+" coach!";
 
+/* a first job, three ways: a favourite, a contender, a rebuild. The
+   contender is the quick start: good enough to win, not so good that
+   anything less is failure. */
+function firstJobs(){
+  const order=NAMES.slice().sort((a,b)=>PRE_RANK[a]-PRE_RANK[b]), N=order.length;
+  const at=f=>order[Math.min(N-1,Math.floor(N*f))];
+  const r=Math.random();
+  return [
+    {k:"fav",  t:at(0.02+0.04*r), l:"The favourite", d:"Expected to win. The pressure starts on day one."},
+    {k:"cont", t:at(0.18+0.12*r), l:"The contender", d:"A good side with a real chance. The best first job."},
+    {k:"build",t:at(0.55+0.15*r), l:"The rebuild",   d:"Patience, and a hero if you pull it off."}
+  ];
+}
+let firstJobPicks=null;
+function quickStart(slotN){
+  slot=slotN;
+  const J=(firstJobPicks||firstJobs())[1];
+  S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:false,introDone:true,
+     setup:{name:"",seed:Math.floor(Math.random()*899999+100000),ready:true}};
+  newDynasty(J.t,S.setup.seed>>>0,"");
+}
+
 function renderTitle(){
   const slots=S._slots||[];
   el("app").innerHTML=`<div class="titlewrap">
@@ -2395,6 +2422,9 @@ function renderTitle(){
     </div>
     <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">${esc(LEAGUE.text.tagline||"Build a program. Win it all.")}</div>
+    ${(()=>{ const free=slots.find(x=>x.empty); if(!free||slots.some(x=>!x.empty))return "";
+      firstJobPicks=firstJobPicks||firstJobs(); const J=firstJobPicks[1];
+      return `<button class="advance quickstart" id="qstart" data-qs="${free.n}">Quick start<small>${esc(J.t)} &middot; ${esc(J.d)}</small></button>` })()}
     <div class="slots">${slots.map(s=>s.empty
       ? `<button class="slot empty" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
@@ -2422,6 +2452,7 @@ function renderTitle(){
           S.title=false;render()}
   });
   el("thow").onclick=()=>{S.title=false;S.introStep=0;render()};
+  const qs=el("qstart"); if(qs)qs.onclick=()=>quickStart(+qs.dataset.qs);
   const ot=el("owltap");
   if(ot)ot.onclick=()=>{owlTaps++;
     ot.classList.remove("hoot"); void ot.offsetWidth; ot.classList.add("hoot");
@@ -2534,12 +2565,12 @@ function renderStart(){
         return esc(((S.setup.names&&S.setup.names[taken])||"").trim()||("Coach "+(taken+1)));
       })()}</div>
       <h1>Where do you<br>want to coach?</h1>
-      <p>Every program is a different job with different expectations. Win at a blue blood and
-        it's what they pay you for; win at a rebuild and you'll have your pick of the country.</p>
+      <p>${LEAGUE.text.pickIntro?esc(LEAGUE.text.pickIntro):`Every program is a different job with different expectations. Win at a blue blood and
+        it's what they pay you for; win at a rebuild and you'll have your pick of the country.`}</p>
     </header>
     ${(function(){
       const n=(S.setup&&S.setup.coaches)||1;
-      if(n<2)return `<div class="grouphead">Your program</div>`;
+      if(n<2)return "";                         // the first jobs below carry the heading
       const taken=(S.picking||[]).map(x=>x.team);
       const who=((S.setup.names&&S.setup.names[taken.length])||"").trim()
               ||("Coach "+(taken.length+1));
@@ -2547,6 +2578,11 @@ function renderStart(){
         (${taken.length+1} of ${n})</div>`+
         (taken.length?`<div class="note">Already taken: ${taken.map(esc).join(", ")}</div>`:"");
     })()}
+    ${(S.picking&&S.picking.length)?"":(()=>{ firstJobPicks=firstJobPicks||firstJobs();
+      return `<div class="grouphead">Good first jobs</div><div class="firstjobs">${firstJobPicks.map(J=>`<button class="pick firstjob" data-t="${esc(J.t)}">
+        <span class="dot" style="background:${teamColor(J.t)}"></span><span class="fjl">${esc(J.l)}</span>
+        <span class="fjt">${esc(J.t)}</span><span class="fjd">${esc(J.d)}</span></button>`).join("")}</div>
+        <div class="grouphead">Or any of them</div>` })()}
     <div class="seedrow"><input id="find" class="seedbox findbox" placeholder="Search ${NAMES.length} ${esc(LEAGUE.text.orgs||"teams")}...">
       <span class="seedhint">The number is the preseason rating rank. Lower means a stronger
       program &mdash; and higher expectations to go with it.</span></div>

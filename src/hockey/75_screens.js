@@ -125,7 +125,7 @@ function evidenceHTML(g,my,d,dp){
     const rows=[["Giveaways they force in our zone",per(T.to),T.to/n>=1.2],["Our zone entries they kill",per(T.fe),T.fe/n>=1.2],["Shifts they cycle below our goal line",per(T.cy),T.cy/n>=1.2]];
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are playing us <span>per period</span></div>
       ${rows.map(r=>`<div class="evr ${r[2]?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${r[1]}</span></div>`).join("")}
-      <div class="evn">League average: 2.8 of each a period. The system they play leaves one of these well above it.</div></div>`; }
+      ${firstReadTip()}<div class="evn">League average: 2.8 of each a period. The system they play leaves one of these well above it.</div></div>`; }
   if(dp.k==="goalie"){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>

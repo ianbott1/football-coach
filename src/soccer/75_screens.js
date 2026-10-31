@@ -139,7 +139,7 @@ function evidenceHTML(g,my,d,kind){
   const rows=tellRows(d.T[opp]);
   return `<div class="evid"><div class="evh">How ${esc(oppName)} are playing it <span>per 45 minutes</span></div>
     ${rows.map(r=>`<div class="evr ${r[3]}"><span class="evk">${r[0]}</span><span class="evv">${r[1]}</span></div>`).join("")}
-    <div class="evn">League average: possession 50%, turnovers 6.3, crosses 5.4, long balls 6.3.</div></div>`;
+    ${firstReadTip()}<div class="evn">League average: possession 50%, turnovers 6.3, crosses 5.4, long balls 6.3.</div></div>`;
 }
 function statStrip(g,d){
   if(!d||!d.st)return "";
