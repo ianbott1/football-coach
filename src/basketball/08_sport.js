@@ -1,5 +1,6 @@
 /* ============ sport: basketball ============ */
 const SPORT={
+  scoreWord:"RUN",                 // the flash when you score
   id:"basketball",
   word:"Basketball",
   /* what the owl perches on in the logo: the rim, with the backboard behind

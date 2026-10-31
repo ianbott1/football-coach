@@ -4,6 +4,7 @@
    of up-and-comer a program hires as head coach. A second sport defines
    its own SPORT. */
 const SPORT={
+  scoreWord:"SCORE",                 // the flash when you score
   id:"football",
   word:"Football",                     // the title screen's wordmark: Football / Coach
   /* what the owl perches on in the logo: the crossbar of a goalpost */

@@ -158,7 +158,7 @@ function playsHTML(list,my,g){
   });
   return rows.slice().reverse().map(r=>`<div class="play ${r.team===my?'mine':''} ${r.goal?'goalrow':''} ${r.cue?'cue':''}">
       <span class="pq">${r.m}'</span>
-      <div class="ptxt"><b>${esc(r.team)}</b> ${esc(r.text)}${r.tag?` <span class="dtag ${r.tag==="GOAL"?'sc':r.tag==="RED"?'rd':'yl'}">${esc(r.tag)}</span>`:""}</div>
+      <div class="ptxt">${r.cue?"":`<b>${esc(r.team)}</b> `}${esc(r.text)}${r.tag?` <span class="dtag ${r.tag==="GOAL"?'sc':r.tag==="RED"?'rd':'yl'}">${esc(r.tag)}</span>`:""}</div>
       <span class="pscore">${r.h}&ndash;${r.a}</span></div>`).join("");
 }
 function liveView(){
@@ -233,7 +233,7 @@ function watchView(){
     <div class="grouphead">Run of play</div>
     <div class="plays">${rows.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''} ${e.outcome==="GOAL"?'goalrow':''} ${e.cue?'cue':''}">
       <span class="pq">${esc(e.clock)}</span>
-      <div class="ptxt"><b>${esc(e.team)}</b> ${esc(e.text)}${e.outcome?` <span class="dtag ${e.outcome==="GOAL"?'sc':e.outcome==="RED"?'rd':e.outcome==="YELLOW"?'yl':'sc'}">${esc(e.outcome)}</span>`:""}</div>
+      <div class="ptxt">${e.cue?"":`<b>${esc(e.team)}</b> `}${esc(e.text)}${e.outcome?` <span class="dtag ${e.outcome==="GOAL"?'sc':e.outcome==="RED"?'rd':e.outcome==="YELLOW"?'yl':'sc'}">${esc(e.outcome)}</span>`:""}</div>
       <span class="pscore">${e.h}&ndash;${e.a}</span></div>`).join("")
       ||`<div class="empty">${owlMark(40)}<span>Waiting for kick-off&hellip;</span></div>`}</div>
     <div class="actionbar">

@@ -1,5 +1,5 @@
 {
- "fp": "c8db5e6c176f0c48",
+ "fp": "c096db37010529c0",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -40,6 +40,11 @@
    "fp": "c8db5e6c176f0c48",
    "from": "d23c7ff230c52e3e",
    "note": "Live knockout games: playoff overtime is sudden death (was a shootout when watched live)"
+  },
+  {
+   "fp": "c096db37010529c0",
+   "from": "c8db5e6c176f0c48",
+   "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
   }
  ],
  "result": {
@@ -54,7 +59,7 @@
     "heis": "442e84bddce94699",
     "history": "bdb28eb017b804f7",
     "universe": "a2c380c9df16ff4e",
-    "screens": "2ae3725b6c6c7ad1"
+    "screens": "8be40fcad3c6cf36"
    },
    {
     "year": 2027,
@@ -66,7 +71,7 @@
     "heis": "8048fef75d1be0ca",
     "history": "b3e92789551b5ab6",
     "universe": "c657229cc2a4d886",
-    "screens": "a32db569bc355c5e"
+    "screens": "1798611126b11703"
    }
   ],
   "Edmonton#777": [
@@ -80,7 +85,7 @@
     "heis": "ecdb7a9cde402f0d",
     "history": "c34ada104fce02c8",
     "universe": "f7460c11c2c9d079",
-    "screens": "2c8cbdc5eace4db8"
+    "screens": "66fff1306795a051"
    },
    {
     "year": 2027,
@@ -92,7 +97,7 @@
     "heis": "f2f5d48668d871e0",
     "history": "ba1719cdfe5d873b",
     "universe": "49d58b0bf266d4dd",
-    "screens": "6f9cb680a69238aa"
+    "screens": "66a4680e8b57eb95"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "18154063d811470b",
+ "fp": "903b985cbac98368",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -115,6 +115,11 @@
    "fp": "18154063d811470b",
    "from": "556614e8a2b8e0fa",
    "note": "Display fixes: table position in soccer, pro power rank for every team, your game number, history keeps draws and OT losses, written before teams move"
+  },
+  {
+   "fp": "903b985cbac98368",
+   "from": "18154063d811470b",
+   "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
   }
  ],
  "result": {
@@ -129,7 +134,7 @@
     "heis": "4fae3ab392988611",
     "history": "bd438ebcde8c63eb",
     "universe": "441905dd3148a5d1",
-    "screens": "0ff5664a2f0bf0c5"
+    "screens": "3f4df1a32bb35129"
    },
    {
     "year": 2027,
@@ -141,7 +146,7 @@
     "heis": "50292adb1f3816e5",
     "history": "653fe80c2abb1549",
     "universe": "e5bd249266f86217",
-    "screens": "54cf7d5b21455477"
+    "screens": "475d7fe4bed020b0"
    },
    {
     "year": 2028,
@@ -153,7 +158,7 @@
     "heis": "5b669cd7b429c116",
     "history": "235bc03bdfbea1f5",
     "universe": "5ce43d3b22c0c456",
-    "screens": "28052e9b2b67f7dc"
+    "screens": "8970b9fc79c76acb"
    },
    {
     "year": 2029,
@@ -165,7 +170,7 @@
     "heis": "83d959288c7ec0b4",
     "history": "394cff4f2de57d9a",
     "universe": "c8c772df34c1095b",
-    "screens": "2d55c564bbfaef50"
+    "screens": "34146101559d6fb6"
    }
   ],
   "Tennessee#2024": [
@@ -179,7 +184,7 @@
     "heis": "37fc33ff6586a56c",
     "history": "6d8d72369d3f7895",
     "universe": "2c58f09c02e89ff3",
-    "screens": "55c3346ca075ff18"
+    "screens": "bf6b7ef41809c411"
    },
    {
     "year": 2027,
@@ -191,7 +196,7 @@
     "heis": "e712dc2ea45e4767",
     "history": "e50821ad0a8af7e4",
     "universe": "78816cc84a6db315",
-    "screens": "ead84f44ba8f59c8"
+    "screens": "74fa7f8a6141111c"
    },
    {
     "year": 2028,
@@ -203,7 +208,7 @@
     "heis": "a0b7318947052e77",
     "history": "b585ff05d0864d66",
     "universe": "46d72c51c05f7d3c",
-    "screens": "53f77d028e810982"
+    "screens": "d64e058880688006"
    },
    {
     "year": 2029,
@@ -215,7 +220,7 @@
     "heis": "fe3a965910525c47",
     "history": "ce29e693a0fcb4df",
     "universe": "53bac5df002b0332",
-    "screens": "d21d650860cf2c96"
+    "screens": "26a337dc616f05b4"
    }
   ],
   "Detroit#777": [
@@ -229,7 +234,7 @@
     "heis": "c3850889cd76aeef",
     "history": "70e5242cbf2bd60e",
     "universe": "7271894a51fa7473",
-    "screens": "3432387bc94be358"
+    "screens": "5187a3ced4d4e635"
    },
    {
     "year": 2027,
@@ -241,7 +246,7 @@
     "heis": "a95547d27a243ff5",
     "history": "f5736d99dc8a49e4",
     "universe": "a591cec98bfc76c6",
-    "screens": "715634472e943629"
+    "screens": "6e5d34ab7f6d61cf"
    },
    {
     "year": 2028,
@@ -253,7 +258,7 @@
     "heis": "b2abbee3d451aa2e",
     "history": "f0ae7ecd8c68064c",
     "universe": "146bab95bbd40dd7",
-    "screens": "cbf907ce7db27e45"
+    "screens": "cd698f90a7ad5a1d"
    }
   ],
   "NY Giants#31337": [
@@ -267,7 +272,7 @@
     "heis": "2d43f3c0d766e586",
     "history": "7d9896fb4b9e0798",
     "universe": "20286de6b7b76f5c",
-    "screens": "63b64463ccd3d7b5"
+    "screens": "99df430d968d32e1"
    },
    {
     "year": 2027,
@@ -279,7 +284,7 @@
     "heis": "e1fc4979e8151576",
     "history": "3efc151dc34d1295",
     "universe": "874396bf1838dbb4",
-    "screens": "b1019a8c9a595a00"
+    "screens": "267bacd27984e69e"
    },
    {
     "year": 2028,
@@ -291,7 +296,7 @@
     "heis": "1068d0462124ad57",
     "history": "d3c198b10b25c22d",
     "universe": "8286ec96ba4e5bbf",
-    "screens": "73ce02413956eb19"
+    "screens": "376561c77b2f974e"
    }
   ],
   "schedules#60": [

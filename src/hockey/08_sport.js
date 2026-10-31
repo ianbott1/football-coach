@@ -1,5 +1,6 @@
 /* ============ sport: hockey ============ */
 const SPORT={
+  scoreWord:"GOAL",                 // the flash when you score
   id:"hockey",
   word:"Hockey",
   /* what the owl perches on in the logo: the crossbar of a goal, with the

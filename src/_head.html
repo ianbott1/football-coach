@@ -753,6 +753,18 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .dtag.rd{color:#fff;background:var(--flag);border-color:var(--flag)}
 .dtag.yl{color:#14171F;background:#F2C94C;border-color:#F2C94C}
 .callbtn small{display:block;font-family:var(--sans,inherit);font-size:11.5px;font-weight:400;letter-spacing:0;text-transform:none;opacity:.75;margin-top:3px}
+.goalflash{position:fixed;inset:0;pointer-events:none;z-index:60;display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--fc) 55%,transparent),transparent 68%);animation:gflash 1.4s ease-out forwards}
+.goalflash span{font-family:var(--cond);font-weight:700;font-size:clamp(46px,14vw,96px);letter-spacing:.04em;color:#fff;
+ text-transform:uppercase;text-shadow:0 4px 30px rgba(0,0,0,.5),0 0 2px var(--fc);transform:skewX(-6deg)}
+.goalflash.theirs{background:radial-gradient(circle at 50% 40%,rgba(10,12,18,.55),transparent 70%)}
+.goalflash.theirs span{font-size:clamp(26px,7vw,46px);color:var(--muted)}
+@keyframes gflash{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1.04)}24%{transform:scale(1)}72%{opacity:1}100%{opacity:0}}
+canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+.reset.off{opacity:.45;text-decoration:line-through}
+/* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
+@media(max-width:480px){.tb-yr{display:none}.tb-team{margin-left:0;font-size:19px}
+ .tb-right .reset{padding:4px 7px;margin-left:4px}.tb-right{font-size:12px}}
 .mom{margin:8px 0 2px}.mom svg{width:100%;height:44px;display:block}
 .obar.wdl b{display:inline-block;height:100%;background:var(--muted);opacity:.55}
 .momkey{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}

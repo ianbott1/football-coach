@@ -1,5 +1,5 @@
 {
- "fp": "178642329c00eae9",
+ "fp": "0a9d135e68ddff29",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -105,6 +105,11 @@
    "fp": "178642329c00eae9",
    "from": "f09b652f6ead65b6",
    "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
+  },
+  {
+   "fp": "0a9d135e68ddff29",
+   "from": "178642329c00eae9",
+   "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
   }
  ],
  "result": {
@@ -119,7 +124,7 @@
     "heis": "a07fa10837ea63bd",
     "history": "b4c05994b1c6172c",
     "universe": "53c6acc4af15004d",
-    "screens": "77c2b03a83b4545e"
+    "screens": "ae5501677478ac3a"
    },
    {
     "year": 2027,
@@ -131,7 +136,7 @@
     "heis": "bcb859497400b5a9",
     "history": "ae73e295373e04fc",
     "universe": "ba1b0368fcd6178a",
-    "screens": "8d516150775d3306"
+    "screens": "e1e3af830e647279"
    }
   ],
   "Coppin State#2024": [
@@ -145,7 +150,7 @@
     "heis": "79e19a7b8769bb45",
     "history": "70f5225a11c2b030",
     "universe": "161e89c63f7ebc60",
-    "screens": "214a98b90dd57f97"
+    "screens": "808d97f991bf565e"
    },
    {
     "year": 2027,
@@ -157,7 +162,7 @@
     "heis": "8ec38204f2737426",
     "history": "e182a69c7cd8e025",
     "universe": "0b727f24486a2b6f",
-    "screens": "90630b741886fdfb"
+    "screens": "ae1c3d757b9dc168"
    }
   ],
   "Gonzaga#777": [
@@ -171,7 +176,7 @@
     "heis": "c9db7b71d8cb9ff5",
     "history": "51feba7c23db0c99",
     "universe": "f782d7238ff61480",
-    "screens": "f3d6345e62628787"
+    "screens": "f47062abb15cb9f8"
    },
    {
     "year": 2027,
@@ -183,7 +188,7 @@
     "heis": "04f4f64ed7dc6b23",
     "history": "2541e885ec6898e4",
     "universe": "dc4954653c3fe7f9",
-    "screens": "e2f99d1794048d44"
+    "screens": "dbb80c47d0b2366f"
    }
   ],
   "schedules#60": [

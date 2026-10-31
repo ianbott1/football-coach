@@ -1,5 +1,5 @@
 {
- "fp": "1523215423dd4f0a",
+ "fp": "dbc75eecc1a0aa43",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -104,6 +104,11 @@
    "fp": "1523215423dd4f0a",
    "from": "0c3a089bf28fd73e",
    "note": "The gameplan tip ('This choice is real') removed from every game; hockey: the NHL's 84-game matrix, regulation-wins tiebreak, OTL in schedules"
+  },
+  {
+   "fp": "dbc75eecc1a0aa43",
+   "from": "1523215423dd4f0a",
+   "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
   }
  ],
  "result": {
@@ -118,7 +123,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "2d03e5d872291c88",
     "universe": "e79095527cedb7a2",
-    "screens": "810417779259f8a0"
+    "screens": "970cde6e8b6d9e31"
    },
    {
     "year": 2027,
@@ -130,7 +135,7 @@
     "heis": "5c947393c6f7ab04",
     "history": "54e86afb05b51bb6",
     "universe": "7984b671b6b8445c",
-    "screens": "90a6caa031721edb"
+    "screens": "7bcd63c878820d86"
    },
    {
     "year": 2028,
@@ -142,7 +147,7 @@
     "heis": "cea69a0c24106e1c",
     "history": "0fbedd73deeb837b",
     "universe": "10c0a14a142936e0",
-    "screens": "f4e7643afab148ca"
+    "screens": "a388914e64c77ed0"
    },
    {
     "year": 2029,
@@ -154,7 +159,7 @@
     "heis": "86c27997c3fd52ed",
     "history": "534eefba20e56b1b",
     "universe": "e03443c50faacd3b",
-    "screens": "933ce29bc8930dc6"
+    "screens": "bfbe4a6c992077d5"
    }
   ],
   "Rice#2024": [
@@ -168,7 +173,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "51f014b628388728"
+    "screens": "47a3992938d6c060"
    },
    {
     "year": 2027,
@@ -180,7 +185,7 @@
     "heis": "4e4319a44375c65b",
     "history": "badebf2c925eda97",
     "universe": "d27a590dd69db4c8",
-    "screens": "072a8554fbd62564"
+    "screens": "1b3e2820b07c77d0"
    },
    {
     "year": 2028,
@@ -192,7 +197,7 @@
     "heis": "f4929038beaf492f",
     "history": "c4907f846de53b96",
     "universe": "739fe69b302c434d",
-    "screens": "ed76264328c18205"
+    "screens": "0a77365d5dd1be78"
    },
    {
     "year": 2029,
@@ -204,7 +209,7 @@
     "heis": "aacb35d7197a5573",
     "history": "85bae84c3194d8be",
     "universe": "fd8e222efc417852",
-    "screens": "9873c289aa9a7643"
+    "screens": "8e15e3588794590d"
    }
   ],
   "Oregon#777": [
@@ -218,7 +223,7 @@
     "heis": "fde104829f9687a1",
     "history": "9316d1f06af839c7",
     "universe": "be152d1e2f6220f0",
-    "screens": "37abe7d04aceef2c"
+    "screens": "b6c4f8b3d576bf95"
    },
    {
     "year": 2027,
@@ -230,7 +235,7 @@
     "heis": "16871fc36811ec09",
     "history": "271d5c40ea22a899",
     "universe": "489fc5cea8fb2491",
-    "screens": "4984e7a49051aacf"
+    "screens": "4b04326b2389c1ec"
    },
    {
     "year": 2028,
@@ -242,7 +247,7 @@
     "heis": "8bc8df1a03879f2f",
     "history": "e5ded2f68e112df9",
     "universe": "10e4f661e0c5e66f",
-    "screens": "854df63ef609bae4"
+    "screens": "7ec4277b67d34de8"
    }
   ],
   "Kent State#31337": [
@@ -256,7 +261,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "74007a0db2a63521",
     "universe": "e22d53c083f084ff",
-    "screens": "71af65f56b976bb4"
+    "screens": "45b9c5879685119f"
    },
    {
     "year": 2027,
@@ -268,7 +273,7 @@
     "heis": "e3afac23d3079708",
     "history": "4929007a1d5ff808",
     "universe": "8b8561c010c5d7ce",
-    "screens": "695cba88c4fbd46c"
+    "screens": "865d073b2db1d8d6"
    },
    {
     "year": 2028,
@@ -280,7 +285,7 @@
     "heis": "1631e759996121aa",
     "history": "f34fa1d94fa7d861",
     "universe": "c6dadac000888428",
-    "screens": "97838e5b498d1b57"
+    "screens": "8c05aa8caa0816c5"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "20e97c7e2b25e763",
+ "fp": "eaa3c31f2a9d8500",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -45,6 +45,11 @@
    "fp": "20e97c7e2b25e763",
    "from": "20e97c7e2b25e763",
    "note": "Soccer: five-minute spells, approaches and counters, the flank, named events; calls you read from the numbers"
+  },
+  {
+   "fp": "eaa3c31f2a9d8500",
+   "from": "20e97c7e2b25e763",
+   "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
   }
  ],
  "result": {
@@ -59,7 +64,7 @@
     "heis": "55d506ffc7fe7bfe",
     "history": "d65939b1d2e30710",
     "universe": "ffc1384b7f0bde7b",
-    "screens": "7e98f202e04fab32"
+    "screens": "4ca7d908eb8a3ec7"
    },
    {
     "year": 2027,
@@ -71,7 +76,7 @@
     "heis": "f28ca5913ae5d28b",
     "history": "e56c3915eb5fec39",
     "universe": "b0d931d892ebeeaa",
-    "screens": "441013cdfc1ad578"
+    "screens": "20c81e6c80bb52c9"
    }
   ],
   "Wrexham#777": [
@@ -85,7 +90,7 @@
     "heis": "e030f45d81b7c5fb",
     "history": "f7476907f3ff711f",
     "universe": "81027896a1ed408a",
-    "screens": "4007926d67198a6a"
+    "screens": "11631a5e52e23e6d"
    },
    {
     "year": 2027,
@@ -97,7 +102,7 @@
     "heis": "adfa54e343de925d",
     "history": "024ddb89ae8c1d9b",
     "universe": "b11162d3b2e50fee",
-    "screens": "7caa827ba5d7a906"
+    "screens": "4afbd82c103ec779"
    }
   ],
   "schedules#60": [

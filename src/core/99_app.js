@@ -105,7 +105,7 @@ function liveTick(){
   if(!live)return;
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
-    live.kicked=true;
+    live.kicked=true; sfx("start");
     render();
     if(!live.paused){live.timer=setTimeout(liveTick,650);return}
     return;
@@ -124,7 +124,9 @@ function liveTick(){
       render();
       return;
     }
+    const pH=live.drives.length?live.drives[live.drives.length-1].sh:0, pA=live.drives.length?live.drives[live.drives.length-1].sa:0;
     live.drives.push(r.drive);
+    feelSpell(live,pH||0,pA||0);
     break;
   }
   render();
@@ -143,11 +145,12 @@ function answerLive(v){
   S.calls[k]=(S.calls[k]||[]).concat([v]);
   live.replay.push(v); live.ri=live.replay.length;
   live.eng.reply(v);
-  live.ask=null;
+  live.ask=null; sfx("tap");
   save(); liveTick();
 }
 function finishLive(){
   const g=live.g;
+  feelFinal(live);
   const meHome=(g.home===S.myTeam);
   const played={team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
@@ -192,6 +195,7 @@ function resolveWeek(step){
 function endLive(){
   if(live&&live.timer)clearTimeout(live.timer);
   if(live&&!live.done){                        // skip: run the rest instantly
+    live.skipped=true;
     let guard=0;
     while(guard++<400){
       const r=live.eng.next();
@@ -2002,6 +2006,8 @@ function render(){
       S.watchMode=b.dataset.watch; save(); render();});
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
+    document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
+      S.sound=b.dataset.sound==="true"; save(); if(soundOn())sfx("tap"); render();});
     return;
   }
   if(S.retired){
@@ -2037,6 +2043,7 @@ function render(){
           <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
         <div class="tb-right">${recFmt(my,liveRec(my))}
           ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
+          <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button>
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>
           <button class="reset" id="rst" title="Start over">&#8635;</button></div>
@@ -2093,6 +2100,8 @@ function render(){
   document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
   const sb=el("skip"); if(sb)sb.onclick=()=>{simAhead();window.scrollTo({top:0})};
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
+  const sn=el("snd"); if(sn)sn.onclick=()=>{S.sound=!soundOn(); save(); if(soundOn())sfx("tap"); render()};
+  celebrateIfDue();
   const qg=el("quitgo"); if(qg)qg.onclick=async()=>{quitAsk=false;S.title=true;S._slots=await allSlots();render()};
   const qn=el("quitno"); if(qn)qn.onclick=()=>{quitAsk=false;render()};
   const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
@@ -2372,6 +2381,11 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">Your games play out score by score without
       revealing the final. You can skip to the result at any point, or rewatch afterwards
       from the result card.</div></div>
+    <div class="grouphead">Sound</div>
+    <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-sound="${v}"
+      aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
+    <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
+      Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
     <div class="grouphead">Playback speed</div>
     <div class="setrow">${SPEEDS.map(s=>`<button class="setbtn" data-speed="${s[0]}"
       aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>

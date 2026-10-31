@@ -1,5 +1,5 @@
 {
- "fp": "e1a6a388a10ae3be",
+ "fp": "258d5e4f869ba1b2",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -55,6 +55,11 @@
    "fp": "e1a6a388a10ae3be",
    "from": "e1a6a388a10ae3be",
    "note": "Basketball: offences and defences read from the shot chart, star foul trouble, named events; calls default to the assistant"
+  },
+  {
+   "fp": "258d5e4f869ba1b2",
+   "from": "e1a6a388a10ae3be",
+   "note": "Feel: sound toggle in the top bar; commentary rows no longer repeat the club"
   }
  ],
  "result": {
@@ -69,7 +74,7 @@
     "heis": "fcf8ab6cab4f0fc2",
     "history": "7e9f9d9d403b0585",
     "universe": "5388ade8c9aafbe8",
-    "screens": "7f699049159965f4"
+    "screens": "1a128dc8d09b51eb"
    },
    {
     "year": 2027,
@@ -81,7 +86,7 @@
     "heis": "83d0fdef67245b15",
     "history": "a8631c6fe312520d",
     "universe": "b77c5e0f0f35c372",
-    "screens": "664ccda26a4d3983"
+    "screens": "4887f61236b3f3cb"
    }
   ],
   "Detroit#777": [
@@ -95,7 +100,7 @@
     "heis": "079e7841cbfe0008",
     "history": "6fc42ade3a575dbf",
     "universe": "f8ac42c33f2668bf",
-    "screens": "14efeb1bef1fb5bf"
+    "screens": "efaeba73b7496cd3"
    },
    {
     "year": 2027,
@@ -107,7 +112,7 @@
     "heis": "b1d0b15610447f60",
     "history": "60b5c770a1922b4b",
     "universe": "a41f30915c3b8f44",
-    "screens": "4a4d5ac05495e487"
+    "screens": "668e612d8acb1813"
    }
   ],
   "schedules#60": [
