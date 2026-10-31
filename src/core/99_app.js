@@ -86,7 +86,11 @@ function startLive(g,step){
   live={g:g, step:step,
         eng:makeLiveGame(rng,e.h,e.a,
               userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
-              h2h?{home:true,away:true}:userIsHome),
+              h2h?{home:true,away:true}:userIsHome,
+              // a knockout (a postseason game, a cup tie): extra time and
+              // penalties in soccer, sudden death in hockey, not a draw or a
+              // shootout. Without it a level play-off left no winner.
+              SEA.phase!=="week"||!!g.cup),
         drives:[], ask:null, done:false,
         paused:(S.watchStep===true), userIsHome:userIsHome,
         h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
