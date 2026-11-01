@@ -23,8 +23,8 @@ Python 3 and (for tests) Node.
     python3 build.py            # cfb -> dist/football-coach.html
     python3 build.py nfl        # pro -> dist/football-coach-pro.html
 
-That one file is the whole game: open it in a browser, or copy it to a web
-host as `index.html`.
+That one file is the whole game: open it in a browser, or put it on any web
+host. The published site's root is a landing page linking all six.
 
 ## What a league provides
 
@@ -80,7 +80,8 @@ run `python3 build.py` to see the merged list.
 
 ## Publishing
 
-    cp dist/football-coach.html <repo>/index.html
+    python3 build.py site            # all six + the landing page -> dist/site/
+    cp dist/site/*.html .            # index.html is the landing page
     git add -A && git commit -m "..." && git push
 
 ## Calibration targets
