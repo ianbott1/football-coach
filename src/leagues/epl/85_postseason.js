@@ -28,6 +28,9 @@ LEAGUE.post={
 extendSeason({
   buttonLabel(){
     const p=this.phase;
+    if(p==="week"&&this.half&&this.sched.some(g=>g.week===this.step&&g.cup&&(g.home===this.userTeam||g.away===this.userTeam)))
+      return "Play the "+cupTitle(CUP_WEEKS[this.step]);
+    if(p==="week"&&this.half)return "Play the cup ties";
     if(p==="week")return `Play ${LEAGUE.dates[this.step]}`;
     if(p==="done")return "Enter the summer";
     return "Play the "+ROUND_NAME[p].toLowerCase()+"s";

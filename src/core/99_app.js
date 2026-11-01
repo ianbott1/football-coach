@@ -157,6 +157,7 @@ function finishLive(){
               theirs:(meHome?live.eng.a:live.eng.h),
               drives:live.drives};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
+  if(g.cup)played.cup=true;
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>({k:x.k,pick:x.pick,truth:x.truth,right:x.right}));
@@ -178,7 +179,7 @@ function finishLive(){
   // In a hot seat, a tie against a coach who comes later this turn waits for
   // them (they play it, both calling), as league meetings do
   if(SEA.phase==="week"&&SEA.gamesFor){
-    const mine=SEA.gamesFor(S.myTeam,step), done=(S.played[pk]||[]).filter(p=>p.team===S.myTeam).length;
+    const mine=SEA.gamesFor(S.myTeam,step), done=(S.played[pk]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!SEA.half)).length;
     if(mine.length>done){ const nx=mine[done];
       if(isHotSeat()&&coachIndexOf(opponentOf(nx))>(S.turn||0))handoffNotes[opponentOf(nx)]={vs:S.myTeam, coach:S.career.name};
       else { live=null; save(); startLive(nx,step,done); return } }
@@ -193,15 +194,25 @@ function finishLive(){
   resolveWeek(step);
 }
 
+/* A cup night (the second part of a split cup week) that none of the
+   coaches' teams is in: play it straight away, nobody needs to press for it. */
+function skipCupNight(){
+  if(!LEAGUE.splitCup||!SEA.half||SEA.phase!=="week")return;
+  const teams=isHotSeat()?S.coaches.map((c,i)=>i===(S.turn||0)?S.myTeam:c.myTeam):[S.myTeam];
+  if(teams.some(t=>SEA.gamesFor(t,SEA.step).length))return;
+  SEA.userTeam=S.myTeam; SEA.advance(); S.steps++;
+}
 /* Everyone has had their turn: play out the rest of the league. */
 function resolveWeek(step){
   handoffNotes={};
   SEA.userTeam=S.myTeam;
+  const wasCup=!!SEA.half;
   SEA.advance();
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
+  skipCupNight();
   plan="balanced";
-  flash={type:"week",step:step};
+  flash={type:"week",step:step,cup:wasCup};
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   save(); render();
 }
@@ -267,10 +278,11 @@ function rebuild(){
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
   SEA.featured=(S.featured===undefined?null:S.featured);
-  for(let i=0;i<S.steps;i++){
-    if(S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
-    if(S.fires&&S.fires[i])S.fires[i].forEach(sd=>SEA.fireCoordinator(S.myTeam,sd));
-    const ans=(S.calls&&S.calls[callKey(i,SEA.year)])||[]; let ai=0;
+  for(let n=0;n<S.steps;n++){
+    const i=SEA.step, first=!SEA.half;          // the step being played (a cup week's two parts share one)
+    if(first&&S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
+    if(first&&S.fires&&S.fires[i])S.fires[i].forEach(sd=>SEA.fireCoordinator(S.myTeam,sd));
+    const ans=(S.calls&&S.calls[callKey(i,SEA.year)+(SEA.half?"#1":"")])||[]; let ai=0;
     const pl=S.played&&S.played[callKey(i,SEA.year)];
     // recorded answers replay a game only for old saves that kept no live
     // results; where results are kept, any other game of yours that step
@@ -446,7 +458,7 @@ function doAdvance(){
   SEA.plan=plan;
   // your first game this step not yet played (a cup week has two; a reload
   // between them picks up at the second)
-  const doneN=(S.played&&S.played[callKey(before)]||[]).filter(p=>p.team===S.myTeam).length;
+  const doneN=(S.played&&S.played[callKey(before)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!SEA.half)).length;
   const mineNow=(SEA.phase==="week"&&SEA.gamesFor)?SEA.gamesFor(S.myTeam,before):null;
   if(mineNow&&doneN&&doneN>=mineNow.length&&!isHotSeat()){ resolveWeek(before); return }
   const ug=(SEA.phase==="week")?(mineNow?mineNow[doneN]||null:SEA.nextGame(S.myTeam))
@@ -456,7 +468,7 @@ function doAdvance(){
   const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
   if(wantLive && !live && laterRival){ handoffNotes[opponentOf(ug)]={vs:S.myTeam, coach:S.career.name}; }
   else if(wantLive && !live){
-    startLive(ug, before, mineNow?doneN:0);
+    startLive(ug, before, SEA.half?1:(mineNow?doneN:0));
     return;                                    // the game is played in the viewer
   }
   // no live game to play (a bye, or watching turned off): still hand over
@@ -467,13 +479,15 @@ function doAdvance(){
     handoff=true; save(); render(); return;
   }
   SEA.userTeam=S.myTeam;
+  const wasCup=!!SEA.half;
   SEA.advance();
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
+  skipCupNight();
   plan="balanced";
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   LEAGUE.ui.afterAdvance(ph);
-  flash={type:SEA.phase==="week"||before<LEAGUE.weeks?"week":"post",step:before};
+  flash={type:SEA.phase==="week"||before<LEAGUE.weeks?"week":"post",step:before,cup:wasCup};
   const g=heroGame();
   const rk=SEA.poll.rankMap();
   if(g&&!prefersReduced()&&(S.watchMode||"all")==="never"){
@@ -760,11 +774,13 @@ function heroResult(){
   let g=null,label="",cupG=null;
   if(flash&&flash.type==="week"){
     const W=SEA.weeks[flash.step];
-    if(W){g=W.games.find(x=>!x.cup&&(x.home===my||x.away===my))||W.games.find(x=>x.home===my||x.away===my);label=W.label;
+    if(W){g=(flash.cup?W.games.find(x=>x.cup&&(x.home===my||x.away===my)):null)
+        ||W.games.find(x=>!x.cup&&(x.home===my||x.away===my))||W.games.find(x=>x.home===my||x.away===my);label=W.label;
       cupG=W.games.find(x=>x.cup&&x!==g&&(x.home===my||x.away===my))||null;
       // leagues that number steps by calendar day name your game by your count
       if(g&&LEAGUE.myGameLabel)label=LEAGUE.myGameLabel(SEA.weeks.slice(0,flash.step+1)
-        .filter(w=>w.games.some(x=>x.home===my||x.away===my)).length)}
+        .filter(w=>w.games.some(x=>!x.cup&&(x.home===my||x.away===my))).length);
+      if(g&&g.cup){label=g.title; cupG=null}}
   }else if(flash&&flash.type==="post"){
     const pools=SEA.postPools();
     for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f){g=f;break}}
@@ -787,6 +803,8 @@ function heroResult(){
     else if(cur[my]<=T)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
   }
   if(LEAGUE.position&&LEAGUE.positionLine)move=`<div class="hmove flat">${LEAGUE.positionLine(my)}</div>`;
+  if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
+    move=`<div class="hmove ${won?'up':'dn'}">${won?(nx?"Into the "+esc(nx.name):"FA CUP WINNERS"):"Out of the FA Cup"}</div><button class="rewatch seedraw" data-cupview="1">See the draw</button>` }
   if(half)return `<div class="hero half">
     <div class="hlabel"><span class="live"></span>HALFTIME${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
@@ -795,7 +813,7 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}${g.cup?" &middot; "+esc(g.title):""}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}
+    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -806,7 +824,7 @@ function firstReadTip(){
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){
   if(step===undefined||step===null||typeof readText!=="function"||!S.played)return "";
-  const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&p.reads);
+  const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&p.reads&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)));
   const R=[].concat(...P.map(p=>p.reads)); if(!R.length)return "";
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
@@ -1169,9 +1187,10 @@ function nextUpHTML(my,rk){
     const st=stakesFor(ng);
     const riv=LEAGUE.rivals.name(my,opp);
     const ser=riv?LEAGUE.rivals.series(U,my,opp):null;
-    h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>
-      <div class="nextcard ${riv?'riv':''}">
-      <div class="nlabel">${ng.home===my?"HOME vs":"AWAY at"}</div>
+    const cupNight=ng.cup&&LEAGUE.cup;
+    h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(SEA.step):LEAGUE.dates[SEA.step]||"")}</div>
+      <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
+      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
@@ -1183,13 +1202,15 @@ function nextUpHTML(my,rk){
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
       </div>`:""}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
-      ${st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
+      ${cupNight?`<div class="stake"><span class="stag">FA CUP</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} Level after ninety: extra time, then penalties.</span></div>
+        <button class="rewatch seedraw" data-cupview="1">See the draw</button>`
+        :st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
         <span class="sline">${x.l}</span></div>`).join("")}
       ${planPickerHTML(wp)}</div>`;
   }
   // a cup tie this week too (soccer's FA Cup): its own card, midweek
   if(SEA.phase==="week"&&SEA.gamesFor&&LEAGUE.cup){
-    SEA.gamesFor(my,SEA.step).filter(x=>x!==ng&&x.cup).forEach(cg=>{
+    SEA.sched.filter(x=>x.week===SEA.step&&x.cup&&x!==ng&&(x.home===my||x.away===my)).forEach(cg=>{
       const opp=cg.home===my?cg.away:cg.home, wp=winProb(my,opp,cg.home===my,cg.neutral);
       const line=LEAGUE.cup.stake?LEAGUE.cup.stake(my,opp,cg):"";
       h+=`<div class="grouphead">Midweek &mdash; ${esc(LEAGUE.cup.date(SEA.step))}</div>
@@ -1198,7 +1219,8 @@ function nextUpHTML(my,rk){
         <div class="nopp">${TL(opp)}</div>
         <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
         ${oddsHTML(my,opp,cg.home===my,cg.neutral,wp)}
-        <div class="stake"><span class="stag">FA CUP</span><span class="sline">${line} Level after ninety: extra time, then penalties.</span></div></div>`;
+        <div class="stake"><span class="stag">FA CUP</span><span class="sline">${line} Level after ninety: extra time, then penalties.</span></div>
+        <button class="rewatch seedraw" data-cupview="1">See the draw</button></div>`;
     });
   }
   return h;
@@ -1297,7 +1319,7 @@ function vary(list,key){
 function weekNews(W){
   const my=S.myTeam, items=[];
   const gs=W.games;
-  const rankTxt=r=>r&&r<=RANK_TOP?"No. "+r+" ":"";
+  const rankTxt=r=>LEAGUE.position?"":r&&r<=RANK_TOP?"No. "+r+" ":"";   // a league with a table quotes no rankings
 
   // headline: the best ranked team to go down
   const ups=gs.filter(g=>loserRank(g)<=25&&winnerRank(g)>loserRank(g))
@@ -1445,12 +1467,31 @@ function newsBlock(){
 }
 
 /* ============ playoff picture ============ */
+let grpTab=null;                 // Scores and Standings: which division (LEAGUE.groupFilter), or All
+function grpNow(){ return grpTab||CONF[S.myTeam] }
+function grpTabsHTML(cupToo){
+  const g=grpNow(), nm=c=>LEAGUE.groupShort?LEAGUE.groupShort(c):LEAGUE.conf.names[c];
+  return `<div class="subtabs">${LEAGUE.conf.order.map(c=>`<button class="subtab" data-grp="${c}" aria-pressed="${g===c}">${esc(nm(c))}</button>`).join("")}${
+    cupToo?`<button class="subtab" data-grp="CUP" aria-pressed="${g==="CUP"}">FA Cup</button>`:""}<button class="subtab" data-grp="ALL" aria-pressed="${g==="ALL"}">All</button></div>`;
+}
 function scoresView(){
   if(!SEA.weeks.length)
     return `<div class="note">The season hasn't started. Hit the button below to play ${LEAGUE.stepLabel?LEAGUE.stepLabel(0):"Week 1"}.</div>`;
   const pv=LEAGUE.ui.postseasonView(); if(pv)return pv;
   const W=SEA.weeks[SEA.weeks.length-1];
   if(!W)return `<div class="note">No games yet.</div>`;
+  if(LEAGUE.groupFilter){
+    const cupG=W.games.filter(g=>g.cup), g0=grpNow(), sel=g0==="CUP"&&!cupG.length?CONF[S.myTeam]:g0;
+    let h=`<div class="dateline"><h2>${esc(W.label)}</h2><span>${esc(W.date||"")}</span></div>`+grpTabsHTML(cupG.length>0)+(sel===CONF[S.myTeam]?newsBlock():"");
+    const line=g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam);
+    if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("")+
+      `<button class="rewatch seedraw" data-cupview="1">See the whole draw</button>`;
+    const groups=sel==="ALL"?LEAGUE.conf.order:[sel];
+    groups.forEach(c=>{ const gs=W.games.filter(g=>!g.cup&&CONF[g.home]===c); if(!gs.length)return;
+      h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>` });
+    if(sel==="ALL"&&cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+    return h;
+  }
   const marq=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)<=25);
   const rest=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)>25);
   let h=`<div class="dateline"><h2>${esc(W.label)}</h2><span>${esc(W.date||"")}</span></div>`;
@@ -1467,7 +1508,8 @@ function standingsView(){
   const st=SEA.weeks.length?SEA.weeks[SEA.weeks.length-1].standings:SEA.standings(null);
   let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
   const mine=CONF[S.myTeam];
-  const order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
+  let order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
+  if(LEAGUE.groupFilter){ const g0=grpNow()==="CUP"?mine:grpNow(); h+=grpTabsHTML(false); if(g0!=="ALL")order=[g0] }
   if(wide)h+=`<div class="standgrid">`;
   order.forEach(c=>{
     const head=`<div class="srow shead"><span class="spos">#</span>
@@ -2208,10 +2250,14 @@ function render(){
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;render()});
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
     if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null; dynCoach=null}
+    else if(b.dataset.grp){grpTab=b.dataset.grp}
     else if(b.dataset.m){teamTab=b.dataset.m}
     else LEAGUE.ui.subtab(b);
     render()});
   document.querySelectorAll(".tpick").forEach(b=>b.onclick=()=>{dynTeam=b.dataset.t;render()});
+  // "See the draw": the cup page (soccer), from wherever it's offered
+  document.querySelectorAll("[data-cupview]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
+    view="poll"; LEAGUE.ui.subtab({dataset:{et:"CUP"}}); flash=null; window.scrollTo({top:0}); render() });
   const db=el("dback"); if(db)db.onclick=()=>{dynTeam=null;render()};
   document.querySelectorAll("[data-coach]").forEach(b=>b.onclick=()=>{
     dynCoach=b.dataset.coach; save(); render();});

@@ -35,6 +35,23 @@ for(let y=0;y<N;y++){
   ok(api.NAMES.every(t=>{const r=rec[t], d=(E.drw&&E.drw[t])||0; return r[0]+r[1]+d===(api.CONF[t]==='PL'?38:46)}),`${yr}: a league record counts cup ties`);
   api.openOffseason(); const O=api.S.off; if(O&&O.act.userOpen)O.move=api.S.myTeam; api.commitOffseason();
 }
+// cup night is its own turn: the league game, then a button for the tie, then the tie live
+{ const {load}=require('./harness.js');
+  const B=load({file:path.join(__dirname,'..','dist','soccer-coach.html'),expose:['S','SEA','live','doAdvance','answerLive','liveTick','newDynasty','flash','heroGame']});
+  B.newDynasty('Brentford',5,'T'); const my=B.S.myTeam; let g=0, sawCup=false;
+  const play=()=>{ B.doAdvance(); let k=0; while(B.live&&!B.live.done&&k++<900){ B.live.ask?B.answerLive(B.live.ask.dp.opts[B.live.ask.dp.opts.length-1][0]):B.liveTick() } };
+  while(!sawCup&&g++<120&&B.SEA.phase==='week'){
+    const cupWeek=B.SEA.sched.some(x=>x.week===B.SEA.step&&x.cup&&(x.home===my||x.away===my));
+    if(cupWeek&&!B.SEA.half){ play();     // the league game
+      ok(B.SEA.half===1&&/FA Cup/.test(B.SEA.buttonLabel()),`after the league game the button is "${B.SEA.buttonLabel()}", not the cup tie`);
+      B.doAdvance(); ok(!!(B.live&&B.live.g.cup),'the cup tie did not start live');
+      let k=0; while(B.live&&!B.live.done&&k++<900){ B.live.ask?B.answerLive(B.live.ask.dp.opts[B.live.ask.dp.opts.length-1][0]):B.liveTick() }
+      const h=B.heroGame&&B.heroGame(); sawCup=true;
+      ok(B.flash&&B.flash.cup,'cup night\'s result is not the headline');
+    } else play();
+  }
+  ok(sawCup,'never reached a cup tie of ours');
+}
 console.log(`  ${ties} ties over ${N} seasons: ${(100*upsets/ties).toFixed(1)}% won by a club two or more tiers below; ${(100*pens/ties).toFixed(1)}% on penalties`);
 console.log(`  non-league clubs in the third round: ${(nonLeagueR3/N).toFixed(1)} a season (real: usually 2-6); Premier League winners ${plWinners} of ${finals}`);
 ok(upsets/ties>0.02&&upsets/ties<0.2,'giant-killings off');

@@ -28,32 +28,52 @@ function eplRankingView(){
   return `<div class="dateline"><h2>The table</h2><span>${SEA.year}</span></div>`+tabs+
     eplTable(d)+`<div class="note">Points, then goal difference, then goals scored.</div>`;
 }
-/* the FA Cup: where you stand, the latest round in full, the shocks before it */
+/* the FA Cup: where you stand and the road so far, the bracket from the
+   quarter-finals (drawn round by round, so later slots wait for the draw),
+   the latest round in full, earlier rounds your tie and the shocks */
 function cupView(){
   const C=SEA.cup, my=S.myTeam; if(!C)return "";
   const tier=t=>DIVS[CONF[t]].tier, R=CUP_ROUNDS;
   const fate=cupFate(SEA,my);
   const enter=tier(my)<=2?"the third round":tier(my)<=4?"the first round":tier(my)===5?"the fourth qualifying round":"the third qualifying round";
+  const inNext=C.draws[C.next]&&C.draws[C.next].some(p=>p.indexOf(my)>=0);
   let h=`<div class="note">${fate?`<b>${esc(fate==="Winners"?"FA Cup winners.":fate+".")}</b>`
-    :C.next!==undefined&&C.draws[C.next]&&C.draws[C.next].some(p=>p.indexOf(my)>=0)?`<b>Still in it:</b> ${esc(R[C.next].name)} next.`
+    :inNext&&!C.played[C.next]?`<b>Still in it:</b> ${esc(R[C.next].name)} next.`
     :`You enter in ${enter}.`} Ties are midweek; level after ninety minutes, extra time and penalties. Semi-finals and the final at Wembley.</div>`;
   if(C.winner)h+=`<div class="note"><b>${esc(C.winner)}</b> win the FA Cup${C.finalist?", beating "+esc(C.finalist)+" in the final":""}.</div>`;
+  const tieOf=(i,p)=>C.played[i]?C.played[i].find(x=>x.home===p[0]&&x.away===p[1]):null;
+  // your road
+  const road=[]; R.forEach((r,i)=>{ const p=C.draws[i]&&C.draws[i].find(p=>p.indexOf(my)>=0); if(!p)return;
+    const g=tieOf(i,p), opp=p[0]===my?p[1]:p[0];
+    road.push(`<div class="frow mine"><span class="sd">${esc(r.short)}</span><div class="fmain"><div class="fname">${p[0]===my?"vs":r.neutral?"v":"at"} ${TL(opp)}</div>
+      <div class="fnote">${esc(LEAGUE.conf.names[CONF[opp]])}</div></div>
+      <span class="fcfp">${g?(g.winner===my?"W ":"L ")+(p[0]===my?g.hp+"-"+g.ap:g.ap+"-"+g.hp)+(g.pens?" p":""):"to play"}</span></div>`) });
+  if(road.length)h+=`<div class="grouphead">Your road</div>`+road.join("");
+  // the bracket: quarter-finals on
+  const qf=R.findIndex(r=>r.k==="qf");
+  if(C.draws[qf]){
+    const col=(i,n)=>{ const D=C.draws[i]||[], out=[];
+      for(let k=0;k<n;k++){ const p=D[k]; const g=p?tieOf(i,p):null;
+        out.push(g?bgame(g):p?bgame(null,{t:p[0]},{t:p[1]}):bgame(null)) }
+      return `<div class="bcol"><div class="bhead">${esc(R[i].name.replace(/^./,c=>c.toUpperCase()))}</div><div class="bgames">${out.join("")}</div></div>` };
+    h+=`<div class="grouphead">The last eight</div><div class="bracket">${col(qf,4)}${col(qf+1,2)}${col(qf+2,1)}</div>
+      <div class="note">An open draw every round: the semi-final pairings aren't known until the quarter-finals are played.</div>`;
+  }
   const row=(g,pair)=>{ const hm=g?g.home:pair[0], aw=g?g.away:pair[1], mine=hm===my||aw===my;
     const sc=g?`${g.hp}&ndash;${g.ap}${g.pens?" p":""}`:"v";
     const shock=g&&tier(g.winner)-tier(g.loser)>=2;
     return `<div class="frow ${mine?'mine':''}"><div class="fmain"><div class="fname">
       <span class="${g&&g.winner===hm?'cupw':''}">${TL(hm)}</span> <span class="cupsc">${sc}</span> <span class="${g&&g.winner===aw?'cupw':''}">${TL(aw)}</span></div>
       <div class="fnote">${esc(LEAGUE.conf.names[CONF[hm]])} v ${esc(LEAGUE.conf.names[CONF[aw]])}${shock?" &middot; <b>giant-killing</b>":""}</div></div></div>` };
-  for(let i=R.length-1;i>=0;i--){
+  for(let i=Math.min(qf-1,R.length-1);i>=0;i--){
     const drawn=C.draws[i]; if(!drawn)continue;
     const played=C.played[i];
-    const latest=i===C.next||(C.winner&&i===R.length-1);
-    let list=drawn.map((p,j)=>row(played?played.find(x=>x.home===p[0]&&x.away===p[1]):null,p));
-    if(!latest){ // earlier rounds: your tie and the shocks
-      list=drawn.map((p,j)=>{ const g=played&&played.find(x=>x.home===p[0]&&x.away===p[1]);
+    const latest=i===C.next;
+    let list=drawn.map(p=>row(tieOf(i,p),p));
+    if(!latest){ list=drawn.map(p=>{ const g=tieOf(i,p);
         return (p.indexOf(my)>=0||(g&&tier(g.winner)-tier(g.loser)>=2))?row(g,p):"" }).filter(Boolean);
       if(!list.length)continue }
-    h+=`<div class="grouphead">${esc(R[i].name.replace(/^./,c=>c.toUpperCase()))}${latest&&!played?" &middot; the draw":""}${!latest?" &middot; your tie and the shocks":""}</div>`+list.join("");
+    h+=`<div class="grouphead">${esc(R[i].name.replace(/^./,c=>c.toUpperCase()))}${latest&&!played?" &middot; the draw":latest?"":" &middot; your tie and the shocks"}</div>`+list.join("");
   }
   return h;
 }

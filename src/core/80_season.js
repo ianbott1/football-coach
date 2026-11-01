@@ -98,7 +98,7 @@ class Season{
     // a game already played out live: match on the user's team so the ordering
     // a round happens to use can never lose the result
     const list=this.forcedList||(this.forced?[this.forced]:[]);
-    const fi=list.findIndex(F=>(a===F.team||b===F.team)&&(a===F.other||b===F.other));
+    const fi=list.findIndex(F=>(a===F.team||b===F.team)&&(a===F.other||b===F.other)&&(F.cup===undefined||!!F.cup===cup));
     if(fi>=0){
       const F=list[fi];
       list.splice(fi,1);
@@ -187,13 +187,32 @@ class Season{
   advance(){
     this.prevRank=this.rankMap();
     const p=this.phase;
+    // a cup week (LEAGUE.splitCup) is two advances on one step: the league
+    // round, then the midweek cup ties, each played and shown on its own
+    if(p==="week"&&LEAGUE.splitCup){
+      if(!this.half&&this.cupWeek(this.step)){ this._week("league"); this.half=1; return }
+      if(this.half){ this._week("cup"); this.half=0; this.step++; return }
+    }
     if(p==="week")this._week();
     else if(p!=="done")this[LEAGUE.post.run[p]]();
     this.step++;
   }
-  _week(){
+  cupWeek(w){ return this.sched.some(g=>g.week===w&&g.cup) }
+  _week(part){
     const w=this.step, prev=this.rankMap(), out=[];
-    this.sched.filter(g=>g.week===w).forEach(g=>{
+    if(part==="cup"){                      // the midweek ties: added to the week, nothing else moves on
+      this.sched.filter(g=>g.week===w&&g.cup).forEach(g=>{
+        const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site});
+        r.hrank=prev[g.home];r.arank=prev[g.away];
+        r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1]; r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+        if(this.userTeam===g.home||this.userTeam===g.away)r.drives=this._userDrives;
+        out.push(r) });
+      this.poll.update(out,this.elo);
+      const W=this.weeks[w]; W.games=W.games.concat(out); W.cupPlayed=true;
+      if(LEAGUE.afterWeek)LEAGUE.afterWeek(this,w);
+      return;
+    }
+    this.sched.filter(g=>g.week===w&&!(part==="league"&&g.cup)).forEach(g=>{
       const r=this._resolve(g.home,g.away,g.neutral,g.cup?{conf:false,cup:true,title:g.title,site:g.site}:{conf:g.conf});
       if(g.conf&&!r.draw){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
       r.hrank=prev[g.home];r.arank=prev[g.away];
@@ -208,10 +227,13 @@ class Season{
     out.sort((a,b)=>Math.min(a.hrank,a.arank)-Math.min(b.hrank,b.arank));
     this.weeks.push({label:LEAGUE.stepLabel?LEAGUE.stepLabel(w):`Week ${w+1}`,date:LEAGUE.dates[w],games:out,
       poll:this.top25(prev),standings:this.standings(prev)});
-    if(LEAGUE.afterWeek)LEAGUE.afterWeek(this,w);   // a league's own between-weeks business (soccer: the next cup draw)
+    if(part!=="league"&&LEAGUE.afterWeek)LEAGUE.afterWeek(this,w);   // a league's own between-weeks business (soccer: the next cup draw)
   }
-  /* every game a team has in a step (a cup week can bring two) */
-  gamesFor(team,step){ return this.sched.filter(g=>g.week===step&&(g.home===team||g.away===team)) }
+  /* every game a team has in a step (a cup week can bring two). On the
+     current step of a split cup week, only the part being played. */
+  gamesFor(team,step){ let L=this.sched.filter(g=>g.week===step&&(g.home===team||g.away===team));
+    if(LEAGUE.splitCup&&step===this.step&&this.cupWeek(step))L=L.filter(g=>!!g.cup===!!this.half);
+    return L }
   top25(prev){
     return this.poll.order().slice(0,25).map((t,i)=>({
       rank:i+1,team:t,conf:CONF[t],rec:this.rec[t][0]+"-"+this.rec[t][1],
@@ -255,7 +277,7 @@ class Season{
     return W.games.find(g=>g.home===team||g.away===team)||null;
   }
   nextGame(team){
-    const g=this.sched.find(g=>g.week===this.step&&(g.home===team||g.away===team));
+    const g=this.gamesFor(team,this.step)[0];
     return g||null;
   }
 }

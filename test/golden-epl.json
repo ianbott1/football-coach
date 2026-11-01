@@ -1,5 +1,5 @@
 {
- "fp": "250f8de60424ba81",
+ "fp": "5be4c9bc52cb2f1b",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -70,59 +70,64 @@
    "fp": "250f8de60424ba81",
    "from": "0e8fcdd1fbf029df",
    "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
+  },
+  {
+   "fp": "5be4c9bc52cb2f1b",
+   "from": "250f8de60424ba81",
+   "note": "Cup nights: the FA Cup tie is its own turn; the cup page has your road and the last-eight bracket; Scores and Standings filter by division"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "89165cd963aee010",
-    "post": "4b8b3ba2e4cfb36c",
+    "games": "9f40db1e1c97ae37",
+    "post": "e6c866e33e47047a",
     "champion": "Manchester City",
-    "rec": "2d6492d027fc93f2",
-    "poll": "2882cd4537a44136",
-    "heis": "e4f2c9d16293c01f",
-    "history": "d35e40908f961bb5",
-    "universe": "8c1da501ae958c94",
-    "screens": "74f5babda8a91784"
+    "rec": "13342c7bac3a4f0f",
+    "poll": "c4f5eb015643755c",
+    "heis": "60c5663964e6bb64",
+    "history": "2f6c6987d2c776f7",
+    "universe": "4ab1b1af982ae25d",
+    "screens": "38c52eab4e2ede87"
    },
    {
     "year": 2027,
-    "games": "5c9ce2b5a73159b7",
-    "post": "98de293f9187d29a",
+    "games": "ed54239eb9d8b607",
+    "post": "2e458f4458b7bf19",
     "champion": "Manchester City",
-    "rec": "cc7bccc30cc8e278",
-    "poll": "c8ecc51f4b904cde",
-    "heis": "756e06562ffc95b3",
-    "history": "b6b4fdca54b7ba80",
-    "universe": "11402e8ddc3f6d21",
-    "screens": "3925bb426e8bc56d"
+    "rec": "84c35167bc194ca8",
+    "poll": "17e3b7b01eecc746",
+    "heis": "3e58aefd144ac824",
+    "history": "7e8603cfbc2dc60a",
+    "universe": "5f8d3df86f90a231",
+    "screens": "7d004330ff3c98e4"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "bc5a536ce6ed8d98",
-    "post": "1f7da0cef2312002",
-    "champion": "Manchester United",
-    "rec": "87e9435548bcce77",
-    "poll": "4e506db1d79a5cbc",
-    "heis": "1a60e3a07644f048",
-    "history": "73a43ae62607953c",
-    "universe": "306b8fa0bb0a9d27",
-    "screens": "3d637003ac78b491"
+    "games": "8674db2b184bf3c7",
+    "post": "149737c9fec8907f",
+    "champion": "Arsenal",
+    "rec": "43eec24036e9012b",
+    "poll": "69b40ac8aa64527a",
+    "heis": "789212d36a85dc1c",
+    "history": "fa462194a8029bd0",
+    "universe": "dbfee4e9580fc12e",
+    "screens": "9ba83709e3a0c943"
    },
    {
     "year": 2027,
-    "games": "efe74272f504e948",
-    "post": "138850a2c42a599d",
-    "champion": "Manchester City",
-    "rec": "f68bdb85dbdd24e9",
-    "poll": "f0393316165d27e3",
-    "heis": "4a0e210760fa2d92",
-    "history": "5d0d661f0fd8e614",
-    "universe": "65fa79cafc3d946f",
-    "screens": "09cbfe3e351eb48d"
+    "games": "4ed74a9a31471f8d",
+    "post": "e05bb1cc629857ff",
+    "champion": "Arsenal",
+    "rec": "28dc241621ceea16",
+    "poll": "3e3703d9ca0710da",
+    "heis": "7e8c08b95156a3fb",
+    "history": "c3530f1ec9fb8dcf",
+    "universe": "55e46e69d749afae",
+    "screens": "bc74d82fcede6325"
    }
   ],
   "schedules#60": [

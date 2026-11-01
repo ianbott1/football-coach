@@ -16,7 +16,8 @@ for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro
   { const A=load({file:D(file),expose:EXP}); A.newDynasty(team,8,'T'); const st=A.simStops(); Object.keys(st).forEach(k=>st[k]=false);
     const W=A.LEAGUE.weeks; A.simRun(W);
     ok(A.SEA.step===W&&A.SEA.phase!=='week',`${name}: with no stops, sim to the end stopped at step ${A.SEA.step} of ${W}`);
-    ok(A.S.steps===A.SEA.step,`${name}: steps on the save (${A.S.steps}) don't match the season (${A.SEA.step})`);
+    // one advance a step, except soccer's cup weeks (league, then cup night): the reload below is the real check
+    ok(A.LEAGUE.splitCup?A.S.steps>=A.SEA.step:A.S.steps===A.SEA.step,`${name}: steps on the save (${A.S.steps}) don't match the season (${A.SEA.step})`);
     // a save made now reloads to the same season
     const js=JSON.stringify(A.S), B=mk()(D(file)); await B.loadSave(js);
     const sig=X=>JSON.stringify(X.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g.ap])));

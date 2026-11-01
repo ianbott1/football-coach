@@ -102,3 +102,5 @@ LEAGUE.trophyNow=(sea,t)=>sea&&sea.cup&&sea.cup.winner===t?{key:"facup",line:"FA
 /* the season card: a cup win, or a final */
 LEAGUE.cardLine=(h,team)=>{ const c=h&&h.league&&h.league.cup; if(!c||!c.mine)return null;
   return c.mine==="Winners"?"FA CUP WINNERS":c.mine==="Runners-up"?"FA Cup finalists":null };
+/* a cup week is two turns: the league round, then the cup ties (Season.advance) */
+LEAGUE.splitCup=true;

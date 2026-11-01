@@ -1,5 +1,5 @@
 {
- "fp": "92984937b554a039",
+ "fp": "187d85f159ed7c5b",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -50,6 +50,11 @@
    "fp": "92984937b554a039",
    "from": "2e50894917024226",
    "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
+  },
+  {
+   "fp": "187d85f159ed7c5b",
+   "from": "92984937b554a039",
+   "note": "Cup nights: the FA Cup tie is its own turn; the cup page has your road and the last-eight bracket; Scores and Standings filter by division"
   }
  ],
  "out": [
@@ -59,20 +64,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "18-9-11",
+      "rec": "17-7-14",
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "220804868da47250"
+     "book": "8d4173eda7d3d33e"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "16-6-16",
-      "result": "Finished 9th in the Premier League",
-      "grade": "B"
+      "rec": "11-8-19",
+      "result": "Finished 16th in the Premier League",
+      "grade": "C"
      },
-     "book": "cfcb24a64bf675e5"
+     "book": "5aaf083199d8143a"
     }
    ]
   },
@@ -82,20 +87,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "12-20-6",
-      "result": "Finished 10th in the Premier League",
-      "grade": "C"
+      "rec": "15-15-8",
+      "result": "Finished 7th in the Premier League",
+      "grade": "C+"
      },
-     "book": "b8cb07234037a126"
+     "book": "2ab38ba01a3c28de"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-10-16",
-      "result": "Finished 13th in the Premier League",
-      "grade": "C+"
+      "rec": "12-12-14",
+      "result": "Finished 10th in the Premier League",
+      "grade": "B-"
      },
-     "book": "56fa2c7b04fd53df"
+     "book": "b7dc879d0510f179"
     }
    ]
   },
@@ -105,20 +110,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "17-10-11",
-      "result": "Finished 5th in the Premier League",
-      "grade": "B-"
+      "rec": "19-12-7",
+      "result": "Finished 3rd in the Premier League",
+      "grade": "B"
      },
-     "book": "e27958df8c20ab31"
+     "book": "062f497f472c90f9"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "13-7-18",
-      "result": "Finished 13th in the Premier League",
-      "grade": "C+"
+      "rec": "18-7-13",
+      "result": "Finished 7th in the Premier League",
+      "grade": "B+"
      },
-     "book": "bf81384c135f57e7"
+     "book": "354223a186bee4b8"
     }
    ]
   }
