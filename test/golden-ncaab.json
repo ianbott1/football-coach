@@ -1,5 +1,5 @@
 {
- "fp": "fde2cdf9294a075e",
+ "fp": "2ba3e6e76615839e",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -135,6 +135,11 @@
    "fp": "fde2cdf9294a075e",
    "from": "f842c386e4bcf812",
    "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
+  },
+  {
+   "fp": "2ba3e6e76615839e",
+   "from": "fde2cdf9294a075e",
+   "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
   }
  ],
  "result": {
@@ -148,8 +153,8 @@
     "poll": "3db83b91ec6d524e",
     "heis": "f0ca3896b10da2b9",
     "history": "beca097262346711",
-    "universe": "a3db5ae57c7abd0d",
-    "screens": "c92ae778c52c84dd"
+    "universe": "0f5af4cc504af3ca",
+    "screens": "d30c49a05c7885e9"
    },
    {
     "year": 2027,
@@ -160,8 +165,8 @@
     "poll": "fbc9e0c7e7f5fd92",
     "heis": "64b059fcdf7e9d46",
     "history": "1ebfba27a7174280",
-    "universe": "54a8de15592c81df",
-    "screens": "3c03fdb9c888f126"
+    "universe": "9a19ac2144574dcb",
+    "screens": "01c1b8bf7cf8b0a2"
    }
   ],
   "Coppin State#2024": [
@@ -174,8 +179,8 @@
     "poll": "0deabcdd48afbc7d",
     "heis": "13bfe33d01f2b2a1",
     "history": "f1c532d111868c7a",
-    "universe": "e1fe7eceb21386ee",
-    "screens": "acebbe8f39e868e3"
+    "universe": "0d169a9aef98c39b",
+    "screens": "5eb9d3408c881517"
    },
    {
     "year": 2027,
@@ -186,8 +191,8 @@
     "poll": "7682d10e469788bb",
     "heis": "5e653284efe7ed05",
     "history": "9d5b0d8b80c64894",
-    "universe": "b209be1c3e96760f",
-    "screens": "1f9c76a6cbaca38b"
+    "universe": "7c1ae29b6dcecac0",
+    "screens": "6a4726e1dd58979c"
    }
   ],
   "Gonzaga#777": [
@@ -200,8 +205,8 @@
     "poll": "288ab5e7416b807f",
     "heis": "c94713712b4e6c61",
     "history": "85931fd4a947013a",
-    "universe": "61c342b6686811e0",
-    "screens": "e0e29d968350cb64"
+    "universe": "6bd84e41bfb20e17",
+    "screens": "c81accdebd30f57d"
    },
    {
     "year": 2027,
@@ -212,8 +217,8 @@
     "poll": "2a80cc7ffe8e0ea5",
     "heis": "2c21cf7676ec0650",
     "history": "f1fbd3d2691a817b",
-    "universe": "08641f9d27f55023",
-    "screens": "e377f5eceb6a97dc"
+    "universe": "4f06141954a97e6a",
+    "screens": "ef09cdb9512446d7"
    }
   ],
   "schedules#60": [

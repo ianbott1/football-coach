@@ -1,5 +1,5 @@
 {
- "fp": "6c821f0358acba84",
+ "fp": "e067a3d155b76f44",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -40,6 +40,11 @@
    "fp": "6c821f0358acba84",
    "from": "517b702e7761ad1c",
    "note": "same"
+  },
+  {
+   "fp": "e067a3d155b76f44",
+   "from": "6c821f0358acba84",
+   "note": "playtest fixes"
   }
  ],
  "out": [
@@ -53,7 +58,7 @@
       "result": "Lost in the conference finals",
       "grade": "A-"
      },
-     "book": "e026f75cf2f98c63"
+     "book": "081bd6c65b124722"
     },
     {
      "team": "New York",
@@ -76,7 +81,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "20d6669089b836aa"
+     "book": "25df7114330fe92c"
     },
     {
      "team": "New York",
@@ -99,7 +104,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "eebe26de3a005b85"
+     "book": "e8caf86a802ed197"
     },
     {
      "team": "New York",

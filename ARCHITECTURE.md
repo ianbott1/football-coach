@@ -136,6 +136,8 @@ Lessons from this project (each cost a bug that shipped or nearly did):
 - A cup tie and a league game can share a week and an opponent: key live
   games by step and slot, not step and teams.
 - pkill -f matches its own shell too: it killed the session's shell. Don't.
+- Wait on a fresh output file: waiting for "passed" in last run's file
+  returned at once, and a commit went out before its suite had run.
 - Playoff series put several of your games in one round: anything that
   finds "your game" in a round must take the latest, not the first.
 

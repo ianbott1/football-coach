@@ -1,5 +1,5 @@
 {
- "fp": "c043483bc39d3398",
+ "fp": "853f00a0d18231c3",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -75,59 +75,64 @@
    "fp": "c043483bc39d3398",
    "from": "25243ce42c3fb0f8",
    "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
+  },
+  {
+   "fp": "853f00a0d18231c3",
+   "from": "c043483bc39d3398",
+   "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "f1b83385bcde1478",
+    "games": "d2999ec9a74cbd3e",
     "post": "4f0d3f9cb73b0f6d",
     "champion": "Los Angeles",
     "rec": "13d85b141d805f37",
     "poll": "e96f5d234e794cc0",
     "heis": "2e578c69901469ff",
     "history": "d98de5d76d1ff6b8",
-    "universe": "2e525831ff24bc18",
-    "screens": "b2b00a77efd5d389"
+    "universe": "8cd43aeb0365187c",
+    "screens": "a01e383d19f754b0"
    },
    {
     "year": 2027,
-    "games": "54a76c9834e54bd9",
+    "games": "706b0eb6f72e1886",
     "post": "a2ecbd9d7af1d592",
     "champion": "Ottawa",
     "rec": "bcbb85380b1c67d9",
     "poll": "b2a4444428bcdb51",
     "heis": "b7ea50030c95ed67",
     "history": "7c7f60d92bca494c",
-    "universe": "2e60ecbe9ac6b0e8",
-    "screens": "fa81ded3fb2dba58"
+    "universe": "cbab89d46de584d7",
+    "screens": "ab83add6bfabea89"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "49d001e26ba2bc77",
+    "games": "0bb37f613a8122b4",
     "post": "d5c9bc7158a616bf",
     "champion": "Carolina",
     "rec": "de36e59a5dff0a83",
     "poll": "a66e4e334a78bddc",
     "heis": "878c7e6e19a040c2",
     "history": "6178bf0d8580d326",
-    "universe": "4493d4b5bb0d7c49",
-    "screens": "eb9a080dd3a07414"
+    "universe": "e2d1b87d39b86108",
+    "screens": "53a113b3a233b2ec"
    },
    {
     "year": 2027,
-    "games": "bfd69272d7b66eca",
+    "games": "e6e71277c18297aa",
     "post": "cf7b8adf9badba02",
     "champion": "Florida",
     "rec": "352ddee40a90558a",
     "poll": "fe9cd3db0c256042",
     "heis": "f2d909c6344345fc",
     "history": "88b94b12deffcefb",
-    "universe": "adee6b46ae6c5649",
-    "screens": "d3091077341db348"
+    "universe": "a3193fc350d77c28",
+    "screens": "ed105f31a58f6357"
    }
   ],
   "schedules#60": [

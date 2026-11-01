@@ -1,5 +1,5 @@
 {
- "fp": "ef596c05d20190b1",
+ "fp": "7d6e9937b579c11c",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -85,59 +85,64 @@
    "fp": "ef596c05d20190b1",
    "from": "c30c3c91a5fa28a5",
    "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
+  },
+  {
+   "fp": "7d6e9937b579c11c",
+   "from": "ef596c05d20190b1",
+   "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "02e1c4d9367f5bbf",
+    "games": "6b00597464e8e8d8",
     "post": "28ecd1f6ed6104db",
     "champion": "Oklahoma City",
     "rec": "e61dc93deac9a255",
     "poll": "a8b3c0e31087f3a7",
     "heis": "63b26623b64cb946",
     "history": "69a32b83375fd04c",
-    "universe": "eadf0a52bb4647c6",
-    "screens": "3013a338895776bc"
+    "universe": "46251cdb81003226",
+    "screens": "2205e80528651b96"
    },
    {
     "year": 2027,
-    "games": "8b93dab768395dab",
+    "games": "79dbd7a5928d34e1",
     "post": "ded275c4564e9818",
     "champion": "Houston",
     "rec": "666b63f8175686e9",
     "poll": "40b82dbcc1ad01b0",
     "heis": "9217622e7d61c00d",
     "history": "1e3a8d3ec91349f7",
-    "universe": "37a33c6e030bedec",
-    "screens": "c861f4bad8d7ec87"
+    "universe": "f4fd239a7120bca9",
+    "screens": "18111dd62ee55d55"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "a92ae8b475a8bb68",
+    "games": "64895b23cdbc51aa",
     "post": "340f990f196d0a87",
     "champion": "Oklahoma City",
     "rec": "c07e1e6d83f9eb6e",
     "poll": "7dcb8c99aed9d8f9",
     "heis": "da347f46c12242a0",
     "history": "87fa3daa759a11f8",
-    "universe": "071424eb2da78df6",
-    "screens": "ed768b99b000171c"
+    "universe": "8e67079d846127ed",
+    "screens": "fb317e0d21c4e7b6"
    },
    {
     "year": 2027,
-    "games": "532874d14eb84dc9",
+    "games": "400ba4354ec1c86a",
     "post": "55686090b7845727",
     "champion": "Oklahoma City",
     "rec": "48d5153dc6a5d661",
     "poll": "e9f3535da8f3f11c",
     "heis": "2ee66f8616664203",
     "history": "f6295c16f4347cb0",
-    "universe": "c2382f3cee1bd86b",
-    "screens": "4f562c78bb97b168"
+    "universe": "2c905f62635109b5",
+    "screens": "a22e589f10a6d081"
    }
   ],
   "schedules#60": [

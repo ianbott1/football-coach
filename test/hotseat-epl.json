@@ -1,5 +1,5 @@
 {
- "fp": "f2628a69c2bceb6d",
+ "fp": "c480deea631b2b39",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -85,6 +85,11 @@
    "fp": "f2628a69c2bceb6d",
    "from": "3c53cad12faa8e81",
    "note": "same"
+  },
+  {
+   "fp": "c480deea631b2b39",
+   "from": "f2628a69c2bceb6d",
+   "note": "playtest fixes"
   }
  ],
  "out": [
@@ -121,7 +126,7 @@
       "result": "Finished 5th in the Premier League",
       "grade": "B-"
      },
-     "book": "1f85e92cd45dd0d3"
+     "book": "a315e6d47aa9b437"
     },
     {
      "team": "Tottenham Hotspur",
@@ -130,7 +135,7 @@
       "result": "Finished 12th in the Premier League",
       "grade": "C+"
      },
-     "book": "bb012069718d4f3b"
+     "book": "bedea5653ccb40fa"
     }
    ]
   },
@@ -144,7 +149,7 @@
       "result": "Finished 3rd in the Premier League",
       "grade": "B"
      },
-     "book": "8062e0a834b2182e"
+     "book": "a46957a2faa12484"
     },
     {
      "team": "Tottenham Hotspur",
@@ -153,7 +158,7 @@
       "result": "Finished 12th in the Premier League",
       "grade": "C+"
      },
-     "book": "992ec6eca94b75cc"
+     "book": "a4df871ce8eca4e9"
     }
    ]
   }
