@@ -1,5 +1,5 @@
 {
- "fp": "33afe946a4ffb5a8",
+ "fp": "278cb655c179f1e7",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -119,6 +119,11 @@
    "fp": "33afe946a4ffb5a8",
    "from": "cbb34bc99b665392",
    "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
+  },
+  {
+   "fp": "278cb655c179f1e7",
+   "from": "33afe946a4ffb5a8",
+   "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
   }
  ],
  "result": {
@@ -133,7 +138,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "d7bb9332c3244ae9",
     "universe": "b7ac40b9143e27ab",
-    "screens": "f1c00a88dd03c78f"
+    "screens": "f529075d684bc87f"
    },
    {
     "year": 2027,
@@ -145,7 +150,7 @@
     "heis": "480803b9b658faca",
     "history": "1d3a43a2bf113240",
     "universe": "5390fa1e791e25e8",
-    "screens": "43dfb5950ad189df"
+    "screens": "6dcbadc5c33b4842"
    },
    {
     "year": 2028,
@@ -157,7 +162,7 @@
     "heis": "dd04a1940012247a",
     "history": "3dedd32c439534dd",
     "universe": "b0e56ef4165976b8",
-    "screens": "6e913969843e1829"
+    "screens": "be9a7becc8a42313"
    },
    {
     "year": 2029,
@@ -169,7 +174,7 @@
     "heis": "8d304a39ff6e17a2",
     "history": "c1c6f8583def5295",
     "universe": "1179a0486aaf45c5",
-    "screens": "66bb64908c08aedb"
+    "screens": "b9092b90975035dd"
    }
   ],
   "Rice#2024": [
@@ -183,7 +188,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "5ec453239bc46fb2"
+    "screens": "b1dd977ce1f45648"
    },
    {
     "year": 2027,
@@ -195,7 +200,7 @@
     "heis": "4e4319a44375c65b",
     "history": "d16b79a94234f928",
     "universe": "0b938625974f1298",
-    "screens": "4075abbea0afb2fa"
+    "screens": "183021696cbac985"
    },
    {
     "year": 2028,
@@ -207,7 +212,7 @@
     "heis": "f4929038beaf492f",
     "history": "94a13bc1fe2c59d3",
     "universe": "0abbf96409ae5113",
-    "screens": "c9fa80f5d3b8666b"
+    "screens": "4faeb3793a8a5ec6"
    },
    {
     "year": 2029,
@@ -219,7 +224,7 @@
     "heis": "aacb35d7197a5573",
     "history": "e90ccc1a26b8bb85",
     "universe": "5f072f58326c5f0a",
-    "screens": "3b57528690513269"
+    "screens": "f5d8dd1861e78595"
    }
   ],
   "Oregon#777": [
@@ -233,7 +238,7 @@
     "heis": "fde104829f9687a1",
     "history": "25cd5037a0d73f0b",
     "universe": "d2743ab63660d88b",
-    "screens": "8051fd9d244c21fa"
+    "screens": "03ad195ced70f400"
    },
    {
     "year": 2027,
@@ -245,7 +250,7 @@
     "heis": "16871fc36811ec09",
     "history": "39388581ec611a8d",
     "universe": "8238002faae98585",
-    "screens": "900fe28e5ff1c519"
+    "screens": "e4ed389709967a9d"
    },
    {
     "year": 2028,
@@ -257,7 +262,7 @@
     "heis": "908583fabe0cc4b0",
     "history": "ef4fd11b45f4ed17",
     "universe": "d4125114927c1a44",
-    "screens": "df535c8a15811224"
+    "screens": "5dd7050096de77b7"
    }
   ],
   "Kent State#31337": [
@@ -271,7 +276,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "6fbcf459c463df80",
     "universe": "6ff9e8fc66e28c42",
-    "screens": "b0b43891d737ad82"
+    "screens": "03d0bbc76afa1fd8"
    },
    {
     "year": 2027,
@@ -283,7 +288,7 @@
     "heis": "e3afac23d3079708",
     "history": "882251df12411959",
     "universe": "838fd061138f23ef",
-    "screens": "5e38365ded160940"
+    "screens": "9ca0ad67c4853245"
    },
    {
     "year": 2028,
@@ -295,7 +300,7 @@
     "heis": "1631e759996121aa",
     "history": "e36ad09105b2d59f",
     "universe": "c308da879c21d578",
-    "screens": "81058b34b9048234"
+    "screens": "1a3dd6984cbd66ec"
    }
   ],
   "schedules#60": [

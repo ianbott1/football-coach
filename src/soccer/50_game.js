@@ -35,7 +35,11 @@ const SC_BASE = {
   red:{own:0.70, opp:1.32},  // down to ten
   flank:{right:1.17, wrong:0.93}, // overloading their weak flank, or the wrong one
   cueTrue:0.6,       // commentary that describes how a side really plays (else a random approach)
-  flankTell:2.0      // attacks that get through down the weak flank, against the other
+  flankTell:2.0,     // attacks that get through down the weak flank, against the other
+  favW:4,            // a club's usual approach: this many times as likely as any other
+  scouted:6,         // games in a scouting report
+  misprep:{own:0.93, opp:1.05},  // set up from kick-off for the wrong thing: out of shape until you change it
+  prepped:{own:1.05, opp:0.95}   // ...and for the right thing: drilled all week, sharper than a change made mid-game
 };
 const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.sc)||{}, (typeof SC_TRY!=="undefined"?SC_TRY:{}));
 
@@ -131,7 +135,24 @@ function subCall(E,booked,canWait,lead){
     opts:opts, energy:why, booked:!!booked, lead:lead};
 }
 
-function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
+/* the scouting report: how a club set up in its last few games (its usual
+   approach, weighed against the others as it would be against an even side),
+   drawn from its own seed so it never moves the game */
+function scoutReport(fav,seed){
+  const r=new RNG(seed>>>0), w=APPROACH_KEYS.map(k=>k===fav?SC.favW:1), tot=w.reduce((a,b)=>a+b), n={};
+  APPROACH_KEYS.forEach(k=>n[k]=0);
+  for(let g=0;g<SC.scouted;g++){ let x=r.r()*tot, i=0; while(x>w[i]){x-=w[i];i++} n[APPROACH_KEYS[i]]++ }
+  return n;
+}
+function prepCall(rep){
+  const top=APPROACH_KEYS.reduce((a,k)=>rep[k]>rep[a]?k:a,APPROACH_KEYS[0]);
+  const opts=Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l]).concat([["normal","Wait and see: leave it to your assistant"]]);
+  return {k:"prep",h:"Before kick-off: the scouting report",q:"Set up for how they usually play, or wait and see?",
+    opts:opts, report:Object.assign({},rep), n:SC.scouted, pearl:top};
+}
+function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
+  ctx=ctx||{};
+  const fav=ctx.fav||{};
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1);
   const side0=()=>({weak:rng.r()<0.5?"left":"right", fl:[0,0], aim:null, F:[0,1,2].map(()=>SC.fit[0]+rng.r()*(SC.fit[1]-SC.fit[0])), E:[1,1,1], app:null, ctr:null, booked:0, red:false, subs:0,
@@ -140,6 +161,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
     mode:{home:planH,away:planA}, late:{home:null,away:null}, asked:{}, queue:[], ask:null,
     ot:0, so:false, done:false, playoff:!!knockout, draw:false,
     S:{home:side0(), away:side0()}};
+  st.gap=gap;
   const other=s=>s==="home"?"away":"home";
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   /* each side's approach: the computer's from its edge (the better side
@@ -150,7 +172,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
     if(humans[side]){ if(m==="safe")return "press"; if(m==="aggressive")return "block";
       return rng.pick(["wing","direct"]) }
     const e=(side==="home"?gap:-gap);
-    const w=e>60?[3,1,3,1]:e<-60?[1,4,1,3]:[2,2,2,2];
+    const w=(e>60?[3,1,3,1]:e<-60?[1,4,1,3]:[2,2,2,2]).map((x,i)=>APPROACH_KEYS[i]===fav[side]?x*SC.favW:x);
     let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} return APPROACH_KEYS[i];
   };
   st.S.home.app=pickApp("home"); st.S.away.app=pickApp("away");
@@ -165,7 +187,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
     return L||st.mode[side] };
   /* the computer's reads and changes */
   // it reads the other side right about half the time, and otherwise leaves it
-  const readIt=(side,p)=>{ if(rng.r()<p)st.S[side].ctr=APPROACH[st.S[other(side)].app].counter };
+  const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ctr=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false} };
   const cpuRead=(side,p)=>{ if(!humans[side])readIt(side,p) };
   const assistantRead=(side,stage)=>readIt(side,stage===2?0.3:0.45);
   // the flank: spotted about four times in ten
@@ -179,6 +201,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
       // counters: yours against their approach, theirs against yours
       if(X.ctr){ if(COUNTERS[X.ctr].beats===O.app)own*=SC.counter.own; else own*=SC.misread }
       if(O.ctr&&COUNTERS[O.ctr].beats===X.app)own*=SC.counter.opp;
+      if(X.prepd)own*=COUNTERS[X.ctr].beats===O.app?SC.prepped.own:SC.misprep.own;
+      if(O.prepd)own*=COUNTERS[O.ctr].beats===X.app?SC.prepped.opp:SC.misprep.opp;
       if(X.aim)own*=(X.aim===O.weak?SC.flank.right:SC.flank.wrong);
       // legs: your attack and midfield make chances, their defence and midfield stop them
       const myLegs=(X.E[2]*0.6+X.E[1]*0.4), theirLegs=(O.E[0]*0.6+O.E[1]*0.4);
@@ -249,10 +273,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
   st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
+    if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true;
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t}) } return }
     if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t}) }
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak; st.log.push({side:side,k:"flank",pick:v,truth:t,right:v===t}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
-    if(dp.k==="read"){ if(v&&COUNTERS[v])X.ctr=v; else assistantRead(side,dp.stage); return }
+    if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v } else assistantRead(side,dp.stage); return }
     if(dp.k==="subs"){
       if(v==="wait"){ st.waitSub=st.waitSub||{}; st.waitSub[side]=true; return }
       if(v==="normal"){ assistantSub(side); if(dp.stage===2)assistantSub(side); return }
@@ -271,6 +297,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
       const r={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,theirs:Q.side==="home"?st.a:st.h,q:st.seg,side:Q.side};
       st.waiting=r; return r}
     const s=st.seg;
+    if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
+      if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
+      if(st.queue.length)return st.next()}
     if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45);
       queueCall(sd,readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue))}); if(st.queue.length)return st.next()}
     if(s===9&&!st.ht){st.ht=true;
@@ -293,10 +322,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout){
   st.reply=function(v){ st.answer=v; st.waiting=null };
   return st;
 }
+/* each club's usual approach this season, and the seed for its scouting report */
+function clubStyle(t,year){ return APPROACH_KEYS[strHash(t+"|"+year)%APPROACH_KEYS.length] }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};
-  const e=makeLiveGame(rng,eloH,eloA,planH,planA,humans,opts.playoff);
+  const e=makeLiveGame(rng,eloH,eloA,planH,planA,humans,opts.playoff,opts.ctx);
   let guard=0;
   while(guard++<120){
     const r=e.next();

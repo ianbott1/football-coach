@@ -121,6 +121,14 @@ function liveScoreboard(){
 /* ---- the evidence ---- */
 function evidenceHTML(g,my,d,dp){
   const opp=g.home===my?"away":"home";
+  if(dp.k==="prep"){ const R=dp.report, n=dp.n||6;
+    const e=live&&live.eng&&live.eng.gap!==undefined?(opp==="home"?live.eng.gap:-live.eng.gap):0;
+    const tilt=e>60?`${esc(g[opp])} are the stronger side tonight: sides like that forecheck more often than usual.`
+      :e<-60?`${esc(g[opp])} are the weaker side tonight: sides like that trap more often than usual.`
+      :`An even game on paper: they're likeliest to play their usual way.`;
+    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
+      ${SYSTEM_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(SYSTEM[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
+      <div class="evn">Most teams have a usual system, but not every night. ${tilt} Get it right and the work you did in practice shows; get it wrong and you're a step behind until you change it.</div></div>`; }
   if(dp.k==="read"&&d&&d.T){ const T=d.T[opp], n=Math.max(1,T.n), per=x=>(x/n*4).toFixed(1);
     const rows=[["Giveaways they force in our zone",per(T.to),T.to/n>=1.2],["Our zone entries they kill",per(T.fe),T.fe/n>=1.2],["Shifts they cycle below our goal line",per(T.cy),T.cy/n>=1.2]];
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are playing us <span>per period</span></div>
@@ -166,7 +174,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>dp.k==="read"&&ANSWERS[o]?ANSWERS[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep")&&ANSWERS[o]?ANSWERS[o].d:"";
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -232,6 +240,8 @@ function watchView(){
 function readText(e){
   if(e.k==="read")return e.right?`Your read was right: they were playing ${SYSTEM[e.truth].l}.`
     :`They were playing ${SYSTEM[e.truth].l}: the answer was "${ANSWERS[SYSTEM[e.truth].counter].l}".`;
+  if(e.k==="prep")return e.right?`Your preparation was right: they came out playing ${SYSTEM[e.truth].l}.`
+    :`You prepared for the wrong system: they came out playing ${SYSTEM[e.truth].l}.`;
   if(e.k==="goalie")return e.truth==="off"?(e.right?"Right call: your goalie really was having a bad night.":"Your goalie really was off tonight: pulling him was right.")
     :(e.right?"Right call: he'd been unlucky, not bad.":"He'd just been unlucky: the backup was a step down.");
   return "";

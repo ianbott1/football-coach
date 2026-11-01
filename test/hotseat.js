@@ -19,7 +19,7 @@ for(let y=0;y<3;y++){
   while(api.SEA.phase!=='done'&&guard++<1200){     // two coaches: two advances a step (an NBA season: 240)
     api.doAdvance(); let g=0;
     // every live game, including one that follows another in the same step (a midweek cup tie)
-    const seen=new Set(), note=()=>{ const L=api.live; if(L&&!seen.has(L)){ seen.add(L); liveGames.push(L.step+'|'+[L.g.home,L.g.away].sort().join('~')) } };
+    const seen=new Set(), note=()=>{ const L=api.live; if(L&&!seen.has(L)){ seen.add(L); liveGames.push(L.step+'#'+(L.slot||0)+'|'+[L.g.home,L.g.away].sort().join('~')) } };
     note();
     while(api.live&&!api.live.done&&g++<6000){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick(); note()}
   }

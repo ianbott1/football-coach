@@ -28,6 +28,10 @@ const BB_COLLEGE = {
   answer:{share:-0.10, p3:-0.03, p2:-0.035, f2:0.85, to:0.035, p2t:-0.015},   // the right defence on their style
   leak:{p2:0.012, p3:0.008},  // the wrong one: easier looks somewhere else
   cueTrue:0.4,          // commentary on a style that is about the real one
+  favW:4,               // a team's usual offence: this many times as likely as any other
+  scouted:6,            // games in a scouting report
+  prepped:{p2:-0.008, p3:-0.008},   // the right defence, drilled all week: sharper than a mid-game switch
+  misprep:{p2:0.008, p3:0.006},     // the wrong one from the tip: out of position until you change it
   pnrTell:[2.0,5.0],    // ball screens a segment: other styles, pick-and-roll
   starOwn:0.022,        // your star off the floor: your make rates, this much lower...
   starClutch:2.2,       // ...and this many times more in the closing segments (who finishes games)
@@ -120,13 +124,14 @@ const DEFENCES={
   trap: {beats:"pnr",   l:"Trap the ball handler",   d:"Blitz the pick-and-roll, make someone else beat you"}
 };
 /* the offence a side runs, against the defence it faces: one possession's modifier */
-function styleMod(off,def){
+function styleMod(off,def,prepd){
   const b=STYLE[off].mod, m={share:b.share,p2:b.p2,p3:b.p3,to:b.to,f2:b.f2};
   if(def){ if(DEFENCES[def].beats===off){ const A=BB.answer;
       if(off==="threes"){m.share+=A.share; m.p3+=A.p3}
       else if(off==="paint"){m.p2+=A.p2; m.f2*=A.f2}
       else {m.to+=A.to; m.p2+=A.p2t} }
-    else { m.p2+=BB.leak.p2; m.p3+=BB.leak.p3 } }
+    else { m.p2+=BB.leak.p2; m.p3+=BB.leak.p3 }
+    if(prepd){ const P=DEFENCES[def].beats===off?BB.prepped:BB.misprep; m.p2+=P.p2; m.p3+=P.p3 } }
   return m;
 }
 function bbRead(T){
@@ -172,7 +177,22 @@ function lastCall(){
 /* The live game. humans: {home, away} (a bare boolean is the one-coach
    form: true = the user is home). next() plays a segment, or returns a call
    for a person to make; reply(v) answers it. */
-function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
+/* the scouting report: the offences a team ran in its last few games,
+   drawn from its own seed so it never moves the game */
+function scoutReport(fav,seed){
+  const r=new RNG(seed>>>0), w=STYLE_KEYS.map(k=>k===fav?BB.favW:1), tot=w.reduce((a,b)=>a+b), n={};
+  STYLE_KEYS.forEach(k=>n[k]=0);
+  for(let g=0;g<BB.scouted;g++){ let x=r.r()*tot, i=0; while(x>w[i]){x-=w[i];i++} n[STYLE_KEYS[i]]++ }
+  return n;
+}
+function prepCall(rep){
+  const top=STYLE_KEYS.reduce((a,k)=>rep[k]>rep[a]?k:a,STYLE_KEYS[0]);
+  return {k:"prep",h:"Before tip-off: the scouting report",b:"Game-plan for how they usually score, or wait and see?",
+    opts:Object.keys(DEFENCES).map(d=>[d,DEFENCES[d].l]).concat([["normal","Wait and see: leave it to your assistant"]]),
+    report:Object.assign({},rep), n:BB.scouted, pearl:top};
+}
+function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
+  ctx=ctx||{}; const fav=ctx.fav||{};
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const tempo=((AGGR[planH]||AGGR.balanced).tempo+(AGGR[planA]||AGGR.balanced).tempo)/2;
   const poss=Math.max(50,Math.round(rng.gauss(BB.pace*tempo,BB.paceSd)));
@@ -190,9 +210,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
   // a side's offence: a person's from the gameplan, the computer's by chance
   const pickOff=(side)=>{ const m=st.mode[side];
     if(humans[side]&&m==="safe")return "paint"; if(humans[side]&&m==="aggressive")return "threes";
-    return STYLE_KEYS[rng.int(3)] };
+    if(!fav[side])return STYLE_KEYS[rng.int(3)];
+    const w=STYLE_KEYS.map(k=>k===fav[side]?BB.favW:1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} return STYLE_KEYS[i] };
   st.S.home.off=pickOff("home"); st.S.away.off=pickOff("away");
-  const readIt=(side,p)=>{ if(rng.r()<p)st.S[side].def=STYLE[st.S[other(side)].off].answer };
+  st.gap=gap;
+  const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].def=STYLE[st.S[other(side)].off].answer; st.S[side].prepd=false} };
   const queueCall=(side,dp)=>{ const key=dp.k+(dp.stage||"")+side; if(!humans[side]||st.asked[key])return;
     st.asked[key]=true; st.queue.push({side:side,dp:dp}) };
   // calls due before a segment: the old score calls
@@ -223,7 +245,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
     const onH=starOn(H,s), onA=starOn(A,s);
     const cl=s>=SEGS-2?BB.starClutch:1, so=BB.starOwn*cl, sd=BB.starDef*cl;
     const ehH=g.eH-(onH?0:so)+(onA?0:sd), ehA=-g.eH-(onA?0:so)+(onH?0:sd);
-    const modH=styleMod(H.off,A.def), modA=styleMod(A.off,H.def);
+    const modH=styleMod(H.off,A.def,A.prepd), modA=styleMod(A.off,H.def,H.prepd);
     let dh=0,da=0, nA=n;
     const pressH=st.late.home==="press", pressA=st.late.away==="press";
     const nn=(pressH||pressA)?Math.round(n*BB.pressPace):n;
@@ -287,8 +309,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
   st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
+    if(dp.k==="prep"){ if(DEFENCES[v]){ const t=st.S[other(side)].off; X.def=v; X.prepd=true;
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:DEFENCES[v].beats===t}) } return }
     if(dp.k==="read"&&DEFENCES[v]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:v,truth:t,right:DEFENCES[v].beats===t}) }
-    if(dp.k==="read"){ if(DEFENCES[v])X.def=v; else readIt(side,dp.stage===2?0.3:0.45); return }
+    if(dp.k==="read"){ if(DEFENCES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }
     if(dp.k==="fouls"){ if(v!=="play")sitStar(X,dp.half); return }
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }
     if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; return }
@@ -304,6 +328,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
               theirs:Q.side==="home"?st.a:st.h,q:st.seg<4?1:st.seg<SEGS?2:3,side:Q.side};
       const r=st.ask; st.ask=null; st.waiting=r; return r}
     const s=st.seg;
+    if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
+      if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
+      if(st.queue.length)return st.next()}
     // foul trouble, either side, before any segment of regulation
     if(s<SEGS&&st.ft!==s){ st.ft=s; ["home","away"].forEach(sd=>{ const X=st.S[sd], h=troubleAt(s,X); if(!h)return;
         if(h===1)X.asked1=true; else X.asked2=true;
@@ -339,10 +366,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
 
 /* A whole game at once (every game but the ones you watch): the same game,
    with the computer's calls, or opts.decide for a person who isn't watching. */
+/* each team's usual offence this season, and the seed for its scouting report */
+function clubStyle(t,year){ return STYLE_KEYS[strHash(t+"|"+year)%STYLE_KEYS.length] }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};
-  const e=makeLiveGame(rng,eloH,eloA,planH,planA,humans);
+  const e=makeLiveGame(rng,eloH,eloA,planH,planA,humans,opts.playoff,opts.ctx);
   let guard=0;
   while(guard++<200){
     const r=e.next();

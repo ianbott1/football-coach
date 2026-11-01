@@ -23,6 +23,10 @@ const SPORT={
     if(L.goals+L.ast>=3)return {v:70+(L.goals+L.ast)*8,txt:`${L.goals} goal${L.goals===1?"":"s"} and ${L.ast} assists`};
     return null;
   },
+  /* career milestones: [stat, words, the numbers that count] */
+  milestones:{GK:["cs","clean sheets",[25,50,75,100,150,200]], CB:["goals","goals",[10,20,30,50]],
+    FB:["ast","assists",[25,50,75,100]], CM:["goals","goals",[25,50,75,100,150]],
+    W:["goals","goals",[25,50,75,100,150,200]], ST:["goals","goals",[25,50,75,100,150,200,250,300]]},
   riser:{l:"Rising coach",
     d:"The most talked-about coach in the country. Could be a manager in his own right soon."}
 };

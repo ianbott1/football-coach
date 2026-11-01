@@ -16,6 +16,8 @@ layers may not use the same filename.
 
     python3 build.py              -> dist/football-coach.html   (league: cfb)
     python3 build.py <league>     -> dist/<league>.html
+    python3 build.py site         -> all six, plus the landing page, in dist/site/
+                                     (what the GitHub Pages root holds)
 """
 import os, glob, sys
 
@@ -54,5 +56,22 @@ def build(league="cfb"):
     for m in mods:
         print("   ", os.path.relpath(m, SRC))
 
+def site():
+    """Every game, and src/landing.html as index.html, in dist/site/."""
+    import re, shutil
+    out = os.path.join(HERE, "dist", "site")
+    os.makedirs(out, exist_ok=True)
+    for lg in OUTNAME:
+        build(lg)
+        shutil.copy(os.path.join(HERE, "dist", OUTNAME[lg]), os.path.join(out, OUTNAME[lg]))
+    head = open(os.path.join(SRC, "_head.html"), encoding="utf-8").read()
+    icon = re.search(r'<link rel="icon" href="([^"]*)">', head).group(1)
+    page = open(os.path.join(SRC, "landing.html"), encoding="utf-8").read()
+    page = page.replace("<!--ICON-->", '<link rel="icon" href="%s">' % icon).replace("<!--ICONURL-->", icon)
+    with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as f:
+        f.write(page)
+    print("site: %s" % ", ".join(sorted(os.listdir(out))))
+
 if __name__ == "__main__":
-    build(sys.argv[1] if len(sys.argv) > 1 else "cfb")
+    arg = sys.argv[1] if len(sys.argv) > 1 else "cfb"
+    site() if arg == "site" else build(arg)

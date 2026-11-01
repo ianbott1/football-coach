@@ -11,6 +11,9 @@ const SPORT={
     </g>
     <path d="M14 64 V50 H58 V64" fill="none" stroke="#D7263D" stroke-width="3.6" stroke-linejoin="round"/>
     <ellipse cx="36" cy="66.5" rx="24" ry="2.4" fill="none" stroke="#7FB7E6" stroke-width="1.6" opacity=".8"/>`,
+  /* career milestones: [stat, words, the numbers that count] */
+  milestones:(()=>{ const P=["pts","points",[100,250,500,750,1000,1250,1500]];
+    return {C:P,LW:P,RW:P,D:P,D2:P,G:["so","shutouts",[10,25,50,75,100]]} })(),
   staff:{
     oc:{short:"OFF", long:"assistant coach, forwards"},
     dc:{short:"DEF", long:"assistant coach, defence"},

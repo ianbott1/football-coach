@@ -130,6 +130,13 @@ function staffTake(dp, ctx){
     R.push({who:"capy", pick:"second", line:"It seems to me dropping off a little rarely hurts anyone. Though I confess I haven't looked at the numbers."});
     return R;
   }
+  if(dp.k==="prep"){
+    const top=dp.pearl, p=top&&APPROACH[top]?APPROACH[top].counter:"normal";
+    R.push({who:"bears", pick:"long", line:bearYell("read",seed)});
+    R.push({who:"pearl", pick:p, line:pearlSay(`They were ${APPROACH[top].l} in ${dp.report[top]} of their last ${dp.n}! Let's get ready for that!`,seed)});
+    R.push({who:"capy", pick:"normal", line:"I'd rather see them first, myself. Twenty-five minutes of watching never hurt anybody. Well. Rarely."});
+    return R;
+  }
   if(dp.k==="flank"){
     const p=dp.pearl==="left"||dp.pearl==="right"?dp.pearl:"normal";
     R.push({who:"bears", pick:"left", line:bearYell("flank",seed)});

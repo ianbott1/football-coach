@@ -1,5 +1,5 @@
 {
- "fp": "5d28ac71fe18c521",
+ "fp": "517b702e7761ad1c",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -25,6 +25,16 @@
    "fp": "5d28ac71fe18c521",
    "from": "ce3404d664e8dd93",
    "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
+  },
+  {
+   "fp": "517b702e7761ad1c",
+   "from": "5d28ac71fe18c521",
+   "note": "scouting report before each game"
+  },
+  {
+   "fp": "517b702e7761ad1c",
+   "from": "517b702e7761ad1c",
+   "note": "your players, call verdicts"
   }
  ],
  "out": [
@@ -34,20 +44,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "60-32",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "rec": "76-22",
+      "result": "Lost in the conference finals",
+      "grade": "A"
      },
-     "book": "61ebdfc73476a1b9"
+     "book": "679ed705e0fa5c47"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "60-36",
-      "result": "Lost in the conference finals",
-      "grade": "B+"
+      "rec": "65-28",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "b7825da0a26c4130"
+     "book": "d301264995cc941b"
     }
    ]
   },
@@ -57,20 +67,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "29-53",
+      "rec": "31-51",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "fe5fbefbd2f0d14a"
+     "book": "978f379e17a9b3f2"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "63-29",
+      "rec": "51-41",
       "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "grade": "C+"
      },
-     "book": "e8f3187b0996ad1a"
+     "book": "92cb88aeb4922097"
     }
    ]
   },
@@ -80,20 +90,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "25-57",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "44-44",
+      "result": "Lost in the first round",
+      "grade": "C-"
      },
-     "book": "70d2c6216d17151a"
+     "book": "07ffdd8a53c89201"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "86-18",
-      "result": "Lost in the NBA Finals",
+      "rec": "83-18",
+      "result": "NBA CHAMPIONS",
       "grade": "A+"
      },
-     "book": "7f661ae3e4606e57"
+     "book": "01b13a77dafbd629"
     }
    ]
   }

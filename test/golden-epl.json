@@ -1,5 +1,5 @@
 {
- "fp": "5be4c9bc52cb2f1b",
+ "fp": "d55caaf4cda74737",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -75,59 +75,84 @@
    "fp": "5be4c9bc52cb2f1b",
    "from": "250f8de60424ba81",
    "note": "Cup nights: the FA Cup tie is its own turn; the cup page has your road and the last-eight bracket; Scores and Standings filter by division"
+  },
+  {
+   "fp": "6ee9bb3b6b967b77",
+   "from": "5be4c9bc52cb2f1b",
+   "note": "transfer window: kitty in the universe, transfers in history, summer screen"
+  },
+  {
+   "fp": "7c035fbbefd7afcb",
+   "from": "6ee9bb3b6b967b77",
+   "note": "kitty fixed when the summer opens"
+  },
+  {
+   "fp": "0d678ad5e25e9a12",
+   "from": "7c035fbbefd7afcb",
+   "note": "transfer rows: button size, affordable first"
+  },
+  {
+   "fp": "1d001b2a119c7881",
+   "from": "0d678ad5e25e9a12",
+   "note": "scouting report: clubs have a usual approach; pre-game prep call"
+  },
+  {
+   "fp": "d55caaf4cda74737",
+   "from": "1d001b2a119c7881",
+   "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "9f40db1e1c97ae37",
-    "post": "e6c866e33e47047a",
-    "champion": "Manchester City",
-    "rec": "13342c7bac3a4f0f",
-    "poll": "c4f5eb015643755c",
-    "heis": "60c5663964e6bb64",
-    "history": "2f6c6987d2c776f7",
-    "universe": "4ab1b1af982ae25d",
-    "screens": "38c52eab4e2ede87"
+    "games": "c8a836c1493a8573",
+    "post": "d76b5b28d23e4b25",
+    "champion": "Liverpool",
+    "rec": "5bf1a25af92f1c11",
+    "poll": "99ec49b2cd611e3d",
+    "heis": "f2e69ba69a821714",
+    "history": "5dbff61a127c2a79",
+    "universe": "002405e602097b6d",
+    "screens": "cc03ba5f70f558e9"
    },
    {
     "year": 2027,
-    "games": "ed54239eb9d8b607",
-    "post": "2e458f4458b7bf19",
-    "champion": "Manchester City",
-    "rec": "84c35167bc194ca8",
-    "poll": "17e3b7b01eecc746",
-    "heis": "3e58aefd144ac824",
-    "history": "7e8603cfbc2dc60a",
-    "universe": "5f8d3df86f90a231",
-    "screens": "7d004330ff3c98e4"
+    "games": "5a3e42ab1a8c532d",
+    "post": "42996642b0e0f9ad",
+    "champion": "Arsenal",
+    "rec": "565430956871e876",
+    "poll": "24a2e1208d5db2a6",
+    "heis": "a8417a340339a1c3",
+    "history": "1237ddbc0e3c0015",
+    "universe": "1e5a0080ba0e9d4b",
+    "screens": "6f6982cee109009a"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "8674db2b184bf3c7",
-    "post": "149737c9fec8907f",
-    "champion": "Arsenal",
-    "rec": "43eec24036e9012b",
-    "poll": "69b40ac8aa64527a",
-    "heis": "789212d36a85dc1c",
-    "history": "fa462194a8029bd0",
-    "universe": "dbfee4e9580fc12e",
-    "screens": "9ba83709e3a0c943"
+    "games": "97874898e2784de9",
+    "post": "4187359a7dfa47ec",
+    "champion": "Manchester City",
+    "rec": "dfbd0d49244a6bd3",
+    "poll": "f1e6d424de08334c",
+    "heis": "43dadd60238d5849",
+    "history": "ccdc9e6548d3d6d0",
+    "universe": "8eb47ef4415f050a",
+    "screens": "662940a1ae4ee714"
    },
    {
     "year": 2027,
-    "games": "4ed74a9a31471f8d",
-    "post": "e05bb1cc629857ff",
+    "games": "bd154ee3e044fede",
+    "post": "d05267aac3c3acdf",
     "champion": "Arsenal",
-    "rec": "28dc241621ceea16",
-    "poll": "3e3703d9ca0710da",
-    "heis": "7e8c08b95156a3fb",
-    "history": "c3530f1ec9fb8dcf",
-    "universe": "55e46e69d749afae",
-    "screens": "bc74d82fcede6325"
+    "rec": "59e7c8dca8a0e0dc",
+    "poll": "ef87399e1d1a46a2",
+    "heis": "731e7e8f2cd0184b",
+    "history": "cac4e3384e6d185f",
+    "universe": "3c87f216f5bf9478",
+    "screens": "b287e2ee36509c30"
    }
   ],
   "schedules#60": [

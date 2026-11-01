@@ -127,6 +127,19 @@ function tellRows(T){
     ["Crosses",per(T.cr),"Lots: they're overloading the flanks.",T.cr/n>=1.05?"hi":""],
     ["Long balls",per(T.lb),"Lots: they're going direct.",T.lb/n>=1.3?"hi":""]];
 }
+/* the scouting report: how they set up in their last few games, and how the
+   game in front of you tilts it (a stronger side presses or goes wide more,
+   a weaker one sits deeper or goes direct) */
+function reportHTML(dp,g,my){
+  const opp=g.home===my?"away":"home", oppName=g[opp], R=dp.report, n=dp.n||6;
+  const e=live&&live.eng&&live.eng.gap!==undefined?(opp==="home"?live.eng.gap:-live.eng.gap):0;
+  const tilt=e>60?`${esc(oppName)} are the stronger side today: sides like that press or go wide more often than usual.`
+    :e<-60?`${esc(oppName)} are the weaker side today: sides like that sit deeper or go direct more often than usual.`
+    :`An even game on paper: they're likeliest to play their usual way.`;
+  return `<div class="evid"><div class="evh">${esc(oppName)}: their last ${n} games</div>
+    ${APPROACH_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(APPROACH[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
+    <div class="evn">Most clubs have a usual way of playing, but not every week. ${tilt} Get it right and the work you did all week shows; get it wrong and you're out of shape until you change it.</div></div>`;
+}
 function evidenceHTML(g,my,d,kind){
   if(!d||!d.T)return "";
   const opp=g.home===my?"away":"home", me=g.home===my?"home":"away", oppName=g[opp];
@@ -185,7 +198,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>dp.k==="read"&&COUNTERS[o]?COUNTERS[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep")&&COUNTERS[o]?COUNTERS[o].d:"";
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -194,7 +207,7 @@ function liveCallView(){
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.q||"")}</div>
     </div>
-    ${dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):""}
+    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):""}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length,g:g,my:my}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
@@ -253,6 +266,8 @@ function watchView(){
 function readText(e){
   if(e.k==="read")return e.right?`Your read was right: they were ${APPROACH[e.truth].l}.`
     :`They were ${APPROACH[e.truth].l}: the answer was "${COUNTERS[APPROACH[e.truth].counter].l}".`;
+  if(e.k==="prep")return e.right?`Your preparation was right: they came out ${APPROACH[e.truth].l}.`
+    :`You set up for the wrong thing: they came out ${APPROACH[e.truth].l}.`;
   if(e.k==="flank")return e.right?`Right flank: their ${e.truth}-back was the weak one.`
     :`Their weak side was the ${e.truth} flank, not the ${e.pick}.`;
   return "";

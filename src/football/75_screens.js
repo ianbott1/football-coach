@@ -187,3 +187,51 @@ function liveCallView(){
   </div>`;
 }
 
+
+/* ---- after the game: were your calls the better percentage play? ----
+   Each call (fourth down, two-point try, the late and half-time calls) is
+   replayed from the moment you made it, with every answer, over the same
+   stretch of luck many times, every later call left to the usual choice.
+   The verdict: whether your answer won as often as the best one. */
+let VERDICT_RUNS=1200;          // replays per answer
+const VERDICT_SLACK=0.03;        // within this of the best answer: a good call (it's close)
+const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick"};
+const TALLY_LABEL="The better call this season";
+function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
+  if(dp.k==="fourth")return o.indexOf("punt")>=0?"punt":"kick";
+  return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }
+function callVerdicts(args,seed,answers,meHome){
+  const KINDS={fourth:1,two:1,chase:1,protect:1,half:1};
+  // the game as played: which asks were which
+  const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
+    while(g++<2000){ const r=e.next(); if(r.done)break;
+      if(r.ask){ asks.push({dp:r.ask,mine:r.mine,theirs:r.theirs}); e.reply(answers[i]!==undefined?answers[i]:verdictDefault(r.ask)); i++ } } }
+  const out=[];
+  asks.forEach((A,j)=>{
+    if(!KINDS[A.dp.k]||answers[j]===undefined)return;
+    const opts=A.dp.opts.map(x=>x[0]), rate={};
+    opts.forEach(o=>{ let w=0;
+      for(let m=0;m<VERDICT_RUNS;m++){
+        const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+        while(g++<2000){ r=e.next(); if(r.done)break;
+          if(r.ask){ let v;
+            if(i<j)v=answers[i];
+            else if(i===j){ rng.f=mulberry32((seed^Math.imul(m+1,0x9E3779B1))>>>0); rng.sp=null; v=o }
+            else v=verdictDefault(r.ask);
+            e.reply(v); i++ } }
+        const mine=meHome?r.h:r.a, theirs=meHome?r.a:r.h; w+=mine>theirs?1:mine===theirs?0.5:0 }
+      rate[o]=w/VERDICT_RUNS });
+    const pick=answers[j], best=opts.reduce((a,o)=>rate[o]>rate[a]?o:a,opts[0]);
+    if(rate[best]-Math.min(...opts.map(o=>rate[o]))<0.02)return;    // it made no real difference: not a call worth judging
+    const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0];
+    out.push({k:"call",pick:pick,truth:best,right:rate[pick]>=rate[best]-VERDICT_SLACK,
+      h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100)});
+  });
+  return out;
+}
+function readText(e){
+  if(e.k!=="call")return "";
+  if(e.pick===e.truth)return `${e.h}: "${e.mine}" was the better call (won ${e.pr}% of replays).`;
+  if(e.right)return `${e.h}: "${e.mine}" was as good as anything (${e.pr}% against ${e.br}% for "${e.best}").`;
+  return `${e.h}: "${e.best}" was the better call, ${e.br}% against your ${e.pr}%.`;
+}

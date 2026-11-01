@@ -26,7 +26,7 @@ add('migrate old saves (college football)',['migrate.js']);
 // college football
 add('h2h (cfb)',['h2h.js',D(G.cfb)]); add('moves (cfb)',['moves.js',D(G.cfb)]);
 add('firing (cfb)',['firing.js',D(G.cfb)]); add('clinch marks (nfl)',['clinch.js',D(G.nfl),'120']);
-add('plans (cfb)',['plans.js',D(G.cfb)]);
+add('plans (cfb)',['plans.js',D(G.cfb)]); add('call verdicts (nfl)',['fb-verdicts.js',D(G.nfl),'60']); add('your players (all six)',['people.js']);
 // pro football
 add('rules (nfl)',['nfl.js',D(G.nfl),'3','8']); add('draft board (nfl)',['draftboard.js',D(G.nfl)]);
 add('free-agent targets (nfl)',['fatargets.js',D(G.nfl)]); add('trades (nfl)',['trades.js',D(G.nfl)]);
@@ -41,7 +41,7 @@ add('NBA history (nba)',['nba-history.js','2','100'],{long:true});
 add('playoffs (nhl)',['nhl-playoffs.js','3']); add('clinch marks (nhl)',['nhl-clinch.js','4']);
 add('screens (nhl)',['nhl-screens.js']); add('NHL history (nhl)',['nhl-history.js','2','60'],{long:true});
 // English football
-add('rules (epl)',['epl-rules.js','4']); add('screens (epl)',['epl-screens.js']); add('strength predicts the table (epl)',['epl-predict.js']); add('decisions (epl)',['sc-decisions.js']); add('FA Cup (epl)',['epl-cup.js','6']); add('reads (nhl)',['hk-reads.js']); add('reads (ncaab)',['bb-reads.js','college']); add('reads (nba)',['bb-reads.js','pro']);
+add('rules (epl)',['epl-rules.js','4']); add('screens (epl)',['epl-screens.js']); add('strength predicts the table (epl)',['epl-predict.js']); add('decisions (epl)',['sc-decisions.js']); add('FA Cup (epl)',['epl-cup.js','6']); add('transfer window (epl)',['transfers.js']); add('reads (nhl)',['hk-reads.js']); add('reads (ncaab)',['bb-reads.js','college']); add('reads (nba)',['bb-reads.js','pro']);
 
 (async()=>{
   const t0=Date.now();

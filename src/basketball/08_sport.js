@@ -15,6 +15,11 @@ const SPORT={
     </g>
     <path d="M19 50 H53" stroke="#E4572E" stroke-width="4.4" stroke-linecap="round"/>
     <ellipse cx="36" cy="67" rx="11.5" ry="2.6" fill="none" stroke="var(--line)" stroke-width="2.2"/>`,
+  /* career milestones: [stat, words, the numbers that count]; college careers are four years */
+  milestones:(()=>{ const P=["pts","points",[5000,10000,15000,20000,25000,30000]], R=["reb","rebounds",[2500,5000,7500,10000,12500]];
+    return {PG:P,SG:P,SF:P,PF:P,C:R} })(),
+  milestonesCollege:(()=>{ const P=["pts","points",[1000,1500,2000,2500]], R=["reb","rebounds",[500,750,1000,1250]];
+    return {PG:P,SG:P,SF:P,PF:P,C:R} })(),
   staff:{
     oc:{short:"OFF", long:"offensive assistant"},
     dc:{short:"DEF", long:"defensive assistant"},

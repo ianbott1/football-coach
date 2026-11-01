@@ -1,5 +1,5 @@
 {
- "fp": "5f3d19d77e47dbc1",
+ "fp": "a43a967842c4e292",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -40,6 +40,16 @@
    "fp": "5f3d19d77e47dbc1",
    "from": "aed761d97562d564",
    "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
+  },
+  {
+   "fp": "a43a967842c4e292",
+   "from": "5f3d19d77e47dbc1",
+   "note": "scouting report before each game"
+  },
+  {
+   "fp": "a43a967842c4e292",
+   "from": "a43a967842c4e292",
+   "note": "your players, call verdicts"
   }
  ],
  "out": [
@@ -49,20 +59,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "35-34-15",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "47-25-12",
+      "result": "Lost in the second round",
+      "grade": "A"
      },
-     "book": "782a8a43b2f5c3de"
+     "book": "2c5f1f255bf0861e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "40-32-12",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "46-28-10",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "76057dc504240b1e"
+     "book": "796096c6b9e6f81e"
     }
    ]
   },
@@ -72,20 +82,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-37-7",
+      "rec": "41-34-9",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "71d7eb974e6bb407"
+     "book": "5ec8096795b015b1"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "48-30-6",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "41-32-11",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "644a6ee127219c6a"
+     "book": "82198f638c40cdd4"
     }
    ]
   },
@@ -95,20 +105,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "33-38-13",
+      "rec": "40-33-11",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "945c17b295f6b5d7"
+     "book": "2b0fd2888d18fac5"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "39-35-10",
+      "rec": "31-45-8",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "D"
      },
-     "book": "523e48603dde3372"
+     "book": "e0336539ebae3228"
     }
    ]
   }

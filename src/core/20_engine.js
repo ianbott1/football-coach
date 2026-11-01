@@ -1,4 +1,6 @@
 /* ============ RNG ============ */
+/* a string to a 32-bit number (FNV-1a): names to stable seeds */
+function strHash(x){ let h=2166136261; x=String(x); for(let i=0;i<x.length;i++)h=Math.imul(h^x.charCodeAt(i),16777619)>>>0; return h }
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
   t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 class RNG{

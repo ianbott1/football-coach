@@ -1,5 +1,5 @@
 {
- "fp": "187d85f159ed7c5b",
+ "fp": "3c53cad12faa8e81",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -55,6 +55,31 @@
    "fp": "187d85f159ed7c5b",
    "from": "92984937b554a039",
    "note": "Cup nights: the FA Cup tie is its own turn; the cup page has your road and the last-eight bracket; Scores and Standings filter by division"
+  },
+  {
+   "fp": "47ea70348dd7a5a9",
+   "from": "187d85f159ed7c5b",
+   "note": "transfer window screen and history"
+  },
+  {
+   "fp": "46f5c78b3ee253c7",
+   "from": "47ea70348dd7a5a9",
+   "note": "kitty fixed when the summer opens"
+  },
+  {
+   "fp": "46f5c78b3ee253c7",
+   "from": "46f5c78b3ee253c7",
+   "note": "transfer rows"
+  },
+  {
+   "fp": "3c53cad12faa8e81",
+   "from": "46f5c78b3ee253c7",
+   "note": "scouting report before each game; live games keyed by slot (a cup tie and a league game against the same club in one week)"
+  },
+  {
+   "fp": "3c53cad12faa8e81",
+   "from": "3c53cad12faa8e81",
+   "note": "your players, call verdicts"
   }
  ],
  "out": [
@@ -64,20 +89,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "17-7-14",
+      "rec": "19-8-11",
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "8d4173eda7d3d33e"
+     "book": "02269747d7da4f53"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-8-19",
-      "result": "Finished 16th in the Premier League",
-      "grade": "C"
+      "rec": "14-4-20",
+      "result": "Finished 11th in the Premier League",
+      "grade": "B-"
      },
-     "book": "5aaf083199d8143a"
+     "book": "f7d4106835a5ab4e"
     }
    ]
   },
@@ -87,20 +112,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "15-15-8",
-      "result": "Finished 7th in the Premier League",
-      "grade": "C+"
+      "rec": "16-15-7",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "2ab38ba01a3c28de"
+     "book": "9f0b5b65ac6cee75"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-12-14",
-      "result": "Finished 10th in the Premier League",
-      "grade": "B-"
+      "rec": "13-9-16",
+      "result": "Finished 12th in the Premier League",
+      "grade": "C+"
      },
-     "book": "b7dc879d0510f179"
+     "book": "8556e827fee57ae0"
     }
    ]
   },
@@ -110,20 +135,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "19-12-7",
+      "rec": "20-10-8",
       "result": "Finished 3rd in the Premier League",
       "grade": "B"
      },
-     "book": "062f497f472c90f9"
+     "book": "96e19fe0252995ab"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "18-7-13",
-      "result": "Finished 7th in the Premier League",
-      "grade": "B+"
+      "rec": "12-9-17",
+      "result": "Finished 12th in the Premier League",
+      "grade": "C+"
      },
-     "book": "354223a186bee4b8"
+     "book": "bc03da42e8db3f55"
     }
    ]
   }

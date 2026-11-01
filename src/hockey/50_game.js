@@ -44,7 +44,11 @@ const HK_BASE = {
   formSd:0.007,      // an ordinary night's spread
   backup:0.006,      // the backup: this much worse than the starter on average
   softBad:0.65, softOk:0.15,   // goals the commentary calls soft: on a bad night, on an ordinary one
-  cueTrue:0.5        // commentary on a system that is about the real one
+  cueTrue:0.5,       // commentary on a system that is about the real one
+  favW:4,            // a club's usual system: this many times as likely as any other
+  scouted:6,         // games in a scouting report
+  misprep:{own:0.93, opp:1.05},  // set up all week for the wrong system: out of shape until you change it
+  prepped:{own:1.05, opp:0.95}   // ...for the right one: drilled, sharper than a change made mid-game
 };
 const HK = Object.assign({}, HK_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.hk)||{}, (typeof HK_TRY!=="undefined"?HK_TRY:{}));
 /* gameplans and in-game modes: how many events a side creates, and allows */
@@ -105,7 +109,22 @@ function pullCall(lead){
   return {k:"pull",h:`Down ${-lead}, late in the third`,q:"When does the goalie come out?",
     opts:[["early","Early: over three minutes left"],["late","The usual: under two minutes"],ASSIST]};
 }
-function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
+/* the scouting report: the systems a club played in its last few games,
+   drawn from its own seed so it never moves the game */
+function scoutReport(fav,seed){
+  const r=new RNG(seed>>>0), w=SYSTEM_KEYS.map(k=>k===fav?HK.favW:1), tot=w.reduce((a,b)=>a+b), n={};
+  SYSTEM_KEYS.forEach(k=>n[k]=0);
+  for(let g=0;g<HK.scouted;g++){ let x=r.r()*tot, i=0; while(x>w[i]){x-=w[i];i++} n[SYSTEM_KEYS[i]]++ }
+  return n;
+}
+function prepCall(rep){
+  const top=SYSTEM_KEYS.reduce((a,k)=>rep[k]>rep[a]?k:a,SYSTEM_KEYS[0]);
+  return {k:"prep",h:"Before the puck drops: the scouting report",q:"Set up for how they usually play, or wait and see?",
+    opts:Object.keys(ANSWERS).map(a=>[a,ANSWERS[a].l]).concat([["normal","Wait and see: leave it to your assistant"]]),
+    report:Object.assign({},rep), n:HK.scouted, pearl:top};
+}
+function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
+  ctx=ctx||{}; const fav=ctx.fav||{};
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1);
   const night=()=>rng.r()<HK.offNight?HK.offBy+rng.gauss(0,HK.formSd):rng.gauss(0,HK.formSd);
@@ -114,14 +133,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
   const st={h:0,a:0,drives:[],seg:0,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
     mode:{home:planH,away:planA}, late:{home:null,away:null}, asked:{}, queue:[], ask:null,
     ot:0, so:false, done:false, playoff:!!playoff, S:{home:side0(),away:side0()}};
+  st.gap=gap;
   const other=s=>s==="home"?"away":"home";
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   // a side's system: the better side forechecks, the weaker traps
   const pickSys=(side)=>{
     const m=st.mode[side];
     if(humans[side]){ if(m==="safe")return "forecheck"; if(m==="aggressive")return "trap"; return "cycle" }
-    const e=side==="home"?gap:-gap, w=e>60?[3,1,2]:e<-60?[1,3,2]:[2,2,2];
-    let x=rng.r()*6, i=0; while(x>w[i]){x-=w[i];i++} return SYSTEM_KEYS[i];
+    const e=side==="home"?gap:-gap, w=(e>60?[3,1,2]:e<-60?[1,3,2]:[2,2,2]).map((x,i)=>SYSTEM_KEYS[i]===fav[side]?x*HK.favW:x);
+    let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} return SYSTEM_KEYS[i];
   };
   st.S.home.sys=pickSys("home"); st.S.away.sys=pickSys("away");
   const queueCall=(side,dp)=>{ const key=dp.k+(dp.h||"")+side; if(!humans[side]||st.asked[key])return;
@@ -132,7 +152,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
   const modeOf=(s,side)=>{ const L=humans[side]&&st.late[side];
     if(L==="auto"||!humans[side])return cpuMode(side,s);
     return L||st.mode[side] };
-  const readIt=(side,p)=>{ if(rng.r()<p)st.S[side].ans=SYSTEM[st.S[other(side)].sys].counter };
+  const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ans=SYSTEM[st.S[other(side)].sys].counter; st.S[side].prepd=false} };
   // the computer's goalie rule: four in, he's out (once)
   const cpuGoalie=(side)=>{ const X=st.S[side]; if(!X.backupIn&&X.ga>=4)swapGoalie(side) };
   const swapGoalie=(side)=>{ const X=st.S[side]; X.backupIn=true; X.form=night()+HK.backup; X.ga=0; X.xga=0; X.soft=0; X.sa=0;
@@ -144,6 +164,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
     const sysF=(side)=>{ const X=st.S[side], O=st.S[other(side)]; let f=SYSTEM[X.sys].own*SYSTEM[O.sys].opp;
       if(X.ans){ if(ANSWERS[X.ans].beats===O.sys)f*=HK.counter.own; else f*=HK.misread }
       if(O.ans&&ANSWERS[O.ans].beats===X.sys)f*=HK.counter.opp;
+      if(X.prepd)f*=ANSWERS[X.ans].beats===O.sys?HK.prepped.own:HK.misprep.own;
+      if(O.prepd)f*=ANSWERS[O.ans].beats===X.sys?HK.prepped.opp:HK.misprep.opp;
       return f };
     let lamH=HK.shots/SEGS*(1+e*HK.shotEdge)*AH.own*AA.opp*sysF("home");
     let lamA=HK.shots/SEGS*(1-e*HK.shotEdge)*AA.own*AH.opp*sysF("away");
@@ -220,9 +242,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
   st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
+    if(dp.k==="prep"){ if(ANSWERS[v]){ const t=st.S[other(side)].sys; X.ans=v; X.prepd=true;
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t}) } return }
     if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
-    if(dp.k==="read"){ if(ANSWERS[v])X.ans=v; else readIt(side,0.45); return }
+    if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else readIt(side,0.45); return }
     if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal")cpuGoalie(side); return }
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; return }
     if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
@@ -235,6 +259,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
       const r={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,theirs:Q.side==="home"?st.a:st.h,q:st.seg,side:Q.side};
       st.waiting=r; return r}
     const s=st.seg;
+    if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
+      if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
+      if(st.queue.length)return st.next()}
     // first intermission: the read, and your goalie if he's let in two or more
     if(s===4&&!st.i1){st.i1=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], O=st.S[other(sd)];
         if(!humans[sd]){ readIt(sd,0.45); cpuGoalie(sd); return }
@@ -258,10 +285,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff){
 }
 /* A whole game at once: the same game, with the computer's calls, or
    opts.decide for a person who isn't watching. */
+/* each club's usual system this season, and the seed for its scouting report */
+function clubStyle(t,year){ return SYSTEM_KEYS[strHash(t+"|"+year)%SYSTEM_KEYS.length] }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};
-  const e=makeLiveGame(rng,eloH,eloA,planH,planA,humans,opts.playoff);
+  const e=makeLiveGame(rng,eloH,eloA,planH,planA,humans,opts.playoff,opts.ctx);
   let guard=0;
   while(guard++<120){
     const r=e.next();

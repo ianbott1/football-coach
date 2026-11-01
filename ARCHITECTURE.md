@@ -14,13 +14,16 @@ server, published on GitHub Pages at ianbott1.github.io/football-coach.
     Pro Hockey Coach       build.py nhl     hockey-coach-pro.html      hockey        nhl
     Soccer Coach           build.py epl     soccer-coach.html          soccer        epl
 
-Publishing copies each dist file to the repo root (college football as
-index.html) and pushes.
+Publishing: `python3 build.py site` builds all six into dist/site/ with the
+landing page (src/landing.html) as index.html; copy that folder's files to
+the repo root and push. College football lives at football-coach.html (the
+root was college football until November 2026).
 
 ## Three layers
 
     src/core/          sport-neutral: RNG, talent model, season state machine
-                       (80), history (90), share card (95), objectives and
+                       (80), history (90), your players: form, milestones,
+                       moods (93_people), share card (95), objectives and
                        achievements (96_goals), sound/touch/motion (97_feel),
                        UI, saves and the live-game loop (99_app)
     src/<sport>/       football, basketball, hockey, soccer: positions and
@@ -56,6 +59,18 @@ answer blunts it, the wrong one costs a little.
     basketball  offence (threes, paint, pick-and-roll) -> defence, end of Q1
                 and the half; half-time, late and last-shot calls
     football    the original calls (fourth downs, two-point tries, the clock)
+    before the game (soccer, hockey, basketball): the scouting report. Each
+                club has a usual approach this season (clubStyle: a hash of
+                name and year, favW 4x as likely); the report is its last six
+                games, from its own seed. Prepare a counter from kick-off, or
+                wait. A drilled counter is sharper than a mid-game change; the
+                wrong one leaves you out of shape until you change it.
+
+After a live football game each call is judged (callVerdicts): replayed from
+that moment with every answer over the same 1200 stretches of luck, later
+calls left to the usual choice; "the better call" if yours won within 3
+points of the best. Calls that made no difference aren't judged. The
+verdict agrees with one from 10x the replays ~87% of the time.
 
 - Every call's last option leaves it to your assistant, who plays exactly as
   the computer does: a skipped or simmed game is never worse than before.
@@ -75,6 +90,9 @@ Measured value, even sides at home (tests below):
                 pulling him every time he lets in two -0.8
     basketball  college numbers +2.7, Pearl +1.0, guess -2.8;
                 pro +1.8, +1.2, -5.4
+    scouting    following the report (Pearl's pick): soccer +2.6, hockey
+                +2.9, college basketball +4.5, pro +3.4; a guess ~0;
+                report then reading the numbers beats reading alone by 1-2.4
 
 ## Working rules
 
@@ -110,6 +128,10 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   same line, or every game's baseline moves.
 - Global names collide across files (tierOf): a test that loads the build
   catches it; the build itself doesn't.
+- Rebuild every game before a test that loads them all: a stale build gave
+  false failures (a field added to one module, five builds out of date).
+- A cup tie and a league game can share a week and an opponent: key live
+  games by step and slot, not step and teams.
 
 ## Tests (test/)
 
@@ -117,7 +139,8 @@ run-all.js runs every verdict test in every game. Per game: golden (fingerprint
 of results and screens), hotseat, storage, reload. Across games: saves,
 layouts, sim-and-skip, sim-ahead, objectives, goals, migrate (old saves; the
 v1 build is in test/fixtures; deliberate screen changes are normalised there
-with a note). Per league: rules and clinch tests (nfl, nba-playoffs,
+with a note), your players (people), football call verdicts (fb-verdicts),
+the transfer window (transfers). Per league: rules and clinch tests (nfl, nba-playoffs,
 nhl-playoffs, nhl-clinch, bb-bracket, epl-rules, epl-cup), screen and wording
 audits (bb-screens, nba-screens, nhl-screens, epl-screens), the reads
 (sc-decisions, hk-reads, bb-reads college/pro: league calibration plus each
@@ -137,6 +160,31 @@ rounds, tiers 3-4 at the first round, 1-2 at the third; open draws with its
 own RNG (so the league's results don't move); midweek ties in league weeks,
 played live; level ties go to extra time and penalties; Wembley for the
 last two rounds. Cup ties never touch a league record or a table.
+
+## Soccer: the transfer window (leagues/epl/27_transfers.js)
+
+Players under contract cost a fee (wage x age x years left, more for a
+starter) as well as wages. They move up the pyramid, not down: a player
+won't drop a division, and in the same division wants a club of at least
+his own club's standing (judged on the standing as the summer began, and
+on next season's divisions). The kitty, fixed when the summer opens: 15% of
+the season's wage bill + 1.5% of the budget + half of last summer's
+leftover; sales add to it. Bigger clubs bid for your best players (keep or
+sell). Bids go in your order while the money and the wage budget last.
+Only your bids and sales move players: the computer's clubs rebuild as
+before, so the league behaves as it did. Measured (test/transfers.js): a
+Premier League club ~£8M against a median starter upgrade of ~£10M; a
+League One club ~£1.3M against ~£1.2M.
+
+## Your players (core/93_people.js)
+
+The team page shows your three best players and any backup who wants to
+start: season line, form (last three games against his season: in form at
+1.35x, out of form at 0.6x), final year (contract, or a college senior), the
+next career milestone when close, and a mood read from those facts (not a
+mechanic). Milestones per sport and level are in SPORT.milestones (college:
+milestonesCollege) and reach the weekly news. Pro careers count from the
+dynasty's first season (generated players have no earlier history).
 
 ## Real data
 
@@ -171,7 +219,9 @@ last two rounds. Cup ties never touch a league record or a table.
   Oct 2026; 6 v 11 read 62-69% across runs). Its tolerance is 3 standard
   errors treating tournaments as independent, but a career's tournaments
   share teams, so the real noise is larger. The old engine also failed 8 v 9
-  at 388 tournaments (52.9%, real 48.8). Fix to consider: a standard error
+  at 388 tournaments (52.9%, real 48.8). Nov 2026, same seeds: the previous
+  build failed 6 v 11 (68.9%); the scouting-report build failed 2 v 15
+  (96.1%, prior 94.7) and 3 v 14 (90.1%, prior 88.3). Fix to consider: a standard error
   clustered by career. Not loosened.
 - Soccer: the Premier League is a little too predictable (rank corr ~0.9).
 - Pro hockey: year-to-year correlation of records 0.40 (NHL ~0.5).

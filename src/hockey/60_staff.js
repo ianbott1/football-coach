@@ -130,7 +130,13 @@ function staffTake(dp, ctx){
   const diff = (ctx.mine||0)-(ctx.theirs||0);
   const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
   const R=[];
-  if(dp.k==="read"){
+  if(dp.k==="prep"){
+    const top=dp.pearl;
+    R.push({who:"bears", pick:"stretch", line:bearYell("read",seed)});
+    R.push({who:"pearl", pick:SYSTEM[top]?SYSTEM[top].counter:"normal", line:pearlSay(`They played ${SYSTEM[top].l} in ${dp.report[top]} of their last ${dp.n}! Let's practise for that!`,seed)});
+    R.push({who:"capy", pick:"normal", line:"I would rather watch a period first. One finds teams are not always who they were last week."});
+  }
+  else if(dp.k==="read"){
     R.push({who:"bears", pick:"stretch", line:bearYell("read",seed)});
     R.push({who:"pearl", pick:dp.pearl&&SYSTEM[dp.pearl]?SYSTEM[dp.pearl].counter:"normal",
       line:pearlSay(dp.pearl&&PEARL_SYS[dp.pearl]?"I just saw it! "+PEARL_SYS[dp.pearl]:"I haven't seen enough to say!",seed)});

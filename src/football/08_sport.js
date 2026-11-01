@@ -12,6 +12,15 @@ const SPORT={
       <path d="M9 13 V50"/><path d="M63 13 V50"/><path d="M9 50 H63"/><path d="M36 50 V62"/>
     </g>
     <ellipse cx="36" cy="65" rx="11.5" ry="3" fill="none" stroke="var(--line)" stroke-width="2.2"/>`,
+  /* career milestones: [stat, words, the numbers that count]; college careers are four years */
+  milestones:{QB:["pyd","passing yards",[10000,20000,30000,40000,50000,60000]], RB:["ryd","rushing yards",[2500,5000,7500,10000,12500,15000]],
+    WR:["cyd","receiving yards",[2500,5000,7500,10000,12500]], WR2:["cyd","receiving yards",[2500,5000,7500,10000,12500]],
+    OT:["pan","pancakes",[250,500,750,1000]], EDGE:["sck","sacks",[25,50,75,100,125,150]], DT:["sck","sacks",[25,50,75,100]],
+    LB:["tkl","tackles",[250,500,750,1000,1250,1500]], CB:["ints","interceptions",[10,20,30,40,50]], S:["ints","interceptions",[10,20,30,40,50]]},
+  milestonesCollege:{QB:["pyd","passing yards",[5000,7500,10000,12500]], RB:["ryd","rushing yards",[2000,3000,4000,5000]],
+    WR:["cyd","receiving yards",[2000,3000,4000]], WR2:["cyd","receiving yards",[2000,3000,4000]],
+    OT:["pan","pancakes",[200,300,400]], EDGE:["sck","sacks",[20,30,40]], DT:["sck","sacks",[15,25]],
+    LB:["tkl","tackles",[300,400,500]], CB:["ints","interceptions",[10,15,20]], S:["ints","interceptions",[10,15,20]]},
   staff:{
     oc:{short:"OC", long:"offensive coordinator"},
     dc:{short:"DC", long:"defensive coordinator"},

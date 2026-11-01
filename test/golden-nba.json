@@ -1,5 +1,5 @@
 {
- "fp": "92329dbac32a5b16",
+ "fp": "c30c3c91a5fa28a5",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -70,59 +70,69 @@
    "fp": "92329dbac32a5b16",
    "from": "f72096931111d402",
    "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
+  },
+  {
+   "fp": "8c83f538b029f4a5",
+   "from": "92329dbac32a5b16",
+   "note": "scouting report: clubs have a usual approach; pre-game prep call"
+  },
+  {
+   "fp": "c30c3c91a5fa28a5",
+   "from": "8c83f538b029f4a5",
+   "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "3c70cec20ea5a526",
-    "post": "1b6da67449e4329d",
-    "champion": "New York",
-    "rec": "594d821a92f2047d",
-    "poll": "ce4eb2ac1eaab234",
-    "heis": "fcf8ab6cab4f0fc2",
-    "history": "a930baee044eda47",
-    "universe": "187e1b46b4060355",
-    "screens": "2b0b99a058ed8f66"
+    "games": "02e1c4d9367f5bbf",
+    "post": "28ecd1f6ed6104db",
+    "champion": "Oklahoma City",
+    "rec": "9db3cacf1c51e19f",
+    "poll": "a8b3c0e31087f3a7",
+    "heis": "63b26623b64cb946",
+    "history": "d7ee5a9a22e76709",
+    "universe": "75a076cdeea0554c",
+    "screens": "37c159ab4d2ac2f8"
    },
    {
     "year": 2027,
-    "games": "75e13fd6c713d411",
-    "post": "2efe2598fefce5a5",
-    "champion": "Oklahoma City",
-    "rec": "98137c42dfb45eea",
-    "poll": "5980f8b6aa05fc3c",
-    "heis": "83d0fdef67245b15",
-    "history": "e942240be4614bfe",
-    "universe": "fba5d2083c3847c0",
-    "screens": "59d02d14f516ed41"
+    "games": "5f846b2535e1063c",
+    "post": "b18d2ba7ec7e8de3",
+    "champion": "San Antonio",
+    "rec": "9e7f428c21c8d56c",
+    "poll": "e0fd5b1397806a33",
+    "heis": "24f6f1211f0c414f",
+    "history": "88c97179f5593ecc",
+    "universe": "3cbb0c4d8163d256",
+    "screens": "fdac941e504b92a5"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "862630b8e3f510bd",
-    "post": "538ee27c366d5cac",
+    "games": "a92ae8b475a8bb68",
+    "post": "340f990f196d0a87",
     "champion": "Oklahoma City",
-    "rec": "1fa232fe532ae368",
-    "poll": "856a03617b97b186",
-    "heis": "079e7841cbfe0008",
-    "history": "392cba6b8c9c1069",
-    "universe": "71c3b69a5a092505",
-    "screens": "0f1220f58c8eef0a"
+    "rec": "0f3c8a70351d22cf",
+    "poll": "7dcb8c99aed9d8f9",
+    "heis": "da347f46c12242a0",
+    "history": "48d7f10946b13b2e",
+    "universe": "41dea31d059be398",
+    "screens": "db00b011096845d5"
    },
    {
     "year": 2027,
-    "games": "a198b885cbbd9872",
-    "post": "f0ad9390abd03054",
+    "games": "4079457ceb8c594d",
+    "post": "9303b3087cd550a6",
     "champion": "Denver",
-    "rec": "b512f59533bfb08b",
-    "poll": "a75dff291ab2b57e",
-    "heis": "b1d0b15610447f60",
-    "history": "60b5c770a1922b4b",
-    "universe": "5b4db5ff6eeee84d",
-    "screens": "f20d4bc0d40e9f24"
+    "rec": "5f43e0a5ce672c6c",
+    "poll": "2cfb6411ac61344a",
+    "heis": "d7b17492932d1abb",
+    "history": "554ddfa09f30292e",
+    "universe": "98551a8b09c8fcda",
+    "screens": "3a33f2a81d0e3ebd"
    }
   ],
   "schedules#60": [

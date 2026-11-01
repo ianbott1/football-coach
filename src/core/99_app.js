@@ -83,6 +83,7 @@ function startLive(g,step,slot){
   const rng=new RNG(liveSeed(step));
   const userIsHome=(g.home===S.myTeam);
   const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):"balanced";
+  const knock=SEA.phase!=="week"||!!g.cup, ctx=typeof gameCtx==="function"?gameCtx(g.home,g.away,SEA.year,step):undefined;
   live={g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
         eng:makeLiveGame(rng,e.h,e.a,
               userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
@@ -90,7 +91,8 @@ function startLive(g,step,slot){
               // a knockout (a postseason game, a cup tie): extra time and
               // penalties in soccer, sudden death in hockey, not a draw or a
               // shootout. Without it a level play-off left no winner.
-              SEA.phase!=="week"||!!g.cup),
+              knock, ctx),
+        args:[e.h,e.a,userIsHome?plan:oppPlan,userIsHome?oppPlan:plan,h2h?{home:true,away:true}:userIsHome,knock,ctx],
         drives:[], ask:null, done:false,
         paused:(S.watchStep===true), userIsHome:userIsHome,
         h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
@@ -158,9 +160,14 @@ function finishLive(){
               drives:live.drives};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
   if(g.cup)played.cup=true;
+  // was each call the better percentage play? (sports that judge their calls:
+  // the same game replayed from that moment with each answer, many times)
+  if(typeof callVerdicts==="function"&&!live.h2h&&live.args){
+    const V=callVerdicts(live.args,liveSeed(live.step),live.replay,meHome);
+    if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
-    if(R.length){ played.reads=R.map(x=>({k:x.k,pick:x.pick,truth:x.truth,right:x.right}));
+    if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
       R.forEach(x=>{T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
@@ -413,6 +420,8 @@ function newDynasty(team,seed,coachName,roster){
    game days) in the long pro seasons */
 function WK(){ return LEAGUE.text.week||"week" }
 function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
+/* a career's record: W-D-L where games can be drawn */
+function careerRec(C){ return LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:`${C.w}-${C.l}` }
 function ordinal(n){return n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th")}
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
@@ -533,6 +542,7 @@ function openOffseason(){
   C.objLog=(C.objLog||[]).concat([{year:SEA.year,team:my,met:om,of:seasonObjectives(my).length}]);
   C.rep=Math.max(-48,Math.min(80,C.rep));
   C.w+=SEA.rec[my][0]; C.l+=SEA.rec[my][1];
+  if(LEAGUE.draws)C.d=(C.d||0)+((SEA.drw&&SEA.drw[my])||0);
   if(titles.natl)C.titles++; if(titles.conf)C.confs++;
   const st=C.stops[C.stops.length-1];
   st.w+=SEA.rec[my][0]; st.l+=SEA.rec[my][1];
@@ -828,7 +838,7 @@ function readsHTML(step){
   const R=[].concat(...P.map(p=>p.reads)); if(!R.length)return "";
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
-    ${Y&&Y.n>=3?`<div class="readtally">Reading the game this season: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
+    ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -1037,8 +1047,8 @@ function myTeamView(){
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
   if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
-    (reveal==="half"?"":nextUpHTML(my,rk)+objectivesHTML(my))}
-  else if(reveal!=="half")h+=objectivesHTML(my);
+    (reveal==="half"?"":nextUpHTML(my,rk)+objectivesHTML(my)+starsHTML(my))}
+  else if(reveal!=="half")h+=objectivesHTML(my)+starsHTML(my);
   h+=(reveal==="half"?"":seasonLogHTML(my));
   return h;
 }
@@ -1178,7 +1188,7 @@ function nextUpHTML(my,rk){
     h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>
       <div class="nextcard bye"><div class="nlabel">OPEN DATE</div>
       <div class="byeowl">${owlSVG("owlmini",false)}</div>
-      <div class="nopp">Bye week</div>
+      <div class="nopp">${esc(LEAGUE.text.bye||"Bye week")}</div>
       <div class="nrec">No game &mdash; everyone else plays on</div></div>`;
   }
   if(ng){
@@ -1237,7 +1247,7 @@ function scheduleHTML(team,compact){
       .sort((x,y)=>(x.cup?1:0)-(y.cup?1:0));
     const label=`Wk ${w+1}`;
     if(!all.length){rows.push(`<div class="srow byerow"><span class="spos">&ndash;</span>
-      <span class="steam">Bye week</span><span class="sconf byelbl">${label}</span></div>`);continue}
+      <span class="steam">${esc(LEAGUE.text.bye||"Bye week")}</span><span class="sconf byelbl">${label}</span></div>`);continue}
     all.forEach(g=>{
     const opp=g.home===team?g.away:g.home;
     const rk=SEA.poll.rankMap()[opp];
@@ -1451,6 +1461,7 @@ function weekNews(W){
       h:`${LEAGUE.awards.mvp} watch: ${hz[0].n}, ${classTag(hz[0].c)} ${hz[0].p}, ${hz[0].t}`,
       b:`${hz[0].line||""}${hz[1]?" \u00b7 "+hz[1].n+" ("+hz[1].t+") is closest.":""}`});
   }
+  if(typeof milestoneNews==="function")milestoneNews(my).forEach(x=>items.push(x));
   items.sort((x,y)=>(y.p||0)-(x.p||0));
   return items;
 }
@@ -1801,7 +1812,7 @@ function dynastyView(){
       <div class="iname">${esc(C.name)}</div>
       <div class="imeta">You &middot; head coach &middot; ${esc(repGrade(C.rep))}</div>
       <div class="stats">
-        <div><b>${C.w}-${C.l}</b><span>Career</span></div>
+        <div><b>${careerRec(C)}</b><span>Career</span></div>
         <div><b>${C.titles}</b><span>Titles</span></div>
         <div><b>${C.confs}</b><span>Conf</span></div>
         <div><b>${C.fired}</b><span>Fired</span></div>

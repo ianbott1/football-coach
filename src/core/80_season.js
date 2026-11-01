@@ -129,6 +129,7 @@ class Season{
             if(!pl)return;
             if(!pl.st2)pl.st2=blankStats(P.p);
             const line=gameStats(this.rng,pl,i,pf,pa2,pf>pa2);
+            if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
             pl.last={line:line,pos:P.p,week:this.step,team:tm};
           });
@@ -142,6 +143,8 @@ class Season{
     }
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
     if(LEAGUE.tracksOT||LEAGUE.draws)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
+    // what the sport knows about the two sides before kick-off (soccer: each club's usual approach)
+    if(typeof gameCtx==="function")gopts=Object.assign({},gopts||{},{ctx:gameCtx(a,b,this.year,this.step)});
     const gs=playGame(this.rng,eloH,eloA,
       this.userTeam===a?plan:"balanced",
       this.userTeam===b?plan:"balanced",
@@ -173,6 +176,7 @@ class Season{
           if(!pl)return;
           if(!pl.st2)pl.st2=blankStats(P.p);
           const line=gameStats(this.rng,pl,i,pf,pa,pf>pa);
+          if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
           addStats(pl.st2,line);
           pl.last={line:line,pos:P.p,week:this.step,team:tm};
         });

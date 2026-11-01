@@ -1,5 +1,5 @@
 {
- "fp": "0d881169bac71f2a",
+ "fp": "beccea3264179431",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -55,59 +55,69 @@
    "fp": "0d881169bac71f2a",
    "from": "0f17d45f02d64c01",
    "note": "Things to play for: the board's objectives, the trophy cabinet, your reads judged after each game"
+  },
+  {
+   "fp": "d8c83d2dc768d826",
+   "from": "0d881169bac71f2a",
+   "note": "scouting report: clubs have a usual approach; pre-game prep call"
+  },
+  {
+   "fp": "beccea3264179431",
+   "from": "d8c83d2dc768d826",
+   "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "71bd40647194bdd9",
-    "post": "5a3ef164c9c2192c",
+    "games": "f1b83385bcde1478",
+    "post": "4f0d3f9cb73b0f6d",
     "champion": "Los Angeles",
-    "rec": "b8dff52352398fa4",
-    "poll": "9d11e28b9d2a32e2",
-    "heis": "442e84bddce94699",
-    "history": "ab2dfacdc776ff75",
-    "universe": "1f0b543f3139c3a3",
-    "screens": "cd85998ee4af1ff8"
+    "rec": "3860e68e76095ab4",
+    "poll": "e96f5d234e794cc0",
+    "heis": "2e578c69901469ff",
+    "history": "35010fcb0d7513d3",
+    "universe": "10b67306cfcd99c3",
+    "screens": "65169c540cc3c618"
    },
    {
     "year": 2027,
-    "games": "59fd3b868b2ced8d",
-    "post": "6e0299701b4b72e9",
-    "champion": "Dallas",
-    "rec": "5c5becb173f9b1d6",
-    "poll": "fc4d89a6550d379c",
-    "heis": "171df37b0e7003e2",
-    "history": "7018733250560c02",
-    "universe": "50beddf31f35b7b6",
-    "screens": "3cbcd32cb1d2f60e"
+    "games": "54a76c9834e54bd9",
+    "post": "a2ecbd9d7af1d592",
+    "champion": "Ottawa",
+    "rec": "dd0d73c5672a167d",
+    "poll": "b2a4444428bcdb51",
+    "heis": "b7ea50030c95ed67",
+    "history": "1bd868de8995b984",
+    "universe": "55065d763b7cba35",
+    "screens": "9ce3aa3e0f29d0b3"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "46939018742b4890",
-    "post": "62dce78d2e4197a9",
-    "champion": "Vegas",
-    "rec": "08e10dde1c371f19",
-    "poll": "8fd4ec7855614831",
-    "heis": "ecdb7a9cde402f0d",
-    "history": "9517aaacb4a75756",
-    "universe": "52bd65cce21345e4",
-    "screens": "88be0b21447d3c54"
+    "games": "49d001e26ba2bc77",
+    "post": "d5c9bc7158a616bf",
+    "champion": "Carolina",
+    "rec": "dd8bb7b14da00d85",
+    "poll": "a66e4e334a78bddc",
+    "heis": "878c7e6e19a040c2",
+    "history": "d2dbeb2cde4b50be",
+    "universe": "15f61c25076d03bd",
+    "screens": "d89f6215878b7822"
    },
    {
     "year": 2027,
-    "games": "a379debb09c72cf0",
-    "post": "6f6aa4ad39d936d2",
-    "champion": "Buffalo",
-    "rec": "0914ad26f44a2edc",
-    "poll": "80a9fe7c31440105",
-    "heis": "76314a0b23cf1963",
-    "history": "d20a773fa1be64a5",
-    "universe": "a0f930ebad36b186",
-    "screens": "0f73635364a6ea85"
+    "games": "bfd69272d7b66eca",
+    "post": "cf7b8adf9badba02",
+    "champion": "Florida",
+    "rec": "5143bd6c30e68b7a",
+    "poll": "fe9cd3db0c256042",
+    "heis": "f2d909c6344345fc",
+    "history": "30ff2a45fb7db466",
+    "universe": "41788243654c2491",
+    "screens": "54551c0581700d3c"
    }
   ],
   "schedules#60": [

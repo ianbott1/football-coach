@@ -91,6 +91,10 @@ function liveScoreboard(){
 
 /* ---- the evidence ---- */
 function evidenceHTML(g,my,d,dp){
+  if(dp.k==="prep"){ const opp=g.home===my?"away":"home", R=dp.report, n=dp.n||6;
+    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
+      ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
+      <div class="evn">Most teams have a way they like to score, but not every night. Get it right and the work you did in practice shows; get it wrong and you're out of position until you change it.</div></div>`; }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
@@ -132,7 +136,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>dp.k==="read"&&DEFENCES[o]?DEFENCES[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep")&&DEFENCES[o]?DEFENCES[o].d:"";
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -197,5 +201,7 @@ function watchView(){
 function readText(e){
   if(e.k==="read")return e.right?`Your read was right: they were ${STYLE[e.truth].l}.`
     :`They were ${STYLE[e.truth].l}: the answer was "${DEFENCES[STYLE[e.truth].answer].l}".`;
+  if(e.k==="prep")return e.right?`Your game plan was right: they came out ${STYLE[e.truth].l}.`
+    :`You game-planned for the wrong thing: they came out ${STYLE[e.truth].l}.`;
   return "";
 }

@@ -276,6 +276,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     u.moved={year:u.year,moves:move};
     syncConf(u);
   }
+  const prog0=Object.assign({},u.program);             // club standing as the summer began: what players judged you by
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
   const chFor=t=>U_CH[t]||null, ut=choices.userTeam;
   if(ut&&choices.coach){const c=choices.coach;
@@ -352,6 +353,11 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   Object.keys(U_CH).forEach(t=>{const ch=U_CH[t]; if(ch&&ch.trade)nflApplyTrade(u,t,ch.trade,rep,leave,pool)});
   NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
 
+  // the transfer window: your sales, then your bids (27_transfers.js)
+  rep.transfers={};
+  Object.keys(U_CH).forEach(t=>{ if(u.roster[t])tWindow(u,t,U_CH[t]||{},rep,pool,leave,prog0) });
+  NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
+
   // 4. the academy: English football has no draft. Each club brings through
   // one or two youngsters (17-19), better at bigger clubs; they join as
   // backups where they beat the one there, and are let go otherwise.
@@ -397,7 +403,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const cost=Math.round(p.ask*1.1*10)/10;
       const bk=R[BK(p.i)];
       if(bk&&bk.keep){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`no room at ${pos}: it would cut ${bk.n}, whom you just signed`});return}
-      if(payroll(R)+cost>budgetOf(u,t)){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
+      if(payroll(R)+cost>budgetOf(u,t)){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted ${money(cost)} a year; the wage budget didn't have room`});return}
       p.signed=true; p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       p.keep=true;                                  // not to be cut again this offseason
       const out=nflPlace(R,p);
@@ -472,12 +478,12 @@ LEAGUE.offseason={
     const R=u.roster[t], resign=nflResignPlan(R,budgetOf(u,t)), asks={};
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
     nflDraftClass(u,t);                              // made now, so the screen can show it
-    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null}};
+    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null, bids:[], sales:[], kitty:tKitty(u,t,payroll(R))}};
   },
-  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null}},
-  faStyles:{contend:{l:"Spend to contend",d:"Chase the best players available, whatever their age. Uses nearly every dollar."},
-            balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
-            young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
+  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null, bids:P.bids||[], sales:P.sales||[], kitty:P.kitty}},
+  faStyles:{contend:{l:"Spend to contend",d:"Free transfers: the best available, whatever their age. Uses nearly all the wage budget."},
+            balanced:{l:"Balanced",d:"Free transfers: fill real holes with players in their prime. Leaves a little room."},
+            young:{l:"Stay young",d:"Free transfers: only players 27 and under, and keep wage room for later."}},
   draftStyles:{bpa:{l:"Best available",d:"Take the best player on the board, whatever the position."},
                need:{l:"Draft for need",d:"Fill the weakest spots on the roster, even if it means reaching."},
                upside:{l:"Swing for upside",d:"Raw prospects with the highest ceilings. Slower to pay off."}}
@@ -533,6 +539,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
+    transfers:(C.transfers&&C.transfers[my])||[], kittyLeft:(C.kittyLeft&&C.kittyLeft[my])||0,
     payroll:off.cap?off.cap[my]:null,
     // every club's season in words, frozen before promotion and relegation moved anyone
     res:(typeof SEA!=="undefined"&&SEA)?Object.fromEntries(NAMES.map(t=>[t,SEA.seasonResult(t)])):null,
