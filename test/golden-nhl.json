@@ -1,5 +1,5 @@
 {
- "fp": "beccea3264179431",
+ "fp": "25243ce42c3fb0f8",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -65,6 +65,11 @@
    "fp": "beccea3264179431",
    "from": "d8c83d2dc768d826",
    "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
+  },
+  {
+   "fp": "25243ce42c3fb0f8",
+   "from": "beccea3264179431",
+   "note": "Scores steps through the weeks: played and to come"
   }
  ],
  "result": {
@@ -117,7 +122,7 @@
     "heis": "f2d909c6344345fc",
     "history": "30ff2a45fb7db466",
     "universe": "41788243654c2491",
-    "screens": "54551c0581700d3c"
+    "screens": "18a822c5135f5b83"
    }
   ],
   "schedules#60": [

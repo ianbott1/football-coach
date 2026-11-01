@@ -1,5 +1,5 @@
 {
- "fp": "1180f074d1752e5e",
+ "fp": "038b0b68abf90ce7",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -135,6 +135,11 @@
    "fp": "1180f074d1752e5e",
    "from": "a725ad249e43e584",
    "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
+  },
+  {
+   "fp": "038b0b68abf90ce7",
+   "from": "1180f074d1752e5e",
+   "note": "Scores steps through the weeks: played and to come"
   }
  ],
  "result": {
@@ -235,7 +240,7 @@
     "heis": "fe3a965910525c47",
     "history": "ce29e693a0fcb4df",
     "universe": "53bac5df002b0332",
-    "screens": "37726bca4ac860d7"
+    "screens": "417f8181ed2b3d86"
    }
   ],
   "Detroit#777": [

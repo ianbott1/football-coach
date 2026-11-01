@@ -1,5 +1,5 @@
 {
- "fp": "d55caaf4cda74737",
+ "fp": "b1184097eb543296",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -100,6 +100,11 @@
    "fp": "d55caaf4cda74737",
    "from": "1d001b2a119c7881",
    "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
+  },
+  {
+   "fp": "b1184097eb543296",
+   "from": "d55caaf4cda74737",
+   "note": "Scores steps through the weeks: played and to come"
   }
  ],
  "result": {
@@ -114,7 +119,7 @@
     "heis": "f2e69ba69a821714",
     "history": "5dbff61a127c2a79",
     "universe": "002405e602097b6d",
-    "screens": "cc03ba5f70f558e9"
+    "screens": "8f3c930c3eef8abb"
    },
    {
     "year": 2027,
@@ -126,7 +131,7 @@
     "heis": "a8417a340339a1c3",
     "history": "1237ddbc0e3c0015",
     "universe": "1e5a0080ba0e9d4b",
-    "screens": "6f6982cee109009a"
+    "screens": "f0eee2ec213b9691"
    }
   ],
   "Wrexham#777": [

@@ -1,5 +1,5 @@
 {
- "fp": "278cb655c179f1e7",
+ "fp": "b46a3a152bdacba6",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -124,6 +124,11 @@
    "fp": "278cb655c179f1e7",
    "from": "33afe946a4ffb5a8",
    "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
+  },
+  {
+   "fp": "b46a3a152bdacba6",
+   "from": "278cb655c179f1e7",
+   "note": "Scores steps through the weeks: played and to come"
   }
  ],
  "result": {
@@ -150,7 +155,7 @@
     "heis": "480803b9b658faca",
     "history": "1d3a43a2bf113240",
     "universe": "5390fa1e791e25e8",
-    "screens": "6dcbadc5c33b4842"
+    "screens": "f28d11d1a27372e0"
    },
    {
     "year": 2028,
@@ -250,7 +255,7 @@
     "heis": "16871fc36811ec09",
     "history": "39388581ec611a8d",
     "universe": "8238002faae98585",
-    "screens": "e4ed389709967a9d"
+    "screens": "90780253d2ab5727"
    },
    {
     "year": 2028,

@@ -59,6 +59,13 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .dateline{display:flex;justify-content:space-between;align-items:baseline;padding:16px 16px 8px}
 .dateline h2{font-family:var(--cond);font-size:25px;font-weight:700;text-transform:uppercase}
 .dateline span{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.1em}
+.wknav{display:flex;align-items:center;gap:10px;padding:14px 12px 8px}
+.wkmid{flex:1;min-width:0;text-align:center}
+.wkmid h2{font-family:var(--cond);font-size:25px;font-weight:700;text-transform:uppercase;line-height:1}
+.wkmid span{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.1em}
+.wkbtn{flex:none;width:40px;height:36px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--bone);font-size:17px;cursor:pointer}
+.wkbtn:disabled{opacity:.3;cursor:default}
+.game.fixture .sc{min-width:0}
 .grouphead{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
  color:var(--muted);padding:18px 16px 7px;border-top:1px solid var(--line);margin-top:8px}
 .note{color:var(--muted);font-size:12.5px;padding:18px 16px;line-height:1.5}
@@ -5406,6 +5413,7 @@ function skipIdleDays(){
   }
 }
 function doAdvance(){
+  scoreWk=null;                                   // Scores follows the new week
   skipIdleDays();
   if(SEA.phase==="done"){ openOffseason(); return; }
   const before=SEA.step;
@@ -5718,11 +5726,17 @@ function liveConf(team){
   return g.winner===team?[w-1,l]:[w,l-1];
 }
 
+/* the game the result card shows: on a cup night the cup tie, otherwise
+   the league game (Rewatch must replay the same one) */
+function heroWeekGame(W,my){
+  return (flash&&flash.cup?W.games.find(x=>x.cup&&(x.home===my||x.away===my)):null)
+    ||W.games.find(x=>!x.cup&&(x.home===my||x.away===my))||W.games.find(x=>x.home===my||x.away===my)||null;
+}
 function heroGame(){
   const my=S.myTeam;
   if(flash&&flash.type==="week"){
     const W=SEA.weeks[flash.step];
-    if(W)return W.games.find(x=>x.home===my||x.away===my)||null;
+    if(W)return heroWeekGame(W,my);
   }else if(flash&&flash.type==="post"){
     const pools=SEA.postPools();
     for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f)return f}
@@ -5735,8 +5749,7 @@ function heroResult(){
   let g=null,label="",cupG=null;
   if(flash&&flash.type==="week"){
     const W=SEA.weeks[flash.step];
-    if(W){g=(flash.cup?W.games.find(x=>x.cup&&(x.home===my||x.away===my)):null)
-        ||W.games.find(x=>!x.cup&&(x.home===my||x.away===my))||W.games.find(x=>x.home===my||x.away===my);label=W.label;
+    if(W){g=heroWeekGame(W,my);label=W.label;
       cupG=W.games.find(x=>x.cup&&x!==g&&(x.home===my||x.away===my))||null;
       // leagues that number steps by calendar day name your game by your count
       if(g&&LEAGUE.myGameLabel)label=LEAGUE.myGameLabel(SEA.weeks.slice(0,flash.step+1)
@@ -6436,15 +6449,48 @@ function grpTabsHTML(cupToo){
   return `<div class="subtabs">${LEAGUE.conf.order.map(c=>`<button class="subtab" data-grp="${c}" aria-pressed="${g===c}">${esc(nm(c))}</button>`).join("")}${
     cupToo?`<button class="subtab" data-grp="CUP" aria-pressed="${g==="CUP"}">FA Cup</button>`:""}<button class="subtab" data-grp="ALL" aria-pressed="${g==="ALL"}">All</button></div>`;
 }
+/* Scores can step back through the weeks played and on to the fixtures to
+   come (scoreWk: which week; null follows the latest) */
+let scoreWk=null;
+function wkLabel(w){ return SEA.weeks[w]?SEA.weeks[w].label:(LEAGUE.stepLabel?LEAGUE.stepLabel(w):`Week ${w+1}`) }
+function wkNav(w,last,maxW){
+  return `<div class="wknav"><button class="wkbtn" data-wk="${w-1}" ${w<=0?"disabled":""} aria-label="Earlier">&larr;</button>
+    <div class="wkmid"><h2>${esc(wkLabel(w))}</h2><span>${esc(LEAGUE.dates[w]||"")}${w>last?" &middot; to come":w<last?" &middot; played":""}</span></div>
+    <button class="wkbtn" data-wk="${w+1}" ${w>=maxW?"disabled":""} aria-label="Later">&rarr;</button></div>`;
+}
+function fixtureLine(g,mine){
+  const t=(x)=>`<div class="side"><span class="nm">${TL(x)}</span><span class="sc"></span></div>`;
+  const chips=[]; if(g.title)chips.push(`<span class="chip ttl">${esc(g.title)}</span>`); if(g.site)chips.push(`<span class="chip ttl">${esc(g.site)}</span>`);
+  const rv=LEAGUE.rivals.name(g.home,g.away); if(rv)chips.push(`<span class="chip riv">${esc(rv)}</span>`);
+  return `<article class="game fixture${mine?" mine":""}"><div class="edge"></div><div class="gbody">
+    ${LEAGUE.homeFirst?t(g.home)+t(g.away):t(g.away)+t(g.home)}${chips.length?`<div class="meta">${chips.join("")}</div>`:""}</div></article>`;
+}
+function fixturesView(w,last,maxW){
+  const gs=SEA.sched.filter(x=>x.week===w), my=S.myTeam, mine=g=>g.home===my||g.away===my;
+  let h=wkNav(w,last,maxW);
+  if(!gs.length)return h+`<div class="note">No games ${LEAGUE.text.week?"this "+LEAGUE.text.week:"this week"}.</div>`;
+  const line=g=>fixtureLine(g,mine(g));
+  if(LEAGUE.groupFilter)h+=grpTabsHTML(false);
+  const yours=gs.filter(mine); if(yours.length)h+=`<div class="grouphead">Yours</div>`+yours.map(line).join("");
+  if(LEAGUE.groupFilter){ const g0=grpNow(), sel=g0==="CUP"?CONF[my]:g0, groups=sel==="ALL"?LEAGUE.conf.order:[sel];
+    groups.forEach(c=>{ const L=gs.filter(g=>!g.cup&&CONF[g.home]===c); if(L.length)h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${L.length} games</div><div class="${wide?'gamegrid':''}">`+L.map(line).join("")+`</div>` });
+    const cupG=gs.filter(g=>g.cup); if(cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+    return h }
+  return h+`<div class="grouphead">Everyone &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
+}
 function scoresView(){
-  if(!SEA.weeks.length)
-    return `<div class="note">The season hasn't started. Hit the button below to play ${LEAGUE.stepLabel?LEAGUE.stepLabel(0):"Week 1"}.</div>`;
+  if(!SEA.weeks.length&&scoreWk===null)
+    return `<div class="note">The season hasn't started. Hit the button below to play ${LEAGUE.stepLabel?LEAGUE.stepLabel(0):"Week 1"}.</div>`+
+      (SEA.sched&&SEA.sched.length?`<button class="rewatch seedraw" data-wk="0">See the fixtures</button>`:"");
   const pv=LEAGUE.ui.postseasonView(); if(pv)return pv;
-  const W=SEA.weeks[SEA.weeks.length-1];
+  const last=SEA.weeks.length-1, maxW=Math.max(last,...SEA.sched.map(x=>x.week));
+  const w=scoreWk===null?last:Math.max(0,Math.min(scoreWk,maxW));
+  if(w>last)return fixturesView(w,last,maxW);
+  const W=SEA.weeks[w];
   if(!W)return `<div class="note">No games yet.</div>`;
   if(LEAGUE.groupFilter){
     const cupG=W.games.filter(g=>g.cup), g0=grpNow(), sel=g0==="CUP"&&!cupG.length?CONF[S.myTeam]:g0;
-    let h=`<div class="dateline"><h2>${esc(W.label)}</h2><span>${esc(W.date||"")}</span></div>`+grpTabsHTML(cupG.length>0)+(sel===CONF[S.myTeam]?newsBlock():"");
+    let h=wkNav(w,last,maxW)+grpTabsHTML(cupG.length>0)+(sel===CONF[S.myTeam]&&w===last?newsBlock():"");
     const line=g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam);
     if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("")+
       `<button class="rewatch seedraw" data-cupview="1">See the whole draw</button>`;
@@ -6456,8 +6502,8 @@ function scoresView(){
   }
   const marq=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)<=25);
   const rest=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)>25);
-  let h=`<div class="dateline"><h2>${esc(W.label)}</h2><span>${esc(W.date||"")}</span></div>`;
-  h+=newsBlock();
+  let h=wkNav(w,last,maxW);
+  if(w===last)h+=newsBlock();
   if(marq.length)h+=`<div class="grouphead">Ranked teams</div>`+
     marq.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("");
   if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${rest.length} games</div>`+
@@ -7285,6 +7331,8 @@ function render(){
   document.querySelectorAll("[data-coord]").forEach(b=>b.onclick=()=>{
     S.off.picks[b.dataset.coord]=+b.dataset.ci; save(); render();});
   LEAGUE.ui.bindOffseason();
+  document.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>{ const v=+b.dataset.wk;
+    scoreWk=(v===SEA.weeks.length-1)?null:v; if(view!=="scores")view="scores"; render() });
   const rw=document.querySelector("[data-rewatch]");
   if(rw)rw.onclick=()=>{const g=heroGame(); if(g)startWatch(g)};
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
