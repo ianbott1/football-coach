@@ -112,7 +112,7 @@ function bearYell(kind, seed){
   const n=Math.abs(seed|0);
   if(n%4===2){ const d=BEAR_YELL.distracted; return d[Math.floor(n/4)%d.length] }
   const pool=BEAR_YELL[kind]||BEAR_YELL.push;
-  return pool[n%pool.length];
+  return pool[n%pool.length]||"We have a feeling about this one. A big feeling.";   // never a blank line
 }
 const PEARL_READ={
   press:"They keep winning it back in our half! That's a press. Go long over it!",

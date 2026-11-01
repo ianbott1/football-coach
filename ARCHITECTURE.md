@@ -190,6 +190,12 @@ why, free agency, the draft, trades; each contract row says the staff's
 call. "Back to the staff's plan" undoes your changes. College: the even
 budget split and a balanced class.
 
+## Backups and the season tally
+
+Help (?) has "Download a backup" (the save as a .coach file) and "Restore a
+backup"; the title screen restores into the first empty slot. The team
+page keeps the season's tally of reads and calls (tallyHTML).
+
 ## Music (core/97_feel.js)
 
 Generated with Web Audio like the sound: four chords per sport (own key and

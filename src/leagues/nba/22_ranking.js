@@ -12,7 +12,7 @@ class PowerRank{
     return NAMES.slice().sort((a,b)=>{
       const ga=this.w[a]+this.l[a], gb=this.w[b]+this.l[b];
       // early on, how good a team is outweighs a 1-0 start
-      const k=Math.min(1,Math.max(ga,gb)/6);
+      const k=Math.min(1,Math.max(ga,gb)/(LEAGUE.schedule.games*0.35));   // record counts fully after a third of the season (the NFL's six of 17)
       const sa=k*this.pct(a)*400+this.elo[a], sb=k*this.pct(b)*400+this.elo[b];
       return sb-sa;
     });

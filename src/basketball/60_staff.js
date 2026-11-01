@@ -131,7 +131,7 @@ function bearYell(kind, seed){
     return d[Math.floor(n/4)%d.length];
   }
   const pool=BEAR_YELL[kind]||BEAR_YELL.half;
-  return pool[n%pool.length];
+  return pool[n%pool.length]||"We have a feeling about this one. A big feeling.";   // never a blank line
 }
 
 const PEARL_STYLE={
@@ -147,7 +147,7 @@ function staffTake(dp, ctx){
     const top=dp.pearl;
     R.push({who:"bears", pick:"trap", line:bearYell("read",seed)});
     R.push({who:"pearl", pick:STYLE[top]?STYLE[top].answer:"normal", line:pearlSay(`They were ${STYLE[top].l} in ${dp.report[top]} of their last ${dp.n}! Let's practise for that!`,seed)});
-    R.push({who:"capy", pick:"normal", line:"I would want to see a quarter first, myself. Teams are not always who the tape says they are."});
+    R.push({who:"capy", pick:"normal", line:"I would want to see "+(BB.quarters?"a quarter":"ten minutes")+" first, myself. Teams are not always who the tape says they are."});
   }
   else if(dp.k==="read"){
     R.push({who:"bears", pick:"trap", line:bearYell("read",seed)});

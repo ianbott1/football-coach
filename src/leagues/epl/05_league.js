@@ -61,8 +61,10 @@ const LEAGUE={
   myGameLabel:n=>`Matchday ${n}`,
   groupFilter:true,                            // Scores and Standings filter by division
   groupShort:c=>LEAGUE.conf.names[c].replace("National League ","NL "),              // your matchday: the Premier League skips weeks
-  position:t=>SEA&&SEA.table?SEA.table(CONF[t]).indexOf(t)+1:0,  // table position, not a ranking
-  positionLine:t=>`${ordinal(LEAGUE.position(t))} in ${LEAGUE.conf.names[CONF[t]]}`,
+  // table position, not a ranking; none before a team's first league game (17th at 0-0-0 means nothing)
+  position:t=>{ if(!SEA||!SEA.table)return 0; const r=SEA.rec[t], d=(SEA.drw&&SEA.drw[t])||0;
+    if(r&&r[0]+r[1]+d===0)return 0; return SEA.table(CONF[t]).indexOf(t)+1 },
+  positionLine:t=>LEAGUE.position(t)?`${ordinal(LEAGUE.position(t))} in ${LEAGUE.conf.names[CONF[t]]}`:`${LEAGUE.conf.names[CONF[t]]}: no games yet`,
   rankTop:6,
   /* W-D-L and points: three a win, one a draw */
   // the league's record: play-off games don't count in the table

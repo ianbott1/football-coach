@@ -208,8 +208,10 @@ function twoPointCall(mine, theirs, q, late){
   const d = (mine + 7) - theirs;
   if (q < 3) return null;
   if ([-5,-2,-1,1,2,4,5].indexOf(d) >= 0) {
-    return {k:"two", h:`Kick it, or go for two`,
-      b:`A conversion puts you at ${d + 1}; the kick leaves it at ${d}.`,
+    // in scores, not margins: "puts you at 0" read as a score of nothing
+    const td=mine+6, say=(m,t)=>`${m}-${t}${m>t?", up "+(m-t):m<t?", down "+(t-m):", tied"}`;
+    return {k:"two", h:`Touchdown: ${td}-${theirs}. Kick it, or go for two?`,
+      b:`Two points makes it ${say(td+2,theirs)}; the kick makes it ${say(td+1,theirs)}.`,
       opts:[["kick","Kick the extra point"],["two","Go for two"]]};
   }
   return null;
@@ -309,6 +311,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
           res = rng.r()<0.97 ? {pts:7,kind:"TD",stall:100}
                              : {pts:6,kind:"TD",stall:100,note:"extra point missed"};
         }
+        if(home)st.h-=6; else st.a-=6;            // put on the board at the question; push adds the whole score
         return {drive:push(home,P.q,P.start,res,P.aggr),h:st.h,a:st.a};
       }
     }
@@ -346,7 +349,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
         if(dp){
           used.two=true; called();
           st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr};
-          return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
+          if(home)st.h+=6; else st.a+=6;          // the touchdown is on the board while you decide
+          return {ask:dp,mine:mine+6,theirs:theirs,q:q,side:side};
         }
       }
     }

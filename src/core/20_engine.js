@@ -28,7 +28,16 @@ function homeField(u,t){
   return Math.round(base+(LEAGUE.venues[t]||8));
 }
 
-function venueLabel(v){
+/* a venue against the rest of its league: the pros' home edges differ by a
+   few Elo, college's by tens, so where it ranks is what reads true */
+function venueLabel(v,all){
+  if(all&&all.length>4){ const lo=Math.min(...all), hi=Math.max(...all);
+    if(hi-lo<1)return "a normal road game";
+    const above=all.filter(x=>x>v).length/all.length;
+    if(above<0.1)return "one of the toughest places to play in the "+(LEAGUE.classes&&LEAGUE.classes.length?"country":"league");
+    if(above<0.3)return "a tough place to play";
+    if(above<0.8)return "a normal road game";
+    return "an easier trip than most" }
   if(v>=88)return "one of the hardest places to play in the country";
   if(v>=76)return "a genuinely hostile road trip";
   if(v>=64)return "a real home-field edge";
@@ -311,6 +320,7 @@ function newUniverse(seed){
     u.coach[n]=c;
   });
   u._rngState=seed*7919+13;
+  NAMES.forEach(t=>distinctStaff(u,t));
   return u;
 }
 
@@ -332,6 +342,19 @@ function seatHeat(u,rec,elo,t){
    see openOffseason). A person's job is theirs to lose that way, never the
    carousel's. Each person's part comes back in the ...By maps; the plain
    userOpen/staffOpen/candidates are the first user's, for one-coach games. */
+/* no two people on one staff share a first name (a head coach Curt with an
+   assistant Curt reads like a bug): a repeat is swapped for another name,
+   picked by hash so the game's random draws don't move */
+function distinctStaff(u,t){
+  const c=u.coach&&u.coach[t], first=x=>x&&x.n?x.n.split(" ")[0]:null;
+  const taken=new Set(); if(c&&first(c))taken.add(first(c));
+  ["oc","dc"].forEach(sd=>{ const x=u[sd]&&u[sd][t]; if(!x||!x.n)return;
+    let f=first(x);
+    if(taken.has(f)){ let h=strHash(x.n+"|"+t+"|"+sd);
+      for(let k=0;k<FIRST.length&&taken.has(f);k++)f=FIRST[(h+k)%FIRST.length];
+      x.n=f+x.n.slice(x.n.indexOf(" ")) }
+    taken.add(f) });
+}
 function offseasonCoaching(u,rng,rec,elo,users){
   users=users||{};
   const isUser=t=>Object.prototype.hasOwnProperty.call(users,t);
@@ -416,6 +439,7 @@ function offseasonCoaching(u,rng,rec,elo,users){
     });
   });
 
+  NAMES.forEach(t=>distinctStaff(u,t));
   return {fired:fired,hires:hires,poached:poached,openJobs:openJobs,coordMoves:coordMoves,
           userOpenBy:userOpenBy,staffOpenBy:staffOpenBy,candidatesBy:candidatesBy,
           userOpen:!!userOpenBy[userTeam],candidates:candidatesBy[userTeam]||null,

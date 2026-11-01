@@ -98,11 +98,11 @@ function evidenceHTML(g,my,d,dp){
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
-  return `<div class="evid"><div class="evh">How ${esc(g[opp])} are scoring <span>per quarter</span></div>
+  return `<div class="evid"><div class="evh">How ${esc(g[opp])} are scoring <span>${BB.quarters?"per quarter":"per ten minutes"}</span></div>
     <div class="evr ${share>=45?'hi':share<=31?'lo':''}"><span class="evk">Shots from three</span><span class="evv">${share}% (${T.tpa} of ${T.fga})</span></div>
     <div class="evr"><span class="evk">Points in the paint</span><span class="evv">${paint}</span></div>
     <div class="evr ${T.pnr/n>=3.4?'hi':''}"><span class="evk">Pick-and-rolls run</span><span class="evv">${scr}</span></div>
-    ${firstReadTip()}<div class="evn">League average: 38% of shots from three, 4.4 pick-and-rolls a quarter. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
+    ${firstReadTip()}<div class="evn">League average: 38% of shots from three, 4.4 pick-and-rolls ${BB.quarters?"a quarter":"every ten minutes"}. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
 }
 
 /* ---- the run of play ---- */

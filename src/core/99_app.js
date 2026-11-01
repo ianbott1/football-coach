@@ -284,6 +284,7 @@ function promote(i){
 function rebuild(){
   U=snap(S.uStart);
   syncConf(U);
+  NAMES.forEach(t=>distinctStaff(U,t));          // saves from before staff names were kept distinct
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
@@ -379,6 +380,26 @@ async function loadSlot(n){
     const d=unsaveDup(JSON.parse(lzwUnpack(r.value)));
     if(saveLeague(d)!==LEAGUE.id)return null;        // never open another game's save
     return migrateSave(d)}catch(e){return null}
+}
+/* backups: a career saved as a file you keep, and opened again from it. A
+   browser's storage can be cleared; a file on your computer or phone can't. */
+function downloadBackup(){
+  try{
+    const text=lzwPack(saveText(Object.assign({},S,{league:LEAGUE.id}))), blob=new Blob([text],{type:"text/plain"});
+    const a=document.createElement("a"), yr=(SEA&&SEA.year)||"";
+    a.href=URL.createObjectURL(blob); a.download=`${LEAGUE.id}-${(S.myTeam||"career").replace(/[^A-Za-z0-9]+/g,"-")}-${yr}.coach`;
+    document.body.appendChild(a); a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href); a.remove()}catch(e){}},500);
+    return true }catch(e){ return false }
+}
+/* a backup file's text to a career, or null if it isn't one of this game's */
+function readBackup(text){
+  try{ const d=unsaveDup(JSON.parse(lzwUnpack(String(text).trim())));
+    if(!d||!d.myTeam||saveLeague(d)!==LEAGUE.id)return null; return migrateSave(d) }catch(e){ return null }
+}
+async function restoreBackup(file,into){
+  const text=await file.text(), d=readBackup(text);
+  if(!d){ alert("That file isn't a backup from this game."); return false }
+  slot=into; S=d; S.title=false; rebuild(); S.expNow=S.expNow||expectations(); await save(); render(); return true;
 }
 async function allSlots(){
   const out=[];
@@ -589,6 +610,7 @@ function commitOffseason(){
       if(side==="oc")U.oc[S.myTeam]=pick; else U.dc[S.myTeam]=pick;
     }
   });
+  distinctStaff(U,S.myTeam);
   S.pending=S.pending||{};
   S.pending[S.myTeam]=Object.assign(LEAGUE.offseason.choices(P),{phil:P.phil,
                        featured:(S.featured===undefined?null:S.featured)});
@@ -845,6 +867,16 @@ function firstReadTip(){
   if(S.readTally&&S.readTally.n>=3)return "";
   return `<div class="evtip">First reads: look for the number marked &#9650; or &#9660;, well away from the league average. That's how they're playing. Pick the answer that beats it, then see if you were right after the game.</div>`;
 }
+/* the season's tally of your reads and calls, kept on the team page all year */
+function tallyHTML(){
+  const T=S.readTally; if(!T||!T.n)return "";
+  const Y=T.yr&&T.yr[SEA.year], lab=typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season";
+  const pct=(a,b)=>b?Math.round(100*a/b):0;
+  return `<div class="grouphead">Your calls</div><div class="tallycard">
+    <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
+    <div><div class="fname">${esc(lab)}</div>
+    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div></div></div>`;
+}
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){
   if(step===undefined||step===null||typeof readText!=="function"||!S.played)return "";
@@ -944,7 +976,11 @@ function stakesFor(ng){
   // the quiet line: your game number where steps are days (hockey, basketball) or matchdays
   const gNo=SEA.weeks.filter(W=>W.games.some(x=>!x.cup&&(x.home===my||x.away===my))).length+1;
   if(!out.length)out.push({p:0,tag:LEAGUE.myGameLabel?LEAGUE.myGameLabel(gNo).toUpperCase():(LEAGUE.skipIdle||LEAGUE.stepLabel)?"GAME "+gNo:"WEEK "+(wk+1),
-    l:`${ng.home===my?"Home":"On the road"} against ${opp}. Take care of business.`});
+    l:(wp=>{ const at=`${ng.home===my?"Home":"On the road"} against ${opp}.`;
+      return wp>=0.65?`${at} You should win this one. Take care of business.`
+        :wp>=0.45?`${at} A game you can win.`
+        :wp>=0.3?`${at} An uphill one: a win here would count.`
+        :`${at} A big ask. Nobody expects it, which is what would make it.` })(winProb(my,opp,ng.home===my,ng.neutral))});
 
   out.sort((x,y)=>y.p-x.p);
   return out.slice(0,2);
@@ -1063,8 +1099,8 @@ function myTeamView(){
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
   if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
-    (reveal==="half"?"":nextUpHTML(my,rk)+objectivesHTML(my)+starsHTML(my))}
-  else if(reveal!=="half")h+=objectivesHTML(my)+starsHTML(my);
+    (reveal==="half"?"":nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+starsHTML(my))}
+  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+starsHTML(my);
   h+=(reveal==="half"?"":seasonLogHTML(my));
   return h;
 }
@@ -1225,7 +1261,7 @@ function nextUpHTML(my,rk){
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
-        ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa))}.</div>`:""}
+        ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa,SEA.hfa?NAMES.map(t=>SEA.hfa[t]):null))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}</b> in the series${
         ser.streak&&ser.streak.n>1?` &middot; ${ser.streak.team===my
           ? "you've won "+ser.streak.n+" straight"
@@ -1771,7 +1807,7 @@ function teamCard(t){
   let h=`<div class="idcard" style="border-left:4px solid ${teamInk(t)}">
     <div class="iname" style="color:${teamInk(t)}">${esc(t)}</div>
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[t]])} &middot; currently
-      ${LEAGUE.position?ordinal(LEAGUE.position(t))+" in "+esc(LEAGUE.conf.names[CONF[t]])
+      ${LEAGUE.position?(LEAGUE.position(t)?ordinal(LEAGUE.position(t))+" in ":"no games yet in ")+esc(LEAGUE.conf.names[CONF[t]])
         :A.now<=RANK_TOP?"ranked #"+A.now:"unranked ("+ordinal(A.now)+")"}</div>
     <div class="stats">
       <div><b>${A.w}-${A.l}</b><span>All-time</span></div>
@@ -2112,7 +2148,7 @@ function digestBlock(){
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
   h+=`<div class="bsub">Now ${recStr(my)}${
-    LEAGUE.position?", "+ordinal(LEAGUE.position(my))+" in "+esc(LEAGUE.conf.names[CONF[my]])
+    LEAGUE.position?(LEAGUE.position(my)?", "+ordinal(LEAGUE.position(my))+" in "+esc(LEAGUE.conf.names[CONF[my]]):"")
       :rk[my]<=RANK_TOP?", ranked No. "+rk[my]:", unranked"}.</div></div>`;
   return h;
 }
@@ -2241,6 +2277,10 @@ function render(){
     const c=el("hclose"); if(c)c.onclick=()=>{S.help=false;render()};
     document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{
       S.watchMode=b.dataset.watch; save(); render();});
+    const bk=el("backupbtn"); if(bk)bk.onclick=()=>{ save(); downloadBackup() };
+    const rf2=el("restorefile2"); if(rf2)rf2.onchange=async()=>{ const f=rf2.files&&rf2.files[0]; if(!f)return;
+      if(!confirm("Replace the career you're playing with this backup?"))return;
+      await restoreBackup(f,slot) };
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
@@ -2552,6 +2592,7 @@ function renderTitle(){
              season${s.seasons===1?"":"s"} &middot; ${s.rec}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            <span class="slotdel" data-del="${s.n}">Erase</span></button>`).join("")}</div>
     <button class="introskip wide" id="thow">How to play</button>
+    <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
   </div>`;
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
     if(ev.target&&ev.target.dataset.del){
@@ -2568,6 +2609,10 @@ function renderTitle(){
           S.title=false;render()}
   });
   el("thow").onclick=()=>{S.title=false;S.introStep=0;render()};
+  const rf=el("restorefile"); if(rf)rf.onchange=async()=>{ const f=rf.files&&rf.files[0]; if(!f)return;
+    const free=slots.find(x=>x.empty); let into=free?free.n:1;
+    if(!free&&!confirm("Every slot is full. Replace the career in slot 1 with this backup?"))return;
+    await restoreBackup(f,into) };
   const qs=el("qstart"); if(qs)qs.onclick=()=>quickStart(+qs.dataset.qs);
   const ot=el("owltap");
   if(ot)ot.onclick=()=>{owlTaps++;
@@ -2661,6 +2706,11 @@ function helpPanel(){
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
+    ${S.myTeam?`<div class="grouphead">Your save</div>
+    <div class="setrow"><button class="setbtn" id="backupbtn">Download a backup</button>
+      <label class="setbtn restorelbl">Restore a backup<input type="file" id="restorefile2" accept=".coach,.txt,text/plain" hidden></label></div>
+    <div class="helpcard"><div class="cdesc">Your career is saved in this browser as you play. Clearing the browser's data
+      erases it, so keep a backup file now and then: it opens again from here, or from the title screen on any device.</div></div>`:""}
     <div class="grouphead">Playback speed</div>
     <div class="setrow">${SPEEDS.map(s=>`<button class="setbtn" data-speed="${s[0]}"
       aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>

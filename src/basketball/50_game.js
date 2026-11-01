@@ -145,7 +145,7 @@ const ASSIST=["normal","Leave it to your assistant"];
 /* The calls a coach can make. dp: {k, h (headline), b (the situation),
    opts: [[key, label], ...]}; the last option always leaves it to the assistant. */
 function readCall(stage,T,hint){
-  return {k:"read",stage:stage,h:stage===1?"End of the first quarter":"Half-time: their offense",
+  return {k:"read",stage:stage,h:stage===1?(BB.quarters?"End of the first quarter":"Ten minutes in"):"Half-time: their offense",
     b:stage===1?"How are they scoring? Pick the defense.":"Anything changed? Adjust the defense, or leave it.",
     opts:Object.keys(DEFENSES).map(d=>[d,DEFENSES[d].l]).concat([ASSIST]),
     tell:{tpa:T.tpa,fga:T.fga,paint:T.paint,pnr:T.pnr,n:T.n}, best:bbRead(T), pearl:hint||bbRead(T)};

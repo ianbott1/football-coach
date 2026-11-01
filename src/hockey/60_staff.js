@@ -118,7 +118,7 @@ function bearYell(kind, seed){
     return d[Math.floor(n/4)%d.length];
   }
   const pool=BEAR_YELL[kind]||BEAR_YELL.half;
-  return pool[n%pool.length];
+  return pool[n%pool.length]||"We have a feeling about this one. A big feeling.";   // never a blank line
 }
 
 const PEARL_SYS={
