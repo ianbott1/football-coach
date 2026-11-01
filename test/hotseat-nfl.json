@@ -90,6 +90,16 @@
    "fp": "006eb7489d659c2e",
    "from": "006eb7489d659c2e",
    "note": "your players, call verdicts"
+  },
+  {
+   "fp": "18f3642003c219df",
+   "from": "006eb7489d659c2e",
+   "note": "same"
+  },
+  {
+   "fp": "006eb7489d659c2e",
+   "from": "18f3642003c219df",
+   "note": "same"
   }
  ],
  "out": [

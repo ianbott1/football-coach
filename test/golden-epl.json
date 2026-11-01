@@ -1,5 +1,5 @@
 {
- "fp": "b1184097eb543296",
+ "fp": "99a2ee1e705729a0",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -105,6 +105,11 @@
    "fp": "b1184097eb543296",
    "from": "d55caaf4cda74737",
    "note": "Scores steps through the weeks: played and to come"
+  },
+  {
+   "fp": "99a2ee1e705729a0",
+   "from": "b1184097eb543296",
+   "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
   }
  ],
  "result": {
@@ -114,24 +119,24 @@
     "games": "c8a836c1493a8573",
     "post": "d76b5b28d23e4b25",
     "champion": "Liverpool",
-    "rec": "5bf1a25af92f1c11",
+    "rec": "0e8fe23353d07949",
     "poll": "99ec49b2cd611e3d",
     "heis": "f2e69ba69a821714",
-    "history": "5dbff61a127c2a79",
-    "universe": "002405e602097b6d",
-    "screens": "8f3c930c3eef8abb"
+    "history": "cf536e32de338b73",
+    "universe": "fa9f59a9c3c4b21e",
+    "screens": "bc0787cf1833e6f1"
    },
    {
     "year": 2027,
     "games": "5a3e42ab1a8c532d",
     "post": "42996642b0e0f9ad",
     "champion": "Arsenal",
-    "rec": "565430956871e876",
+    "rec": "99d9e032ae294d67",
     "poll": "24a2e1208d5db2a6",
     "heis": "a8417a340339a1c3",
-    "history": "1237ddbc0e3c0015",
-    "universe": "1e5a0080ba0e9d4b",
-    "screens": "f0eee2ec213b9691"
+    "history": "afb8d45dee736b43",
+    "universe": "18c5b2d61a2b4837",
+    "screens": "346306227a8718a2"
    }
   ],
   "Wrexham#777": [
@@ -140,24 +145,24 @@
     "games": "97874898e2784de9",
     "post": "4187359a7dfa47ec",
     "champion": "Manchester City",
-    "rec": "dfbd0d49244a6bd3",
+    "rec": "bf56ea84439860c3",
     "poll": "f1e6d424de08334c",
     "heis": "43dadd60238d5849",
-    "history": "ccdc9e6548d3d6d0",
-    "universe": "8eb47ef4415f050a",
-    "screens": "662940a1ae4ee714"
+    "history": "7be755fac175dd57",
+    "universe": "dbf9a857dda660ad",
+    "screens": "d7831072199788d9"
    },
    {
     "year": 2027,
     "games": "bd154ee3e044fede",
     "post": "d05267aac3c3acdf",
     "champion": "Arsenal",
-    "rec": "59e7c8dca8a0e0dc",
+    "rec": "84c4789c0be2524b",
     "poll": "ef87399e1d1a46a2",
     "heis": "731e7e8f2cd0184b",
-    "history": "cac4e3384e6d185f",
-    "universe": "3c87f216f5bf9478",
-    "screens": "b287e2ee36509c30"
+    "history": "fbcaa751c546f8f1",
+    "universe": "e7727b9ca5659a7d",
+    "screens": "cb6acb624a25fa10"
    }
   ],
   "schedules#60": [

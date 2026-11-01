@@ -1,5 +1,5 @@
 {
- "fp": "3c53cad12faa8e81",
+ "fp": "f2628a69c2bceb6d",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -80,6 +80,11 @@
    "fp": "3c53cad12faa8e81",
    "from": "3c53cad12faa8e81",
    "note": "your players, call verdicts"
+  },
+  {
+   "fp": "f2628a69c2bceb6d",
+   "from": "3c53cad12faa8e81",
+   "note": "same"
   }
  ],
  "out": [
@@ -93,7 +98,7 @@
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "02269747d7da4f53"
+     "book": "b415cd40a76e4538"
     },
     {
      "team": "Tottenham Hotspur",
@@ -102,7 +107,7 @@
       "result": "Finished 11th in the Premier League",
       "grade": "B-"
      },
-     "book": "f7d4106835a5ab4e"
+     "book": "56ef793824091b6d"
     }
    ]
   },
@@ -116,7 +121,7 @@
       "result": "Finished 5th in the Premier League",
       "grade": "B-"
      },
-     "book": "9f0b5b65ac6cee75"
+     "book": "1f85e92cd45dd0d3"
     },
     {
      "team": "Tottenham Hotspur",
@@ -125,7 +130,7 @@
       "result": "Finished 12th in the Premier League",
       "grade": "C+"
      },
-     "book": "8556e827fee57ae0"
+     "book": "bb012069718d4f3b"
     }
    ]
   },
@@ -139,7 +144,7 @@
       "result": "Finished 3rd in the Premier League",
       "grade": "B"
      },
-     "book": "96e19fe0252995ab"
+     "book": "8062e0a834b2182e"
     },
     {
      "team": "Tottenham Hotspur",
@@ -148,7 +153,7 @@
       "result": "Finished 12th in the Premier League",
       "grade": "C+"
      },
-     "book": "bc03da42e8db3f55"
+     "book": "992ec6eca94b75cc"
     }
    ]
   }

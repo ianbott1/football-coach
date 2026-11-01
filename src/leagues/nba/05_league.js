@@ -57,6 +57,7 @@ const LEAGUE={
   venues:{"Denver":6,"Utah":5,"Golden State":3,"Boston":3,"Oklahoma City":3,"Brooklyn":-3,"LA Clippers":-2,"Washington":-2},
   schedule:{games:82},
   stepLabel:w=>`Game day ${w+1}`,
+  daily:true,                                 // a step is a day: Scores is headed by the date
   myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day
   bigTop:5,                                   // a big game in an 82-game season: a top-five side
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty
@@ -65,7 +66,7 @@ const LEAGUE={
   art:{owlExtra:`
       <path d="M19.2 14.2 C24 11.2 30 10.2 36 10.2 C42 10.2 48 11.2 52.8 14.2 L52.2 18.4 C47.6 15.8 42 14.8 36 14.8 C30 14.8 24.4 15.8 19.8 18.4 Z" fill="#E4572E"/>
       <text x="36" y="49.5" text-anchor="middle" font-family="Impact,'Arial Black',sans-serif" font-size="8.5" fill="#F4F1EA">23</text>`},
-  text:{
+  text:{bye:"No game today",
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a contender. That's how they're built.","A statement win over a real team."],
     badLoss:["A loss you can't afford in this conference.","Beaten by a lottery team. It will cost you in the standings.","The kind of loss that decides who plays in the play-in."],
     champions:"NBA champions",

@@ -94,7 +94,7 @@ function gameScript(g,rosterHome,rosterAway,seed){
       if(d.side==="home")H+=d.pts; else A+=d.pts;
       outcome = d.pts===2?"SAF" : d.pts===3?"FG" : "TD";
       if(d.pts===2){
-        possSide = d.side==="home"?"away":"home";     // the trapped offence
+        possSide = d.side==="home"?"away":"home";     // the trapped offense
         end = 0;                                      // its own goal line
       }else end = 100;
       text = scoreText(rng,off,def,d.pts);

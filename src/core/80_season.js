@@ -117,7 +117,7 @@ class Season{
       else{
         fsh=eloUpdate(this.elo[win],this.elo[lose],Math.max(1,Math.abs(fm)),(win===a)&&!neutral,neutral);
         this.elo[win]+=fsh; this.elo[lose]-=fsh;
-        if(!cup){this.rec[win][0]++; this.rec[lose][1]++}
+        if(!cup&&this.countsInRecord()){this.rec[win][0]++; this.rec[lose][1]++}
       }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
       if(this.roster){
@@ -162,7 +162,7 @@ class Season{
     else{
       sh=eloUpdate(this.elo[win],this.elo[lose],Math.max(1,Math.abs(m)),(win===a)&&!neutral,neutral);
       this.elo[win]+=sh;this.elo[lose]-=sh;
-      if(!cup){this.rec[win][0]++;this.rec[lose][1]++}
+      if(!cup&&this.countsInRecord()){this.rec[win][0]++;this.rec[lose][1]++}
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
@@ -201,6 +201,10 @@ class Season{
     else if(p!=="done")this[LEAGUE.post.run[p]]();
     this.step++;
   }
+  /* a game counts in the season record in the regular season; in the
+     postseason only where the sport counts it (college: bowls and the
+     tournament are part of the record; the pros and English play-offs aren't) */
+  countsInRecord(){ return this.phase==="week"||!!LEAGUE.postRecord }
   cupWeek(w){ return this.sched.some(g=>g.week===w&&g.cup) }
   _week(part){
     const w=this.step, prev=this.rankMap(), out=[];

@@ -223,6 +223,7 @@ function offseasonScreen(){
   // the roster you'd carry into the new year, and what it costs
   const R=U.roster[S.myTeam], expiring=Object.keys(P.asks||{}).map(Number);
   const pay=nflPlannedPay(), room=LEAGUE.cap-pay;
+  h+=staffPlanHTML(P);
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign go to free agency, where another team can take them. Rookies and free agents are added afterwards, inside whatever cap room you leave.");
   const tax=LEAGUE.taxLine||LEAGUE.cap;
@@ -236,7 +237,7 @@ function offseasonScreen(){
       <div class="fnote">${i<POS.length?"Starter":"Backup"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
       <span class="cgrade">${on?"re-sign":"let go"}</span></div>
       <div class="cdesc">Asking $${a.sal.toFixed(1)}M a year for ${a.yrs} year${a.yrs===1?"":"s"}${
-        p.age>=31?" &middot; on the wrong side of thirty":""}.</div></div>`}).join("");
+        p.age>=31?" &middot; on the wrong side of thirty":""}.</div>${staffTag(i)}</div>`}).join("");
   h+=`<div class="grouphead">${n(2)}. Free agency</div>`;
   const FA=LEAGUE.offseason.faStyles;
   h+=Object.keys(FA).map(k=>`<div class="opt ${P.fa===k?'on':''}" data-fa="${k}">

@@ -16,7 +16,7 @@ const SPORT={
     return {C:P,LW:P,RW:P,D:P,D2:P,G:["so","shutouts",[10,25,50,75,100]]} })(),
   staff:{
     oc:{short:"OFF", long:"assistant coach, forwards"},
-    dc:{short:"DEF", long:"assistant coach, defence"},
+    dc:{short:"DEF", long:"assistant coach, defense"},
     any:"assistant coach"
   },
   /* a game worth a headline, or null */

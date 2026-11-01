@@ -42,7 +42,10 @@ tracksOT, draws, recText/points/standingsCol, rankTop, rankAll (number every
 team), bigTop (what counts as a big game), position/positionLine (a table
 instead of a ranking), myGameLabel, stepLabel, skipIdle, homeFirst,
 jobMarket/poachOffers, budgetOf, pickIntro, afterWeek (between-weeks
-business: the cup draw), cup, trophyNow, cardLine.
+business: the cup draw), cup, trophyNow, cardLine, postRecord (college:
+postseason games count in the season record; elsewhere only the regular
+season does, Season.countsInRecord), daily (hockey, pro basketball: Scores
+is headed by the date; schedules list games, not days), text.bye.
 
 ## In-game calls: the design rule
 
@@ -132,6 +135,9 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   false failures (a field added to one module, five builds out of date).
 - A cup tie and a league game can share a week and an opponent: key live
   games by step and slot, not step and teams.
+- pkill -f matches its own shell too: it killed the session's shell. Don't.
+- Playoff series put several of your games in one round: anything that
+  finds "your game" in a round must take the latest, not the first.
 
 ## Tests (test/)
 
@@ -175,6 +181,21 @@ Only your bids and sales move players: the computer's clubs rebuild as
 before, so the league behaves as it did. Measured (test/transfers.js): a
 Premier League club ~£8M against a median starter upgrade of ~£10M; a
 League One club ~£1.3M against ~£1.2M.
+
+## The offseason: the staff's plan (core/94_staffplan.js)
+
+Every offseason choice starts at what the staff would do (the computer
+teams' plan). A card at the top says so: who they'd re-sign and let go and
+why, free agency, the draft, trades; each contract row says the staff's
+call. "Back to the staff's plan" undoes your changes. College: the even
+budget split and a balanced class.
+
+## Music (core/97_feel.js)
+
+Generated with Web Audio like the sound: four chords per sport (own key and
+tempo), bass, a plucked figure; in a live game a beat and a busier figure.
+The second top-bar button (S.music, off by default); it starts on the first
+tap after a reload, as browsers require.
 
 ## Your players (core/93_people.js)
 

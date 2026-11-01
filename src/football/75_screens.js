@@ -21,11 +21,11 @@ function driveScript(g,drives){
   const RH=SEA.roster[g.home], RA=SEA.roster[g.away];
   const OUTTXT={PUNT:["three and out","forced to punt","stalls out, punt","goes backwards, punt"],
                 DOWNS:["turned over on downs"],MISS:["the kick is no good"],
-                INT:["intercepted"],FUM:["fumble, recovered by the defence"]};
+                INT:["intercepted"],FUM:["fumble, recovered by the defense"]};
   return drives.map(d=>{
     const off=d.home?RH:RA, def=d.home?RA:RH;
-    const nm=i=>off&&off[i]?off[i].n:"the offence";
-    const dn=i=>def&&def[i]?def[i].n:"the defence";
+    const nm=i=>off&&off[i]?off[i].n:"the offense";
+    const dn=i=>def&&def[i]?def[i].n:"the defense";
     let text;
     if(d.kind==="TD"){
       const y=Math.round(rng.range(2,64));

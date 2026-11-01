@@ -126,9 +126,12 @@ function liveTick(){
       render();
       return;
     }
-    const pH=live.drives.length?live.drives[live.drives.length-1].sh:0, pA=live.drives.length?live.drives[live.drives.length-1].sa:0;
+    // the score before this stretch (kept here: drives record it differently by sport,
+    // and football's don't carry sh/sa, which made every drive look like a score)
+    const pH=live.lastH||0, pA=live.lastA||0;
     live.drives.push(r.drive);
-    feelSpell(live,pH||0,pA||0);
+    feelSpell(live,pH,pA);
+    live.lastH=live.eng.h; live.lastA=live.eng.a;
     break;
   }
   render();
@@ -213,13 +216,13 @@ function skipCupNight(){
 function resolveWeek(step){
   handoffNotes={};
   SEA.userTeam=S.myTeam;
-  const wasCup=!!SEA.half;
+  const wasCup=!!SEA.half, wasPost=SEA.phase!=="week";
   SEA.advance();
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
   plan="balanced";
-  flash={type:"week",step:step,cup:wasCup};
+  flash={type:wasPost?"post":"week",step:step,cup:wasCup};     // a live playoff game gets its result card too
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   save(); render();
 }
@@ -780,9 +783,15 @@ function heroGame(){
     const W=SEA.weeks[flash.step];
     if(W)return heroWeekGame(W,my);
   }else if(flash&&flash.type==="post"){
-    const pools=SEA.postPools();
-    for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f)return f}
+    return lastPostGame(my);
   }
+  return null;
+}
+/* your latest postseason game: pools run latest round first, and a series
+   puts several of yours in one round (the first found was game 1, which made
+   every result card in a series show game 1) */
+function lastPostGame(my){
+  for(const p of SEA.postPools()){ const m=p.filter(x=>x.home===my||x.away===my); if(m.length)return m[m.length-1] }
   return null;
 }
 
@@ -798,8 +807,7 @@ function heroResult(){
         .filter(w=>w.games.some(x=>!x.cup&&(x.home===my||x.away===my))).length);
       if(g&&g.cup){label=g.title; cupG=null}}
   }else if(flash&&flash.type==="post"){
-    const pools=SEA.postPools();
-    for(const p of pools){const f=p.find(x=>x.home===my||x.away===my);if(f){g=f;break}}
+    g=lastPostGame(my);
   }
   if(!g)return "";
   const won=g.winner===my;
@@ -933,7 +941,9 @@ function stakesFor(ng){
   if(l>=6)out.push({p:40,tag:"SPOILER",
     l:`Nothing left but pride and a chance to wreck somebody's season.`});
 
-  if(!out.length)out.push({p:0,tag:"WEEK "+(wk+1),
+  // the quiet line: your game number where steps are days (hockey, basketball) or matchdays
+  const gNo=SEA.weeks.filter(W=>W.games.some(x=>!x.cup&&(x.home===my||x.away===my))).length+1;
+  if(!out.length)out.push({p:0,tag:LEAGUE.myGameLabel?LEAGUE.myGameLabel(gNo).toUpperCase():(LEAGUE.skipIdle||LEAGUE.stepLabel)?"GAME "+gNo:"WEEK "+(wk+1),
     l:`${ng.home===my?"Home":"On the road"} against ${opp}. Take care of business.`});
 
   out.sort((x,y)=>y.p-x.p);
@@ -1189,7 +1199,12 @@ function nextUpHTML(my,rk){
     }
     return h;
   }
-  const ng=SEA.nextGame(my);
+  let ng=SEA.nextGame(my), ngStep=SEA.step;
+  // a league with a game most days (LEAGUE.skipIdle): the button plays through
+  // the days you're off, so the card shows your next game, not an open date
+  if(!ng&&SEA.phase==="week"&&LEAGUE.skipIdle){
+    const nx=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===my||x.away===my)).sort((x,y)=>x.week-y.week)[0];
+    if(nx){ng=nx; ngStep=nx.week} }
   if(!ng&&SEA.phase==="week"){
     h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>
       <div class="nextcard bye"><div class="nlabel">OPEN DATE</div>
@@ -1204,7 +1219,7 @@ function nextUpHTML(my,rk){
     const riv=LEAGUE.rivals.name(my,opp);
     const ser=riv?LEAGUE.rivals.series(U,my,opp):null;
     const cupNight=ng.cup&&LEAGUE.cup;
-    h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(SEA.step):LEAGUE.dates[SEA.step]||"")}</div>
+    h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(ngStep):LEAGUE.dates[ngStep]||"")}</div>
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
       <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
@@ -1252,6 +1267,7 @@ function scheduleHTML(team,compact){
     const all=(played?W.games:SEA.sched.filter(x=>x.week===w)).filter(x=>x.home===team||x.away===team)
       .sort((x,y)=>(x.cup?1:0)-(y.cup?1:0));
     const label=`Wk ${w+1}`;
+    if(!all.length&&LEAGUE.skipIdle)continue;           // a day off in a daily league is no row
     if(!all.length){rows.push(`<div class="srow byerow"><span class="spos">&ndash;</span>
       <span class="steam">${esc(LEAGUE.text.bye||"Bye week")}</span><span class="sconf byelbl">${label}</span></div>`);continue}
     all.forEach(g=>{
@@ -1267,7 +1283,7 @@ function scheduleHTML(team,compact){
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
-      rows.push(`<div class="srow up"><span class="spos">${label.replace("Wk ","")}</span>
+      rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
         <span class="steam">${g.home===team?"vs":g.cup&&g.neutral?"v":"at"} ${rkTag(rk)}${TL(opp)}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sall">${esc(g.cup&&LEAGUE.cup?LEAGUE.cup.date(w):LEAGUE.dates[w]||"")}</span></div>`);
@@ -1497,7 +1513,7 @@ let scoreWk=null;
 function wkLabel(w){ return SEA.weeks[w]?SEA.weeks[w].label:(LEAGUE.stepLabel?LEAGUE.stepLabel(w):`Week ${w+1}`) }
 function wkNav(w,last,maxW){
   return `<div class="wknav"><button class="wkbtn" data-wk="${w-1}" ${w<=0?"disabled":""} aria-label="Earlier">&larr;</button>
-    <div class="wkmid"><h2>${esc(wkLabel(w))}</h2><span>${esc(LEAGUE.dates[w]||"")}${w>last?" &middot; to come":w<last?" &middot; played":""}</span></div>
+    <div class="wkmid"><h2>${esc(LEAGUE.daily?(LEAGUE.dates[w]||wkLabel(w)):wkLabel(w))}</h2><span>${LEAGUE.daily?"":esc(LEAGUE.dates[w]||"")}${w>last?(LEAGUE.daily?"to come":" &middot; to come"):w<last?(LEAGUE.daily?"played":" &middot; played"):""}</span></div>
     <button class="wkbtn" data-wk="${w+1}" ${w>=maxW?"disabled":""} aria-label="Later">&rarr;</button></div>`;
 }
 function fixtureLine(g,mine){
@@ -2264,7 +2280,7 @@ function render(){
           <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
         <div class="tb-right">${recFmt(my,liveRec(my))}
           ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
-          <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button>
+          <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button><button class="reset ${musicOn()?'':'off'}" id="mus" title="Music ${musicOn()?'on':'off'}">&#9835;</button>
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>
           <button class="reset" id="rst" title="Start over">&#8635;</button></div>
@@ -2323,7 +2339,8 @@ function render(){
   document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
   // (the bottom bar's Sim ahead button is bound with skip2, above)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
-  const sn=el("snd"); if(sn)sn.onclick=()=>{S.sound=!soundOn(); save(); if(soundOn())sfx("tap"); render()};
+  const sn=el("snd"); if(sn)sn.onclick=()=>{S.sound=!soundOn(); save(); if(soundOn()){sfx("tap"); if(musicOn())musicStart()} else musicStop(); render()};
+  const mu=el("mus"); if(mu)mu.onclick=()=>{S.music=!musicOn(); if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render()};
   celebrateIfDue();
   const qg=el("quitgo"); if(qg)qg.onclick=async()=>{quitAsk=false;S.title=true;S._slots=await allSlots();render()};
   const qn=el("quitno"); if(qn)qn.onclick=()=>{quitAsk=false;render()};
@@ -2373,6 +2390,7 @@ function render(){
   document.querySelectorAll("[data-coord]").forEach(b=>b.onclick=()=>{
     S.off.picks[b.dataset.coord]=+b.dataset.ci; save(); render();});
   LEAGUE.ui.bindOffseason();
+  document.querySelectorAll("[data-staffplan]").forEach(b=>b.onclick=()=>{ if(S.off&&typeof staffPlanReset==="function"){staffPlanReset(); save(); render()} });
   document.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>{ const v=+b.dataset.wk;
     scoreWk=(v===SEA.weeks.length-1)?null:v; if(view!=="scores")view="scores"; render() });
   const rw=document.querySelector("[data-rewatch]");

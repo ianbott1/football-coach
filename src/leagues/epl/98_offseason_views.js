@@ -266,6 +266,7 @@ function offseasonScreen(){
   // the roster you'd carry into the new year, and what it costs
   const R=U.roster[S.myTeam], expiring=Object.keys(P.asks||{}).map(Number);
   const cap=LEAGUE.budgetOf(U,S.myTeam), pay=nflPlannedPay(), room=cap-pay;
+  h+=staffPlanHTML(P);
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign leave on a free transfer. Then the transfer window: buy and sell, inside your kitty and your wage budget.");
   h+=`<div class="budgetleft ${pay<=cap?'done':''}">Wages &pound;${pay.toFixed(1)}M a year &middot; budget &pound;${cap}M &middot; ${
@@ -278,7 +279,7 @@ function offseasonScreen(){
       <div class="fnote">${i<POS.length?"Starter":"Backup"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
       <span class="cgrade">${on?"re-sign":"let go"}</span></div>
       <div class="cdesc">Asking ${money(a.sal)} a year for ${a.yrs} year${a.yrs===1?"":"s"}${
-        p.age>=31?" &middot; on the wrong side of thirty":""}.</div></div>`}).join("");
+        p.age>=31?" &middot; on the wrong side of thirty":""}.</div>${staffTag(i)}</div>`}).join("");
   h+=`<div class="grouphead">${n(2)}. The transfer window</div>`;
   h+=tWindowHTML(P);
   h+=`<div class="grouphead">${n(3)}. Free transfers</div>`;

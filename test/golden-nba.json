@@ -1,5 +1,5 @@
 {
- "fp": "c30c3c91a5fa28a5",
+ "fp": "ef596c05d20190b1",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -80,6 +80,11 @@
    "fp": "c30c3c91a5fa28a5",
    "from": "8c83f538b029f4a5",
    "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
+  },
+  {
+   "fp": "ef596c05d20190b1",
+   "from": "c30c3c91a5fa28a5",
+   "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
   }
  ],
  "result": {
@@ -89,24 +94,24 @@
     "games": "02e1c4d9367f5bbf",
     "post": "28ecd1f6ed6104db",
     "champion": "Oklahoma City",
-    "rec": "9db3cacf1c51e19f",
+    "rec": "e61dc93deac9a255",
     "poll": "a8b3c0e31087f3a7",
     "heis": "63b26623b64cb946",
-    "history": "d7ee5a9a22e76709",
-    "universe": "75a076cdeea0554c",
-    "screens": "37c159ab4d2ac2f8"
+    "history": "69a32b83375fd04c",
+    "universe": "eadf0a52bb4647c6",
+    "screens": "3013a338895776bc"
    },
    {
     "year": 2027,
-    "games": "5f846b2535e1063c",
-    "post": "b18d2ba7ec7e8de3",
-    "champion": "San Antonio",
-    "rec": "9e7f428c21c8d56c",
-    "poll": "e0fd5b1397806a33",
-    "heis": "24f6f1211f0c414f",
-    "history": "88c97179f5593ecc",
-    "universe": "3cbb0c4d8163d256",
-    "screens": "fdac941e504b92a5"
+    "games": "8b93dab768395dab",
+    "post": "ded275c4564e9818",
+    "champion": "Houston",
+    "rec": "666b63f8175686e9",
+    "poll": "40b82dbcc1ad01b0",
+    "heis": "9217622e7d61c00d",
+    "history": "1e3a8d3ec91349f7",
+    "universe": "37a33c6e030bedec",
+    "screens": "c861f4bad8d7ec87"
    }
   ],
   "Detroit#777": [
@@ -115,24 +120,24 @@
     "games": "a92ae8b475a8bb68",
     "post": "340f990f196d0a87",
     "champion": "Oklahoma City",
-    "rec": "0f3c8a70351d22cf",
+    "rec": "c07e1e6d83f9eb6e",
     "poll": "7dcb8c99aed9d8f9",
     "heis": "da347f46c12242a0",
-    "history": "48d7f10946b13b2e",
-    "universe": "41dea31d059be398",
-    "screens": "db00b011096845d5"
+    "history": "87fa3daa759a11f8",
+    "universe": "071424eb2da78df6",
+    "screens": "ed768b99b000171c"
    },
    {
     "year": 2027,
-    "games": "4079457ceb8c594d",
-    "post": "9303b3087cd550a6",
-    "champion": "Denver",
-    "rec": "5f43e0a5ce672c6c",
-    "poll": "2cfb6411ac61344a",
-    "heis": "d7b17492932d1abb",
-    "history": "554ddfa09f30292e",
-    "universe": "98551a8b09c8fcda",
-    "screens": "3a33f2a81d0e3ebd"
+    "games": "532874d14eb84dc9",
+    "post": "55686090b7845727",
+    "champion": "Oklahoma City",
+    "rec": "48d5153dc6a5d661",
+    "poll": "e9f3535da8f3f11c",
+    "heis": "2ee66f8616664203",
+    "history": "f6295c16f4347cb0",
+    "universe": "c2382f3cee1bd86b",
+    "screens": "4f562c78bb97b168"
    }
   ],
   "schedules#60": [

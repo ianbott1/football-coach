@@ -107,7 +107,7 @@ const ACH=[
 ];
 let newAch=[];                     // unlocked since the last screen: shown once
 function achList(){ return ACH.filter(a=>(!a.soccer||!!LEAGUE.cup)&&(!a.reads||typeof readText==="function")) }
-function unlock(id){ const C=S.career; C.ach=C.ach||{}; if(C.ach[id])return; C.ach[id]=SEA.year; newAch.push(id) }
+function unlock(id){ const C=S.career; C.ach=C.ach||{}; if(C.ach[id])return; C.ach[id]=SEA.year; newAch.push(id); if(typeof sfx==="function")sfx("ach") }
 function checkAchievements(){
   if(!SEA||!S.myTeam||!S.career)return;
   const my=S.myTeam, C=S.career, have=C.ach||{};

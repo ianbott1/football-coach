@@ -25,7 +25,7 @@ add('sim and skip (all six)',['sim-and-skip.js']); add('sim ahead (all six)',['s
 add('migrate old saves (college football)',['migrate.js']);
 // college football
 add('h2h (cfb)',['h2h.js',D(G.cfb)]); add('moves (cfb)',['moves.js',D(G.cfb)]);
-add('firing (cfb)',['firing.js',D(G.cfb)]); add('clinch marks (nfl)',['clinch.js',D(G.nfl),'120']);
+add('firing (cfb)',['firing.js',D(G.cfb)],{timeout:900000});   /* ~400s alone, slower when four run at once */ add('clinch marks (nfl)',['clinch.js',D(G.nfl),'120']);
 add('plans (cfb)',['plans.js',D(G.cfb)]); add('call verdicts (nfl)',['fb-verdicts.js',D(G.nfl),'60']); add('your players (all six)',['people.js']);
 // pro football
 add('rules (nfl)',['nfl.js',D(G.nfl),'3','8']); add('draft board (nfl)',['draftboard.js',D(G.nfl)]);

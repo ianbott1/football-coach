@@ -173,6 +173,7 @@ function offseasonScreen(){
   });
   const step=(A.userOpen||S.off.poach.length)?1:0;
   const B=P.budget, used=LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
+  h+=collegePlanHTML(P);
   h+=`<div class="grouphead">${step?"2":"1"}. Budget &mdash; ${S.off.pool} to spend</div>`;
   h+=coachMark("budget","You must spend every point. Facilities compound for years but only if you keep the job; retention and development pay off right away.");
   h+=`<div class="note">Every point you put somewhere is a point you didn't put

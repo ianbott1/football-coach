@@ -61,8 +61,7 @@ extendSeason({
   },
   _br(h,a,neutral,round,label){
     const r=this._resolve(h,a,neutral,{title:label,round:round});
-    // playoff games don't change a team's record
-    this.rec[r.winner][0]--; this.rec[r.loser][1]--;
+    // playoff games don't change a team's record (the season counts only regular-season games: countsInRecord)
     r.hseed=this.seeds[h]; r.aseed=this.seeds[a];
     r.hrec=this.rec[h][0]+"-"+this.rec[h][1]; r.arec=this.rec[a][0]+"-"+this.rec[a][1];
     return r;

@@ -48,6 +48,7 @@ function sfx(kind){
     else if(kind==="win"){ [523,659,784,1047].forEach((f,i)=>tone(ac,{f:f,type:"triangle",at:0.35+i*0.11,dur:i===3?0.5:0.16,peak:0.1})) }
     else if(kind==="draw"){ [523,523].forEach((f,i)=>tone(ac,{f:f,type:"triangle",at:0.35+i*0.16,dur:0.18,peak:0.08})) }
     else if(kind==="loss"){ tone(ac,{f:330,type:"triangle",at:0.35,dur:0.25,peak:0.08}); tone(ac,{f:247,type:"triangle",at:0.62,dur:0.45,peak:0.08}) }
+    else if(kind==="ach"){ [784,988,1175,1568].forEach((f,i)=>tone(ac,{f:f,type:"sine",at:0.05+i*0.07,dur:i===3?0.6:0.12,peak:0.07})); tone(ac,{f:2093,type:"sine",at:0.36,dur:0.5,peak:0.03}) }
     else if(kind==="tap"){ tone(ac,{f:1200,type:"sine",dur:0.04,peak:0.03}) }
     else if(kind==="title"){ crowd(ac,{f:1100,peak:0.22,up:0.2,down:2.6}); [523,659,784,1047,1319].forEach((f,i)=>tone(ac,{f:f,type:"triangle",at:0.2+i*0.13,dur:i===4?0.9:0.2,peak:0.1})) }
   }catch(e){}
@@ -124,3 +125,84 @@ function celebrateIfDue(){
   sfx("title"); buzz([80,50,80,50,200]);
   confetti([teamInk(S.myTeam),teamColor(S.myTeam),"#F4A63A","#E9E5DA"]);
 }
+
+/* ---- music: made on the spot, like the sound (no files) ----
+   A loop of four chords with a bass line and a plucked figure over it,
+   quiet under everything else. Calm between games; during a live game it
+   picks up: a beat, a busier figure, and a lift when you're ahead late.
+   Each sport has its own key and pace. S.music turns it on (off to begin
+   with); it never changes a result. */
+const MUSIC={
+  football:{root:50, bpm:104, prog:[0,7,9,5]},   // D: I V vi IV
+  basketball:{root:53, bpm:112, prog:[0,9,5,7]}, // F: I vi IV V
+  hockey:{root:52, bpm:100, prog:[0,5,7,5]},     // E: I IV V IV
+  soccer:{root:55, bpm:96, prog:[0,9,5,7]}       // G: I vi IV V
+};
+let musicT=null, musicBar=0, musicNext=0, musicGain=null;
+function musicOn(){ return !!(S&&S.music) }
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+function musicSpec(){ return MUSIC[(typeof SPORT!=="undefined"&&SPORT.id)||"football"]||MUSIC.football }
+function mNote(ac,dest,{m,type="triangle",at,dur,peak,attack=0.01}){
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.type=type; o.frequency.setValueAtTime(mtof(m),at);
+  g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(peak,at+attack); g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(g); g.connect(dest); o.start(at); o.stop(at+dur+0.05);
+}
+function mHit(ac,dest,{at,f,dur,peak,type="highpass"}){
+  const s=ac.createBufferSource(), fl=ac.createBiquadFilter(), g=ac.createGain();
+  s.buffer=noiseBuf(ac,dur+0.05); fl.type=type; fl.frequency.value=f;
+  g.gain.setValueAtTime(peak,at); g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  s.connect(fl); fl.connect(g); g.connect(dest); s.start(at); s.stop(at+dur+0.05);
+}
+function mKick(ac,dest,at,peak){
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.frequency.setValueAtTime(140,at); o.frequency.exponentialRampToValueAtTime(45,at+0.14);
+  g.gain.setValueAtTime(peak,at); g.gain.exponentialRampToValueAtTime(0.0001,at+0.22);
+  o.connect(g); g.connect(dest); o.start(at); o.stop(at+0.25);
+}
+/* one bar, scheduled ahead of time */
+function musicBarAt(ac,t0){
+  const M=musicSpec(), inGame=!!(typeof live!=="undefined"&&live&&!live.done);
+  const beat=60/(M.bpm*(inGame?1.08:1)), bar=beat*4, deg=M.prog[musicBar%4], root=M.root+deg;
+  const minor=deg===9||deg===4, third=root+(minor?3:4), fifth=root+7;
+  let lead=0; if(inGame){ const me=live.g.home===S.myTeam; lead=me?live.eng.h-live.eng.a:live.eng.a-live.eng.h }
+  const D=musicGain;
+  // the pad: the chord, held
+  [root,third,fifth].forEach(m=>mNote(ac,D,{m:m+12,type:"triangle",at:t0,dur:bar*0.98,peak:0.05,attack:0.25}));
+  // the bass: root on one and three (and the fifth on four in a game)
+  mNote(ac,D,{m:root-12,type:"sine",at:t0,dur:beat*1.6,peak:0.16});
+  mNote(ac,D,{m:root-12,type:"sine",at:t0+beat*2,dur:beat*1.4,peak:0.13});
+  if(inGame)mNote(ac,D,{m:fifth-12,type:"sine",at:t0+beat*3.5,dur:beat*0.5,peak:0.1});
+  // the figure: eighth notes through the chord, a different shape each bar
+  const shapes=[[0,1,2,1,0,2,1,2],[2,1,0,1,2,1,0,1],[0,2,1,2,0,2,1,0],[1,2,0,2,1,0,2,1]];
+  const tones=[root+24,third+24,fifth+24], sh=shapes[musicBar%4];
+  const n=inGame?8:4;
+  for(let i=0;i<n;i++){ const k=inGame?i:i*2;
+    mNote(ac,D,{m:tones[sh[k]]+(inGame&&lead>0&&musicBar%8>=4?12:0),type:"square",at:t0+k*beat/2,dur:beat*0.35,peak:inGame?0.022:0.018}) }
+  // the beat, in a game: kick on one and three, a snap on two and four, ticks between
+  if(inGame){
+    mKick(ac,D,t0,0.22); mKick(ac,D,t0+beat*2,0.2);
+    mHit(ac,D,{at:t0+beat,f:1800,dur:0.12,peak:0.07,type:"bandpass"}); mHit(ac,D,{at:t0+beat*3,f:1800,dur:0.12,peak:0.07,type:"bandpass"});
+    for(let i=0;i<8;i++)mHit(ac,D,{at:t0+i*beat/2,f:7000,dur:0.03,peak:0.025});
+  }
+  musicBar++;
+  return bar;
+}
+function musicTick(){
+  const ac=audio(); if(!ac||!musicOn()){ musicStop(); return }
+  if(!musicGain){ musicGain=ac.createGain(); musicGain.gain.value=0.55; const lp=ac.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=3200;
+    musicGain.connect(lp); lp.connect(ac.destination) }
+  if(musicNext<ac.currentTime)musicNext=ac.currentTime+0.1;
+  while(musicNext<ac.currentTime+1.2){ try{ musicNext+=musicBarAt(ac,musicNext) }catch(e){ musicStop(); return } }
+}
+function musicStart(){
+  if(!musicOn()||musicT)return;
+  try{ const ac=audio(); if(!ac)return; musicNext=ac.currentTime+0.1; musicTick(); musicT=setInterval(musicTick,400) }catch(e){}
+}
+function musicStop(){
+  if(musicT){clearInterval(musicT); musicT=null}
+  try{ if(musicGain){ const g=musicGain; musicGain=null; g.gain.setTargetAtTime(0.0001,AC.currentTime,0.15); setTimeout(()=>{try{g.disconnect()}catch(e){}},800) } }catch(e){}
+}
+/* a browser starts sound only after a tap: music that was on last time waits for the first one */
+try{ if(typeof document!=="undefined"&&document.addEventListener)
+  document.addEventListener("pointerdown",()=>{ if(musicOn()&&soundOn()&&!musicT)musicStart() },{passive:true}) }catch(e){}

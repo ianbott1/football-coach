@@ -1,5 +1,5 @@
 {
- "fp": "f842c386e4bcf812",
+ "fp": "fde2cdf9294a075e",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -130,6 +130,11 @@
    "fp": "f842c386e4bcf812",
    "from": "d58a2e34fe1cfb97",
    "note": "your players on the team page, milestones in the news; football call verdicts; soccer 'No game this week'"
+  },
+  {
+   "fp": "fde2cdf9294a075e",
+   "from": "f842c386e4bcf812",
+   "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
   }
  ],
  "result": {
@@ -144,7 +149,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "beca097262346711",
     "universe": "a3db5ae57c7abd0d",
-    "screens": "012946e3983b4552"
+    "screens": "c92ae778c52c84dd"
    },
    {
     "year": 2027,
@@ -156,7 +161,7 @@
     "heis": "64b059fcdf7e9d46",
     "history": "1ebfba27a7174280",
     "universe": "54a8de15592c81df",
-    "screens": "f395948684b2386b"
+    "screens": "3c03fdb9c888f126"
    }
   ],
   "Coppin State#2024": [
@@ -170,7 +175,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "f1c532d111868c7a",
     "universe": "e1fe7eceb21386ee",
-    "screens": "0ed34ade5acf466c"
+    "screens": "acebbe8f39e868e3"
    },
    {
     "year": 2027,
@@ -182,7 +187,7 @@
     "heis": "5e653284efe7ed05",
     "history": "9d5b0d8b80c64894",
     "universe": "b209be1c3e96760f",
-    "screens": "c211664373c60898"
+    "screens": "1f9c76a6cbaca38b"
    }
   ],
   "Gonzaga#777": [
@@ -196,7 +201,7 @@
     "heis": "c94713712b4e6c61",
     "history": "85931fd4a947013a",
     "universe": "61c342b6686811e0",
-    "screens": "8e3e7e76ee437ab4"
+    "screens": "e0e29d968350cb64"
    },
    {
     "year": 2027,
@@ -208,7 +213,7 @@
     "heis": "2c21cf7676ec0650",
     "history": "f1fbd3d2691a817b",
     "universe": "08641f9d27f55023",
-    "screens": "4a5e4d37d45d2147"
+    "screens": "e377f5eceb6a97dc"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "517b702e7761ad1c",
+ "fp": "6c821f0358acba84",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -35,6 +35,11 @@
    "fp": "517b702e7761ad1c",
    "from": "517b702e7761ad1c",
    "note": "your players, call verdicts"
+  },
+  {
+   "fp": "6c821f0358acba84",
+   "from": "517b702e7761ad1c",
+   "note": "same"
   }
  ],
  "out": [
@@ -44,20 +49,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "76-22",
+      "rec": "68-14",
       "result": "Lost in the conference finals",
-      "grade": "A"
+      "grade": "A-"
      },
-     "book": "679ed705e0fa5c47"
+     "book": "e026f75cf2f98c63"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "65-28",
+      "rec": "58-24",
       "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "d301264995cc941b"
+     "book": "ecec7a3e47a674bf"
     }
    ]
   },
@@ -67,20 +72,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-51",
+      "rec": "13-69",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "978f379e17a9b3f2"
+     "book": "20d6669089b836aa"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "51-41",
+      "rec": "64-18",
       "result": "Lost in the conference semifinals",
-      "grade": "C+"
+      "grade": "B"
      },
-     "book": "92cb88aeb4922097"
+     "book": "4acf5f83a3dce204"
     }
    ]
   },
@@ -90,20 +95,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-44",
-      "result": "Lost in the first round",
-      "grade": "C-"
+      "rec": "30-52",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "07ffdd8a53c89201"
+     "book": "eebe26de3a005b85"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "83-18",
-      "result": "NBA CHAMPIONS",
-      "grade": "A+"
+      "rec": "52-30",
+      "result": "Lost in the conference semifinals",
+      "grade": "C+"
      },
-     "book": "01b13a77dafbd629"
+     "book": "b591e7d2f3422cc5"
     }
    ]
   }

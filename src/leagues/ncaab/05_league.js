@@ -5,6 +5,7 @@
 const SPREAD=+((typeof process!=="undefined"&&process.env&&process.env.BB_SPREAD)||1.45);   // how far apart programs start (calibrated)
 const NCAAB_ELO=t=>Math.round(1450+(t.lvl+t.ped*0.8)*SPREAD);      // starting strength: a prior, calibrated
 const LEAGUE={
+  postRecord:true,                 // bowls and the playoff (college: the tournament) count in the season record
   id:"ncaab",
   name:"College Basketball",
   /* [program, starting Elo, conference] */

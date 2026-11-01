@@ -1,5 +1,5 @@
 {
- "fp": "b46a3a152bdacba6",
+ "fp": "b287e74924a82e17",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -129,6 +129,11 @@
    "fp": "b46a3a152bdacba6",
    "from": "278cb655c179f1e7",
    "note": "Scores steps through the weeks: played and to come"
+  },
+  {
+   "fp": "b287e74924a82e17",
+   "from": "b46a3a152bdacba6",
+   "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
   }
  ],
  "result": {
@@ -143,7 +148,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "d7bb9332c3244ae9",
     "universe": "b7ac40b9143e27ab",
-    "screens": "f529075d684bc87f"
+    "screens": "9738695fd0068125"
    },
    {
     "year": 2027,
@@ -155,7 +160,7 @@
     "heis": "480803b9b658faca",
     "history": "1d3a43a2bf113240",
     "universe": "5390fa1e791e25e8",
-    "screens": "f28d11d1a27372e0"
+    "screens": "ca8f247aba291592"
    },
    {
     "year": 2028,
@@ -167,7 +172,7 @@
     "heis": "dd04a1940012247a",
     "history": "3dedd32c439534dd",
     "universe": "b0e56ef4165976b8",
-    "screens": "be9a7becc8a42313"
+    "screens": "3851e5daee971b98"
    },
    {
     "year": 2029,
@@ -179,7 +184,7 @@
     "heis": "8d304a39ff6e17a2",
     "history": "c1c6f8583def5295",
     "universe": "1179a0486aaf45c5",
-    "screens": "b9092b90975035dd"
+    "screens": "78150e22c5720393"
    }
   ],
   "Rice#2024": [
@@ -193,7 +198,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "5b2b8bc40e7f16e0",
-    "screens": "b1dd977ce1f45648"
+    "screens": "54814253b6c1d97c"
    },
    {
     "year": 2027,
@@ -205,7 +210,7 @@
     "heis": "4e4319a44375c65b",
     "history": "d16b79a94234f928",
     "universe": "0b938625974f1298",
-    "screens": "183021696cbac985"
+    "screens": "2e888ce6ee0461b0"
    },
    {
     "year": 2028,
@@ -217,7 +222,7 @@
     "heis": "f4929038beaf492f",
     "history": "94a13bc1fe2c59d3",
     "universe": "0abbf96409ae5113",
-    "screens": "4faeb3793a8a5ec6"
+    "screens": "1149405008534d77"
    },
    {
     "year": 2029,
@@ -229,7 +234,7 @@
     "heis": "aacb35d7197a5573",
     "history": "e90ccc1a26b8bb85",
     "universe": "5f072f58326c5f0a",
-    "screens": "f5d8dd1861e78595"
+    "screens": "2fefe37a1a97c63a"
    }
   ],
   "Oregon#777": [
@@ -243,7 +248,7 @@
     "heis": "fde104829f9687a1",
     "history": "25cd5037a0d73f0b",
     "universe": "d2743ab63660d88b",
-    "screens": "03ad195ced70f400"
+    "screens": "29ec66d6e6c4b4a7"
    },
    {
     "year": 2027,
@@ -255,7 +260,7 @@
     "heis": "16871fc36811ec09",
     "history": "39388581ec611a8d",
     "universe": "8238002faae98585",
-    "screens": "90780253d2ab5727"
+    "screens": "c261ff5aedb874dc"
    },
    {
     "year": 2028,
@@ -267,7 +272,7 @@
     "heis": "908583fabe0cc4b0",
     "history": "ef4fd11b45f4ed17",
     "universe": "d4125114927c1a44",
-    "screens": "5dd7050096de77b7"
+    "screens": "864a6e4b7b55d48a"
    }
   ],
   "Kent State#31337": [
@@ -281,7 +286,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "6fbcf459c463df80",
     "universe": "6ff9e8fc66e28c42",
-    "screens": "03d0bbc76afa1fd8"
+    "screens": "a050c643cbbd20c2"
    },
    {
     "year": 2027,
@@ -293,7 +298,7 @@
     "heis": "e3afac23d3079708",
     "history": "882251df12411959",
     "universe": "838fd061138f23ef",
-    "screens": "9ca0ad67c4853245"
+    "screens": "30815317bba4f6ac"
    },
    {
     "year": 2028,
@@ -305,7 +310,7 @@
     "heis": "1631e759996121aa",
     "history": "e36ad09105b2d59f",
     "universe": "c308da879c21d578",
-    "screens": "1a3dd6984cbd66ec"
+    "screens": "188e4e38800ed86a"
    }
   ],
   "schedules#60": [

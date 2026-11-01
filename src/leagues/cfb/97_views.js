@@ -129,12 +129,29 @@ function bracketView(){
            ["Semifinals","Jan 14-15",SEA.rounds.sf],
            ["National Championship","Jan 25 &middot; Las Vegas",SEA.rounds.fin]];
   const played=R.filter(r=>r[2].length);
-  if(!played.length){
-    h+=`<div class="note">The bracket fills in as each round is played.
-      ${inField?`<b>${esc(my)}</b> is in at the No. ${SEA.seeds[my]} seed.`
-        :`${esc(my)} did not make the field.`}</div>`;
-    return h;
+  if(!SEA.field.length){ h+=`<div class="note">The field hasn't been announced yet.</div>`; return h }
+  h+=`<div class="note">${inField?`<b>${esc(my)}</b> is in at the No. ${SEA.seeds[my]} seed.`:`${esc(my)} did not make the field.`}</div>`;
+  // the round to come, as far as it's known: seeds, and who waits for whom
+  const sd=t=>`<span class="csd">${SEA.seeds[t]||""}</span>`, F=SEA.field;
+  const slot=(t,txt,c)=>t?`<span class="${c}">${esc(t)}</span>`:`<span class="${c} tbd">${txt}</span>`;
+  const pair=(a,b,bTxt,site)=>`<div class="crow ${a===my||b===my?'mine':''}">${sd(a)}${slot(a,"","cw")}<span class="cs">v</span>${slot(b,bTxt,"cl")}<span class="csd r">${b?SEA.seeds[b]:""}</span></div>${site?`<div class="csite">${site}</div>`:""}`;
+  let next=null;
+  if(!SEA.rounds.r1.length){
+    next=["First Round","Dec 18-19 &middot; at the higher seed",[[5,12],[6,11],[7,10],[8,9]].map(([a,b])=>pair(F[a-1],F[b-1],"",""))
+      .concat([`<div class="rnd sub">Waiting in the quarterfinals</div>`],[["Rose Bowl",1,"8/9"],["Sugar Bowl",2,"7/10"],["Fiesta Bowl",3,"6/11"],["Peach Bowl",4,"5/12"]]
+        .map(([b,t,w])=>pair(F[t-1],null,`Winner ${w}`,b)))];
+  }else if(!SEA.rounds.qf.length){
+    const w={}; SEA.rounds.r1.forEach(g=>{w[Math.min(g.hseed,g.aseed)]=g.winner});
+    next=["Quarterfinals","Dec 30 &amp; Jan 1",[["Rose Bowl",1,8],["Sugar Bowl",2,7],["Fiesta Bowl",3,6],["Peach Bowl",4,5]].map(([b,t,k])=>pair(F[t-1],w[k],"",b))];
+  }else if(!SEA.rounds.sf.length){
+    const q=SEA.rounds.qf.map(g=>g.winner).sort((a,b)=>SEA.seeds[a]-SEA.seeds[b]);
+    next=["Semifinals","Jan 14-15 &middot; re-seeded",[pair(q[0],q[3],"","Cotton Bowl"),pair(q[1],q[2],"","Orange Bowl")]];
+  }else if(!SEA.rounds.fin.length){
+    const f=SEA.rounds.sf.map(g=>g.winner).sort((a,b)=>SEA.seeds[a]-SEA.seeds[b]);
+    next=["National Championship","Jan 25 &middot; Las Vegas",[pair(f[0],f[1],"","Allegiant Stadium")]];
   }
+  if(next)h+=`<div class="rnd">Up next: ${next[0]}<small>${next[1]}</small></div><div class="collapsed">${next[2].join("")}</div>`;
+  if(!played.length)return h;
   played.forEach(([n,sub,gs],i)=>{
     const latest=i===played.length-1;
     const mine=gs.find(g=>g.home===my||g.away===my);

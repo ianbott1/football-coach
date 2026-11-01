@@ -1,5 +1,5 @@
 {
- "fp": "25243ce42c3fb0f8",
+ "fp": "c043483bc39d3398",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -70,6 +70,11 @@
    "fp": "25243ce42c3fb0f8",
    "from": "beccea3264179431",
    "note": "Scores steps through the weeks: played and to come"
+  },
+  {
+   "fp": "c043483bc39d3398",
+   "from": "25243ce42c3fb0f8",
+   "note": "pro playoff games out of the season record; staff's plan in the offseason; music button; Offense spelling; daily leagues show dates and game numbers; CFB bracket to come; result card follows the series"
   }
  ],
  "result": {
@@ -79,24 +84,24 @@
     "games": "f1b83385bcde1478",
     "post": "4f0d3f9cb73b0f6d",
     "champion": "Los Angeles",
-    "rec": "3860e68e76095ab4",
+    "rec": "13d85b141d805f37",
     "poll": "e96f5d234e794cc0",
     "heis": "2e578c69901469ff",
-    "history": "35010fcb0d7513d3",
-    "universe": "10b67306cfcd99c3",
-    "screens": "65169c540cc3c618"
+    "history": "d98de5d76d1ff6b8",
+    "universe": "2e525831ff24bc18",
+    "screens": "b2b00a77efd5d389"
    },
    {
     "year": 2027,
     "games": "54a76c9834e54bd9",
     "post": "a2ecbd9d7af1d592",
     "champion": "Ottawa",
-    "rec": "dd0d73c5672a167d",
+    "rec": "bcbb85380b1c67d9",
     "poll": "b2a4444428bcdb51",
     "heis": "b7ea50030c95ed67",
-    "history": "1bd868de8995b984",
-    "universe": "55065d763b7cba35",
-    "screens": "9ce3aa3e0f29d0b3"
+    "history": "7c7f60d92bca494c",
+    "universe": "2e60ecbe9ac6b0e8",
+    "screens": "fa81ded3fb2dba58"
    }
   ],
   "Edmonton#777": [
@@ -105,24 +110,24 @@
     "games": "49d001e26ba2bc77",
     "post": "d5c9bc7158a616bf",
     "champion": "Carolina",
-    "rec": "dd8bb7b14da00d85",
+    "rec": "de36e59a5dff0a83",
     "poll": "a66e4e334a78bddc",
     "heis": "878c7e6e19a040c2",
-    "history": "d2dbeb2cde4b50be",
-    "universe": "15f61c25076d03bd",
-    "screens": "d89f6215878b7822"
+    "history": "6178bf0d8580d326",
+    "universe": "4493d4b5bb0d7c49",
+    "screens": "eb9a080dd3a07414"
    },
    {
     "year": 2027,
     "games": "bfd69272d7b66eca",
     "post": "cf7b8adf9badba02",
     "champion": "Florida",
-    "rec": "5143bd6c30e68b7a",
+    "rec": "352ddee40a90558a",
     "poll": "fe9cd3db0c256042",
     "heis": "f2d909c6344345fc",
-    "history": "30ff2a45fb7db466",
-    "universe": "41788243654c2491",
-    "screens": "18a822c5135f5b83"
+    "history": "88b94b12deffcefb",
+    "universe": "adee6b46ae6c5649",
+    "screens": "d3091077341db348"
    }
   ],
   "schedules#60": [

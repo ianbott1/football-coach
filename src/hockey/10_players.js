@@ -1,5 +1,5 @@
 /* ============ players: hockey ============ */
-/* Twelve players: a first unit (centre, two wings, two defencemen and the
+/* Twelve players: a first unit (centre, two wings, two defensemen and the
    starting goalie) and a player behind each (the depth lines, the third
    pair, the backup goalie). Team strength comes from them, the goalie most
    of all. */

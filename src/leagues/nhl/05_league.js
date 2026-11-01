@@ -69,12 +69,13 @@ const LEAGUE={
   recText(t,sea,r){ const [w,l]=r||(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return `${w}-${l-o}-${o}` },
   standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
   stepLabel:w=>`Game day ${w+1}`,
+  daily:true,                                 // a step is a day: Scores is headed by the date
   myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day               // a pro season is game days, not weeks
   bigTop:5,                                   // a big game in an 82-game season: a top-five side
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty-two
   points(t,sea){ const [w]=(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return 2*w+o },
 
-  text:{
+  text:{bye:"No game today",
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a contender on their ice. That's a statement.","Two points off a real team."],
     badLoss:["Points you can't give away in this division.","Beaten by a lottery team. It will cost you in the standings.","The kind of loss that decides the last wild card."],
     champions:"Stanley Cup champions",

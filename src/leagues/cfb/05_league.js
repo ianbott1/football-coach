@@ -4,6 +4,7 @@
    players come from and go to, and what things are called. The core reads
    all of it through LEAGUE and knows none of it itself. */
 const LEAGUE={
+  postRecord:true,                 // bowls and the playoff (college: the tournament) count in the season record
   id:"cfb",
   name:"College Football",
 

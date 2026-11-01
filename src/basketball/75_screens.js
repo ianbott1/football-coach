@@ -136,7 +136,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>(dp.k==="read"||dp.k==="prep")&&DEFENCES[o]?DEFENCES[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep")&&DEFENSES[o]?DEFENSES[o].d:"";
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -200,7 +200,7 @@ function watchView(){
 /* ---- after the game: were your reads right? ---- */
 function readText(e){
   if(e.k==="read")return e.right?`Your read was right: they were ${STYLE[e.truth].l}.`
-    :`They were ${STYLE[e.truth].l}: the answer was "${DEFENCES[STYLE[e.truth].answer].l}".`;
+    :`They were ${STYLE[e.truth].l}: the answer was "${DEFENSES[STYLE[e.truth].answer].l}".`;
   if(e.k==="prep")return e.right?`Your game plan was right: they came out ${STYLE[e.truth].l}.`
     :`You game-planned for the wrong thing: they came out ${STYLE[e.truth].l}.`;
   return "";
