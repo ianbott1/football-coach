@@ -256,7 +256,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  border-bottom:1px solid rgba(42,49,69,.55)}
 .ipos{font-family:var(--cond);font-size:17px;font-weight:600;flex:0 0 52px;color:var(--flag)}
 .iwk{flex:1;font-family:var(--mono);font-size:11px;color:var(--muted)}
-.imag{font-family:var(--mono);font-size:12px;color:var(--flag)}
+.imag{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--flag);white-space:nowrap}.imag.mid{color:var(--sodium)}.imag.low{color:var(--muted)}
 .nextcard{margin:8px 16px 0;padding:14px;border:1px solid var(--sodium);
  background:linear-gradient(180deg,rgba(244,166,58,.09),transparent)}
 .nextcard.riv{border-color:var(--flag);
@@ -6233,7 +6233,7 @@ function readsHTML(step){
   if(!R.length){ const n=P.reduce((a,p)=>a+(p.judged||0),0);
     const c=P.map(p=>p.close).filter(Boolean)[0];
     const deb=c?`<div class="readnone"><b>${esc(c.h)}</b>: you chose "${esc(c.pick)}". ${c.opts.map(o=>`"${esc(o[0])}" won ${o[1]}%`).join(", ")} of replays: the options were that close, so the game turned on the plays, not the call.</div>`:"";
-    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't move":"moved"} your chance of winning by 2 points or more, so ${n===1?"it isn't":"none is"} graded.</div>${deb}</div>`:"" }
+    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${deb}</div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
@@ -6404,11 +6404,11 @@ function rosterView(){
   const R=SEA.roster[my];
   const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
   const college=!!(LEAGUE.classes&&LEAGUE.classes.length), more=SPORT.featureMore||"gives a player the ball more";
-  const featPP=Math.round(10*FEATURE_EDGE/10*(PP10[LEAGUE.id]||1.5))/10, featDv=college?3.8:FEAT_DEV_PRO;   // measured per engine, not the textbook Elo curve
-  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: your team gets about ${featPP} points of win probability a game while he's healthy, and he develops about ${featDv} rating points faster in the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
+  // what featuring does, in words: the sizes stay under the hood (Ian, Nov 2026)
+  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: the team plays a little better while he's healthy, and he develops faster over the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
   // college players are seniors and declare early; pros are just older or younger
-  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b> <span class="planwhy">(+${featPP} points of win probability a game, +${featDv} development)</span>${college&&F.c>=3
+  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${college&&F.c>=3
       ? " \u2014 a senior, so you get the boost but he graduates before the development lands."
       : !college&&F.age>=30 ? ` \u2014 at ${F.age} you get the boost now, but there's little development left in him.`
       : F.pot-F.r<4 ? " \u2014 he's near his ceiling, so there's little development left."
@@ -6503,9 +6503,13 @@ function teamCardHTML(my,rk,co){
   return h;
 }
 
-/* win probability per 10 team-strength points near an even game, measured on
-   each engine (Nov 2026: a 40-point edge, 20,000 games each) */
-const PP10={cfb:1.3,nfl:2.4,ncaab:1.5,nba:2.2,nhl:0.9,epl:0.5};
+/* how much an absence hurts, in a word: the size stays under the hood (it was a
+   raw team-strength number, and a -195 read like nonsense next to a 78 rating) */
+/* judged against a typical starter's absence in the same sport (the median,
+   measured Nov 2026): Big loss ~ the top fifth, Minor ~ the bottom third */
+const INJ_MED={cfb:28,nfl:21,ncaab:60,nba:42,nhl:34,epl:39};
+function injHurt(m){ const x=Math.abs(m||0)/(INJ_MED[LEAGUE.id]||30);
+  return x>=1.7?{l:"Big loss",c:"big"}:x>=0.7?{l:"Real loss",c:"mid"}:{l:"Minor",c:"low"} }
 function injuryHTML(inj){
   let h="";
   if(inj.length){
@@ -6514,8 +6518,8 @@ function injuryHTML(inj){
       <div class="iwho"><div class="pname">${esc(e.who||e.k)}</div>
       <div class="psub">out ${e.w} more ${stepWord(e.w)}${
         e.rating?" &middot; rated "+e.rating:""}</div></div>
-      <span class="imag" title="What losing him costs the team, in team-strength points (a different scale from player ratings)">${Math.round(e.m)}</span></div>`).join("")
-      +`<div class="stkey">The number on the right is what each absence costs the team's strength, in team-strength points (not the player rating scale): it's his rating against his backup's, weighted by his minutes. In an even game, every 10 points is about ${PP10[LEAGUE.id]||1.5} points of win probability${LEAGUE.draws?" (a draw counting half)":""}.</div>`;
+      <span class="imag ${injHurt(e.m).c}">${injHurt(e.m).l}</span></div>`).join("")
+      +`<div class="stkey">How much each absence hurts depends on how good he is and how good the man replacing him is.</div>`;
   }
   return h;
 }

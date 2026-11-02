@@ -1,5 +1,5 @@
 {
- "fp": "2d86d4984c36af94",
+ "fp": "b2aa631703adec50",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -164,6 +164,11 @@
    "fp": "2d86d4984c36af94",
    "from": "b66df212eab76ee3",
    "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
+  },
+  {
+   "fp": "b2aa631703adec50",
+   "from": "2d86d4984c36af94",
+   "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
   }
  ],
  "result": {
@@ -178,7 +183,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "9952067fdc1fb461",
     "universe": "c79efd00746c4319",
-    "screens": "e60cfc524c498891"
+    "screens": "09ddae75e33d320c"
    },
    {
     "year": 2027,
@@ -190,7 +195,7 @@
     "heis": "480803b9b658faca",
     "history": "ac3a15173a773d71",
     "universe": "7845d6f1024dda3b",
-    "screens": "cb0cb2600645c0c1"
+    "screens": "2d8617bf30b7f50f"
    },
    {
     "year": 2028,
@@ -202,7 +207,7 @@
     "heis": "dd04a1940012247a",
     "history": "b5bdb2098a96e70c",
     "universe": "38ee269a6648d287",
-    "screens": "f1e424c2f0b445ff"
+    "screens": "4812449afa2b4d33"
    },
    {
     "year": 2029,
@@ -214,7 +219,7 @@
     "heis": "8d304a39ff6e17a2",
     "history": "e01b198c7ad1cae2",
     "universe": "e986ceeb574628cb",
-    "screens": "80bf2140c0f5d9a7"
+    "screens": "701b851e2515e4b8"
    }
   ],
   "Rice#2024": [
@@ -228,7 +233,7 @@
     "heis": "62c67774006ebb20",
     "history": "02d5f003193c65d5",
     "universe": "5f6e50ee854d4a54",
-    "screens": "aefcbfb0c63f6919"
+    "screens": "429d4b64c0bc1f0d"
    },
    {
     "year": 2027,
@@ -240,7 +245,7 @@
     "heis": "4e4319a44375c65b",
     "history": "38ff63bf6b4d898f",
     "universe": "7d5a0760ca6e51a9",
-    "screens": "3cff63fdbb7bad56"
+    "screens": "842a6b6319f17bd0"
    },
    {
     "year": 2028,
@@ -252,7 +257,7 @@
     "heis": "f4929038beaf492f",
     "history": "0c636b45336df982",
     "universe": "7e57573047680ae7",
-    "screens": "4e70d537fda5e7fc"
+    "screens": "51507b41812875ed"
    },
    {
     "year": 2029,
@@ -264,7 +269,7 @@
     "heis": "aacb35d7197a5573",
     "history": "29a62091281ea40e",
     "universe": "1d7b62e5e7fe578b",
-    "screens": "57534c3da0f554c6"
+    "screens": "61ed51a8fcf746ba"
    }
   ],
   "Oregon#777": [
@@ -278,7 +283,7 @@
     "heis": "fde104829f9687a1",
     "history": "e1c18941586fa977",
     "universe": "501323d207357aeb",
-    "screens": "00134c6a99513cf4"
+    "screens": "32fbbfbb95d25307"
    },
    {
     "year": 2027,
@@ -290,7 +295,7 @@
     "heis": "16871fc36811ec09",
     "history": "3d3bff6e053e14d4",
     "universe": "ed7a89e9ef4bcd02",
-    "screens": "94a9c2b93f88cb49"
+    "screens": "f1fc6c776c83789e"
    },
    {
     "year": 2028,
@@ -302,7 +307,7 @@
     "heis": "908583fabe0cc4b0",
     "history": "682db458c522f655",
     "universe": "0c506fd80c7bee56",
-    "screens": "d46d69816cd27fbe"
+    "screens": "a2cac7709ec3927c"
    }
   ],
   "Kent State#31337": [
@@ -316,7 +321,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "59730e241690a6ed",
     "universe": "29ba28273658b169",
-    "screens": "9788f0a24d20d43d"
+    "screens": "cf7b13cfde291df9"
    },
    {
     "year": 2027,
@@ -328,7 +333,7 @@
     "heis": "e3afac23d3079708",
     "history": "120b9f5080616f24",
     "universe": "2aa05bb9248e1180",
-    "screens": "abedb677a9263f35"
+    "screens": "48384f870ca89ec8"
    },
    {
     "year": 2028,
@@ -340,7 +345,7 @@
     "heis": "1631e759996121aa",
     "history": "fc3c138ab3761df6",
     "universe": "ba477dea2dc9a385",
-    "screens": "3aa71f9ab3825ee2"
+    "screens": "157c03c78b773361"
    }
   ],
   "schedules#60": [

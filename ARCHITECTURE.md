@@ -155,9 +155,15 @@ Lessons from this project (each cost a bug that shipped or nearly did):
 - No browser dialogs (confirm/alert): blocked or dismissed, they return false
   without a word and the button does nothing ("Make a change"). tapTwice()
   confirms on the page.
-- Numbers on screen come from each engine, not a textbook formula: win
-  probability per 10 strength points runs 0.5 (soccer) to 2.4 (pro football),
-  measured (PP10); the Elo curve said 1.5 for all.
+- Show what a coach would see, not the engine's dials (Ian, Nov 2026):
+  records, save %, scouting stats, fourth-down conversion odds and the
+  post-game replay verdicts stay; plan goal rates, featuring's win
+  probability and development points, injury costs, base rates ("one night
+  in ten") and grading thresholds are said in words. Injuries read Big loss /
+  Real loss / Minor against the sport's typical absence (INJ_MED, measured).
+  Any number that is shown must be measured on that engine: win probability
+  per 10 strength points runs 0.5 (soccer) to 2.4 (pro football), where the
+  textbook Elo curve said 1.5 for all.
 - A trailing comment on a line that a later edit extends swallows the code
   after it (featDv vanished; every page failed to load). Load-check in
   Chromium after every build.

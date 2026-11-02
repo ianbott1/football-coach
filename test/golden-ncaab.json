@@ -1,5 +1,5 @@
 {
- "fp": "c2c5c81584a9719b",
+ "fp": "f38dbd3f9a1a8931",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -165,6 +165,11 @@
    "fp": "c2c5c81584a9719b",
    "from": "3c990023cdf3dd76",
    "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
+  },
+  {
+   "fp": "f38dbd3f9a1a8931",
+   "from": "c2c5c81584a9719b",
+   "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
   }
  ],
  "result": {
@@ -179,7 +184,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "0201f9bb0bedb414",
     "universe": "29a92f3d60e09617",
-    "screens": "87ad7b78acc1f74e"
+    "screens": "a5f078f10949029c"
    },
    {
     "year": 2027,
@@ -217,7 +222,7 @@
     "heis": "5e653284efe7ed05",
     "history": "9d5b0d8b80c64894",
     "universe": "ed8086c25debe3aa",
-    "screens": "c37cab2231013b52"
+    "screens": "f22d2a0966d9fd80"
    }
   ],
   "Gonzaga#777": [
@@ -243,7 +248,7 @@
     "heis": "2c21cf7676ec0650",
     "history": "90af7ff2d80996f1",
     "universe": "e2f2c5eeb4e16444",
-    "screens": "134e125950357028"
+    "screens": "b821afd7485fb4ae"
    }
   ],
   "schedules#60": [

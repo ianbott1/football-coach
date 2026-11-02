@@ -125,6 +125,11 @@
    "fp": "92d3ce8a6e49a718",
    "from": "92d3ce8a6e49a718",
    "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
+  },
+  {
+   "fp": "92d3ce8a6e49a718",
+   "from": "92d3ce8a6e49a718",
+   "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
   }
  ],
  "out": [

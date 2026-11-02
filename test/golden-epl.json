@@ -1,5 +1,5 @@
 {
- "fp": "fc70b8fe854f66f1",
+ "fp": "fbe978cd08cc819e",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -135,6 +135,11 @@
    "fp": "fc70b8fe854f66f1",
    "from": "96476bcaef508da6",
    "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
+  },
+  {
+   "fp": "fbe978cd08cc819e",
+   "from": "fc70b8fe854f66f1",
+   "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
   }
  ],
  "result": {
@@ -175,7 +180,7 @@
     "heis": "35b811b30c3c7d9b",
     "history": "38047ead0032f2b3",
     "universe": "0ea2b36ee1c9b06c",
-    "screens": "849b9eefd68862f7"
+    "screens": "9c901b64817161d2"
    },
    {
     "year": 2027,
@@ -187,7 +192,7 @@
     "heis": "773291adde1b8df1",
     "history": "2fab7c58d1b0eed6",
     "universe": "a71d39242eea38a6",
-    "screens": "01bccc02e87abfca"
+    "screens": "71ea1eeda2352130"
    }
   ],
   "schedules#60": [

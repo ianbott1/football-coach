@@ -2,9 +2,9 @@
 const INTERIM_Q=-18;     // replacement-level assistant
 const FEATURE_EDGE=12;   // Elo
 const PLANS={
-  safe:      {sd:0.85, edge:0, l:"Skate with them", d:"Open, high-event hockey: your games average about 6.7 goals. Over sixty minutes the better team wins, so it's best when that's you."},
-  balanced:  {sd:1.0,  edge:0, l:"Balanced",        d:"Play your game: about 6.2 goals a game, the league's usual."},
-  aggressive:{sd:1.2,  edge:0, l:"Clog it up",      d:"Trap the neutral zone, block shots, shorten the game: about 5.2 goals a game. Fewer chances, more luck, so it's best when you're outgunned."}
+  safe:      {sd:0.85, edge:0, l:"Skate with them", d:"Open, high-event hockey: more chances, and more goals, at both ends. Over sixty minutes the better team wins, so it's best when that's you."},
+  balanced:  {sd:1.0,  edge:0, l:"Balanced",        d:"Play your game."},
+  aggressive:{sd:1.2,  edge:0, l:"Clog it up",      d:"Trap the neutral zone, block shots, shorten the game: fewer chances at both ends, and more luck. Best when you're outgunned."}
 };
 function isBigGame(g,team,seaRankMap,rivalName){
   if(!g)return false;
