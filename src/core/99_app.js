@@ -170,6 +170,7 @@ function finishLive(){
   // the same game replayed from that moment with each answer, many times)
   if(typeof callVerdicts==="function"&&!live.h2h&&live.args){
     const V=callVerdicts(live.args,liveSeed(live.step),live.replay,meHome);
+    if(V.judged)played.judged=V.judged;
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
@@ -898,8 +899,11 @@ function tallyHTML(){
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){
   if(step===undefined||step===null||typeof readText!=="function"||!S.played)return "";
-  const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&p.reads&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)));
-  const R=[].concat(...P.map(p=>p.reads)); if(!R.length)return "";
+  const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&(p.reads||p.judged)&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)));
+  const R=[].concat(...P.map(p=>p.reads||[]));
+  // calls made, none close enough to grade: say so, or the card looks broken
+  if(!R.length){ const n=P.reduce((a,p)=>a+(p.judged||0),0);
+    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't move":"moved"} your chance of winning by 2 points or more, so ${n===1?"it isn't":"none is"} graded.</div></div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;

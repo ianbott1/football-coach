@@ -191,14 +191,14 @@ function fourthDownCall(stall, togo, offElo, defElo){
   if (stall >= 62) {
     return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
       b:`A ${dist}-yard attempt from here, or keep the drive alive.`,
-      opts:[["go",`Go for it \u00b7 ${gp}%`],
-            ["kick",`Kick it \u00b7 ${dist} yds \u00b7 ${fp}%`],
+      opts:[["go",`Go for it \u00b7 ${gp}% to convert`],
+            ["kick",`Kick it \u00b7 ${dist} yds \u00b7 ${fp}% to make`],
             stall<78?["punt","Pin them deep"]:null].filter(Boolean)};
   }
   if (stall >= 44) {
     return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
       b:`${dist} yards is a long way for the kicker. Go for it, or flip the field.`,
-      opts:[["go",`Go for it \u00b7 ${gp}%`],["punt","Punt it away"]]};
+      opts:[["go",`Go for it \u00b7 ${gp}% to convert`],["punt","Punt it away"]]};
   }
   return null;
 }
@@ -210,8 +210,8 @@ function twoPointCall(mine, theirs, q, late){
   if ([-5,-2,-1,1,2,4,5].indexOf(d) >= 0) {
     // in scores, not margins: "puts you at 0" read as a score of nothing
     const td=mine+6, say=(m,t)=>`${m}-${t}${m>t?", up "+(m-t):m<t?", down "+(t-m):", tied"}`;
-    return {k:"two", h:`Touchdown: ${td}-${theirs}. Kick it, or go for two?`,
-      b:`Two points makes it ${say(td+2,theirs)}; the kick makes it ${say(td+1,theirs)}.`,
+    return {k:"two", h:`After the touchdown, ${td}-${theirs}`,
+      b:`Kick it, or go for two? Two points makes it ${say(td+2,theirs)}; the kick makes it ${say(td+1,theirs)}.`,
       opts:[["kick","Kick the extra point"],["two","Go for two"]]};
   }
   return null;

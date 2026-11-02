@@ -208,9 +208,10 @@ function callVerdicts(args,seed,answers,meHome){
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<2000){ const r=e.next(); if(r.done)break;
       if(r.ask){ asks.push({dp:r.ask,mine:r.mine,theirs:r.theirs}); e.reply(answers[i]!==undefined?answers[i]:verdictDefault(r.ask)); i++ } } }
-  const out=[];
+  const out=[]; let judged=0;
   asks.forEach((A,j)=>{
     if(!KINDS[A.dp.k]||answers[j]===undefined)return;
+    judged++;
     const opts=A.dp.opts.map(x=>x[0]), rate={};
     opts.forEach(o=>{ let w=0;
       for(let m=0;m<VERDICT_RUNS;m++){
@@ -232,6 +233,7 @@ function callVerdicts(args,seed,answers,meHome){
       other:alt!==null?lab(alt):undefined, or:alt!==null?Math.round(rate[alt]*100):undefined,
       h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100)});
   });
+  out.judged=judged;                       // calls you made that could be graded, whether or not any were
   return out;
 }
 function readText(e){

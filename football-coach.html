@@ -526,6 +526,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .tallybig span{font-size:20px;color:var(--muted)}
 .tallynote{margin-top:4px;text-transform:none;letter-spacing:0;font-family:var(--body);font-size:12px}
 .callnote{font-size:12px;color:var(--muted);line-height:1.45;padding:2px 16px 10px}
+.readnone{font-size:12.5px;color:var(--muted);line-height:1.45;padding:4px 0}
 .introskip{background:none;border:1px solid var(--line);color:var(--muted);
  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
  padding:14px 16px;cursor:pointer;border-radius:2px}
@@ -4025,14 +4026,14 @@ function fourthDownCall(stall, togo, offElo, defElo){
   if (stall >= 62) {
     return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
       b:`A ${dist}-yard attempt from here, or keep the drive alive.`,
-      opts:[["go",`Go for it \u00b7 ${gp}%`],
-            ["kick",`Kick it \u00b7 ${dist} yds \u00b7 ${fp}%`],
+      opts:[["go",`Go for it \u00b7 ${gp}% to convert`],
+            ["kick",`Kick it \u00b7 ${dist} yds \u00b7 ${fp}% to make`],
             stall<78?["punt","Pin them deep"]:null].filter(Boolean)};
   }
   if (stall >= 44) {
     return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
       b:`${dist} yards is a long way for the kicker. Go for it, or flip the field.`,
-      opts:[["go",`Go for it \u00b7 ${gp}%`],["punt","Punt it away"]]};
+      opts:[["go",`Go for it \u00b7 ${gp}% to convert`],["punt","Punt it away"]]};
   }
   return null;
 }
@@ -4044,8 +4045,8 @@ function twoPointCall(mine, theirs, q, late){
   if ([-5,-2,-1,1,2,4,5].indexOf(d) >= 0) {
     // in scores, not margins: "puts you at 0" read as a score of nothing
     const td=mine+6, say=(m,t)=>`${m}-${t}${m>t?", up "+(m-t):m<t?", down "+(t-m):", tied"}`;
-    return {k:"two", h:`Touchdown: ${td}-${theirs}. Kick it, or go for two?`,
-      b:`Two points makes it ${say(td+2,theirs)}; the kick makes it ${say(td+1,theirs)}.`,
+    return {k:"two", h:`After the touchdown, ${td}-${theirs}`,
+      b:`Kick it, or go for two? Two points makes it ${say(td+2,theirs)}; the kick makes it ${say(td+1,theirs)}.`,
       opts:[["kick","Kick the extra point"],["two","Go for two"]]};
   }
   return null;
@@ -4895,9 +4896,10 @@ function callVerdicts(args,seed,answers,meHome){
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<2000){ const r=e.next(); if(r.done)break;
       if(r.ask){ asks.push({dp:r.ask,mine:r.mine,theirs:r.theirs}); e.reply(answers[i]!==undefined?answers[i]:verdictDefault(r.ask)); i++ } } }
-  const out=[];
+  const out=[]; let judged=0;
   asks.forEach((A,j)=>{
     if(!KINDS[A.dp.k]||answers[j]===undefined)return;
+    judged++;
     const opts=A.dp.opts.map(x=>x[0]), rate={};
     opts.forEach(o=>{ let w=0;
       for(let m=0;m<VERDICT_RUNS;m++){
@@ -4919,6 +4921,7 @@ function callVerdicts(args,seed,answers,meHome){
       other:alt!==null?lab(alt):undefined, or:alt!==null?Math.round(rate[alt]*100):undefined,
       h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100)});
   });
+  out.judged=judged;                       // calls you made that could be graded, whether or not any were
   return out;
 }
 function readText(e){
@@ -7125,6 +7128,7 @@ function finishLive(){
   // the same game replayed from that moment with each answer, many times)
   if(typeof callVerdicts==="function"&&!live.h2h&&live.args){
     const V=callVerdicts(live.args,liveSeed(live.step),live.replay,meHome);
+    if(V.judged)played.judged=V.judged;
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
@@ -7853,8 +7857,11 @@ function tallyHTML(){
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){
   if(step===undefined||step===null||typeof readText!=="function"||!S.played)return "";
-  const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&p.reads&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)));
-  const R=[].concat(...P.map(p=>p.reads)); if(!R.length)return "";
+  const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&(p.reads||p.judged)&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)));
+  const R=[].concat(...P.map(p=>p.reads||[]));
+  // calls made, none close enough to grade: say so, or the card looks broken
+  if(!R.length){ const n=P.reduce((a,p)=>a+(p.judged||0),0);
+    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't move":"moved"} your chance of winning by 2 points or more, so ${n===1?"it isn't":"none is"} graded.</div></div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
