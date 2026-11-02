@@ -63,12 +63,11 @@ function collegePlanHTML(P){
 
 /* ---- how much the staff give away on a read ----
    Full: Pearl names what she sees and the answer. Hints: she points at what
-   to look at and leaves the answer to you. Automatic: full advice in your
-   first season, hints after (once you know how to read the panel). */
-function staffHints(){
-  const m=S.advice||"auto";
-  return m==="hints"||(m==="auto"&&!!(S.history&&S.history.length));
-}
+   to look at and leaves the answer to you. Hints are the default from the
+   first season (Nov 2026: both testers found Full gave the answer away);
+   Full is the opt-in. A save that chose "Automatic" (full in season one,
+   hints after) now gets hints. */
+function staffHints(){ return (S.advice||"hints")!=="full" }
 function staffAdvice(dp,ctx){
   const R=staffTake(dp,ctx);
   if(!staffHints()||(dp.k!=="read"&&dp.k!=="prep"))return R;

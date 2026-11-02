@@ -149,6 +149,9 @@ Lessons from this project (each cost a bug that shipped or nearly did):
 - A long-run test that skips the first seasons hides the seasons every new
   player sees: nba-longrun recorded from season 4, and fresh seasons ran
   77-5 for two years (Muse). Check season 1 too.
+- Staff advice on reads: Hints only is the default from the first season
+  (Nov 2026, both testers: Full gave the answer away); Full is the opt-in.
+  "Automatic" is gone; saves that chose it get hints.
 - No browser dialogs (confirm/alert): blocked or dismissed, they return false
   without a word and the button does nothing ("Make a change"). tapTwice()
   confirms on the page.
