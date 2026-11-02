@@ -87,7 +87,7 @@ function nflTargetsHTML(P,room){
 }
 function nflPickSlot(){
   const o=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam)+1;
-  return o+(o===1?"st":o===2?"nd":o===3?"rd":"th");
+  return ordinal(o);                  // 21st, not 21th
 }
 
 function offseasonBanner(){

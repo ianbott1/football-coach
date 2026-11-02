@@ -26,6 +26,7 @@ const HK_CUE={
 };
 function pickOf(a,u){return a[u%a.length]}
 function hkEventText(g,e,swapped){
+  const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
   if(e.k==="goal"){
     const n=hkSkater(tm,u), a1=hkSkater(tm,(u*7+3)%100), gk=hkGoalie(opp,swapped&&swapped[e.side==="home"?"away":"home"]);
@@ -138,9 +139,9 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>
       <div class="evr ${dp.sa&&(dp.sa-dp.ga)/dp.sa<0.85?'hi':''}"><span class="evk">Save % tonight (league .900)</span><span class="evv">${dp.sa?((dp.sa-dp.ga)/dp.sa).toFixed(3).replace(/^0/,""):"-"}</span></div>
-      <div class="evr ${dp.ga-dp.xga>=1.5?'hi':''}"><span class="evk">Expected from those shots</span><span class="evv">${dp.xga.toFixed(1)}</span></div>
+      <div class="evr ${dp.ga-dp.xga>=1.5&&dp.soft>=2?'hi':''}"><span class="evk">Expected from those shots</span><span class="evv">${dp.xga.toFixed(1)}</span></div>
       <div class="evr ${dp.soft>=2?'hi':''}"><span class="evk">Goals called soft</span><span class="evv">${dp.soft} of ${dp.ga}</span></div>
-      <div class="evn">About one night in ten a goalie is genuinely off. More often he's just been unlucky, and his backup is a step down. Soft goals and a gap over the expected number are what an off night looks like.</div></div>`; }
+      <div class="evn">About one night in ten a goalie is genuinely off. More often he's just been unlucky, and his backup is a step down. A gap over the expected number can be bad luck on its own: with fewer than two soft goals he's off about one time in twenty. With two or more soft goals, about seven times in ten.</div></div>`; }
   return "";
 }
 

@@ -7,7 +7,7 @@ const NBA_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,9,20));      // Oct
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   for(let i=0;i<90;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+(i%5===4?3:2))}
   return out})();
-const NBA_K=+((typeof process!=="undefined"&&process.env&&process.env.NBA_K)||2.0);
+const NBA_K=+((typeof process!=="undefined"&&process.env&&process.env.NBA_K)||1.0);   // 2.0 until Nov 2026: fresh seasons ran 75-7 and 10-72 (wins sd 17.6; real ~13-14); the history test only looked from season 4
 const NBA_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1500+(e-1500)*NBA_K),d]);
 const LEAGUE={
   id:"nba",
@@ -15,7 +15,8 @@ const LEAGUE={
   name:"Pro Basketball",
 
   /* [franchise, starting strength (a prior, not standings), division];
-     spread 2x around 1500 (calibrated: test/nba-stability.js) */
+     scaled by NBA_K around 1500: 1.0 gives a first season like the real
+     league (wins sd ~13.5, best ~66, worst ~15; test/nba-history.js checks season 1 too) */
   teams:NBA_SPREAD([
 ["Boston",1590,"ATL"],["Brooklyn",1440,"ATL"],["New York",1580,"ATL"],["Philadelphia",1500,"ATL"],["Toronto",1480,"ATL"],
 ["Chicago",1470,"CEN"],["Cleveland",1600,"CEN"],["Detroit",1560,"CEN"],["Indiana",1520,"CEN"],["Milwaukee",1510,"CEN"],
@@ -53,7 +54,7 @@ const LEAGUE={
   tuning:{hfa:60, gapScale:1, pFloor:1200, pCeil:1850, talentSteps:+((typeof process!=="undefined"&&process.env&&process.env.NBA_TS)||12),
     /* the pro game (docs/NBA.md): 48 minutes in quarters, ~99 possessions */
     bb:{pace:99,paceSd:2.5,two:0.557,three:0.370,foul2:0.13,foul3:0.02,ft:0.785,and1:0.09,oreb:0.24,foulOut:6,starFouls:3.0,teamFouls:20,
-        toBase:0.129,gapPerPoss:+((typeof process!=="undefined"&&process.env&&process.env.NBA_GAP)||0.0006),garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
+        toBase:0.129,softGap:200,gapPerPoss:+((typeof process!=="undefined"&&process.env&&process.env.NBA_GAP)||0.0006),garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
   venues:{"Denver":6,"Utah":5,"Golden State":3,"Boston":3,"Oklahoma City":3,"Brooklyn":-3,"LA Clippers":-2,"Washington":-2},
   schedule:{games:82},
   stepLabel:w=>`Day ${w+1}`,                  // a calendar day, not your game number

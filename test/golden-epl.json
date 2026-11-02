@@ -1,5 +1,5 @@
 {
- "fp": "96476bcaef508da6",
+ "fp": "fc70b8fe854f66f1",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -130,6 +130,11 @@
    "fp": "96476bcaef508da6",
    "from": "a3f3ab6db830dbf7",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "fc70b8fe854f66f1",
+   "from": "96476bcaef508da6",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "result": {
@@ -143,7 +148,7 @@
     "poll": "99ec49b2cd611e3d",
     "heis": "b52085e10a9aee19",
     "history": "cb7021ce2949668e",
-    "universe": "1820d9dc239adb4a",
+    "universe": "fb5f2adf9597a294",
     "screens": "e406e266e3c8880d"
    },
    {
@@ -155,8 +160,8 @@
     "poll": "0bef40b09f114e8c",
     "heis": "61b1d170fd28a807",
     "history": "50f1149a236474a0",
-    "universe": "319edcd6c897b476",
-    "screens": "809da6797bea86c1"
+    "universe": "5409178e56ee6d91",
+    "screens": "cae31698d67307ef"
    }
   ],
   "Wrexham#777": [
@@ -169,8 +174,8 @@
     "poll": "f1e6d424de08334c",
     "heis": "35b811b30c3c7d9b",
     "history": "38047ead0032f2b3",
-    "universe": "b6ecd59713f4db92",
-    "screens": "7d5660eedd98db33"
+    "universe": "0ea2b36ee1c9b06c",
+    "screens": "849b9eefd68862f7"
    },
    {
     "year": 2027,
@@ -181,8 +186,8 @@
     "poll": "b0771262e8ab2be0",
     "heis": "773291adde1b8df1",
     "history": "2fab7c58d1b0eed6",
-    "universe": "8b474c2b0d3292fb",
-    "screens": "590cafa84810b768"
+    "universe": "a71d39242eea38a6",
+    "screens": "01bccc02e87abfca"
    }
   ],
   "schedules#60": [

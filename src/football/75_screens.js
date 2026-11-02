@@ -179,7 +179,10 @@ function liveCallView(){
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
     ${dp.k==="fourth"?`<div class="callnote">The percentages are the chance this play works. After the game, the call is graded on what wins the game: a likely conversion can still be the wrong choice, and a long kick the right one.</div>`:""}
     <div class="grouphead">Drive chart</div>
-    <div class="plays">${live.drives.slice().reverse().slice(0,6).map(d=>{
+    <div class="plays">${dp.k==="two"?(()=>{ const H=live.eng.h, A=live.eng.a;   // the touchdown is on the board: on the chart too (it read 6-12 under 12-12)
+      return `<div class="play mine"><span class="pq">Q${(live.drives[live.drives.length-1]||{q:1}).q} &middot; ${live.drives.length+1}</span>
+        <div class="ptxt"><b>${esc(my)}</b> touchdown, the try to come <span class="dtag sc">TD</span></div>
+        <span class="pscore">${A}&ndash;${H}</span></div>` })():""}${live.drives.slice().reverse().slice(0,6).map(d=>{
       const tm=d.home?g.home:g.away;
       return `<div class="play ${tm===my?'mine':''}">
         <span class="pq">Q${d.q} &middot; ${d.n}</span>

@@ -642,6 +642,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  flex:0 0 auto}
 .attnbtn:hover{background:rgba(139,159,232,.18)}
 .attnbtn.flag{border-color:var(--flag);color:var(--flag)}
+.armed{background:var(--flag)!important;color:var(--ink)!important;border-color:var(--flag)!important}
 .attnbtn.flag:hover{background:rgba(228,91,78,.15)}
 .staffbar{margin-top:11px;padding-top:10px;border-top:1px solid var(--line)}
 .staffbar.plain{margin:0;padding:10px 16px 12px;border-top:1px solid var(--line)}
@@ -1581,6 +1582,15 @@ function distinctRoster(u,t,seen){
 /* the player you featured last season: a pro develops this much faster (college: 3.8, in developRoster) */
 const FEAT_DEV_PRO=2.5;
 function featDev(ch,i){ return ch&&ch.featured!==null&&ch.featured!==undefined&&ch.featured===i?FEAT_DEV_PRO:0 }
+/* a surname for commentary: with a first initial when someone else in this game
+   shares it (Instinct: "my goalie saving my own player's shot") */
+function surnameIn(n,g){
+  if(!n)return ""; const last=n.split(" ").slice(-1)[0], R=typeof SEA!=="undefined"&&SEA&&SEA.roster;
+  if(!R||!g)return last;
+  let c=0; [g.home,g.away].forEach(t=>(R[t]||[]).forEach(p=>{ if(p&&p.n&&p.n.split(" ").slice(-1)[0]===last)c++ }));
+  const dup=c>1;
+  return dup?n[0]+". "+last:last;
+}
 function distinctLeague(u){
   if(!u.roster)return;
   // college: thousands of players for about 3,000 possible names, so names stay
@@ -2514,8 +2524,10 @@ function nflRecordSeries(u,season){
     if(!nflDivRival(g.home,g.away))return; const nm=LEAGUE.conf.names[CONF[g.home]];
     const k=nflSeriesKey(g.home,g.away);
     const s=u.series[k]||(u.series[k]={n:nm,w:{},streak:null,games:[]});
-    s.w[g.winner]=(s.w[g.winner]||0)+1;
-    if(s.streak&&s.streak.t===g.winner)s.streak.n++; else s.streak={t:g.winner,n:1};
+    // a draw has no winner: it counts as a draw and ends a winning run (it read "null has won 2 straight")
+    if(!g.winner){ s.d=(s.d||0)+1; s.streak=null }
+    else { s.w[g.winner]=(s.w[g.winner]||0)+1;
+      if(s.streak&&s.streak.t===g.winner)s.streak.n++; else s.streak={t:g.winner,n:1} }
     s.games.push({y:season.year,w:g.winner,l:g.loser,s:Math.max(g.hp,g.ap)+"-"+Math.min(g.hp,g.ap)});
     if(s.games.length>25)s.games.shift();
   });
@@ -2523,7 +2535,10 @@ function nflRecordSeries(u,season){
 function nflSeriesFor(u,a,b){
   if(!u||!u.series)return null;
   const s=u.series[nflSeriesKey(a,b)]; if(!s)return null;
-  return {name:s.n,w:s.w[a]||0,l:s.w[b]||0,
+  // a save from before draws were counted: they sat under "null", with a streak of nobody's
+  if(s.w&&s.w["null"]){ s.d=(s.d||0)+s.w["null"]; delete s.w["null"] }
+  if(s.streak&&!s.streak.t)s.streak=null;
+  return {name:s.n,w:s.w[a]||0,l:s.w[b]||0,d:s.d||0,
           streak:s.streak?{team:s.streak.t,n:s.streak.n}:null,games:s.games.slice().reverse()};
 }
 LEAGUE.rivals={name:nflRivalName, series:nflSeriesFor, record:nflRecordSeries, of:NFL_RIVAL_OF};
@@ -3128,6 +3143,7 @@ const SAVE=["saves well from","tips over a header from","gets down to keep out",
 function pickOf(a,u){return a[u%a.length]}
 /* one event as a line of commentary */
 function scEventText(g,e){
+  const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
   if(e.k==="goal"){ const s=scScorer(tm,u); return {team:tm,tag:"GOAL",text:`${s.n} ${pickOf(FINISH[s.unit],u>>2)}`} }
   if(e.k==="save"){ const s=scScorer(tm,u), gk=scPlayer(opp,"GK",u)||"the keeper";
@@ -5000,7 +5016,7 @@ function tWindowHTML(P){
 }
 function nflPickSlot(){
   const o=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam)+1;
-  return o+(o===1?"st":o===2?"nd":o===3?"rd":"th");
+  return ordinal(o);
 }
 
 function offseasonBanner(){
@@ -5233,7 +5249,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured",
+const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast",
                     "history","expNow","readTally"];
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -5486,6 +5502,15 @@ function swapDepth(sea,i){
   sea.talent.base[S.myTeam]=rosterElo(R);
 }
 
+/* a confirm on the page itself: the first tap turns the button into the
+   question, the second does it. Browser dialogs (confirm) can be blocked or
+   dismissed without a word, and then the button just does nothing (Muse: "Make a
+   change" never worked, and sim-ahead kept stopping on it). */
+function tapTwice(b,ask,fn){
+  if(b.dataset.armed==="1"){ delete b.dataset.armed; fn(); return }
+  b.dataset.armed="1"; const was=b.innerHTML; b.innerHTML=ask; b.classList.add("armed");
+  setTimeout(()=>{ if(b.dataset.armed==="1"){ delete b.dataset.armed; b.innerHTML=was; b.classList.remove("armed") } },5000);
+}
 function fireCoord(side){
   if(!SEA.fireCoordinator(S.myTeam,side))return;
   S.fires=S.fires||{};
@@ -5734,7 +5759,15 @@ function skipIdleDays(){
 function spectating(){
   return SEA&&SEA.phase!=="week"&&SEA.phase!=="done"&&!isHotSeat()&&SEA.postMatchup&&!SEA.postMatchup(S.myTeam);
 }
-function advLabel(){ return spectating()?"Sim to your next game, or the end":SEA.buttonLabel() }
+function advLabel(){
+  if(spectating())return "Sim to your next game, or the end";
+  // a daily league skips your days off: name the date of the game it takes you to (Instinct: "PLAY OCT 16" under "NEXT UP OCT 17")
+  if(LEAGUE.skipIdle&&LEAGUE.dates&&SEA.phase==="week"&&!isHotSeat()&&!SEA.nextGame(S.myTeam)){
+    const nx=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===S.myTeam||x.away===S.myTeam)).sort((x,y)=>x.week-y.week)[0];
+    if(nx&&LEAGUE.dates[nx.week])return `Play ${LEAGUE.dates[nx.week]}`;
+  }
+  return SEA.buttonLabel();
+}
 function simPostOn(ph){
   let g=0, was=ph;
   while(SEA.phase!=="week"&&SEA.phase!=="done"&&g++<300){
@@ -5889,6 +5922,9 @@ function commitOffseason(){
     S.off=null; handoff=true; openOffseason(); save(); render(); return;
   }
   const users=S.pending; S.pending=null;
+  // featuring lasts a season: remember who it was, so the roster can say it reset
+  { const fp=(S.featured!==null&&S.featured!==undefined&&SEA.roster&&SEA.roster[S.myTeam])?SEA.roster[S.myTeam][S.featured]:null;
+    S.featuredLast=fp?{n:fp.n,year:SEA.year}:null; }
   endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
     LEAGUE.offseason.choices(P),{phil:P.phil,
     featured:(S.featured!==undefined?S.featured:null)}), A, oldTeam);
@@ -6336,7 +6372,7 @@ function rosterView(){
   const R=SEA.roster[my];
   const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
   const college=!!(LEAGUE.classes&&LEAGUE.classes.length), more=SPORT.featureMore||"gives a player the ball more";
-  const featPP=Math.round(1000*(1/(1+Math.pow(10,-FEATURE_EDGE/400))-0.5))/10, featDv=college?3.8:FEAT_DEV_PRO;
+  const featPP=Math.round(10*FEATURE_EDGE/10*(PP10[LEAGUE.id]||1.5))/10, featDv=college?3.8:FEAT_DEV_PRO;   // measured per engine, not the textbook Elo curve
   let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: your team gets about ${featPP} points of win probability a game while he's healthy, and he develops about ${featDv} rating points faster in the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
   // college players are seniors and declare early; pros are just older or younger
@@ -6346,7 +6382,8 @@ function rosterView(){
       : F.pot-F.r<4 ? " \u2014 he's near his ceiling, so there's little development left."
       : college ? " \u2014 room to grow, and far likelier to stay than declare early."
       : " \u2014 room to grow, and the development will show next season."}`
-      :"Nobody featured. Tap a starter to feature him."}</div>`;
+      :S.featuredLast&&S.featuredLast.year===SEA.year-1&&!S.off?`Featuring lasts a season, so it reset when this one began (last season: ${esc(S.featuredLast.n)}). Tap a starter to feature him.`
+      :"Nobody featured. Tap a starter to feature him."}${F&&S.off?` <span class="planwhy">Featuring resets when the new season starts: pick again then.</span>`:""}</div>`;
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
@@ -6434,6 +6471,9 @@ function teamCardHTML(my,rk,co){
   return h;
 }
 
+/* win probability per 10 team-strength points near an even game, measured on
+   each engine (Nov 2026: a 40-point edge, 20,000 games each) */
+const PP10={cfb:1.3,nfl:2.4,ncaab:1.5,nba:2.2,nhl:0.9,epl:0.5};
 function injuryHTML(inj){
   let h="";
   if(inj.length){
@@ -6442,8 +6482,8 @@ function injuryHTML(inj){
       <div class="iwho"><div class="pname">${esc(e.who||e.k)}</div>
       <div class="psub">out ${e.w} more ${stepWord(e.w)}${
         e.rating?" &middot; rated "+e.rating:""}</div></div>
-      <span class="imag" title="What losing him costs the team, in rating points">${Math.round(e.m)}</span></div>`).join("")
-      +`<div class="stkey">The number on the right is what each absence costs the team's strength, in rating points: in an even game, every 10 points is about one and a half points of win probability.</div>`;
+      <span class="imag" title="What losing him costs the team, in team-strength points (a different scale from player ratings)">${Math.round(e.m)}</span></div>`).join("")
+      +`<div class="stkey">The number on the right is what each absence costs the team's strength, in team-strength points (not the player rating scale): it's his rating against his backup's, weighted by his minutes. In an even game, every 10 points is about ${PP10[LEAGUE.id]||1.5} points of win probability${LEAGUE.draws?" (a draw counting half)":""}.</div>`;
   }
   return h;
 }
@@ -6553,7 +6593,7 @@ function nextUpHTML(my,rk){
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
         ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa,SEA.hfa?NAMES.map(t=>SEA.hfa[t]):null))}.</div>`:""}
-      ${ser?`<div class="series"><b>${ser.w}-${ser.l}</b> in the series${
+      ${ser?`<div class="series"><b>${ser.w}-${ser.l}${ser.d?"-"+ser.d:""}</b> in the series${
         ser.streak&&ser.streak.n>1?` &middot; ${ser.streak.team===my
           ? "you've won "+ser.streak.n+" straight"
           : esc(ser.streak.team)+" has won "+ser.streak.n+" straight"}`:""}
@@ -6749,7 +6789,7 @@ function weekNews(W){
     let b=`${rivG.winner} keeps ${nm}.`;
     if(ser&&ser.streak&&ser.streak.n>=2)
       b=`${ser.streak.team} has now won ${ser.streak.n} straight in ${nm}.`;
-    else if(ser)b=`${ser.w}-${ser.l} in the series.`;
+    else if(ser)b=`${ser.w}-${ser.l}${ser.d?"-"+ser.d:""} in the series${ser.d?" (won, lost, drawn)":""}.`;
     items.push({p:85,k:"riv",tone:"flag",
       h:`${rivG.winner} takes ${nm}, ${Math.max(rivG.hp,rivG.ap)}-${Math.min(rivG.hp,rivG.ap)}`,b:b});
   }
@@ -7133,7 +7173,7 @@ function teamCard(t){
         <div class="fmain"><div class="fname">vs ${TL(r.o)}</div>
         <div class="fnote">${esc(r.s.name)}${r.s.streak&&r.s.streak.n>1
           ?" &middot; "+esc(r.s.streak.team)+" has won "+r.s.streak.n+" straight":""}</div></div>
-        <span class="fcfp ${r.s.w>r.s.l?'up':r.s.w<r.s.l?'dn':''}">${r.s.w}-${r.s.l}</span></div>`).join("");
+        <span class="fcfp ${r.s.w>r.s.l?'up':r.s.w<r.s.l?'dn':''}">${r.s.w}-${r.s.l}${r.s.d?"-"+r.s.d:""}</span></div>`).join("");
     }
   }
   h+=rosterOf(t);
@@ -7387,6 +7427,15 @@ function simTargets(){
 const SIM_WHY={big:"A big game is next.",slide:"Three defeats in a row: worth a look.",hurt:"One of your players is hurt.",decide:"Something needs a decision."};
 function hurtCount(t){ return SEA.talent.active(t).length }
 function attnCount(t){ return (attentionHTML(t).match(/class="attn"/g)||[]).length }
+/* the decisions on screen, by name (data-fire="oc", data-promo="3") */
+function attnKeys(t){ return (attentionHTML(t).match(/data-(fire|promo)="[^"]*"/g)||[]) }
+/* a decision sim-ahead hasn't already stopped for this season: one under fire
+   comes and goes as the record crosses .500, and stopped every time it came back */
+function newDecision(t){
+  S.simSeen=S.simSeen||{}; const k=String(SEA.year), seen=S.simSeen[k]=S.simSeen[k]||[];
+  Object.keys(S.simSeen).forEach(y=>{ if(y!==k)delete S.simSeen[y] });
+  const fresh=attnKeys(t).filter(x=>seen.indexOf(x)<0); fresh.forEach(x=>seen.push(x)); return fresh.length>0;
+}
 function simRun(to){
   const my=S.myTeam, from=SEA.step, stops=simStops();
   let why=null;
@@ -7394,7 +7443,7 @@ function simRun(to){
   while(SEA.phase==="week"&&SEA.step<to){
     // before your game: is it one you'd want to play yourself?
     if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
-    const h0=hurtCount(my), a0=attnCount(my), st0=streakOf(my);
+    const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
     S.plans[SEA.step]="balanced"; SEA.plan="balanced";
     SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured);
     SEA.advance(); S.steps++;
@@ -7403,7 +7452,7 @@ function simRun(to){
     const st=streakOf(my);
     if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=st.n)){why="slide";break}
     if(stops.hurt&&hurtCount(my)>h0){why="hurt";break}
-    if(stops.decide&&attnCount(my)>a0){why="decide";break}
+    if(stops.decide&&newDecision(my)){why="decide";break}
   }
   simSheet=false;
   flash={type:"digest",from:from,to:SEA.step,why:why};
@@ -7679,11 +7728,11 @@ function render(){
   const qg=el("quitgo"); if(qg)qg.onclick=async()=>{quitAsk=false;S.title=true;S._slots=await allSlots();render()};
   const qn=el("quitno"); if(qn)qn.onclick=()=>{quitAsk=false;render()};
   const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
-  const rb=el("rst"); if(rb)rb.onclick=async()=>{
-    if(confirm("Abandon this dynasty and start a new one?")){
+  const rb=el("rst"); if(rb)rb.onclick=()=>tapTwice(rb,"Tap again to abandon this career",async()=>{
+    {
       try{await store.delete(KEYFOR(slot))}catch(e){}
       S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
-      U=null;SEA=null;flash=null;renderStart();}};
+      U=null;SEA=null;flash=null;renderStart();}});
   const advance=()=>{
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team"&&!wide)view="scores";
@@ -7716,9 +7765,8 @@ function render(){
     ev.stopPropagation(); openTeam(b.dataset.team);});
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
-  document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>{
-    if(confirm("Replace your "+SPORT.staff.any+" with an interim for the rest of the season?"))
-      fireCoord(b.dataset.fire);});
+  document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>
+    tapTwice(b,"Tap again: an interim for the rest of the season",()=>fireCoord(b.dataset.fire)));
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
     const h=S.history[+b.dataset.card]; if(h){cardFor=h;cardMsg="";render()}});
   document.querySelectorAll("[data-coord]").forEach(b=>b.onclick=()=>{
@@ -7890,9 +7938,10 @@ function renderTitle(){
   </div>`;
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
     if(ev.target&&ev.target.dataset.del){
-      if(!confirm("Erase this career permanently?"))return;
-      try{await store.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
-      S._slots=await allSlots(); render(); return;
+      tapTwice(ev.target,"Tap again to erase",async()=>{
+        try{await store.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
+        S._slots=await allSlots(); render() });
+      return;
     }
     const n=+b.dataset.slot;
     slot=n;

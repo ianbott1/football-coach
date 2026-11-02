@@ -35,6 +35,7 @@ const SAVE=["saves well from","tips over a header from","gets down to keep out",
 function pickOf(a,u){return a[u%a.length]}
 /* one event as a line of commentary */
 function scEventText(g,e){
+  const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
   if(e.k==="goal"){ const s=scScorer(tm,u); return {team:tm,tag:"GOAL",text:`${s.n} ${pickOf(FINISH[s.unit],u>>2)}`} }
   if(e.k==="save"){ const s=scScorer(tm,u), gk=scPlayer(opp,"GK",u)||"the keeper";

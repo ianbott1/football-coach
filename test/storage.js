@@ -1,7 +1,7 @@
 /* Saving outside Claude's artifact viewer, the way the published site runs:
    no window.storage, only the browser's localStorage. Plays three weeks,
    presses the title-screen button, checks the slot is listed and loads back
-   to the same season; checks "Start over" really deletes the save; checks a
+   to the same season; checks "Start over" asks on the first tap and deletes the save on the second; checks a
    browser with storage blocked reports the save failed instead of hiding it.
      node test/storage.js [file.html]   last line: MATCH or MISMATCH */
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
@@ -57,8 +57,11 @@ const season=api=>h({g:api.SEA.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g
   // 2. start over deletes the save
   const C=boot(LS); C.S=await C.loadSlot(1); C.rebuild(); C.setSlot(1); C.render();
   ok(!!(C.nodes.rst&&C.nodes.rst.onclick), '"Start over" button is on screen');
+  // two taps, on the page (no browser dialog: a blocked one made buttons do nothing)
   if(C.nodes.rst&&C.nodes.rst.onclick){await C.nodes.rst.onclick(); await tick()}
-  ok(!Object.keys(LS).some(k=>/slot1$/.test(k)), '"Start over" deletes slot 1');
+  ok(Object.keys(LS).some(k=>/slot1$/.test(k)), 'one tap of "Start over" only asks: slot 1 is still there');
+  if(C.nodes.rst&&C.nodes.rst.onclick){await C.nodes.rst.onclick(); await tick(); await tick()}
+  ok(!Object.keys(LS).some(k=>/slot1$/.test(k)), 'the second tap deletes slot 1');
   // 2b. the shared table says it is unavailable rather than claiming a post
   { const E=boot(LS); E.newDynasty(E.firstTeam(),3,'T'); await play(E,1);
     E.S.history=[{year:2026,rec:'1-0',rank:5,result:'x',grade:'B'}];

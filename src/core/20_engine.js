@@ -375,6 +375,15 @@ function distinctRoster(u,t,seen){
 /* the player you featured last season: a pro develops this much faster (college: 3.8, in developRoster) */
 const FEAT_DEV_PRO=2.5;
 function featDev(ch,i){ return ch&&ch.featured!==null&&ch.featured!==undefined&&ch.featured===i?FEAT_DEV_PRO:0 }
+/* a surname for commentary: with a first initial when someone else in this game
+   shares it (Instinct: "my goalie saving my own player's shot") */
+function surnameIn(n,g){
+  if(!n)return ""; const last=n.split(" ").slice(-1)[0], R=typeof SEA!=="undefined"&&SEA&&SEA.roster;
+  if(!R||!g)return last;
+  let c=0; [g.home,g.away].forEach(t=>(R[t]||[]).forEach(p=>{ if(p&&p.n&&p.n.split(" ").slice(-1)[0]===last)c++ }));
+  const dup=c>1;
+  return dup?n[0]+". "+last:last;
+}
 function distinctLeague(u){
   if(!u.roster)return;
   // college: thousands of players for about 3,000 possible names, so names stay

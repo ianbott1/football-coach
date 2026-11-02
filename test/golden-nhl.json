@@ -1,5 +1,5 @@
 {
- "fp": "f313e7ce5c8f2591",
+ "fp": "36512297cbbe688f",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -95,6 +95,11 @@
    "fp": "f313e7ce5c8f2591",
    "from": "a08df572186cb9a7",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "36512297cbbe688f",
+   "from": "f313e7ce5c8f2591",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "result": {
@@ -109,7 +114,7 @@
     "heis": "9e5a3b000418f0ce",
     "history": "03d798fc9b2d0c95",
     "universe": "bf1ebf46f130af2a",
-    "screens": "87bd0cc19e1d105b"
+    "screens": "08f74f2be94f26ae"
    },
    {
     "year": 2027,
@@ -121,7 +126,7 @@
     "heis": "273afd2bca434032",
     "history": "0b142fbe057fb99f",
     "universe": "ce5dd7c7f27374d7",
-    "screens": "031e270a12d908cc"
+    "screens": "0b9011c62a456bdd"
    }
   ],
   "Edmonton#777": [
@@ -135,7 +140,7 @@
     "heis": "0cc42876587eba43",
     "history": "a0b8749fd0b58d09",
     "universe": "c415efa4aa1ded44",
-    "screens": "97ab1ea049213628"
+    "screens": "84bb818fe6a36cab"
    },
    {
     "year": 2027,
@@ -147,7 +152,7 @@
     "heis": "1a44b93622528b72",
     "history": "ce6413aaf08650f1",
     "universe": "7fc4a0ae3d88ae07",
-    "screens": "0d072afaa263feb8"
+    "screens": "56ce5b8869e383e4"
    }
   ],
   "schedules#60": [

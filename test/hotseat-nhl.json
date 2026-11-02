@@ -75,6 +75,11 @@
    "fp": "3454f8908304731a",
    "from": "05e9b33253bf3ac0",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "3454f8908304731a",
+   "from": "3454f8908304731a",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "out": [

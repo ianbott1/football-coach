@@ -1,5 +1,5 @@
 {
- "fp": "b66df212eab76ee3",
+ "fp": "2d86d4984c36af94",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -159,6 +159,11 @@
    "fp": "b66df212eab76ee3",
    "from": "edf916cc55611f46",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "2d86d4984c36af94",
+   "from": "b66df212eab76ee3",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "result": {
@@ -173,7 +178,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "9952067fdc1fb461",
     "universe": "c79efd00746c4319",
-    "screens": "b8114078235c2785"
+    "screens": "e60cfc524c498891"
    },
    {
     "year": 2027,
@@ -185,7 +190,7 @@
     "heis": "480803b9b658faca",
     "history": "ac3a15173a773d71",
     "universe": "7845d6f1024dda3b",
-    "screens": "c4a64c084db2319c"
+    "screens": "cb0cb2600645c0c1"
    },
    {
     "year": 2028,
@@ -197,7 +202,7 @@
     "heis": "dd04a1940012247a",
     "history": "b5bdb2098a96e70c",
     "universe": "38ee269a6648d287",
-    "screens": "cc00f445672f9d66"
+    "screens": "f1e424c2f0b445ff"
    },
    {
     "year": 2029,
@@ -209,7 +214,7 @@
     "heis": "8d304a39ff6e17a2",
     "history": "e01b198c7ad1cae2",
     "universe": "e986ceeb574628cb",
-    "screens": "d1d11ba9d1f7bf34"
+    "screens": "80bf2140c0f5d9a7"
    }
   ],
   "Rice#2024": [
@@ -223,7 +228,7 @@
     "heis": "62c67774006ebb20",
     "history": "02d5f003193c65d5",
     "universe": "5f6e50ee854d4a54",
-    "screens": "a80d7b376d3e8678"
+    "screens": "aefcbfb0c63f6919"
    },
    {
     "year": 2027,
@@ -235,7 +240,7 @@
     "heis": "4e4319a44375c65b",
     "history": "38ff63bf6b4d898f",
     "universe": "7d5a0760ca6e51a9",
-    "screens": "f1fdf582834c9551"
+    "screens": "3cff63fdbb7bad56"
    },
    {
     "year": 2028,
@@ -247,7 +252,7 @@
     "heis": "f4929038beaf492f",
     "history": "0c636b45336df982",
     "universe": "7e57573047680ae7",
-    "screens": "ab1e9f858710c2ab"
+    "screens": "4e70d537fda5e7fc"
    },
    {
     "year": 2029,
@@ -259,7 +264,7 @@
     "heis": "aacb35d7197a5573",
     "history": "29a62091281ea40e",
     "universe": "1d7b62e5e7fe578b",
-    "screens": "fdd7b23e110858e1"
+    "screens": "57534c3da0f554c6"
    }
   ],
   "Oregon#777": [
@@ -273,7 +278,7 @@
     "heis": "fde104829f9687a1",
     "history": "e1c18941586fa977",
     "universe": "501323d207357aeb",
-    "screens": "77d91fe02a629ef4"
+    "screens": "00134c6a99513cf4"
    },
    {
     "year": 2027,
@@ -285,7 +290,7 @@
     "heis": "16871fc36811ec09",
     "history": "3d3bff6e053e14d4",
     "universe": "ed7a89e9ef4bcd02",
-    "screens": "1a2e4efd9a1d27dd"
+    "screens": "94a9c2b93f88cb49"
    },
    {
     "year": 2028,
@@ -297,7 +302,7 @@
     "heis": "908583fabe0cc4b0",
     "history": "682db458c522f655",
     "universe": "0c506fd80c7bee56",
-    "screens": "61e50af25cbbfccd"
+    "screens": "d46d69816cd27fbe"
    }
   ],
   "Kent State#31337": [
@@ -311,7 +316,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "59730e241690a6ed",
     "universe": "29ba28273658b169",
-    "screens": "8af80014b834302b"
+    "screens": "9788f0a24d20d43d"
    },
    {
     "year": 2027,
@@ -323,7 +328,7 @@
     "heis": "e3afac23d3079708",
     "history": "120b9f5080616f24",
     "universe": "2aa05bb9248e1180",
-    "screens": "923e751a1cb6459f"
+    "screens": "abedb677a9263f35"
    },
    {
     "year": 2028,
@@ -335,7 +340,7 @@
     "heis": "1631e759996121aa",
     "history": "fc3c138ab3761df6",
     "universe": "ba477dea2dc9a385",
-    "screens": "e1593ec20f078223"
+    "screens": "3aa71f9ab3825ee2"
    }
   ],
   "schedules#60": [

@@ -196,7 +196,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const tempo=((AGGR[planH]||AGGR.balanced).tempo+(AGGR[planA]||AGGR.balanced).tempo)/2;
   const poss=Math.max(50,Math.round(rng.gauss(BB.pace*tempo,BB.paceSd)));
-  const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1);
+  // a mismatch past BB.softGap counts half: the better side rests and coasts, so
+  // even a great team loses some (unset: no change). Pro: 82-0 happened.
+  const rawGap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1), sg=BB.softGap;
+  const gap=sg&&Math.abs(rawGap)>sg?Math.sign(rawGap)*(sg+(Math.abs(rawGap)-sg)*0.5):rawGap;
   const eH=gap*BB.gapPerPoss/2;
   // tonight's referees
   let cx=rng.r(), crew=1; for(const [w,f] of BB.crews){ if(cx<w){crew=f;break} cx-=w }

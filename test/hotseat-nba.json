@@ -1,5 +1,5 @@
 {
- "fp": "d53fae362252796e",
+ "fp": "9028a2fbaa0345a0",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -60,6 +60,11 @@
    "fp": "d53fae362252796e",
    "from": "b958ac01fb997d54",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "9028a2fbaa0345a0",
+   "from": "d53fae362252796e",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "out": [
@@ -70,19 +75,19 @@
      "team": "Boston",
      "last": {
       "rec": "56-26",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "result": "Lost in the conference finals",
+      "grade": "A-"
      },
-     "book": "0aff674bf82898ca"
+     "book": "46d65d8092e51eac"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "57-25",
+      "rec": "43-39",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "03887d01ff6ad349"
+     "book": "ce0ecc37fedb17d4"
     }
    ]
   },
@@ -92,20 +97,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-44",
-      "result": "Lost in the play-in",
+      "rec": "15-67",
+      "result": "Losing season",
       "grade": "F"
      },
-     "book": "ea4a2e10a51d62cb"
+     "book": "6071607cb3c302d1"
     },
     {
      "team": "New York",
      "last": {
       "rec": "38-44",
       "result": "Lost in the play-in",
-      "grade": "F"
+      "grade": "C-"
      },
-     "book": "5a10f2e3358b346c"
+     "book": "b5d879f5b7ab6246"
     }
    ]
   },
@@ -115,20 +120,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-51",
-      "result": "Lost in the play-in",
-      "grade": "F"
+      "rec": "42-40",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "ba5d14a2f1628051"
+     "book": "c922bb3f2367085d"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "56-26",
+      "rec": "61-21",
       "result": "Lost in the conference finals",
-      "grade": "B"
+      "grade": "A"
      },
-     "book": "d3cc261bb06cd80a"
+     "book": "1e945186f50e53e6"
     }
    ]
   }

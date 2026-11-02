@@ -1,5 +1,5 @@
 {
- "fp": "3c990023cdf3dd76",
+ "fp": "c2c5c81584a9719b",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -160,6 +160,11 @@
    "fp": "3c990023cdf3dd76",
    "from": "67fa90cc961531b8",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "c2c5c81584a9719b",
+   "from": "3c990023cdf3dd76",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "result": {
@@ -174,7 +179,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "0201f9bb0bedb414",
     "universe": "29a92f3d60e09617",
-    "screens": "982a3b56c63bc310"
+    "screens": "87ad7b78acc1f74e"
    },
    {
     "year": 2027,
@@ -212,7 +217,7 @@
     "heis": "5e653284efe7ed05",
     "history": "9d5b0d8b80c64894",
     "universe": "ed8086c25debe3aa",
-    "screens": "988c3a5ed24a64fd"
+    "screens": "c37cab2231013b52"
    }
   ],
   "Gonzaga#777": [
@@ -238,7 +243,7 @@
     "heis": "2c21cf7676ec0650",
     "history": "90af7ff2d80996f1",
     "universe": "e2f2c5eeb4e16444",
-    "screens": "3462e04539a45bcb"
+    "screens": "134e125950357028"
    }
   ],
   "schedules#60": [

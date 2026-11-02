@@ -1,5 +1,5 @@
 {
- "fp": "f6c00b56416014a1",
+ "fp": "3032f1f479869c28",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -105,59 +105,64 @@
    "fp": "f6c00b56416014a1",
    "from": "8b8f7e9bfef08509",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "3032f1f479869c28",
+   "from": "f6c00b56416014a1",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "72bdd0402bfe2814",
-    "post": "9d9284e2c2cacf0b",
-    "champion": "Oklahoma City",
-    "rec": "aa853607fa7cd512",
-    "poll": "8fd166669c73b774",
-    "heis": "38a7677f937e874e",
-    "history": "9e0755fa5765fafc",
-    "universe": "4268a30e0594bad4",
-    "screens": "5ab99535b555a408"
+    "games": "67800adb5e7d1cf8",
+    "post": "ed9eba474f12e23e",
+    "champion": "Houston",
+    "rec": "d7ae1235bae99b43",
+    "poll": "5a2da089622cdcd1",
+    "heis": "2ccdc333a87126d8",
+    "history": "824d04bfa9695602",
+    "universe": "50f9c7f183bd2a1e",
+    "screens": "ed6760fb477940f5"
    },
    {
     "year": 2027,
-    "games": "1c1f7e931eb27fb0",
-    "post": "5563fd3782efeea7",
-    "champion": "Oklahoma City",
-    "rec": "f41e788d1abd84e7",
-    "poll": "a09047d0d21b277a",
-    "heis": "b5080c65418470f7",
-    "history": "c451edb0d0c50a26",
-    "universe": "d91a26b85c247264",
-    "screens": "e269b9a7ee71ce55"
+    "games": "45c44c2966ca2792",
+    "post": "2965fb3fd633191d",
+    "champion": "San Antonio",
+    "rec": "8b21c891a61082a5",
+    "poll": "08b93211ff8a698c",
+    "heis": "d9117e620e3eacf2",
+    "history": "847ed719ff33767a",
+    "universe": "923fa1682502566d",
+    "screens": "c00b69f99fab09df"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "0f27faa4616fc0e5",
-    "post": "a50b7d68297f4596",
-    "champion": "New York",
-    "rec": "ea183e1a389930ff",
-    "poll": "e9fa2611eb922da6",
-    "heis": "acb4a1205aaeb642",
-    "history": "859f6a43d8a86815",
-    "universe": "7ad461c85fc6bf0f",
-    "screens": "e9c6351aabc18752"
+    "games": "1d170f87b3f53036",
+    "post": "d3eabe0ca6204f17",
+    "champion": "Golden State",
+    "rec": "806c1a86431a86bb",
+    "poll": "d96e604f59d2c590",
+    "heis": "22c9531ba0090e60",
+    "history": "d5c3150c78cdbfb1",
+    "universe": "006378e8737ac3af",
+    "screens": "309c036de4166c29"
    },
    {
     "year": 2027,
-    "games": "38f55edcc7c234ca",
-    "post": "369ea0bcb5fceb83",
-    "champion": "Oklahoma City",
-    "rec": "b5e1d747c6531d70",
-    "poll": "e2738a81c0e6cd57",
-    "heis": "69c7f5ea9ff72300",
-    "history": "f3efb329562b33f4",
-    "universe": "2b82db168ca5bd2d",
-    "screens": "a1e682c39901eb26"
+    "games": "8f7ef6e223543269",
+    "post": "b2934e3947f2eb46",
+    "champion": "Houston",
+    "rec": "5b696f77f56741fe",
+    "poll": "e389e8260161377b",
+    "heis": "79edbf090805b4d0",
+    "history": "f138f3888bbe8475",
+    "universe": "ffcecd3f8b675305",
+    "screens": "02e6e978e805d60e"
    }
   ],
   "schedules#60": [

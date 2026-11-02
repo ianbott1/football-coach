@@ -146,6 +146,18 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   bug: simPostOn stops after LEAGUE.post.stopAfter (default "selection").
 - Wait on a fresh output file: waiting for "passed" in last run's file
   returned at once, and a commit went out before its suite had run.
+- A long-run test that skips the first seasons hides the seasons every new
+  player sees: nba-longrun recorded from season 4, and fresh seasons ran
+  77-5 for two years (Muse). Check season 1 too.
+- No browser dialogs (confirm/alert): blocked or dismissed, they return false
+  without a word and the button does nothing ("Make a change"). tapTwice()
+  confirms on the page.
+- Numbers on screen come from each engine, not a textbook formula: win
+  probability per 10 strength points runs 0.5 (soccer) to 2.4 (pro football),
+  measured (PP10); the Elo curve said 1.5 for all.
+- A trailing comment on a line that a later edit extends swallows the code
+  after it (featDv vanished; every page failed to load). Load-check in
+  Chromium after every build.
 - Measure the paths a player actually takes, not just the default: hockey
   scored right with the assistant's calls and the balanced plan, but Muse
   played "Skate with them" on a top team and saw 87-point centres. And put
@@ -268,7 +280,10 @@ dynasty's first season (generated players have no earlier history).
     college basketball 72.6 pts/team, margin 12.2, home 62%, favourites 68%;
                       first-round seed pairings vs NCAA history (bb-march)
     pro basketball    114.6 pts/team, margin 13.2, home 61%, favourites 71%;
-                      wins sd 12-13, 1 seeds ~55% of titles, series 4-7 games
+                      wins sd 12-13, 1 seeds ~55% of titles, series 4-7 games.
+                      First seasons too (nba-history checks seasons 1-3):
+                      wins sd ~13, best ~66, worst ~15 (NBA_K 1.0; it was
+                      2.0 and fresh seasons ran 77-5 / 9-73, sd 17.6)
     pro hockey        6.1 goals/game, save % ~.900, ~22% to overtime; points
                       mean ~94 (84 games), sd ~14. Game totals spread like a
                       Poisson at that mean (12+ goals ~2%). Your games by plan
@@ -280,6 +295,19 @@ dynasty's first season (generated players have no earlier history).
                       mix); strength predicts the tables (rank corr 0.6-0.9)
 
 ## Known calibration gaps (measured)
+
+- Pro basketball: 70-win seasons in ~19% of long-run seasons (real ~10%);
+  max seen 79. Big mismatches (gap over 200) count half (BB.softGap) since an
+  82-0 turned up; the tail is still a little fat.
+- Pro football: best record ~15 wins (real ~14), worst ~2 (real ~3).
+- Salary caps never bind (Nov 2026, four seasons): hockey payrolls median
+  ~25 against 104 (max 60), pro football ~55 against 110 (max ~82), pro
+  basketball ~70 against 165 (max ~133). A design question for Ian: rescale
+  salaries or the cap to the players the sim tracks.
+- College basketball injury costs reach ~200 team-strength points: some
+  starters in the 80s have backups rated 30-40. Bench depth, not the cost
+  formula, is the problem; worth reshaping college benches (a calibration
+  change: run bb-calibrate and bb-march after).
 
 - Pro football: mean margin ~13 (NFL ~10-11).
 - Pro basketball: first-round 2 v 7 and 3 v 6 upsets too common.

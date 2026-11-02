@@ -1,5 +1,5 @@
 {
- "fp": "37c56daf400e9a37",
+ "fp": "ae931eca0fdb0624",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -170,6 +170,11 @@
    "fp": "37c56daf400e9a37",
    "from": "0114425898ff87f2",
    "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
+  },
+  {
+   "fp": "ae931eca0fdb0624",
+   "from": "37c56daf400e9a37",
+   "note": "Nov 2026 round 3: NBA first seasons calibrated (NBA_K 1.0, softGap 200: results), play-date label, 21st, featuring reset note, surnames with initials, goalie panel numbers, two-tap confirms, rivalry draws, two-point chart row, injury unit and per-sport win-probability figures"
   }
  ],
  "result": {
@@ -184,7 +189,7 @@
     "heis": "4fae3ab392988611",
     "history": "596a2c56d5b183a0",
     "universe": "5992944bf2f3eda2",
-    "screens": "4e2c0c7c81ee09a3"
+    "screens": "db4f1fbda205d5d6"
    },
    {
     "year": 2027,
@@ -196,7 +201,7 @@
     "heis": "fdc50db359407b6a",
     "history": "f61d554c828aad74",
     "universe": "a49e8a2e40e9b322",
-    "screens": "4f9c8f5c7642d280"
+    "screens": "e9c453b953d2b53a"
    },
    {
     "year": 2028,
@@ -208,7 +213,7 @@
     "heis": "1adeacdb630e4f15",
     "history": "ffae35bb422f65a5",
     "universe": "81c549e5c505eb30",
-    "screens": "a988782cfd2eb2d0"
+    "screens": "8c4cba70c7f2d1ee"
    },
    {
     "year": 2029,
@@ -220,7 +225,7 @@
     "heis": "fb3f7c4c4fd41e06",
     "history": "c4ff3e6b3c0c0c41",
     "universe": "d9cd27494ca1c4e9",
-    "screens": "fd9967d51ab59cba"
+    "screens": "5d7eb06f4013d774"
    }
   ],
   "Tennessee#2024": [
@@ -284,7 +289,7 @@
     "heis": "13df5e7e2aea9503",
     "history": "64dfbc2d66b1dc09",
     "universe": "d9728141d759931e",
-    "screens": "93db9fc1a85e273f"
+    "screens": "2e5cbb3dce3ab9f1"
    },
    {
     "year": 2027,
@@ -308,7 +313,7 @@
     "heis": "274e5bf3b646a2c7",
     "history": "f651df416bf45aaa",
     "universe": "9388cc6876d83615",
-    "screens": "1e9ed726a54a7ebd"
+    "screens": "a4aab7270c685942"
    }
   ],
   "NY Giants#31337": [
@@ -322,7 +327,7 @@
     "heis": "9cccf8d2fc162002",
     "history": "e6b5d76abba7669d",
     "universe": "36e57ac2b6e3a9bf",
-    "screens": "7cb11d296af611f2"
+    "screens": "f7fa8e2d7d79fdca"
    },
    {
     "year": 2027,
@@ -346,7 +351,7 @@
     "heis": "96c4d91e5f50db6e",
     "history": "b8e4c85fff5ff300",
     "universe": "e8bd030f24323ecf",
-    "screens": "6cf97a1739540892"
+    "screens": "6b0cfb78bcb6de09"
    }
   ],
   "schedules#60": [

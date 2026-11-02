@@ -19,6 +19,7 @@ const BB_CUE={
 };
 function pickOf(a,u){return a[u%a.length]}
 function bbEventText(g,e){
+  const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, u=e.u||0;
   if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
   if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
