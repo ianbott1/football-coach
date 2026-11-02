@@ -1,5 +1,5 @@
 {
- "fp": "7f078515e886620e",
+ "fp": "e43d98d3ea00f9af",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -105,6 +105,11 @@
    "fp": "7f078515e886620e",
    "from": "7f078515e886620e",
    "note": "playtest round 5"
+  },
+  {
+   "fp": "e43d98d3ea00f9af",
+   "from": "7f078515e886620e",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "out": [
@@ -118,7 +123,7 @@
       "result": "Lost in the Elite Eight",
       "grade": "A+"
      },
-     "book": "1e4118cb74d51e54"
+     "book": "6dec95d32d3fc0fa"
     },
     {
      "team": "North Carolina",
@@ -127,7 +132,7 @@
       "result": "Lost in the First Round",
       "grade": "B+"
      },
-     "book": "95ef48f4fd31dba0"
+     "book": "d33f00cb920b60bc"
     }
    ]
   },
@@ -141,7 +146,7 @@
       "result": "Lost in the Elite Eight",
       "grade": "A"
      },
-     "book": "6a89e14ac62b374e"
+     "book": "40712a47e320639b"
     },
     {
      "team": "North Carolina",
@@ -150,7 +155,7 @@
       "result": "Lost in the First Round",
       "grade": "C"
      },
-     "book": "1d45c2668d83b6dc"
+     "book": "f0fcdee86b309f04"
     }
    ]
   },
@@ -164,7 +169,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "9a2a1521c24b0924"
+     "book": "e291b4775fb6a998"
     },
     {
      "team": "North Carolina",
@@ -173,7 +178,7 @@
       "result": "Lost in the First Round",
       "grade": "C"
      },
-     "book": "740c41c7bfb9e710"
+     "book": "ee0c086924467576"
     }
    ]
   }

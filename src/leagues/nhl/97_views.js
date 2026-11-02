@@ -90,7 +90,7 @@ function nflBracket(){
   if(!nbaPostTab)nbaPostTab=mine&&mine.side&&mine.side!=="Finals"?mine.side:(mine&&mine.side==="Finals"?"Final":SEA.sideOf(my));
   let h=`<div class="subtabs">${tabs.map(k=>`<button class="subtab" data-np="${k}" aria-pressed="${nbaPostTab===k}">${k}</button>`).join("")}</div>`;
   if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> win the Stanley Cup.</div>`;
-  if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${esc(mine.hi)} ${mine.w[mine.hi]}, ${esc(mine.lo)} ${mine.w[mine.lo]}.
+  if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${(o=>`${esc(my)} ${mine.w[my]||0}, ${esc(o)} ${mine.w[o]||0}`)(mine.hi===my?mine.lo:mine.hi)}.
     <button class="subtab" data-simseries="1">Sim the series</button></div>`;
   if(nbaPostTab==="Final"){
     h+=`<div class="bracket"><div class="bcol"><div class="bhead">Stanley Cup Final</div><div class="bgames">${seriesBox((SEA.series.r4||[])[0])}</div></div></div>`;

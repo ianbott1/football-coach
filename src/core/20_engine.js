@@ -270,6 +270,8 @@ function jobMarket(u,rng,rep,openings,current){
   if(opts.length)picked.push(opts[0]);
   if(opts.length>2)picked.push(opts[Math.floor(opts.length/2)]);
   if(opts.length>1)picked.push(opts[opts.length-1]);
+  // nobody in range: the weakest opening will still talk to you (a firing is never a forced retirement)
+  if(!picked.length){ const last=openings.filter(t=>t!==current).sort((a,b)=>u.program[a]-u.program[b])[0]; if(last)picked.push(last) }
   return [...new Set(picked)].slice(0,3);
 }
 
@@ -358,15 +360,39 @@ function distinctStaff(u,t){
 /* no two players on one roster share a name (two Cooper Nwosus read as one
    player, a senior two years running): a repeat gets another first name, by
    hash so no random draw moves */
-function distinctRoster(u,t){
+function distinctRoster(u,t,seen){
   const R=u.roster&&u.roster[t]; if(!R)return;
-  const seen=new Set();
+  seen=seen||new Set();
   R.forEach((p,i)=>{ if(!p||!p.n)return;
     if(seen.has(p.n)){ const sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):""; let h=strHash(p.n+"|"+t+"|"+i), n=p.n;
       const F=typeof PNAMES_F!=="undefined"?PNAMES_F:FIRST;
       for(let k=0;k<F.length&&seen.has(n);k++)n=F[(h+k)%F.length]+last;
       p.n=n }
     seen.add(p.n) });
+}
+/* across the league: no two players anywhere share a name (in team order, so
+   the same save always settles the same way) */
+/* the player you featured last season: a pro develops this much faster (college: 3.8, in developRoster) */
+const FEAT_DEV_PRO=2.5;
+function featDev(ch,i){ return ch&&ch.featured!==null&&ch.featured!==undefined&&ch.featured===i?FEAT_DEV_PRO:0 }
+function distinctLeague(u){
+  if(!u.roster)return;
+  // college: thousands of players for about 3,000 possible names, so names stay
+  // distinct within a roster only (a league-wide rule would run out of names)
+  if(LEAGUE.classes&&LEAGUE.classes.length){ NAMES.forEach(t=>distinctRoster(u,t)); return }
+  const all=[], count=new Map();
+  NAMES.forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(!p||!p.n)return; all.push({p,t,i}); count.set(p.n,(count.get(p.n)||0)+1) }));
+  const taken=new Set(count.keys()), F=typeof PNAMES_F!=="undefined"?PNAMES_F:FIRST;
+  // a name held twice: one keeps it (see the sort);
+  // the other gets a first name nobody in the league has with his surname
+  const byName=new Map(); all.forEach(x=>{ if(count.get(x.p.n)>1){ if(!byName.has(x.p.n))byName.set(x.p.n,[]); byName.get(x.p.n).push(x) } });
+  byName.forEach(list=>{
+    // a player on a team someone coaches keeps his name (the recaps name him), then the longest-serving
+    const mine=new Set(typeof S!=="undefined"&&S?[S.myTeam].concat((S.coaches||[]).map(c=>c.myTeam)):[]);
+    list.sort((a,b)=>((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
+    list.slice(1).forEach(x=>{ const p=x.p, sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):"", h=strHash(p.n+"|"+x.t+"|"+x.i);
+      for(let k=0;k<F.length;k++){ const n=F[(h+k)%F.length]+last; if(!taken.has(n)){ p.n=n; taken.add(n); break } } });
+  });
 }
 function offseasonCoaching(u,rng,rec,elo,users){
   users=users||{};

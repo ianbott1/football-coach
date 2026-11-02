@@ -204,7 +204,8 @@ function readNote(e){
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&STYLE[e.evid])
     return e.right?` The numbers pointed to ${STYLE[e.evid].l}; your read was better than they were.`
       :` The numbers at the time pointed to ${STYLE[e.evid].l}: a short stretch can mislead.`;
-  if(e.k==="prep"&&e.split)return e.right?" The report was split, so that was a good guess.":" The report was split, so this was close to a coin flip.";
+  if(e.k==="prep"&&e.split){ const by=typeof e.split==="string"?" "+e.split:"";   // "3-3": their last games, by system
+    return e.right?` The report was split${by}, so that was a good guess.`:` The report was split${by}, so this was close to a coin flip.` }
   return "";
 }
 function readText(e){ return readTextBase(e)+readNote(e) }

@@ -1,5 +1,5 @@
 {
- "fp": "a08df572186cb9a7",
+ "fp": "f313e7ce5c8f2591",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -90,6 +90,11 @@
    "fp": "a08df572186cb9a7",
    "from": "d81d1320f0606be4",
    "note": "Muse and Instinct: spectator postseason rounds sim on; NBA home games 41 each; hockey scoring per player scaled; distinct roster and staff names; board players taken before your pick; résumé on Selection Sunday; hint mode; number explanations; ranks read as #N; career includes the season in progress"
+  },
+  {
+   "fp": "f313e7ce5c8f2591",
+   "from": "a08df572186cb9a7",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "result": {
@@ -101,10 +106,10 @@
     "champion": "Los Angeles",
     "rec": "13d85b141d805f37",
     "poll": "e96f5d234e794cc0",
-    "heis": "39b82a2569beea12",
-    "history": "8c9cf205edd95249",
-    "universe": "d5b22affdf8b0f17",
-    "screens": "e68b5fd47a152c51"
+    "heis": "9e5a3b000418f0ce",
+    "history": "03d798fc9b2d0c95",
+    "universe": "bf1ebf46f130af2a",
+    "screens": "87bd0cc19e1d105b"
    },
    {
     "year": 2027,
@@ -113,10 +118,10 @@
     "champion": "Ottawa",
     "rec": "bcbb85380b1c67d9",
     "poll": "b2a4444428bcdb51",
-    "heis": "12e77bab27e89a7f",
-    "history": "e6dbabb95f0c87f0",
-    "universe": "e19f9f372ea8bf64",
-    "screens": "a137e42155634b03"
+    "heis": "273afd2bca434032",
+    "history": "0b142fbe057fb99f",
+    "universe": "ce5dd7c7f27374d7",
+    "screens": "031e270a12d908cc"
    }
   ],
   "Edmonton#777": [
@@ -127,10 +132,10 @@
     "champion": "Carolina",
     "rec": "de36e59a5dff0a83",
     "poll": "a66e4e334a78bddc",
-    "heis": "86f5b33b2136c3c1",
-    "history": "adbbcaae39aa8c6f",
-    "universe": "dad359ad9aead4d1",
-    "screens": "8aaa5f0668d1373a"
+    "heis": "0cc42876587eba43",
+    "history": "a0b8749fd0b58d09",
+    "universe": "c415efa4aa1ded44",
+    "screens": "97ab1ea049213628"
    },
    {
     "year": 2027,
@@ -139,10 +144,10 @@
     "champion": "Florida",
     "rec": "352ddee40a90558a",
     "poll": "fe9cd3db0c256042",
-    "heis": "07bba0a57342ecb4",
-    "history": "c8277195159cae99",
-    "universe": "ad8a36728f2b7862",
-    "screens": "eb436dbf7c9c2d28"
+    "heis": "1a44b93622528b72",
+    "history": "ce6413aaf08650f1",
+    "universe": "7fc4a0ae3d88ae07",
+    "screens": "0d072afaa263feb8"
    }
   ],
   "schedules#60": [

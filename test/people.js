@@ -41,6 +41,10 @@ for(const [f,team] of CASES){
  });
     seasons++;
     A.openOffseason(); for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
+    // no two players anywhere in the league share a name (Muse: one name at Arsenal and Chelsea)
+    // (college: within a roster; its name pool is smaller than its player count)
+    const college=!!(A.LEAGUE.classes&&A.LEAGUE.classes.length);
+    let nm=new Map(); Object.keys(A.U.roster).forEach(t=>{ if(college)nm=new Map(); (A.U.roster[t]||[]).forEach(p=>{ if(p&&p.n){ if(nm.has(p.n))ok(false,`${f}: ${p.n} plays for both ${nm.get(p.n)} and ${t}`); nm.set(p.n,t) } }) });
   }
   console.log(`  ${f.padEnd(26)} ${seasons} seasons: ${miles} milestones (${mine} yours, ${newsHit} in your news), ${hot} hot-form tags checked, final-year tag on ${tagged} of ${pages} pages`);
   ok(miles>=5,`${f}: hardly any milestones (${miles}) in ${seasons} seasons`);

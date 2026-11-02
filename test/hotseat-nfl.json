@@ -1,5 +1,5 @@
 {
- "fp": "9ea5d5e7ece7c777",
+ "fp": "92d3ce8a6e49a718",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -115,6 +115,11 @@
    "fp": "9ea5d5e7ece7c777",
    "from": "006eb7489d659c2e",
    "note": "playtest round 5"
+  },
+  {
+   "fp": "92d3ce8a6e49a718",
+   "from": "9ea5d5e7ece7c777",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "out": [
@@ -128,7 +133,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "dc41aaa3357beb23"
+     "book": "f5a7fb7f4786ad4d"
     },
     {
      "team": "Tennessee",
@@ -137,7 +142,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "88338d88ecb32080"
+     "book": "238f1ec3efa782e5"
     }
    ]
   },
@@ -151,7 +156,7 @@
       "result": "Lost in the divisional round",
       "grade": "B+"
      },
-     "book": "5add9fff330304d4"
+     "book": "250a50e07afbcc06"
     },
     {
      "team": "Tennessee",
@@ -160,7 +165,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "4c0cbe559fc92314"
+     "book": "e97fc5d3d25fe5bd"
     }
    ]
   },
@@ -174,7 +179,7 @@
       "result": "Lost in the divisional round",
       "grade": "B+"
      },
-     "book": "ff5d99341fd731dc"
+     "book": "6dcb5692f69abfd5"
     },
     {
      "team": "Tennessee",
@@ -183,7 +188,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "568d46fa89f22b9d"
+     "book": "af9aa99dca8d8e68"
     }
    ]
   }

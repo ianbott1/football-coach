@@ -146,6 +146,18 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   bug: simPostOn stops after LEAGUE.post.stopAfter (default "selection").
 - Wait on a fresh output file: waiting for "passed" in last run's file
   returned at once, and a commit went out before its suite had run.
+- Measure the paths a player actually takes, not just the default: hockey
+  scored right with the assistant's calls and the balanced plan, but Muse
+  played "Skate with them" on a top team and saw 87-point centres. And put
+  the measured numbers on the choice (the plan buttons now say 6.7/6.2/5.2).
+- A rename must check every name in the league, not just the ones seen so
+  far: renaming one duplicate into another player's name cascaded through
+  the league each summer and scrambled identities (caught by measuring
+  summer rating changes: +50 jumps were two players with one name). When two
+  share a name, a player on a coached team keeps it: the recaps name him
+  (renaming a transfer you'd just signed broke "signed X" in bb-portal).
+- Screens must not promise what the code doesn't do: pro featuring said it
+  sped development and didn't (only college did) until Nov 2026.
 - Playoff series put several of your games in one round: anything that
   finds "your game" in a round must take the latest, not the first.
 
@@ -258,7 +270,12 @@ dynasty's first season (generated players have no earlier history).
     pro basketball    114.6 pts/team, margin 13.2, home 61%, favourites 71%;
                       wins sd 12-13, 1 seeds ~55% of titles, series 4-7 games
     pro hockey        6.1 goals/game, save % ~.900, ~22% to overtime; points
-                      mean ~94 (84 games), sd ~14
+                      mean ~94 (84 games), sd ~14. Game totals spread like a
+                      Poisson at that mean (12+ goals ~2%). Your games by plan
+                      (Nov 2026): skate with them 6.7, balanced 6.2, clog it
+                      up 5.2. Skater points: first-line C median ~65 (best
+                      ~100; a top team skating with them gets ~90, as real
+                      Vegas did), first-pair D ~35, second pair ~20.
     soccer            2.75 goals/game, ~27% draws, ~41% home wins (league
                       mix); strength predicts the tables (rank corr 0.6-0.9)
 

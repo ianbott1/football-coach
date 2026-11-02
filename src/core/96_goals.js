@@ -11,7 +11,12 @@ function preElo(t){ return (SEA.preseason&&SEA.preseason[t])||SEA.elo[t]||1500 }
 function myLeagueGames(my){ return SEA.sched.filter(g=>!g.cup&&(g.home===my||g.away===my)) }
 function seasonObjectives(my){
   if(!SEA||!my)return [];
-  if(S.obj&&S.obj.year===SEA.year&&S.obj.team===my)return S.obj.list;
+  if(S.obj&&S.obj.year===SEA.year&&S.obj.team===my){
+    // a save from before a schedule change: the home count follows the schedule as it is now
+    S.obj.list.forEach(o=>{ if(o.k!=="home")return; const n=myLeagueGames(my).filter(g=>g.home===my&&!g.neutral).length;
+      if(n&&o.of!==n){ o.of=n; o.n=Math.min(o.n,n); o.l=`Win ${o.n} of your ${n} home games` } });
+    return S.obj.list;
+  }
   const out=[], games=myLeagueGames(my);
   // a rival on the schedule
   const rg=games.find(g=>LEAGUE.rivals.name(my,g.home===my?g.away:g.home));
@@ -31,7 +36,7 @@ function seasonObjectives(my){
     // what you'd expect to win (a draw isn't a win: about a quarter of soccer games are drawn)
     const pw=LEAGUE.draws?p*0.74:p;
     const t=Math.max(1,Math.min(H.length,Math.round(H.length*Math.min(0.88,pw))));
-    out.push({k:"home",n:t,of:H.length,l:`Win ${t} of your ${H.length} home ${LEAGUE.skipIdle?"games":"games"}`}) }
+    out.push({k:"home",n:t,of:H.length,l:`Win ${t} of your ${H.length} home games`}) }
   // a run of wins, when there's room for a third
   const n=games.length;
   out.push({k:"streak",n:n<=13?3:n<=40?4:5,l:`Win ${n<=13?3:n<=40?4:5} games in a row`});

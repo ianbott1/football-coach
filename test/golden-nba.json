@@ -1,5 +1,5 @@
 {
- "fp": "8b8f7e9bfef08509",
+ "fp": "f6c00b56416014a1",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -100,6 +100,11 @@
    "fp": "8b8f7e9bfef08509",
    "from": "f31633cf53efd2b2",
    "note": "Muse and Instinct: spectator postseason rounds sim on; NBA home games 41 each; hockey scoring per player scaled; distinct roster and staff names; board players taken before your pick; résumé on Selection Sunday; hint mode; number explanations; ranks read as #N; career includes the season in progress"
+  },
+  {
+   "fp": "f6c00b56416014a1",
+   "from": "8b8f7e9bfef08509",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "result": {
@@ -112,9 +117,9 @@
     "rec": "aa853607fa7cd512",
     "poll": "8fd166669c73b774",
     "heis": "38a7677f937e874e",
-    "history": "1ad30b341af5d7e7",
-    "universe": "37cd1dd0436d73f6",
-    "screens": "484aaa498ed17728"
+    "history": "9e0755fa5765fafc",
+    "universe": "4268a30e0594bad4",
+    "screens": "5ab99535b555a408"
    },
    {
     "year": 2027,
@@ -124,9 +129,9 @@
     "rec": "f41e788d1abd84e7",
     "poll": "a09047d0d21b277a",
     "heis": "b5080c65418470f7",
-    "history": "832fb0b63e05030f",
-    "universe": "24ec9a5ceaa5bfc0",
-    "screens": "f895f9c1ba2908eb"
+    "history": "c451edb0d0c50a26",
+    "universe": "d91a26b85c247264",
+    "screens": "e269b9a7ee71ce55"
    }
   ],
   "Detroit#777": [
@@ -137,10 +142,10 @@
     "champion": "New York",
     "rec": "ea183e1a389930ff",
     "poll": "e9fa2611eb922da6",
-    "heis": "119999e795ccf905",
-    "history": "e908c0689b9ec106",
-    "universe": "e0e6aea19dd4b5b2",
-    "screens": "af4f52fb6f6ce9cf"
+    "heis": "acb4a1205aaeb642",
+    "history": "859f6a43d8a86815",
+    "universe": "7ad461c85fc6bf0f",
+    "screens": "e9c6351aabc18752"
    },
    {
     "year": 2027,
@@ -150,9 +155,9 @@
     "rec": "b5e1d747c6531d70",
     "poll": "e2738a81c0e6cd57",
     "heis": "69c7f5ea9ff72300",
-    "history": "ac3840579181430e",
-    "universe": "3b026099645376de",
-    "screens": "f9171486733e8740"
+    "history": "f3efb329562b33f4",
+    "universe": "2b82db168ca5bd2d",
+    "screens": "a1e682c39901eb26"
    }
   ],
   "schedules#60": [

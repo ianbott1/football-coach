@@ -36,7 +36,10 @@ function load(opts) {
   const exposed = opts.expose || [];
   // getters, not values: S, U, SEA and live are reassigned with `let`, so a
   // value captured here would be stale (null) forever
-  const ret = 'return {' + exposed.map(n => 'get ' + n + '(){return typeof ' + n + '!=="undefined"?' + n + ':undefined}').join(',') + '};';
+  // opts.settable: names a test may assign (A.plan='safe'), as a click would
+  const settable = opts.settable || [];
+  const ret = 'return {' + exposed.map(n => 'get ' + n + '(){return typeof ' + n + '!=="undefined"?' + n + ':undefined}'
+    + (settable.indexOf(n) >= 0 ? ',set ' + n + '(v){' + n + '=v}' : '')).join(',') + '};';
   return new Function(js + '\n' + ret)();
 }
 

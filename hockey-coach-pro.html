@@ -931,7 +931,7 @@ const LEAGUE={
   // the regular season's record: playoff games don't count in the standings
   recText(t,sea,r){ const [w,l]=r||(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return `${w}-${l-o}-${o}` },
   standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
-  stepLabel:w=>`Game day ${w+1}`,
+  stepLabel:w=>`Day ${w+1}`,                  // a calendar day, not your game number
   daily:true,                                 // a step is a day: Scores is headed by the date
   myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day               // a pro season is game days, not weeks
   bigTop:5,                                   // a big game in an 82-game season: a top-five side
@@ -1097,7 +1097,7 @@ function blankStats(pos){const o={g:0}; (STAT_KEYS[pos]||[]).forEach(k=>o[k]=0);
    84-game season, the best near 100; a first-pair defenceman ~35 (it was 92
    and 48: a dozen players can't carry all of a team's scoring) */
 const ROLE={C:{goals:0.195,ast:0.19,sog:0.24},LW:{goals:0.18,ast:0.15,sog:0.22},RW:{goals:0.18,ast:0.15,sog:0.22},
-            D:{goals:0.085,ast:0.12,sog:0.17},D2:{goals:0.08,ast:0.11,sog:0.15}};
+            D:{goals:0.085,ast:0.12,sog:0.17},D2:{goals:0.055,ast:0.075,sog:0.12}};   // a second pair: ~22 points, not the first pair's ~35
 /* one game's line for one first-unit player, consistent with his rating and the score */
 function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const P=POS[posIdx].p;
@@ -1480,6 +1480,8 @@ function jobMarket(u,rng,rep,openings,current){
   if(opts.length)picked.push(opts[0]);
   if(opts.length>2)picked.push(opts[Math.floor(opts.length/2)]);
   if(opts.length>1)picked.push(opts[opts.length-1]);
+  // nobody in range: the weakest opening will still talk to you (a firing is never a forced retirement)
+  if(!picked.length){ const last=openings.filter(t=>t!==current).sort((a,b)=>u.program[a]-u.program[b])[0]; if(last)picked.push(last) }
   return [...new Set(picked)].slice(0,3);
 }
 
@@ -1568,15 +1570,39 @@ function distinctStaff(u,t){
 /* no two players on one roster share a name (two Cooper Nwosus read as one
    player, a senior two years running): a repeat gets another first name, by
    hash so no random draw moves */
-function distinctRoster(u,t){
+function distinctRoster(u,t,seen){
   const R=u.roster&&u.roster[t]; if(!R)return;
-  const seen=new Set();
+  seen=seen||new Set();
   R.forEach((p,i)=>{ if(!p||!p.n)return;
     if(seen.has(p.n)){ const sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):""; let h=strHash(p.n+"|"+t+"|"+i), n=p.n;
       const F=typeof PNAMES_F!=="undefined"?PNAMES_F:FIRST;
       for(let k=0;k<F.length&&seen.has(n);k++)n=F[(h+k)%F.length]+last;
       p.n=n }
     seen.add(p.n) });
+}
+/* across the league: no two players anywhere share a name (in team order, so
+   the same save always settles the same way) */
+/* the player you featured last season: a pro develops this much faster (college: 3.8, in developRoster) */
+const FEAT_DEV_PRO=2.5;
+function featDev(ch,i){ return ch&&ch.featured!==null&&ch.featured!==undefined&&ch.featured===i?FEAT_DEV_PRO:0 }
+function distinctLeague(u){
+  if(!u.roster)return;
+  // college: thousands of players for about 3,000 possible names, so names stay
+  // distinct within a roster only (a league-wide rule would run out of names)
+  if(LEAGUE.classes&&LEAGUE.classes.length){ NAMES.forEach(t=>distinctRoster(u,t)); return }
+  const all=[], count=new Map();
+  NAMES.forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(!p||!p.n)return; all.push({p,t,i}); count.set(p.n,(count.get(p.n)||0)+1) }));
+  const taken=new Set(count.keys()), F=typeof PNAMES_F!=="undefined"?PNAMES_F:FIRST;
+  // a name held twice: one keeps it (see the sort);
+  // the other gets a first name nobody in the league has with his surname
+  const byName=new Map(); all.forEach(x=>{ if(count.get(x.p.n)>1){ if(!byName.has(x.p.n))byName.set(x.p.n,[]); byName.get(x.p.n).push(x) } });
+  byName.forEach(list=>{
+    // a player on a team someone coaches keeps his name (the recaps name him), then the longest-serving
+    const mine=new Set(typeof S!=="undefined"&&S?[S.myTeam].concat((S.coaches||[]).map(c=>c.myTeam)):[]);
+    list.sort((a,b)=>((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
+    list.slice(1).forEach(x=>{ const p=x.p, sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):"", h=strHash(p.n+"|"+x.t+"|"+x.i);
+      for(let k=0;k<F.length;k++){ const n=F[(h+k)%F.length]+last; if(!taken.has(n)){ p.n=n; taken.add(n); break } } });
+  });
 }
 function offseasonCoaching(u,rng,rec,elo,users){
   users=users||{};
@@ -1689,7 +1715,7 @@ function staffElo(u,t){
   return (u.oc[t].q*OFF_SHARE + u.dc[t].q*DEF_SHARE)*STAFF_ELO;
 }
 function coordGrade(q){
-  if(q>=40)return "one of the best in the country";
+  if(q>=40)return "one of the best in the "+(LEAGUE.classes&&LEAGUE.classes.length?"country":"league");
   if(q>=20)return "highly regarded";
   if(q>=2)return "solid";
   if(q>=-20)return "unproven";
@@ -2077,8 +2103,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   const chFor=t=>U_CH[t]||null, ut=choices.userTeam;
   if(ut&&choices.coach){const c=choices.coach;
     u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0}}
-  const rep={resigned:{},released:{},retired:{},drafted:{},signed:{},filled:{}};
-  NAMES.forEach(t=>{rep.resigned[t]=[];rep.released[t]=[];rep.retired[t]=[];
+  const rep={resigned:{},released:{},retired:{},grew:{},drafted:{},signed:{},filled:{}};
+  NAMES.forEach(t=>{rep.resigned[t]=[];rep.released[t]=[];rep.retired[t]=[];rep.grew[t]=[];
     rep.drafted[t]=[];rep.signed[t]=[];rep.filled[t]=[]});
   const pool=[];                                        // free agents
   const risers=[],fallers=[];
@@ -2116,12 +2142,12 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
     R.forEach((p,i)=>{
       if(!p)return;
-      p.age++; p.c=p.age;
+      const was=p.r; p.age++; p.c=p.age;
       const a=p.age-(AGE_SHIFT[p.p]||0);
       const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(ocq+dcq)*0.01;                      // both ends: both assistants
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      let g=rng.gauss(base+c.q*0.02+devMod+side+org,2.0);
+      let g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i),2.0);
       // a breakout season: now and then a young player jumps a level, and
       // sometimes carries a franchise with him (the spread needs a source)
       if(a<=25&&rng.r()<+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07)){
@@ -2130,6 +2156,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       p.r=Math.round(Math.max(35,Math.min(g>0?p.pot:99,p.r+g)));
       if(a>=27)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
       p.peak=Math.max(p.peak||0,p.r);
+      if(p.r-was>=5)rep.grew[t].push({n:p.n,p:p.p,age:p.age,from:was,to:p.r,leap:p.leap===u.year});   // the report's "big summers"
     });
     // 3. retirement
     R.forEach((p,i)=>{
@@ -2326,7 +2353,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my||d.d.round===1&&d.d.pick<=10)
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
-    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
+    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[],
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     payroll:off.cap?off.cap[my]:null};
 };
@@ -2622,7 +2649,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(ANSWERS[v]){ const t=st.S[other(side)].sys; X.ans=v; X.prepd=true;
-      st.log.push({side:side,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]})()}) } return }
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
     if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else readIt(side,0.45); return }
@@ -2833,7 +2860,7 @@ function staffTake(dp, ctx){
   else if(dp.k==="push"){
     R.push({who:"bears", pick:"push", line:bearYell("push",seed)});
     R.push({who:"pearl", pick: diff<=-2?"push":"keep", line:pearlSay(diff<=-2
-      ? `Two goals is a lot to find! Let's open it up a bit.`
+      ? (diff===-2?`Two goals is a lot to find! Let's open it up a bit.`:`Down ${-diff}? That's a lot of ground to make up. Let's open it up.`)
       : `It's one goal! Plenty of time. Keep playing our way.`,seed)});
     R.push({who:"capy", pick:"keep", line:`Chasing, one finds, mostly produces goals at the other end.`});
   }
@@ -2882,9 +2909,9 @@ function staffAside(kind, data){
 const INTERIM_Q=-18;     // replacement-level assistant
 const FEATURE_EDGE=12;   // Elo
 const PLANS={
-  safe:      {sd:0.85, edge:0, l:"Skate with them", d:"Open, high-event hockey. Over sixty minutes the better team wins \u2014 best when that's you."},
-  balanced:  {sd:1.0,  edge:0, l:"Balanced",        d:"Play your game."},
-  aggressive:{sd:1.2,  edge:0, l:"Clog it up",      d:"Trap the neutral zone, block shots, shorten the game. Fewer chances, more luck \u2014 best when you're outgunned."}
+  safe:      {sd:0.85, edge:0, l:"Skate with them", d:"Open, high-event hockey: your games average about 6.7 goals. Over sixty minutes the better team wins, so it's best when that's you."},
+  balanced:  {sd:1.0,  edge:0, l:"Balanced",        d:"Play your game: about 6.2 goals a game, the league's usual."},
+  aggressive:{sd:1.2,  edge:0, l:"Clog it up",      d:"Trap the neutral zone, block shots, shorten the game: about 5.2 goals a game. Fewer chances, more luck, so it's best when you're outgunned."}
 };
 function isBigGame(g,team,seaRankMap,rivalName){
   if(!g)return false;
@@ -3063,9 +3090,10 @@ function evidenceHTML(g,my,d,dp){
   if(dp.k==="goalie"){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>
+      <div class="evr ${dp.sa&&(dp.sa-dp.ga)/dp.sa<0.85?'hi':''}"><span class="evk">Save % tonight (league .900)</span><span class="evv">${dp.sa?((dp.sa-dp.ga)/dp.sa).toFixed(3).replace(/^0/,""):"-"}</span></div>
       <div class="evr ${dp.ga-dp.xga>=1.5?'hi':''}"><span class="evk">Expected from those shots</span><span class="evv">${dp.xga.toFixed(1)}</span></div>
       <div class="evr ${dp.soft>=2?'hi':''}"><span class="evk">Goals called soft</span><span class="evv">${dp.soft} of ${dp.ga}</span></div>
-      <div class="evn">Some nights a goalie is genuinely off. More often he's just been unlucky, and his backup is a step down.</div></div>`; }
+      <div class="evn">About one night in ten a goalie is genuinely off. More often he's just been unlucky, and his backup is a step down. Soft goals and a gap over the expected number are what an off night looks like.</div></div>`; }
   return "";
 }
 
@@ -3169,7 +3197,8 @@ function readNote(e){
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&SYSTEM[e.evid])
     return e.right?` The numbers pointed to ${SYSTEM[e.evid].l}; your read was better than they were.`
       :` The numbers at the time pointed to ${SYSTEM[e.evid].l}: a short stretch can mislead.`;
-  if(e.k==="prep"&&e.split)return e.right?" The report was split, so that was a good guess.":" The report was split, so this was close to a coin flip.";
+  if(e.k==="prep"&&e.split){ const by=typeof e.split==="string"?" "+e.split:"";   // "3-3": their last games, by system
+    return e.right?` The report was split${by}, so that was a good guess.`:` The report was split${by}, so this was close to a coin flip.` }
   return "";
 }
 function readText(e){ return readTextBase(e)+readNote(e) }
@@ -3589,7 +3618,7 @@ extendSeason({
     const x=(S||[]).find(x=>!x.winner&&(x.hi===team||x.lo===team)); if(!x)return null;
     const home=HOME_HI[k-1]?x.hi:x.lo;
     return {home:home,away:home===x.hi?x.lo:x.hi,neutral:false,
-      label:`${ROUND_NAME[r]}, game ${k} \u00b7 series ${x.w[x.hi]}-${x.w[x.lo]}`};
+      label:`${ROUND_NAME[r]}, game ${k} \u00b7 ${seriesFrom(x,team)}`};
   },
   postMatchup(team){return this._nextFor(team)},
   postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:false}},
@@ -3656,6 +3685,11 @@ extendSeason({
     this._clinch=out; this._clinchAt=this.step; return out;
   }
 });
+/* the series score from one side: yours first, in words */
+function seriesFrom(x,team){
+  const o=x.hi===team?x.lo:x.hi, a=x.w[team]||0, b=x.w[o]||0;
+  return a===b?(a?`series tied ${a}-${b}`:"series starts"):a>b?`you lead ${a}-${b}`:`you trail ${a}-${b}`;
+}
 /* ============ awards: pro football ============ */
 /* The MVP race, and one All-Pro team across the whole league. */
 extendSeason({
@@ -4136,7 +4170,12 @@ function preElo(t){ return (SEA.preseason&&SEA.preseason[t])||SEA.elo[t]||1500 }
 function myLeagueGames(my){ return SEA.sched.filter(g=>!g.cup&&(g.home===my||g.away===my)) }
 function seasonObjectives(my){
   if(!SEA||!my)return [];
-  if(S.obj&&S.obj.year===SEA.year&&S.obj.team===my)return S.obj.list;
+  if(S.obj&&S.obj.year===SEA.year&&S.obj.team===my){
+    // a save from before a schedule change: the home count follows the schedule as it is now
+    S.obj.list.forEach(o=>{ if(o.k!=="home")return; const n=myLeagueGames(my).filter(g=>g.home===my&&!g.neutral).length;
+      if(n&&o.of!==n){ o.of=n; o.n=Math.min(o.n,n); o.l=`Win ${o.n} of your ${n} home games` } });
+    return S.obj.list;
+  }
   const out=[], games=myLeagueGames(my);
   // a rival on the schedule
   const rg=games.find(g=>LEAGUE.rivals.name(my,g.home===my?g.away:g.home));
@@ -4156,7 +4195,7 @@ function seasonObjectives(my){
     // what you'd expect to win (a draw isn't a win: about a quarter of soccer games are drawn)
     const pw=LEAGUE.draws?p*0.74:p;
     const t=Math.max(1,Math.min(H.length,Math.round(H.length*Math.min(0.88,pw))));
-    out.push({k:"home",n:t,of:H.length,l:`Win ${t} of your ${H.length} home ${LEAGUE.skipIdle?"games":"games"}`}) }
+    out.push({k:"home",n:t,of:H.length,l:`Win ${t} of your ${H.length} home games`}) }
   // a run of wins, when there's room for a third
   const n=games.length;
   out.push({k:"streak",n:n<=13?3:n<=40?4:5,l:`Win ${n<=13?3:n<=40?4:5} games in a row`});
@@ -4574,7 +4613,7 @@ function nflBracket(){
   if(!nbaPostTab)nbaPostTab=mine&&mine.side&&mine.side!=="Finals"?mine.side:(mine&&mine.side==="Finals"?"Final":SEA.sideOf(my));
   let h=`<div class="subtabs">${tabs.map(k=>`<button class="subtab" data-np="${k}" aria-pressed="${nbaPostTab===k}">${k}</button>`).join("")}</div>`;
   if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> win the Stanley Cup.</div>`;
-  if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${esc(mine.hi)} ${mine.w[mine.hi]}, ${esc(mine.lo)} ${mine.w[mine.lo]}.
+  if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${(o=>`${esc(my)} ${mine.w[my]||0}, ${esc(o)} ${mine.w[o]||0}`)(mine.hi===my?mine.lo:mine.hi)}.
     <button class="subtab" data-simseries="1">Sim the series</button></div>`;
   if(nbaPostTab==="Final"){
     h+=`<div class="bracket"><div class="bcol"><div class="bhead">Stanley Cup Final</div><div class="bgames">${seriesBox((SEA.series.r4||[])[0])}</div></div></div>`;
@@ -4712,6 +4751,8 @@ function offseasonBanner(){
   const X=last.league||{};
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
+  if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
+    rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: each summer about one player in fourteen aged 25 or under takes a big step.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
   if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
   if(X.trade)rec+=X.trade.done?`<div class="bnews"><b>Trade:</b> ${esc(X.trade.gave)} (${esc(X.trade.gp)}) to ${esc(X.trade.with)} for ${esc(X.trade.got)} (${esc(X.trade.qp)}).</div>`
@@ -5190,7 +5231,7 @@ function rebuild(){
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
-  NAMES.forEach(t=>{distinctStaff(U,t); distinctRoster(U,t)});   // saves from before names were kept distinct
+  NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
@@ -5355,7 +5396,7 @@ function newDynasty(team,seed,coachName,roster){
     u.coach[c.myTeam]={id:0,n:c.career.name,q:0,t:0,hired:true,you:true,
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
-  NAMES.forEach(t=>distinctRoster(u,t));
+  distinctLeague(u);
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -5638,7 +5679,7 @@ function endSeason(rng,choices,act,seasonTeam){
         coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
-  NAMES.forEach(t=>distinctRoster(U,t));
+  distinctLeague(U);
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -5828,7 +5869,15 @@ function tallyHTML(){
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
-    ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}</div></div>`;
+    ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
+    ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
+}
+/* this season's games of yours: watched live (they can hold calls) or simmed (they can't) */
+function simmedThisSeason(){
+  const my=S.myTeam, pre=SEA.year+":";
+  const all=SEA.weeks.reduce((c,W)=>c+W.games.filter(g=>g.home===my||g.away===my).length,0);
+  const watched=Object.keys(S.played||{}).filter(k=>k.indexOf(pre)===0).reduce((c,k)=>c+S.played[k].filter(p=>p.team===my).length,0);
+  return {all:all, watched:Math.min(watched,all), sim:Math.max(0,all-watched)};
 }
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){
@@ -6010,10 +6059,11 @@ function rosterView(){
   const R=SEA.roster[my];
   const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
   const college=!!(LEAGUE.classes&&LEAGUE.classes.length), more=SPORT.featureMore||"gives a player the ball more";
-  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more} and speeds his development. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
+  const featPP=Math.round(1000*(1/(1+Math.pow(10,-FEATURE_EDGE/400))-0.5))/10, featDv=college?3.8:FEAT_DEV_PRO;
+  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: your team gets about ${featPP} points of win probability a game while he's healthy, and he develops about ${featDv} rating points faster in the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
   // college players are seniors and declare early; pros are just older or younger
-  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${college&&F.c>=3
+  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b> <span class="planwhy">(+${featPP} points of win probability a game, +${featDv} development)</span>${college&&F.c>=3
       ? " \u2014 a senior, so you get the boost but he graduates before the development lands."
       : !college&&F.age>=30 ? ` \u2014 at ${F.age} you get the boost now, but there's little development left in him.`
       : F.pot-F.r<4 ? " \u2014 he's near his ceiling, so there's little development left."
@@ -7314,7 +7364,7 @@ function render(){
         return ug?`<button class="skip" id="simone">Sim game</button>`:""})()}
       <button class="advance ${done||inOff?'gold':''}" id="adv" ${
         inOff&&((S.off.act.userOpen&&S.off.move===null)||LEAGUE.ui.offseasonBlock()!==null)?'disabled':''}>${
-        inOff?(S.off.act.userOpen&&S.off.move===null?"Choose your next job"
+        inOff?(S.off.act.userOpen&&S.off.move===null?"Pick your next job above"
               :LEAGUE.ui.offseasonBlock()!==null?LEAGUE.ui.offseasonBlock():
               S.off.move==="retire"?"Retire"
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"

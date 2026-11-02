@@ -1,5 +1,5 @@
 {
- "fp": "05e9b33253bf3ac0",
+ "fp": "3454f8908304731a",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -70,6 +70,11 @@
    "fp": "05e9b33253bf3ac0",
    "from": "083f36dfbb5479ac",
    "note": "playtest round 5"
+  },
+  {
+   "fp": "3454f8908304731a",
+   "from": "05e9b33253bf3ac0",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "out": [
@@ -83,7 +88,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "5a80f553aea512b1"
+     "book": "129161cda88e12c9"
     },
     {
      "team": "Montreal",
@@ -92,7 +97,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "c430b44b01457336"
+     "book": "e288db259d69b691"
     }
    ]
   },
@@ -106,7 +111,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "d8a81d39fe9857a9"
+     "book": "c50e76d7686fdfcf"
     },
     {
      "team": "Montreal",
@@ -115,7 +120,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "46eed7676ddbb861"
+     "book": "ffdeefcee36926f9"
     }
    ]
   },
@@ -129,7 +134,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "c04a93d913d1fdb9"
+     "book": "ca0527f201b5e7a2"
     },
     {
      "team": "Montreal",
@@ -138,7 +143,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "5c5483dd295688cf"
+     "book": "09c47f8274a1cb45"
     }
    ]
   }

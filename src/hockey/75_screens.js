@@ -137,9 +137,10 @@ function evidenceHTML(g,my,d,dp){
   if(dp.k==="goalie"){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>
+      <div class="evr ${dp.sa&&(dp.sa-dp.ga)/dp.sa<0.85?'hi':''}"><span class="evk">Save % tonight (league .900)</span><span class="evv">${dp.sa?((dp.sa-dp.ga)/dp.sa).toFixed(3).replace(/^0/,""):"-"}</span></div>
       <div class="evr ${dp.ga-dp.xga>=1.5?'hi':''}"><span class="evk">Expected from those shots</span><span class="evv">${dp.xga.toFixed(1)}</span></div>
       <div class="evr ${dp.soft>=2?'hi':''}"><span class="evk">Goals called soft</span><span class="evv">${dp.soft} of ${dp.ga}</span></div>
-      <div class="evn">Some nights a goalie is genuinely off. More often he's just been unlucky, and his backup is a step down.</div></div>`; }
+      <div class="evn">About one night in ten a goalie is genuinely off. More often he's just been unlucky, and his backup is a step down. Soft goals and a gap over the expected number are what an off night looks like.</div></div>`; }
   return "";
 }
 
@@ -243,7 +244,8 @@ function readNote(e){
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&SYSTEM[e.evid])
     return e.right?` The numbers pointed to ${SYSTEM[e.evid].l}; your read was better than they were.`
       :` The numbers at the time pointed to ${SYSTEM[e.evid].l}: a short stretch can mislead.`;
-  if(e.k==="prep"&&e.split)return e.right?" The report was split, so that was a good guess.":" The report was split, so this was close to a coin flip.";
+  if(e.k==="prep"&&e.split){ const by=typeof e.split==="string"?" "+e.split:"";   // "3-3": their last games, by system
+    return e.right?` The report was split${by}, so that was a good guess.`:` The report was split${by}, so this was close to a coin flip.` }
   return "";
 }
 function readText(e){ return readTextBase(e)+readNote(e) }

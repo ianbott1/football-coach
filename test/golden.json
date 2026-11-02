@@ -1,5 +1,5 @@
 {
- "fp": "edf916cc55611f46",
+ "fp": "b66df212eab76ee3",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -154,6 +154,11 @@
    "fp": "edf916cc55611f46",
    "from": "bd655098cd828a8e",
    "note": "spectator rounds stop at Selection Sunday and the field; views follow the last round played"
+  },
+  {
+   "fp": "b66df212eab76ee3",
+   "from": "edf916cc55611f46",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "result": {
@@ -166,9 +171,9 @@
     "rec": "35af61f8274aa94b",
     "poll": "f344bb22473337de",
     "heis": "f4bffc65a63bcc64",
-    "history": "97210abe791f8af4",
+    "history": "9952067fdc1fb461",
     "universe": "c79efd00746c4319",
-    "screens": "e08713969e992e70"
+    "screens": "b8114078235c2785"
    },
    {
     "year": 2027,
@@ -178,9 +183,9 @@
     "rec": "fd8cdf7c8c56dca7",
     "poll": "d5560dbc66e7441b",
     "heis": "480803b9b658faca",
-    "history": "1d3a43a2bf113240",
+    "history": "ac3a15173a773d71",
     "universe": "7845d6f1024dda3b",
-    "screens": "36213f3871f4e59e"
+    "screens": "c4a64c084db2319c"
    },
    {
     "year": 2028,
@@ -190,9 +195,9 @@
     "rec": "c15c9b16219da434",
     "poll": "b3c7321d4bd086fb",
     "heis": "dd04a1940012247a",
-    "history": "8950da712a0a54e8",
+    "history": "b5bdb2098a96e70c",
     "universe": "38ee269a6648d287",
-    "screens": "b7531f95de51e88a"
+    "screens": "cc00f445672f9d66"
    },
    {
     "year": 2029,
@@ -202,9 +207,9 @@
     "rec": "4a29bc70190df8c1",
     "poll": "bae177c294a702f1",
     "heis": "8d304a39ff6e17a2",
-    "history": "c1c6f8583def5295",
+    "history": "e01b198c7ad1cae2",
     "universe": "e986ceeb574628cb",
-    "screens": "58483f85ea9bb685"
+    "screens": "d1d11ba9d1f7bf34"
    }
   ],
   "Rice#2024": [
@@ -216,9 +221,9 @@
     "rec": "5a13038bb9c0659a",
     "poll": "e03e8f95cff2c1d2",
     "heis": "62c67774006ebb20",
-    "history": "3b5b2bfaabe8cb08",
+    "history": "02d5f003193c65d5",
     "universe": "5f6e50ee854d4a54",
-    "screens": "5a680c92951fc438"
+    "screens": "a80d7b376d3e8678"
    },
    {
     "year": 2027,
@@ -228,9 +233,9 @@
     "rec": "a71d99a0ac02f98f",
     "poll": "4be2d33c354d4bcb",
     "heis": "4e4319a44375c65b",
-    "history": "d16b79a94234f928",
+    "history": "38ff63bf6b4d898f",
     "universe": "7d5a0760ca6e51a9",
-    "screens": "9259fa17ddf42d11"
+    "screens": "f1fdf582834c9551"
    },
    {
     "year": 2028,
@@ -240,9 +245,9 @@
     "rec": "55525ea407626cf4",
     "poll": "58eb60e0c7beef44",
     "heis": "f4929038beaf492f",
-    "history": "4cb7cda629c336e3",
+    "history": "0c636b45336df982",
     "universe": "7e57573047680ae7",
-    "screens": "0ea3c493ca2157a4"
+    "screens": "ab1e9f858710c2ab"
    },
    {
     "year": 2029,
@@ -252,9 +257,9 @@
     "rec": "53faf3e62eeda225",
     "poll": "6ca3362f25dda876",
     "heis": "aacb35d7197a5573",
-    "history": "08e0884cd01570b8",
+    "history": "29a62091281ea40e",
     "universe": "1d7b62e5e7fe578b",
-    "screens": "2f2a6c42cd6bc718"
+    "screens": "fdd7b23e110858e1"
    }
   ],
   "Oregon#777": [
@@ -266,9 +271,9 @@
     "rec": "e818f4657fb65aa8",
     "poll": "1d7f3b529a1578bb",
     "heis": "fde104829f9687a1",
-    "history": "25cd5037a0d73f0b",
+    "history": "e1c18941586fa977",
     "universe": "501323d207357aeb",
-    "screens": "cc1b9c90ad616be7"
+    "screens": "77d91fe02a629ef4"
    },
    {
     "year": 2027,
@@ -278,9 +283,9 @@
     "rec": "6b450aa094076f0d",
     "poll": "0effb13eec186517",
     "heis": "16871fc36811ec09",
-    "history": "39388581ec611a8d",
+    "history": "3d3bff6e053e14d4",
     "universe": "ed7a89e9ef4bcd02",
-    "screens": "2490366374b7ea5b"
+    "screens": "1a2e4efd9a1d27dd"
    },
    {
     "year": 2028,
@@ -290,9 +295,9 @@
     "rec": "a6bea5ad8c72cd28",
     "poll": "a1b1fdaf6e981207",
     "heis": "908583fabe0cc4b0",
-    "history": "ef4fd11b45f4ed17",
+    "history": "682db458c522f655",
     "universe": "0c506fd80c7bee56",
-    "screens": "ec95f6a461eddc6e"
+    "screens": "61e50af25cbbfccd"
    }
   ],
   "Kent State#31337": [
@@ -304,9 +309,9 @@
     "rec": "a031dc1efee78a97",
     "poll": "b799a15d667a2c8f",
     "heis": "eb2739b75cbf53ed",
-    "history": "6fbcf459c463df80",
+    "history": "59730e241690a6ed",
     "universe": "29ba28273658b169",
-    "screens": "b4e2c999692692fe"
+    "screens": "8af80014b834302b"
    },
    {
     "year": 2027,
@@ -316,9 +321,9 @@
     "rec": "9491ccf2c52868f8",
     "poll": "ada2b098a6f58532",
     "heis": "e3afac23d3079708",
-    "history": "882251df12411959",
+    "history": "120b9f5080616f24",
     "universe": "2aa05bb9248e1180",
-    "screens": "432f36f0c12790b6"
+    "screens": "923e751a1cb6459f"
    },
    {
     "year": 2028,
@@ -328,9 +333,9 @@
     "rec": "87d50fd1dc74cbf7",
     "poll": "21c24b771776ac8b",
     "heis": "1631e759996121aa",
-    "history": "e36ad09105b2d59f",
+    "history": "fc3c138ab3761df6",
     "universe": "ba477dea2dc9a385",
-    "screens": "0fac4afa83b0541c"
+    "screens": "e1593ec20f078223"
    }
   ],
   "schedules#60": [

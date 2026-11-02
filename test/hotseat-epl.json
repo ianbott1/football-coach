@@ -1,5 +1,5 @@
 {
- "fp": "c480deea631b2b39",
+ "fp": "faa0e08a16dcf0d6",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -100,6 +100,11 @@
    "fp": "c480deea631b2b39",
    "from": "c480deea631b2b39",
    "note": "playtest round 5"
+  },
+  {
+   "fp": "faa0e08a16dcf0d6",
+   "from": "c480deea631b2b39",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "out": [
@@ -113,7 +118,7 @@
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "b415cd40a76e4538"
+     "book": "2d155115cdb8be23"
     },
     {
      "team": "Tottenham Hotspur",
@@ -122,7 +127,7 @@
       "result": "Finished 11th in the Premier League",
       "grade": "B-"
      },
-     "book": "56ef793824091b6d"
+     "book": "8b6cc7c22a81a643"
     }
    ]
   },
@@ -132,20 +137,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-15-7",
-      "result": "Finished 5th in the Premier League",
+      "rec": "19-14-5",
+      "result": "Finished 4th in the Premier League",
       "grade": "B-"
      },
-     "book": "a315e6d47aa9b437"
+     "book": "dfc6c966ba3635c8"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "13-9-16",
-      "result": "Finished 12th in the Premier League",
+      "rec": "12-8-18",
+      "result": "Finished 13th in the Premier League",
       "grade": "C+"
      },
-     "book": "bedea5653ccb40fa"
+     "book": "214464f3ba90fc3e"
     }
    ]
   },
@@ -155,20 +160,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-10-8",
-      "result": "Finished 3rd in the Premier League",
-      "grade": "B"
+      "rec": "21-7-10",
+      "result": "Finished 4th in the Premier League",
+      "grade": "B-"
      },
-     "book": "a46957a2faa12484"
+     "book": "682abc0769ba9710"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-9-17",
-      "result": "Finished 12th in the Premier League",
-      "grade": "C+"
+      "rec": "15-8-15",
+      "result": "Finished 8th in the Premier League",
+      "grade": "B"
      },
-     "book": "a4df871ce8eca4e9"
+     "book": "3edc05520aeada61"
     }
    ]
   }

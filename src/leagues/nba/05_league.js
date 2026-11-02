@@ -56,7 +56,7 @@ const LEAGUE={
         toBase:0.129,gapPerPoss:+((typeof process!=="undefined"&&process.env&&process.env.NBA_GAP)||0.0006),garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
   venues:{"Denver":6,"Utah":5,"Golden State":3,"Boston":3,"Oklahoma City":3,"Brooklyn":-3,"LA Clippers":-2,"Washington":-2},
   schedule:{games:82},
-  stepLabel:w=>`Game day ${w+1}`,
+  stepLabel:w=>`Day ${w+1}`,                  // a calendar day, not your game number
   daily:true,                                 // a step is a day: Scores is headed by the date
   myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day
   bigTop:5,                                   // a big game in an 82-game season: a top-five side

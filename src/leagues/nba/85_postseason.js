@@ -126,7 +126,7 @@ extendSeason({
     const x=(S||[]).find(x=>!x.winner&&(x.hi===team||x.lo===team)); if(!x)return null;
     const home=HOME_HI[k-1]?x.hi:x.lo;
     return {home:home,away:home===x.hi?x.lo:x.hi,neutral:false,
-      label:`${ROUND_NAME[r]}, game ${k} \u00b7 series ${x.w[x.hi]}-${x.w[x.lo]}`};
+      label:`${ROUND_NAME[r]}, game ${k} \u00b7 ${seriesFrom(x,team)}`};
   },
   postMatchup(team){return this._nextFor(team)},
   postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:false}},
@@ -185,3 +185,8 @@ extendSeason({
     this._clinch=out; this._clinchAt=this.step; return out;
   }
 });
+/* the series score from one side: yours first, in words */
+function seriesFrom(x,team){
+  const o=x.hi===team?x.lo:x.hi, a=x.w[team]||0, b=x.w[o]||0;
+  return a===b?(a?`series tied ${a}-${b}`:"series starts"):a>b?`you lead ${a}-${b}`:`you trail ${a}-${b}`;
+}

@@ -152,7 +152,7 @@ function staffTake(dp, ctx){
   else if(dp.k==="push"){
     R.push({who:"bears", pick:"push", line:bearYell("push",seed)});
     R.push({who:"pearl", pick: diff<=-2?"push":"keep", line:pearlSay(diff<=-2
-      ? `Two goals is a lot to find! Let's open it up a bit.`
+      ? (diff===-2?`Two goals is a lot to find! Let's open it up a bit.`:`Down ${-diff}? That's a lot of ground to make up. Let's open it up.`)
       : `It's one goal! Plenty of time. Keep playing our way.`,seed)});
     R.push({who:"capy", pick:"keep", line:`Chasing, one finds, mostly produces goals at the other end.`});
   }

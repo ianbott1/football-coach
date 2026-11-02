@@ -21,7 +21,7 @@ function staffElo(u,t){
 }
 
 function coordGrade(q){
-  if(q>=40)return "one of the best in the country";
+  if(q>=40)return "one of the best in the "+(LEAGUE.classes&&LEAGUE.classes.length?"country":"league");
   if(q>=20)return "highly regarded";
   if(q>=2)return "solid";
   if(q>=-20)return "unproven";

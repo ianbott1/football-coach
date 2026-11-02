@@ -110,7 +110,7 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
 function classLabel(rank,total){
   const pct=rank/total;
   if(rank<=10)return "Top-10 class";
-  if(pct<=0.20)return "Top-25 class";
+  if(rank<=25)return "Top-25 class";               // the label is the rank: No. 52 of 365 is not top 25
   if(pct<=0.45)return "Above average";
   if(pct<=0.75)return "Middling";
   return "Thin class";

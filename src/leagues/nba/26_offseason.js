@@ -237,8 +237,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   const chFor=t=>U_CH[t]||null, ut=choices.userTeam;
   if(ut&&choices.coach){const c=choices.coach;
     u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0}}
-  const rep={resigned:{},released:{},retired:{},drafted:{},signed:{},filled:{}};
-  NAMES.forEach(t=>{rep.resigned[t]=[];rep.released[t]=[];rep.retired[t]=[];
+  const rep={resigned:{},released:{},retired:{},grew:{},drafted:{},signed:{},filled:{}};
+  NAMES.forEach(t=>{rep.resigned[t]=[];rep.released[t]=[];rep.retired[t]=[];rep.grew[t]=[];
     rep.drafted[t]=[];rep.signed[t]=[];rep.filled[t]=[]});
   const pool=[];                                        // free agents
   const risers=[],fallers=[];
@@ -276,12 +276,12 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
     R.forEach((p,i)=>{
       if(!p)return;
-      p.age++; p.c=p.age;
+      const was=p.r; p.age++; p.c=p.age;
       const a=p.age-(AGE_SHIFT[p.p]||0);
       const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(ocq+dcq)*0.01;                      // both ends: both assistants
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      let g=rng.gauss(base+c.q*0.02+devMod+side+org,2.0);
+      let g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i),2.0);
       // a breakout season: now and then a young player jumps a level, and
       // sometimes carries a franchise with him (the spread needs a source)
       if(a<=25&&rng.r()<+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07)){
@@ -290,6 +290,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       p.r=Math.round(Math.max(35,Math.min(g>0?p.pot:99,p.r+g)));
       if(a>=27)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
       p.peak=Math.max(p.peak||0,p.r);
+      if(p.r-was>=5)rep.grew[t].push({n:p.n,p:p.p,age:p.age,from:was,to:p.r,leap:p.leap===u.year});   // the report's "big summers"
     });
     // 3. retirement
     R.forEach((p,i)=>{
@@ -490,7 +491,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my||d.d.round===1&&d.d.pick<=10)
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
-    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
+    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[],
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     boardGone:(C.boardGone&&C.boardGone[my])||[],
     payroll:off.cap?off.cap[my]:null};

@@ -68,7 +68,7 @@ const LEAGUE={
   // the regular season's record: playoff games don't count in the standings
   recText(t,sea,r){ const [w,l]=r||(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return `${w}-${l-o}-${o}` },
   standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
-  stepLabel:w=>`Game day ${w+1}`,
+  stepLabel:w=>`Day ${w+1}`,                  // a calendar day, not your game number
   daily:true,                                 // a step is a day: Scores is headed by the date
   myGameLabel:n=>`Game ${n}`,                  // the hero names your game, not the calendar day               // a pro season is game days, not weeks
   bigTop:5,                                   // a big game in an 82-game season: a top-five side

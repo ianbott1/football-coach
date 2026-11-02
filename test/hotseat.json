@@ -1,5 +1,5 @@
 {
- "fp": "c1f025f2fe03a4ff",
+ "fp": "66222e167b736ebe",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -95,6 +95,11 @@
    "fp": "c1f025f2fe03a4ff",
    "from": "c1f025f2fe03a4ff",
    "note": "playtest round 5"
+  },
+  {
+   "fp": "66222e167b736ebe",
+   "from": "c1f025f2fe03a4ff",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "out": [
@@ -108,7 +113,7 @@
       "result": "Won the ReliaQuest Bowl",
       "grade": "B-"
      },
-     "book": "cb480f3f632af1f5"
+     "book": "a11848449bc147c9"
     },
     {
      "team": "Rice",
@@ -117,7 +122,7 @@
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "c6f5ed07e3c294c1"
+     "book": "e5210a7845a17b38"
     }
    ]
   },
@@ -131,7 +136,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A-"
      },
-     "book": "b43a910c26bbc05d"
+     "book": "12ec111118c58a9d"
     },
     {
      "team": "Rice",
@@ -140,7 +145,7 @@
       "result": "No bowl game",
       "grade": "C"
      },
-     "book": "f14559dedebed92e"
+     "book": "8bfba085b7a32e04"
     }
    ]
   },
@@ -154,7 +159,7 @@
       "result": "Eliminated in the first round",
       "grade": "C"
      },
-     "book": "a2de458d761a0af9"
+     "book": "50cd934a9fd4e3af"
     },
     {
      "team": "Rice",
@@ -163,7 +168,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "dc065c5341049e71"
+     "book": "d7740d444d197b90"
     }
    ]
   }

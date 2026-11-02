@@ -20,6 +20,8 @@ for(let y=0;y<N;y++){
   if(S.off.act.userOpen)S.off.move=my;
   api.commitOffseason();
   const h=api.S.history.slice(-1)[0], P=(h.league&&h.league.portal)||{};
+  // your recap lists each player who left once (Instinct saw two departures twice)
+  { const O=(P.out&&P.out[my])||[], seen=new Set(); O.forEach(o=>{ ok(!seen.has(o.n), `${E.year}: ${o.n} listed twice in your portal-out recap`); seen.add(o.n) }) }
   // the same player (the same record, not just the same name: names repeat
   // across 3,650 players) is never on two rosters
   const U=api.U, where=new Map();

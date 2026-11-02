@@ -77,6 +77,7 @@ function bracketView(){
         n?` <em>${n}</em>`:""}</button>`}).join("")}</div>`;
 
   if(postTab==="bowls"){
+    h+=bowlPathNote(my);
     if(!SEA.bowls.length){
       const pr=SEA.bowlPairs||[];
       if(!pr.length)return h+`<div class="note">Bowl matchups are announced at the
@@ -279,3 +280,12 @@ LEAGUE.ui={
     return false;
   }
 };
+/* why you're in the bowl you're in: where you finished, and what the playoff took */
+function bowlPathNote(my){
+  const rk=SEA.cfpRank; if(!rk||!SEA.field||!SEA.field.length||SEA.field.indexOf(my)>=0)return "";
+  const at=SEA.field.filter(t=>SEA.notes[t]==="At-large"), last=at.sort((a,b)=>rk[b]-rk[a])[0];
+  const auto=SEA.field.length-at.length, w=SEA.rec[my]?SEA.rec[my][0]:0;
+  const lastBit=last?` The last at-large team in was ${esc(last)} at No. ${rk[last]} (${esc(SEA.selRec[last]||"")}).`:"";
+  return `<div class="note">You finished No. ${rk[my]} in the final ranking. The playoff takes ${auto} conference champions and the next ${at.length} teams in the ranking.${lastBit} ${
+    w>=6?"Bowls pair every other team with six wins, best-ranked first.":"Bowls take teams with six wins or more: you had "+w+"."}</div>`;
+}

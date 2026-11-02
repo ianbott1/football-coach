@@ -1,5 +1,5 @@
 {
- "fp": "a3f3ab6db830dbf7",
+ "fp": "96476bcaef508da6",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -125,6 +125,11 @@
    "fp": "a3f3ab6db830dbf7",
    "from": "9f2f390ff4734081",
    "note": "Muse and Instinct: spectator postseason rounds sim on; NBA home games 41 each; hockey scoring per player scaled; distinct roster and staff names; board players taken before your pick; résumé on Selection Sunday; hint mode; number explanations; ranks read as #N; career includes the season in progress"
+  },
+  {
+   "fp": "96476bcaef508da6",
+   "from": "a3f3ab6db830dbf7",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "result": {
@@ -136,22 +141,22 @@
     "champion": "Liverpool",
     "rec": "0e8fe23353d07949",
     "poll": "99ec49b2cd611e3d",
-    "heis": "f2e69ba69a821714",
-    "history": "cf536e32de338b73",
-    "universe": "874c3dc64985e563",
-    "screens": "a80ef2583ecfc78b"
+    "heis": "b52085e10a9aee19",
+    "history": "cb7021ce2949668e",
+    "universe": "1820d9dc239adb4a",
+    "screens": "e406e266e3c8880d"
    },
    {
     "year": 2027,
-    "games": "5a3e42ab1a8c532d",
-    "post": "42996642b0e0f9ad",
+    "games": "6e128cf81c998361",
+    "post": "367e7991176e1299",
     "champion": "Arsenal",
-    "rec": "99d9e032ae294d67",
-    "poll": "24a2e1208d5db2a6",
-    "heis": "a8417a340339a1c3",
-    "history": "afb8d45dee736b43",
-    "universe": "8368ce442af87801",
-    "screens": "ce3c67192ec4e8d4"
+    "rec": "306dca8c107dd6fb",
+    "poll": "0bef40b09f114e8c",
+    "heis": "61b1d170fd28a807",
+    "history": "50f1149a236474a0",
+    "universe": "319edcd6c897b476",
+    "screens": "809da6797bea86c1"
    }
   ],
   "Wrexham#777": [
@@ -162,22 +167,22 @@
     "champion": "Manchester City",
     "rec": "bf56ea84439860c3",
     "poll": "f1e6d424de08334c",
-    "heis": "43dadd60238d5849",
-    "history": "7be755fac175dd57",
-    "universe": "137ccda2080e72fb",
-    "screens": "ebb1ca75760114bb"
+    "heis": "35b811b30c3c7d9b",
+    "history": "38047ead0032f2b3",
+    "universe": "b6ecd59713f4db92",
+    "screens": "7d5660eedd98db33"
    },
    {
     "year": 2027,
-    "games": "bd154ee3e044fede",
-    "post": "d05267aac3c3acdf",
-    "champion": "Arsenal",
-    "rec": "84c4789c0be2524b",
-    "poll": "ef87399e1d1a46a2",
-    "heis": "731e7e8f2cd0184b",
-    "history": "fbcaa751c546f8f1",
-    "universe": "bbfb8f0755bc752e",
-    "screens": "69be2a0f171e1651"
+    "games": "4a15e3dbeb4a3a0c",
+    "post": "de64450a4e505d38",
+    "champion": "Manchester City",
+    "rec": "9ea9381ffef9b4a5",
+    "poll": "b0771262e8ab2be0",
+    "heis": "773291adde1b8df1",
+    "history": "2fab7c58d1b0eed6",
+    "universe": "8b474c2b0d3292fb",
+    "screens": "590cafa84810b768"
    }
   ],
   "schedules#60": [

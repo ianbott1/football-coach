@@ -1,5 +1,5 @@
 {
- "fp": "b958ac01fb997d54",
+ "fp": "d53fae362252796e",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -55,6 +55,11 @@
    "fp": "b958ac01fb997d54",
    "from": "e067a3d155b76f44",
    "note": "playtest round 5"
+  },
+  {
+   "fp": "d53fae362252796e",
+   "from": "b958ac01fb997d54",
+   "note": "Nov 2026 Muse round 2: league-wide player names (pros), big summers in history, featuring numbers, series from your side, Day N, bowl path note, class label by rank, second-pair D scoring (awards), soccer summer cap (results from season 2)"
   }
  ],
  "out": [
@@ -68,7 +73,7 @@
       "result": "Lost in the conference semifinals",
       "grade": "B-"
      },
-     "book": "18ce4f55d85a6ba5"
+     "book": "0aff674bf82898ca"
     },
     {
      "team": "New York",
@@ -77,7 +82,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "ec6ccf697024857c"
+     "book": "03887d01ff6ad349"
     }
    ]
   },
@@ -91,7 +96,7 @@
       "result": "Lost in the play-in",
       "grade": "F"
      },
-     "book": "6e30aacf46cf136b"
+     "book": "ea4a2e10a51d62cb"
     },
     {
      "team": "New York",
@@ -100,7 +105,7 @@
       "result": "Lost in the play-in",
       "grade": "F"
      },
-     "book": "9a0d3589e86bbaef"
+     "book": "5a10f2e3358b346c"
     }
    ]
   },
@@ -114,7 +119,7 @@
       "result": "Lost in the play-in",
       "grade": "F"
      },
-     "book": "74e34f4fb82d0496"
+     "book": "ba5d14a2f1628051"
     },
     {
      "team": "New York",
@@ -123,7 +128,7 @@
       "result": "Lost in the conference finals",
       "grade": "B"
      },
-     "book": "c5206eccd7a23a2a"
+     "book": "d3cc261bb06cd80a"
     }
    ]
   }

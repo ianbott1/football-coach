@@ -290,7 +290,7 @@ function rebuild(){
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
-  NAMES.forEach(t=>{distinctStaff(U,t); distinctRoster(U,t)});   // saves from before names were kept distinct
+  NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
@@ -455,7 +455,7 @@ function newDynasty(team,seed,coachName,roster){
     u.coach[c.myTeam]={id:0,n:c.career.name,q:0,t:0,hired:true,you:true,
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
-  NAMES.forEach(t=>distinctRoster(u,t));
+  distinctLeague(u);
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -738,7 +738,7 @@ function endSeason(rng,choices,act,seasonTeam){
         coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
-  NAMES.forEach(t=>distinctRoster(U,t));
+  distinctLeague(U);
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -928,7 +928,15 @@ function tallyHTML(){
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
-    ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}</div></div>`;
+    ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
+    ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
+}
+/* this season's games of yours: watched live (they can hold calls) or simmed (they can't) */
+function simmedThisSeason(){
+  const my=S.myTeam, pre=SEA.year+":";
+  const all=SEA.weeks.reduce((c,W)=>c+W.games.filter(g=>g.home===my||g.away===my).length,0);
+  const watched=Object.keys(S.played||{}).filter(k=>k.indexOf(pre)===0).reduce((c,k)=>c+S.played[k].filter(p=>p.team===my).length,0);
+  return {all:all, watched:Math.min(watched,all), sim:Math.max(0,all-watched)};
 }
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){
@@ -1110,10 +1118,11 @@ function rosterView(){
   const R=SEA.roster[my];
   const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
   const college=!!(LEAGUE.classes&&LEAGUE.classes.length), more=SPORT.featureMore||"gives a player the ball more";
-  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more} and speeds his development. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
+  const featPP=Math.round(1000*(1/(1+Math.pow(10,-FEATURE_EDGE/400))-0.5))/10, featDv=college?3.8:FEAT_DEV_PRO;
+  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: your team gets about ${featPP} points of win probability a game while he's healthy, and he develops about ${featDv} rating points faster in the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
   // college players are seniors and declare early; pros are just older or younger
-  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${college&&F.c>=3
+  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b> <span class="planwhy">(+${featPP} points of win probability a game, +${featDv} development)</span>${college&&F.c>=3
       ? " \u2014 a senior, so you get the boost but he graduates before the development lands."
       : !college&&F.age>=30 ? ` \u2014 at ${F.age} you get the boost now, but there's little development left in him.`
       : F.pot-F.r<4 ? " \u2014 he's near his ceiling, so there's little development left."
@@ -2414,7 +2423,7 @@ function render(){
         return ug?`<button class="skip" id="simone">Sim game</button>`:""})()}
       <button class="advance ${done||inOff?'gold':''}" id="adv" ${
         inOff&&((S.off.act.userOpen&&S.off.move===null)||LEAGUE.ui.offseasonBlock()!==null)?'disabled':''}>${
-        inOff?(S.off.act.userOpen&&S.off.move===null?"Choose your next job"
+        inOff?(S.off.act.userOpen&&S.off.move===null?"Pick your next job above"
               :LEAGUE.ui.offseasonBlock()!==null?LEAGUE.ui.offseasonBlock():
               S.off.move==="retire"?"Retire"
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"

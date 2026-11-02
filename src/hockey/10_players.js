@@ -63,7 +63,7 @@ function blankStats(pos){const o={g:0}; (STAT_KEYS[pos]||[]).forEach(k=>o[k]=0);
    84-game season, the best near 100; a first-pair defenceman ~35 (it was 92
    and 48: a dozen players can't carry all of a team's scoring) */
 const ROLE={C:{goals:0.195,ast:0.19,sog:0.24},LW:{goals:0.18,ast:0.15,sog:0.22},RW:{goals:0.18,ast:0.15,sog:0.22},
-            D:{goals:0.085,ast:0.12,sog:0.17},D2:{goals:0.08,ast:0.11,sog:0.15}};
+            D:{goals:0.085,ast:0.12,sog:0.17},D2:{goals:0.055,ast:0.075,sog:0.12}};   // a second pair: ~22 points, not the first pair's ~35
 /* one game's line for one first-unit player, consistent with his rating and the score */
 function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const P=POS[posIdx].p;

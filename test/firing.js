@@ -1,7 +1,7 @@
 /* Firing follows the rule the game states: miss expectations two years
    running at the same job and you're fired; never for one bad season. A
    season misses when its grade says so ("Short of the mark" or "A bad
-   year"). In a hot seat the computer never fires or poaches a human coach.
+   year"). A fired coach always has at least one job to take. In a hot seat the computer never fires or poaches a human coach.
      node test/firing.js [file.html] [careers=10]   last line: MATCH or MISMATCH */
 const fs=require('fs'),path=require('path');
 const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
@@ -41,6 +41,8 @@ let bad=0, offseasons=0, firings=0, oneBad=0; const fail=m=>{bad++; if(bad<=8)co
         const others=hot?api.S.coaches.map((x,i)=>i===(api.S.turn||0)?null:x.myTeam).filter(Boolean):[];
         others.forEach(t=>{const c2=api.U.coach[t];
           if(!c2||!c2.you)fail(`${E.year}: ${my}'s offseason replaced the human coach at ${t} with ${c2&&c2.n} [turn ${api.S.turn}; saved teams ${api.S.coaches.map(x=>x.myTeam).join('/')}; active ${api.S.myTeam}]`)});
+        // a firing is never a forced retirement: someone always offers a job
+        if(went&&!S.off.jobs.length)fail(`${E.year} ${my}: fired and nobody offered a job (only Retire)`);
         if(went)S.off.move=S.off.jobs.length?S.off.jobs[0]:'retire';
         api.commitOffseason(); await new Promise(r=>setImmediate(r));
         if(api.S.retired||!api.S.off&&!hot)break;

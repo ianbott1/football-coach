@@ -124,7 +124,7 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
 function classLabel(rank,total){
   const pct=rank/total;
   if(rank<=10)return "Top-10 class";
-  if(pct<=0.20)return "Top-25 class";
+  if(rank<=25)return "Top-25 class";               // the label is the rank: No. 52 of 365 is not top 25
   if(pct<=0.45)return "Above average";
   if(pct<=0.75)return "Middling";
   return "Thin class";
@@ -280,7 +280,9 @@ function runPortal(u,rng,entrants,U_CH,report){
     }
     if(suitors.length)sign(suitors[rng.int(suitors.length)],m);
   });
-  moved.filter(m=>!taken.has(m.e.key)).forEach(m=>push(P.out,m.e.from,{n:m.pl.n,p:m.pl.p,r:m.pl.r,why:m.e.why,unsigned:true}));
+  // nobody signed him: mark his entry (he's listed once, when he left; Instinct saw him twice)
+  moved.filter(m=>!taken.has(m.e.key)).forEach(m=>{ const x=(P.out[m.e.from]||[]).find(o=>o.n===m.pl.n&&!o.unsigned);
+    if(x)x.unsigned=true; else push(P.out,m.e.from,{n:m.pl.n,p:m.pl.p,r:m.pl.r,why:m.e.why,unsigned:true}) });
   report.portal=P;
   if(typeof S!=="undefined"&&S)S.lastPortalIn=P.in;          // for tests: every program's transfers in
   return touched;
