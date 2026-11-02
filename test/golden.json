@@ -1,5 +1,5 @@
 {
- "fp": "7fca5475ec89cb97",
+ "fp": "94f24e14cc21611e",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -139,6 +139,11 @@
    "fp": "7fca5475ec89cb97",
    "from": "b287e74924a82e17",
    "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
+  },
+  {
+   "fp": "94f24e14cc21611e",
+   "from": "7fca5475ec89cb97",
+   "note": "a finished game is recorded once (repeat ticks and clicks after the whistle recorded it again); the fourth-down note; graded-calls note"
   }
  ],
  "result": {
@@ -153,7 +158,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "d7bb9332c3244ae9",
     "universe": "e24d735e4aa754a9",
-    "screens": "2a291929cd90e799"
+    "screens": "8083be623fed968d"
    },
    {
     "year": 2027,
@@ -165,7 +170,7 @@
     "heis": "480803b9b658faca",
     "history": "1d3a43a2bf113240",
     "universe": "c856b52d6d2e0313",
-    "screens": "0628303b510ebd1c"
+    "screens": "5faf4757e3e927f4"
    },
    {
     "year": 2028,
@@ -177,7 +182,7 @@
     "heis": "dd04a1940012247a",
     "history": "3dedd32c439534dd",
     "universe": "3b241e1244280bdd",
-    "screens": "76146980741df37e"
+    "screens": "ba618e52f2420c18"
    },
    {
     "year": 2029,
@@ -189,7 +194,7 @@
     "heis": "8d304a39ff6e17a2",
     "history": "c1c6f8583def5295",
     "universe": "1c139c053d4c3e7e",
-    "screens": "bb32122b7488e6f1"
+    "screens": "3e80519ecc2d8d7a"
    }
   ],
   "Rice#2024": [
@@ -203,7 +208,7 @@
     "heis": "62c67774006ebb20",
     "history": "3b5b2bfaabe8cb08",
     "universe": "496a47b16b66f64f",
-    "screens": "050636e920d7ab8e"
+    "screens": "9c60f6e14def53b1"
    },
    {
     "year": 2027,
@@ -215,7 +220,7 @@
     "heis": "4e4319a44375c65b",
     "history": "d16b79a94234f928",
     "universe": "c4a7ae754d981993",
-    "screens": "2f314b02a4f76e1a"
+    "screens": "66bf4c441817210e"
    },
    {
     "year": 2028,
@@ -227,7 +232,7 @@
     "heis": "f4929038beaf492f",
     "history": "94a13bc1fe2c59d3",
     "universe": "44b0247682d0862c",
-    "screens": "c23225d33ee344bb"
+    "screens": "04918c11f9c01bbd"
    },
    {
     "year": 2029,
@@ -239,7 +244,7 @@
     "heis": "aacb35d7197a5573",
     "history": "e90ccc1a26b8bb85",
     "universe": "90ca3efc347a0395",
-    "screens": "f504f339b7673c67"
+    "screens": "61544d23cd6b414c"
    }
   ],
   "Oregon#777": [
@@ -253,7 +258,7 @@
     "heis": "fde104829f9687a1",
     "history": "25cd5037a0d73f0b",
     "universe": "0679124b4f6dbe3e",
-    "screens": "46fe3e449168e3f8"
+    "screens": "75c2036b1be745e0"
    },
    {
     "year": 2027,
@@ -265,7 +270,7 @@
     "heis": "16871fc36811ec09",
     "history": "39388581ec611a8d",
     "universe": "405d700eba707225",
-    "screens": "3bae7124bc1b4f87"
+    "screens": "13a45ace1dd477a3"
    },
    {
     "year": 2028,
@@ -277,7 +282,7 @@
     "heis": "908583fabe0cc4b0",
     "history": "ef4fd11b45f4ed17",
     "universe": "4616a9ec909d7467",
-    "screens": "06b96542dc5da124"
+    "screens": "f857de79061e1466"
    }
   ],
   "Kent State#31337": [
@@ -291,7 +296,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "6fbcf459c463df80",
     "universe": "c2773cd1962f995f",
-    "screens": "bd1178b105495321"
+    "screens": "bbb668d647c21922"
    },
    {
     "year": 2027,
@@ -303,7 +308,7 @@
     "heis": "e3afac23d3079708",
     "history": "882251df12411959",
     "universe": "a2cd6f5ef16a4429",
-    "screens": "cb997ec5e01c1410"
+    "screens": "11f8e561009671fd"
    },
    {
     "year": 2028,
@@ -315,7 +320,7 @@
     "heis": "1631e759996121aa",
     "history": "e36ad09105b2d59f",
     "universe": "ba0ff3afc35fdd16",
-    "screens": "722f07a42b281ad8"
+    "screens": "ec5ec6b9c315fe65"
    }
   ],
   "schedules#60": [

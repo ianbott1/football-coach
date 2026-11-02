@@ -177,6 +177,7 @@ function liveCallView(){
         <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
+    ${dp.k==="fourth"?`<div class="callnote">The percentages are the chance this play works. After the game, the call is graded on what wins the game: a likely conversion can still be the wrong choice, and a long kick the right one.</div>`:""}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${live.drives.slice().reverse().slice(0,6).map(d=>{
       const tm=d.home?g.home:g.away;
@@ -197,6 +198,7 @@ let VERDICT_RUNS=1200;          // replays per answer
 const VERDICT_SLACK=0.03;        // within this of the best answer: a good call (it's close)
 const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick"};
 const TALLY_LABEL="The better call this season";
+const TALLY_NOTE="Only calls where the choice moved your chance of winning by 2 points or more are graded; the rest made no real difference.";
 function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
   if(dp.k==="fourth")return o.indexOf("punt")>=0?"punt":"kick";
   return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }

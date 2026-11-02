@@ -104,7 +104,7 @@ function startLive(g,step,slot){
 }
 
 function liveTick(){
-  if(!live)return;
+  if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
     live.kicked=true; sfx("start");
@@ -145,6 +145,7 @@ function liveGap(){
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
 }
 function answerLive(v){
+  if(!live||live.done||!live.ask)return;    // a second click on a call already answered
   S.calls=S.calls||{};
   const k=live.ckey||callKey(live.step);
   S.calls[k]=(S.calls[k]||[]).concat([v]);
@@ -154,6 +155,8 @@ function answerLive(v){
   save(); liveTick();
 }
 function finishLive(){
+  if(live.finished)return;                  // once per game, however it's reached
+  live.finished=true;
   const g=live.g;
   feelFinal(live);
   const meHome=(g.home===S.myTeam);
@@ -231,7 +234,7 @@ function endLive(){
   const was=live;                              // finishing can start your next game (a cup tie): keep that one
   if(live&&live.timer)clearTimeout(live.timer);
   if(live&&!live.done){                        // skip: run the rest instantly
-    live.skipped=true;
+    live.skipped=true; live.done=true;
     let guard=0;
     while(guard++<400){
       const r=live.eng.next();
@@ -374,12 +377,26 @@ async function moveForeignSaves(){
     }catch(e){}
   }
 }
+/* saves from before a finished game was recorded only once: drop the extra
+   copies, and count the tally again from the games that are left */
+function repairPlayed(d){
+  if(!d||!d.played)return d;
+  const T=d.readTally;
+  Object.keys(d.played).forEach(k=>{ const seen=new Set(), yr=k.split(":")[0];
+    d.played[k]=d.played[k].filter(p=>{ const id=p.team+"|"+p.other+"|"+!!p.cup+"|"+p.mine+"-"+p.theirs;
+      if(!seen.has(id)){seen.add(id); return true}
+      // a copy: take its reads back out of the tally they inflated
+      if(T)(p.reads||[]).forEach(x=>{ T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
+      return false }) });
+  if(T){ T.n=Math.max(0,T.n); T.right=Math.max(0,Math.min(T.right,T.n)) }
+  return d;
+}
 async function loadSlot(n){
   await moveForeignSaves();
   try{const r=await store.get(KEYFOR(n)); if(!r)return null;
     const d=unsaveDup(JSON.parse(lzwUnpack(r.value)));
     if(saveLeague(d)!==LEAGUE.id)return null;        // never open another game's save
-    return migrateSave(d)}catch(e){return null}
+    return repairPlayed(migrateSave(d))}catch(e){return null}
 }
 /* backups: a career saved as a file you keep, and opened again from it. A
    browser's storage can be cleared; a file on your computer or phone can't. */
@@ -394,7 +411,7 @@ function downloadBackup(){
 /* a backup file's text to a career, or null if it isn't one of this game's */
 function readBackup(text){
   try{ const d=unsaveDup(JSON.parse(lzwUnpack(String(text).trim())));
-    if(!d||!d.myTeam||saveLeague(d)!==LEAGUE.id)return null; return migrateSave(d) }catch(e){ return null }
+    if(!d||!d.myTeam||saveLeague(d)!==LEAGUE.id)return null; return repairPlayed(migrateSave(d)) }catch(e){ return null }
 }
 async function restoreBackup(file,into){
   const text=await file.text(), d=readBackup(text);
@@ -875,7 +892,8 @@ function tallyHTML(){
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
-    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div></div></div>`;
+    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
+    ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}</div></div>`;
 }
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){

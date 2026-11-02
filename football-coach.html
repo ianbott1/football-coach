@@ -524,6 +524,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .tallycard{display:flex;align-items:center;gap:14px;padding:12px 16px}
 .tallybig{font-family:var(--cond);font-size:34px;font-weight:700;color:var(--sodium);line-height:1}
 .tallybig span{font-size:20px;color:var(--muted)}
+.tallynote{margin-top:4px;text-transform:none;letter-spacing:0;font-family:var(--body);font-size:12px}
+.callnote{font-size:12px;color:var(--muted);line-height:1.45;padding:2px 16px 10px}
 .introskip{background:none;border:1px solid var(--line);color:var(--muted);
  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
  padding:14px 16px;cursor:pointer;border-radius:2px}
@@ -4862,6 +4864,7 @@ function liveCallView(){
         <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
+    ${dp.k==="fourth"?`<div class="callnote">The percentages are the chance this play works. After the game, the call is graded on what wins the game: a likely conversion can still be the wrong choice, and a long kick the right one.</div>`:""}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${live.drives.slice().reverse().slice(0,6).map(d=>{
       const tm=d.home?g.home:g.away;
@@ -4882,6 +4885,7 @@ let VERDICT_RUNS=1200;          // replays per answer
 const VERDICT_SLACK=0.03;        // within this of the best answer: a good call (it's close)
 const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick"};
 const TALLY_LABEL="The better call this season";
+const TALLY_NOTE="Only calls where the choice moved your chance of winning by 2 points or more are graded; the rest made no real difference.";
 function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
   if(dp.k==="fourth")return o.indexOf("punt")>=0?"punt":"kick";
   return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }
@@ -7055,7 +7059,7 @@ function startLive(g,step,slot){
 }
 
 function liveTick(){
-  if(!live)return;
+  if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
     live.kicked=true; sfx("start");
@@ -7096,6 +7100,7 @@ function liveGap(){
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
 }
 function answerLive(v){
+  if(!live||live.done||!live.ask)return;    // a second click on a call already answered
   S.calls=S.calls||{};
   const k=live.ckey||callKey(live.step);
   S.calls[k]=(S.calls[k]||[]).concat([v]);
@@ -7105,6 +7110,8 @@ function answerLive(v){
   save(); liveTick();
 }
 function finishLive(){
+  if(live.finished)return;                  // once per game, however it's reached
+  live.finished=true;
   const g=live.g;
   feelFinal(live);
   const meHome=(g.home===S.myTeam);
@@ -7182,7 +7189,7 @@ function endLive(){
   const was=live;                              // finishing can start your next game (a cup tie): keep that one
   if(live&&live.timer)clearTimeout(live.timer);
   if(live&&!live.done){                        // skip: run the rest instantly
-    live.skipped=true;
+    live.skipped=true; live.done=true;
     let guard=0;
     while(guard++<400){
       const r=live.eng.next();
@@ -7325,12 +7332,26 @@ async function moveForeignSaves(){
     }catch(e){}
   }
 }
+/* saves from before a finished game was recorded only once: drop the extra
+   copies, and count the tally again from the games that are left */
+function repairPlayed(d){
+  if(!d||!d.played)return d;
+  const T=d.readTally;
+  Object.keys(d.played).forEach(k=>{ const seen=new Set(), yr=k.split(":")[0];
+    d.played[k]=d.played[k].filter(p=>{ const id=p.team+"|"+p.other+"|"+!!p.cup+"|"+p.mine+"-"+p.theirs;
+      if(!seen.has(id)){seen.add(id); return true}
+      // a copy: take its reads back out of the tally they inflated
+      if(T)(p.reads||[]).forEach(x=>{ T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
+      return false }) });
+  if(T){ T.n=Math.max(0,T.n); T.right=Math.max(0,Math.min(T.right,T.n)) }
+  return d;
+}
 async function loadSlot(n){
   await moveForeignSaves();
   try{const r=await store.get(KEYFOR(n)); if(!r)return null;
     const d=unsaveDup(JSON.parse(lzwUnpack(r.value)));
     if(saveLeague(d)!==LEAGUE.id)return null;        // never open another game's save
-    return migrateSave(d)}catch(e){return null}
+    return repairPlayed(migrateSave(d))}catch(e){return null}
 }
 /* backups: a career saved as a file you keep, and opened again from it. A
    browser's storage can be cleared; a file on your computer or phone can't. */
@@ -7345,7 +7366,7 @@ function downloadBackup(){
 /* a backup file's text to a career, or null if it isn't one of this game's */
 function readBackup(text){
   try{ const d=unsaveDup(JSON.parse(lzwUnpack(String(text).trim())));
-    if(!d||!d.myTeam||saveLeague(d)!==LEAGUE.id)return null; return migrateSave(d) }catch(e){ return null }
+    if(!d||!d.myTeam||saveLeague(d)!==LEAGUE.id)return null; return repairPlayed(migrateSave(d)) }catch(e){ return null }
 }
 async function restoreBackup(file,into){
   const text=await file.text(), d=readBackup(text);
@@ -7826,7 +7847,8 @@ function tallyHTML(){
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
-    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div></div></div>`;
+    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
+    ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}</div></div>`;
 }
 /* your reads in this week's live games, right or wrong, and the season's tally */
 function readsHTML(step){

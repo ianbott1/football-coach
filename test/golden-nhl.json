@@ -1,5 +1,5 @@
 {
- "fp": "853f00a0d18231c3",
+ "fp": "d81d1320f0606be4",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -80,6 +80,11 @@
    "fp": "853f00a0d18231c3",
    "from": "c043483bc39d3398",
    "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
+  },
+  {
+   "fp": "d81d1320f0606be4",
+   "from": "853f00a0d18231c3",
+   "note": "a finished game is recorded once (repeat ticks and clicks after the whistle recorded it again); the fourth-down note; graded-calls note"
   }
  ],
  "result": {
@@ -94,7 +99,7 @@
     "heis": "2e578c69901469ff",
     "history": "d98de5d76d1ff6b8",
     "universe": "8cd43aeb0365187c",
-    "screens": "a01e383d19f754b0"
+    "screens": "d85ae1990d2d3cf2"
    },
    {
     "year": 2027,
@@ -106,7 +111,7 @@
     "heis": "b7ea50030c95ed67",
     "history": "7c7f60d92bca494c",
     "universe": "cbab89d46de584d7",
-    "screens": "ab83add6bfabea89"
+    "screens": "5fe7431cde8c151b"
    }
   ],
   "Edmonton#777": [
@@ -120,7 +125,7 @@
     "heis": "878c7e6e19a040c2",
     "history": "6178bf0d8580d326",
     "universe": "e2d1b87d39b86108",
-    "screens": "53a113b3a233b2ec"
+    "screens": "7da137c9b98d68dd"
    },
    {
     "year": 2027,
@@ -132,7 +137,7 @@
     "heis": "f2d909c6344345fc",
     "history": "88b94b12deffcefb",
     "universe": "a3193fc350d77c28",
-    "screens": "ed105f31a58f6357"
+    "screens": "5290fb3192a61e50"
    }
   ],
   "schedules#60": [

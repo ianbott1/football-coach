@@ -1,5 +1,5 @@
 {
- "fp": "7d6e9937b579c11c",
+ "fp": "f31633cf53efd2b2",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -90,6 +90,11 @@
    "fp": "7d6e9937b579c11c",
    "from": "ef596c05d20190b1",
    "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
+  },
+  {
+   "fp": "f31633cf53efd2b2",
+   "from": "7d6e9937b579c11c",
+   "note": "a finished game is recorded once (repeat ticks and clicks after the whistle recorded it again); the fourth-down note; graded-calls note"
   }
  ],
  "result": {
@@ -104,7 +109,7 @@
     "heis": "63b26623b64cb946",
     "history": "69a32b83375fd04c",
     "universe": "46251cdb81003226",
-    "screens": "2205e80528651b96"
+    "screens": "8f407cc5e324a535"
    },
    {
     "year": 2027,
@@ -116,7 +121,7 @@
     "heis": "9217622e7d61c00d",
     "history": "1e3a8d3ec91349f7",
     "universe": "f4fd239a7120bca9",
-    "screens": "18111dd62ee55d55"
+    "screens": "6afb152a97ee3682"
    }
   ],
   "Detroit#777": [
@@ -130,7 +135,7 @@
     "heis": "da347f46c12242a0",
     "history": "87fa3daa759a11f8",
     "universe": "8e67079d846127ed",
-    "screens": "fb317e0d21c4e7b6"
+    "screens": "0330e0a51c05006f"
    },
    {
     "year": 2027,
@@ -142,7 +147,7 @@
     "heis": "2ee66f8616664203",
     "history": "f6295c16f4347cb0",
     "universe": "2c905f62635109b5",
-    "screens": "a22e589f10a6d081"
+    "screens": "56eb646735624070"
    }
   ],
   "schedules#60": [

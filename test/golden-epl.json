@@ -1,5 +1,5 @@
 {
- "fp": "348d298c30189beb",
+ "fp": "9f2f390ff4734081",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -115,6 +115,11 @@
    "fp": "348d298c30189beb",
    "from": "99a2ee1e705729a0",
    "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
+  },
+  {
+   "fp": "9f2f390ff4734081",
+   "from": "348d298c30189beb",
+   "note": "a finished game is recorded once (repeat ticks and clicks after the whistle recorded it again); the fourth-down note; graded-calls note"
   }
  ],
  "result": {
@@ -129,7 +134,7 @@
     "heis": "f2e69ba69a821714",
     "history": "cf536e32de338b73",
     "universe": "690a0498502857c9",
-    "screens": "29b823ea55355cee"
+    "screens": "02e66c6792810e60"
    },
    {
     "year": 2027,
@@ -141,7 +146,7 @@
     "heis": "a8417a340339a1c3",
     "history": "afb8d45dee736b43",
     "universe": "5a5cbe94d21920f0",
-    "screens": "cc89e979697c26c8"
+    "screens": "de6b72250190e97b"
    }
   ],
   "Wrexham#777": [
@@ -155,7 +160,7 @@
     "heis": "43dadd60238d5849",
     "history": "7be755fac175dd57",
     "universe": "fc17f37a56b04ce9",
-    "screens": "cbe897ae492602ca"
+    "screens": "c9d777256d1807b9"
    },
    {
     "year": 2027,
@@ -167,7 +172,7 @@
     "heis": "731e7e8f2cd0184b",
     "history": "fbcaa751c546f8f1",
     "universe": "78f7c4b2305d25f5",
-    "screens": "b09b5ff7216d291c"
+    "screens": "6dd67492df764c3b"
    }
   ],
   "schedules#60": [

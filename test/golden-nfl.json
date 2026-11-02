@@ -1,5 +1,5 @@
 {
- "fp": "18e31e7211a7c8e2",
+ "fp": "6f1ccfa561da18de",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -155,6 +155,11 @@
    "fp": "18e31e7211a7c8e2",
    "from": "325d0df972b21e44",
    "note": "playtest fixes: two-point score, venue and blurb by difficulty, halves in college basketball, verdicts show both numbers, fumble wording, distinct staff names, slower ranking swings in long seasons (results same, order by rank moves), no table position before a game, backups, season tally"
+  },
+  {
+   "fp": "6f1ccfa561da18de",
+   "from": "18e31e7211a7c8e2",
+   "note": "a finished game is recorded once (repeat ticks and clicks after the whistle recorded it again); the fourth-down note; graded-calls note"
   }
  ],
  "result": {
@@ -169,7 +174,7 @@
     "heis": "4fae3ab392988611",
     "history": "c9752823e0add0d8",
     "universe": "192b324e2bc1f74b",
-    "screens": "fa93b2f136349ba7"
+    "screens": "24034c973efeddb1"
    },
    {
     "year": 2027,
@@ -181,7 +186,7 @@
     "heis": "fdc50db359407b6a",
     "history": "936adea5ec423f1f",
     "universe": "5f49022530ff8c2f",
-    "screens": "cbb6d98611f203ec"
+    "screens": "1372b345966cac09"
    },
    {
     "year": 2028,
@@ -193,7 +198,7 @@
     "heis": "1adeacdb630e4f15",
     "history": "46bf5aea0fd2da1b",
     "universe": "39702cc8f70417c5",
-    "screens": "544f83c216db1850"
+    "screens": "e3f1829ea6adca48"
    },
    {
     "year": 2029,
@@ -205,7 +210,7 @@
     "heis": "fb3f7c4c4fd41e06",
     "history": "4df7c5d8c28f42d8",
     "universe": "27ddb5fc11ec777c",
-    "screens": "654341520b7db61b"
+    "screens": "6bdc1eb27485ec80"
    }
   ],
   "Tennessee#2024": [
@@ -219,7 +224,7 @@
     "heis": "37fc33ff6586a56c",
     "history": "6d8d72369d3f7895",
     "universe": "ab90cef8d212cd7c",
-    "screens": "49df90872fc4109b"
+    "screens": "4cbebcde51620a00"
    },
    {
     "year": 2027,
@@ -231,7 +236,7 @@
     "heis": "e712dc2ea45e4767",
     "history": "e50821ad0a8af7e4",
     "universe": "e8abadf42a2f3933",
-    "screens": "c8d809439c8ecf8b"
+    "screens": "dd5c342ad3de13f1"
    },
    {
     "year": 2028,
@@ -243,7 +248,7 @@
     "heis": "a0b7318947052e77",
     "history": "b585ff05d0864d66",
     "universe": "e73d875dec0715fc",
-    "screens": "b074a80c0e15b8aa"
+    "screens": "d521eb1008276c33"
    },
    {
     "year": 2029,
@@ -255,7 +260,7 @@
     "heis": "fe3a965910525c47",
     "history": "ce29e693a0fcb4df",
     "universe": "799fd850e1e2dce9",
-    "screens": "4893ee1ea3bb83a3"
+    "screens": "7b27ef82708707e7"
    }
   ],
   "Detroit#777": [
@@ -269,7 +274,7 @@
     "heis": "c3850889cd76aeef",
     "history": "225db274c4295655",
     "universe": "335e0e67c1cd9cec",
-    "screens": "70eba5b6c3887a50"
+    "screens": "e261d5503ca24b9a"
    },
    {
     "year": 2027,
@@ -281,7 +286,7 @@
     "heis": "d77cb45d41985614",
     "history": "0fe251bda7bb6862",
     "universe": "5898d47c96ea1cd2",
-    "screens": "642a429425f55728"
+    "screens": "bfcb17c73a7229c8"
    },
    {
     "year": 2028,
@@ -293,7 +298,7 @@
     "heis": "2b90adad8d1de335",
     "history": "dc033a5074be5365",
     "universe": "ed509823c2328183",
-    "screens": "41d05a8493531855"
+    "screens": "814a7812368fb045"
    }
   ],
   "NY Giants#31337": [
@@ -307,7 +312,7 @@
     "heis": "2d43f3c0d766e586",
     "history": "489a6f2574cc905e",
     "universe": "ff279d868b0c4d93",
-    "screens": "6f3f155643552c78"
+    "screens": "b0816cbd11b8d544"
    },
    {
     "year": 2027,
@@ -319,7 +324,7 @@
     "heis": "e1fc4979e8151576",
     "history": "702484a2956210e9",
     "universe": "1e8f0ecd3dfc00a2",
-    "screens": "130fbd27b0abf2ba"
+    "screens": "bb398b552aa43d95"
    },
    {
     "year": 2028,
@@ -331,7 +336,7 @@
     "heis": "ee47b31cdd115450",
     "history": "bd1258dc66da24f4",
     "universe": "afbe69c9891e8e6b",
-    "screens": "8619d8750e6ff8b4"
+    "screens": "01454694297ad40b"
    }
   ],
   "schedules#60": [
