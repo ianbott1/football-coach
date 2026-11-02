@@ -1,5 +1,5 @@
 {
- "fp": "006eb7489d659c2e",
+ "fp": "9ea5d5e7ece7c777",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -110,6 +110,11 @@
    "fp": "006eb7489d659c2e",
    "from": "006eb7489d659c2e",
    "note": "recorded once"
+  },
+  {
+   "fp": "9ea5d5e7ece7c777",
+   "from": "006eb7489d659c2e",
+   "note": "playtest round 5"
   }
  ],
  "out": [
@@ -123,7 +128,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "38bdf0cd108f5f37"
+     "book": "dc41aaa3357beb23"
     },
     {
      "team": "Tennessee",
@@ -132,7 +137,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "cd6264e911ee7b59"
+     "book": "88338d88ecb32080"
     }
    ]
   },
@@ -146,7 +151,7 @@
       "result": "Lost in the divisional round",
       "grade": "B+"
      },
-     "book": "9e8cb1634d620f50"
+     "book": "5add9fff330304d4"
     },
     {
      "team": "Tennessee",
@@ -155,7 +160,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "3be8fb2e43a8d454"
+     "book": "4c0cbe559fc92314"
     }
    ]
   },
@@ -169,7 +174,7 @@
       "result": "Lost in the divisional round",
       "grade": "B+"
      },
-     "book": "046674699f65ee90"
+     "book": "ff5d99341fd731dc"
     },
     {
      "team": "Tennessee",
@@ -178,7 +183,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "c300e5086cd18544"
+     "book": "568d46fa89f22b9d"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "f31633cf53efd2b2",
+ "fp": "8b8f7e9bfef08509",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -95,64 +95,69 @@
    "fp": "f31633cf53efd2b2",
    "from": "7d6e9937b579c11c",
    "note": "a finished game is recorded once (repeat ticks and clicks after the whistle recorded it again); the fourth-down note; graded-calls note"
+  },
+  {
+   "fp": "8b8f7e9bfef08509",
+   "from": "f31633cf53efd2b2",
+   "note": "Muse and Instinct: spectator postseason rounds sim on; NBA home games 41 each; hockey scoring per player scaled; distinct roster and staff names; board players taken before your pick; résumé on Selection Sunday; hint mode; number explanations; ranks read as #N; career includes the season in progress"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "6b00597464e8e8d8",
-    "post": "28ecd1f6ed6104db",
+    "games": "72bdd0402bfe2814",
+    "post": "9d9284e2c2cacf0b",
     "champion": "Oklahoma City",
-    "rec": "e61dc93deac9a255",
-    "poll": "a8b3c0e31087f3a7",
-    "heis": "63b26623b64cb946",
-    "history": "69a32b83375fd04c",
-    "universe": "46251cdb81003226",
-    "screens": "8f407cc5e324a535"
+    "rec": "aa853607fa7cd512",
+    "poll": "8fd166669c73b774",
+    "heis": "38a7677f937e874e",
+    "history": "1ad30b341af5d7e7",
+    "universe": "37cd1dd0436d73f6",
+    "screens": "484aaa498ed17728"
    },
    {
     "year": 2027,
-    "games": "79dbd7a5928d34e1",
-    "post": "ded275c4564e9818",
-    "champion": "Houston",
-    "rec": "666b63f8175686e9",
-    "poll": "40b82dbcc1ad01b0",
-    "heis": "9217622e7d61c00d",
-    "history": "1e3a8d3ec91349f7",
-    "universe": "f4fd239a7120bca9",
-    "screens": "6afb152a97ee3682"
+    "games": "1c1f7e931eb27fb0",
+    "post": "5563fd3782efeea7",
+    "champion": "Oklahoma City",
+    "rec": "f41e788d1abd84e7",
+    "poll": "a09047d0d21b277a",
+    "heis": "b5080c65418470f7",
+    "history": "832fb0b63e05030f",
+    "universe": "24ec9a5ceaa5bfc0",
+    "screens": "f895f9c1ba2908eb"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "64895b23cdbc51aa",
-    "post": "340f990f196d0a87",
-    "champion": "Oklahoma City",
-    "rec": "c07e1e6d83f9eb6e",
-    "poll": "7dcb8c99aed9d8f9",
-    "heis": "da347f46c12242a0",
-    "history": "87fa3daa759a11f8",
-    "universe": "8e67079d846127ed",
-    "screens": "0330e0a51c05006f"
+    "games": "0f27faa4616fc0e5",
+    "post": "a50b7d68297f4596",
+    "champion": "New York",
+    "rec": "ea183e1a389930ff",
+    "poll": "e9fa2611eb922da6",
+    "heis": "119999e795ccf905",
+    "history": "e908c0689b9ec106",
+    "universe": "e0e6aea19dd4b5b2",
+    "screens": "af4f52fb6f6ce9cf"
    },
    {
     "year": 2027,
-    "games": "400ba4354ec1c86a",
-    "post": "55686090b7845727",
+    "games": "38f55edcc7c234ca",
+    "post": "369ea0bcb5fceb83",
     "champion": "Oklahoma City",
-    "rec": "48d5153dc6a5d661",
-    "poll": "e9f3535da8f3f11c",
-    "heis": "2ee66f8616664203",
-    "history": "f6295c16f4347cb0",
-    "universe": "2c905f62635109b5",
-    "screens": "56eb646735624070"
+    "rec": "b5e1d747c6531d70",
+    "poll": "e2738a81c0e6cd57",
+    "heis": "69c7f5ea9ff72300",
+    "history": "ac3840579181430e",
+    "universe": "3b026099645376de",
+    "screens": "f9171486733e8740"
    }
   ],
   "schedules#60": [
    {
-    "all": "85ad3f63a9a6b5cf"
+    "all": "ffc197f3ea3de0ee"
    }
   ]
  }

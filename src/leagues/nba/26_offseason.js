@@ -328,6 +328,9 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const mine=board.map(id=>prospects.findIndex(p=>p.pid===id&&!p.taken)).find(i=>i>=0);
     if(mine!==undefined)bi=mine;
     const p=prospects[bi]; p.taken=true;
+    // a player on someone's board taken before their turn: say so, or the board looks ignored
+    Object.keys(U_CH).forEach(ut2=>{ const B=(U_CH[ut2]&&U_CH[ut2].board)||[];
+      if(ut2!==t&&B.indexOf(p.pid)>=0){ rep.boardGone=rep.boardGone||{}; (rep.boardGone[ut2]=rep.boardGone[ut2]||[]).push({n:p.n,p:p.p,to:t,overall:overall}) } });
     p.draft={round:rd,pick:k+1,overall:overall,team:t,year:u.year};
     p.k={sal:rookieSal(overall),yrs:4}; p.joined=u.year+1; p.drafted=true;
     const g=nflGain(R,p);
@@ -489,6 +492,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[],
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
+    boardGone:(C.boardGone&&C.boardGone[my])||[],
     payroll:off.cap?off.cap[my]:null};
 };
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};

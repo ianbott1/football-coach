@@ -148,6 +148,20 @@ function bracketView(){
   return h;
 }
 /* ---- Selection Sunday ---- */
+/* how the committee saw it: your résumé beside the last team in. The order is
+   the résumé (strength from results, record, schedule, a conference title),
+   so a 20-9 team from a weak league can sit behind a 16-15 one from a strong
+   league: this shows why */
+function resumeHTML(my,last){
+  if(!last||last===my)return "";
+  const rank=f=>{ const o=NAMES.slice().sort((a,b)=>f(b)-f(a)); const m={}; o.forEach((t,i)=>m[t]=i+1); return m };
+  const R=rank(t=>SEA.resume(t)), P=rank(t=>SEA.power(t)), Q=rank(t=>SEA.sos(t));
+  const row=t=>`<tr class="${t===my?'mine':''}"><td>${esc(t)}</td><td>${SEA.rec[t][0]}-${SEA.rec[t][1]}</td><td>${P[t]}</td><td>${Q[t]}</td><td>${R[t]}</td></tr>`;
+  return `<div class="grouphead">How the committee saw it</div>
+    <table class="restab"><tr><th></th><th>Record</th><th title="Strength from results: margin against who you played">Power</th><th title="How strong your opponents were">Schedule</th><th>Résumé</th></tr>
+    ${row(my)}${row(last)}</table>
+    <div class="note">Ranks out of ${NAMES.length}. The résumé weighs how strong your results say you are, your record, and how hard your schedule was; at-large bids go down that order (conference champions are in regardless). ${esc(last)} was the last team in.</div>`;
+}
 /* your fate first, then the field: the 1 seeds, the bubble, bids by conference */
 function selectionReveal(){
   const my=S.myTeam, sd=SEA.seeds[my], F=SEA.field, al=F.filter(t=>SEA.notes[t]==="At-large");
@@ -169,6 +183,7 @@ function selectionReveal(){
       <div class="selbig">${close?"First four out":"Not selected"}</div>
       <div class="selsub">${SEA.rec[my][0]}-${SEA.rec[my][1]}. ${close?"One more good win would have done it.":"Win the conference tournament next year and you're in regardless."}</div></div>`;
   }
+  card+=resumeHTML(my,lastIn[lastIn.length-1]);
   const ones=REGIONS.map(r=>SEA.bracket[r][1]);
   const byConf={}; F.forEach(t=>byConf[CONF[t]]=(byConf[CONF[t]]||0)+1);
   const multi=Object.keys(byConf).filter(c=>byConf[c]>1).sort((a,b)=>byConf[b]-byConf[a]);

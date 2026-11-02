@@ -10,6 +10,12 @@ const SPORT={
     </g>
     <path d="M10 65 V50 H62 V65" fill="none" stroke="#F4F1EA" stroke-width="3.4" stroke-linejoin="round"/>
     <path d="M4 66.5 H68" stroke="#4E9A55" stroke-width="2.2" opacity=".85"/>`,
+  featureMore:"gives a player more of the ball",          // what featuring a player means in this sport
+  /* Pearl in hint mode: where to look, not the answer */
+  hints:{press:"They keep winning the ball back in our half. What does that tell you?",
+    block:"Look how deep they're sitting, and how much of the ball they're giving us.",
+    wing:"Count where their attacks are coming from.",
+    direct:"Watch how often the ball goes long."},
   staff:{
     oc:{short:"ATT", long:"assistant manager, attack"},
     dc:{short:"DEF", long:"assistant manager, defence"},

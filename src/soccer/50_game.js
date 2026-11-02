@@ -221,9 +221,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     st.h+=gH; st.a+=gA;
     // shots, big chances that didn't go in
     [["home",lamH,gH],["away",lamA,gA]].forEach(([sd,lam,g])=>{
-      const X=st.S[sd], shots=g+poisson(rng,lam*3.4), sot=g+Math.min(shots-g,poisson(rng,lam*1.1));
+      const X=st.S[sd]; let shots=g+poisson(rng,lam*3.4), sot=g+Math.min(shots-g,poisson(rng,lam*1.1));
+      // a chance the commentary calls (a save, a miss) is a shot in the numbers too:
+      // a match once showed 0 shots and two great saves (same draws, same order)
+      if(poisson(rng,lam*0.9)>0){ const e={m:minute(),side:sd,k:rng.r()<0.55?"save":"miss",u:rng.int(100)}; ev.push(e);
+        if(e.k==="save")sot=Math.max(sot,g+1); shots=Math.max(shots,sot+(e.k==="miss"?1:0)) }
       X.sh+=shots; X.sot+=sot; st.lines[sd==="home"?"h":"a"].sog+=sot;
-      if(poisson(rng,lam*0.9)>0)ev.push({m:minute(),side:sd,k:rng.r()<0.55?"save":"miss",u:rng.int(100)});
     });
     // the tells: what each side's approach puts in the numbers
     ["home","away"].forEach(sd=>{ const X=st.S[sd], O=st.S[other(sd)];
@@ -274,8 +277,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true;
-      st.log.push({side:side,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t}) } return }
-    if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t}) }
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]})()}) } return }
+    if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t,evid:dp.best}) }
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak; st.log.push({side:side,k:"flank",pick:v,truth:t,right:v===t}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
     if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v } else assistantRead(side,dp.stage); return }

@@ -133,9 +133,10 @@ function offseasonBanner(){
       ${(last.coaching.hires||[]).length} teams hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
-      const mine=(X.draft||[]).filter(d=>d.team===my);
-      if(!mine.length)return "";
-      return `<div class="grouphead">Draft &mdash; ${last.year+1}</div>`+
+      const mine=(X.draft||[]).filter(d=>d.team===my), gone=X.boardGone||[];
+      if(!mine.length&&!gone.length)return "";
+      const goneH=gone.length?`<div class="note">Gone before your pick: ${gone.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to)} at #${x.overall}`).join(", ")}. Your board takes the highest player on it who's still there.</div>`:"";
+      return `<div class="grouphead">Draft &mdash; ${last.year+1}</div>`+goneH+
         mine.map(d=>`<div class="drow">
           <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
           <div class="fmain"><div class="fname">${esc(d.n)}

@@ -225,20 +225,30 @@ function callVerdicts(args,seed,answers,meHome){
         const mine=meHome?r.h:r.a, theirs=meHome?r.a:r.h; w+=mine>theirs?1:mine===theirs?0.5:0 }
       rate[o]=w/VERDICT_RUNS });
     const pick=answers[j], best=opts.reduce((a,o)=>rate[o]>rate[a]?o:a,opts[0]);
-    if(rate[best]-Math.min(...opts.map(o=>rate[o]))<0.02)return;    // it made no real difference: not a call worth judging
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0];
+    const spread=rate[best]-Math.min(...opts.map(o=>rate[o]));
+    if(spread<0.02){                       // it made no real difference: not graded, but kept for the debrief
+      if(!out.close||spread>out.close.spread)out.close={h:A.dp.h,spread:spread,pick:lab(pick),
+        opts:opts.map(o=>[lab(o),Math.round(rate[o]*100)])};
+      return }
     // the runner-up, so a right call still shows what it beat
     const alt=opts.filter(o=>o!==pick).reduce((a,o)=>a===null||rate[o]>rate[a]?o:a,null);
     out.push({k:"call",pick:pick,truth:best,right:rate[pick]>=rate[best]-VERDICT_SLACK,
       other:alt!==null?lab(alt):undefined, or:alt!==null?Math.round(rate[alt]*100):undefined,
       h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100)});
   });
-  out.judged=judged;                       // calls you made that could be graded, whether or not any were
+  out.judged=judged;
+  if(out.close)delete out.close.spread;                       // calls you made that could be graded, whether or not any were
   return out;
 }
 function readText(e){
   if(e.k!=="call")return "";
-  if(e.pick===e.truth)return `${e.h}: "${e.mine}" was the better call: ${e.pr}% of replays won, against ${e.or!==undefined?e.or:"?"}% for "${e.other||"the other"}".`;
-  if(e.right)return `${e.h}: "${e.mine}" was as good as anything (${e.pr}% against ${e.br}% for "${e.best}").`;
+  // inside the margin the replays can't separate, both ways read the same:
+  // a point either side isn't "the better call"
+  const slack=Math.round(VERDICT_SLACK*100);
+  if(e.right){ const o=e.pick===e.truth?e.other:e.best, or=e.pick===e.truth?e.or:e.br;
+    if(o!==undefined&&Math.abs(e.pr-or)<=slack)
+      return `${e.h}: "${e.mine}" and "${o}" won about as often (${e.pr}% and ${or}% of replays): either was a good call.`;
+    return `${e.h}: "${e.mine}" was the better call: ${e.pr}% of replays won, against ${or!==undefined?or:"?"}% for "${o||"the other"}".` }
   return `${e.h}: "${e.best}" was the better call, ${e.br}% against your ${e.pr}%.`;
 }

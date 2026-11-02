@@ -75,7 +75,7 @@ const LEAGUE={
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty-two
   points(t,sea){ const [w]=(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return 2*w+o },
 
-  text:{bye:"No game today",
+  text:{unit:"team",bye:"No game today",
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a contender on their ice. That's a statement.","Two points off a real team."],
     badLoss:["Points you can't give away in this division.","Beaten by a lottery team. It will cost you in the standings.","The kind of loss that decides the last wild card."],
     champions:"Stanley Cup champions",

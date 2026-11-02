@@ -23,8 +23,26 @@ function nbaSchedule(rng,R,year){
     series[key(a,b)]= CONF[a]===CONF[b]?4 : sideOf(a)===sideOf(b)?(three.has(key(a,b))?3:4) : 2 }));
   // the games, home and away split evenly (the odd game of three goes either way)
   const games=[];
+  const odd=[];                                   // the extra game of each three-game series
   Object.keys(series).forEach(k=>{const [a,b]=k.split("|"), n=series[k], ha=rng.r()<0.5;
-    for(let i=0;i<n;i++){const h=(i%2===0)===ha?a:b; games.push({home:h,away:h===a?b:a})}});
+    for(let i=0;i<n;i++){const h=(i%2===0)===ha?a:b, g={home:h,away:h===a?b:a}; games.push(g); if(n%2&&i===n-1)odd.push(g)}});
+  // the odd games went home or away by a coin, which left teams 39-43 at home:
+  // turn them round until every team has 41 (each team has four of them)
+  const home={}; NAMES.forEach(t=>home[t]=0); games.forEach(g=>home[g.home]++);
+  const flip=g=>{ home[g.home]--; home[g.away]++; const t=g.home; g.home=g.away; g.away=t };
+  for(let pass=0;pass<50;pass++){ let moved=false;
+    odd.forEach(g=>{ if(home[g.home]>home[g.away]+1){ flip(g); moved=true } });
+    if(!moved)break }
+  // what's left is 42s and 40s a step apart: carry each 42's extra game along
+  // a chain of odd games to a 40 (a short search over who hosts whom)
+  for(let pass=0;pass<200;pass++){
+    const over=NAMES.find(t=>home[t]>41); if(!over)break;
+    const prev=new Map([[over,null]]), q=[over]; let end=null;
+    while(q.length&&!end){ const t=q.shift();
+      for(const g of odd){ if(g.home!==t||prev.has(g.away))continue; prev.set(g.away,g); if(home[g.away]<41){end=g.away;break} q.push(g.away) } }
+    if(!end)break;
+    for(let t=end;prev.get(t);){ const g=prev.get(t); const from=g.home; flip(g); t=from }
+  }
   // fit into dates: each date a matching, teams with the most games left first
   const DAYS=LEAGUE.weeks;
   for(let attempt=0;attempt<30;attempt++){

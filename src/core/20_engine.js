@@ -355,6 +355,19 @@ function distinctStaff(u,t){
       x.n=f+x.n.slice(x.n.indexOf(" ")) }
     taken.add(f) });
 }
+/* no two players on one roster share a name (two Cooper Nwosus read as one
+   player, a senior two years running): a repeat gets another first name, by
+   hash so no random draw moves */
+function distinctRoster(u,t){
+  const R=u.roster&&u.roster[t]; if(!R)return;
+  const seen=new Set();
+  R.forEach((p,i)=>{ if(!p||!p.n)return;
+    if(seen.has(p.n)){ const sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):""; let h=strHash(p.n+"|"+t+"|"+i), n=p.n;
+      const F=typeof PNAMES_F!=="undefined"?PNAMES_F:FIRST;
+      for(let k=0;k<F.length&&seen.has(n);k++)n=F[(h+k)%F.length]+last;
+      p.n=n }
+    seen.add(p.n) });
+}
 function offseasonCoaching(u,rng,rec,elo,users){
   users=users||{};
   const isUser=t=>Object.prototype.hasOwnProperty.call(users,t);

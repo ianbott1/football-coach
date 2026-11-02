@@ -1,5 +1,5 @@
 {
- "fp": "083f36dfbb5479ac",
+ "fp": "05e9b33253bf3ac0",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -65,6 +65,11 @@
    "fp": "083f36dfbb5479ac",
    "from": "083f36dfbb5479ac",
    "note": "recorded once"
+  },
+  {
+   "fp": "05e9b33253bf3ac0",
+   "from": "083f36dfbb5479ac",
+   "note": "playtest round 5"
   }
  ],
  "out": [
@@ -78,7 +83,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "1a19542a63a8ac98"
+     "book": "5a80f553aea512b1"
     },
     {
      "team": "Montreal",
@@ -87,7 +92,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "0abfc46a27da8cdd"
+     "book": "c430b44b01457336"
     }
    ]
   },
@@ -101,7 +106,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "748ac9a3e95ba84d"
+     "book": "d8a81d39fe9857a9"
     },
     {
      "team": "Montreal",
@@ -110,7 +115,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "cfdb1bd508bfd6de"
+     "book": "46eed7676ddbb861"
     }
    ]
   },
@@ -124,7 +129,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "fe47b5e99d7c85b8"
+     "book": "c04a93d913d1fdb9"
     },
     {
      "team": "Montreal",
@@ -133,7 +138,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "ba2531e83194a243"
+     "book": "5c5483dd295688cf"
     }
    ]
   }

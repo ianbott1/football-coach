@@ -88,7 +88,7 @@ const LEAGUE={
       <path d="M24 14 C22.6 7.6 24 4.8 26.4 4.2 C28.5 6.9 30 10 30.8 12.9 Z" fill="#C98A63"/>
       <path d="M48 14 C49.4 7.6 48 4.8 45.6 4.2 C43.5 6.9 42 10 41.2 12.9 Z" fill="#C98A63"/>`},
 
-  text:{
+  text:{unit:"team",
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a good team. That's how contenders are made.","A statement win over a real team."],
     badLoss:["That's a loss you can't afford in this league.","Beaten by a team you should handle. It will cost you in the standings.","The kind of loss that decides tiebreakers."],
     champions:"Super Bowl champions",

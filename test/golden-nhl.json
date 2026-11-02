@@ -1,5 +1,5 @@
 {
- "fp": "d81d1320f0606be4",
+ "fp": "a08df572186cb9a7",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -85,6 +85,11 @@
    "fp": "d81d1320f0606be4",
    "from": "853f00a0d18231c3",
    "note": "a finished game is recorded once (repeat ticks and clicks after the whistle recorded it again); the fourth-down note; graded-calls note"
+  },
+  {
+   "fp": "a08df572186cb9a7",
+   "from": "d81d1320f0606be4",
+   "note": "Muse and Instinct: spectator postseason rounds sim on; NBA home games 41 each; hockey scoring per player scaled; distinct roster and staff names; board players taken before your pick; résumé on Selection Sunday; hint mode; number explanations; ranks read as #N; career includes the season in progress"
   }
  ],
  "result": {
@@ -96,10 +101,10 @@
     "champion": "Los Angeles",
     "rec": "13d85b141d805f37",
     "poll": "e96f5d234e794cc0",
-    "heis": "2e578c69901469ff",
-    "history": "d98de5d76d1ff6b8",
-    "universe": "8cd43aeb0365187c",
-    "screens": "d85ae1990d2d3cf2"
+    "heis": "39b82a2569beea12",
+    "history": "8c9cf205edd95249",
+    "universe": "d5b22affdf8b0f17",
+    "screens": "e68b5fd47a152c51"
    },
    {
     "year": 2027,
@@ -108,10 +113,10 @@
     "champion": "Ottawa",
     "rec": "bcbb85380b1c67d9",
     "poll": "b2a4444428bcdb51",
-    "heis": "b7ea50030c95ed67",
-    "history": "7c7f60d92bca494c",
-    "universe": "cbab89d46de584d7",
-    "screens": "5fe7431cde8c151b"
+    "heis": "12e77bab27e89a7f",
+    "history": "e6dbabb95f0c87f0",
+    "universe": "e19f9f372ea8bf64",
+    "screens": "a137e42155634b03"
    }
   ],
   "Edmonton#777": [
@@ -122,10 +127,10 @@
     "champion": "Carolina",
     "rec": "de36e59a5dff0a83",
     "poll": "a66e4e334a78bddc",
-    "heis": "878c7e6e19a040c2",
-    "history": "6178bf0d8580d326",
-    "universe": "e2d1b87d39b86108",
-    "screens": "7da137c9b98d68dd"
+    "heis": "86f5b33b2136c3c1",
+    "history": "adbbcaae39aa8c6f",
+    "universe": "dad359ad9aead4d1",
+    "screens": "8aaa5f0668d1373a"
    },
    {
     "year": 2027,
@@ -134,10 +139,10 @@
     "champion": "Florida",
     "rec": "352ddee40a90558a",
     "poll": "fe9cd3db0c256042",
-    "heis": "f2d909c6344345fc",
-    "history": "88b94b12deffcefb",
-    "universe": "a3193fc350d77c28",
-    "screens": "5290fb3192a61e50"
+    "heis": "07bba0a57342ecb4",
+    "history": "c8277195159cae99",
+    "universe": "ad8a36728f2b7862",
+    "screens": "eb436dbf7c9c2d28"
    }
   ],
   "schedules#60": [

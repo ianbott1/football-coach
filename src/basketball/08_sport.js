@@ -20,6 +20,11 @@ const SPORT={
     return {PG:P,SG:P,SF:P,PF:P,C:R} })(),
   milestonesCollege:(()=>{ const P=["pts","points",[1000,1500,2000,2500]], R=["reb","rebounds",[500,750,1000,1250]];
     return {PG:P,SG:P,SF:P,PF:P,C:R} })(),
+  featureMore:"gives a player more shots",          // what featuring a player means in this sport
+  /* Pearl in hint mode: where to look, not the answer */
+  hints:{threes:"Look at where their shots are coming from.",
+    paint:"Watch the points in the paint.",
+    pnr:"Count the ball screens."},
   staff:{
     oc:{short:"OFF", long:"offensive assistant"},
     dc:{short:"DEF", long:"defensive assistant"},

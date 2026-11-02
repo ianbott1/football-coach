@@ -140,6 +140,10 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   when the game is done, finishLive runs once per game, and old saves drop
   duplicate copies on load (repairPlayed). Fast clicks at the whistle
   recorded games up to five times (test/double-finish.js).
+- `grep -c MATCH` counts MISMATCH lines too: check baselines with
+  `grep -v "^MATCH"` (nothing printed means all match).
+- Simming on past a moment the player should see (Selection Sunday) is a
+  bug: simPostOn stops after LEAGUE.post.stopAfter (default "selection").
 - Wait on a fresh output file: waiting for "passed" in last run's file
   returned at once, and a commit went out before its suite had run.
 - Playoff series put several of your games in one round: anything that
@@ -195,6 +199,21 @@ teams' plan). A card at the top says so: who they'd re-sign and let go and
 why, free agency, the draft, trades; each contract row says the staff's
 call. "Back to the staff's plan" undoes your changes. College: the even
 budget split and a balanced class.
+
+## The postseason is yours only where you play (core: spectating, simPostOn)
+
+A round with no game of yours says "Sim to your next game, or the end", and
+one click sims on until you play again or it's over (test/postseason-gate.js).
+Records: the career includes the season in progress (careerNow); saves carry
+seasonNow for the title screen.
+
+## Reads: hints and honest verdicts
+
+Staff advice on reads (help panel): Full, Hints only (Pearl points at the
+number to watch, SPORT.hints), or Automatic (full in the first season, hints
+after: the default). Read verdicts say when the numbers pointed elsewhere
+(evid) and when the scouting report was split. Football: near-equal options
+read "won about as often" both ways; a quiet game shows its closest call.
 
 ## Backups and the season tally
 

@@ -14,6 +14,11 @@ const SPORT={
   /* career milestones: [stat, words, the numbers that count] */
   milestones:(()=>{ const P=["pts","points",[100,250,500,750,1000,1250,1500]];
     return {C:P,LW:P,RW:P,D:P,D2:P,G:["so","shutouts",[10,25,50,75,100]]} })(),
+  featureMore:"gives a player more ice time",          // what featuring a player means in this sport
+  /* Pearl in hint mode: where to look, not the answer */
+  hints:{forecheck:"We keep getting pinned in our own end. Why?",
+    trap:"We can't get anything through the middle. Look at the zone entries.",
+    cycle:"They're spending a lot of time low, behind our net."},
   staff:{
     oc:{short:"OFF", long:"assistant coach, forwards"},
     dc:{short:"DEF", long:"assistant coach, defense"},

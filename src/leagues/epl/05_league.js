@@ -64,6 +64,14 @@ const LEAGUE={
   // table position, not a ranking; none before a team's first league game (17th at 0-0-0 means nothing)
   position:t=>{ if(!SEA||!SEA.table)return 0; const r=SEA.rec[t], d=(SEA.drw&&SEA.drw[t])||0;
     if(r&&r[0]+r[1]+d===0)return 0; return SEA.table(CONF[t]).indexOf(t)+1 },
+  /* the picker's label: the division a club is in (a rich Championship club
+     isn't a "Premier League" job), and in the top flight how high it aims */
+  tierFor(t,rank){ const T=LEAGUE.text.tiers, d=CONF[t], by=l=>T.find(x=>x.l===l);
+    if(d==="PL"){ const pl=NAMES.filter(x=>CONF[x]==="PL").sort((a,b)=>rank[a]-rank[b]), i=pl.indexOf(t);
+      return i<4?T[0]:i<8?T[1]:by("Premier League") }
+    if(d==="CH")return by("Championship");
+    if(d==="L1"||d==="L2")return by("Football League");
+    return by("Non-league") },
   positionLine:t=>LEAGUE.position(t)?`${ordinal(LEAGUE.position(t))} in ${LEAGUE.conf.names[CONF[t]]}`:`${LEAGUE.conf.names[CONF[t]]}: no games yet`,
   rankTop:6,
   /* W-D-L and points: three a win, one a draw */
@@ -76,7 +84,7 @@ const LEAGUE={
       <path d="M24 44.5 C30 47 42 47 48 44.5 L48.5 48 C42 50.5 30 50.5 23.5 48 Z" fill="#D7263D"/>
       <path d="M42 47.5 L45 58 L41.5 58.6 L39.5 48.2 Z" fill="#D7263D"/>`},
 
-  text:{bye:"No game this week",
+  text:{unit:"club",bye:"No game this week",
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a big club. That's the kind of result that changes a season.","Three points off a real side."],
     badLoss:["Points you can't afford to drop.","Beaten by a side you should beat. It'll be remembered in May.","The kind of result that decides who goes down."],
     champions:"champions",

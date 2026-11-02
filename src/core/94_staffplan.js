@@ -60,3 +60,20 @@ function collegePlanHTML(P){
     <div class="planrow"><b>Recruiting</b> ${esc(RF.balanced?RF.balanced.l:"Balanced")}${RF.balanced?": "+esc(RF.balanced.d):""}</div>
     ${P.portal!==undefined?`<div class="planrow"><b>Transfer portal</b> nobody: add players below if you want them.</div>`:""}</div>`;
 }
+
+/* ---- how much the staff give away on a read ----
+   Full: Pearl names what she sees and the answer. Hints: she points at what
+   to look at and leaves the answer to you. Automatic: full advice in your
+   first season, hints after (once you know how to read the panel). */
+function staffHints(){
+  const m=S.advice||"auto";
+  return m==="hints"||(m==="auto"&&!!(S.history&&S.history.length));
+}
+function staffAdvice(dp,ctx){
+  const R=staffTake(dp,ctx);
+  if(!staffHints()||(dp.k!=="read"&&dp.k!=="prep"))return R;
+  const H=SPORT.hints||{};
+  const line=dp.k==="prep"?"Look at what they did most, and ask whether today is any different. Who's the stronger side?"
+    :(H[dp.pearl]||"I've got a feeling, but you've got the numbers. What do they say?");
+  return R.map(x=>x.who==="pearl"?Object.assign({},x,{pick:null,line:pearlSay(line,(ctx.mine||0)*7+(ctx.q||0))}):x);
+}

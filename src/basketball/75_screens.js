@@ -147,7 +147,7 @@ function liveCallView(){
     </div>
     ${evidenceHTML(g,my,last,dp)}
     <div class="grouphead staffhead">The staff room</div>
-    <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
+    <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
         <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
@@ -198,7 +198,17 @@ function watchView(){
 }
 
 /* ---- after the game: were your reads right? ---- */
-function readText(e){
+/* what the evidence said, when it pointed the other way: a read the numbers
+   got wrong is a noisy sample, not a coin flip, and the verdict says so */
+function readNote(e){
+  if(e.k==="read"&&e.evid&&e.evid!==e.truth&&STYLE[e.evid])
+    return e.right?` The numbers pointed to ${STYLE[e.evid].l}; your read was better than they were.`
+      :` The numbers at the time pointed to ${STYLE[e.evid].l}: a short stretch can mislead.`;
+  if(e.k==="prep"&&e.split)return e.right?" The report was split, so that was a good guess.":" The report was split, so this was close to a coin flip.";
+  return "";
+}
+function readText(e){ return readTextBase(e)+readNote(e) }
+function readTextBase(e){
   if(e.k==="read")return e.right?`Your read was right: they were ${STYLE[e.truth].l}.`
     :`They were ${STYLE[e.truth].l}: the answer was "${DEFENSES[STYLE[e.truth].answer].l}".`;
   if(e.k==="prep")return e.right?`Your game plan was right: they came out ${STYLE[e.truth].l}.`

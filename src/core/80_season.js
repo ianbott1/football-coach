@@ -210,7 +210,7 @@ class Season{
     const w=this.step, prev=this.rankMap(), out=[];
     if(part==="cup"){                      // the midweek ties: added to the week, nothing else moves on
       this.sched.filter(g=>g.week===w&&g.cup).forEach(g=>{
-        const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site});
+        const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site,round:g.round});
         r.hrank=prev[g.home];r.arank=prev[g.away];
         r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1]; r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
         if(this.userTeam===g.home||this.userTeam===g.away)r.drives=this._userDrives;
@@ -221,7 +221,7 @@ class Season{
       return;
     }
     this.sched.filter(g=>g.week===w&&!(part==="league"&&g.cup)).forEach(g=>{
-      const r=this._resolve(g.home,g.away,g.neutral,g.cup?{conf:false,cup:true,title:g.title,site:g.site}:{conf:g.conf});
+      const r=this._resolve(g.home,g.away,g.neutral,g.cup?{conf:false,cup:true,title:g.title,site:g.site,round:g.round}:{conf:g.conf});
       if(g.conf&&!r.draw){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
       r.hrank=prev[g.home];r.arank=prev[g.away];
       r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];

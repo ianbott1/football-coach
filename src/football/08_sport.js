@@ -21,6 +21,7 @@ const SPORT={
     WR:["cyd","receiving yards",[2000,3000,4000]], WR2:["cyd","receiving yards",[2000,3000,4000]],
     OT:["pan","pancakes",[200,300,400]], EDGE:["sck","sacks",[20,30,40]], DT:["sck","sacks",[15,25]],
     LB:["tkl","tackles",[300,400,500]], CB:["ints","interceptions",[10,15,20]], S:["ints","interceptions",[10,15,20]]},
+  featureMore:"gives a player the ball more",          // what featuring a player means in this sport
   staff:{
     oc:{short:"OC", long:"offensive coordinator"},
     dc:{short:"DC", long:"defensive coordinator"},

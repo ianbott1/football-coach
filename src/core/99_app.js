@@ -171,6 +171,7 @@ function finishLive(){
   if(typeof callVerdicts==="function"&&!live.h2h&&live.args){
     const V=callVerdicts(live.args,liveSeed(live.step),live.replay,meHome);
     if(V.judged)played.judged=V.judged;
+    if(V.close)played.close=V.close;               // the nearest thing to a graded call, for a quiet game's debrief
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
@@ -225,7 +226,7 @@ function resolveWeek(step){
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
-  plan="balanced";
+  if(isHotSeat())plan="balanced";               // one coach: your gameplan stays as you set it
   flash={type:wasPost?"post":"week",step:step,cup:wasCup};     // a live playoff game gets its result card too
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   save(); render();
@@ -286,9 +287,10 @@ function promote(i){
 }
 
 function rebuild(){
+  plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
-  NAMES.forEach(t=>distinctStaff(U,t));          // saves from before staff names were kept distinct
+  NAMES.forEach(t=>{distinctStaff(U,t); distinctRoster(U,t)});   // saves from before names were kept distinct
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
@@ -324,6 +326,7 @@ function save(){
     else await Promise.resolve();
     savePending=null;
     S.league=LEAGUE.id;                                   // every save says which game it's from
+    if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0)};
   try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
     return saveOK;
   })();
@@ -425,7 +428,8 @@ async function allSlots(){
     const d=await loadSlot(n);
     out.push(d&&d.myTeam?{n:n,team:d.myTeam,year:(d.uStart&&d.uStart.year)||2026,
       coach:(d.career&&d.career.name)||"",seasons:(d.history||[]).length,
-      rec:d.career?d.career.w+"-"+d.career.l:"",titles:d.career?d.career.titles:0}:{n:n,empty:true});
+      rec:d.career?(LEAGUE.draws?`${d.career.w}-${d.career.d||0}-${d.career.l}`:d.career.w+"-"+d.career.l):"",titles:d.career?d.career.titles:0,
+      now:d.seasonNow&&d.seasonNow.played?d.seasonNow:null}:{n:n,empty:true});
   }
   return out;
 }
@@ -451,6 +455,7 @@ function newDynasty(team,seed,coachName,roster){
     u.coach[c.myTeam]={id:0,n:c.career.name,q:0,t:0,hired:true,you:true,
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
+  NAMES.forEach(t=>distinctRoster(u,t));
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -464,6 +469,14 @@ function WK(){ return LEAGUE.text.week||"week" }
 function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
 /* a career's record: W-D-L where games can be drawn */
 function careerRec(C){ return LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:`${C.w}-${C.l}` }
+/* the career so far including the season being played: a season is added to
+   the career when the offseason opens, so mid-season (and after the last
+   game, before the offseason) the career alone read 0-0 */
+function careerNow(C){
+  const my=S.myTeam, banked=S.off&&S.off.year===SEA.year;
+  if(!SEA||!SEA.rec||!SEA.rec[my]||banked)return C;
+  const r=SEA.rec[my]; return Object.assign({},C,{w:C.w+r[0],l:C.l+r[1],d:(C.d||0)+((SEA.drw&&SEA.drw[my])||0)});
+}
 function ordinal(n){return n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th")}
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
@@ -496,6 +509,25 @@ function skipIdleDays(){
     SEA.advance(); S.steps++;
   }
 }
+/* In the postseason, a round with no game of yours is the league's, not
+   yours: the button sims on until you play again or it's over (it used to
+   say "Play the Super Bowl" to a 5-12 team, and walk an eliminated team
+   through every remaining game of every series one click at a time). */
+function spectating(){
+  return SEA&&SEA.phase!=="week"&&SEA.phase!=="done"&&!isHotSeat()&&SEA.postMatchup&&!SEA.postMatchup(S.myTeam);
+}
+function advLabel(){ return spectating()?"Sim to your next game, or the end":SEA.buttonLabel() }
+function simPostOn(ph){
+  let g=0, was=ph;
+  while(SEA.phase!=="week"&&SEA.phase!=="done"&&g++<300){
+    was=SEA.phase;
+    SEA.userTeam=S.myTeam; SEA.advance(); SEA.forcedList=[]; SEA.forced=null; S.steps++;
+    if((LEAGUE.post.stopAfter||["selection"]).indexOf(was)>=0)break;     // a moment to see, not sim past: Selection Sunday, the field
+    if(SEA.phase!=="done"&&SEA.postMatchup(S.myTeam))break;
+  }
+  LEAGUE.ui.afterAdvance(was);                  // the views follow the last round played (Selection Sunday's field)
+  flash={type:"post"}; reveal=null; save(); render();
+}
 function doAdvance(){
   scoreWk=null;                                   // Scores follows the new week
   skipIdleDays();
@@ -515,6 +547,7 @@ function doAdvance(){
   if(mineNow&&doneN&&doneN>=mineNow.length&&!isHotSeat()){ resolveWeek(before); return }
   const ug=(SEA.phase==="week")?(mineNow?mineNow[doneN]||null:SEA.nextGame(S.myTeam))
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
+  if(spectating()){ simPostOn(ph); return }
   const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never" && !simOnce;
   // meeting a coach who comes later this turn: they play it, with both of you calling
   const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
@@ -536,7 +569,7 @@ function doAdvance(){
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
-  plan="balanced";
+  if(isHotSeat())plan="balanced";
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   LEAGUE.ui.afterAdvance(ph);
   flash={type:SEA.phase==="week"||before<LEAGUE.weeks?"week":"post",step:before,cup:wasCup};
@@ -705,6 +738,7 @@ function endSeason(rng,choices,act,seasonTeam){
         coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
+  NAMES.forEach(t=>distinctRoster(U,t));
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -719,7 +753,7 @@ function endSeason(rng,choices,act,seasonTeam){
 }
 
 /* ============ rendering ============ */
-function rkTag(r){return r&&r<=RANK_TOP?`<span class="rk">${r}</span>`:""}
+function rkTag(r){return r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
 
 function gameLine(g,mine){
   const hw=g.winner===g.home;
@@ -903,7 +937,9 @@ function readsHTML(step){
   const R=[].concat(...P.map(p=>p.reads||[]));
   // calls made, none close enough to grade: say so, or the card looks broken
   if(!R.length){ const n=P.reduce((a,p)=>a+(p.judged||0),0);
-    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't move":"moved"} your chance of winning by 2 points or more, so ${n===1?"it isn't":"none is"} graded.</div></div>`:"" }
+    const c=P.map(p=>p.close).filter(Boolean)[0];
+    const deb=c?`<div class="readnone"><b>${esc(c.h)}</b>: you chose "${esc(c.pick)}". ${c.opts.map(o=>`"${esc(o[0])}" won ${o[1]}%`).join(", ")} of replays: the options were that close, so the game turned on the plays, not the call.</div>`:"";
+    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't move":"moved"} your chance of winning by 2 points or more, so ${n===1?"it isn't":"none is"} graded.</div>${deb}</div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
@@ -1073,12 +1109,16 @@ function rosterView(){
   const hurt={}; SEA.talent.active(my).forEach(e=>hurt[e.idx]=e);
   const R=SEA.roster[my];
   const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
-  let h=coachMark("roster","Each position shows your starter and the man behind him. Featuring gives a player the ball more and speeds his development. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.");
+  const college=!!(LEAGUE.classes&&LEAGUE.classes.length), more=SPORT.featureMore||"gives a player the ball more";
+  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more} and speeds his development. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
-  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${F.c>=3
+  // college players are seniors and declare early; pros are just older or younger
+  h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${college&&F.c>=3
       ? " \u2014 a senior, so you get the boost but he graduates before the development lands."
+      : !college&&F.age>=30 ? ` \u2014 at ${F.age} you get the boost now, but there's little development left in him.`
       : F.pot-F.r<4 ? " \u2014 he's near his ceiling, so there's little development left."
-      : " \u2014 room to grow, and far likelier to stay than declare early."}`
+      : college ? " \u2014 room to grow, and far likelier to stay than declare early."
+      : " \u2014 room to grow, and the development will show next season."}`
       :"Nobody featured. Tap a starter to feature him."}</div>`;
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
   h+=POS.map((P,i)=>{
@@ -1092,8 +1132,8 @@ function rosterView(){
           <div class="pmain"><div class="pname">${esc(s.n)}
             ${inj?`<span class="outtag">OUT ${inj.w}w</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
-            <div class="psub">${tag(s)}${s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
-              (s.c>=2&&s.r>=76?" &middot; <span class='draftag'>draft risk</span>":"")}</div></div>
+            <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
+              (college&&s.c>=2&&s.r>=76?" &middot; <span class='draftag'>draft risk</span>":"")}</div></div>
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
@@ -1146,8 +1186,9 @@ function teamCardHTML(my,rk,co){
       if(!O||!D)return "";
       const row=(lab,c)=>`<div class="stline"><span class="stlab">${lab}</span>
         <span class="stn">${esc(c.n)}</span><span class="sts">${esc(c.s)}</span>
-        <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}">${c.q>0?"+":""}${c.q}</span></div>`;
-      return `<div class="staffbar">${row(SPORT.staff.oc.short,O)}${row(SPORT.staff.dc.short,D)}</div>`})()}
+        <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}" title="How good he is at the job: 0 is an average ${esc(SPORT.staff.any||"coach")}, +40 one of the best, -40 in over his head">${c.q>0?"+":""}${c.q}</span></div>`;
+      return `<div class="staffbar">${row(SPORT.staff.oc.short,O)}${row(SPORT.staff.dc.short,D)}</div>
+        <div class="stkey">${esc(SPORT.staff.oc.short)}, ${esc(SPORT.staff.dc.short)}: your two lead assistants. The number is how good each is at the job (0 average, +40 among the best); it shifts how your team plays and how fast players develop.</div>`})()}
     ${(()=>{const e=S.expNow||expectations();
       const w=SEA.rec[my][0],l=SEA.rec[my][1];
       // games left: your remaining regular-season games (was 12 minus games
@@ -1174,7 +1215,8 @@ function injuryHTML(inj){
       <div class="iwho"><div class="pname">${esc(e.who||e.k)}</div>
       <div class="psub">out ${e.w} more ${stepWord(e.w)}${
         e.rating?" &middot; rated "+e.rating:""}</div></div>
-      <span class="imag">${Math.round(e.m)}</span></div>`).join("");
+      <span class="imag" title="What losing him costs the team, in rating points">${Math.round(e.m)}</span></div>`).join("")
+      +`<div class="stkey">The number on the right is what each absence costs the team's strength, in rating points: in an even game, every 10 points is about one and a half points of win probability.</div>`;
   }
   return h;
 }
@@ -1851,8 +1893,8 @@ function teamCard(t){
           <span class="sts">${esc(U.oc[t].s)}</span></div>
         <div class="stline"><span class="stlab">${SPORT.staff.dc.short}</span><span class="stn">${esc(U.dc[t].n)}</span>
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
-    <div class="progline">${LEAGUE.text.org} strength since ${base}:
-      <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b>
+    <div class="progline" title="Change in the ${esc(LEAGUE.text.org)}'s long-run strength rating since you took over: it moves with results, recruiting or signings, and the staff">${LEAGUE.text.org} strength since ${base}:
+      <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b> <span class="stkeyin">(rating points)</span>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
   if(U&&U.series&&LEAGUE.rivals.of[t]){
     const rows=LEAGUE.rivals.of[t].map(x=>LEAGUE.rivals.series(U,t,x.o)?{o:x.o,s:LEAGUE.rivals.series(U,t,x.o)}:null)
@@ -1925,7 +1967,7 @@ function dynastyView(){
       <div class="iname">${esc(C.name)}</div>
       <div class="imeta">You &middot; head coach &middot; ${esc(repGrade(C.rep))}</div>
       <div class="stats">
-        <div><b>${careerRec(C)}</b><span>Career</span></div>
+        <div><b>${careerRec(careerNow(C))}</b><span>Career</span></div>
         <div><b>${C.titles}</b><span>Titles</span></div>
         <div><b>${C.confs}</b><span>Conf</span></div>
         <div><b>${C.fired}</b><span>Fired</span></div>
@@ -2097,7 +2139,9 @@ function simAhead(){
 
 /* ---- sim ahead: as far as you like, stopping when something needs you ---- */
 let simSheet=false;
-const SIM_STOPS=[["big","A big game is next (a rival, a top side, a cup tie)"],["slide","We lose three in a row"],
+/* what you take charge of: a program (college), a team, a club */
+const ORG_WORD=(typeof LEAGUE!=="undefined"&&LEAGUE.text&&LEAGUE.text.unit)||"program";
+const SIM_STOPS=[["big","A big game is next (a rival, a top side"+(typeof LEAGUE!=="undefined"&&LEAGUE.cup?", a cup tie)":")")],["slide","We lose three in a row"],
   ["hurt","One of our players gets hurt"],["decide","Something needs a decision"]];
 function simStops(){ if(!S.simStops)S.simStops={big:true,slide:true,hurt:true,decide:true}; return S.simStops }
 function myGamesIn(w){ const my=S.myTeam; return SEA.gamesFor?SEA.gamesFor(my,w):SEA.sched.filter(g=>g.week===w&&(g.home===my||g.away===my)) }
@@ -2299,6 +2343,7 @@ function render(){
     const c=el("hclose"); if(c)c.onclick=()=>{S.help=false;render()};
     document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{
       S.watchMode=b.dataset.watch; save(); render();});
+    document.querySelectorAll("[data-advice]").forEach(b=>b.onclick=()=>{ S.advice=b.dataset.advice; save(); render() });
     const bk=el("backupbtn"); if(bk)bk.onclick=()=>{ save(); downloadBackup() };
     const rf2=el("restorefile2"); if(rf2)rf2.onchange=async()=>{ const f=rf2.files&&rf2.files[0]; if(!f)return;
       if(!confirm("Replace the career you're playing with this backup?"))return;
@@ -2314,7 +2359,7 @@ function render(){
     el("app").innerHTML=`<header class="mast">
       <div class="kicker">Career complete</div>
       <h1>${esc(C.name)}</h1>
-      <p>${C.w}-${C.l} across ${C.stops.length} program${C.stops.length===1?"":"s"},
+      <p>${careerRec(C)} across ${C.stops.length} ${ORG_WORD}${C.stops.length===1?"":"s"},
       ${C.titles} national title${C.titles===1?"":"s"}, ${C.confs} conference title${C.confs===1?"":"s"}.
       ${C.fired?`Fired ${C.fired} time${C.fired===1?"":"s"} along the way.`:"Never fired."}</p></header>
       <div class="grouphead">Coaching stops</div>
@@ -2354,7 +2399,7 @@ function render(){
     <div class="cols">
     ${wide&&!inOff?`<aside id="side">${teamPanel()}
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
-        SEA.buttonLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
+        advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
     <main id="view">${(checkAchievements(),achToastHTML())}${inOff?LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
@@ -2373,7 +2418,7 @@ function render(){
               :LEAGUE.ui.offseasonBlock()!==null?LEAGUE.ui.offseasonBlock():
               S.off.move==="retire"?"Retire"
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
-              :"Begin "+(SEA.year+1)+" season"):SEA.buttonLabel()}</button>
+              :"Begin "+(SEA.year+1)+" season"):advLabel()}</button>
     </div>`;
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;render()});
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
@@ -2398,7 +2443,7 @@ function render(){
   const df=el("dfind"); if(df)df.oninput=()=>{dynQ=df.value;
     const p=df.selectionStart; render();
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
-  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan;render()});
+  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; save()} render()});
   // (the bottom bar's Sim ahead button is bound with skip2, above)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
   const sn=el("snd"); if(sn)sn.onclick=()=>{S.sound=!soundOn(); save(); if(soundOn()){sfx("tap"); if(musicOn())musicStart()} else musicStop(); render()};
@@ -2536,7 +2581,7 @@ function pickList(q){
       if(!list.length)return "";
       return `<div class="cbox"><div class="chead">${LEAGUE.conf.names[c]}</div>
       <div class="pickgrid">${list.map(t=>{
-        const ti=tierOf(PRE_RANK[t]);
+        const ti=LEAGUE.tierFor?LEAGUE.tierFor(t,PRE_RANK):tierOf(PRE_RANK[t]);   // soccer: by division, not by rating
         const gone=(S.picking||[]).some(x=>x.team===t);
         return `<button class="pick ${gone?"taken":""}" data-t="${esc(t)}"
           ${gone?"disabled":""} title="${esc(ti.l)}">
@@ -2610,8 +2655,8 @@ function renderTitle(){
       : `<button class="slot" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
-           <span class="slotsub">${esc(s.coach)} &middot; ${s.year} &middot; ${s.seasons}
-             season${s.seasons===1?"":"s"} &middot; ${s.rec}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
+           <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} so far: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
+             season${s.seasons===1?"":"s"} done${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            <span class="slotdel" data-del="${s.n}">Erase</span></button>`).join("")}</div>
     <button class="introskip wide" id="thow">How to play</button>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
@@ -2667,7 +2712,7 @@ function renderSetup(){
       <input class="seedbox" data-coname="${i+1}" maxlength="26"
         placeholder="Coach ${i+2} name"
         value="${esc((S.setup.names&&S.setup.names[i+1])||"")}">`).join("")}</div>`:""}
-    <div class="titlebtns"><button class="advance" id="cgo">Choose your program</button></div>
+    <div class="titlebtns"><button class="advance" id="cgo">Choose your ${ORG_WORD}</button></div>
   </div>`;
   el("crand").onclick=()=>{S.setup.name=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
   const grab=()=>{
@@ -2696,7 +2741,7 @@ function renderIntro(){
     <p class="introb">${card.b}</p>
     <div class="intronav">
       <button class="introskip" id="iskip">Skip</button>
-      <button class="advance" id="inext">${i===INTRO.length-1?"Pick your program":"Next"}</button>
+      <button class="advance" id="inext">${i===INTRO.length-1?"Pick your "+ORG_WORD:"Next"}</button>
     </div>
     <div class="dots">${INTRO.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join("")}</div>
   </div>`;
@@ -2733,6 +2778,11 @@ function helpPanel(){
       <label class="setbtn restorelbl">Restore a backup<input type="file" id="restorefile2" accept=".coach,.txt,text/plain" hidden></label></div>
     <div class="helpcard"><div class="cdesc">Your career is saved in this browser as you play. Clearing the browser's data
       erases it, so keep a backup file now and then: it opens again from here, or from the title screen on any device.</div></div>`:""}
+    <div class="grouphead">Staff advice on reads</div>
+    <div class="setrow">${[["auto","Automatic"],["full","Full"],["hints","Hints only"]].map(([k,l])=>`<button class="setbtn" data-advice="${k}"
+      aria-pressed="${(S.advice||"auto")===k}">${l}</button>`).join("")}</div>
+    <div class="helpcard"><div class="cdesc">Full: Pearl tells you what she sees and what to do. Hints only: she points at what to look at and leaves the answer to you.
+      Automatic: full advice in your first season, hints after.</div></div>
     <div class="grouphead">Playback speed</div>
     <div class="setrow">${SPEEDS.map(s=>`<button class="setbtn" data-speed="${s[0]}"
       aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
@@ -2762,7 +2812,7 @@ function renderStart(){
       const taken=(S.picking||[]).map(x=>x.team);
       const who=((S.setup.names&&S.setup.names[taken.length])||"").trim()
               ||("Coach "+(taken.length+1));
-      return `<div class="grouphead">${esc(who)} &mdash; pick a program
+      return `<div class="grouphead">${esc(who)} &mdash; pick a ${ORG_WORD}
         (${taken.length+1} of ${n})</div>`+
         (taken.length?`<div class="note">Already taken: ${taken.map(esc).join(", ")}</div>`:"");
     })()}
@@ -2773,7 +2823,7 @@ function renderStart(){
         <div class="grouphead">Or any of them</div>` })()}
     <div class="seedrow"><input id="find" class="seedbox findbox" placeholder="Search ${NAMES.length} ${esc(LEAGUE.text.orgs||"teams")}...">
       <span class="seedhint">The number is the preseason rating rank. Lower means a stronger
-      program &mdash; and higher expectations to go with it.</span></div>
+      ${ORG_WORD} &mdash; and higher expectations to go with it.</span></div>
     <div class="tierkey">${TIERS.map(t=>`<span class="${t.c}">${esc(t.l)}</span>`).join("")}</div>
     <div id="picks">${pickList("")}</div>
     <div style="height:40px"></div>`;

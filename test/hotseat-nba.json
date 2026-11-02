@@ -1,5 +1,5 @@
 {
- "fp": "e067a3d155b76f44",
+ "fp": "b958ac01fb997d54",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -50,6 +50,11 @@
    "fp": "e067a3d155b76f44",
    "from": "e067a3d155b76f44",
    "note": "recorded once"
+  },
+  {
+   "fp": "b958ac01fb997d54",
+   "from": "e067a3d155b76f44",
+   "note": "playtest round 5"
   }
  ],
  "out": [
@@ -59,20 +64,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "68-14",
-      "result": "Lost in the conference finals",
-      "grade": "A-"
+      "rec": "56-26",
+      "result": "Lost in the conference semifinals",
+      "grade": "B-"
      },
-     "book": "081bd6c65b124722"
+     "book": "18ce4f55d85a6ba5"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "58-24",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "rec": "57-25",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "ecec7a3e47a674bf"
+     "book": "ec6ccf697024857c"
     }
    ]
   },
@@ -82,20 +87,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "13-69",
-      "result": "Losing season",
+      "rec": "38-44",
+      "result": "Lost in the play-in",
       "grade": "F"
      },
-     "book": "25df7114330fe92c"
+     "book": "6e30aacf46cf136b"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "64-18",
-      "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "rec": "38-44",
+      "result": "Lost in the play-in",
+      "grade": "F"
      },
-     "book": "4acf5f83a3dce204"
+     "book": "9a0d3589e86bbaef"
     }
    ]
   },
@@ -105,20 +110,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-52",
-      "result": "Losing season",
+      "rec": "31-51",
+      "result": "Lost in the play-in",
       "grade": "F"
      },
-     "book": "e8caf86a802ed197"
+     "book": "74e34f4fb82d0496"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "52-30",
-      "result": "Lost in the conference semifinals",
-      "grade": "C+"
+      "rec": "56-26",
+      "result": "Lost in the conference finals",
+      "grade": "B"
      },
-     "book": "b591e7d2f3422cc5"
+     "book": "c5206eccd7a23a2a"
     }
    ]
   }
