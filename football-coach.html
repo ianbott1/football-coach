@@ -13,7 +13,7 @@
  --mono:'IBM Plex Mono',ui-monospace,monospace}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--ink);color:var(--bone);font-family:var(--body);
- -webkit-font-smoothing:antialiased;padding-bottom:176px}
+ -webkit-font-smoothing:antialiased;padding-bottom:200px}
 #app{max-width:760px;margin:0 auto}
 .mast{padding:26px 16px 16px;border-bottom:1px solid var(--line)}
 .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
@@ -871,7 +871,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="bab083c";
+<script>const BUILD_ID="b5a6e6e";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -1658,7 +1658,7 @@ function coachTable(u){
   NAMES.forEach(t=>{
     const c=u.coach[t]; if(!c)return;
     out.push({team:t,n:c.n,q:c.q,t:c.t,you:!!c.you,
-      w:c.w||0,l:c.l||0,titles:c.titles||0,confs:c.confs||0,
+      w:c.w||0,l:c.l||0,d:c.d||0,titles:c.titles||0,confs:c.confs||0,   // soccer: draws too (the table read 54-0-48, Muse)
       stops:(c.stops||[]).slice()});
   });
   return out;
@@ -6125,7 +6125,7 @@ function starsHTML(team){
   if(!SEA||!SEA.roster||!SEA.roster[team]||typeof statLine!=="function")return "";
   const R=SEA.roster[team], hurt={}; SEA.talent.active(team).forEach(e=>hurt[e.idx]=e);
   const idx=R.map((p,i)=>i).filter(i=>R[i]&&i<POS.length).sort((a,b)=>R[b].r-R[a].r).slice(0,3);
-  R.forEach((p,i)=>{ if(p&&i>=POS.length&&idx.length<5&&moodOf(p,i,team).t==="wants to start")idx.push(i) });
+  R.forEach((p,i)=>{ if(p&&i>=POS.length&&!hurt[i]&&idx.length<5&&moodOf(p,i,team).t==="wants to start")idx.push(i) });
   if(!idx.length)return "";
   const tag=(t,c)=>`<span class="ptag ${c||""}">${esc(t)}</span>`;
   return `<div class="grouphead">Your players</div>`+idx.map(i=>{
@@ -7308,7 +7308,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy",
+const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
                     "history","expNow","readTally"];
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -7578,6 +7578,20 @@ function swapDepth(sea,i){
     else if(e.idx===BK(i)){ e.idx=i; if(e.m0!=null){ e.m=e.m0; delete e.m0 } } });
 }
 
+/* Featuring and ice time change how your games play from the moment you
+   choose, so each change is kept with the step it was made at: a reload
+   replays every game with the choice that was in force when it was played.
+   (Only the latest was kept, and every simmed game replayed with it: records
+   drifted between loads, 77-5 to 71-11; the title screen's summary, written
+   at the last save, disagreed until the career was opened. Muse.) With no
+   log for this season the choice hasn't changed since it began. */
+function noteChoice(k,was,now){
+  if(!SEA||S.off||SEA.phase==="done")return;
+  // (called after the change: "was" is what held since the season began)
+  if(!S.chLog||S.chLog.year!==SEA.year)S.chLog={year:SEA.year, ch:[],
+    f0:k==="f"?(was===undefined?null:was):(S.featured===undefined?null:S.featured), d0:k==="d"?(was||null):(S.deploy||null)};
+  S.chLog.ch.push({s:SEA.step, k:k, v:now===undefined?null:JSON.parse(JSON.stringify(now))});
+}
 /* a confirm on the page itself: the first tap turns the button into the
    question, the second does it. Browser dialogs (confirm) can be blocked or
    dismissed without a word, and then the button just does nothing (Muse: "Make a
@@ -7615,8 +7629,11 @@ function rebuild(){
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
+  const CL=S.chLog&&S.chLog.year===SEA.year?S.chLog:null;   // the choices as they were made (noteChoice)
+  if(CL){ SEA.featured=CL.f0; SEA.deploy=CL.d0 }
   for(let n=0;n<S.steps;n++){
     const i=SEA.step, first=!SEA.half;          // the step being played (a cup week's two parts share one)
+    if(CL&&first)CL.ch.forEach(c=>{ if(c.s===i){ if(c.k==="f")SEA.featured=c.v; else SEA.deploy=c.v } });
     if(first&&S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
     if(first&&S.fires&&S.fires[i])S.fires[i].forEach(sd=>SEA.fireCoordinator(S.myTeam,sd));
     const ans=(S.calls&&S.calls[callKey(i,SEA.year)+(SEA.half?"#1":"")])||[]; let ai=0;
@@ -7630,6 +7647,7 @@ function rebuild(){
     SEA.advance();
     SEA.forcedList=[]; SEA.forced=null;
   }
+  SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;   // and now, what's chosen now
   SEA.plan=plan;
 }
 
@@ -7646,7 +7664,7 @@ function save(){
     else await Promise.resolve();
     savePending=null;
     S.league=LEAGUE.id;                                   // every save says which game it's from
-    if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0)};
+    if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0),done:SEA.phase==="done"};
   try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
     return saveOK;
   })();
@@ -8626,7 +8644,7 @@ function attentionHTML(my){
   const hurt={}; SEA.talent.active(my).forEach(e=>hurt[e.idx]=e);
   POS.forEach((P,i)=>{
     const s=R[i], b=R[BK(i)];
-    if(!s||!b||hurt[i])return;
+    if(!s||!b||hurt[i]||hurt[BK(i)])return;      // never "start him" for a man who's hurt (Muse: an OUT player was recommended)
     if(b.r>s.r+2)out.push({k:"depth",i:i,
       h:`${b.n} has passed ${s.n} at ${P.p}`,
       b:`${b.r} to ${s.r}. He's ready.`});
@@ -9103,7 +9121,13 @@ let dynCoach=null, coachQ="";
 
 function coachRows(){
   if(!U||!U.coach)return [];
-  return coachTable(U);
+  // a person's row is their whole career, every stop (it counted only the
+  // current job, and disagreed with the You page: Muse)
+  const careerOf=t=>{ if(t===S.myTeam)return S.career;
+    const c=(S.coaches||[]).find((x,i)=>i!==(S.turn||0)&&x&&x.myTeam===t); return c&&c.career };
+  return coachTable(U).map(r=>{ const C=r.you&&careerOf(r.team); if(!C)return r;
+    // banked seasons, like every other coach's row (the season in progress isn't in theirs)
+    return Object.assign({},r,{w:C.w,l:C.l,d:C.d||0,titles:C.titles,confs:C.confs,stops:C.stops.slice()}) });
 }
 
 function coachCard(c){
@@ -9241,12 +9265,14 @@ function allTime(t){
 }
 
 function seasonRowsFor(t){
-  return S.history.map(h=>{
+  return S.history.map((h,hi)=>{
     const r=(h.teams&&h.teams[t])||[0,0,999];
     const seed=h.seeds?h.seeds[t]:null;
     const res=LEAGUE.seasonLine(h,t,r,seed);
     const cc=h.groupChamps?Object.keys(h.groupChamps).find(c=>h.groupChamps[c]===t):null;
-    return {year:h.year,rec:wdl(r[0],r[1],r[3]),rank:r[2],res:res,grade:(t===S.myTeam?h.grade:null),
+    // yours only where you coached this club that year (after a move it showed your other job's grades)
+    const mine=(h.team||S.myTeam)===t;
+    return {year:h.year,hi:mine?hi:-1,rec:wdl(r[0],r[1],r[3]),rank:r[2],res:res,grade:(mine?h.grade:null),
             champ:h.champion===t,conf:cc?LEAGUE.conf.names[cc]:null,
             coach:!!(h.coaching&&h.coaching.firedList.indexOf(t)>=0)};
   }).reverse();
@@ -9255,6 +9281,12 @@ function seasonRowsFor(t){
 /* the pro games: what a team pays, against its cap (or, in soccer, its wage
    budget), on every team's card and all season (Muse: payroll was
    offseason-only, and never shown for other teams) */
+/* a franchise's long-run strength since the dynasty began, in words: the
+   rating points were engine-speak on a coach's card (Instinct) */
+function strengthWords(d){
+  const a=Math.abs(d), up=d>0;
+  return a<25?"about where it was":a<75?(up?"a little stronger":"a little weaker"):a<150?(up?"stronger":"weaker"):(up?"much stronger":"much weaker");
+}
 function payrollLine(t){
   if(typeof payroll!=="function"||!LEAGUE.cap)return "";
   const R=(SEA&&SEA.roster&&SEA.roster[t])||(U&&U.roster&&U.roster[t]); if(!R||!R.some(p=>p&&p.k))return "";
@@ -9294,8 +9326,8 @@ function teamCard(t){
           <span class="sts">${esc(U.oc[t].s)}</span></div>
         <div class="stline"><span class="stlab">${SPORT.staff.dc.short}</span><span class="stn">${esc(U.dc[t].n)}</span>
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
-    <div class="progline" title="Change in the ${esc(LEAGUE.text.org)}'s long-run strength rating since you took over: it moves with results, ${LEAGUE.classes&&LEAGUE.classes.length?"recruiting":"the draft and signings"}, and the staff">${LEAGUE.text.org} strength since ${base}:
-      <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b> <span class="stkeyin">(rating points)</span>
+    <div class="progline" title="How the ${esc(LEAGUE.text.org)}'s long-run strength has moved since ${base}: with results, ${LEAGUE.classes&&LEAGUE.classes.length?"recruiting":"the draft and signings"}, and the staff">${LEAGUE.text.org} since ${base}:
+      <b class="${d>=25?'up':d<=-25?'dn':''}">${strengthWords(d)}</b>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div>${payrollLine(t)}</div>`;
   if(U&&U.series&&LEAGUE.rivals.of[t]){
     const rows=LEAGUE.rivals.of[t].map(x=>LEAGUE.rivals.series(U,t,x.o)?{o:x.o,s:LEAGUE.rivals.series(U,t,x.o)}:null)
@@ -9338,9 +9370,9 @@ function teamCard(t){
       </div>`).join("");
     if(book.length>12)h+=`<div class="note">Showing the top 12 by draft position.</div>`;
   }
-  h+=`<div class="grouphead">Season by season</div>`;
+  h+=`<div class="grouphead">${esc(t)}, season by season</div>`;
   h+=rows.map((r,i)=>{
-    const idx=(t===S.myTeam)?(S.history.length-1-i):-1;
+    const idx=r.hi===undefined?-1:r.hi;
     const has=idx>=0&&S.history[idx]&&S.history[idx].coach;
     return `<div class="yrow ${r.champ?'gold':''}">
     <span class="yr">${r.year}</span>
@@ -9354,6 +9386,16 @@ function teamCard(t){
   return h;
 }
 
+/* your own seasons, whichever club: after a move, the club card below is the
+   new club's history, not yours (Muse) */
+function yourSeasonsHTML(){
+  const H=S.history||[]; if(!H.length||new Set(H.map(h=>h.team||S.myTeam)).size<2)return "";
+  return `<div class="grouphead">Your seasons</div>`+H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<div class="yrow ${h.honours&&h.honours.title?'gold':''}">
+    <span class="yr">${h.year}</span>${h.grade?`<span class="ygrade">${esc(h.grade)}</span>`:""}
+    <div class="ymain"><div class="yrec">${esc(h.team||"")} &middot; ${esc(h.rec||"")}</div>
+    <div class="yres">${esc(h.result||"")}</div></div>
+    ${h.coach?`<button class="ycard" data-card="${i}" title="Season card">&#8599;</button>`:""}</div>`).join("");
+}
 function dynastyView(){
   const my=S.myTeam;
   let h=`<div class="dateline"><h2>Dynasty</h2>
@@ -9381,6 +9423,7 @@ function dynastyView(){
         <span class="stoprec">${wdl(s.w,s.l,s.d)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
       </div>`).join("")}</div>`;
     h+=cabinetHTML();
+    h+=yourSeasonsHTML();
     h+=teamCard(my);
     h+=`<div class="seedrow"><div class="seedbox seedshow">SEED ${S.seed}</div>
       <span class="seedhint">Anyone starting with this seed gets the identical universe.
@@ -9921,7 +9964,8 @@ function render(){
     ev.stopPropagation(); promote(+b.dataset.promo);});
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.feat;
-    S.featured=(S.featured===i?null:i);
+    const was=S.featured; S.featured=(S.featured===i?null:i);
+    noteChoice("f",was,S.featured);
     if(SEA)SEA.featured=S.featured;
     save(); render();});
   document.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{
@@ -10070,8 +10114,8 @@ function renderTitle(){
       : `<div class="slotwrap"><button class="slot" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
-           <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} so far: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
-             season${s.seasons===1?"":"s"} done${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
+           <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} ${s.now.done?"finished":"so far"}: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
+             ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            </button><button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button></div>`).join("")}</div>
     <button class="introskip wide" id="thow">How to play</button>
     <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>

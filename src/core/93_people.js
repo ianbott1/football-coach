@@ -53,7 +53,7 @@ function starsHTML(team){
   if(!SEA||!SEA.roster||!SEA.roster[team]||typeof statLine!=="function")return "";
   const R=SEA.roster[team], hurt={}; SEA.talent.active(team).forEach(e=>hurt[e.idx]=e);
   const idx=R.map((p,i)=>i).filter(i=>R[i]&&i<POS.length).sort((a,b)=>R[b].r-R[a].r).slice(0,3);
-  R.forEach((p,i)=>{ if(p&&i>=POS.length&&idx.length<5&&moodOf(p,i,team).t==="wants to start")idx.push(i) });
+  R.forEach((p,i)=>{ if(p&&i>=POS.length&&!hurt[i]&&idx.length<5&&moodOf(p,i,team).t==="wants to start")idx.push(i) });
   if(!idx.length)return "";
   const tag=(t,c)=>`<span class="ptag ${c||""}">${esc(t)}</span>`;
   return `<div class="grouphead">Your players</div>`+idx.map(i=>{

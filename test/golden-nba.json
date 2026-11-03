@@ -1,5 +1,5 @@
 {
- "fp": "7b23111031dcb60b",
+ "fp": "04f7d3535038e9e7",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -135,6 +135,11 @@
    "fp": "7b23111031dcb60b",
    "from": "b00478fd04693ea1",
    "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
+  },
+  {
+   "fp": "04f7d3535038e9e7",
+   "from": "7b23111031dcb60b",
+   "note": "Muse round 7 / Instinct round 3: soccer odds include featuring, your Coaches row is your career, Your seasons after a move, franchise strength in words, injured backups not recommended (screens only; no results move)"
   }
  ],
  "result": {
@@ -149,7 +154,7 @@
     "heis": "2ccdc333a87126d8",
     "history": "724781e719e07cd8",
     "universe": "ffe5fefffc4dcc93",
-    "screens": "c8e3c1fea31459c3"
+    "screens": "79373f953200a001"
    },
    {
     "year": 2027,
@@ -161,7 +166,7 @@
     "heis": "d00aaf8480776c48",
     "history": "0e09fef71711b830",
     "universe": "7537bfed45d855ad",
-    "screens": "30f855ab4f8557b8"
+    "screens": "87128515fc51063a"
    }
   ],
   "Detroit#777": [
@@ -175,7 +180,7 @@
     "heis": "22c9531ba0090e60",
     "history": "98b2e21d68c8c6bf",
     "universe": "2dc6580ab638ef44",
-    "screens": "a4fded0cff6901bd"
+    "screens": "4072bddd80765e78"
    },
    {
     "year": 2027,
@@ -187,7 +192,7 @@
     "heis": "079d6a02c16c2b6a",
     "history": "abc6206750985913",
     "universe": "e03274d969fd6485",
-    "screens": "5e3413b8797008d9"
+    "screens": "4711fcb4eff64b53"
    }
   ],
   "schedules#60": [

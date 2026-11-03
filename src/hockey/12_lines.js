@@ -78,5 +78,5 @@ function linesHTML(){
 }
 function bindLines(){
   document.querySelectorAll("[data-deploy]").forEach(b=>b.onclick=()=>{ const [g,k]=b.dataset.deploy.split(":");
-    S.deploy=Object.assign({},S.deploy||{},{[g]:k}); if(SEA)SEA.deploy=S.deploy; save(); render() });
+    const was=S.deploy; S.deploy=Object.assign({},S.deploy||{},{[g]:k}); noteChoice("d",was,S.deploy); if(SEA)SEA.deploy=S.deploy; save(); render() });
 }

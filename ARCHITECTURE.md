@@ -257,6 +257,21 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   rookie reserve is right on average (measured: mean error -0.4M football,
   +0.6M hockey) but varies about 5M either way, so near the line the label
   says "close: it depends on what the draft class costs".
+- Anything you choose that changes how your games play must be kept with the
+  step it was made at, because a load replays the season from its seed:
+  featuring and ice time kept only the latest choice, so every simmed game
+  replayed with it and records drifted between loads (Muse: 77-5 became
+  71-11; the title screen, written at the last save, "corrected itself" once
+  the career was opened). S.chLog keeps each change (noteChoice); with no log
+  for the season the choice never changed. Promotions and firings were
+  already kept this way (S.promos, S.fires). test/regressions.js 21.
+- A push to main is the release: Pages deploys it within minutes (Instinct
+  tested d501095 live within the hour). Say "live once Pages deploys", not
+  "nothing is live until you push", when Ian has already pushed.
+- In a hot seat the people's coach records (U.coach) count each season twice;
+  screens use each person's career instead (coachRows). Not fixed at the
+  source: U.coach for people is otherwise unused, and changing
+  recordCoaches would move hot-seat histories.
 - Playoff series put several of your games in one round: anything that
   finds "your game" in a round must take the latest, not the first.
 

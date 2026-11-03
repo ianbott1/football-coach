@@ -202,7 +202,7 @@ function coachTable(u){
   NAMES.forEach(t=>{
     const c=u.coach[t]; if(!c)return;
     out.push({team:t,n:c.n,q:c.q,t:c.t,you:!!c.you,
-      w:c.w||0,l:c.l||0,titles:c.titles||0,confs:c.confs||0,
+      w:c.w||0,l:c.l||0,d:c.d||0,titles:c.titles||0,confs:c.confs||0,   // soccer: draws too (the table read 54-0-48, Muse)
       stops:(c.stops||[]).slice()});
   });
   return out;

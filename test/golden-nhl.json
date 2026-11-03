@@ -1,5 +1,5 @@
 {
- "fp": "2c722c956a25da73",
+ "fp": "bdbee5c84f2d4a55",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -130,6 +130,11 @@
    "fp": "2c722c956a25da73",
    "from": "a4f5e7967fdffde6",
    "note": "Instinct round 2: hockey's ask curve reshaped (max for the top 1-2%, 6 of 768 contracts maxed, was 85), signing markups clamped at the max, fit labels, offseason record with OT losses, opaque action bar"
+  },
+  {
+   "fp": "bdbee5c84f2d4a55",
+   "from": "2c722c956a25da73",
+   "note": "Muse round 7 / Instinct round 3: soccer odds include featuring, your Coaches row is your career, Your seasons after a move, franchise strength in words, injured backups not recommended (screens only; no results move)"
   }
  ],
  "result": {
@@ -144,7 +149,7 @@
     "heis": "9e5a3b000418f0ce",
     "history": "f74ba0572c6f0a3e",
     "universe": "c24a5c89d241fd86",
-    "screens": "d70a853382e96823"
+    "screens": "23fc62b78068ef72"
    },
    {
     "year": 2027,
@@ -156,7 +161,7 @@
     "heis": "a3a1a7e8c72f5c64",
     "history": "5fe3088789095910",
     "universe": "3ee676e1f72c7657",
-    "screens": "bde018ed1b42d76f"
+    "screens": "d1a161ba542d9063"
    }
   ],
   "Edmonton#777": [
@@ -170,7 +175,7 @@
     "heis": "0cc42876587eba43",
     "history": "a7e1f7a85f401d81",
     "universe": "8fce4e9efef8d7dd",
-    "screens": "b4ee9116c7807611"
+    "screens": "fc880d5db10886d4"
    },
    {
     "year": 2027,
@@ -182,7 +187,7 @@
     "heis": "12f6ac64a4f962ae",
     "history": "1644d7811121a549",
     "universe": "a9aa940f478d6d67",
-    "screens": "12d060e33a81dc25"
+    "screens": "c116462b62b44fbe"
    }
   ],
   "schedules#60": [

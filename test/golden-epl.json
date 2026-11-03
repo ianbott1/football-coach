@@ -1,5 +1,5 @@
 {
- "fp": "9efa2e71be7f6c31",
+ "fp": "fdbdaae8d3c68e81",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -160,6 +160,11 @@
    "fp": "9efa2e71be7f6c31",
    "from": "79b42bac1440e6d3",
    "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
+  },
+  {
+   "fp": "fdbdaae8d3c68e81",
+   "from": "9efa2e71be7f6c31",
+   "note": "Muse round 7 / Instinct round 3: soccer odds include featuring, your Coaches row is your career, Your seasons after a move, franchise strength in words, injured backups not recommended (screens only; no results move)"
   }
  ],
  "result": {
@@ -174,7 +179,7 @@
     "heis": "b52085e10a9aee19",
     "history": "eec9a6693577fc76",
     "universe": "ad8098afd5da5e56",
-    "screens": "0519b1bcc099d298"
+    "screens": "585bd6c2ce23c441"
    },
    {
     "year": 2027,
@@ -186,7 +191,7 @@
     "heis": "61b1d170fd28a807",
     "history": "6f9dbbcd251fe49b",
     "universe": "8fe74ed2f462a615",
-    "screens": "879a6c3c04695bc0"
+    "screens": "e16f037867aca963"
    }
   ],
   "Wrexham#777": [
@@ -200,7 +205,7 @@
     "heis": "35b811b30c3c7d9b",
     "history": "58fd4d0d1d79782a",
     "universe": "49584d25376128f8",
-    "screens": "3f5c2dd8632601ca"
+    "screens": "cfc54daa8d406f43"
    },
    {
     "year": 2027,
@@ -212,7 +217,7 @@
     "heis": "773291adde1b8df1",
     "history": "5f77473fbc02c450",
     "universe": "3dcbe485f2471ef1",
-    "screens": "423a11e71420caa2"
+    "screens": "abb4199750174d5b"
    }
   ],
   "schedules#60": [

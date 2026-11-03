@@ -13,7 +13,7 @@ const GAMES=[['football-coach.html','Alabama'],['football-coach-pro.html','Denve
   ['basketball-coach-pro.html','Orlando'],['hockey-coach-pro.html','Vegas'],['soccer-coach.html','Dover Athletic']];
 const EXP=['S','SEA','U','POS','NAMES','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','openOffseason','commitOffseason',
   'rosterView','weekNews','teamPanel','attentionHTML','advLabel','ordinal','coachCard','careerNow','hkEventText','bbEventText','scEventText','nflPickSlot','BUILD_ID',
-  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr'];
+  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView'];
 const SET=['stConf','dynTab'];
 
 /* 1. soccer: a draw is never a win, a loss, or "null" (rivalries, headlines) */
@@ -111,9 +111,11 @@ for(const [f] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); ok(/
   const saved=JSON.parse(JSON.stringify(A.S.promos)); ok(Object.values(saved).every(L=>L.every(x=>typeof x==='object')),'new promotions are not marked as moving injuries'); }
 /* 10. featuring moves the shown win probability (it never did) */
 for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,8,'T'); if(A.FEATURE_EDGE===undefined)continue;
-  const my=A.S.myTeam, opp=A.NAMES.find(t=>t!==my), p0=A.winProb(my,opp,true,false);
-  A.S.featured=1; A.SEA.featured=1; const p1=A.winProb(my,opp,true,false);
-  ok(p1>p0,`${f}: featuring left the win probability at ${(100*p0).toFixed(1)}%`); }
+  // the number on the screen (soccer's W/D/L too), against the closest-matched opponent
+  const my=A.S.myTeam, opp=A.NAMES.filter(t=>t!==my).sort((a,b)=>Math.abs(A.SEA.elo[a]-A.SEA.elo[my])-Math.abs(A.SEA.elo[b]-A.SEA.elo[my]))[0];
+  const show=()=>strip(A.oddsHTML(my,opp,true,false,A.winProb(my,opp,true,false))), p0=A.winProb(my,opp,true,false), s0=show();
+  A.S.featured=1; A.SEA.featured=1; const p1=A.winProb(my,opp,true,false), s1=show();
+  ok(p1>p0&&s1!==s0,`${f}: featuring left the odds at "${s0}"`); A.S.featured=null; A.SEA.featured=null; }
 /* 11. a club page's "starters average" is the starters' (it averaged the squad) */
 for(const [f,team] of [['football-coach.html','Alabama'],['soccer-coach.html','Arsenal']]){
   const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T');
@@ -182,6 +184,41 @@ for(const [f] of GAMES.filter(g=>/pro|soccer/.test(g[0]))){ const A=load({settab
   ok(maxed/n<0.03,`hockey: ${maxed} of ${n} contracts at the maximum`); }
 /* 20. the action bar is opaque behind its buttons (text showed through at 390px) */
 for(const [f] of GAMES){ const h=require('fs').readFileSync(D(f),'utf8'); ok(/\.actionbar \.skip\{background:var\(--ink\)\}/.test(h)&&!/\.actionbar\{[^}]*rgba\(16,19,28,\.95\) 32%/.test(h),`${f}: the action bar's buttons are see-through`) }
+/* ---- Muse round 7 / Instinct round 3 (Nov 2026) ---- */
+/* 21. a reload replays every game as it was played: featuring (and hockey's
+   ice time) changed mid-season used to replay all simmed games with the
+   latest choice, so records drifted between loads (77-5 to 71-11) */
+for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,7,'T');
+  const step=n=>{ for(let k=0;k<n&&A.SEA.phase!=='done';k++){ A.simAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){A.live.ask?A.answerLive(A.live.ask.dp.opts[A.live.ask.dp.opts.length-1][0]):A.liveTick()} } };
+  const F=v=>{const w=A.S.featured; A.S.featured=v; A.noteChoice&&A.noteChoice('f',w,v); A.SEA.featured=v};
+  const Dp=v=>{const w=A.S.deploy; A.S.deploy=v; A.noteChoice&&A.noteChoice('d',w,v); A.SEA.deploy=v};
+  step(8); F(0); step(8); if(/hockey/.test(f))Dp({f:'ride',d:'roll'}); step(8); F(null); step(8); F(2);
+  const before=JSON.stringify([A.SEA.rec,A.SEA.drw||null]); A.rebuild();
+  ok(JSON.stringify([A.SEA.rec,A.SEA.drw||null])===before,`${f}: a reload changed the season's records after featuring changes mid-season`);
+  ok(A.SEA.featured===2,`${f}: after a reload the current featuring is ${A.SEA.featured}, not 2`); }
+/* 22. soccer: every coach's record carries draws (the Coaches page read 54-0-48) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Dover Athletic',11,'T');
+  for(let y=0;y<2;y++){ play(A,999); off(A) }
+  const rows=A.coachRows(), me=rows.find(r=>r.you);
+  ok(rows.filter(r=>r.d>0).length>rows.length*0.8,'soccer: coaches\' records have no draws');
+  ok(me&&me.w===A.S.career.w&&me.d===A.S.career.d&&me.l===A.S.career.l,`soccer: your Coaches row ${me&&[me.w,me.d,me.l]} isn't your career ${[A.S.career.w,A.S.career.d,A.S.career.l]}`); }
+/* 23. after a move: your Coaches row is your whole career, the You page lists
+   your own seasons, and the club's rows don't carry your other job's grades */
+{ const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Denver',5,'T');
+  play(A,999); A.openOffseason(); A.S.off.move='Dallas'; for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
+  play(A,999); A.openOffseason(); for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
+  ok(A.S.myTeam==='Dallas','pro football: the move to Dallas didn\'t happen');
+  const me=A.coachRows().find(r=>r.team===A.S.myTeam), C=A.S.career;   // banked, as every coach's row is
+  ok(me&&me.w===C.w&&me.l===C.l,`pro football: your Coaches row ${me&&me.w+'-'+me.l} isn't your career ${C.w}-${C.l}`);
+  const ys=strip(A.yourSeasonsHTML?A.yourSeasonsHTML():''); ok(/Denver/.test(ys)&&/Dallas/.test(ys),'pro football: the You page doesn\'t list your seasons at both clubs');
+  ok(A.seasonRowsFor('Dallas').every(r=>r.year<2027?!r.grade:true),'pro football: Dallas\'s season rows carry a grade from your Denver year'); }
+/* 24. an injured backup is never recommended to start */
+{ const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP}); A.newDynasty('Duke',4,'T'); const my=A.S.myTeam, E=A.SEA;
+  let n=0; for(let i=0;i<A.POS.length;i++){ const b=E.roster[my][A.BK(i)]; if(!b)continue; b.r=E.roster[my][i].r+10; E.talent.inj[my].push({m:0,w:14,k:b.p,idx:A.BK(i),who:b.n,rating:b.r}); n++ }
+  ok(n>0&&!/data-promo/.test(A.attentionHTML(my)),'college basketball: a decision card recommends starting an injured backup'); }
+/* 25. the team card says franchise strength in words */
+for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T');
+  const c=strip(A.teamCard(A.S.myTeam)); ok(!/rating points/.test(c)&&/since \d{4}: (about where|a little|stronger|weaker|much)/.test(c),`${f}: the team card's strength line is in engine numbers ("${(c.match(/since \d{4}:[^&]{0,40}/)||[''])[0]}")`) }
 
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0);

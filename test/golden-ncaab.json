@@ -1,5 +1,5 @@
 {
- "fp": "517b48bd18332064",
+ "fp": "0ae9061182d461f5",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -195,6 +195,11 @@
    "fp": "517b48bd18332064",
    "from": "8908fe84b8d3bbc0",
    "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
+  },
+  {
+   "fp": "0ae9061182d461f5",
+   "from": "517b48bd18332064",
+   "note": "Muse round 7 / Instinct round 3: soccer odds include featuring, your Coaches row is your career, Your seasons after a move, franchise strength in words, injured backups not recommended (screens only; no results move)"
   }
  ],
  "result": {
@@ -209,7 +214,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "3f5f17f1cea58053",
     "universe": "29a92f3d60e09617",
-    "screens": "3cc0ecc581478880"
+    "screens": "562ff4adf33ddfb5"
    },
    {
     "year": 2027,
@@ -221,7 +226,7 @@
     "heis": "64b059fcdf7e9d46",
     "history": "99de8296bf938c82",
     "universe": "bd3d3e718a7a23df",
-    "screens": "49f370d4dfc03c25"
+    "screens": "f3f1f610ee642072"
    }
   ],
   "Coppin State#2024": [
@@ -235,7 +240,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "5cd1a4d4402906a2",
     "universe": "9cb6dcc8e5340bbd",
-    "screens": "2b3e31b228676f79"
+    "screens": "6cf5d38aed369e0b"
    },
    {
     "year": 2027,
@@ -247,7 +252,7 @@
     "heis": "5e653284efe7ed05",
     "history": "d4746daa8900bc99",
     "universe": "ed8086c25debe3aa",
-    "screens": "2388e0e37a077f3a"
+    "screens": "e0d0acc3b3d03804"
    }
   ],
   "Gonzaga#777": [
@@ -261,7 +266,7 @@
     "heis": "c94713712b4e6c61",
     "history": "e4060c2b71079dba",
     "universe": "eee9d3d013e35123",
-    "screens": "086a01aaf7397e34"
+    "screens": "e7bd354b1ca6bb4f"
    },
    {
     "year": 2027,
@@ -273,7 +278,7 @@
     "heis": "2c21cf7676ec0650",
     "history": "4a166164c632e93a",
     "universe": "e2f2c5eeb4e16444",
-    "screens": "d1187d85039465ff"
+    "screens": "6cf8124e3f30cddb"
    }
   ],
   "schedules#60": [
