@@ -1,5 +1,5 @@
 {
- "fp": "8c7af04df5d52c06",
+ "fp": "1b78921a95f1bf4b",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -120,6 +120,11 @@
    "fp": "8c7af04df5d52c06",
    "from": "62ee3f43bb7c1a26",
    "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
+  },
+  {
+   "fp": "1b78921a95f1bf4b",
+   "from": "8c7af04df5d52c06",
+   "note": "Nov 2026: salary caps bind (veteran pay scaled per league, maximum contracts, hard caps enforced with fill-ins counted): results from season 2 in pro football, basketball, hockey"
   }
  ],
  "result": {
@@ -132,21 +137,21 @@
     "rec": "d7ae1235bae99b43",
     "poll": "5a2da089622cdcd1",
     "heis": "2ccdc333a87126d8",
-    "history": "142532239fc64260",
-    "universe": "e50b2eec47e7d23a",
-    "screens": "358f1474fcc0ab8a"
+    "history": "724781e719e07cd8",
+    "universe": "ffe5fefffc4dcc93",
+    "screens": "5d779137b6ceca9c"
    },
    {
     "year": 2027,
-    "games": "45c44c2966ca2792",
-    "post": "2965fb3fd633191d",
-    "champion": "San Antonio",
-    "rec": "8b21c891a61082a5",
-    "poll": "08b93211ff8a698c",
-    "heis": "d9117e620e3eacf2",
-    "history": "5ac08a56110b1766",
-    "universe": "6cb73fa8413bb8ff",
-    "screens": "4c39a93f87a24a97"
+    "games": "f95efe4572eb1597",
+    "post": "16db1a2c5c2558c8",
+    "champion": "Houston",
+    "rec": "a21930b2c603f4b0",
+    "poll": "df61f3c6e1934d57",
+    "heis": "d00aaf8480776c48",
+    "history": "0e09fef71711b830",
+    "universe": "7537bfed45d855ad",
+    "screens": "6e5297a961ad1b41"
    }
   ],
   "Detroit#777": [
@@ -158,21 +163,21 @@
     "rec": "806c1a86431a86bb",
     "poll": "d96e604f59d2c590",
     "heis": "22c9531ba0090e60",
-    "history": "cee690266a246bc4",
-    "universe": "df759fce0e6589a2",
-    "screens": "0741882b83e441e0"
+    "history": "98b2e21d68c8c6bf",
+    "universe": "2dc6580ab638ef44",
+    "screens": "b3762df724f0b1cb"
    },
    {
     "year": 2027,
-    "games": "8f7ef6e223543269",
-    "post": "b2934e3947f2eb46",
-    "champion": "Houston",
-    "rec": "5b696f77f56741fe",
-    "poll": "e389e8260161377b",
-    "heis": "79edbf090805b4d0",
-    "history": "6cdc5f71b4636f92",
-    "universe": "992bd2a7403902fe",
-    "screens": "d32794cbc8053176"
+    "games": "3ee4ea12969a27af",
+    "post": "793cefe7bef40823",
+    "champion": "Oklahoma City",
+    "rec": "867e39e7fd4fb6fe",
+    "poll": "c0b3f4211297b788",
+    "heis": "079d6a02c16c2b6a",
+    "history": "abc6206750985913",
+    "universe": "e03274d969fd6485",
+    "screens": "2eae23a8daa3814f"
    }
   ],
   "schedules#60": [

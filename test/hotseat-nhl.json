@@ -1,5 +1,5 @@
 {
- "fp": "08d1d75f3595aa15",
+ "fp": "1250d64705984f3e",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -90,6 +90,11 @@
    "fp": "08d1d75f3595aa15",
    "from": "3454f8908304731a",
    "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
+  },
+  {
+   "fp": "1250d64705984f3e",
+   "from": "08d1d75f3595aa15",
+   "note": "Nov 2026: salary caps bind (veteran pay scaled per league, maximum contracts, hard caps enforced with fill-ins counted): results from season 2 in pro football, basketball, hockey"
   }
  ],
  "out": [
@@ -103,7 +108,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "4fa15c365bbb7289"
+     "book": "77e6f93580ac3b1d"
     },
     {
      "team": "Montreal",
@@ -112,7 +117,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "8fdb2b29591fce8a"
+     "book": "0f3d3ae4dd256518"
     }
    ]
   },
@@ -122,20 +127,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "41-34-9",
+      "rec": "21-43-20",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "F"
      },
-     "book": "32fce8b91aef0a5d"
+     "book": "682f84483925dac0"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "41-32-11",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "44-30-10",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "5f2e349ae3d2a24a"
+     "book": "257dfcfff39511ba"
     }
    ]
   },
@@ -145,20 +150,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-33-11",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "45-26-13",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "0f11119e3d0843b1"
+     "book": "153d58c27e432961"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "31-45-8",
+      "rec": "25-47-12",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "0f9d7405789d7682"
+     "book": "7ac6f7855fbdf2e1"
     }
    ]
   }

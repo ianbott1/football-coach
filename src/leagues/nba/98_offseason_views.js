@@ -67,7 +67,7 @@ function nflBoardHTML(P){
 function nflTargetsHTML(P,room){
   const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
   const mine=(P.targets||[]).filter(k=>byKey[k]);
-  let left=room-8;                                  // leave room for the draft class
+  let left=room-ROOKIE_ROOM;                        // leave room for the draft class
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
       if(on){left-=x.ask; fit=left>=0?"fits":left>=-8?"fits only by squeezing the draft class":"won't fit as things stand";   // the signing checks the cap; this reserves rookie money

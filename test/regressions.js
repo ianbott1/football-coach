@@ -77,7 +77,19 @@ for(const [f,team] of GAMES){ const A=load({file:D(f),expose:EXP}); A.newDynasty
   ok(/data-fire=/.test(A.attentionHTML(my)),`${f}: no staff decision with a -40 assistant`);
   ok(/data-fire=/.test(A.teamPanel()),`${f}: the wide layout's team panel has no "Make a change"`); }
 
-/* 7. a build stamp on every game */
+/* 7. the salary cap binds (Nov 2026): hard caps are never exceeded after an
+   offseason, and a typical payroll sits near the cap, not a quarter of it */
+for(const [f,cap,hard] of [['football-coach-pro.html',110,true],['hockey-coach-pro.html',104,true],['basketball-coach-pro.html',165,false]]){
+  const A=load({file:D(f),expose:EXP}); A.newDynasty(A.NAMES[2],9,'T'); const meds=[];
+  for(let y=0;y<3;y++){ const E=A.SEA; let g=0; while(E.phase!=='done'&&g++<900)E.advance(); off(A);
+    const pay=A.NAMES.map(t=>A.U.roster[t].reduce((s,x)=>s+(x&&x.k?x.k.sal:0),0)).sort((a,b)=>a-b);
+    meds.push(pay[pay.length>>1]/cap);
+    if(hard)ok(pay[pay.length-1]<=cap+0.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} over the ${cap} hard cap`);
+    else ok(pay[pay.length-1]<=200.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} past the tax line`) }
+  const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=0.6&&m<=0.95,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ~70-85%)`);
+  console.log(`  ${f}: typical payroll ${Math.round(100*m)}% of the cap`); }
+
+/* 8. a build stamp on every game */
 for(const [f] of GAMES){ const A=load({file:D(f),expose:EXP}); ok(/^[0-9a-f]{7}$/.test(A.BUILD_ID||''),`${f}: no build stamp`) }
 
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

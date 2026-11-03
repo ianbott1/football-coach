@@ -18,11 +18,11 @@ for(let y=0;y<2;y++){let g=0;while(api.SEA.phase!=='done'&&g++<600){api.doAdvanc
  api.openOffseason();grab('offseason');
  // always check the assistant-hire section (it only appears when one leaves)
  if(api.S.off){const SC=api.S.off.staff=api.S.off.staff||{}; ['oc','dc'].forEach(k=>{if(!SC[k])SC[k]=[{n:'Test Assistant',q:10,s:'Motion offense',grade:'solid'}]});
-   pages.push(['offseason, assistants leaving',api.view('team')]); delete api.S.off.staff}api.commitOffseason();grab('after offseason');}
+   pages.push(['offseason, assistants leaving',api.view('team')]); delete api.S.off.staff} if(api.S.off&&api.S.off.act.userOpen&&api.S.off.move===null)api.S.off.move=api.S.myTeam;   /* fired: stay (the test reads the record book, not the job market) */ api.commitOffseason();grab('after offseason');}
 pages.push(['team pages',api.teamPages().join('')]);
 // after two seasons the record book has basketball leaders and career lines
 { const prog=api.view('dyn','program').replace(/<[^>]+>/g,' ');
-  if(!/Points/.test(prog)||!/\d[\d,]* points/.test(prog)){console.log('MISMATCH the record book has no basketball leaders or career lines');process.exit(1)} }
+  if(!/Points/.test(prog)||!/\d[\d,]* points/.test(prog)){console.log('MISMATCH the record book has no basketball leaders or career lines');if(process.env.SHOW)console.log(prog.replace(/\s+/g,' ').slice(0,3000));process.exit(1)} }
 const W=/\b(?<!slow it )(?<!Slow it )(touchdowns?|yards?|quarterbacks?|QB|bowls?|Heisman|field goals?|punts?|kickoffs?|end zone|gridiron|CFP|trenches|linemen|offensive line|defensive line|tailback|receivers?|sacks?|interceptions?|fumbles?|Saturdays?|NFL|scrimmage|down and|coordinators?|side of the ball|Super Bowl|baskets?|rebounds?|dribbl\w*|tip-?off|court|NBA|play-in|three-pointers?|free throws?|layups?|point guards?)\b/gi;   // ("Slow it down and" is basketball)
 const hits={};pages.forEach(([lab,h])=>{const t=h.replace(/<[^>]+>/g,' ');let mm;while((mm=W.exec(t))){const k=mm[0].toLowerCase();const ctx=t.slice(Math.max(0,mm.index-50),mm.index+40).replace(/\s+/g,' ');(hits[k]=hits[k]||[]).push(lab+': ...'+ctx+'...')}});
 Object.keys(hits).forEach(k=>{console.log(k,'x'+hits[k].length);[...new Set(hits[k])].slice(0,2).forEach(x=>console.log('    ',x.slice(0,150)))});

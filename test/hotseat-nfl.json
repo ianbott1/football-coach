@@ -1,5 +1,5 @@
 {
- "fp": "ac02bebab40f8571",
+ "fp": "42dfd8b6de8291cd",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -135,6 +135,11 @@
    "fp": "ac02bebab40f8571",
    "from": "92d3ce8a6e49a718",
    "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
+  },
+  {
+   "fp": "42dfd8b6de8291cd",
+   "from": "ac02bebab40f8571",
+   "note": "Nov 2026: salary caps bind (veteran pay scaled per league, maximum contracts, hard caps enforced with fill-ins counted): results from season 2 in pro football, basketball, hockey"
   }
  ],
  "out": [
@@ -148,7 +153,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "1f8181373d0de5dd"
+     "book": "d7a4d4eda7493f5d"
     },
     {
      "team": "Tennessee",
@@ -157,7 +162,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "0a7a4fc146f7f355"
+     "book": "326404cbabc407fc"
     }
    ]
   },
@@ -167,20 +172,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the divisional round",
-      "grade": "B+"
+      "rec": "12-5",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "1cb7dadf2e906321"
+     "book": "da4d413b8abd7aee"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "11-6",
-      "result": "Lost the conference championship",
+      "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "6bd89c6f3e2c5024"
+     "book": "64d38da00b925092"
     }
    ]
   },
@@ -190,20 +195,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the divisional round",
-      "grade": "B+"
+      "rec": "8-9",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "6edb80c591375520"
+     "book": "4dc9a5e46ada7f41"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "15-2",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "8-9",
+      "result": "Losing season",
+      "grade": "B"
      },
-     "book": "38e14a51594a1293"
+     "book": "45b03c38426ad0b3"
     }
    ]
   }

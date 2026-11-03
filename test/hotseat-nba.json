@@ -1,5 +1,5 @@
 {
- "fp": "f9dc233a8aacdb58",
+ "fp": "f19ad78721626db5",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -75,6 +75,11 @@
    "fp": "f9dc233a8aacdb58",
    "from": "9028a2fbaa0345a0",
    "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
+  },
+  {
+   "fp": "f19ad78721626db5",
+   "from": "f9dc233a8aacdb58",
+   "note": "Nov 2026: salary caps bind (veteran pay scaled per league, maximum contracts, hard caps enforced with fill-ins counted): results from season 2 in pro football, basketball, hockey"
   }
  ],
  "out": [
@@ -88,7 +93,7 @@
       "result": "Lost in the conference finals",
       "grade": "A-"
      },
-     "book": "0416e036a72db6e1"
+     "book": "1775aa6c07029296"
     },
     {
      "team": "New York",
@@ -97,7 +102,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "2e7092e3d2aca860"
+     "book": "7bda01d9e2a2720f"
     }
    ]
   },
@@ -107,20 +112,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "15-67",
+      "rec": "11-71",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "92efd5d673f3cf79"
+     "book": "429737f19be8f3ba"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "38-44",
-      "result": "Lost in the play-in",
-      "grade": "C-"
+      "rec": "50-32",
+      "result": "Lost in the first round",
+      "grade": "B-"
      },
-     "book": "d6517d491cc5dc37"
+     "book": "5ebeff9a2b485fef"
     }
    ]
   },
@@ -130,20 +135,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "42-40",
+      "rec": "36-46",
       "result": "Lost in the first round",
-      "grade": "C+"
+      "grade": "C-"
      },
-     "book": "078e60f8dac7aacc"
+     "book": "8a724e50174b9bbd"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "61-21",
-      "result": "Lost in the conference finals",
-      "grade": "A"
+      "rec": "50-32",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "ad6f50b27a0a5801"
+     "book": "74475c37bb4ff459"
     }
    ]
   }

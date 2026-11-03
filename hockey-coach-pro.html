@@ -863,7 +863,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="17e4976";
+<script>const BUILD_ID="9513348";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1902,6 +1902,11 @@ const AGE_SHIFT={};                           // every position ages alike
 const POS_PAY={};                             // and is paid alike
 const MAX_DEAL=Math.round(NFL_CAP*0.20*10)/10; // a max contract: 20% of the cap ($20.8M)
 
+/* What the market pays veterans, scaled so payrolls of the players the sim
+   tracks sit near the cap (Nov 2026: hockey payrolls were ~25 against 104,
+   so the cap never bit). Rookie scales and minimums are real and stay. */
+const PAY=+((typeof process!=="undefined"&&process.env&&process.env.PAY_NHL)||4.3);
+const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of the cap
 function nflAsk(r,pos,age){
   const x=Math.max(0,(r-55)/35);
   // scaled to this league's ratings: a typical starter (~64) about $15M, a
@@ -1909,10 +1914,13 @@ function nflAsk(r,pos,age){
   let s=Math.min(MAX_DEAL,(0.85+40*Math.pow(x,1.5))*(POS_PAY[pos]||1));   // $850K up to the max; payrolls between the floor and the cap
   const a=age-(AGE_SHIFT[pos]||0);
   if(a>=31)s*=0.78; else if(a>=29)s*=0.9;
-  return Math.round(Math.max(0.85,s)*100)/100;
+  return Math.round(Math.max(0.85,Math.min(MAX_SAL,s*PAY))*100)/100;   // veterans' pay, scaled to the cap; the minimum is real
 }
 function nflYears(age,pos){const a=age-(AGE_SHIFT[pos]||0); return a<=26?4:a<=29?3:a<=31?2:1}
 function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
+/* a hard cap: the empty spots left after a signing are filled at the minimum,
+   so free agency keeps that much back (fill-ins tipped teams to 102%) */
+const fillReserve=R=>Math.max(0,R.filter(x=>!x).length-1)*0.9;
 const ROOKIE_ROOM=2;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
@@ -1923,14 +1931,14 @@ function nflResignPlan(R){
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players (the pros' bar was 66 for a starter)
-    const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12)&&p.age<=33;
+    const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12*PAY)&&p.age<=33;
     keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :p.age>33?`his age: ${p.age+1} next season`
       :i<POS.length&&p.r<62?`rated ${p.r}: below what the staff want in a starter`
       :i>=POS.length&&p.r<60?`rated ${p.r}: not enough to keep as a backup`
-      :i>=POS.length&&ask>12?`asking ${money2(ask)}: too much for a backup`
+      :i>=POS.length&&ask>12*PAY?`asking ${money2(ask)}: too much for a backup`
       :`no room under the cap for his ${money2(ask)} ask`;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
   });
@@ -2045,7 +2053,7 @@ function nflFreeAgentPreview(u,myTeam,users){
    is young, less once he is past 29, and less the more he is paid. */
 function tradeValue(p){
   const young=Math.max(0,27-p.age)/5;
-  return p.r+(p.pot-p.r)*0.4*young-Math.max(0,p.age-29)*1.5-p.k.sal*0.25;
+  return p.r+(p.pot-p.r)*0.4*young-Math.max(0,p.age-29)*1.5-p.k.sal/PAY*0.25;
 }
 const tradeKey=(t,p)=>t+"|"+p.n+"|"+p.p;
 /* Offers for one of your players under contract past this season: up to
@@ -2228,7 +2236,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // a draft class can tip a team over: release the worst-value backups until it fits
   NAMES.forEach(t=>{
     const R=u.roster[t];
-    while(payroll(R)>TAX_LINE){
+    while(payroll(R)+R.filter(x=>!x).length*0.9>TAX_LINE){        // the empty spots will cost the minimum: count them now   (TAX_LINE is the cap here)
       let wi=-1,wv=-1;
       R.forEach((p,i)=>{if(!p||i<POS.length)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});
       if(wi<0){ // only starters left over: the most overpaid starter goes
@@ -2253,7 +2261,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const cost=Math.round(p.ask*1.1*10)/10;
       const bk=R[BK(p.i)];
       if(bk&&bk.keep){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`no room at ${pos}: it would cut ${bk.n}, whom you just signed`});return}
-      if(payroll(R)+cost>NFL_CAP){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
+      if(payroll(R)+cost+fillReserve(R)>NFL_CAP){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
       p.signed=true; p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       p.keep=true;                                  // not to be cut again this offseason
       const out=nflPlace(R,p);
@@ -2275,13 +2283,13 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const pull={}; NAMES.forEach(t=>pull[t]=elo[t]+rng.gauss(0,+((typeof process!=="undefined"&&process.env&&process.env.NBA_FAN)||45)));
     const shoppers=NAMES.slice().sort((a,b)=>pull[b]-pull[a]);
     shoppers.forEach(t=>{
-      const R=u.roster[t], st=styleOf(t), room=NFL_CAP*limit[st]-payroll(R);
+      const R=u.roster[t], st=styleOf(t), room=NFL_CAP*limit[st]-payroll(R)-fillReserve(R);
       let best=null,bv=0;
       pool.forEach(p=>{if(p.signed||p.age>maxAge[st]||p.from===t)return;
         const bk=R[BK(p.i)]; if(bk&&bk.keep)return;    // would cut a target you just signed
         const cost=Math.round(p.ask*(1+Math.max(0,rng.gauss(0.05,0.08)))*(1-orgEdge(u,t)*0.06)*10)/10;
         if(cost>room)return;
-        const v=nflGain(R,p)-cost*0.08;
+        const v=nflGain(R,p)-cost/PAY*0.08;
         if(v>bv){bv=v;best=[p,cost]}});
       if(!best||bv<0.8)return;
       const [p,cost]=best; p.signed=true;
@@ -4742,7 +4750,7 @@ function nflBoardHTML(P){
 function nflTargetsHTML(P,room){
   const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
   const mine=(P.targets||[]).filter(k=>byKey[k]);
-  let left=room-8;                                  // leave room for the draft class
+  let left=room-ROOKIE_ROOM;                        // leave room for the draft class
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
       if(on){left-=x.ask; fit=left>=0?"fits":left>=-8?"fits only by squeezing the draft class":"won't fit as things stand";   // the signing checks the cap; this reserves rookie money

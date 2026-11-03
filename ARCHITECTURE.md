@@ -319,10 +319,16 @@ dynasty's first season (generated players have no earlier history).
   max seen 79. Big mismatches (gap over 200) count half (BB.softGap) since an
   82-0 turned up; the tail is still a little fat.
 - Pro football: best record ~15 wins (real ~14), worst ~2 (real ~3).
-- Salary caps never bind (Nov 2026, four seasons): hockey payrolls median
-  ~25 against 104 (max 60), pro football ~55 against 110 (max ~82), pro
-  basketball ~70 against 165 (max ~133). A design question for Ian: rescale
-  salaries or the cap to the players the sim tracks.
+- Salary caps (Nov 2026, Ian's go-ahead): veterans' asks are scaled (PAY:
+  football 1.75, basketball 2.1, hockey 4.3; rookie scales and minimums are
+  real and unscaled), with each league's maximum contract (20% of the cap,
+  35% in basketball). Typical payroll ~75-85% of the cap; hard caps (football,
+  hockey) never exceeded (free agency keeps the minimum back for empty spots;
+  the post-draft check counts them). Basketball's soft cap: re-signing up to
+  the tax line, top payrolls ~105-115%. Calibration unchanged (nba-history,
+  nhl-history, football spread by season). Gap: hockey's typical payroll
+  drifts down by year five (rebuilding teams on rookies and minimums); real
+  leagues have a salary floor, the game doesn't.
 - College basketball injury costs reach ~200 team-strength points: some
   starters in the 80s have backups rated 30-40. Bench depth, not the cost
   formula, is the problem; worth reshaping college benches (a calibration
@@ -338,6 +344,8 @@ dynasty's first season (generated players have no earlier history).
   at 388 tournaments (52.9%, real 48.8). Nov 2026, same seeds: the previous
   build failed 6 v 11 (68.9%); the scouting-report build failed 2 v 15
   (96.1%, prior 94.7) and 3 v 14 (90.1%, prior 88.3). Fix to consider: a standard error
-  clustered by career. Not loosened.
+  clustered by career. Not loosened. Nov 2026 (caps round): 3 v 14 at 89.0%
+  (194 tournaments) on this build and on e31fc08 alike; the long-run is
+  time-limited, so a run can fit a different number of tournaments and pass.
 - Soccer: the Premier League is a little too predictable (rank corr ~0.9).
 - Pro hockey: year-to-year correlation of records 0.40 (NHL ~0.5).
