@@ -26,14 +26,21 @@ const MAX_DEAL=Math.round(NFL_CAP*0.20*10)/10; // a max contract: 20% of the cap
    so the cap never bit). Rookie scales and minimums are real and stay. */
 const PAY=+((typeof process!=="undefined"&&process.env&&process.env.PAY_NHL)||4.3);
 const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of the cap
+/* hockey's own curve (Nov 2026; Instinct: at PAY 4.3 the football-shaped
+   curve put every 63+ at the maximum, ~12% of the league, so the hard cap
+   made no tradeoffs). In dollars, a straight line: a median player (~55)
+   about $7M, a good starter (64, the top 10%) about $16M, the maximum from
+   ~69 (the top 1-2%: a few players in the league, not 45). Typical payroll
+   ~70% of the cap (measured; it was ~80% with 45 maxed). Ratings are
+   compressed (median 55, top 5% 67), so a payroll near the cap and a rare
+   max pull against each other; this is the balance. HK_A/HK_B/HK_0 tune it. */
+const HK_A=+((typeof process!=="undefined"&&process.env&&process.env.HK_A)||19), HK_B=+((typeof process!=="undefined"&&process.env&&process.env.HK_B)||1.0), HK_0=+((typeof process!=="undefined"&&process.env&&process.env.HK_0)||48);
 function nflAsk(r,pos,age){
-  const x=Math.max(0,(r-55)/35);
-  // scaled to this league's ratings: a typical starter (~64) about $15M, a
-  // star (77+) the max, so payrolls sit near the cap and it binds
-  let s=Math.min(MAX_DEAL,(0.85+40*Math.pow(x,1.5))*(POS_PAY[pos]||1));   // $850K up to the max; payrolls between the floor and the cap
+  const x=Math.max(0,(r-HK_0)/20);
+  let s=0.85+HK_A*Math.pow(x,HK_B);
   const a=age-(AGE_SHIFT[pos]||0);
   if(a>=31)s*=0.78; else if(a>=29)s*=0.9;
-  return Math.round(Math.max(0.85,Math.min(MAX_SAL,s*PAY))*100)/100;   // veterans' pay, scaled to the cap; the minimum is real
+  return Math.round(Math.max(0.85,Math.min(MAX_SAL,s))*100)/100;
 }
 function nflYears(age,pos){const a=age-(AGE_SHIFT[pos]||0); return a<=26?4:a<=29?3:a<=31?2:1}
 function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
@@ -162,7 +169,7 @@ function nflFreeAgentPreview(u,myTeam,users){
     R.forEach((p,i)=>{ if(!p||p.k.yrs>1||plan[i])return;
       if(p.r<58||p.age>=33)return;                  // likely to retire or go unsigned
       out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
-                ask:Math.round(nflAsk(p.r,p.p,p.age+1)*1.1*10)/10});
+                ask:Math.round(Math.min(MAX_SAL,nflAsk(p.r,p.p,p.age+1)*1.1)*10)/10});   // a signing's markup never passes the maximum contract (Instinct: a $22.9M ask over a $20.8M max)
     });
   });
   return out.sort((a,b)=>(b.r+(b.pot-b.r)*0.3-b.age*0.2)-(a.r+(a.pot-a.r)*0.3-a.age*0.2));
@@ -377,7 +384,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const p=pool.find(x=>!x.signed&&faKey(x.from,x)===key);
       const [team,n,pos]=key.split("|");
       if(!p){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:"wasn't on the market (retired or re-signed)"});return}
-      const cost=Math.round(p.ask*1.1*10)/10;
+      const cost=Math.round(Math.min(MAX_SAL,p.ask*1.1)*10)/10;
       const bk=R[BK(p.i)];
       if(bk&&bk.keep){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`no room at ${pos}: it would cut ${bk.n}, whom you just signed`});return}
       if(payroll(R)+cost+fillReserve(R)>NFL_CAP){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}

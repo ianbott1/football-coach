@@ -93,5 +93,15 @@ function migrateSave(d){
   if(d.history)d.history=d.history.map(h=>migrateEntry(h,d.career,d.myTeam));
   (d.coaches||[]).forEach(c=>{
     if(c.history)c.history=c.history.map(h=>migrateEntry(h,c.career,c.myTeam))});
+  [d].concat(d.coaches||[]).forEach(c=>(c&&c.history||[]).forEach(backfillDraws));
   return d;
+}
+/* soccer seasons saved before Nov 2026 kept wins and losses but not draws, so
+   a club's all-time record counted only the newer seasons' draws (Muse). A
+   season's games are fixed by the division, so the draws are what's left. */
+function backfillDraws(h){
+  const res=h&&h.league&&h.league.res;
+  if(!LEAGUE.draws||!LEAGUE.seasonGames||!h||!h.teams||!res)return;
+  Object.keys(h.teams).forEach(t=>{ const r=h.teams[t];
+    if(r&&r.length===3&&res[t])r.push(Math.max(0,LEAGUE.seasonGames(res[t])-r[0]-r[1])) });
 }

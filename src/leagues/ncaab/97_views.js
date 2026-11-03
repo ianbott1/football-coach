@@ -246,26 +246,59 @@ function slotTeam(r,line){
   if(og&&!(SEA.rounds.open||[]).length)return {t:`${og.a} (${SEA.selRec[og.a]}) / ${og.b}`,s:line,rec:SEA.selRec[og.b]};
   return t?{t:t,s:line}:null;
 }
-function regionHTML(r){
-  const played=k=>(SEA.rounds[k]||[]).filter(g=>g.region===r);
+/* src: the bracket to draw: this season's (live), or a past one kept in
+   the history (pastBracket) */
+function liveBracket(){ return {rounds:SEA.rounds, seeds:SEA.seeds, live:true} }
+function regionHTML(r,src){
+  const B=src||liveBracket();
+  const played=k=>(B.rounds[k]||[]).filter(g=>g.region===r);
   const col=(k,n,pre)=>{const gs=played(k); const out=[];
-    for(let i=0;i<n;i++)out.push(gs[i]?bgame(gs[i],null,null,k==="r64"):pre?pre(i):bgame(null)); return out};
-  const r64=col("r64",8,i=>bgame(null,slotTeam(r,R64_PAIRS[i][0]),slotTeam(r,R64_PAIRS[i][1]),true));
-  const winnersOf=(k,i)=>{const g=played(k)[i]; return g?{t:g.winner,s:SEA.seeds[g.winner]}:null};
+    for(let i=0;i<n;i++)out.push(gs[i]?bgame(gs[i],null,null,B.live&&k==="r64"):pre?pre(i):bgame(null)); return out};
+  const r64=col("r64",8,i=>B.live?bgame(null,slotTeam(r,R64_PAIRS[i][0]),slotTeam(r,R64_PAIRS[i][1]),true):bgame(null));
+  const winnersOf=(k,i)=>{const g=played(k)[i]; return g?{t:g.winner,s:B.seeds[g.winner]}:null};
   const r32=col("r32",4,i=>bgame(null,winnersOf("r64",2*i),winnersOf("r64",2*i+1)));
   const s16=col("s16",2,i=>bgame(null,winnersOf("r32",2*i),winnersOf("r32",2*i+1)));
   const e8=col("e8",1,i=>bgame(null,winnersOf("s16",0),winnersOf("s16",1)));
   const column=(title,items)=>`<div class="bcol"><div class="bhead">${title}</div><div class="bgames">${items.join("")}</div></div>`;
   return `<div class="bracket">${column("First round",r64)}${column("Second round",r32)}${column("Sweet 16",s16)}${column("Elite Eight",e8)}</div>`;
 }
-function finalFourHTML(){
-  const champ=r=>{const g=(SEA.rounds.e8||[]).find(x=>x.region===r); return g?{t:g.winner,s:SEA.seeds[g.winner]}:null};
-  const f4=SEA.rounds.f4||[], fin=(SEA.rounds.final||[])[0];
+function finalFourHTML(src){
+  const B=src||liveBracket();
+  const champ=r=>{const g=(B.rounds.e8||[]).find(x=>x.region===r); return g?{t:g.winner,s:B.seeds[g.winner]}:null};
+  const f4=B.rounds.f4||[], fin=(B.rounds.final||[])[0];
   const semis=[f4[0]?bgame(f4[0]):bgame(null,champ("East"),champ("South")), f4[1]?bgame(f4[1]):bgame(null,champ("Midwest"),champ("West"))];
-  const w=i=>f4[i]?{t:f4[i].winner,s:SEA.seeds[f4[i].winner]}:null;
+  const w=i=>f4[i]?{t:f4[i].winner,s:B.seeds[f4[i].winner]}:null;
   const column=(title,items)=>`<div class="bcol"><div class="bhead">${title}</div><div class="bgames">${items.join("")}</div></div>`;
-  return `<div class="note">Ford Field, Detroit. East plays South; Midwest plays West.</div>
+  return `${B.live?`<div class="note">Ford Field, Detroit. East plays South; Midwest plays West.</div>`:""}
     <div class="bracket">${column("Final Four",semis)}${column("National Championship",[fin?bgame(fin):bgame(null,w(0),w(1))])}</div>`;
+}
+/* past brackets, kept in the history (Muse: "past-season brackets vanish
+   after the offseason"). Packed small: [region, seed, team, points, seed,
+   team, points] per game, under 3 KB a season. */
+const PB_ROUNDS=["r64","r32","s16","e8","f4","final"];
+function packBracket(sea){
+  if(!sea.rounds||!(sea.rounds.final||[]).length)return null;
+  const out={}; PB_ROUNDS.forEach(k=>out[k]=(sea.rounds[k]||[]).map(g=>[g.region||"",g.hseed,g.home,g.hp,g.aseed,g.away,g.ap]));
+  return out;
+}
+function pastBracket(pk){
+  const rounds={}, seeds={};
+  PB_ROUNDS.forEach(k=>rounds[k]=(pk[k]||[]).map(a=>{ seeds[a[2]]=a[1]; seeds[a[5]]=a[4];
+    return {region:a[0]||undefined,hseed:a[1],home:a[2],hp:a[3],aseed:a[4],away:a[5],ap:a[6],winner:a[3]>a[6]?a[2]:a[5]} }));
+  return {rounds:rounds, seeds:seeds, live:false};
+}
+let pastYr=null, pastRegion="Final Four";
+function pastBracketsHTML(){
+  const H=(S.history||[]).filter(x=>x.league&&x.league.bracket);
+  if(!H.length)return "";
+  if(!H.some(x=>x.year===pastYr))pastYr=H[H.length-1].year;
+  const e=H.find(x=>x.year===pastYr), B=pastBracket(e.league.bracket), regs=REGIONS.concat(["Final Four"]);
+  if(regs.indexOf(pastRegion)<0)pastRegion="Final Four";
+  return `<div class="grouphead">Past brackets</div>
+    <div class="subtabs">${H.slice().reverse().map(x=>`<button class="subtab" data-pyr="${x.year}" aria-pressed="${x.year===pastYr}">${x.year}</button>`).join("")}</div>
+    <div class="subtabs">${regs.map(r=>`<button class="subtab" data-preg="${r}" aria-pressed="${pastRegion===r}">${r}</button>`).join("")}</div>
+    ${e.champion?`<div class="note"><b>${esc(e.champion)}</b> won it in ${e.year}.</div>`:""}
+    ${pastRegion==="Final Four"?finalFourHTML(B):regionHTML(pastRegion,B)}`;
 }
 LEAGUE.ui={
   stakes:bbStakes,
@@ -276,5 +309,7 @@ LEAGUE.ui={
   afterAdvance(ph){ if(ph==="selection")postTab="field"; else if(NCAA_ROUNDS.indexOf(ph)>=0)postTab="bracket"; else if(CT_ROUNDS.indexOf(ph)>=0)postTab="ct" },
   subtab(b){ if(b.dataset.p){postTab=b.dataset.p;return true} if(b.dataset.k){pollTab=b.dataset.k;return true}
     if(b.dataset.br){bracketRegion=b.dataset.br;return true}
-    if(b.dataset.ctc){ctConf=b.dataset.ctc;return true} return false }
+    if(b.dataset.ctc){ctConf=b.dataset.ctc;return true}
+    if(b.dataset.pyr){pastYr=+b.dataset.pyr;return true} if(b.dataset.preg){pastRegion=b.dataset.preg;return true} return false },
+  historyHTML:pastBracketsHTML,
 };

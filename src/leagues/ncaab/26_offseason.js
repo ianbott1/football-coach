@@ -455,6 +455,7 @@ LEAGUE.historyExtras=function(sea,off,my){
         early:!!d.early,c:d.c,d:d.draft})):[],
     // only the teams people coach: the screens show nothing else, and all 365
     // cost 85,000 characters a season in the save
+    bracket:typeof packBracket==="function"?packBracket(sea):null,
     classes:mineOnly(off.classes), early:mineOnly(off.early), realigned:off.realigned||[],
     portal:off.portal?{in:mineOnly(off.portal.in), out:mineOnly(off.portal.out), targets:mineOnly(off.portal.targets)}:null};
 };

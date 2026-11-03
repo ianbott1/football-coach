@@ -70,7 +70,10 @@ function nflTargetsHTML(P,room){
   let left=room-ROOKIE_ROOM;                        // leave room for the draft class
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
-      if(on){left-=x.ask; fit=left>=0?"fits":left>=-8?"fits only by squeezing the draft class":"won't fit as things stand";   // the signing checks the cap; this reserves rookie money
+      // the signing checks the cap after the draft, so the class is already paid for: there is no squeezing it
+      // (Instinct: a "squeezing" target then had no room). This room is right on average, within about 5M either
+      // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
+      if(on){left-=x.ask; fit=left>=2?"fits":left>=-3?"close: it depends on what the draft class costs":"won't fit as things stand";
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
@@ -161,7 +164,7 @@ function offseasonScreen(){
     last.champion===my?"SUPER BOWL CHAMPIONS":"",last.poll.rankMap()[my]);
   h+=`<div class="banner"><div class="bkick">${last.year} final</div>
     <div class="gradebox"><span class="grade">${gr.g}</span>
-      <div><div class="btitle" style="margin:0">${last.rec[my][0]}-${last.rec[my][1]}</div>
+      <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the Stanley Cup.

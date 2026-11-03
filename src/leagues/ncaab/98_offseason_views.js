@@ -110,7 +110,7 @@ function offseasonScreen(){
     last.champion===my?"NATIONAL":"",last.poll.rankMap()[my]);
   h+=`<div class="banner"><div class="bkick">${last.year} final</div>
     <div class="gradebox"><span class="grade">${gr.g}</span>
-      <div><div class="btitle" style="margin:0">${last.rec[my][0]}-${last.rec[my][1]}</div>
+      <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the national title.

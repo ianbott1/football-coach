@@ -1,5 +1,5 @@
 {
- "fp": "66222e167b736ebe",
+ "fp": "b2ba972daf44cee9",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -130,6 +130,11 @@
    "fp": "66222e167b736ebe",
    "from": "66222e167b736ebe",
    "note": "Nov 2026: recruiting board (college games): offseason screen"
+  },
+  {
+   "fp": "b2ba972daf44cee9",
+   "from": "66222e167b736ebe",
+   "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
   }
  ],
  "out": [
@@ -175,7 +180,7 @@
       "result": "No bowl game",
       "grade": "C"
      },
-     "book": "8bfba085b7a32e04"
+     "book": "aefee36936719665"
     }
    ]
   },
@@ -198,7 +203,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "d7740d444d197b90"
+     "book": "ef720887371de287"
     }
    ]
   }

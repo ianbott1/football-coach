@@ -1,5 +1,5 @@
 {
- "fp": "90eece6631042674",
+ "fp": "b89a968a0ab6a7d6",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -195,6 +195,16 @@
    "fp": "90eece6631042674",
    "from": "6f20c25895c4257d",
    "note": "Nov 2026: what your calls did (post-game line and season ledger)"
+  },
+  {
+   "fp": "d8a6a0f70451386c",
+   "from": "90eece6631042674",
+   "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
+  },
+  {
+   "fp": "b89a968a0ab6a7d6",
+   "from": "d8a6a0f70451386c",
+   "note": "Instinct round 2: hockey's ask curve reshaped (max for the top 1-2%, 6 of 768 contracts maxed, was 85), signing markups clamped at the max, fit labels, offseason record with OT losses, opaque action bar"
   }
  ],
  "result": {
@@ -209,7 +219,7 @@
     "heis": "4fae3ab392988611",
     "history": "23a1d91958dd6aa2",
     "universe": "a3b6172688389ae1",
-    "screens": "26c33e4863bdaedc"
+    "screens": "40158e2ed1ffb34b"
    },
    {
     "year": 2027,
@@ -221,7 +231,7 @@
     "heis": "6aa62e2d5b0d619d",
     "history": "c8184ce51240bdc7",
     "universe": "e3621cf5a79231f3",
-    "screens": "37623af3cec758c7"
+    "screens": "50bff790d69067b9"
    },
    {
     "year": 2028,
@@ -233,7 +243,7 @@
     "heis": "80083c319ecb3780",
     "history": "41079c6153d31272",
     "universe": "7c785b21eb42cf75",
-    "screens": "135caee0eaaf89b8"
+    "screens": "53914c7bde746dc3"
    },
    {
     "year": 2029,
@@ -245,7 +255,7 @@
     "heis": "f47242f3509d113f",
     "history": "c588cd9c7c7ea2ca",
     "universe": "8ecd526fabc1df30",
-    "screens": "457646334403d9f4"
+    "screens": "068c17fd709d2086"
    }
   ],
   "Tennessee#2024": [
@@ -259,7 +269,7 @@
     "heis": "47fbe057dba617c3",
     "history": "502e5b30e80a4bc5",
     "universe": "a78a624937b05b5c",
-    "screens": "e87c71c8ebd9d538"
+    "screens": "b475e2ecd4796ab0"
    },
    {
     "year": 2027,
@@ -271,7 +281,7 @@
     "heis": "5920aaa5e2220fb2",
     "history": "6f439e4f058c6e69",
     "universe": "4f6c878f8b8a886f",
-    "screens": "eb7490163bb5da95"
+    "screens": "432f24e5f48ae387"
    },
    {
     "year": 2028,
@@ -283,7 +293,7 @@
     "heis": "f5665e14fcb89df4",
     "history": "23d943ee25323b9f",
     "universe": "186324dfe9ee1763",
-    "screens": "67f631cb4d25a4c0"
+    "screens": "8e058aa008df96cb"
    },
    {
     "year": 2029,
@@ -295,7 +305,7 @@
     "heis": "be3941753ba5b769",
     "history": "7d834bd4f2794d50",
     "universe": "ba81bcd6f630a5c9",
-    "screens": "a42854727019a03f"
+    "screens": "fa51aa726d569e5e"
    }
   ],
   "Detroit#777": [
@@ -309,7 +319,7 @@
     "heis": "13df5e7e2aea9503",
     "history": "1583aac41f3e1d8b",
     "universe": "ed60048a150c6853",
-    "screens": "601b93a5d05fb4cc"
+    "screens": "99b20e891d082043"
    },
    {
     "year": 2027,
@@ -321,7 +331,7 @@
     "heis": "33bbadd12d2df0e5",
     "history": "16def6cee0fdbd6f",
     "universe": "1a90b87e8235b3ab",
-    "screens": "52fefcb924c96537"
+    "screens": "589547508a05ad4e"
    },
    {
     "year": 2028,
@@ -333,7 +343,7 @@
     "heis": "4e7bc8a63fc80b4c",
     "history": "3b994ac8f58c022c",
     "universe": "5667a62a40a26b73",
-    "screens": "866793de66feb3b8"
+    "screens": "afa0037de64176f7"
    }
   ],
   "NY Giants#31337": [
@@ -347,7 +357,7 @@
     "heis": "9cccf8d2fc162002",
     "history": "8c49d3ed48464d07",
     "universe": "2f8815baa55405cc",
-    "screens": "cec4fc4ddb15e11e"
+    "screens": "3191cecd2ec4b67a"
    },
    {
     "year": 2027,
@@ -359,7 +369,7 @@
     "heis": "15a80387b7436730",
     "history": "4cd20c1603e4bafd",
     "universe": "e593063f394ad60a",
-    "screens": "def544aef6ec413e"
+    "screens": "c075d446f9837230"
    },
    {
     "year": 2028,
@@ -371,7 +381,7 @@
     "heis": "d1ccd6c1f8bab5e9",
     "history": "da65f0bccff1fc27",
     "universe": "e0498393ac40d312",
-    "screens": "2f1368d73367827b"
+    "screens": "cc7c6f2b5cba3823"
    }
   ],
   "schedules#60": [

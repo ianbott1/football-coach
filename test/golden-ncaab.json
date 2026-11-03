@@ -1,5 +1,5 @@
 {
- "fp": "8908fe84b8d3bbc0",
+ "fp": "517b48bd18332064",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -190,6 +190,11 @@
    "fp": "8908fe84b8d3bbc0",
    "from": "651586600de99f7e",
    "note": "Nov 2026: recruiting board (college games): offseason screen"
+  },
+  {
+   "fp": "517b48bd18332064",
+   "from": "8908fe84b8d3bbc0",
+   "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
   }
  ],
  "result": {
@@ -202,9 +207,9 @@
     "rec": "573fe24355100b22",
     "poll": "3db83b91ec6d524e",
     "heis": "f0ca3896b10da2b9",
-    "history": "0201f9bb0bedb414",
+    "history": "3f5f17f1cea58053",
     "universe": "29a92f3d60e09617",
-    "screens": "c79747a11f1c13fc"
+    "screens": "3cc0ecc581478880"
    },
    {
     "year": 2027,
@@ -214,9 +219,9 @@
     "rec": "07b73d3d6f5c4a00",
     "poll": "fbc9e0c7e7f5fd92",
     "heis": "64b059fcdf7e9d46",
-    "history": "148a12213556f06b",
+    "history": "99de8296bf938c82",
     "universe": "bd3d3e718a7a23df",
-    "screens": "0a1d59e20d099aa0"
+    "screens": "49f370d4dfc03c25"
    }
   ],
   "Coppin State#2024": [
@@ -228,9 +233,9 @@
     "rec": "297cd1c1e57d7e2e",
     "poll": "0deabcdd48afbc7d",
     "heis": "13bfe33d01f2b2a1",
-    "history": "f1c532d111868c7a",
+    "history": "5cd1a4d4402906a2",
     "universe": "9cb6dcc8e5340bbd",
-    "screens": "741ede81366e6c13"
+    "screens": "2b3e31b228676f79"
    },
    {
     "year": 2027,
@@ -240,9 +245,9 @@
     "rec": "7dabe830340c4f95",
     "poll": "7682d10e469788bb",
     "heis": "5e653284efe7ed05",
-    "history": "9d5b0d8b80c64894",
+    "history": "d4746daa8900bc99",
     "universe": "ed8086c25debe3aa",
-    "screens": "1add0c58f948a11f"
+    "screens": "2388e0e37a077f3a"
    }
   ],
   "Gonzaga#777": [
@@ -254,9 +259,9 @@
     "rec": "93d65758bdfdc180",
     "poll": "288ab5e7416b807f",
     "heis": "c94713712b4e6c61",
-    "history": "1ba2e919260b2430",
+    "history": "e4060c2b71079dba",
     "universe": "eee9d3d013e35123",
-    "screens": "d01c05f7bdf67d05"
+    "screens": "086a01aaf7397e34"
    },
    {
     "year": 2027,
@@ -266,9 +271,9 @@
     "rec": "51c4474cc284ffd9",
     "poll": "2a80cc7ffe8e0ea5",
     "heis": "2c21cf7676ec0650",
-    "history": "90af7ff2d80996f1",
+    "history": "4a166164c632e93a",
     "universe": "e2f2c5eeb4e16444",
-    "screens": "98a65f980bc7cbed"
+    "screens": "d1187d85039465ff"
    }
   ],
   "schedules#60": [

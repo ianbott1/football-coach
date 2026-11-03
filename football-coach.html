@@ -39,7 +39,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .tab:focus-visible,.pick:focus-visible,.advance:focus-visible{outline:2px solid var(--sodium);
  outline-offset:2px}
 .actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;
- background:linear-gradient(180deg,transparent,rgba(16,19,28,.95) 32%)}
+ background:linear-gradient(180deg,transparent,var(--ink) 14px)}
+.actionbar .skip{background:var(--ink)}   /* opaque: text scrolling under the bar never shows through the buttons (Instinct, 390px) */
 .advance{display:block;width:100%;max-width:728px;margin:0 auto;background:var(--sodium);
  color:#10131C;border:none;font-family:var(--cond);font-weight:700;font-size:19px;
  letter-spacing:.08em;text-transform:uppercase;padding:15px;cursor:pointer;border-radius:2px}
@@ -399,6 +400,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  line-height:1;padding:3px 7px;margin-left:9px;cursor:pointer;border-radius:2px}
 .reset:hover{color:var(--sodium);border-color:var(--sodium)}
 .seedshow{color:var(--sodium);text-align:center}
+.confpick{padding:4px 16px 12px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.confpick select{font:inherit;color:var(--bone);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px;max-width:100%}
 .subtabs{display:flex;gap:6px;padding:4px 16px 12px;overflow-x:auto;scrollbar-width:none}
 .subtabs::-webkit-scrollbar{display:none}
 .subtabs .subtab{flex-shrink:0;min-width:min-content}
@@ -498,7 +501,9 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  line-height:1.05;color:var(--bone)}
 .slot.empty .slotmain{font-size:16px;font-weight:500;color:var(--muted);text-transform:none}
 .slotsub{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.04em}
-.slotdel{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:8.5px;
+.slotwrap{position:relative;width:100%}
+.slotwrap .slot{padding-right:64px}
+.slotdel{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:8.5px;background:var(--panel2);cursor:pointer;
  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);
  padding:3px 6px}
 .slotdel:hover{color:var(--flag);border-color:var(--flag)}
@@ -866,7 +871,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="1aeb1b6";
+<script>const BUILD_ID="bab083c";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -5940,7 +5945,17 @@ function migrateSave(d){
   if(d.history)d.history=d.history.map(h=>migrateEntry(h,d.career,d.myTeam));
   (d.coaches||[]).forEach(c=>{
     if(c.history)c.history=c.history.map(h=>migrateEntry(h,c.career,c.myTeam))});
+  [d].concat(d.coaches||[]).forEach(c=>(c&&c.history||[]).forEach(backfillDraws));
   return d;
+}
+/* soccer seasons saved before Nov 2026 kept wins and losses but not draws, so
+   a club's all-time record counted only the newer seasons' draws (Muse). A
+   season's games are fixed by the division, so the draws are what's left. */
+function backfillDraws(h){
+  const res=h&&h.league&&h.league.res;
+  if(!LEAGUE.draws||!LEAGUE.seasonGames||!h||!h.teams||!res)return;
+  Object.keys(h.teams).forEach(t=>{ const r=h.teams[t];
+    if(r&&r.length===3&&res[t])r.push(Math.max(0,LEAGUE.seasonGames(res[t])-r[0]-r[1])) });
 }
 /* ============ the recruiting board (college games) ============ */
 /* A class fills the spots seniors leave. Before the offseason you see, for
@@ -7161,7 +7176,7 @@ function offseasonScreen(){
     last.champion===my?"NATIONAL":"",last.poll.rankMap()[my]);
   h+=`<div class="banner"><div class="bkick">${last.year} final</div>
     <div class="gradebox"><span class="grade">${gr.g}</span>
-      <div><div class="btitle" style="margin:0">${last.rec[my][0]}-${last.rec[my][1]}</div>
+      <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the national title.
@@ -7546,11 +7561,21 @@ const el=id=>document.getElementById(id);
 
 function snap(u){return JSON.parse(JSON.stringify(u))}
 
+/* promoting a backup. An injury belongs to the player, not the slot: if the
+   starter is hurt, his injury goes to the bench with him and stops costing
+   the team (his replacement is the starter now, and in the team's strength).
+   Promotions saved before Nov 2026 (plain numbers) replay as they were played:
+   the injury stayed on the slot (Muse: "promote the healthy backup and the
+   roster shows him as OUT"). */
 function swapDepth(sea,i){
+  const moveInj=typeof i==="object"; if(moveInj)i=i.i;
   const R=sea.roster&&sea.roster[S.myTeam];
   if(!R||!R[i]||!R[BK(i)])return;
   const t=R[i]; R[i]=R[BK(i)]; R[BK(i)]=t;
   sea.talent.base[S.myTeam]=rosterElo(R);
+  if(moveInj)(sea.talent.inj[S.myTeam]||[]).forEach(e=>{
+    if(e.idx===i){ e.idx=BK(i); e.m0=e.m; e.m=0 }
+    else if(e.idx===BK(i)){ e.idx=i; if(e.m0!=null){ e.m=e.m0; delete e.m0 } } });
 }
 
 /* a confirm on the page itself: the first tap turns the button into the
@@ -7559,8 +7584,9 @@ function swapDepth(sea,i){
    change" never worked, and sim-ahead kept stopping on it). */
 function tapTwice(b,ask,fn){
   if(b.dataset.armed==="1"){ delete b.dataset.armed; fn(); return }
-  b.dataset.armed="1"; const was=b.innerHTML; b.innerHTML=ask; b.classList.add("armed");
-  setTimeout(()=>{ if(b.dataset.armed==="1"){ delete b.dataset.armed; b.innerHTML=was; b.classList.remove("armed") } },5000);
+  b.dataset.armed="1"; const was=b.innerHTML, lab=b.getAttribute&&b.getAttribute("aria-label"); b.innerHTML=ask; b.classList.add("armed");
+  if(lab)b.setAttribute("aria-label",ask);           // a screen reader hears the question too
+  setTimeout(()=>{ if(b.dataset.armed==="1"){ delete b.dataset.armed; b.innerHTML=was; b.classList.remove("armed"); if(lab)b.setAttribute("aria-label",lab) } },5000);
 }
 function fireCoord(side){
   if(!SEA.fireCoordinator(S.myTeam,side))return;
@@ -7575,8 +7601,8 @@ function promote(i){
   S.promos=S.promos||{};
   const k=SEA.step;
   S.promos[k]=S.promos[k]||[];
-  S.promos[k].push(i);
-  swapDepth(SEA,i);
+  S.promos[k].push({i:i});
+  swapDepth(SEA,{i:i});
   save(); render();
 }
 
@@ -7773,6 +7799,8 @@ function careerNow(C){
 }
 function ordinal(n){return n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th")}
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
+/* a record, with draws where the game has them (W-D-L) */
+function wdl(w,l,d){ return LEAGUE.draws?`${w}-${d||0}-${l}`:`${w}-${l}` }
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
 /* how many ranked teams wear a number: the top 25 in college, fewer in a 30-team league */
 const RANK_TOP=(LEAGUE.rankTop||25);
@@ -7923,12 +7951,15 @@ function openOffseason(){
   if(LEAGUE.draws)C.d=(C.d||0)+((SEA.drw&&SEA.drw[my])||0);
   if(titles.natl)C.titles++; if(titles.conf)C.confs++;
   const st=C.stops[C.stops.length-1];
-  st.w+=SEA.rec[my][0]; st.l+=SEA.rec[my][1];
+  st.w+=SEA.rec[my][0]; st.l+=SEA.rec[my][1]; if(LEAGUE.draws)st.d=(st.d||0)+((SEA.drw&&SEA.drw[my])||0);
   if(titles.natl)st.titles++;
   st.to=SEA.year;
   const staffCands={};
   if(A.staffOpen&&A.staffOpen.oc)staffCands.oc=coordCandidates(rng,U.program[my],"oc",C.rep);
   if(A.staffOpen&&A.staffOpen.dc)staffCands.dc=coordCandidates(rng,U.program[my],"dc",C.rep);
+  // an assistant you fired during the season doesn't come back: his job is open (Muse: he returned the next season)
+  ["oc","dc"].forEach(side=>{ if(SEA.midFired&&SEA.midFired[side]&&!staffCands[side]){
+    staffCands[side]=coordCandidates(rng,U.program[my],side,C.rep); A.staffOpen=Object.assign({},A.staffOpen||{},{[side]:true}) } });
   // a league can run its own market (soccer: relative to your club, not fixed bands)
   const jobs=A.userOpen?(LEAGUE.jobMarket?LEAGUE.jobMarket(U,rng,C.rep,A.openJobs,my,!!A.fired):jobMarket(U,rng,C.rep,A.openJobs,my)):[];
   const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,A.openJobs,my):poachOffers(U,rng,C.rep,A.openJobs,my));
@@ -7974,8 +8005,13 @@ function commitOffseason(){
   }
   const users=S.pending; S.pending=null;
   // featuring lasts a season: remember who it was, so the roster can say it reset
-  { const fp=(S.featured!==null&&S.featured!==undefined&&SEA.roster&&SEA.roster[S.myTeam])?SEA.roster[S.myTeam][S.featured]:null;
-    S.featuredLast=fp?{n:fp.n,year:SEA.year}:null; }
+  // (from the club you coached this season: after a move, S.myTeam is the new
+  // one, and its player in that slot is someone else; Muse saw the new club's
+  // man named. Featuring doesn't follow you: the summer's development is for
+  // the player you featured, and he isn't yours any more.)
+  { const fp=(S.featured!==null&&S.featured!==undefined&&SEA.roster&&SEA.roster[oldTeam])?SEA.roster[oldTeam][S.featured]:null;
+    S.featuredLast=fp?{n:fp.n,year:SEA.year,team:oldTeam}:null;
+    if(oldTeam!==S.myTeam){ S.featured=null; users[S.myTeam]&&(users[S.myTeam].featured=null) } }
   endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
     LEAGUE.offseason.choices(P),{phil:P.phil,
     featured:(S.featured!==undefined?S.featured:null), deploy:S.deploy||null}), A, oldTeam);
@@ -8283,7 +8319,17 @@ function oddsHTML(me,opp,atHome,neutral,wp){
 function winProb(me,opp,atHome,neutral){
   const v=t=>(SEA.hfa&&SEA.hfa[t])||LEAGUE.tuning.hfa;
   const hfa=neutral?0:(atHome?v(me):-v(opp));
-  return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa-SEA.elo[opp])/400)));
+  return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa+(me===S.myTeam?ownEdge():0)-SEA.elo[opp])/400)));
+}
+/* what your own choices add in your games, the same edge the games use: a
+   featured starter who's healthy, and hockey's ice time (Muse: featuring
+   never moved the displayed win probability) */
+function ownEdge(){
+  let e=0; const R=SEA.roster&&SEA.roster[S.myTeam];
+  if(S.featured!==null&&S.featured!==undefined&&R&&R[S.featured]&&typeof FEATURE_EDGE!=="undefined"
+     &&!SEA.talent.active(S.myTeam).some(x=>x.idx===S.featured))e+=FEATURE_EDGE;
+  if(typeof deployEdge==="function"&&SEA.userTeam===S.myTeam)e+=deployEdge(SEA,S.myTeam);
+  return e;
 }
 
 function confPosition(t){
@@ -8395,16 +8441,18 @@ function rosterOf(t){
   if(!SEA.roster||!SEA.roster[t])return "";
   const hurt={}; SEA.talent.active(t).forEach(e=>hurt[e.idx]=e);
   const R=SEA.roster[t];
-  const avg=Math.round(R.reduce((s,p)=>s+p.r,0)/R.length);
-  return `<div class="grouphead">Starters &middot; average rating ${avg}</div>`+
-    R.map((p,i)=>{const inj=hurt[i];
+  // starters are the first unit; the rest is depth (it averaged and listed all of them as "Starters": Muse)
+  const st=R.slice(0,POS.length).filter(Boolean), avg=Math.round(st.reduce((s,p)=>s+p.r,0)/Math.max(1,st.length));
+  const row=(p,i)=>{ if(!p)return ""; const inj=hurt[i];
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
         <div class="pmain"><div class="pname">${esc(p.n)}</div>
           <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
-        ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`}).join("");
+        ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`};
+  return `<div class="grouphead">Starters &middot; average rating ${avg}</div>`+R.slice(0,POS.length).map((p,i)=>row(p,i)).join("")
+    +(R.length>POS.length?`<div class="grouphead">Depth</div>`+R.slice(POS.length).map((p,i)=>row(p,i+POS.length)).join(""):"");
 }
 
 function teamPanel(){
@@ -8437,7 +8485,7 @@ function rosterView(){
       : F.pot-F.r<4 ? " \u2014 he's near his ceiling, so there's little development left."
       : college ? " \u2014 room to grow, and far likelier to stay than declare early."
       : " \u2014 room to grow, and the development will show next season."}`
-      :S.featuredLast&&S.featuredLast.year===SEA.year-1&&!S.off?`Featuring lasts a season, so it reset when this one began (last season: ${esc(S.featuredLast.n)}). Tap a starter to feature him.`
+      :S.featuredLast&&S.featuredLast.year===SEA.year-1&&(!S.featuredLast.team||S.featuredLast.team===my)&&!S.off?`Featuring lasts a season, so it reset when this one began (last season: ${esc(S.featuredLast.n)}). Tap a starter to feature him.`
       :"Nobody featured. Tap a starter to feature him."}${F&&S.off?` <span class="planwhy">Featuring resets when the new season starts: pick again then.</span>`:""}</div>`;
   if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
@@ -8457,7 +8505,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm">${esc(b.n)}</div>
+          <div class="pmain"><div class="pname sm">${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${hurt[BK(i)].w}w</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -8746,7 +8794,10 @@ function seasonGrade(wins,losses,result,exp){ return LEAGUE.goals.grade(wins,los
 
 function milestones(wins,losses,result,rank,team,history){
   const my=team||S.myTeam, out=[], H=history||S.history;
-  const mine=H.map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
+  // your seasons at this club only: the history holds every club's rows, so
+  // after a move "your tenure" counted years before you arrived (Muse: a
+  // milestone whose arithmetic didn't add up)
+  const mine=H.filter(h=>(h.team||my)===my).map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
   if(!mine.length){
     if(wins>=11)out.push(`${wins} wins in your first season in charge.`);
     return out;
@@ -8755,12 +8806,12 @@ function milestones(wins,losses,result,rank,team,history){
   const bestR=Math.min(...mine.map(r=>r[2]));
   if(wins>bestW)out.push(`Best season of your tenure &mdash; ${wins} wins, past the old high of ${bestW}.`);
   if(rank<bestR&&rank<=RANK_TOP)out.push(`Highest finish yet at No. ${rank}.`);
-  if(LEAGUE.goals.isTitle(result)&&!H.some(h=>h.champion===my))
+  if(LEAGUE.goals.isTitle(result)&&!H.some(h=>h.champion===my&&(h.team||my)===my))
     out.push(LEAGUE.goals.firstTitle);
   let streak=0;
   for(let i=mine.length-1;i>=0;i--){if(mine[i][0]>mine[i][1])streak++;else break}
   if(wins>losses&&streak+1>=5)out.push(`${streak+1} straight winning seasons.`);
-  if(losses>=9&&wins<=3)out.push(`Worst season in ${mine.length+1} years. That will be remembered.`);
+  if(losses>=9&&wins<=3&&wins<Math.min(...mine.map(r=>r[0])))out.push(`Worst season of your ${mine.length+1} in charge. That will be remembered.`);
   return out;
 }
 
@@ -8932,6 +8983,7 @@ function newsBlock(){
 }
 
 /* ============ playoff picture ============ */
+let stConf=null;                // Standings in the college games: one conference, or null for all
 let grpTab=null;                 // Scores and Standings: which division (LEAGUE.groupFilter), or All
 function grpNow(){ return grpTab||CONF[S.myTeam] }
 function grpTabsHTML(cupToo){
@@ -9008,6 +9060,12 @@ function standingsView(){
   const mine=CONF[S.myTeam];
   let order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
   if(LEAGUE.groupFilter){ const g0=grpNow()==="CUP"?mine:grpNow(); h+=grpTabsHTML(false); if(g0!=="ALL")order=[g0] }
+  // the college games' 30-odd conferences: pick one (Muse: "no conference filter")
+  else if(LEAGUE.conf.order.length>4){
+    if(stConf&&order.indexOf(stConf)<0)stConf=null;
+    h+=`<div class="confpick"><label for="stconf">Conference</label> <select id="stconf">
+      <option value="">All conferences</option>${order.map(c=>`<option value="${esc(c)}"${stConf===c?" selected":""}>${esc(LEAGUE.conf.names[c])}${c===mine?" (yours)":""}</option>`).join("")}</select></div>`;
+    if(stConf)order=[stConf] }
   if(wide)h+=`<div class="standgrid">`;
   order.forEach(c=>{
     const head=`<div class="srow shead"><span class="spos">#</span>
@@ -9068,7 +9126,7 @@ function coachCard(c){
       <span class="dot" style="background:${teamColor(s.team)}"></span>
       <span class="stopteam">${TL(s.team)}</span>
       <span class="stopyr">${s.from}${s.to>s.from?"\u2013"+s.to:""}</span>
-      <span class="stoprec">${s.w}-${s.l}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span></div>`).join("");
+      <span class="stoprec">${wdl(s.w,s.l,s.d)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span></div>`).join("");
   }else{
     h+=`<div class="note">No completed seasons at this job yet.</div>`;
   }
@@ -9093,7 +9151,7 @@ function coachesView(){
     <div class="fmain"><div class="fname">${esc(c.n)}${c.you?' <span class="youtag">YOU</span>':''}</div>
     <div class="fnote">${esc(c.team)} &middot; year ${c.t+1}${
       c.stops&&c.stops.length>1?" &middot; "+c.stops.length+" jobs":""}</div></div>
-    <div class="tstat"><span class="trec">${c.w}-${c.l}</span>
+    <div class="tstat"><span class="trec">${wdl(c.w,c.l,c.d)}</span>
     <span class="trk">${c.titles?c.titles+"\u00d7 natl":(c.confs?c.confs+"\u00d7 conf":"")}</span></div></div>`).join("");
   if(rows.length>60)h+=`<div class="note">Showing 60. Search to narrow.</div>`;
   return h;
@@ -9188,12 +9246,22 @@ function seasonRowsFor(t){
     const seed=h.seeds?h.seeds[t]:null;
     const res=LEAGUE.seasonLine(h,t,r,seed);
     const cc=h.groupChamps?Object.keys(h.groupChamps).find(c=>h.groupChamps[c]===t):null;
-    return {year:h.year,rec:r[0]+"-"+r[1],rank:r[2],res:res,grade:(t===S.myTeam?h.grade:null),
+    return {year:h.year,rec:wdl(r[0],r[1],r[3]),rank:r[2],res:res,grade:(t===S.myTeam?h.grade:null),
             champ:h.champion===t,conf:cc?LEAGUE.conf.names[cc]:null,
             coach:!!(h.coaching&&h.coaching.firedList.indexOf(t)>=0)};
   }).reverse();
 }
 
+/* the pro games: what a team pays, against its cap (or, in soccer, its wage
+   budget), on every team's card and all season (Muse: payroll was
+   offseason-only, and never shown for other teams) */
+function payrollLine(t){
+  if(typeof payroll!=="function"||!LEAGUE.cap)return "";
+  const R=(SEA&&SEA.roster&&SEA.roster[t])||(U&&U.roster&&U.roster[t]); if(!R||!R.some(p=>p&&p.k))return "";
+  const pay=payroll(R), lim=LEAGUE.budgetOf?LEAGUE.budgetOf(U,t):LEAGUE.cap, room=lim-pay;
+  return `<div class="progline">Payroll <b>${money2(pay)}</b> of ${money2(lim)} ${LEAGUE.budgetOf?"wage budget":"cap"} &middot; ${
+    room>=0?`${money2(room)} of room`:`<span class="dn">${money2(-room)} over</span>`}</div>`;
+}
 function teamCard(t){
   const rows=seasonRowsFor(t);
   const A=allTime(t);
@@ -9228,7 +9296,7 @@ function teamCard(t){
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
     <div class="progline" title="Change in the ${esc(LEAGUE.text.org)}'s long-run strength rating since you took over: it moves with results, ${LEAGUE.classes&&LEAGUE.classes.length?"recruiting":"the draft and signings"}, and the staff">${LEAGUE.text.org} strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b> <span class="stkeyin">(rating points)</span>
-      ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
+      ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div>${payrollLine(t)}</div>`;
   if(U&&U.series&&LEAGUE.rivals.of[t]){
     const rows=LEAGUE.rivals.of[t].map(x=>LEAGUE.rivals.series(U,t,x.o)?{o:x.o,s:LEAGUE.rivals.series(U,t,x.o)}:null)
                           .filter(Boolean);
@@ -9310,7 +9378,7 @@ function dynastyView(){
         <span class="dot" style="background:${teamColor(s.team)}"></span>
         <span class="stopteam">${esc(s.team)}</span>
         <span class="stopyr">${s.from}${s.to&&s.to>s.from?"\u2013"+s.to:s.to?"":"\u2013"}</span>
-        <span class="stoprec">${s.w}-${s.l}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
+        <span class="stoprec">${wdl(s.w,s.l,s.d)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
       </div>`).join("")}</div>`;
     h+=cabinetHTML();
     h+=teamCard(my);
@@ -9397,11 +9465,12 @@ function dynastyView(){
       style="border-left:3px solid ${teamInk(x.champion)}">
       <span class="yr">${x.year}</span>
       <div class="ymain"><div class="yrec">${esc(x.champion)}</div>
-      <div class="yres">${r?r[0]+"-"+r[1]:""}${x.groupChamps?" &middot; "+
+      <div class="yres">${r?wdl(r[0],r[1],r[3]):""}${x.groupChamps?" &middot; "+
         (Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)
           ?LEAGUE.conf.names[Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)]+" champion"
           :"at-large"):""}</div></div></div>`;
   }).join("");
+  if(LEAGUE.ui.historyHTML)h+=LEAGUE.ui.historyHTML();   // college basketball: past brackets
   // the latest season with league tables (an old hot-seat entry may lack them)
   const last=S.history.slice().reverse().find(x=>x.top10)||{year:S.history[S.history.length-1].year,top10:[],teams:{}};
   h+=`<div class="grouphead">Final top 10 &mdash; ${last.year}</div>`;
@@ -9409,7 +9478,7 @@ function dynastyView(){
     return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${esc(t)}</span>
-      <span class="sall">${r[0]}-${r[1]}</span></div>`}).join("");
+      <span class="sall">${wdl(r[0],r[1],r[3])}</span></div>`}).join("");
   if(S.origProgram&&U){
     const base=S.history[0].year;
     const d=NAMES.map(t=>[t,Math.round(U.program[t]-S.origProgram[t])])
@@ -9709,7 +9778,7 @@ function render(){
         <span class="dot" style="background:${teamColor(s.team)}"></span>
         <span class="stopteam">${esc(s.team)}</span>
         <span class="stopyr">${s.from}\u2013${s.to||s.from}</span>
-        <span class="stoprec">${s.w}-${s.l}</span></div>`).join("")}
+        <span class="stoprec">${wdl(s.w,s.l,s.d)}</span></div>`).join("")}
       <div class="actionbar"><button class="advance gold" id="reset2">New career</button></div>`;
     const r=el("reset2"); if(r)r.onclick=async()=>{
       try{await store.delete(KEYFOR(slot))}catch(e){}
@@ -9777,6 +9846,7 @@ function render(){
   document.querySelectorAll("[data-coach]").forEach(b=>b.onclick=()=>{
     dynCoach=b.dataset.coach; save(); render();});
   const cb=el("cback"); if(cb)cb.onclick=()=>{dynCoach=null;render()};
+  const scf=el("stconf"); if(scf)scf.onchange=()=>{stConf=scf.value||null; render()};
   const cf=el("cfind"); if(cf)cf.oninput=()=>{coachQ=cf.value;
     const p=cf.selectionStart; render();
     const n=el("cfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
@@ -9797,8 +9867,11 @@ function render(){
   const rb=el("rst"); if(rb)rb.onclick=()=>tapTwice(rb,"Tap again to abandon this career",async()=>{
     {
       try{await store.delete(KEYFOR(slot))}catch(e){}
-      S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
-      U=null;SEA=null;flash=null;renderStart();}});
+      // back to the title screen, where the empty slot starts a career properly
+      // (it went straight to the team picker with no setup, and picking a team
+      // threw: every game needed a reload; Muse saw it in hockey)
+      S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true};
+      U=null;SEA=null;flash=null;live=null;render();}});
   const advance=()=>{
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team"&&!wide)view="scores";
@@ -9994,23 +10067,23 @@ function renderTitle(){
       ? `<button class="slot empty" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
            <span class="slotmain">Empty &mdash; start a career</span></button>`
-      : `<button class="slot" data-slot="${s.n}">
+      : `<div class="slotwrap"><button class="slot" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
            <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} so far: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
              season${s.seasons===1?"":"s"} done${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
-           <span class="slotdel" data-del="${s.n}">Erase</span></button>`).join("")}</div>
+           </button><button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button></div>`).join("")}</div>
     <button class="introskip wide" id="thow">How to play</button>
     <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
   </div>`;
+  // Erase is its own button beside the slot (it was text inside the slot's button: anything that
+  // pressed "Erase" as a control, a keyboard, a screen reader, a test agent, pressed the slot and loaded the career)
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
+    tapTwice(b,"Tap again to erase",async()=>{
+      try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){}
+      S._slots=await allSlots(); render() }) });
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
-    if(ev.target&&ev.target.dataset.del){
-      tapTwice(ev.target,"Tap again to erase",async()=>{
-        try{await store.delete(KEYFOR(+ev.target.dataset.del))}catch(e){}
-        S._slots=await allSlots(); render() });
-      return;
-    }
     const n=+b.dataset.slot;
     slot=n;
     const d=await loadSlot(n);

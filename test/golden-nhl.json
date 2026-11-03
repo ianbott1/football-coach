@@ -1,5 +1,5 @@
 {
- "fp": "35dadfac80bcd916",
+ "fp": "2c722c956a25da73",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -120,6 +120,16 @@
    "fp": "35dadfac80bcd916",
    "from": "feb4a606132956fe",
    "note": "Nov 2026: what your calls did (post-game line and season ledger)"
+  },
+  {
+   "fp": "a4f5e7967fdffde6",
+   "from": "35dadfac80bcd916",
+   "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
+  },
+  {
+   "fp": "2c722c956a25da73",
+   "from": "a4f5e7967fdffde6",
+   "note": "Instinct round 2: hockey's ask curve reshaped (max for the top 1-2%, 6 of 768 contracts maxed, was 85), signing markups clamped at the max, fit labels, offseason record with OT losses, opaque action bar"
   }
  ],
  "result": {
@@ -132,21 +142,21 @@
     "rec": "13d85b141d805f37",
     "poll": "e96f5d234e794cc0",
     "heis": "9e5a3b000418f0ce",
-    "history": "da7582bddabe9716",
-    "universe": "589afe1fc150f3fd",
-    "screens": "39802e6df2c6eee0"
+    "history": "f74ba0572c6f0a3e",
+    "universe": "c24a5c89d241fd86",
+    "screens": "d70a853382e96823"
    },
    {
     "year": 2027,
-    "games": "db5424d3795ea5c5",
-    "post": "b0bd7195cd128102",
-    "champion": "Los Angeles",
-    "rec": "f3bc6e168cfc170b",
-    "poll": "ebc3821d0073f1ea",
-    "heis": "9b8eabb7a70851e7",
-    "history": "8947135aa8f52224",
-    "universe": "2b7660efe2a4cf17",
-    "screens": "cde8cf2e1c0b5a63"
+    "games": "3ce9e1a1d760d308",
+    "post": "5ffa45dc6005c815",
+    "champion": "Washington",
+    "rec": "0d457a4fe00a46f5",
+    "poll": "2d4d21c073ab4b9e",
+    "heis": "a3a1a7e8c72f5c64",
+    "history": "5fe3088789095910",
+    "universe": "3ee676e1f72c7657",
+    "screens": "bde018ed1b42d76f"
    }
   ],
   "Edmonton#777": [
@@ -158,21 +168,21 @@
     "rec": "de36e59a5dff0a83",
     "poll": "a66e4e334a78bddc",
     "heis": "0cc42876587eba43",
-    "history": "68176c8f0820cb9b",
-    "universe": "ddb55fd9ede2cd56",
-    "screens": "1849df9f12652373"
+    "history": "a7e1f7a85f401d81",
+    "universe": "8fce4e9efef8d7dd",
+    "screens": "b4ee9116c7807611"
    },
    {
     "year": 2027,
-    "games": "caf73c01825ea943",
-    "post": "86e987f2931a3ac9",
-    "champion": "San Jose",
-    "rec": "f799d5687a8f003c",
-    "poll": "699806f9c8f3c6f1",
-    "heis": "6d34694358e77f87",
-    "history": "dbc862f2675576ed",
-    "universe": "f474ccd8ab96c4b3",
-    "screens": "0304e14f9bb938f7"
+    "games": "1f112cdefddf0577",
+    "post": "b6a9cfbc62a61777",
+    "champion": "Winnipeg",
+    "rec": "e71b134e97f1ede4",
+    "poll": "490d4fc9d624b6f7",
+    "heis": "12f6ac64a4f962ae",
+    "history": "1644d7811121a549",
+    "universe": "a9aa940f478d6d67",
+    "screens": "12d060e33a81dc25"
    }
   ],
   "schedules#60": [

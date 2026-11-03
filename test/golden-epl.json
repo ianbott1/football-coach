@@ -1,5 +1,5 @@
 {
- "fp": "79b42bac1440e6d3",
+ "fp": "9efa2e71be7f6c31",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -155,6 +155,11 @@
    "fp": "79b42bac1440e6d3",
    "from": "346ebfa9d5b3c5b2",
    "note": "Nov 2026: what your calls did (post-game line and season ledger)"
+  },
+  {
+   "fp": "9efa2e71be7f6c31",
+   "from": "79b42bac1440e6d3",
+   "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
   }
  ],
  "result": {
@@ -169,7 +174,7 @@
     "heis": "b52085e10a9aee19",
     "history": "eec9a6693577fc76",
     "universe": "ad8098afd5da5e56",
-    "screens": "63b55c43d47a387c"
+    "screens": "0519b1bcc099d298"
    },
    {
     "year": 2027,
@@ -181,7 +186,7 @@
     "heis": "61b1d170fd28a807",
     "history": "6f9dbbcd251fe49b",
     "universe": "8fe74ed2f462a615",
-    "screens": "908e153998dc5104"
+    "screens": "879a6c3c04695bc0"
    }
   ],
   "Wrexham#777": [
@@ -195,7 +200,7 @@
     "heis": "35b811b30c3c7d9b",
     "history": "58fd4d0d1d79782a",
     "universe": "49584d25376128f8",
-    "screens": "5c89fe53f4bc6d3a"
+    "screens": "3f5c2dd8632601ca"
    },
    {
     "year": 2027,
@@ -207,7 +212,7 @@
     "heis": "773291adde1b8df1",
     "history": "5f77473fbc02c450",
     "universe": "3dcbe485f2471ef1",
-    "screens": "5239312e5e3008f4"
+    "screens": "423a11e71420caa2"
    }
   ],
   "schedules#60": [

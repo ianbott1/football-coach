@@ -1,7 +1,9 @@
 /* Two-tap confirms in a real browser (Chromium), where dialogs are dismissed:
    Erase on the title screen and Start over in a career ask on the first tap
    and act on the second; an armed Erase never loads the career instead.
-   Muse saw both do nothing in hockey and college football (on a stale build).
+   Muse saw both do nothing in hockey and college football (on a stale build),
+   and Erase pressed as a control loaded the career (it was text inside the
+   slot's button; now its own button, checked here by role and name).
      node test/confirm-taps.js [distDir]      last line: MATCH or MISMATCH */
 const {chromium}=require('playwright'); const path=require('path');
 const DIST=process.argv[2]||path.join(__dirname,'..','dist');
@@ -22,7 +24,15 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
       ok(await keys(p)===k0,`${f}: one tap of Start over deleted the career`);
       ok(/Tap again/.test(await rst.innerText()),`${f}: Start over didn't ask on the first tap ("${(await rst.innerText()).trim()}")`);
       await rst.click(); await p.waitForTimeout(500);
-      ok(await keys(p)==='',`${f}: two taps of Start over left the save (${await keys(p)})`); }
+      ok(await keys(p)==='',`${f}: two taps of Start over left the save (${await keys(p)})`);
+      // and a new career starts without a reload (it went to a team picker with no setup, and a pick threw)
+      ok(!!(await p.$('[data-slot]')),`${f}: Start over didn't return to the title screen`);
+      const sl=await p.$('[data-slot]'); if(sl){ await sl.click(); await p.waitForTimeout(400) }
+      const cg=await p.$('#cgo'); if(cg){ await cg.click(); await p.waitForTimeout(400) }
+      const pk=(await p.$$('.pick'))[4]; if(pk){ await pk.click(); await p.waitForTimeout(900) }
+      ok(!!(await p.$('#rst')),`${f}: after Start over, a new career didn't begin (${errs[0]||'no error'})`);
+      ok(!errs.length,`${f}: page errors after Start over: ${errs[0]}`);
+      await p.evaluate(()=>localStorage.clear()); }
     // Erase, on the title screen
     await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(800);
     await p.goto(url); await p.waitForTimeout(700);
@@ -33,6 +43,15 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
       const d2=await p.$('[data-del]'); if(d2){ await d2.click(); await p.waitForTimeout(500) }
       ok(await keys(p)==='',`${f}: two taps of Erase left the save (${await keys(p)})`);
       ok(!(await p.$('#rst')),`${f}: the second tap of Erase loaded the career`); }
+    // Erase as a control (by role and name, as a keyboard, a screen reader or a test agent reaches it):
+    // it was text inside the slot's button, so pressing it pressed the slot and loaded the career
+    await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(800);
+    await p.goto(url); await p.waitForTimeout(700);
+    { const er=p.getByRole('button',{name:/^Erase/}); const n=await er.count(); ok(n===1,`${f}: ${n} buttons named Erase on the title screen`);
+      if(n===1){ await er.click(); await p.waitForTimeout(250);
+        ok(!(await p.$('#rst'))&&(await keys(p))!=='',`${f}: pressing the Erase button loaded or erased the career at once`);
+        await p.getByRole('button',{name:/Tap again to erase|^Erase/}).click(); await p.waitForTimeout(600);
+        ok(await keys(p)===''&&!(await p.$('#rst')),`${f}: pressing Erase twice didn't erase (saves ${await keys(p)}, career loaded ${!!(await p.$('#rst'))})`) } }
     ok(!errs.length,`${f}: page errors: ${errs[0]}`);
     await ctx.close();
   }

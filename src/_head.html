@@ -39,7 +39,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .tab:focus-visible,.pick:focus-visible,.advance:focus-visible{outline:2px solid var(--sodium);
  outline-offset:2px}
 .actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;
- background:linear-gradient(180deg,transparent,rgba(16,19,28,.95) 32%)}
+ background:linear-gradient(180deg,transparent,var(--ink) 14px)}
+.actionbar .skip{background:var(--ink)}   /* opaque: text scrolling under the bar never shows through the buttons (Instinct, 390px) */
 .advance{display:block;width:100%;max-width:728px;margin:0 auto;background:var(--sodium);
  color:#10131C;border:none;font-family:var(--cond);font-weight:700;font-size:19px;
  letter-spacing:.08em;text-transform:uppercase;padding:15px;cursor:pointer;border-radius:2px}
@@ -399,6 +400,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  line-height:1;padding:3px 7px;margin-left:9px;cursor:pointer;border-radius:2px}
 .reset:hover{color:var(--sodium);border-color:var(--sodium)}
 .seedshow{color:var(--sodium);text-align:center}
+.confpick{padding:4px 16px 12px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.confpick select{font:inherit;color:var(--bone);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px;max-width:100%}
 .subtabs{display:flex;gap:6px;padding:4px 16px 12px;overflow-x:auto;scrollbar-width:none}
 .subtabs::-webkit-scrollbar{display:none}
 .subtabs .subtab{flex-shrink:0;min-width:min-content}
@@ -498,7 +501,9 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  line-height:1.05;color:var(--bone)}
 .slot.empty .slotmain{font-size:16px;font-weight:500;color:var(--muted);text-transform:none}
 .slotsub{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.04em}
-.slotdel{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:8.5px;
+.slotwrap{position:relative;width:100%}
+.slotwrap .slot{padding-right:64px}
+.slotdel{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:8.5px;background:var(--panel2);cursor:pointer;
  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);
  padding:3px 6px}
 .slotdel:hover{color:var(--flag);border-color:var(--flag)}

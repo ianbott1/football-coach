@@ -226,6 +226,37 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   (renaming a transfer you'd just signed broke "signed X" in bb-portal).
 - Screens must not promise what the code doesn't do: pro featuring said it
   sped development and didn't (only college did) until Nov 2026.
+- Round 6 (Muse) and Instinct round 2, Nov 2026, each with a check in
+  test/regressions.js that fails on e4f92e5:
+  an injury belongs to the player, not the slot (promoting a healthy backup
+  moves the injury to the bench and stops its cost; promotions saved before
+  this are plain numbers and replay the old way, so old careers don't
+  change); win probability includes your own edges (featuring, ice time:
+  ownEdge); a club page averages its starters, not the squad; soccer records
+  carry draws everywhere, and seasons saved without them are filled in on
+  load from the division's games (38 or 46, read from the season's result
+  wording: the ranking is not pyramid order, as a first try assumed); a
+  coordinator fired mid-season leaves a job to fill, so he can't return;
+  after a move, last season's featuring names the player you featured and
+  says nothing at the new club; Start over goes to the title screen (it went
+  to a team picker with no setup and every game needed a reload); college
+  standings have a conference picker; college basketball keeps each
+  season's bracket (packed, under 3 KB) and History draws past ones;
+  payroll against the cap or wage budget is on every team's card, all
+  season; milestones count only your own seasons at the club.
+- Hockey's ask curve is its own (Instinct): the football-shaped curve at
+  PAY 4.3 put every 63+ at the max (85 of 768 contracts), so the hard cap
+  made no tradeoffs. Now a line in dollars, 0.85 + 19 x (r-48)/20: a median
+  player ~$7M, a 64 (top 10%) ~$16M, the max from ~69 (6 of 768). Typical
+  payroll ~70% (was ~80%): with ratings this compressed (median 55, top 5%
+  67), a payroll near the cap and a rare max pull against each other.
+  nhl-history unchanged. Every league's signing markup (x1.1) is clamped at
+  the maximum contract.
+- The free-agent "fits" label: the signing checks the cap after the draft,
+  so there is no "squeezing the draft class". The screen's room less the
+  rookie reserve is right on average (measured: mean error -0.4M football,
+  +0.6M hockey) but varies about 5M either way, so near the line the label
+  says "close: it depends on what the draft class costs".
 - Playoff series put several of your games in one round: anything that
   finds "your game" in a round must take the latest, not the first.
 
@@ -363,7 +394,8 @@ dynasty's first season (generated players have no earlier history).
   hockey) never exceeded (free agency keeps the minimum back for empty spots;
   the post-draft check counts them). Basketball's soft cap: re-signing up to
   the tax line, top payrolls ~105-115%. Calibration unchanged (nba-history,
-  nhl-history, football spread by season). Gap: hockey's typical payroll
+  nhl-history, football spread by season). Hockey's curve was reshaped
+  later (see the lessons): typical payroll ~70%. Gap: hockey's typical payroll
   drifts down by year five (rebuilding teams on rookies and minimums); real
   leagues have a salary floor, the game doesn't.
 - College basketball injury costs reach ~200 team-strength points: some

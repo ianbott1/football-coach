@@ -146,7 +146,7 @@ function nflFreeAgentPreview(u,myTeam,users){
     R.forEach((p,i)=>{ if(!p||p.k.yrs>1||plan[i])return;
       if(p.r<58||p.age>=33)return;                  // likely to retire or go unsigned
       out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
-                ask:Math.round(nflAsk(p.r,p.p,p.age+1)*1.1*10)/10});
+                ask:Math.round(Math.min(MAX_SAL,nflAsk(p.r,p.p,p.age+1)*1.1)*10)/10});   // a signing's markup never passes the maximum contract (Instinct: a $22.9M ask over a $20.8M max)
     });
   });
   return out.sort((a,b)=>(b.r+(b.pot-b.r)*0.3-b.age*0.2)-(a.r+(a.pot-a.r)*0.3-a.age*0.2));
@@ -357,7 +357,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const p=pool.find(x=>!x.signed&&faKey(x.from,x)===key);
       const [team,n,pos]=key.split("|");
       if(!p){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:"wasn't on the market (retired or re-signed)"});return}
-      const cost=Math.round(p.ask*1.1*10)/10;
+      const cost=Math.round(Math.min(MAX_SAL,p.ask*1.1)*10)/10;
       const bk=R[BK(p.i)];
       if(bk&&bk.keep){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`no room at ${pos}: it would cut ${bk.n}, whom you just signed`});return}
       if(payroll(R)+cost+fillReserve(R)>NFL_CAP){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}

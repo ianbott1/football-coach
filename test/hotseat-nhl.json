@@ -1,5 +1,5 @@
 {
- "fp": "1250d64705984f3e",
+ "fp": "64e5a40d9979fd86",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -100,6 +100,11 @@
    "fp": "1250d64705984f3e",
    "from": "1250d64705984f3e",
    "note": "Nov 2026: what your calls did (post-game line and season ledger)"
+  },
+  {
+   "fp": "64e5a40d9979fd86",
+   "from": "1250d64705984f3e",
+   "note": "Instinct round 2: hockey's ask curve reshaped (max for the top 1-2%, 6 of 768 contracts maxed, was 85), signing markups clamped at the max, fit labels, offseason record with OT losses, opaque action bar"
   }
  ],
  "out": [
@@ -113,7 +118,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "77e6f93580ac3b1d"
+     "book": "0727471a7529dc2e"
     },
     {
      "team": "Montreal",
@@ -122,7 +127,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "0f3d3ae4dd256518"
+     "book": "e1d807551089acb6"
     }
    ]
   },
@@ -132,20 +137,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "21-43-20",
+      "rec": "28-43-13",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "682f84483925dac0"
+     "book": "2e76bd53a7d3dc48"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "44-30-10",
-      "result": "Lost in the second round",
-      "grade": "A-"
+      "rec": "47-27-10",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "257dfcfff39511ba"
+     "book": "35fa8ff9527e54a2"
     }
    ]
   },
@@ -155,20 +160,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "45-26-13",
+      "rec": "43-28-13",
       "result": "Lost in the first round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "153d58c27e432961"
+     "book": "031c45a4c10e2c08"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "25-47-12",
+      "rec": "38-35-11",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "7ac6f7855fbdf2e1"
+     "book": "dc54d254c7111296"
     }
    ]
   }

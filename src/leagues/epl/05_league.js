@@ -12,6 +12,9 @@ const EPL_SPREAD=list=>list.map(([n,e,d])=>[n,Math.round(1560+(e-1560)*EPL_K),d]
 const LEAGUE={
   id:"epl",
   name:"English Football",
+  // a season's league games, from how the club's season is told: 38 in the
+  // Premier League (its relegation alone names no division), 46 in the 24-club divisions
+  seasonGames:res=>/Premier League|^Relegated \(/i.test(res)?38:46,
   draws:true,                                 // a point for a draw, three for a win
   homeFirst:true,                             // results read home first, as in Britain
   /* win, draw and loss, from the engine's own scoring model (Poisson) */
