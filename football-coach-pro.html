@@ -866,7 +866,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="37855de";
+<script>const BUILD_ID="d7c6ae0";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -6210,7 +6210,7 @@ function commitOffseason(){
   distinctStaff(U,S.myTeam);
   S.pending=S.pending||{};
   S.pending[S.myTeam]=Object.assign(LEAGUE.offseason.choices(P),{phil:P.phil,
-                       featured:(S.featured===undefined?null:S.featured)});
+                       featured:(S.featured===undefined?null:S.featured), deploy:S.deploy||null});
   if(isHotSeat() && (S.turn||0) < coachCount()-1){
     writeSeasonHistory(oldTeam);                // this coach's year, in their book
     stashCoach(); loadCoach((S.turn||0)+1);
@@ -6222,7 +6222,7 @@ function commitOffseason(){
     S.featuredLast=fp?{n:fp.n,year:SEA.year}:null; }
   endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
     LEAGUE.offseason.choices(P),{phil:P.phil,
-    featured:(S.featured!==undefined?S.featured:null)}), A, oldTeam);
+    featured:(S.featured!==undefined?S.featured:null), deploy:S.deploy||null}), A, oldTeam);
   S.featured=null;
 }
 

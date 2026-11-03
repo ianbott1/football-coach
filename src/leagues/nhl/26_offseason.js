@@ -294,7 +294,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(ocq+dcq)*0.01;                      // both ends: both assistants
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      let g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i),2.0);
+      let g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof deployDev==="function"?deployDev(ch,i):0),2.0);   // hockey: ice time grows players
       // a breakout season: now and then a young player jumps a level, and
       // sometimes carries a franchise with him (the spread needs a source)
       if(a<=25&&rng.r()<+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07)){

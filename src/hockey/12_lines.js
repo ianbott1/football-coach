@@ -31,6 +31,16 @@ function deployEdge(sea,team){
       e+=DEPLOY_K*R_SLOPE*P.w*(P.bench-b1)*((st.r-bk.r)-G.fresh) }) });
   return e;
 }
+/* ice time grows players: a summer's development, for the season's choice.
+   Rolling gives the depth minutes (+2), and the top unit a little less (-0.5);
+   riding the top unit leaves the depth on the bench (-1) and gives the top
+   unit a little more (+0.5). Now against later. (A shift in the mean of the
+   offseason's draw: the dice fall the same, so no other team changes.) */
+const DEPLOY_DEV={ride:{top:0.5,depth:-1}, bal:{top:0,depth:0}, roll:{top:-0.5,depth:2}};
+function deployDev(ch,i){
+  if(!ch||!ch.deploy)return 0; const k=i%POS.length, g=Object.keys(DEPLOY).find(x=>DEPLOY[x].idx.indexOf(k)>=0);
+  const d=DEPLOY_DEV[ch.deploy[g]||"bal"]; return i<POS.length?d.top:d.depth;
+}
 /* riding your skaters gets more of them hurt; rolling them, fewer */
 function deployHazard(t){
   if(typeof SEA==="undefined"||!SEA)return 1; const D=deployOf(SEA,t);
@@ -64,7 +74,7 @@ function linesHTML(){
       <div class="fnote">${units[g].join(" &middot; ")}</div>
       <div class="setrow">${Object.keys(G.opts).map(k=>`<button class="setbtn" data-deploy="${g}:${k}" aria-pressed="${cur===k}">${esc(G.opts[k].l)}</button>`).join("")}</div>
       <div class="fnote">${esc(deployRead(g))}</div></div>` });
-  return h+`<div class="note">Leaning on your best players gets the team their level more often, and gets more of them hurt. Rolling keeps legs fresh. Balanced is how every team plays by default.</div>`;
+  return h+`<div class="note">Leaning on your best players gets the team their level more often, and gets more of them hurt. Rolling keeps legs fresh, and the minutes grow your depth over the summer; riding leaves them on the bench. Balanced is how every team plays by default.</div>`;
 }
 function bindLines(){
   document.querySelectorAll("[data-deploy]").forEach(b=>b.onclick=()=>{ const [g,k]=b.dataset.deploy.split(":");

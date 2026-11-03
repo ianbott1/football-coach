@@ -50,7 +50,22 @@ function season(team,seed,dep){
   const sh=k=>100*r[k].c/Math.max(1,r[k].all);
   console.log(`  ${t}'s top centre, points per 100 team goals: ${sh('ride').toFixed(1)} riding, ${sh('bal').toFixed(1)} balanced, ${sh('roll').toFixed(1)} rolling | team points ${r.ride.pts.toFixed(0)} / ${r.bal.pts.toFixed(0)} / ${r.roll.pts.toFixed(0)} (four seasons each, luck included)`);
   ok(sh('ride')>sh('bal')&&sh('bal')>sh('roll'),`${t}: the top centre's points per team goal don't follow his ice time`) }
-// 6. the screen
+// 6. ice time grows players: the same season, then one summer rolled or ridden
+{ const run=dep=>{ const B=load({file:D,expose:EXP.concat(['openOffseason','commitOffseason'])}); B.newDynasty('Carolina',11,'T'); const S2=B.SEA; let g=0;
+    while(S2.phase!=='done'&&g++<900){ S2.userTeam=B.S.myTeam; S2.advance() }
+    const my=B.S.myTeam, before={}; B.U.roster[my].forEach((p,i)=>{ if(p)before[p.n]={r:p.r,depth:i>=B.POS.length,pot:p.pot} });
+    B.S.deploy=dep; B.openOffseason(); for(let c=0;c<5&&B.S.off;c++){ if(B.S.off.act&&B.S.off.act.userOpen&&B.S.off.move===null)B.S.off.move=my; B.commitOffseason() }
+    const after={}; B.U.roster[my].forEach(p=>{ if(p)after[p.n]=p.r });
+    return {before,after,others:B.NAMES.filter(t=>t!==my).map(t=>B.U.roster[t].map(p=>p?p.n+':'+p.r:'-').join(',')).join('|')} };
+  const b=run(null), r=run({f:'roll',d:'roll',g:'roll'}), d=run({f:'ride',d:'ride',g:'ride'});
+  ok(r.others===b.others&&d.others===b.others,'a summer\'s ice time changed another team');
+  const diff=(x,depth)=>{ const v=[]; Object.keys(b.before).forEach(n=>{ const B0=b.before[n]; if(B0.depth!==depth||b.after[n]===undefined||x.after[n]===undefined)return;
+      if(B0.r>=B0.pot-4)return;                        // near his ceiling: development can't show
+      v.push(x.after[n]-b.after[n]) }); return v.length?v.reduce((p,q)=>p+q,0)/v.length:0 };
+  const rd=diff(r,true), rt=diff(r,false), dd=diff(d,true), dt=diff(d,false);
+  console.log(`  a summer's development against balanced: rolling depth ${rd>=0?'+':''}${rd.toFixed(1)}, top ${rt>=0?'+':''}${rt.toFixed(1)} | riding depth ${dd>=0?'+':''}${dd.toFixed(1)}, top ${dt>=0?'+':''}${dt.toFixed(1)}`);
+  ok(rd>1&&dd<0&&rt<=0.3&&dt>=-0.3,`ice time doesn't grow the players who get it (roll depth ${rd.toFixed(1)}, ride depth ${dd.toFixed(1)})`) }
+// 7. the screen
 { const h=A.rosterView(); ok(/Lines and ice time/.test(h)&&/data-deploy="f:ride"/.test(h)&&!/undefined|NaN/.test(h),'the lines section does not draw') }
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: lines and ice time work`);
 process.exit(bad?1:0);

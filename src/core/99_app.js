@@ -688,7 +688,7 @@ function commitOffseason(){
   distinctStaff(U,S.myTeam);
   S.pending=S.pending||{};
   S.pending[S.myTeam]=Object.assign(LEAGUE.offseason.choices(P),{phil:P.phil,
-                       featured:(S.featured===undefined?null:S.featured)});
+                       featured:(S.featured===undefined?null:S.featured), deploy:S.deploy||null});
   if(isHotSeat() && (S.turn||0) < coachCount()-1){
     writeSeasonHistory(oldTeam);                // this coach's year, in their book
     stashCoach(); loadCoach((S.turn||0)+1);
@@ -700,7 +700,7 @@ function commitOffseason(){
     S.featuredLast=fp?{n:fp.n,year:SEA.year}:null; }
   endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
     LEAGUE.offseason.choices(P),{phil:P.phil,
-    featured:(S.featured!==undefined?S.featured:null)}), A, oldTeam);
+    featured:(S.featured!==undefined?S.featured:null), deploy:S.deploy||null}), A, oldTeam);
   S.featured=null;
 }
 

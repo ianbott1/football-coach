@@ -866,7 +866,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="ce06d32";
+<script>const BUILD_ID="b8ce605";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1163,6 +1163,16 @@ function deployEdge(sea,team){
       e+=DEPLOY_K*R_SLOPE*P.w*(P.bench-b1)*((st.r-bk.r)-G.fresh) }) });
   return e;
 }
+/* ice time grows players: a summer's development, for the season's choice.
+   Rolling gives the depth minutes (+2), and the top unit a little less (-0.5);
+   riding the top unit leaves the depth on the bench (-1) and gives the top
+   unit a little more (+0.5). Now against later. (A shift in the mean of the
+   offseason's draw: the dice fall the same, so no other team changes.) */
+const DEPLOY_DEV={ride:{top:0.5,depth:-1}, bal:{top:0,depth:0}, roll:{top:-0.5,depth:2}};
+function deployDev(ch,i){
+  if(!ch||!ch.deploy)return 0; const k=i%POS.length, g=Object.keys(DEPLOY).find(x=>DEPLOY[x].idx.indexOf(k)>=0);
+  const d=DEPLOY_DEV[ch.deploy[g]||"bal"]; return i<POS.length?d.top:d.depth;
+}
 /* riding your skaters gets more of them hurt; rolling them, fewer */
 function deployHazard(t){
   if(typeof SEA==="undefined"||!SEA)return 1; const D=deployOf(SEA,t);
@@ -1196,7 +1206,7 @@ function linesHTML(){
       <div class="fnote">${units[g].join(" &middot; ")}</div>
       <div class="setrow">${Object.keys(G.opts).map(k=>`<button class="setbtn" data-deploy="${g}:${k}" aria-pressed="${cur===k}">${esc(G.opts[k].l)}</button>`).join("")}</div>
       <div class="fnote">${esc(deployRead(g))}</div></div>` });
-  return h+`<div class="note">Leaning on your best players gets the team their level more often, and gets more of them hurt. Rolling keeps legs fresh. Balanced is how every team plays by default.</div>`;
+  return h+`<div class="note">Leaning on your best players gets the team their level more often, and gets more of them hurt. Rolling keeps legs fresh, and the minutes grow your depth over the summer; riding leaves them on the bench. Balanced is how every team plays by default.</div>`;
 }
 function bindLines(){
   document.querySelectorAll("[data-deploy]").forEach(b=>b.onclick=()=>{ const [g,k]=b.dataset.deploy.split(":");
@@ -2250,7 +2260,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(ocq+dcq)*0.01;                      // both ends: both assistants
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      let g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i),2.0);
+      let g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof deployDev==="function"?deployDev(ch,i):0),2.0);   // hockey: ice time grows players
       // a breakout season: now and then a young player jumps a level, and
       // sometimes carries a franchise with him (the spread needs a source)
       if(a<=25&&rng.r()<+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07)){
@@ -5926,7 +5936,7 @@ function commitOffseason(){
   distinctStaff(U,S.myTeam);
   S.pending=S.pending||{};
   S.pending[S.myTeam]=Object.assign(LEAGUE.offseason.choices(P),{phil:P.phil,
-                       featured:(S.featured===undefined?null:S.featured)});
+                       featured:(S.featured===undefined?null:S.featured), deploy:S.deploy||null});
   if(isHotSeat() && (S.turn||0) < coachCount()-1){
     writeSeasonHistory(oldTeam);                // this coach's year, in their book
     stashCoach(); loadCoach((S.turn||0)+1);
@@ -5938,7 +5948,7 @@ function commitOffseason(){
     S.featuredLast=fp?{n:fp.n,year:SEA.year}:null; }
   endSeason(rng,Object.assign({userTeam:S.myTeam,users:users,coach:null},
     LEAGUE.offseason.choices(P),{phil:P.phil,
-    featured:(S.featured!==undefined?S.featured:null)}), A, oldTeam);
+    featured:(S.featured!==undefined?S.featured:null), deploy:S.deploy||null}), A, oldTeam);
   S.featured=null;
 }
 

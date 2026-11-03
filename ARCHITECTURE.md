@@ -171,7 +171,10 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   his backup - FRESH: 8 skaters, 6 goalies), so leaning pays for a top-heavy
   group and spreading for a deep one; balanced is exactly the old game (the
   computer's teams, calibration). Riding both skater groups x1.5 injury risk,
-  rolling x0.76; the box score follows the ice time (HK_STAT_BENCH). Size:
+  rolling x0.76; the box score follows the ice time (HK_STAT_BENCH); a
+  summer's development follows it too (DEPLOY_DEV: rolling depth +2, top
+  -0.5; riding depth -1, top +0.5; a shift in the draw's mean, so no other
+  team changes; ceilings cap it, so rolling grows players with room). Size:
   up to ~29 strength points (median 9); hockey turns 25 into ~1 point of win
   probability, ~2 standings points a season. test/lines.js checks each link;
   a season's luck (~10 points) is too big to assert on.
