@@ -1,5 +1,5 @@
 {
- "fp": "1b78921a95f1bf4b",
+ "fp": "b00478fd04693ea1",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -125,6 +125,11 @@
    "fp": "1b78921a95f1bf4b",
    "from": "8c7af04df5d52c06",
    "note": "Nov 2026: salary caps bind (veteran pay scaled per league, maximum contracts, hard caps enforced with fill-ins counted): results from season 2 in pro football, basketball, hockey"
+  },
+  {
+   "fp": "b00478fd04693ea1",
+   "from": "1b78921a95f1bf4b",
+   "note": "Nov 2026: what your calls did (post-game line and season ledger)"
   }
  ],
  "result": {
@@ -139,7 +144,7 @@
     "heis": "2ccdc333a87126d8",
     "history": "724781e719e07cd8",
     "universe": "ffe5fefffc4dcc93",
-    "screens": "5d779137b6ceca9c"
+    "screens": "f1677a89a2bbd8fc"
    },
    {
     "year": 2027,
@@ -151,7 +156,7 @@
     "heis": "d00aaf8480776c48",
     "history": "0e09fef71711b830",
     "universe": "7537bfed45d855ad",
-    "screens": "6e5297a961ad1b41"
+    "screens": "e14fe0be42b844ef"
    }
   ],
   "Detroit#777": [
@@ -165,7 +170,7 @@
     "heis": "22c9531ba0090e60",
     "history": "98b2e21d68c8c6bf",
     "universe": "2dc6580ab638ef44",
-    "screens": "b3762df724f0b1cb"
+    "screens": "c537a3f5acdc992f"
    },
    {
     "year": 2027,
@@ -177,7 +182,7 @@
     "heis": "079d6a02c16c2b6a",
     "history": "abc6206750985913",
     "universe": "e03274d969fd6485",
-    "screens": "2eae23a8daa3814f"
+    "screens": "cb31dc13a7e06f3c"
    }
   ],
   "schedules#60": [

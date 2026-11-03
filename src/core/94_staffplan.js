@@ -85,3 +85,68 @@ function splitNote(R){
   const a=Object.values(R||{}).sort((x,y)=>y-x); if(a.length<2||a[0]!==a[1])return "";
   return `<div class="evn"><b>A split report: ${a.filter(x=>x>0).join("-")}.</b> No clear usual way, so setting up for one is closer to a guess. Waiting to see how they start is a fair call too.</div>`;
 }
+
+/* ---- what your calls did ----
+   Each call you made, against what the assistant would have done (the
+   option you'd get by leaving it to him). Two replays from the moment of the
+   call: once with the same dice, the same game with his choice, for a result
+   you can see ("a 20-24 loss instead"); and many times with fresh luck after
+   it, for whether the call was worth it on average. The averages add up to a
+   season's ledger: what your calls were worth in wins (Muse and Instinct:
+   "nothing shows a good call mattering"). */
+const IMPACT_RUNS=400;
+function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
+function callImpact(args,seed,answers,meHome,runs){
+  runs=runs||IMPACT_RUNS;
+  const play=(j,v,reseed)=>{                 // replay with answers before j, v at j; later asks: yours where they match, else his
+    const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+    while(g++<3000){ r=e.next(); if(r.done)break;
+      if(r.ask){ let a;
+        if(i<j)a=answers[i];
+        else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
+        else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
+        e.reply(a); i++ } }
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h};
+  };
+  const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
+    while(g++<3000){ const r=e.next(); if(r.done)break;
+      if(r.ask){ asks.push({dp:r.ask}); e.reply(answers[i]!==undefined?answers[i]:impactDefault(r.ask)); i++ } } }
+  const out=[], score=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0;
+  asks.forEach((A,j)=>{
+    const pick=answers[j], def=impactDefault(A.dp);
+    if(pick===undefined||pick===def||!A.dp.opts.some(o=>o[0]===def))return;      // left to him: nothing to compare
+    const cf=play(j,def);                    // the same dice, his call
+    let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
+    const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
+    out.push({h:A.dp.h, pick:lab(pick), def:lab(def), cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
+  });
+  return out;
+}
+/* the post-game line: the call that mattered most, in words */
+function impactHTML(P){
+  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c))));
+  if(!C.length)return "";
+  const c=C.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,C[0]), p=c.res;
+  const out=(m,t)=>m>t?"win":m<t?(LEAGUE.draws?"defeat":"loss"):"draw";
+  const res=out(p.mine,p.theirs), alt=out(c.cf.mine,c.cf.theirs);
+  const altLine=`a ${c.cf.mine}-${c.cf.theirs} ${alt}`;
+  const avg=c.worth>=0.05?"wins clearly more often than his":c.worth>=0.02?"wins a little more often than his"
+    :c.worth>-0.02?"made little difference either way":c.worth>-0.05?"wins a little less often than his":"loses clearly more often than his";
+  // one replay is one roll of the dice: the headline credits the call only when
+  // the average over many replays agrees (measured: on its own, the same-luck
+  // replay disagreed with the average about as often as not)
+  const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
+  const head=better&&c.worth>=0.02?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
+    :worse&&c.worth<=-0.02?`That call cost you this one.`
+    :better?`You won, but not because of the call.`
+    :worse?`Unlucky: the call was sound.`
+    :`Same result either way tonight.`;
+  return `<div class="impact"><div class="imphead">${head}</div>
+    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div></div>`;
+}
+/* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
+function ledgerLine(){
+  const L=S.callLedger&&S.callLedger[SEA.year]; if(!L||!L.n)return "";
+  const w=L.worth, a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?(Math.round(a*10)/10):(Math.round(a*2)/2)} win${a>=0.75&&a<1.25?"":"s"}`;
+  return `Your ${L.n} call${L.n===1?"":"s"} this season: ${say} against leaving ${L.n===1?"it":"them"} to the assistant.`;
+}

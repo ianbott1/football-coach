@@ -140,6 +140,11 @@
    "fp": "42dfd8b6de8291cd",
    "from": "ac02bebab40f8571",
    "note": "Nov 2026: salary caps bind (veteran pay scaled per league, maximum contracts, hard caps enforced with fill-ins counted): results from season 2 in pro football, basketball, hockey"
+  },
+  {
+   "fp": "42dfd8b6de8291cd",
+   "from": "42dfd8b6de8291cd",
+   "note": "Nov 2026: what your calls did (post-game line and season ledger)"
   }
  ],
  "out": [

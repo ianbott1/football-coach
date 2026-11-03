@@ -1,5 +1,5 @@
 {
- "fp": "6f20c25895c4257d",
+ "fp": "90eece6631042674",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -190,6 +190,11 @@
    "fp": "6f20c25895c4257d",
    "from": "733abe9fb16affa0",
    "note": "Nov 2026: salary caps bind (veteran pay scaled per league, maximum contracts, hard caps enforced with fill-ins counted): results from season 2 in pro football, basketball, hockey"
+  },
+  {
+   "fp": "90eece6631042674",
+   "from": "6f20c25895c4257d",
+   "note": "Nov 2026: what your calls did (post-game line and season ledger)"
   }
  ],
  "result": {
@@ -204,7 +209,7 @@
     "heis": "4fae3ab392988611",
     "history": "23a1d91958dd6aa2",
     "universe": "a3b6172688389ae1",
-    "screens": "ab0e56df4a60881b"
+    "screens": "26c33e4863bdaedc"
    },
    {
     "year": 2027,
@@ -216,7 +221,7 @@
     "heis": "6aa62e2d5b0d619d",
     "history": "c8184ce51240bdc7",
     "universe": "e3621cf5a79231f3",
-    "screens": "542fd13af43d722b"
+    "screens": "37623af3cec758c7"
    },
    {
     "year": 2028,
@@ -228,7 +233,7 @@
     "heis": "80083c319ecb3780",
     "history": "41079c6153d31272",
     "universe": "7c785b21eb42cf75",
-    "screens": "d71726ff1e29e3d9"
+    "screens": "135caee0eaaf89b8"
    },
    {
     "year": 2029,
@@ -240,7 +245,7 @@
     "heis": "f47242f3509d113f",
     "history": "c588cd9c7c7ea2ca",
     "universe": "8ecd526fabc1df30",
-    "screens": "f93c8ac1927b0572"
+    "screens": "457646334403d9f4"
    }
   ],
   "Tennessee#2024": [
@@ -254,7 +259,7 @@
     "heis": "47fbe057dba617c3",
     "history": "502e5b30e80a4bc5",
     "universe": "a78a624937b05b5c",
-    "screens": "dbe79192ec2e4e15"
+    "screens": "e87c71c8ebd9d538"
    },
    {
     "year": 2027,
@@ -266,7 +271,7 @@
     "heis": "5920aaa5e2220fb2",
     "history": "6f439e4f058c6e69",
     "universe": "4f6c878f8b8a886f",
-    "screens": "b8aac9d275110788"
+    "screens": "eb7490163bb5da95"
    },
    {
     "year": 2028,
@@ -278,7 +283,7 @@
     "heis": "f5665e14fcb89df4",
     "history": "23d943ee25323b9f",
     "universe": "186324dfe9ee1763",
-    "screens": "4318d9516e24d707"
+    "screens": "67f631cb4d25a4c0"
    },
    {
     "year": 2029,
@@ -290,7 +295,7 @@
     "heis": "be3941753ba5b769",
     "history": "7d834bd4f2794d50",
     "universe": "ba81bcd6f630a5c9",
-    "screens": "0fbf7c2e551a978d"
+    "screens": "a42854727019a03f"
    }
   ],
   "Detroit#777": [
@@ -304,7 +309,7 @@
     "heis": "13df5e7e2aea9503",
     "history": "1583aac41f3e1d8b",
     "universe": "ed60048a150c6853",
-    "screens": "ddc53531c600834b"
+    "screens": "601b93a5d05fb4cc"
    },
    {
     "year": 2027,
@@ -316,7 +321,7 @@
     "heis": "33bbadd12d2df0e5",
     "history": "16def6cee0fdbd6f",
     "universe": "1a90b87e8235b3ab",
-    "screens": "08ae346e67208fa8"
+    "screens": "52fefcb924c96537"
    },
    {
     "year": 2028,
@@ -328,7 +333,7 @@
     "heis": "4e7bc8a63fc80b4c",
     "history": "3b994ac8f58c022c",
     "universe": "5667a62a40a26b73",
-    "screens": "4274a1b92caff11c"
+    "screens": "866793de66feb3b8"
    }
   ],
   "NY Giants#31337": [
@@ -342,7 +347,7 @@
     "heis": "9cccf8d2fc162002",
     "history": "8c49d3ed48464d07",
     "universe": "2f8815baa55405cc",
-    "screens": "e570df1d35280f61"
+    "screens": "cec4fc4ddb15e11e"
    },
    {
     "year": 2027,
@@ -354,7 +359,7 @@
     "heis": "15a80387b7436730",
     "history": "4cd20c1603e4bafd",
     "universe": "e593063f394ad60a",
-    "screens": "84e4fe37516e67cd"
+    "screens": "def544aef6ec413e"
    },
    {
     "year": 2028,
@@ -366,7 +371,7 @@
     "heis": "d1ccd6c1f8bab5e9",
     "history": "da65f0bccff1fc27",
     "universe": "e0498393ac40d312",
-    "screens": "2bdbc0ac2d0357aa"
+    "screens": "2f1368d73367827b"
    }
   ],
   "schedules#60": [

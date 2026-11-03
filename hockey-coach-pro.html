@@ -535,6 +535,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .restab tr.mine td{color:var(--sodium)}
 .stkeyin{font-size:11px;color:var(--muted)}
 .readnone{font-size:12.5px;color:var(--muted);line-height:1.45;padding:4px 0}
+.impact{margin-top:10px;padding:10px 12px;border-left:3px solid var(--sodium);background:rgba(244,166,58,.07);border-radius:4px}.imphead{font-family:var(--cond);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.02em}.impbody{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:3px}
 .introskip{background:none;border:1px solid var(--line);color:var(--muted);
  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
  padding:14px 16px;cursor:pointer;border-radius:2px}
@@ -863,7 +864,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="9513348";
+<script>const BUILD_ID="99f2589";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -4059,6 +4060,71 @@ function splitNote(R){
   const a=Object.values(R||{}).sort((x,y)=>y-x); if(a.length<2||a[0]!==a[1])return "";
   return `<div class="evn"><b>A split report: ${a.filter(x=>x>0).join("-")}.</b> No clear usual way, so setting up for one is closer to a guess. Waiting to see how they start is a fair call too.</div>`;
 }
+
+/* ---- what your calls did ----
+   Each call you made, against what the assistant would have done (the
+   option you'd get by leaving it to him). Two replays from the moment of the
+   call: once with the same dice, the same game with his choice, for a result
+   you can see ("a 20-24 loss instead"); and many times with fresh luck after
+   it, for whether the call was worth it on average. The averages add up to a
+   season's ledger: what your calls were worth in wins (Muse and Instinct:
+   "nothing shows a good call mattering"). */
+const IMPACT_RUNS=400;
+function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
+function callImpact(args,seed,answers,meHome,runs){
+  runs=runs||IMPACT_RUNS;
+  const play=(j,v,reseed)=>{                 // replay with answers before j, v at j; later asks: yours where they match, else his
+    const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+    while(g++<3000){ r=e.next(); if(r.done)break;
+      if(r.ask){ let a;
+        if(i<j)a=answers[i];
+        else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
+        else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
+        e.reply(a); i++ } }
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h};
+  };
+  const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
+    while(g++<3000){ const r=e.next(); if(r.done)break;
+      if(r.ask){ asks.push({dp:r.ask}); e.reply(answers[i]!==undefined?answers[i]:impactDefault(r.ask)); i++ } } }
+  const out=[], score=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0;
+  asks.forEach((A,j)=>{
+    const pick=answers[j], def=impactDefault(A.dp);
+    if(pick===undefined||pick===def||!A.dp.opts.some(o=>o[0]===def))return;      // left to him: nothing to compare
+    const cf=play(j,def);                    // the same dice, his call
+    let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
+    const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
+    out.push({h:A.dp.h, pick:lab(pick), def:lab(def), cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
+  });
+  return out;
+}
+/* the post-game line: the call that mattered most, in words */
+function impactHTML(P){
+  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c))));
+  if(!C.length)return "";
+  const c=C.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,C[0]), p=c.res;
+  const out=(m,t)=>m>t?"win":m<t?(LEAGUE.draws?"defeat":"loss"):"draw";
+  const res=out(p.mine,p.theirs), alt=out(c.cf.mine,c.cf.theirs);
+  const altLine=`a ${c.cf.mine}-${c.cf.theirs} ${alt}`;
+  const avg=c.worth>=0.05?"wins clearly more often than his":c.worth>=0.02?"wins a little more often than his"
+    :c.worth>-0.02?"made little difference either way":c.worth>-0.05?"wins a little less often than his":"loses clearly more often than his";
+  // one replay is one roll of the dice: the headline credits the call only when
+  // the average over many replays agrees (measured: on its own, the same-luck
+  // replay disagreed with the average about as often as not)
+  const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
+  const head=better&&c.worth>=0.02?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
+    :worse&&c.worth<=-0.02?`That call cost you this one.`
+    :better?`You won, but not because of the call.`
+    :worse?`Unlucky: the call was sound.`
+    :`Same result either way tonight.`;
+  return `<div class="impact"><div class="imphead">${head}</div>
+    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div></div>`;
+}
+/* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
+function ledgerLine(){
+  const L=S.callLedger&&S.callLedger[SEA.year]; if(!L||!L.n)return "";
+  const w=L.worth, a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?(Math.round(a*10)/10):(Math.round(a*2)/2)} win${a>=0.75&&a<1.25?"":"s"}`;
+  return `Your ${L.n} call${L.n===1?"":"s"} this season: ${say} against leaving ${L.n===1?"it":"them"} to the assistant.`;
+}
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
    so it rasterises to PNG without any library, and with fonts that exist
@@ -4995,7 +5061,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast",
+const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger",
                     "history","expNow","readTally"];
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -5153,6 +5219,13 @@ function finishLive(){
     if(V.judged)played.judged=V.judged;
     if(V.close)played.close=V.close;               // the nearest thing to a graded call, for a quiet game's debrief
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
+  // what your calls did: the same game with the assistant's call, and its worth over many replays
+  if(!live.h2h&&live.args&&(live.replay||[]).length&&typeof callImpact==="function"){
+    const I=callImpact(live.args,liveSeed(live.step),live.replay,meHome);
+    if(I.length){ played.impact=I;
+      const L=S.callLedger=S.callLedger||{}, Y=L[SEA.year]=L[SEA.year]||{n:0,worth:0};
+      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000});
+      Object.keys(L).forEach(y=>{ if(+y<SEA.year-1)delete L[y] }) } }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
@@ -5911,7 +5984,8 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}
+    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -5921,13 +5995,15 @@ function firstReadTip(){
 }
 /* the season's tally of your reads and calls, kept on the team page all year */
 function tallyHTML(){
-  const T=S.readTally; if(!T||!T.n)return "";
+  const T=S.readTally, led=typeof ledgerLine==="function"?ledgerLine():"";
+  if(!T||!T.n)return led?`<div class="grouphead">Your calls</div><div class="tallycard"><div><div class="fnote tallynote">${esc(led)}</div></div></div>`:"";
   const Y=T.yr&&T.yr[SEA.year], lab=typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season";
   const pct=(a,b)=>b?Math.round(100*a/b):0;
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
+    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
 }

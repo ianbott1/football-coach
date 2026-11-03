@@ -165,6 +165,17 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   pushes (cause not visible from here; .nojekyll added). Each game's title
   screen and help, and the landing page, show a build stamp (a hash of the
   source, so a rebuild matches); give testers the stamp with each release.
+- What your calls did (core callImpact, Nov 2026): every call you make
+  against the assistant's choice is replayed (a) once with the same dice and
+  his choice, for the other scoreline, and (b) 400 times with fresh luck after
+  the call, for its worth (win rate yours minus his). The post-game line
+  credits or blames the call only when both agree; a single replay disagreed
+  with the average about as often as not (measured), so otherwise it says it
+  was luck. The season ledger (S.callLedger) sums the worth: "your 27 calls:
+  about +1.5 wins". One call rarely flips a game (a few times in 72 games for
+  a coach always taking the first option); the ledger is where it adds up.
+  test/call-impact.js: replays reproduce the real game exactly, headlines
+  follow the rule, under ~0.7 s per game on desktop.
 - Show what a coach would see, not the engine's dials (Ian, Nov 2026):
   records, save %, scouting stats, fourth-down conversion odds and the
   post-game replay verdicts stay; plan goal rates, featuring's win

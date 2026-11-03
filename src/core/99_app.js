@@ -15,7 +15,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast",
+const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger",
                     "history","expNow","readTally"];
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -173,6 +173,13 @@ function finishLive(){
     if(V.judged)played.judged=V.judged;
     if(V.close)played.close=V.close;               // the nearest thing to a graded call, for a quiet game's debrief
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
+  // what your calls did: the same game with the assistant's call, and its worth over many replays
+  if(!live.h2h&&live.args&&(live.replay||[]).length&&typeof callImpact==="function"){
+    const I=callImpact(live.args,liveSeed(live.step),live.replay,meHome);
+    if(I.length){ played.impact=I;
+      const L=S.callLedger=S.callLedger||{}, Y=L[SEA.year]=L[SEA.year]||{n:0,worth:0};
+      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000});
+      Object.keys(L).forEach(y=>{ if(+y<SEA.year-1)delete L[y] }) } }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
@@ -931,7 +938,8 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}
+    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -941,13 +949,15 @@ function firstReadTip(){
 }
 /* the season's tally of your reads and calls, kept on the team page all year */
 function tallyHTML(){
-  const T=S.readTally; if(!T||!T.n)return "";
+  const T=S.readTally, led=typeof ledgerLine==="function"?ledgerLine():"";
+  if(!T||!T.n)return led?`<div class="grouphead">Your calls</div><div class="tallycard"><div><div class="fnote tallynote">${esc(led)}</div></div></div>`:"";
   const Y=T.yr&&T.yr[SEA.year], lab=typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season";
   const pct=(a,b)=>b?Math.round(100*a/b):0;
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
+    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
 }
