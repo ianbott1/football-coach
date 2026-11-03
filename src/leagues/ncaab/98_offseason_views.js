@@ -28,6 +28,7 @@ function offseasonBanner(){
   let rec="";
   if(cls)rec=`<div class="bnews"><b>Recruiting:</b> ${esc(cls.l)} &mdash;
     ranked ${cls.rank} of ${cls.of} nationally.</div>`;
+  if(cls&&cls.board&&cls.board.length)rec+=rbBannerHTML(cls.board);
   if(pin&&pin.length)rec+=`<div class="bnews"><b>Transfer portal, in:</b> ${pin.map(p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+", from "+esc(p.from)+(p.start?", starting":"")+")").join(", ")}.</div>`;
   if(pout&&pout.length)rec+=`<div class="bnews small"><b>Transfer portal, out:</b> ${pout.map(p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+"): "+esc(p.why)).join("; ")}.</div>`;
   const missed=(ptg||[]).filter(x=>!x.got);
@@ -195,8 +196,9 @@ function offseasonScreen(){
     <div class="fname">${esc(LEAGUE.offseason.recruitFocus[k].l)}</div>
     <div class="cdesc">${esc(LEAGUE.offseason.recruitFocus[k].d)}</div></div>`).join("");
 
-  h+=portalHTML(step?"4":"3");
-  h+=`<div class="grouphead">${step?"5":"4"}. Team philosophy</div>`;
+  h+=recruitBoardHTML(P,step?"4":"3");
+  h+=portalHTML(step?"5":"4");
+  h+=`<div class="grouphead">${step?"6":"5"}. Team philosophy</div>`;
   h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
     <div class="fname">${esc(PHILOSOPHY[k].l)}</div>
     <div class="cdesc">${esc(PHILOSOPHY[k].d)}</div></div>`).join("");
@@ -213,6 +215,7 @@ Object.assign(LEAGUE.ui,{
     return n>0?"Allocate "+n+" more":n<0?"Over budget":null;
   },
   bindOffseason(){
+    bindRecruitBoard();
     document.querySelectorAll("[data-ptadd]").forEach(b=>b.onclick=()=>{
       const P=S.off.picks; P.portal=(P.portal||[]).concat([b.dataset.ptadd]); save(); render();});
     document.querySelectorAll("[data-ptrm]").forEach(b=>b.onclick=()=>{

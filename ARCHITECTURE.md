@@ -165,6 +165,19 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   pushes (cause not visible from here; .nojekyll added). Each game's title
   screen and help, and the landing page, show a build stamp (a hash of the
   source, so a rebuild matches); give testers the stamp with each release.
+- Recruiting board (core 92_recruiting, college games, Nov 2026): prospects
+  at each open position are drawn with the league's own newcomer function
+  (drawNewcomer, shared with developRoster), in your program's context and
+  choices. Your board's top prospect at a position commits with a chance
+  that falls as he rises above what a newcomer there averages (RB_LAND0 0.70,
+  RB_LANDK 0.30 per SD). The default newcomer is always drawn and developed
+  first on the season's dice; a signed recruit swaps in at the end of
+  developRoster (rbSettle), developed by as much as the man he replaced, so
+  no other program's roster changes (an earlier swap-before-development
+  changed everyone's: the dice depend on each player's attributes). Gain per
+  open spot against the replaced newcomer: chasing the best ~+0.4 to +1.2,
+  the best of the battles ~+0.1 to +0.8, only the likely ones negative.
+  test/recruiting.js.
 - What your calls did (core callImpact, Nov 2026): every call you make
   against the assistant's choice is replayed (a) once with the same dice and
   his choice, for the other scoreline, and (b) 400 times with fresh luck after

@@ -29,8 +29,20 @@ function makeRoster(rng,programElo){
   return r;
 }
 
-/* ---- offseason roster churn ---- */
-function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
+/* one newcomer at position i: the class's draw (developRoster), and the
+   recruiting board's prospects, which come from exactly this */
+function drawNewcomer(rng,C,i){
+    const cls=rng.r()<0.62?0:1;
+    // a focus concentrates the class: better where you aim, thinner elsewhere
+    const bonus=(!C.focus.pos||C.focus.pos.indexOf(POS[i%POS.length].p)>=0)?C.focus.r:(C.focus.off||0);
+    const np=makePlayer(rng,C.target-rng.range(4,14)+(C.coach.q*0.045)+bonus
+      +(C.coach.rec||0)*0.5+(C.bud?C.bud.recruitBonus:0),cls,i%POS.length);
+    if(C.focus.pot)np.pot=Math.min(99,np.pot+C.focus.pot);
+    if(C.focus.dev)np.up=C.focus.dev;
+    if(cls===0)np.rec=true;
+    return np;
+}
+function developRoster(u,t,rng,focus,devMod,bud,featured,staff,board){
   focus=focus||{pos:null,r:0,pot:0}; devMod=devMod||0; bud=bud||null;
   const cls=(u.classAvg&&u.classAvg[t]!==undefined)?u.classAvg[t]:null;
   const coach=u.coach[t];
@@ -48,17 +60,9 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
       }
     });
   }
-  const newcomer=(i)=>{
-    const cls=rng.r()<0.62?0:1;
-    // a focus concentrates the class: better where you aim, thinner elsewhere
-    const bonus=(!focus.pos||focus.pos.indexOf(POS[i%POS.length].p)>=0)?focus.r:(focus.off||0);
-    const np=makePlayer(rng,target-rng.range(4,14)+(coach.q*0.045)+bonus
-      +(coach.rec||0)*0.5+(bud?bud.recruitBonus:0),cls,i%POS.length);
-    if(focus.pot)np.pot=Math.min(99,np.pot+focus.pot);
-    if(focus.dev)np.up=focus.dev;
-    if(cls===0)np.rec=true;
-    return np;
-  };
+  const C={target:target,coach:coach,focus:focus,bud:bud,base:base};
+  // the default newcomer is always drawn (the season's own dice); your board may replace him
+  const newcomer=(i)=>rbSign(board,t,u.year,i,drawNewcomer(rng,C,i));
   for(let i=0;i<roster.length;i++){
     const pl=roster[i];
     if(!pl)continue;
@@ -104,7 +108,8 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff){
     const s=roster[i], b=roster[BK(i)];
     if(s&&b&&b.r>s.r+2){roster[i]=b;roster[BK(i)]=s}   // clear upgrade wins the job
   });
-  return {leaving:leaving,arriving:arriving};
+  if(board)rbSettle(roster,arriving);
+  return {leaving:leaving,arriving:arriving,board:board?rbReport(board):null};
 }
 
 function classLabel(rank,total){
@@ -227,7 +232,8 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
     churn[t]=developRoster(u,t,rng,RECRUIT_FOCUS[focus],devMod,bud,
                            ch?ch.featured:null,
-                           {oc:ocq*0.030, dc:dcq*0.030});
+                           {oc:ocq*0.030, dc:dcq*0.030},
+                           ch&&ch.board&&ch.board.length?ch.board.map(x=>Object.assign({},x)):null);
     leavers[t]=churn[t].leaving;
     u.trueBase[t]=rosterElo(u.roster[t])
                  +(c.t<=1?ROOKIE_DIP:0)
@@ -267,6 +273,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   incoming.forEach(([t,av,n],i)=>{
     classes[t]={avg:Math.round(av),n:n,rank:i+1,of:incoming.length,
                 l:classLabel(i+1,incoming.length)};
+    if(churn[t]&&churn[t].board&&churn[t].board.length)classes[t].board=churn[t].board;
   });
   const early={};
   NAMES.forEach(t=>{const x=churn[t].leaving.filter(y=>y.early); if(x.length)early[t]=x});
@@ -297,7 +304,7 @@ LEAGUE.offseason={
               facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}}};
   },
   /* ...and as run() reads them */
-  choices(P){ return {recruit:P.recruit, budget:P.budget} }
+  choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget} }
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the
@@ -356,4 +363,12 @@ LEAGUE.seasonLine=function(h,t,r,seed){
   if(h.champion===t)return "National champions";
   if(seed)return "Playoff, No. "+seed+" seed";
   return r[0]>=6?"No bowl":"Losing season";
+};
+/* the mean a freshman newcomer at position i is drawn around (developRoster's
+   newcomer, with this focus and recruiting budget): the board's prospects use it */
+/* the context a newcomer is drawn in (developRoster's), with these choices: the board's prospects use it */
+LEAGUE.offseason.recruitCtx=function(u,t,P){
+  const base=eloToRating(u.program[t]), target=(u.classAvg&&u.classAvg[t]!==undefined)?base*0.68+u.classAvg[t]*0.32:base;
+  const focus=RECRUIT_FOCUS[(P&&P.recruit)||"balanced"]||{pos:null,r:0,pot:0};
+  return {target:target, coach:u.coach[t]||{q:0}, focus:focus, bud:P&&P.budget?applyBudgetRead(P.budget):null, base:base};
 };

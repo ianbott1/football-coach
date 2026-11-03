@@ -1,5 +1,5 @@
 {
- "fp": "088a461439fc1ea1",
+ "fp": "b0772cc5d61a19c3",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -184,6 +184,11 @@
    "fp": "088a461439fc1ea1",
    "from": "5f054348386b724b",
    "note": "Nov 2026: what your calls did (post-game line and season ledger)"
+  },
+  {
+   "fp": "b0772cc5d61a19c3",
+   "from": "088a461439fc1ea1",
+   "note": "Nov 2026: recruiting board (college games): offseason screen"
   }
  ],
  "result": {
@@ -198,7 +203,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "9952067fdc1fb461",
     "universe": "c79efd00746c4319",
-    "screens": "e1d265994439d4f0"
+    "screens": "d89edc1f3e15e716"
    },
    {
     "year": 2027,
@@ -210,7 +215,7 @@
     "heis": "480803b9b658faca",
     "history": "ac3a15173a773d71",
     "universe": "7845d6f1024dda3b",
-    "screens": "3d3516659749267b"
+    "screens": "63e6c7a626a2f1f1"
    },
    {
     "year": 2028,
@@ -222,7 +227,7 @@
     "heis": "dd04a1940012247a",
     "history": "b5bdb2098a96e70c",
     "universe": "38ee269a6648d287",
-    "screens": "74799ab3db466c2a"
+    "screens": "a3401956fbc061df"
    },
    {
     "year": 2029,
@@ -234,7 +239,7 @@
     "heis": "8d304a39ff6e17a2",
     "history": "e01b198c7ad1cae2",
     "universe": "e986ceeb574628cb",
-    "screens": "514004fcb068233a"
+    "screens": "865044d542953fe3"
    }
   ],
   "Rice#2024": [
@@ -248,7 +253,7 @@
     "heis": "62c67774006ebb20",
     "history": "02d5f003193c65d5",
     "universe": "5f6e50ee854d4a54",
-    "screens": "e7fa9aec8a9d7a70"
+    "screens": "0ae3aba3ae3d1b6d"
    },
    {
     "year": 2027,
@@ -260,7 +265,7 @@
     "heis": "4e4319a44375c65b",
     "history": "38ff63bf6b4d898f",
     "universe": "7d5a0760ca6e51a9",
-    "screens": "75034e01a88000eb"
+    "screens": "cc48541ccc2d5359"
    },
    {
     "year": 2028,
@@ -272,7 +277,7 @@
     "heis": "f4929038beaf492f",
     "history": "0c636b45336df982",
     "universe": "7e57573047680ae7",
-    "screens": "959f90a64537ab00"
+    "screens": "5402120fd50d653a"
    },
    {
     "year": 2029,
@@ -284,7 +289,7 @@
     "heis": "aacb35d7197a5573",
     "history": "29a62091281ea40e",
     "universe": "1d7b62e5e7fe578b",
-    "screens": "39a8ef8943f8b8f3"
+    "screens": "cd720c6c27ae14d7"
    }
   ],
   "Oregon#777": [
@@ -298,7 +303,7 @@
     "heis": "fde104829f9687a1",
     "history": "e1c18941586fa977",
     "universe": "501323d207357aeb",
-    "screens": "0eb4f5bebc370c03"
+    "screens": "fa54bcac6cca3b43"
    },
    {
     "year": 2027,
@@ -310,7 +315,7 @@
     "heis": "16871fc36811ec09",
     "history": "3d3bff6e053e14d4",
     "universe": "ed7a89e9ef4bcd02",
-    "screens": "9644835dc0060880"
+    "screens": "12db6a8a7fb419b3"
    },
    {
     "year": 2028,
@@ -322,7 +327,7 @@
     "heis": "908583fabe0cc4b0",
     "history": "682db458c522f655",
     "universe": "0c506fd80c7bee56",
-    "screens": "e8dec73f43d0a3b7"
+    "screens": "596edff8a12cecf7"
    }
   ],
   "Kent State#31337": [
@@ -336,7 +341,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "59730e241690a6ed",
     "universe": "29ba28273658b169",
-    "screens": "ebde78d633c7cb23"
+    "screens": "5918a63d19cf7096"
    },
    {
     "year": 2027,
@@ -348,7 +353,7 @@
     "heis": "e3afac23d3079708",
     "history": "120b9f5080616f24",
     "universe": "2aa05bb9248e1180",
-    "screens": "ce17de2c0e8b0626"
+    "screens": "fef80655a8214018"
    },
    {
     "year": 2028,
@@ -360,7 +365,7 @@
     "heis": "1631e759996121aa",
     "history": "fc3c138ab3761df6",
     "universe": "ba477dea2dc9a385",
-    "screens": "4caae328523bc4b6"
+    "screens": "6f0a4b4255cbe23c"
    }
   ],
   "schedules#60": [

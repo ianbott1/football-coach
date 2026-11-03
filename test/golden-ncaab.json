@@ -1,5 +1,5 @@
 {
- "fp": "651586600de99f7e",
+ "fp": "8908fe84b8d3bbc0",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -185,6 +185,11 @@
    "fp": "651586600de99f7e",
    "from": "cfee058b0a454c6c",
    "note": "Nov 2026: what your calls did (post-game line and season ledger)"
+  },
+  {
+   "fp": "8908fe84b8d3bbc0",
+   "from": "651586600de99f7e",
+   "note": "Nov 2026: recruiting board (college games): offseason screen"
   }
  ],
  "result": {
@@ -199,7 +204,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "0201f9bb0bedb414",
     "universe": "29a92f3d60e09617",
-    "screens": "d04e52fc07339ff1"
+    "screens": "c79747a11f1c13fc"
    },
    {
     "year": 2027,
@@ -211,7 +216,7 @@
     "heis": "64b059fcdf7e9d46",
     "history": "148a12213556f06b",
     "universe": "bd3d3e718a7a23df",
-    "screens": "6ec37b711c229aba"
+    "screens": "0a1d59e20d099aa0"
    }
   ],
   "Coppin State#2024": [
@@ -225,7 +230,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "f1c532d111868c7a",
     "universe": "9cb6dcc8e5340bbd",
-    "screens": "aeb89bfb67a07b5e"
+    "screens": "741ede81366e6c13"
    },
    {
     "year": 2027,
@@ -237,7 +242,7 @@
     "heis": "5e653284efe7ed05",
     "history": "9d5b0d8b80c64894",
     "universe": "ed8086c25debe3aa",
-    "screens": "d7cc2f1b72e6aa22"
+    "screens": "1add0c58f948a11f"
    }
   ],
   "Gonzaga#777": [
@@ -251,7 +256,7 @@
     "heis": "c94713712b4e6c61",
     "history": "1ba2e919260b2430",
     "universe": "eee9d3d013e35123",
-    "screens": "4eb131af967f6b4b"
+    "screens": "d01c05f7bdf67d05"
    },
    {
     "year": 2027,
@@ -263,7 +268,7 @@
     "heis": "2c21cf7676ec0650",
     "history": "90af7ff2d80996f1",
     "universe": "e2f2c5eeb4e16444",
-    "screens": "5f5ed40c17ac1019"
+    "screens": "98a65f980bc7cbed"
    }
   ],
   "schedules#60": [
