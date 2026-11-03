@@ -79,7 +79,7 @@ const LEAGUE={
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a contender on their ice. That's a statement.","Two points off a real team."],
     badLoss:["Points you can't give away in this division.","Beaten by a lottery team. It will cost you in the standings.","The kind of loss that decides the last wild card."],
     champions:"Stanley Cup champions",
-    org:"Franchise", orgs:"teams", group:"Division", rank:"Rank",
+    org:"Franchise", orgs:"teams", group:"Division", rank:"Power rank",   // by strength, not record (Muse: #21 for a team 15th by record)
     groupShort:"Div",
     standingsNote:`<div class="note">Record W-L-OTL: two points a win, one for losing in overtime or a
       shootout. The top three in each division make the playoffs, plus two wild cards in each conference.

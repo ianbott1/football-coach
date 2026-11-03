@@ -1,5 +1,5 @@
 {
- "fp": "62ee3f43bb7c1a26",
+ "fp": "8c7af04df5d52c06",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -115,6 +115,11 @@
    "fp": "62ee3f43bb7c1a26",
    "from": "3032f1f479869c28",
    "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
+  },
+  {
+   "fp": "8c7af04df5d52c06",
+   "from": "62ee3f43bb7c1a26",
+   "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
   }
  ],
  "result": {
@@ -127,9 +132,9 @@
     "rec": "d7ae1235bae99b43",
     "poll": "5a2da089622cdcd1",
     "heis": "2ccdc333a87126d8",
-    "history": "824d04bfa9695602",
-    "universe": "50f9c7f183bd2a1e",
-    "screens": "285741999a16dd38"
+    "history": "142532239fc64260",
+    "universe": "e50b2eec47e7d23a",
+    "screens": "358f1474fcc0ab8a"
    },
    {
     "year": 2027,
@@ -139,9 +144,9 @@
     "rec": "8b21c891a61082a5",
     "poll": "08b93211ff8a698c",
     "heis": "d9117e620e3eacf2",
-    "history": "847ed719ff33767a",
-    "universe": "923fa1682502566d",
-    "screens": "c00b69f99fab09df"
+    "history": "5ac08a56110b1766",
+    "universe": "6cb73fa8413bb8ff",
+    "screens": "4c39a93f87a24a97"
    }
   ],
   "Detroit#777": [
@@ -153,9 +158,9 @@
     "rec": "806c1a86431a86bb",
     "poll": "d96e604f59d2c590",
     "heis": "22c9531ba0090e60",
-    "history": "d5c3150c78cdbfb1",
-    "universe": "006378e8737ac3af",
-    "screens": "1094c96ca3d7e43f"
+    "history": "cee690266a246bc4",
+    "universe": "df759fce0e6589a2",
+    "screens": "0741882b83e441e0"
    },
    {
     "year": 2027,
@@ -165,9 +170,9 @@
     "rec": "5b696f77f56741fe",
     "poll": "e389e8260161377b",
     "heis": "79edbf090805b4d0",
-    "history": "f138f3888bbe8475",
-    "universe": "ffcecd3f8b675305",
-    "screens": "02e6e978e805d60e"
+    "history": "6cdc5f71b4636f92",
+    "universe": "992bd2a7403902fe",
+    "screens": "d32794cbc8053176"
    }
   ],
   "schedules#60": [

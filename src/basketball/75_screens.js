@@ -95,7 +95,7 @@ function evidenceHTML(g,my,d,dp){
   if(dp.k==="prep"){ const opp=g.home===my?"away":"home", R=dp.report, n=dp.n||6;
     return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
       ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
-      <div class="evn">Most teams have a way they like to score, but not every night. Get it right and the work you did in practice shows; get it wrong and you're out of position until you change it.</div></div>`; }
+      <div class="evn">Most teams have a way they like to score, but not every night. Get it right and the work you did in practice shows; get it wrong and you're out of position until you change it.</div>${splitNote(R)}</div>`; }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);

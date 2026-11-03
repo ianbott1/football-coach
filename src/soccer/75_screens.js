@@ -139,7 +139,7 @@ function reportHTML(dp,g,my){
     :`An even game on paper: they're likeliest to play their usual way.`;
   return `<div class="evid"><div class="evh">${esc(oppName)}: their last ${n} games</div>
     ${APPROACH_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(APPROACH[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
-    <div class="evn">Most clubs have a usual way of playing, but not every week. ${tilt} Get it right and the work you did all week shows; get it wrong and you're out of shape until you change it.</div></div>`;
+    <div class="evn">Most clubs have a usual way of playing, but not every week. ${tilt} Get it right and the work you did all week shows; get it wrong and you're out of shape until you change it.</div>${splitNote(R)}</div>`;
 }
 function evidenceHTML(g,my,d,kind){
   if(!d||!d.T)return "";

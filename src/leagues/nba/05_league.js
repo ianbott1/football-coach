@@ -71,7 +71,7 @@ const LEAGUE={
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a contender. That's how they're built.","A statement win over a real team."],
     badLoss:["A loss you can't afford in this conference.","Beaten by a lottery team. It will cost you in the standings.","The kind of loss that decides who plays in the play-in."],
     champions:"NBA champions",
-    org:"Franchise", orgs:"teams", group:"Division", rank:"Rank",
+    org:"Franchise", orgs:"teams", group:"Division", rank:"Power rank",   // by strength, not record (Muse: #21 for a team 15th by record)
     groupShort:"Div",
     standingsNote:`<div class="note">Overall record, then division record. The top six in each conference
       go straight to the playoffs; 7 to 10 play in. <b>z</b> clinched the top seed &middot; <b>y</b> clinched

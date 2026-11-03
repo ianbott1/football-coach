@@ -42,6 +42,7 @@ add('playoffs (nhl)',['nhl-playoffs.js','3']); add('clinch marks (nhl)',['nhl-cl
 add('screens (nhl)',['nhl-screens.js']); add('NHL history (nhl)',['nhl-history.js','2','60'],{long:true});
 // English football
 add('rules (epl)',['epl-rules.js','4']); add('screens (epl)',['epl-screens.js']); add('strength predicts the table (epl)',['epl-predict.js']); add('decisions (epl)',['sc-decisions.js']); add('FA Cup (epl)',['epl-cup.js','6']); add('transfer window (epl)',['transfers.js']); add('reads (nhl)',['hk-reads.js']); add('reads (ncaab)',['bb-reads.js','college']); add('reads (nba)',['bb-reads.js','pro']);
+add('reported cases (all six)',['regressions.js']); add('two-tap confirms in a browser',['confirm-taps.js']);
 
 (async()=>{
   const t0=Date.now();

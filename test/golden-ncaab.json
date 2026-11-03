@@ -1,5 +1,5 @@
 {
- "fp": "f38dbd3f9a1a8931",
+ "fp": "cfee058b0a454c6c",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -170,6 +170,11 @@
    "fp": "f38dbd3f9a1a8931",
    "from": "c2c5c81584a9719b",
    "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
+  },
+  {
+   "fp": "cfee058b0a454c6c",
+   "from": "f38dbd3f9a1a8931",
+   "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
   }
  ],
  "result": {
@@ -184,7 +189,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "0201f9bb0bedb414",
     "universe": "29a92f3d60e09617",
-    "screens": "a5f078f10949029c"
+    "screens": "084fda7fe2398cb5"
    },
    {
     "year": 2027,
@@ -196,7 +201,7 @@
     "heis": "64b059fcdf7e9d46",
     "history": "148a12213556f06b",
     "universe": "bd3d3e718a7a23df",
-    "screens": "dbd5987fc095d31f"
+    "screens": "b6a77b421051396b"
    }
   ],
   "Coppin State#2024": [
@@ -210,7 +215,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "f1c532d111868c7a",
     "universe": "9cb6dcc8e5340bbd",
-    "screens": "d9c72fceb5655db7"
+    "screens": "c0a502983eb474fc"
    },
    {
     "year": 2027,
@@ -222,7 +227,7 @@
     "heis": "5e653284efe7ed05",
     "history": "9d5b0d8b80c64894",
     "universe": "ed8086c25debe3aa",
-    "screens": "f22d2a0966d9fd80"
+    "screens": "c4599ee482a00aef"
    }
   ],
   "Gonzaga#777": [
@@ -236,7 +241,7 @@
     "heis": "c94713712b4e6c61",
     "history": "1ba2e919260b2430",
     "universe": "eee9d3d013e35123",
-    "screens": "e636adb3b2313828"
+    "screens": "33f9e0698f4d5a82"
    },
    {
     "year": 2027,
@@ -248,7 +253,7 @@
     "heis": "2c21cf7676ec0650",
     "history": "90af7ff2d80996f1",
     "universe": "e2f2c5eeb4e16444",
-    "screens": "b821afd7485fb4ae"
+    "screens": "34a7d7591d4f8659"
    }
   ],
   "schedules#60": [

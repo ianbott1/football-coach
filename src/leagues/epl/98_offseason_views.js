@@ -70,11 +70,11 @@ function nflTargetsHTML(P,room){
   let left=room-0.5;                                // leave a little room for the academy
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
-      if(on){left-=x.ask; fit=left>=0?"fits":"won't fit as things stand";
+      if(on){left-=x.ask; fit=left>=0?"fits":left>=-8?"fits only by squeezing the draft class":"won't fit as things stand";   // the signing checks the cap; this reserves rookie money
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
-      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
+      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span> <span class="ptag">${x.starter?"would start":"depth: better than your backup"}</span></div>
         <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about ${money(x.ask)} a year${on?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free transfers you want</div>`;
@@ -107,7 +107,7 @@ function tWindowHTML(P){
   const brow=(x,on,i)=>{ let fit="";
     if(on){ if(!x.willing)fit=x.why; else if(x.fee>left)fit="more than the kitty has left"; else if(x.wage>wl)fit="his wages won't fit"; else {fit="fits"; left-=x.fee; wl-=x.wage} }
     return `<div class="drow"><span class="dpick">${on?(i+1)+".":""}</span>
-      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
+      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span> <span class="ptag">${x.starter?"would start":"depth: better than your backup"}</span></div>
       <div class="fnote">${esc(x.team)} (${esc(LEAGUE.groupShort?LEAGUE.groupShort(CONF[x.team]):LEAGUE.conf.names[CONF[x.team]])}) &middot; age ${x.age}${x.age>=33?" (may retire)":""} &middot; rated ${x.r}${x.pot>x.r+2?", ceiling "+x.pot:""} &middot; ${money(x.fee)} + ${money(x.wage)} a year${on?" &middot; <b>"+esc(fit)+"</b>":!x.willing?" &middot; "+esc(x.why):""}</div></div>
       ${on?`<button class="skip small" data-bidrm="${esc(x.key)}">Remove</button>`:x.willing?`<button class="skip small" data-bidadd="${esc(x.key)}">Bid</button>`:`<span class="nogo">won't come</span>`}</div>` };
   h+=`<div class="grouphead">Your bids</div>`;
@@ -145,6 +145,8 @@ function offseasonBanner(){
   const X=last.league||{};
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
+  // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
+  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
     rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
@@ -330,7 +332,11 @@ Object.assign(LEAGUE.ui,{
       else { const o=tOffers(U,S.myTeam,nflHumans()).find(x=>x.key===k); if(o)P.sales=P.sales.concat([{key:o.key,team:o.team,fee:o.fee}]) }
       save(); render();});
     document.querySelectorAll("[data-bidadd]").forEach(b=>b.onclick=()=>{
-      const P=S.off.picks; P.bids=(P.bids||[]).concat([b.dataset.bidadd]); save(); render();});
+      const P=S.off.picks, k=b.dataset.bidadd, x=tMarket(U,S.myTeam,nflHumans()).find(m=>m.key===k);
+      P.bids=(P.bids||[]).concat([k]);
+      // the fee and wage you were shown are the ones you pay (they were worked out again after the summer: half price)
+      if(x){ P.bidTerms=Object.assign({},P.bidTerms||{},{[k]:{fee:x.fee,wage:x.wage}}) }
+      save(); render();});
     document.querySelectorAll("[data-bidrm]").forEach(b=>b.onclick=()=>{
       const P=S.off.picks, k=b.dataset.bidrm; P.bids=(P.bids||[]).filter(x=>x!==k); save(); render();});
     document.querySelectorAll("[data-fatadd]").forEach(b=>b.onclick=()=>{

@@ -1,5 +1,5 @@
 {
- "fp": "92d3ce8a6e49a718",
+ "fp": "ac02bebab40f8571",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -130,6 +130,11 @@
    "fp": "92d3ce8a6e49a718",
    "from": "92d3ce8a6e49a718",
    "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
+  },
+  {
+   "fp": "ac02bebab40f8571",
+   "from": "92d3ce8a6e49a718",
+   "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
   }
  ],
  "out": [
@@ -143,7 +148,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "f5a7fb7f4786ad4d"
+     "book": "1f8181373d0de5dd"
     },
     {
      "team": "Tennessee",
@@ -152,7 +157,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "238f1ec3efa782e5"
+     "book": "0a7a4fc146f7f355"
     }
    ]
   },
@@ -166,7 +171,7 @@
       "result": "Lost in the divisional round",
       "grade": "B+"
      },
-     "book": "250a50e07afbcc06"
+     "book": "1cb7dadf2e906321"
     },
     {
      "team": "Tennessee",
@@ -175,7 +180,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "e97fc5d3d25fe5bd"
+     "book": "6bd89c6f3e2c5024"
     }
    ]
   },
@@ -189,7 +194,7 @@
       "result": "Lost in the divisional round",
       "grade": "B+"
      },
-     "book": "6dcb5692f69abfd5"
+     "book": "6edb80c591375520"
     },
     {
      "team": "Tennessee",
@@ -198,7 +203,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "af9aa99dca8d8e68"
+     "book": "38e14a51594a1293"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "faa0e08a16dcf0d6",
+ "fp": "cee4b31e1c55414e",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -115,6 +115,11 @@
    "fp": "faa0e08a16dcf0d6",
    "from": "faa0e08a16dcf0d6",
    "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
+  },
+  {
+   "fp": "cee4b31e1c55414e",
+   "from": "faa0e08a16dcf0d6",
+   "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
   }
  ],
  "out": [
@@ -128,7 +133,7 @@
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "2d155115cdb8be23"
+     "book": "6f105ce898025e28"
     },
     {
      "team": "Tottenham Hotspur",
@@ -137,7 +142,7 @@
       "result": "Finished 11th in the Premier League",
       "grade": "B-"
      },
-     "book": "8b6cc7c22a81a643"
+     "book": "f4be5ea266f79da1"
     }
    ]
   },
@@ -151,7 +156,7 @@
       "result": "Finished 4th in the Premier League",
       "grade": "B-"
      },
-     "book": "dfc6c966ba3635c8"
+     "book": "b5351d57dcb58c04"
     },
     {
      "team": "Tottenham Hotspur",
@@ -160,7 +165,7 @@
       "result": "Finished 13th in the Premier League",
       "grade": "C+"
      },
-     "book": "214464f3ba90fc3e"
+     "book": "55db98a490a0ab17"
     }
    ]
   },
@@ -174,7 +179,7 @@
       "result": "Finished 4th in the Premier League",
       "grade": "B-"
      },
-     "book": "682abc0769ba9710"
+     "book": "93623d9ba8edff47"
     },
     {
      "team": "Tottenham Hotspur",
@@ -183,7 +188,7 @@
       "result": "Finished 8th in the Premier League",
       "grade": "B"
      },
-     "book": "3edc05520aeada61"
+     "book": "e267c9b6323c52fa"
     }
    ]
   }

@@ -129,7 +129,7 @@ function evidenceHTML(g,my,d,dp){
       :`An even game on paper: they're likeliest to play their usual way.`;
     return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
       ${SYSTEM_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(SYSTEM[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
-      <div class="evn">Most teams have a usual system, but not every night. ${tilt} Get it right and the work you did in practice shows; get it wrong and you're a step behind until you change it.</div></div>`; }
+      <div class="evn">Most teams have a usual system, but not every night. ${tilt} Get it right and the work you did in practice shows; get it wrong and you're a step behind until you change it.</div>${splitNote(R)}</div>`; }
   if(dp.k==="read"&&d&&d.T){ const T=d.T[opp], n=Math.max(1,T.n), per=x=>(x/n*4).toFixed(1);
     const rows=[["Giveaways they force in our zone",per(T.to),T.to/n>=1.2],["Our zone entries they kill",per(T.fe),T.fe/n>=1.2],["Shifts they cycle below our goal line",per(T.cy),T.cy/n>=1.2]];
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are playing us <span>per period</span></div>

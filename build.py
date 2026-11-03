@@ -48,11 +48,17 @@ def build(league="cfb"):
         sys.exit("two layers both define: %s" % ", ".join(dup))
     mods = sorted(files, key=os.path.basename)
     js = "".join(open(m, encoding="utf-8").read() for m in mods)
+    # the build stamp: a hash of everything that went in, shown on the title
+    # screen so a tester can tell which build they're playing (the same
+    # source always gives the same stamp, so a rebuild still matches)
+    import hashlib
+    stamp = hashlib.sha1((head + js + tail).encode("utf-8")).hexdigest()[:7]
+    js = 'const BUILD_ID="%s";\n' % stamp + js
     out = os.path.join(HERE, "dist", OUTNAME.get(league, league + ".html"))
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         f.write(head + "<script>" + js + "</script>" + tail)
-    print("built %s  (%d bytes, %d modules)" % (out, os.path.getsize(out), len(mods)))
+    print("built %s  (%d bytes, %d modules, build %s)" % (out, os.path.getsize(out), len(mods), stamp))
     for m in mods:
         print("   ", os.path.relpath(m, SRC))
 
@@ -68,6 +74,14 @@ def site():
     icon = re.search(r'<link rel="icon" href="([^"]*)">', head).group(1)
     page = open(os.path.join(SRC, "landing.html"), encoding="utf-8").read()
     page = page.replace("<!--ICON-->", '<link rel="icon" href="%s">' % icon).replace("<!--ICONURL-->", icon)
+    # each game's build stamp on the landing page, so a tester can check the site is current
+    import hashlib
+    stamps = []
+    for lg in OUTNAME:
+        g = open(os.path.join(out, OUTNAME[lg]), encoding="utf-8").read()
+        m = re.search(r'const BUILD_ID="([0-9a-f]+)"', g)
+        stamps.append(m.group(1) if m else "?")
+    page = page.replace("<!--BUILDS-->", "Builds: " + " &middot; ".join(stamps))
     with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as f:
         f.write(page)
     print("site: %s" % ", ".join(sorted(os.listdir(out))))

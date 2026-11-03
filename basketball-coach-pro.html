@@ -505,6 +505,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .advance.ghost{background:none;border:1px solid var(--line);color:var(--bone)}
 .advance.ghost:hover{border-color:var(--sodium);color:var(--sodium)}
 .introskip.wide{width:100%;text-align:center}
+.buildid{margin-top:14px;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .titlefoot{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
  color:var(--muted);margin-top:30px;opacity:.7}
 .setupwrap{max-width:520px;margin:0 auto;padding:52px 24px 40px}
@@ -862,7 +863,8 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>/* ============ league: pro basketball ============ */
+<script>const BUILD_ID="418a652";
+/* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
    a play-in and best-of-seven playoffs, a draft with a lottery, contracts and
@@ -935,7 +937,7 @@ const LEAGUE={
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a contender. That's how they're built.","A statement win over a real team."],
     badLoss:["A loss you can't afford in this conference.","Beaten by a lottery team. It will cost you in the standings.","The kind of loss that decides who plays in the play-in."],
     champions:"NBA champions",
-    org:"Franchise", orgs:"teams", group:"Division", rank:"Rank",
+    org:"Franchise", orgs:"teams", group:"Division", rank:"Power rank",   // by strength, not record (Muse: #21 for a team 15th by record)
     groupShort:"Div",
     standingsNote:`<div class="note">Overall record, then division record. The top six in each conference
       go straight to the playoffs; 7 to 10 play in. <b>z</b> clinched the top seed &middot; <b>y</b> clinched
@@ -1389,7 +1391,7 @@ function newCoach(rng,prestige){
 }
 
 /* Roll a season's results into every coach's career. */
-function recordCoaches(u,rec,champion,confChamps,year){
+function recordCoaches(u,rec,champion,confChamps,year,drw){
   u.coachLog=u.coachLog||{};
   NAMES.forEach(t=>{
     const c=u.coach[t]; if(!c)return;
@@ -1399,6 +1401,7 @@ function recordCoaches(u,rec,champion,confChamps,year){
     const st=c.stops[c.stops.length-1];
     c.w+=rec[t][0]; c.l+=rec[t][1];
     st.w+=rec[t][0]; st.l+=rec[t][1]; st.to=year;
+    if(drw){ c.d=(c.d||0)+(drw[t]||0); st.d=(st.d||0)+(drw[t]||0) }   // soccer's draws
     if(champion===t){c.titles++; st.titles++}
     if(confChamps&&Object.values(confChamps).indexOf(t)>=0)c.confs++;
   });
@@ -1872,14 +1875,21 @@ const ROOKIE_ROOM=14;                        // what re-signing leaves free for 
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
 function nflResignPlan(R){
-  const exp=[], keep={}; let pay=0;
+  const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players (the pros' bar was 66 for a starter)
     const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12)&&p.age<=33;
-    keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;      // your own players: up to the tax line
+    keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;
+    // why, from the same rule (the screen's reason used to be a fixed string)
+    RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
+      :p.age>33?`his age: ${p.age+1} next season`
+      :i<POS.length&&p.r<62?`rated ${p.r}: below what the staff want in a starter`
+      :i>=POS.length&&p.r<60?`rated ${p.r}: not enough to keep as a backup`
+      :i>=POS.length&&ask>12?`asking ${money2(ask)}: too much for a backup`
+      :`no room under the tax line for his ${money2(ask)} ask`;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
   });
   return keep;
@@ -2077,7 +2087,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   u.alumni=u.alumni||{};
   const leave=(t,p,why)=>{
     u.alumni[t]=u.alumni[t]||[];
-    u.alumni[t].push({n:p.n,p:p.p,from:p.joined||u.year-(p.yrsHere||1),to:u.year,
+    u.alumni[t].push({n:p.n,p:p.p,from:Math.min(u.year,p.joined||u.year-(p.yrsHere||1)),to:u.year,   // never after "to" (it read 2027-2026)
       peak:p.peak||p.r,yrs:p.yrsHere||1,draft:p.draft||null,
       line:LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}),why:why,
       // career totals with the franchise, for its leaders (six numbers)
@@ -2323,7 +2333,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my||d.d.round===1&&d.d.pick<=10)
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
-    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[],
+    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[], payroll:C.cap?C.cap[my]:null,
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     boardGone:(C.boardGone&&C.boardGone[my])||[],
     payroll:off.cap?off.cap[my]:null};
@@ -3118,7 +3128,7 @@ function evidenceHTML(g,my,d,dp){
   if(dp.k==="prep"){ const opp=g.home===my?"away":"home", R=dp.report, n=dp.n||6;
     return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
       ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
-      <div class="evn">Most teams have a way they like to score, but not every night. Get it right and the work you did in practice shows; get it wrong and you're out of position until you change it.</div></div>`; }
+      <div class="evn">Most teams have a way they like to score, but not every night. Get it right and the work you did in practice shows; get it wrong and you're out of position until you change it.</div>${splitNote(R)}</div>`; }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
@@ -3987,11 +3997,13 @@ function staffResignPlan(){
   return LEAGUE.budgetOf?nflResignPlan(R,LEAGUE.budgetOf(U,my)):nflResignPlan(R);
 }
 /* why the staff would keep him or not, in a few words */
+/* (each league's nflResignPlan fills RESIGN_WHY from its own rule: rating
+   bars, age, the ask and the cap; Instinct: the old reasons were fixed strings) */
+let RESIGN_WHY={};
+const money2=x=>(LEAGUE.draws?"\u00a3":"$")+(+x).toFixed(1)+"M";
 function staffWhy(p,i,keep){
-  if(keep)return i<POS.length?"a starter worth what he's asking":"cheap, useful depth";
-  if(p.age>32)return "his age";
-  if(i>=POS.length)return "a backup you can replace for less";
-  return "what he's asking, for what he gives you";
+  staffResignPlan();
+  return RESIGN_WHY[i]||(keep?"worth keeping":"not worth what he's asking");
 }
 function staffPlanDefaults(){ return {fa:"balanced", draft:"bpa"} }
 function staffPlanChanged(P){
@@ -4051,6 +4063,13 @@ function staffAdvice(dp,ctx){
   const line=dp.k==="prep"?"Look at what they did most, and ask whether today is any different. Who's the stronger side?"
     :(H[dp.pearl]||"I've got a feeling, but you've got the numbers. What do they say?");
   return R.map(x=>x.who==="pearl"?Object.assign({},x,{pick:null,line:pearlSay(line,(ctx.mine||0)*7+(ctx.q||0))}):x);
+}
+
+/* a scouting report with no clear leader, said before you commit (Muse: the
+   verdict named a 3-3 split afterwards, the report never warned you) */
+function splitNote(R){
+  const a=Object.values(R||{}).sort((x,y)=>y-x); if(a.length<2||a[0]!==a[1])return "";
+  return `<div class="evn"><b>A split report: ${a.filter(x=>x>0).join("-")}.</b> No clear usual way, so setting up for one is closer to a guess. Waiting to see how they start is a fair call too.</div>`;
 }
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
@@ -4742,7 +4761,7 @@ function nflTargetsHTML(P,room){
   let left=room-8;                                  // leave room for the draft class
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
-      if(on){left-=x.ask; fit=left>=0?"fits":"won't fit as things stand";
+      if(on){left-=x.ask; fit=left>=0?"fits":left>=-8?"fits only by squeezing the draft class":"won't fit as things stand";   // the signing checks the cap; this reserves rookie money
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
@@ -4777,6 +4796,8 @@ function offseasonBanner(){
   const X=last.league||{};
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
+  // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
+  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
     rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
@@ -5578,7 +5599,7 @@ function openOffseason(){
   if(isHotSeat()){
     // once per offseason for the whole league; each coach reads their part
     if(!S.carousel||S.carousel.year!==SEA.year){
-      recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+      recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year,SEA.drw);
       const users={};
       S.coaches.forEach((c,i)=>{
         const cur=i===(S.turn||0);
@@ -5592,7 +5613,7 @@ function openOffseason(){
     A=Object.assign({},X,{userOpen:!!X.userOpenBy[my],candidates:X.candidatesBy[my]||null,
       staffOpen:X.staffOpenBy[my]||{oc:false,dc:false}});
   }else{
-    recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+    recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year,SEA.drw);
     A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,{[my]:missedTwice(my,exp)});
   }
   const titles=SEA.honours(my);
@@ -5681,7 +5702,7 @@ function endSeason(rng,choices,act,seasonTeam){
   const my=seasonTeam||S.myTeam, rk=SEA.poll.rankMap();
   const result=SEA.seasonResult(my);
   const teamRows={};
-  NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
+  NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]; if(LEAGUE.draws)teamRows[t].push((SEA.drw&&SEA.drw[t])||0)});   // [w,l,rank,draws]
   const {confChamps,post,pnote,cfpOf}=SEA.postRecord();
   LEAGUE.rivals.record(U,SEA);
   SEA.bankCareers(U);
@@ -6094,6 +6115,7 @@ function teamPanel(){
   let h=heroResult();
   h+=teamCardHTML(my,rk,co);
   if(reveal==="half")return h;
+  h+=attentionHTML(my);      // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
   h+=injuryHTML(inj);
   h+=nextUpHTML(my,rk);
   return h;
@@ -6173,7 +6195,7 @@ function teamCardHTML(my,rk,co){
       <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
       ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
         :`<div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
-      <div><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
+      <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${co.t<=0?"first season":"year "+(co.t+1)}
@@ -6194,11 +6216,15 @@ function teamCardHTML(my,rk,co){
       const left=SEA.sched.filter(g=>g.week>=SEA.step&&(g.home===my||g.away===my)).length;
       const postMax=LEAGUE.post.phases.filter(p=>p!=="selection").length;
       const need=Math.max(0,e.w-w);
+      // after the regular season, only a team still playing can add wins (it said "it will take a
+      // postseason run" to a 36-46 team that had missed the playoffs)
+      const alive=SEA.phase==="week"||(SEA.phase!=="done"&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
+        ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
           :need===0?`Target of ${e.w} wins already met.`
-          :need>left+postMax?`${e.w} wins is out of reach now.`
+          :need>left+postMax||!alive?`${e.w} wins is out of reach now.`
           :need>left?`${need} more win${need===1?"":"s"} from the ${e.w} expected: it will take a postseason run.`
           :`${need} more win${need===1?"":"s"} from the ${e.w} expected.`}</span></div>`})()}
     </div>`;
@@ -6459,7 +6485,7 @@ function weekNews(W){
   const rankTxt=r=>LEAGUE.position?"":r&&r<=RANK_TOP?"No. "+r+" ":"";   // a league with a table quotes no rankings
 
   // headline: the best ranked team to go down
-  const ups=gs.filter(g=>loserRank(g)<=25&&winnerRank(g)>loserRank(g))
+  const ups=gs.filter(g=>g.winner&&loserRank(g)<=25&&winnerRank(g)>loserRank(g))   // a draw is no upset (it read "null edged null")
               .sort((a,b)=>loserRank(a)-loserRank(b));
   if(ups.length){
     const g=ups[0], L=g.loser, Wn=g.winner;
@@ -6467,7 +6493,8 @@ function weekNews(W){
     const verb=g.margin>=21?vary(["routed","ran over","blew out"],"uv"+Wn)
               :g.margin<=3?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
     items.push({p:90,k:"upset",tone:"flag",
-      h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
+      h:g.pens?`${rankTxt(wr)}${Wn} beat ${rankTxt(lr)}${L} on penalties after a ${g.hp}-${g.ap} draw`   // a shoot-out isn't "edged, 3-3"
+        :`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
       b: lr<=5 ? vary([`A top-five team is down. ${L} won't drop out, but the margin for error is gone.`,
                        `${L} was supposed to be one of the best. ${LEAGUE.text.week?"Not tonight.":"Not this week."}`,
                        `The top five just lost a member for a ${WK()}. ${L} has work to do.`],"ub"+L)
@@ -6499,7 +6526,7 @@ function weekNews(W){
     else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
     else if(oppR>25)b=v(LEAGUE.text.badLoss);
     else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
-    const verb=won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
+    const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
                   :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
     items.push({p:100,k:"you",tone:"gold",
       h:`${my} ${verb} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
@@ -6723,13 +6750,14 @@ function coachRows(){
 
 function coachCard(c){
   const grade=coachGrade(c.q);
-  const pct=(c.w+c.l)?(c.w/(c.w+c.l)).toFixed(3).replace(/^0/,""):"\u2013";
+  // soccer: draws count as games (it showed 22-16-8 as "22-8, .733")
+  const dd=LEAGUE.draws?(c.d||0):0, pct=(c.w+c.l+dd)?(c.w/(c.w+c.l+dd)).toFixed(3).replace(/^0/,""):"\u2013";
   let h=`<div class="idcard" style="border-left:4px solid ${c.you?"var(--vote)":teamInk(c.team)}">
     <div class="iname" style="color:${c.you?"var(--vote)":teamInk(c.team)}">${esc(c.n)}</div>
     <div class="imeta">${c.you?"You &middot; ":""}head coach, ${esc(c.team)} &middot; year ${c.t+1}
       &middot; ${esc(grade)}</div>
     <div class="stats">
-      <div><b>${c.w}-${c.l}</b><span>Career</span></div>
+      <div><b>${LEAGUE.draws?`${c.w}-${dd}-${c.l}`:`${c.w}-${c.l}`}</b><span>Career</span></div>
       <div><b>${pct}</b><span>Win %</span></div>
       <div><b>${c.titles}</b><span>Titles</span></div>
       <div><b>${c.confs}</b><span>Conf</span></div>
@@ -6838,10 +6866,10 @@ function leagueView(){
 }
 
 function allTime(t){
-  let w=0,l=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
+  let w=0,l=0,d=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
   S.history.forEach(h=>{
     const r=h.teams&&h.teams[t]; if(!r)return;
-    w+=r[0]; l+=r[1]; if(r[2]<best)best=r[2];
+    w+=r[0]; l+=r[1]; d+=r[3]||0; if(r[2]<best)best=r[2];
     if(h.champion===t)titles++;
     if(h.groupChamps&&Object.values(h.groupChamps).indexOf(t)>=0)confs++;
     if(h.seeds&&h.seeds[t])cfp++;
@@ -6851,7 +6879,7 @@ function allTime(t){
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
           post:pw+"-"+pl,postGames:pw+pl,coach:coach,now:rk,
-          pct:(w+l)?(w/(w+l)):null,seasons:S.history.length};
+          d:d, pct:(w+l+d)?(w/(w+l+d)):null,seasons:S.history.length};
 }
 
 function seasonRowsFor(t){
@@ -6879,7 +6907,7 @@ function teamCard(t){
       ${LEAGUE.position?(LEAGUE.position(t)?ordinal(LEAGUE.position(t))+" in ":"no games yet in ")+esc(LEAGUE.conf.names[CONF[t]])
         :A.now<=RANK_TOP?"ranked #"+A.now:"unranked ("+ordinal(A.now)+")"}</div>
     <div class="stats">
-      <div><b>${A.w}-${A.l}</b><span>All-time</span></div>
+      <div><b>${LEAGUE.draws?A.w+"-"+A.d+"-"+A.l:A.w+"-"+A.l}</b><span>All-time</span></div>
       <div><b>${A.pct!==null?A.pct.toFixed(3).replace(/^0/,""):"\u2013"}</b><span>Win %</span></div>
       <div><b>${A.best?"#"+A.best:"\u2013"}</b><span>Best finish</span></div>
     </div>
@@ -6898,7 +6926,7 @@ function teamCard(t){
           <span class="sts">${esc(U.oc[t].s)}</span></div>
         <div class="stline"><span class="stlab">${SPORT.staff.dc.short}</span><span class="stn">${esc(U.dc[t].n)}</span>
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
-    <div class="progline" title="Change in the ${esc(LEAGUE.text.org)}'s long-run strength rating since you took over: it moves with results, recruiting or signings, and the staff">${LEAGUE.text.org} strength since ${base}:
+    <div class="progline" title="Change in the ${esc(LEAGUE.text.org)}'s long-run strength rating since you took over: it moves with results, ${LEAGUE.classes&&LEAGUE.classes.length?"recruiting":"the draft and signings"}, and the staff">${LEAGUE.text.org} strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b> <span class="stkeyin">(rating points)</span>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
   if(U&&U.series&&LEAGUE.rivals.of[t]){
@@ -6936,7 +6964,7 @@ function teamCard(t){
       <div class="fmain"><div class="fname">${esc(x.n)}
         <span class="dpos">${esc(x.p)}</span>
         ${x.early?`<span class="etag">${esc(LEAGUE.text.earlyTag||"left early")}</span>`:""}</div>
-      <div class="fnote">${x.from}&ndash;${x.to} &middot; ${esc(LEAGUE.records.alumniLine(x))}</div></div>
+      <div class="fnote">${Math.min(x.from,x.to)}&ndash;${x.to} &middot; ${esc(LEAGUE.records.alumniLine(Object.assign({},x,{from:Math.min(x.from,x.to)})))}</div></div>
       <span class="ares ${x.draft?(x.draft.round<=1?'gold':'up'):''}">${
         x.draft?(x.draft.round+"."+String(x.draft.pick).padStart(2,"0")):"\u2013"}</span>
       </div>`).join("");
@@ -7013,7 +7041,7 @@ function dynastyView(){
         <span class="dot" style="background:${teamColor(t)}"></span>
         <div class="fmain"><div class="fname">${esc(t)}${t===my?' <span class="youtag">YOU</span>':''}</div>
         <div class="fnote">${bits.join(" &middot; ")}</div></div>
-        <div class="tstat"><span class="trec">${A.w}-${A.l}</span>
+        <div class="tstat"><span class="trec">${LEAGUE.draws?A.w+"-"+A.d+"-"+A.l:A.w+"-"+A.l}</span>
         <span class="trk">${standTag(t,{[t]:A.now})}</span></div></div>`;
     }).join("");
     return h;
@@ -7223,7 +7251,7 @@ function digestBlock(){
       <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span>
       <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`) });
   }
-  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle?n+" game"+(n===1?"":"s"):"Weeks "+(flash.from+1)+"&ndash;"+flash.to} simulated</div>`;
+  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):"Weeks "+(flash.from+1)+"&ndash;"+flash.to} simulated</div>`;
   if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
@@ -7504,7 +7532,7 @@ function render(){
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>
-    tapTwice(b,"Tap again: an interim for the rest of the season",()=>fireCoord(b.dataset.fire)));
+    tapTwice(b,"Tap again to confirm",()=>fireCoord(b.dataset.fire)));
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
     const h=S.history[+b.dataset.card]; if(h){cardFor=h;cardMsg="";render()}});
   document.querySelectorAll("[data-coord]").forEach(b=>b.onclick=()=>{
@@ -7672,6 +7700,7 @@ function renderTitle(){
              season${s.seasons===1?"":"s"} done${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            <span class="slotdel" data-del="${s.n}">Erase</span></button>`).join("")}</div>
     <button class="introskip wide" id="thow">How to play</button>
+    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
   </div>`;
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
@@ -7792,6 +7821,7 @@ function helpPanel(){
       <label class="setbtn restorelbl">Restore a backup<input type="file" id="restorefile2" accept=".coach,.txt,text/plain" hidden></label></div>
     <div class="helpcard"><div class="cdesc">Your career is saved in this browser as you play. Clearing the browser's data
       erases it, so keep a backup file now and then: it opens again from here, or from the title screen on any device.</div></div>`:""}
+    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <div class="grouphead">Staff advice on reads</div>
     <div class="setrow">${[["hints","Hints only"],["full","Full"]].map(([k,l])=>`<button class="setbtn" data-advice="${k}"
       aria-pressed="${(S.advice==="full"?"full":"hints")===k}">${l}</button>`).join("")}</div>

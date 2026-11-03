@@ -180,7 +180,7 @@ function newCoach(rng,prestige){
 }
 
 /* Roll a season's results into every coach's career. */
-function recordCoaches(u,rec,champion,confChamps,year){
+function recordCoaches(u,rec,champion,confChamps,year,drw){
   u.coachLog=u.coachLog||{};
   NAMES.forEach(t=>{
     const c=u.coach[t]; if(!c)return;
@@ -190,6 +190,7 @@ function recordCoaches(u,rec,champion,confChamps,year){
     const st=c.stops[c.stops.length-1];
     c.w+=rec[t][0]; c.l+=rec[t][1];
     st.w+=rec[t][0]; st.l+=rec[t][1]; st.to=year;
+    if(drw){ c.d=(c.d||0)+(drw[t]||0); st.d=(st.d||0)+(drw[t]||0) }   // soccer's draws
     if(champion===t){c.titles++; st.titles++}
     if(confChamps&&Object.values(confChamps).indexOf(t)>=0)c.confs++;
   });

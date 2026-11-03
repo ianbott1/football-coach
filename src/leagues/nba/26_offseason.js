@@ -40,14 +40,21 @@ const ROOKIE_ROOM=14;                        // what re-signing leaves free for 
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
 function nflResignPlan(R){
-  const exp=[], keep={}; let pay=0;
+  const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players (the pros' bar was 66 for a starter)
     const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12)&&p.age<=33;
-    keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;      // your own players: up to the tax line
+    keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;
+    // why, from the same rule (the screen's reason used to be a fixed string)
+    RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
+      :p.age>33?`his age: ${p.age+1} next season`
+      :i<POS.length&&p.r<62?`rated ${p.r}: below what the staff want in a starter`
+      :i>=POS.length&&p.r<60?`rated ${p.r}: not enough to keep as a backup`
+      :i>=POS.length&&ask>12?`asking ${money2(ask)}: too much for a backup`
+      :`no room under the tax line for his ${money2(ask)} ask`;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
   });
   return keep;
@@ -245,7 +252,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   u.alumni=u.alumni||{};
   const leave=(t,p,why)=>{
     u.alumni[t]=u.alumni[t]||[];
-    u.alumni[t].push({n:p.n,p:p.p,from:p.joined||u.year-(p.yrsHere||1),to:u.year,
+    u.alumni[t].push({n:p.n,p:p.p,from:Math.min(u.year,p.joined||u.year-(p.yrsHere||1)),to:u.year,   // never after "to" (it read 2027-2026)
       peak:p.peak||p.r,yrs:p.yrsHere||1,draft:p.draft||null,
       line:LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}),why:why,
       // career totals with the franchise, for its leaders (six numbers)
@@ -491,7 +498,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my||d.d.round===1&&d.d.pick<=10)
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
-    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[],
+    released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[], payroll:C.cap?C.cap[my]:null,
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     boardGone:(C.boardGone&&C.boardGone[my])||[],
     payroll:off.cap?off.cap[my]:null};

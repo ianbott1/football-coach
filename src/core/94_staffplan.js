@@ -11,11 +11,13 @@ function staffResignPlan(){
   return LEAGUE.budgetOf?nflResignPlan(R,LEAGUE.budgetOf(U,my)):nflResignPlan(R);
 }
 /* why the staff would keep him or not, in a few words */
+/* (each league's nflResignPlan fills RESIGN_WHY from its own rule: rating
+   bars, age, the ask and the cap; Instinct: the old reasons were fixed strings) */
+let RESIGN_WHY={};
+const money2=x=>(LEAGUE.draws?"\u00a3":"$")+(+x).toFixed(1)+"M";
 function staffWhy(p,i,keep){
-  if(keep)return i<POS.length?"a starter worth what he's asking":"cheap, useful depth";
-  if(p.age>32)return "his age";
-  if(i>=POS.length)return "a backup you can replace for less";
-  return "what he's asking, for what he gives you";
+  staffResignPlan();
+  return RESIGN_WHY[i]||(keep?"worth keeping":"not worth what he's asking");
 }
 function staffPlanDefaults(){ return {fa:"balanced", draft:"bpa"} }
 function staffPlanChanged(P){
@@ -75,4 +77,11 @@ function staffAdvice(dp,ctx){
   const line=dp.k==="prep"?"Look at what they did most, and ask whether today is any different. Who's the stronger side?"
     :(H[dp.pearl]||"I've got a feeling, but you've got the numbers. What do they say?");
   return R.map(x=>x.who==="pearl"?Object.assign({},x,{pick:null,line:pearlSay(line,(ctx.mine||0)*7+(ctx.q||0))}):x);
+}
+
+/* a scouting report with no clear leader, said before you commit (Muse: the
+   verdict named a 3-3 split afterwards, the report never warned you) */
+function splitNote(R){
+  const a=Object.values(R||{}).sort((x,y)=>y-x); if(a.length<2||a[0]!==a[1])return "";
+  return `<div class="evn"><b>A split report: ${a.filter(x=>x>0).join("-")}.</b> No clear usual way, so setting up for one is closer to a guess. Waiting to see how they start is a fair call too.</div>`;
 }

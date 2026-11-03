@@ -104,7 +104,7 @@ function tWindow(u,t,ch,rep,pool,leave,prog){
     if(j<0){log.push({n:n,p:pos,from:st,done:false,why:"retired or moved on before the window"});return}
     const p=S2[j], W=tWilling(u,t,st,prog);
     if(!W.ok){log.push({n:n,p:pos,from:st,done:false,why:W.why});return}
-    const fee=tFee(p,j<POS.length), wage=nflAsk(p.r,p.p,p.age);
+    const T=(ch.bidTerms||{})[key], fee=T?T.fee:tFee(p,j<POS.length), wage=T?T.wage:nflAsk(p.r,p.p,p.age);
     if(fee>kitty){log.push({n:n,p:pos,from:st,done:false,why:`${money(fee)} was more than you had left (${money(kitty)})`});return}
     if(payroll(R)+wage>budgetOf(u,t)){log.push({n:n,p:pos,from:st,done:false,why:`his ${money(wage)} a year wouldn't fit the wage budget`});return}
     S2[j]=null; if(j<POS.length&&S2[BK(j)]){S2[j]=S2[BK(j)];S2[BK(j)]=null}

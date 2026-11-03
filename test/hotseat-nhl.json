@@ -1,5 +1,5 @@
 {
- "fp": "3454f8908304731a",
+ "fp": "08d1d75f3595aa15",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -85,6 +85,11 @@
    "fp": "3454f8908304731a",
    "from": "3454f8908304731a",
    "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
+  },
+  {
+   "fp": "08d1d75f3595aa15",
+   "from": "3454f8908304731a",
+   "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
   }
  ],
  "out": [
@@ -98,7 +103,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "129161cda88e12c9"
+     "book": "4fa15c365bbb7289"
     },
     {
      "team": "Montreal",
@@ -107,7 +112,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "e288db259d69b691"
+     "book": "8fdb2b29591fce8a"
     }
    ]
   },
@@ -121,7 +126,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "c50e76d7686fdfcf"
+     "book": "32fce8b91aef0a5d"
     },
     {
      "team": "Montreal",
@@ -130,7 +135,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "ffdeefcee36926f9"
+     "book": "5f2e349ae3d2a24a"
     }
    ]
   },
@@ -144,7 +149,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "ca0527f201b5e7a2"
+     "book": "0f11119e3d0843b1"
     },
     {
      "team": "Montreal",
@@ -153,7 +158,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "09c47f8274a1cb45"
+     "book": "0f9d7405789d7682"
     }
    ]
   }

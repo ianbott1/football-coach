@@ -92,7 +92,7 @@ const LEAGUE={
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a good team. That's how contenders are made.","A statement win over a real team."],
     badLoss:["That's a loss you can't afford in this league.","Beaten by a team you should handle. It will cost you in the standings.","The kind of loss that decides tiebreakers."],
     champions:"Super Bowl champions",
-    org:"Franchise", orgs:"teams", group:"Division", rank:"Rank",
+    org:"Franchise", orgs:"teams", group:"Division", rank:"Power rank",   // by strength, not record (Muse: #21 for a team 15th by record)
     groupShort:"Div",
     standingsNote:`<div class="note">Overall record, then division record. Amber marks the division leader.
       <b>z</b> clinched the bye &middot; <b>y</b> clinched the division &middot; <b>x</b> clinched

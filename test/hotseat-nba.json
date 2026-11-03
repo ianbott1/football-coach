@@ -1,5 +1,5 @@
 {
- "fp": "9028a2fbaa0345a0",
+ "fp": "f9dc233a8aacdb58",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -70,6 +70,11 @@
    "fp": "9028a2fbaa0345a0",
    "from": "9028a2fbaa0345a0",
    "note": "Nov 2026 (Ian): engine numbers off the screen: plan goal rates, featuring sizes, injury costs (now Big/Real/Minor), goalie base rates, breakout rate, grading threshold"
+  },
+  {
+   "fp": "f9dc233a8aacdb58",
+   "from": "9028a2fbaa0345a0",
+   "note": "Nov 2026 round 4: build stamp, soccer draw/penalty headlines, records with draws, record-book years, re-sign reasons from the rule, payroll line, Power rank, split-report warning, desktop decision card, Pearl's fourth-down line"
   }
  ],
  "out": [
@@ -83,7 +88,7 @@
       "result": "Lost in the conference finals",
       "grade": "A-"
      },
-     "book": "46d65d8092e51eac"
+     "book": "0416e036a72db6e1"
     },
     {
      "team": "New York",
@@ -92,7 +97,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "ce0ecc37fedb17d4"
+     "book": "2e7092e3d2aca860"
     }
    ]
   },
@@ -106,7 +111,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "6071607cb3c302d1"
+     "book": "92efd5d673f3cf79"
     },
     {
      "team": "New York",
@@ -115,7 +120,7 @@
       "result": "Lost in the play-in",
       "grade": "C-"
      },
-     "book": "b5d879f5b7ab6246"
+     "book": "d6517d491cc5dc37"
     }
    ]
   },
@@ -129,7 +134,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "c922bb3f2367085d"
+     "book": "078e60f8dac7aacc"
     },
     {
      "team": "New York",
@@ -138,7 +143,7 @@
       "result": "Lost in the conference finals",
       "grade": "A"
      },
-     "book": "1e945186f50e53e6"
+     "book": "ad6f50b27a0a5801"
     }
    ]
   }

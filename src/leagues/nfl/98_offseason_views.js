@@ -70,7 +70,7 @@ function nflTargetsHTML(P,room){
   let left=room-8;                                  // leave room for the draft class
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
-      if(on){left-=x.ask; fit=left>=0?"fits":"won't fit as things stand";
+      if(on){left-=x.ask; fit=left>=0?"fits":left>=-8?"fits only by squeezing the draft class":"won't fit as things stand";   // the signing checks the cap; this reserves rookie money
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
@@ -105,6 +105,8 @@ function offseasonBanner(){
   const X=last.league||{};
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
+  // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
+  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
     rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;

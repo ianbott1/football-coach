@@ -610,7 +610,7 @@ function openOffseason(){
   if(isHotSeat()){
     // once per offseason for the whole league; each coach reads their part
     if(!S.carousel||S.carousel.year!==SEA.year){
-      recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+      recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year,SEA.drw);
       const users={};
       S.coaches.forEach((c,i)=>{
         const cur=i===(S.turn||0);
@@ -624,7 +624,7 @@ function openOffseason(){
     A=Object.assign({},X,{userOpen:!!X.userOpenBy[my],candidates:X.candidatesBy[my]||null,
       staffOpen:X.staffOpenBy[my]||{oc:false,dc:false}});
   }else{
-    recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year);
+    recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year,SEA.drw);
     A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,{[my]:missedTwice(my,exp)});
   }
   const titles=SEA.honours(my);
@@ -713,7 +713,7 @@ function endSeason(rng,choices,act,seasonTeam){
   const my=seasonTeam||S.myTeam, rk=SEA.poll.rankMap();
   const result=SEA.seasonResult(my);
   const teamRows={};
-  NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]});
+  NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]; if(LEAGUE.draws)teamRows[t].push((SEA.drw&&SEA.drw[t])||0)});   // [w,l,rank,draws]
   const {confChamps,post,pnote,cfpOf}=SEA.postRecord();
   LEAGUE.rivals.record(U,SEA);
   SEA.bankCareers(U);
@@ -1126,6 +1126,7 @@ function teamPanel(){
   let h=heroResult();
   h+=teamCardHTML(my,rk,co);
   if(reveal==="half")return h;
+  h+=attentionHTML(my);      // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
   h+=injuryHTML(inj);
   h+=nextUpHTML(my,rk);
   return h;
@@ -1205,7 +1206,7 @@ function teamCardHTML(my,rk,co){
       <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
       ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
         :`<div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
-      <div><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
+      <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${co.t<=0?"first season":"year "+(co.t+1)}
@@ -1226,11 +1227,15 @@ function teamCardHTML(my,rk,co){
       const left=SEA.sched.filter(g=>g.week>=SEA.step&&(g.home===my||g.away===my)).length;
       const postMax=LEAGUE.post.phases.filter(p=>p!=="selection").length;
       const need=Math.max(0,e.w-w);
+      // after the regular season, only a team still playing can add wins (it said "it will take a
+      // postseason run" to a 36-46 team that had missed the playoffs)
+      const alive=SEA.phase==="week"||(SEA.phase!=="done"&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
+        ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
           :need===0?`Target of ${e.w} wins already met.`
-          :need>left+postMax?`${e.w} wins is out of reach now.`
+          :need>left+postMax||!alive?`${e.w} wins is out of reach now.`
           :need>left?`${need} more win${need===1?"":"s"} from the ${e.w} expected: it will take a postseason run.`
           :`${need} more win${need===1?"":"s"} from the ${e.w} expected.`}</span></div>`})()}
     </div>`;
@@ -1491,7 +1496,7 @@ function weekNews(W){
   const rankTxt=r=>LEAGUE.position?"":r&&r<=RANK_TOP?"No. "+r+" ":"";   // a league with a table quotes no rankings
 
   // headline: the best ranked team to go down
-  const ups=gs.filter(g=>loserRank(g)<=25&&winnerRank(g)>loserRank(g))
+  const ups=gs.filter(g=>g.winner&&loserRank(g)<=25&&winnerRank(g)>loserRank(g))   // a draw is no upset (it read "null edged null")
               .sort((a,b)=>loserRank(a)-loserRank(b));
   if(ups.length){
     const g=ups[0], L=g.loser, Wn=g.winner;
@@ -1499,7 +1504,8 @@ function weekNews(W){
     const verb=g.margin>=21?vary(["routed","ran over","blew out"],"uv"+Wn)
               :g.margin<=3?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
     items.push({p:90,k:"upset",tone:"flag",
-      h:`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
+      h:g.pens?`${rankTxt(wr)}${Wn} beat ${rankTxt(lr)}${L} on penalties after a ${g.hp}-${g.ap} draw`   // a shoot-out isn't "edged, 3-3"
+        :`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
       b: lr<=5 ? vary([`A top-five team is down. ${L} won't drop out, but the margin for error is gone.`,
                        `${L} was supposed to be one of the best. ${LEAGUE.text.week?"Not tonight.":"Not this week."}`,
                        `The top five just lost a member for a ${WK()}. ${L} has work to do.`],"ub"+L)
@@ -1531,7 +1537,7 @@ function weekNews(W){
     else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
     else if(oppR>25)b=v(LEAGUE.text.badLoss);
     else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
-    const verb=won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
+    const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
                   :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
     items.push({p:100,k:"you",tone:"gold",
       h:`${my} ${verb} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
@@ -1755,13 +1761,14 @@ function coachRows(){
 
 function coachCard(c){
   const grade=coachGrade(c.q);
-  const pct=(c.w+c.l)?(c.w/(c.w+c.l)).toFixed(3).replace(/^0/,""):"\u2013";
+  // soccer: draws count as games (it showed 22-16-8 as "22-8, .733")
+  const dd=LEAGUE.draws?(c.d||0):0, pct=(c.w+c.l+dd)?(c.w/(c.w+c.l+dd)).toFixed(3).replace(/^0/,""):"\u2013";
   let h=`<div class="idcard" style="border-left:4px solid ${c.you?"var(--vote)":teamInk(c.team)}">
     <div class="iname" style="color:${c.you?"var(--vote)":teamInk(c.team)}">${esc(c.n)}</div>
     <div class="imeta">${c.you?"You &middot; ":""}head coach, ${esc(c.team)} &middot; year ${c.t+1}
       &middot; ${esc(grade)}</div>
     <div class="stats">
-      <div><b>${c.w}-${c.l}</b><span>Career</span></div>
+      <div><b>${LEAGUE.draws?`${c.w}-${dd}-${c.l}`:`${c.w}-${c.l}`}</b><span>Career</span></div>
       <div><b>${pct}</b><span>Win %</span></div>
       <div><b>${c.titles}</b><span>Titles</span></div>
       <div><b>${c.confs}</b><span>Conf</span></div>
@@ -1870,10 +1877,10 @@ function leagueView(){
 }
 
 function allTime(t){
-  let w=0,l=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
+  let w=0,l=0,d=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
   S.history.forEach(h=>{
     const r=h.teams&&h.teams[t]; if(!r)return;
-    w+=r[0]; l+=r[1]; if(r[2]<best)best=r[2];
+    w+=r[0]; l+=r[1]; d+=r[3]||0; if(r[2]<best)best=r[2];
     if(h.champion===t)titles++;
     if(h.groupChamps&&Object.values(h.groupChamps).indexOf(t)>=0)confs++;
     if(h.seeds&&h.seeds[t])cfp++;
@@ -1883,7 +1890,7 @@ function allTime(t){
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
           post:pw+"-"+pl,postGames:pw+pl,coach:coach,now:rk,
-          pct:(w+l)?(w/(w+l)):null,seasons:S.history.length};
+          d:d, pct:(w+l+d)?(w/(w+l+d)):null,seasons:S.history.length};
 }
 
 function seasonRowsFor(t){
@@ -1911,7 +1918,7 @@ function teamCard(t){
       ${LEAGUE.position?(LEAGUE.position(t)?ordinal(LEAGUE.position(t))+" in ":"no games yet in ")+esc(LEAGUE.conf.names[CONF[t]])
         :A.now<=RANK_TOP?"ranked #"+A.now:"unranked ("+ordinal(A.now)+")"}</div>
     <div class="stats">
-      <div><b>${A.w}-${A.l}</b><span>All-time</span></div>
+      <div><b>${LEAGUE.draws?A.w+"-"+A.d+"-"+A.l:A.w+"-"+A.l}</b><span>All-time</span></div>
       <div><b>${A.pct!==null?A.pct.toFixed(3).replace(/^0/,""):"\u2013"}</b><span>Win %</span></div>
       <div><b>${A.best?"#"+A.best:"\u2013"}</b><span>Best finish</span></div>
     </div>
@@ -1930,7 +1937,7 @@ function teamCard(t){
           <span class="sts">${esc(U.oc[t].s)}</span></div>
         <div class="stline"><span class="stlab">${SPORT.staff.dc.short}</span><span class="stn">${esc(U.dc[t].n)}</span>
           <span class="sts">${esc(U.dc[t].s)}</span></div></div>`:""}`:""}
-    <div class="progline" title="Change in the ${esc(LEAGUE.text.org)}'s long-run strength rating since you took over: it moves with results, recruiting or signings, and the staff">${LEAGUE.text.org} strength since ${base}:
+    <div class="progline" title="Change in the ${esc(LEAGUE.text.org)}'s long-run strength rating since you took over: it moves with results, ${LEAGUE.classes&&LEAGUE.classes.length?"recruiting":"the draft and signings"}, and the staff">${LEAGUE.text.org} strength since ${base}:
       <b class="${d>0?'up':d<0?'dn':''}">${d>0?"+":""}${d}</b> <span class="stkeyin">(rating points)</span>
       ${A.coach?` &middot; ${A.coach} coaching change${A.coach>1?"s":""}`:""}</div></div>`;
   if(U&&U.series&&LEAGUE.rivals.of[t]){
@@ -1968,7 +1975,7 @@ function teamCard(t){
       <div class="fmain"><div class="fname">${esc(x.n)}
         <span class="dpos">${esc(x.p)}</span>
         ${x.early?`<span class="etag">${esc(LEAGUE.text.earlyTag||"left early")}</span>`:""}</div>
-      <div class="fnote">${x.from}&ndash;${x.to} &middot; ${esc(LEAGUE.records.alumniLine(x))}</div></div>
+      <div class="fnote">${Math.min(x.from,x.to)}&ndash;${x.to} &middot; ${esc(LEAGUE.records.alumniLine(Object.assign({},x,{from:Math.min(x.from,x.to)})))}</div></div>
       <span class="ares ${x.draft?(x.draft.round<=1?'gold':'up'):''}">${
         x.draft?(x.draft.round+"."+String(x.draft.pick).padStart(2,"0")):"\u2013"}</span>
       </div>`).join("");
@@ -2045,7 +2052,7 @@ function dynastyView(){
         <span class="dot" style="background:${teamColor(t)}"></span>
         <div class="fmain"><div class="fname">${esc(t)}${t===my?' <span class="youtag">YOU</span>':''}</div>
         <div class="fnote">${bits.join(" &middot; ")}</div></div>
-        <div class="tstat"><span class="trec">${A.w}-${A.l}</span>
+        <div class="tstat"><span class="trec">${LEAGUE.draws?A.w+"-"+A.d+"-"+A.l:A.w+"-"+A.l}</span>
         <span class="trk">${standTag(t,{[t]:A.now})}</span></div></div>`;
     }).join("");
     return h;
@@ -2255,7 +2262,7 @@ function digestBlock(){
       <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span>
       <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`) });
   }
-  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle?n+" game"+(n===1?"":"s"):"Weeks "+(flash.from+1)+"&ndash;"+flash.to} simulated</div>`;
+  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):"Weeks "+(flash.from+1)+"&ndash;"+flash.to} simulated</div>`;
   if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
@@ -2536,7 +2543,7 @@ function render(){
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>
-    tapTwice(b,"Tap again: an interim for the rest of the season",()=>fireCoord(b.dataset.fire)));
+    tapTwice(b,"Tap again to confirm",()=>fireCoord(b.dataset.fire)));
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
     const h=S.history[+b.dataset.card]; if(h){cardFor=h;cardMsg="";render()}});
   document.querySelectorAll("[data-coord]").forEach(b=>b.onclick=()=>{
@@ -2704,6 +2711,7 @@ function renderTitle(){
              season${s.seasons===1?"":"s"} done${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            <span class="slotdel" data-del="${s.n}">Erase</span></button>`).join("")}</div>
     <button class="introskip wide" id="thow">How to play</button>
+    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
   </div>`;
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
@@ -2824,6 +2832,7 @@ function helpPanel(){
       <label class="setbtn restorelbl">Restore a backup<input type="file" id="restorefile2" accept=".coach,.txt,text/plain" hidden></label></div>
     <div class="helpcard"><div class="cdesc">Your career is saved in this browser as you play. Clearing the browser's data
       erases it, so keep a backup file now and then: it opens again from here, or from the title screen on any device.</div></div>`:""}
+    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <div class="grouphead">Staff advice on reads</div>
     <div class="setrow">${[["hints","Hints only"],["full","Full"]].map(([k,l])=>`<button class="setbtn" data-advice="${k}"
       aria-pressed="${(S.advice==="full"?"full":"hints")===k}">${l}</button>`).join("")}</div>

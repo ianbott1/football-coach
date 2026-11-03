@@ -155,6 +155,16 @@ Lessons from this project (each cost a bug that shipped or nearly did):
 - No browser dialogs (confirm/alert): blocked or dismissed, they return false
   without a word and the button does nothing ("Make a change"). tapTwice()
   confirms on the page.
+- Every reported case gets a test that fails on the build that had it:
+  test/regressions.js (soccer draws, hockey play date, featuring reset,
+  ordinals, shared surnames, the desktop decision card, the build stamp)
+  and test/confirm-taps.js (Erase / Start over in Chromium). Both fail
+  hard on 27e0ea0, the build the site was stuck on (DIST=<dir> runs
+  regressions.js against another build).
+- The site can lag the repo: Pages served 27e0ea0 for a day after later
+  pushes (cause not visible from here; .nojekyll added). Each game's title
+  screen and help, and the landing page, show a build stamp (a hash of the
+  source, so a rebuild matches); give testers the stamp with each release.
 - Show what a coach would see, not the engine's dials (Ian, Nov 2026):
   records, save %, scouting stats, fourth-down conversion odds and the
   post-game replay verdicts stay; plan goal rates, featuring's win
