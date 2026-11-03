@@ -69,7 +69,7 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const P=POS[posIdx].p;
   if(P==="G"){ const sa=Math.max(oppPts,Math.round(rng.gauss(29,4.5)));
     return {sv:sa-oppPts, ga:oppPts, so:oppPts===0?1:0} }
-  const R=ROLE[P], q=(pl.r-60)/20, star=Math.max(0.5,1+q*0.45+rng.gauss(0,0.2)), first=1-POS[posIdx].bench;
+  const R=ROLE[P], q=(pl.r-60)/20, star=Math.max(0.5,1+q*0.45+rng.gauss(0,0.2)), first=1-(HK_STAT_BENCH?HK_STAT_BENCH[posIdx]:POS[posIdx].bench);
   const pick=(n,p)=>{let k=0;for(let i=0;i<n;i++)if(rng.r()<p)k++;return k};
   const goals=pick(forPts,Math.min(0.9,R.goals*first*star));
   const ast=pick(Math.round(forPts*1.7),Math.min(0.9,R.ast*first*star*0.55));

@@ -15,7 +15,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger",
+const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy",
                     "history","expNow","readTally"];
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -58,13 +58,13 @@ function opponentOf(g){ return g?(g.home===S.myTeam?g.away:g.home):null }
 /* Both coaches' plans and featured players, applied to one game. */
 function h2hElo(g,step,oj){
   const keepU=SEA.userTeam, keepF=SEA.featured, oc=S.coaches[oj];
-  SEA.userTeam=null; SEA.featured=null;
+  SEA.userTeam=null; SEA.featured=null; const keepDep=SEA.deploy; SEA.deploy=null;
   const e0=SEA.matchupElo(g,"balanced");
-  SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+  SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   const e1=SEA.matchupElo(g,plan);
-  SEA.userTeam=oc.myTeam; SEA.featured=(oc.featured===undefined?null:oc.featured);
+  SEA.userTeam=oc.myTeam; SEA.featured=(oc.featured===undefined?null:oc.featured); SEA.deploy=oc.deploy||null;
   const e2=SEA.matchupElo(g,(oc.plans&&oc.plans[step])||"balanced");
-  SEA.userTeam=keepU; SEA.featured=keepF;
+  SEA.userTeam=keepU; SEA.featured=keepF; SEA.deploy=keepDep;
   return {h:e1.h+e2.h-e0.h, a:e1.a+e2.a-e0.a};
 }
 
@@ -310,7 +310,7 @@ function rebuild(){
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
-  SEA.featured=(S.featured===undefined?null:S.featured);
+  SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   for(let n=0;n<S.steps;n++){
     const i=SEA.step, first=!SEA.half;          // the step being played (a cup week's two parts share one)
     if(first&&S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
@@ -521,7 +521,7 @@ function skipIdleDays(){
   let g=0;
   while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
     // the same bookkeeping as any advance: a reload replays exactly S.steps steps
-    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); S.steps++;
   }
 }
@@ -562,7 +562,7 @@ function doAdvance(){
   if(live&&live.done)live=null;               // last game is over; don't block the next
   ensureCoaches();
   SEA.userTeam=S.myTeam;
-  SEA.featured=(S.featured===undefined?null:S.featured);
+  SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   SEA.plan=plan;
   // your first game this step not yet played (a cup week has two; a reload
   // between them picks up at the second)
@@ -1161,6 +1161,7 @@ function rosterView(){
       : " \u2014 room to grow, and the development will show next season."}`
       :S.featuredLast&&S.featuredLast.year===SEA.year-1&&!S.off?`Featuring lasts a season, so it reset when this one began (last season: ${esc(S.featuredLast.n)}). Tap a starter to feature him.`
       :"Nobody featured. Tap a starter to feature him."}${F&&S.off?` <span class="planwhy">Featuring resets when the new season starts: pick again then.</span>`:""}</div>`;
+  if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
@@ -2232,7 +2233,7 @@ function simRun(to){
     if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
     const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
     S.plans[SEA.step]="balanced"; SEA.plan="balanced";
-    SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured);
+    SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); S.steps++;
     if(SEA.phase!=="week")break;
     // after it: did something happen you'd want to know about now?
@@ -2550,6 +2551,7 @@ function render(){
   };
   document.querySelectorAll("[data-team]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); openTeam(b.dataset.team);});
+  if(typeof bindLines==="function")bindLines();
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>

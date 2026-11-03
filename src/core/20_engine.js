@@ -127,7 +127,7 @@ class Talent{
         this.log[t].push({wk:w,kind:"back",what:e.k,mag:0}));
       this.inj[t]=this.inj[t].filter(e=>e.w>0);
       const sc=iscale(this.base[t]);
-      if(r.r()<INJ_HAZARD*K){
+      if(r.r()<INJ_HAZARD*K*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
         if(this.roster){
           // pick a starter, weighted toward the positions that take hits
           const idx=pickInjuredPos(r);

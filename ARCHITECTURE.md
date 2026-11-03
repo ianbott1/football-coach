@@ -165,6 +165,16 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   pushes (cause not visible from here; .nojekyll added). Each game's title
   screen and help, and the landing page, show a build stamp (a hash of the
   source, so a rebuild matches); give testers the stamp with each release.
+- Hockey lines and ice time (hockey 12_lines, Nov 2026): forwards, defence
+  and goalies each ride / balanced / roll. Strength: DEPLOY_K (2.5) x R_SLOPE
+  x position weight x the change in the starter's share x (his edge over
+  his backup - FRESH: 8 skaters, 6 goalies), so leaning pays for a top-heavy
+  group and spreading for a deep one; balanced is exactly the old game (the
+  computer's teams, calibration). Riding both skater groups x1.5 injury risk,
+  rolling x0.76; the box score follows the ice time (HK_STAT_BENCH). Size:
+  up to ~29 strength points (median 9); hockey turns 25 into ~1 point of win
+  probability, ~2 standings points a season. test/lines.js checks each link;
+  a season's luck (~10 points) is too big to assert on.
 - Recruiting board (core 92_recruiting, college games, Nov 2026): prospects
   at each open position are drawn with the league's own newcomer function
   (drawNewcomer, shared with developRoster), in your program's context and

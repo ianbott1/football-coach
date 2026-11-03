@@ -46,6 +46,8 @@ class Season{
       const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
       if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
     }
+    // hockey: how you split the ice time (lines and pairings)
+    if(typeof deployEdge==="function"&&(this.userTeam===a||this.userTeam===b))edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);
     const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
     return {
       h:this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge,
@@ -88,6 +90,7 @@ class Season{
         const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
         if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
       }
+      if(typeof deployEdge==="function")edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);   // hockey: the ice time
     }
     const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
     const w=Math.min(this.step,LEAGUE.weeks);
@@ -124,6 +127,7 @@ class Season{
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+          if(typeof statDeploy=="function")statDeploy(this,tm);   // hockey: the box score follows the ice time
           POS.forEach((P,i)=>{
             const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
             if(!pl)return;
@@ -170,6 +174,7 @@ class Season{
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
         const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+        if(typeof statDeploy==="function")statDeploy(this,tm);   // hockey: the box score follows the ice time
         POS.forEach((P,i)=>{
           // an injured starter's snaps go to his backup
           const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];

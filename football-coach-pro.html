@@ -109,6 +109,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  text-transform:uppercase;padding:9px 6px;border:1px solid var(--line);background:none;
  color:var(--muted);cursor:pointer}
 .setbtn[aria-pressed="true"]{border-color:var(--sodium);color:var(--sodium);
+.lineset{padding:2px 0 8px}.lineset .setrow{padding:6px 0}
  background:rgba(244,166,58,.1)}
 .pick.taken{opacity:.32;pointer-events:none}
 .handwrap{max-width:520px;margin:0 auto;padding:64px 24px 120px;text-align:center}
@@ -865,7 +866,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selsub{font-size:13.5px;color:var(--bone)}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="4b52ed2";
+<script>const BUILD_ID="37855de";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -1431,7 +1432,7 @@ class Talent{
         this.log[t].push({wk:w,kind:"back",what:e.k,mag:0}));
       this.inj[t]=this.inj[t].filter(e=>e.w>0);
       const sc=iscale(this.base[t]);
-      if(r.r()<INJ_HAZARD*K){
+      if(r.r()<INJ_HAZARD*K*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
         if(this.roster){
           // pick a starter, weighted toward the positions that take hits
           const idx=pickInjuredPos(r);
@@ -3665,6 +3666,8 @@ class Season{
       const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
       if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
     }
+    // hockey: how you split the ice time (lines and pairings)
+    if(typeof deployEdge==="function"&&(this.userTeam===a||this.userTeam===b))edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);
     const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
     return {
       h:this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge,
@@ -3707,6 +3710,7 @@ class Season{
         const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
         if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
       }
+      if(typeof deployEdge==="function")edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);   // hockey: the ice time
     }
     const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
     const w=Math.min(this.step,LEAGUE.weeks);
@@ -3743,6 +3747,7 @@ class Season{
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+          if(typeof statDeploy=="function")statDeploy(this,tm);   // hockey: the box score follows the ice time
           POS.forEach((P,i)=>{
             const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
             if(!pl)return;
@@ -3789,6 +3794,7 @@ class Season{
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
         const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+        if(typeof statDeploy==="function")statDeploy(this,tm);   // hockey: the box score follows the ice time
         POS.forEach((P,i)=>{
           // an injured starter's snaps go to his backup
           const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
@@ -5531,7 +5537,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger",
+const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy",
                     "history","expNow","readTally"];
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -5574,13 +5580,13 @@ function opponentOf(g){ return g?(g.home===S.myTeam?g.away:g.home):null }
 /* Both coaches' plans and featured players, applied to one game. */
 function h2hElo(g,step,oj){
   const keepU=SEA.userTeam, keepF=SEA.featured, oc=S.coaches[oj];
-  SEA.userTeam=null; SEA.featured=null;
+  SEA.userTeam=null; SEA.featured=null; const keepDep=SEA.deploy; SEA.deploy=null;
   const e0=SEA.matchupElo(g,"balanced");
-  SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+  SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   const e1=SEA.matchupElo(g,plan);
-  SEA.userTeam=oc.myTeam; SEA.featured=(oc.featured===undefined?null:oc.featured);
+  SEA.userTeam=oc.myTeam; SEA.featured=(oc.featured===undefined?null:oc.featured); SEA.deploy=oc.deploy||null;
   const e2=SEA.matchupElo(g,(oc.plans&&oc.plans[step])||"balanced");
-  SEA.userTeam=keepU; SEA.featured=keepF;
+  SEA.userTeam=keepU; SEA.featured=keepF; SEA.deploy=keepDep;
   return {h:e1.h+e2.h-e0.h, a:e1.a+e2.a-e0.a};
 }
 
@@ -5826,7 +5832,7 @@ function rebuild(){
   U.userTeam=S.myTeam;
   SEA=new Season(U,S.seasonSeed);
   SEA.userTeam=S.myTeam;
-  SEA.featured=(S.featured===undefined?null:S.featured);
+  SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   for(let n=0;n<S.steps;n++){
     const i=SEA.step, first=!SEA.half;          // the step being played (a cup week's two parts share one)
     if(first&&S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
@@ -6037,7 +6043,7 @@ function skipIdleDays(){
   let g=0;
   while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
     // the same bookkeeping as any advance: a reload replays exactly S.steps steps
-    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured);
+    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); S.steps++;
   }
 }
@@ -6078,7 +6084,7 @@ function doAdvance(){
   if(live&&live.done)live=null;               // last game is over; don't block the next
   ensureCoaches();
   SEA.userTeam=S.myTeam;
-  SEA.featured=(S.featured===undefined?null:S.featured);
+  SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   SEA.plan=plan;
   // your first game this step not yet played (a cup week has two; a reload
   // between them picks up at the second)
@@ -6677,6 +6683,7 @@ function rosterView(){
       : " \u2014 room to grow, and the development will show next season."}`
       :S.featuredLast&&S.featuredLast.year===SEA.year-1&&!S.off?`Featuring lasts a season, so it reset when this one began (last season: ${esc(S.featuredLast.n)}). Tap a starter to feature him.`
       :"Nobody featured. Tap a starter to feature him."}${F&&S.off?` <span class="planwhy">Featuring resets when the new season starts: pick again then.</span>`:""}</div>`;
+  if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
@@ -7748,7 +7755,7 @@ function simRun(to){
     if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
     const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
     S.plans[SEA.step]="balanced"; SEA.plan="balanced";
-    SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured);
+    SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); S.steps++;
     if(SEA.phase!=="week")break;
     // after it: did something happen you'd want to know about now?
@@ -8066,6 +8073,7 @@ function render(){
   };
   document.querySelectorAll("[data-team]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); openTeam(b.dataset.team);});
+  if(typeof bindLines==="function")bindLines();
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>
