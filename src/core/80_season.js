@@ -79,6 +79,7 @@ class Season{
     let sd=1, edge=0;
     // a cup tie: a knockout, and nothing to do with anyone's league record
     const cup=!!(extra&&extra.cup);
+    if(this.userTeam===a||this.userTeam===b)this._userDrives=null;   // this game's drives only (see below)
     if(this.userTeam===a||this.userTeam===b){
       const P=PLANS[this.plan]||PLANS.balanced;
       sd=P.sd;
@@ -218,7 +219,7 @@ class Season{
         const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site,round:g.round});
         r.hrank=prev[g.home];r.arank=prev[g.away];
         r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1]; r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
-        if(this.userTeam===g.home||this.userTeam===g.away)r.drives=this._userDrives;
+        if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
         out.push(r) });
       this.poll.update(out,this.elo);
       const W=this.weeks[w]; W.games=W.games.concat(out); W.cupPlayed=true;
@@ -231,7 +232,7 @@ class Season{
       r.hrank=prev[g.home];r.arank=prev[g.away];
       r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];
       r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
-      if(this.userTeam===g.home||this.userTeam===g.away)r.drives=this._userDrives;
+      if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
       out.push(r);
     });
     this.poll.update(out,this.elo);

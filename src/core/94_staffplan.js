@@ -61,7 +61,10 @@ function staffPlanReset(){
 /* college: the staff's plan is the even split and a balanced class */
 function collegePlanHTML(P){
   const RF=LEAGUE.offseason.recruitFocus, bk=LEAGUE.offseason.budget.buckets, B=P.budget||{};
-  const even=bk.every(b=>(B[b.k]||0)===(B[bk[0].k]||0)), rf=RF[P.recruit]?P.recruit:"balanced", pt=(P.portal||[]).length, bd=(P.rboard||[]).length;
+  // the staff's split is a quarter each, rounded (10 points: 3-2-2-3), so compare with that exactly, not
+  // with "all equal" (it said "your change" before anything was touched: Instinct, Grokbot)
+  const pool=S.off&&S.off.pool, dflt=pool?{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}:null;
+  const even=dflt?bk.every(b=>(B[b.k]||0)===(dflt[b.k]||0)):bk.every(b=>(B[b.k]||0)===(B[bk[0].k]||0)), rf=RF[P.recruit]?P.recruit:"balanced", pt=(P.portal||[]).length, bd=(P.rboard||[]).length;
   const changed=!even||rf!=="balanced"||pt||bd, you=` <span class="planyou">your change</span>`;
   return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
     <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
@@ -156,7 +159,11 @@ function impactHTML(P){
     :worse?(c.worth<=-0.02?`That call cost you this one.`
         :small?`The call went against you tonight; over many replays it makes little difference.`
         :`Unlucky: the call was sound.`)
-    :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight.`;
+    :c.cf.mine===p.mine&&c.cf.theirs===p.theirs?(small?`Same score either way tonight: on these dice the call changed nothing.`
+        :`Same score either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`)
+    :small?`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight.`
+    // the headline and the replays agree in one sentence ("Same defeat either way" above "wins clearly more often": Grokbot)
+    :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`;
   return `<div class="impact"><div class="imphead">${head}</div>
     <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
 }

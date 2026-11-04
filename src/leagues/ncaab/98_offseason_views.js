@@ -88,7 +88,7 @@ function portalHTML(num){
   const row=(e,on,i)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(e.n)} <span class="dpos">${esc(e.p)}</span></div>
-        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)}</div></div>
+        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)} &middot; <b>${portalChanceWord(portalChance(U,my,e))}</b></div></div>
       <button class="skip small" ${on?`data-ptrm="${esc(e.key)}"`:`data-ptadd="${esc(e.key)}"`}>${on?"Remove":"Add"}</button></div>`;
   let h=`<div class="grouphead">${num}. Transfer portal</div>`;
   const losing=all.filter(e=>e.from===my);
@@ -96,6 +96,7 @@ function portalHTML(num){
     :`<div class="note">Nobody on your roster looks likely to leave.</div>`;
   h+=`<div class="grouphead">Transfers you want</div>`+(mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet. Players you add get your first look, in your order, if they'd start or beat your backup at their position.</div>`);
+  h+=`<div class="note">Whether he picks you depends on how far he is above what your program usually gets, and how far down from his old program you'd be. <b>Likely</b>: most like him come. <b>A battle</b>: about half do. <b>A long shot</b>: most go elsewhere. Up to ${PORTAL_MAX} can sign with you in one summer.</div>`;
   const pool=all.filter(e=>e.from!==my&&mine.indexOf(e.key)<0).slice(0,25);
   h+=`<div class="grouphead">Likely in the portal &mdash; the best 25</div>`+pool.map(e=>row(e,false)).join("");
   return h;

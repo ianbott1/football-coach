@@ -1,5 +1,5 @@
 {
- "fp": "8d55f0c40472e6e1",
+ "fp": "d063ffe1fbb4282a",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -210,85 +210,95 @@
    "fp": "8d55f0c40472e6e1",
    "from": "0ae9061182d461f5",
    "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
+  },
+  {
+   "fp": "10f01701316b6afb",
+   "from": "8d55f0c40472e6e1",
+   "note": "Round 9: drives belong to their own game, fixtures show records, hot seat cools, portal chance, slot safety, sim stops off (screens only)"
+  },
+  {
+   "fp": "d063ffe1fbb4282a",
+   "from": "10f01701316b6afb",
+   "note": "Grokbot pass 2 / Instinct round 5: basketball half-time read offers Keep your setup first; soccer whole-match column; headlines; target wording"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "dcda94b15b1cc0aa",
-    "post": "15eaa99a0a3539db",
-    "champion": "Kentucky",
-    "rec": "573fe24355100b22",
-    "poll": "3db83b91ec6d524e",
+    "games": "6f2e77d86daeebca",
+    "post": "6230ad9bb5bc765b",
+    "champion": "Maryland",
+    "rec": "2de5774655a633b1",
+    "poll": "92025f95ade721fb",
     "heis": "f0ca3896b10da2b9",
-    "history": "3f5f17f1cea58053",
-    "universe": "29a92f3d60e09617",
-    "screens": "0093cb9b9619c87b"
+    "history": "c52541282b7f757d",
+    "universe": "98bfdd074fc48cf7",
+    "screens": "850625e0c08c21eb"
    },
    {
     "year": 2027,
-    "games": "8ec114c185c87b11",
-    "post": "5a3a9ffaf9bd5d88",
-    "champion": "UCLA",
-    "rec": "07b73d3d6f5c4a00",
-    "poll": "fbc9e0c7e7f5fd92",
-    "heis": "64b059fcdf7e9d46",
-    "history": "99de8296bf938c82",
-    "universe": "bd3d3e718a7a23df",
-    "screens": "c0696432f5cd25d0"
+    "games": "f44bebac06e1f433",
+    "post": "f570a8b07f8b09eb",
+    "champion": "Texas",
+    "rec": "88262f6255ff2a0d",
+    "poll": "0e739f1ef68aa0b8",
+    "heis": "b7e8cf4cae44bfd2",
+    "history": "2dd2cf0833aabb5d",
+    "universe": "b6dca22a865bb3f9",
+    "screens": "1fe4cbe797ae5490"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "51fa132c4c56ac92",
-    "post": "0a5dffbef1fd01f5",
-    "champion": "North Carolina",
-    "rec": "297cd1c1e57d7e2e",
-    "poll": "0deabcdd48afbc7d",
+    "games": "91aa88c890f486b9",
+    "post": "fc334b5963f6ab27",
+    "champion": "Kansas",
+    "rec": "433758fa94842a93",
+    "poll": "6f431daa7823364c",
     "heis": "13bfe33d01f2b2a1",
-    "history": "5cd1a4d4402906a2",
-    "universe": "9cb6dcc8e5340bbd",
-    "screens": "55fc50547d2b8cad"
+    "history": "5bf6faab24053511",
+    "universe": "f8ec582363d901e4",
+    "screens": "ec44e99f42eae49b"
    },
    {
     "year": 2027,
-    "games": "40cf7b9e1a17ad33",
-    "post": "86fea5dcdafeabf7",
-    "champion": "Arizona",
-    "rec": "7dabe830340c4f95",
-    "poll": "7682d10e469788bb",
-    "heis": "5e653284efe7ed05",
-    "history": "d4746daa8900bc99",
-    "universe": "ed8086c25debe3aa",
-    "screens": "f5cfac206fe27679"
+    "games": "eb951c480afe54c4",
+    "post": "03a5f95031f6c5c4",
+    "champion": "UCLA",
+    "rec": "5d0fdeac18b85c5a",
+    "poll": "563b4d023f24bbfc",
+    "heis": "8120dbad929bbaa3",
+    "history": "a09136552097899c",
+    "universe": "e0e24d0e02bbac42",
+    "screens": "73999001095f868e"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "8c570c637e4513f4",
-    "post": "39818a34debac90d",
-    "champion": "Purdue",
-    "rec": "93d65758bdfdc180",
-    "poll": "288ab5e7416b807f",
+    "games": "6b2b8015d733e4da",
+    "post": "1285a7a2cde9c4f6",
+    "champion": "UCLA",
+    "rec": "ae0f02bf8058b23f",
+    "poll": "df2b0e5f2ce4e60e",
     "heis": "c94713712b4e6c61",
-    "history": "e4060c2b71079dba",
-    "universe": "eee9d3d013e35123",
-    "screens": "aa7d1af8db4edc2d"
+    "history": "6b6207bf21edb5ef",
+    "universe": "62d00ccfc48eb438",
+    "screens": "0727274168f5008a"
    },
    {
     "year": 2027,
-    "games": "3e1dd728ecc0a9b8",
-    "post": "526d389137596c5f",
+    "games": "dcbdcfa07a2cd937",
+    "post": "8d6b4469ad42b373",
     "champion": "North Carolina",
-    "rec": "51c4474cc284ffd9",
-    "poll": "2a80cc7ffe8e0ea5",
-    "heis": "2c21cf7676ec0650",
-    "history": "4a166164c632e93a",
-    "universe": "e2f2c5eeb4e16444",
-    "screens": "86b1570c9aea8893"
+    "rec": "6eabdab6b758f403",
+    "poll": "14ed68296116577d",
+    "heis": "97bdbce0e295541c",
+    "history": "836c5e2056f43b41",
+    "universe": "f69bc2d3009200aa",
+    "screens": "70e703290b702ff5"
    }
   ],
   "schedules#60": [

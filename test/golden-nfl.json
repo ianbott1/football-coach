@@ -1,5 +1,5 @@
 {
- "fp": "f375b689474cb676",
+ "fp": "5708497f42603e74",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -220,6 +220,16 @@
    "fp": "f375b689474cb676",
    "from": "9ba7cf39ef2c158c",
    "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
+  },
+  {
+   "fp": "fdaa58108806b6ee",
+   "from": "f375b689474cb676",
+   "note": "Round 9: drives belong to their own game, fixtures show records, hot seat cools, portal chance, slot safety, sim stops off (screens only)"
+  },
+  {
+   "fp": "5708497f42603e74",
+   "from": "fdaa58108806b6ee",
+   "note": "Grokbot pass 2 / Instinct round 5: basketball half-time read offers Keep your setup first; soccer whole-match column; headlines; target wording"
   }
  ],
  "result": {
@@ -234,7 +244,7 @@
     "heis": "4fae3ab392988611",
     "history": "23a1d91958dd6aa2",
     "universe": "a3b6172688389ae1",
-    "screens": "e808731d41f67df7"
+    "screens": "28f64b524ba05a19"
    },
    {
     "year": 2027,
@@ -246,7 +256,7 @@
     "heis": "6aa62e2d5b0d619d",
     "history": "c8184ce51240bdc7",
     "universe": "e3621cf5a79231f3",
-    "screens": "319aaf7e0dfce9be"
+    "screens": "44b4cd27bdeff0d1"
    },
    {
     "year": 2028,
@@ -258,7 +268,7 @@
     "heis": "80083c319ecb3780",
     "history": "41079c6153d31272",
     "universe": "7c785b21eb42cf75",
-    "screens": "7ca10aafc1e15ad1"
+    "screens": "6f6776ec1687d417"
    },
    {
     "year": 2029,
@@ -270,7 +280,7 @@
     "heis": "f47242f3509d113f",
     "history": "c588cd9c7c7ea2ca",
     "universe": "8ecd526fabc1df30",
-    "screens": "541538b22abe7a50"
+    "screens": "f2d049ee5c021b7c"
    }
   ],
   "Tennessee#2024": [
@@ -284,7 +294,7 @@
     "heis": "47fbe057dba617c3",
     "history": "502e5b30e80a4bc5",
     "universe": "a78a624937b05b5c",
-    "screens": "695af87b4a6fb01b"
+    "screens": "c5e820c5838f7e27"
    },
    {
     "year": 2027,
@@ -296,7 +306,7 @@
     "heis": "5920aaa5e2220fb2",
     "history": "6f439e4f058c6e69",
     "universe": "4f6c878f8b8a886f",
-    "screens": "673b69f269137b36"
+    "screens": "635bfdff4a15e80a"
    },
    {
     "year": 2028,
@@ -308,7 +318,7 @@
     "heis": "f5665e14fcb89df4",
     "history": "23d943ee25323b9f",
     "universe": "186324dfe9ee1763",
-    "screens": "cc417d7a377c727e"
+    "screens": "1a5444fd74b1feff"
    },
    {
     "year": 2029,
@@ -320,7 +330,7 @@
     "heis": "be3941753ba5b769",
     "history": "7d834bd4f2794d50",
     "universe": "ba81bcd6f630a5c9",
-    "screens": "f01ed85c3d0997be"
+    "screens": "8e67d265f4bafe7d"
    }
   ],
   "Detroit#777": [
@@ -334,7 +344,7 @@
     "heis": "13df5e7e2aea9503",
     "history": "1583aac41f3e1d8b",
     "universe": "ed60048a150c6853",
-    "screens": "2b66a454278c78ab"
+    "screens": "8d65a5a391111160"
    },
    {
     "year": 2027,
@@ -346,7 +356,7 @@
     "heis": "33bbadd12d2df0e5",
     "history": "16def6cee0fdbd6f",
     "universe": "1a90b87e8235b3ab",
-    "screens": "771ce3036b3eecb5"
+    "screens": "5c753100936dad0b"
    },
    {
     "year": 2028,
@@ -358,7 +368,7 @@
     "heis": "4e7bc8a63fc80b4c",
     "history": "3b994ac8f58c022c",
     "universe": "5667a62a40a26b73",
-    "screens": "c0949068f5f80d8d"
+    "screens": "a863a4b8c8583d72"
    }
   ],
   "NY Giants#31337": [
@@ -372,7 +382,7 @@
     "heis": "9cccf8d2fc162002",
     "history": "8c49d3ed48464d07",
     "universe": "2f8815baa55405cc",
-    "screens": "26e9ff87a33d03d9"
+    "screens": "c4c9ea189df94aae"
    },
    {
     "year": 2027,
@@ -384,7 +394,7 @@
     "heis": "15a80387b7436730",
     "history": "4cd20c1603e4bafd",
     "universe": "e593063f394ad60a",
-    "screens": "dccc601bd41a5fd5"
+    "screens": "3424027bb91269f7"
    },
    {
     "year": 2028,
@@ -396,7 +406,7 @@
     "heis": "d1ccd6c1f8bab5e9",
     "history": "da65f0bccff1fc27",
     "universe": "e0498393ac40d312",
-    "screens": "7ebc3236aeffe66a"
+    "screens": "d6fdd5441e583b51"
    }
   ],
   "schedules#60": [

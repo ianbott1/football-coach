@@ -113,7 +113,7 @@ function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s
 function readCall(stage,T,hint,cur){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
   // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
-  const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup ("+COUNTERS[cur].l+")"]]:[]).concat(Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
+  const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup: "+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
   return {k:"read",stage:stage,h:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},
@@ -239,6 +239,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       T.pos+=t[3]+rng.gauss(0,6); T.n++;
       // the same numbers since half-time, for the second-half read: the whole-match ones mostly
       // describe the first half (Instinct: they lagged the change). No dice of their own.
+      // the whole match too, never reset: the read's own numbers start again when they change their
+      // approach at half-time, and the "whole match" column showed the same as "since half-time" (Instinct)
+      { const W=X.tellAll=X.tellAll||{to:0,cr:0,lb:0,pos:0,n:0}, k=X.tellLast||{to:0,cr:0,lb:0,pos:0,n:0};
+        W.to+=T.to-k.to; W.cr+=T.cr-k.cr; W.lb+=T.lb-k.lb; W.pos+=T.pos-k.pos; W.n+=T.n-k.n }
       if(st.seg>=9){ const U=X.tell2=X.tell2||{to:0,cr:0,lb:0,pos:0,n:0}, k=X.tellLast;
         if(k){ U.to+=T.to-k.to; U.cr+=T.cr-k.cr; U.lb+=T.lb-k.lb; U.pos+=T.pos-k.pos; U.n+=T.n-k.n } }
       X.tellLast={to:T.to,cr:T.cr,lb:T.lb,pos:T.pos,n:T.n};
@@ -265,6 +269,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       E:{home:H.E.map(x=>Math.round(x*100)),away:A.E.map(x=>Math.round(x*100))},
       T:{home:Object.assign({},H.tell),away:Object.assign({},A.tell)},
       T2:{home:H.tell2?Object.assign({},H.tell2):null,away:A.tell2?Object.assign({},A.tell2):null},
+      TA:{home:H.tellAll?Object.assign({},H.tellAll):null,away:A.tellAll?Object.assign({},A.tellAll):null},
       st:{home:[H.sh,H.sot],away:[A.sh,A.sot]}};
     st.drives.push(d); return d;
   };

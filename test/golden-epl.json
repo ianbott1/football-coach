@@ -1,5 +1,5 @@
 {
- "fp": "9c889f2be850ccf5",
+ "fp": "5e93f23084a67d3a",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -175,6 +175,16 @@
    "fp": "9c889f2be850ccf5",
    "from": "1877b5c671e0cb04",
    "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
+  },
+  {
+   "fp": "d593cd4a8e378571",
+   "from": "9c889f2be850ccf5",
+   "note": "Round 9: drives belong to their own game, fixtures show records, hot seat cools, portal chance, slot safety, sim stops off (screens only)"
+  },
+  {
+   "fp": "5e93f23084a67d3a",
+   "from": "d593cd4a8e378571",
+   "note": "Grokbot pass 2 / Instinct round 5: basketball half-time read offers Keep your setup first; soccer whole-match column; headlines; target wording"
   }
  ],
  "result": {
@@ -189,7 +199,7 @@
     "heis": "96c742eeedcbcb70",
     "history": "0cc5bcabe2374db6",
     "universe": "aa5ac560167fd94d",
-    "screens": "24126b2acac4428e"
+    "screens": "38c86b11c13d218e"
    },
    {
     "year": 2027,
@@ -201,7 +211,7 @@
     "heis": "bb203c2b2d9a3278",
     "history": "8a00384b8f1d46ed",
     "universe": "94d40423664780f7",
-    "screens": "a8f440beec02893c"
+    "screens": "244d39114563b01c"
    }
   ],
   "Wrexham#777": [
@@ -215,7 +225,7 @@
     "heis": "06d24a6f1c40846f",
     "history": "a6c8f0c58c480270",
     "universe": "8c894b5bdb42be75",
-    "screens": "e0a5a5106fe8767f"
+    "screens": "12b8aa0519980d76"
    },
    {
     "year": 2027,
@@ -227,7 +237,7 @@
     "heis": "79759676587273ba",
     "history": "8d166f116fa8b48d",
     "universe": "c6f9717b4411d480",
-    "screens": "763870650b707105"
+    "screens": "5ad47557427a9405"
    }
   ],
   "schedules#60": [

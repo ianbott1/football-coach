@@ -99,7 +99,7 @@ function objectivesMet(my){ return seasonObjectives(my).filter(o=>objStatus(o,my
 /* ---- achievements ---- */
 const ACH=[
   {id:"firstwin", l:"Off the mark",         d:"Win your first game"},
-  {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours (150 points)"},
+  {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours"},
   {id:"perfect",  l:"Saw it all",            d:"Get every read right in a game with three or more", reads:true},
   {id:"reader",   l:"Reads the game",        d:"Get 70% of your reads right over a season (12 or more)", reads:true},
   {id:"board",    l:"The board's favourite", d:"Meet all three objectives in a season"},
@@ -125,7 +125,7 @@ function checkAchievements(){
   if(!have.perfect&&S.played){ const P=S.played; for(const k in P){ (P[k]||[]).forEach(p=>{ if(p.team===my&&p.reads&&p.reads.length>=3&&p.reads.every(x=>x.right))unlock("perfect") }) } }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   if(!have.reader&&Y&&Y.n>=12&&Y.right/Y.n>=0.7)unlock("reader");
-  if(C.w+(SEA.rec[my]?SEA.rec[my][0]:0)>=100)unlock("century");
+  if(careerNow(C).w>=100)unlock("century");     // the career once: in the offseason the season is already banked (it unlocked at 62 wins: Muse)
   if(LEAGUE.cup&&SEA.cup&&SEA.cup.winner===my)unlock("cup");
   if(SEA.phase==="done"){
     const rec=(SEA.regRec||SEA.rec)[my];

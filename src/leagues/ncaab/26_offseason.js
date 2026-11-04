@@ -233,6 +233,17 @@ function portalEntrants(u){
 }
 /* a transfer takes a spot at his position if he's better than who is there;
    whoever he pushes off the end leaves the program */
+/* Will a transfer pick you? Like the recruiting board: the further he is
+   above what your program usually gets, and the further down from his old
+   program you are, the less likely. It was certain, so Rice took the top of
+   the portal (an 87 from UCLA) and went 27-1 (Ian); the computer's programs
+   can't sign a player from a program 60+ points above them at all. */
+const PORTAL_MAX=3;                                  // a coach's own signings in one summer (the computer's take two)
+function portalChance(u,t,e){
+  const typ=eloToRating(u.program[t]||1500), up=Math.max(0,(u.program[e.from]||1500)-(u.program[t]||1500));
+  return Math.max(0.05,Math.min(0.9,0.85-0.05*Math.max(0,e.r-typ)-0.0015*up));
+}
+function portalChanceWord(c){ return c>=0.7?"likely":c>=0.4?"a battle":"a long shot" }
 function portalPlace(R,pl){
   const i=POS.findIndex(P=>P.p===pl.p); if(i<0)return {ok:false};
   if(!R[i]||pl.r>R[i].r){const out=R[BK(i)]; R[BK(i)]=R[i]; R[i]=pl; return {ok:true,out:out,start:true}}
@@ -262,6 +273,9 @@ function runPortal(u,rng,entrants,U_CH,report){
       const m=moved.find(x=>x.e.key===k&&!taken.has(k)), nm=k.split("|")[1];
       if(!m)return {n:nm,got:false,why:"didn't enter the portal after all (or went elsewhere first)"};
       if(m.e.from===t)return {n:nm,got:false,why:"he's leaving you"};
+      if((count[t]||0)>=PORTAL_MAX)return {n:nm,got:false,why:`you'd already signed ${PORTAL_MAX}: that's the limit for one summer`};
+      // his decision, on its own dice (a hash: no other program's draws change)
+      if(portalHash(k+"|"+t+"|"+u.year)>=portalChance(u,t,m.e))return {n:nm,got:false,why:"chose another program"};
       const res=sign(t,m);
       return res.ok?{n:nm,got:true,start:res.start}:{n:nm,got:false,why:`no room at ${m.pl.p}: your players there are better`};
     })});

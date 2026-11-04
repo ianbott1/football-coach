@@ -1,5 +1,5 @@
 {
- "fp": "14f82384197e6368",
+ "fp": "9fef131c118c7a33",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -145,6 +145,16 @@
    "fp": "14f82384197e6368",
    "from": "7b63a84a2c20e330",
    "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
+  },
+  {
+   "fp": "04e9ad640e888c5b",
+   "from": "14f82384197e6368",
+   "note": "Round 9: drives belong to their own game, fixtures show records, hot seat cools, portal chance, slot safety, sim stops off (screens only)"
+  },
+  {
+   "fp": "9fef131c118c7a33",
+   "from": "04e9ad640e888c5b",
+   "note": "Grokbot pass 2 / Instinct round 5: basketball half-time read offers Keep your setup first; soccer whole-match column; headlines; target wording"
   }
  ],
  "result": {
@@ -159,7 +169,7 @@
     "heis": "16979613a8cfcbd8",
     "history": "313fa1a849569be6",
     "universe": "ed6b2f3a1b472058",
-    "screens": "ac4c9594a3b8e5a0"
+    "screens": "86ea415b0da93796"
    },
    {
     "year": 2027,
@@ -171,7 +181,7 @@
     "heis": "53df3055fedc8465",
     "history": "199232672fa54fe7",
     "universe": "2d4abdad8bc69e2b",
-    "screens": "7af5e925770aed1a"
+    "screens": "501ce90b297984dc"
    }
   ],
   "Edmonton#777": [
@@ -185,7 +195,7 @@
     "heis": "709711487d15f028",
     "history": "0af1fd328bf12077",
     "universe": "b383b08dc440aeae",
-    "screens": "4c1f08547a7d9f84"
+    "screens": "83d44be6e5ad2358"
    },
    {
     "year": 2027,
@@ -197,7 +207,7 @@
     "heis": "46bdb7d2aebb5206",
     "history": "76319712ddbcd142",
     "universe": "9fabc6e72a9bf553",
-    "screens": "195d6e21d09df91f"
+    "screens": "802dc6acdeebf5cc"
    }
   ],
   "schedules#60": [

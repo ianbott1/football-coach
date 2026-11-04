@@ -13,7 +13,7 @@ const GAMES=[['football-coach.html','Alabama'],['football-coach-pro.html','Denve
   ['basketball-coach-pro.html','Orlando'],['hockey-coach-pro.html','Vegas'],['soccer-coach.html','Dover Athletic']];
 const EXP=['S','SEA','U','POS','NAMES','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','openOffseason','commitOffseason',
   'rosterView','weekNews','teamPanel','attentionHTML','advLabel','ordinal','coachCard','careerNow','hkEventText','bbEventText','scEventText','nflPickSlot','BUILD_ID',
-  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView','claimSlot','save','staleTab','store','REVKEY','slot','allSlots','ownMark','readsHTML','callKey','impactHTML','bearYell','evidenceHTML','makeLiveGame','RNG','playGame','PLANS','staffPlanHTML','stakesFor','objStatus','seasonObjectives','attentionHTML','plan'];
+  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView','claimSlot','save','staleTab','store','REVKEY','slot','allSlots','ownMark','readsHTML','callKey','impactHTML','bearYell','evidenceHTML','makeLiveGame','RNG','playGame','PLANS','staffPlanHTML','stakesFor','objStatus','seasonObjectives','attentionHTML','plan','heroGame','checkAchievements','seatBadge','fixtureLine','simStops','portalChance','eloToRating','dynastyView','collegePlanHTML','openOffseason'];
 const SET=['stConf','dynTab','live','flash','plan'];
 
 /* 1. soccer: a draw is never a win, a loss, or "null" (rivalries, headlines) */
@@ -306,6 +306,56 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:71,theirs:67,impact:[{h:'Half-time',pick:'Trap the ball handler',def:'Pack the paint',worth:-0.07,cf:{mine:61,theirs:70}}]}];
   const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/won this one tonight, though over many replays it loses more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
+/* ---- Muse round 9 / Ian (Nov 2026) ---- */
+/* 42. a game's drives are its own: Rewatch showed another game (a 12-31 loss replayed as a 27-20 win) */
+for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,7,'T'); let bad=0,n=0;
+  for(let k=0;k<12&&A.SEA.phase==='week';k++){ (k%2?A.simAdvance:A.doAdvance)(); let m=0; while(A.live&&!A.live.done&&m++<6000){A.live.ask?A.answerLive(A.live.ask.dp.opts[0][0]):A.liveTick()}
+    A.SEA.weeks[A.SEA.weeks.length-1].games.filter(g=>(g.home===A.S.myTeam||g.away===A.S.myTeam)&&g.drives&&g.drives.length&&g.drives[0].pts!==undefined).forEach(g=>{ n++;
+      const h=g.drives.filter(d=>d.home).reduce((s,d)=>s+(d.pts||0),0), a=g.drives.filter(d=>!d.home).reduce((s,d)=>s+(d.pts||0),0); if(h!==g.hp||a!==g.ap)bad++ }) }
+  if(n)ok(bad===0,`${f}: ${bad} of ${n} games' drives don't add up to their score`) }
+/* 43. the Century trophy counts the career once (it unlocked at 62 wins in the offseason) */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Tampa Bay',5,'T'); play(A,999); A.openOffseason();
+  A.checkAchievements(); const w=A.S.career.w; ok(w>=100||!(A.S.career.ach||{}).century,`hockey: Century unlocked at ${w} career wins`); }
+/* 44. hockey's history names its conference champions (it read "undefined champion") */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Tampa Bay',5,'T'); play(A,999); off(A);
+  A.dynTab='league'; ok(!/undefined/.test(A.dynastyView()),'hockey: History says "undefined"'); A.dynTab='program'; ok(!/undefined/.test(A.dynastyView()),'hockey: the You page says "undefined"') }
+/* 45. a missed year's hot seat cools once the new season is on course (it read HOT SEAT at 24-4) */
+{ const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP}); A.newDynasty('Rice',5,'T'); const my=A.S.myTeam;
+  A.S.history=[{year:A.SEA.year-1,team:my,miss:true}]; A.SEA.rec[my]=[24,4]; ok(!/HOT SEAT/.test(A.seatBadge()),'college basketball: HOT SEAT at 24-4'); A.SEA.rec[my]=[4,24]; ok(/HOT SEAT/.test(A.seatBadge()),'college basketball: no hot seat at 4-24 after a missed year'); }
+/* 46. the transfer portal: a weak program can't take the top of it for certain (Rice took an 87 from UCLA) */
+{ const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP}); A.newDynasty('Rice',5,'T');
+  if(!A.portalChance)ok(false,'no portal chance (every target signs)'); else {
+  const U=A.U, top={r:87,from:'UCLA',why:'wants more minutes'}, mid={r:A.eloToRating(U.program.Rice)+2,from:A.NAMES.slice().sort((a,b)=>U.program[a]-U.program[b])[150],why:'wants more minutes'};
+  ok(A.portalChance(U,'Rice',top)<=0.15,`college basketball: Rice lands UCLA's 87 with chance ${A.portalChance(U,'Rice',top).toFixed(2)}`);
+  ok(A.portalChance(U,'Rice',mid)>=0.5,`college basketball: Rice lands a fitting transfer with chance ${A.portalChance(U,'Rice',mid).toFixed(2)}`);
+  ok(A.portalChance(U,'Duke',{r:82,from:'Kansas',why:'wants more minutes'})>=0.7,'college basketball: Duke can\'t land a Kansas transfer') } }
+/* 47. fixtures show each side's record (Ian: "can't see the seeds or records") */
+{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP}); A.newDynasty('Alabama',5,'T'); play(A,3);
+  const g=A.SEA.sched.find(x=>x.week>=A.SEA.step); ok(/class="frec">\d+-\d+/.test(A.fixtureLine(g,false)),'college football: fixtures have no records') }
+/* 48. sim-ahead's stop boxes start unticked */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T'); const st=A.simStops();
+  ok(Object.values(st).every(v=>v===false),`soccer: sim-ahead stops start ticked (${JSON.stringify(st)})`); }
+/* ---- Grokbot pass 2 / Instinct round 5 (Nov 2026) ---- */
+/* 49. soccer: "whole match" isn't reset when they change approach at half-time (both columns read the same) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T'); let seen=0,same=0;
+  for(let k=0;k<12;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){ const q=A.live.ask;
+      if(q&&q.dp.k==='read'&&q.dp.stage===2){ const d=A.live.drives[A.live.drives.length-1], opp=A.live.g.home===A.S.myTeam?'away':'home';
+        if(d.TA&&d.TA[opp]&&d.T2&&d.T2[opp]){ seen++; const a=d.TA[opp], b=d.T2[opp]; if(a.n===b.n)same++ } }
+      q?A.answerLive(q.dp.opts[q.dp.opts.length-1][0]):A.liveTick() } }
+  ok(seen>0&&same===0,`soccer: whole match covered no more than since half-time in ${same} of ${seen} second reads`); }
+/* 50. basketball's half-time read offers "Keep your setup" */
+{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP}); A.newDynasty('Boston',5,'T'); let n=0,keep=0;
+  for(let k=0;k<4;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<6000){ const q=A.live.ask;
+      if(q&&q.dp.k==='read'&&q.dp.stage===2){ n++; if(q.dp.opts[0][0]==='keep')keep++ }
+      q?A.answerLive(q.dp.k==='read'&&q.dp.stage===1?q.dp.opts[0][0]:q.dp.opts[0][0]):A.liveTick() } }
+  ok(n>0&&keep===n,`pro basketball: ${keep} of ${n} half-time reads offer "Keep your setup"`); }
+/* 51. college plan card: untouched isn't "your change" */
+{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP}); A.newDynasty('Navy',5,'T'); play(A,999); A.openOffseason();
+  ok(!/your change/i.test(A.collegePlanHTML(A.S.off.picks)),'college football: the untouched plan card says "your change"'); }
+/* 52. a same-result headline carries the replay verdict when it's big */
+{ const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
+  const P=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.07,cf:{mine:50,theirs:68}}]}];
+  ok(/Same defeat either way tonight, but over many replays your call wins more often/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays'); }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

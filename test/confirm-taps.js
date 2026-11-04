@@ -55,6 +55,22 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     ok(!errs.length,`${f}: page errors: ${errs[0]}`);
     await ctx.close();
   }
+  // a save that won't open is never shown as empty, and the last career opened can be brought back
+  // (Muse: two careers gone from slots that read Empty)
+  { const ctx=await b.newContext({viewport:{width:390,height:844}}); const url='file://'+path.join(DIST,'hockey-coach-pro.html');
+    const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss()); await p.goto(url); await p.waitForTimeout(600); await p.click('#qstart'); await p.waitForTimeout(900);
+    await p.goto(url); await p.waitForTimeout(800); await p.click('[data-slot="1"]'); await p.waitForTimeout(1200);   // open it: a copy is kept
+    const key=await p.evaluate(()=>KEYFOR(1)), team=await p.evaluate(()=>S.myTeam);
+    await p.evaluate(k=>localStorage.setItem(k,'LZW1:garbage'),key);                                         // damaged
+    await p.goto(url); await p.waitForTimeout(900);
+    const txt=await p.evaluate(()=>document.body.innerText);
+    ok(/won't open/i.test(txt)&&!/Empty/i.test(txt.split(/slot 2/i)[0].split(/slot 1/i).pop()),'a damaged save showed as Empty');
+    ok(!(await p.$('.slot.broken[data-slot]')),'a damaged save can be clicked into a new career');
+    await p.evaluate(k=>localStorage.removeItem(k),key); await p.goto(url); await p.waitForTimeout(900);      // gone
+    const cb=await p.$('[data-copyback="1"]'); ok(!!cb,'no offer to bring back the last career opened');
+    if(cb){ await cb.click(); await p.waitForTimeout(200); await (await p.$('[data-copyback="1"]')).click(); await p.waitForTimeout(800);
+      await p.click('[data-slot="1"]'); await p.waitForTimeout(1200); ok(await p.evaluate(()=>S.myTeam)===team,'the brought-back career didn\'t open') }
+    await ctx.close(); }
   // two tabs on one career: the one left behind stops saving instead of wiping the newer progress
   // (it wiped six games: Muse's "ghost" careers and lagging title summaries)
   { const ctx=await b.newContext({viewport:{width:390,height:844}}); const url='file://'+path.join(DIST,'basketball-coach-pro.html');

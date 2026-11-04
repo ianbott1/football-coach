@@ -295,6 +295,20 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   football favourites at 70% that won 84%, hockey's at 70% that won 63%,
   and the plan buttons never moved the number. Soccer's W/D/L model takes
   fitted goal and edge factors per plan.
+- Testers share one browser (Nov 2026, round 9): every game lives on one
+  origin, so localStorage is shared by every tester using that profile.
+  The careers Grokbot "lost" in slot 1 include ones Muse reported erasing
+  the round before (Pro Football Seattle, Hockey Toronto); in a clean
+  profile the reported repro (a pre-update career in slot 1, a new career
+  in slot 2, reload) keeps slot 1 in all six games. Defences now: a save
+  that won't open is shown as such and never as Empty (an empty-looking
+  slot invites a new career over it), and each game keeps a copy of the
+  career last opened, offered back on the title screen when its slot is
+  empty or unreadable. Testers should each use their own browser profile.
+- A game's drives must be its own: a live game's result kept the drives of
+  the last simmed game of yours (_userDrives), so Rewatch showed another
+  game (a 12-31 loss replayed as a 27-20 win) and box views disagreed with
+  the score. regressions.js 42.
 - A push to main is the release: Pages deploys it within minutes (Instinct
   tested d501095 live within the hour). Say "live once Pages deploys", not
   "nothing is live until you push", when Ian has already pushed.

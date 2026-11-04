@@ -150,7 +150,7 @@ function evidenceHTML(g,my,d,kind){
       <div class="flankbar"><span>Left <b>${F[0]}</b></span><i style="--l:${(100*F[0]/Math.max(1,F[0]+F[1])).toFixed(0)}%"></i><span><b>${F[1]}</b> Right</span></div>
       <div class="evn">A full-back having a hard day shows up here. It's a count, so a small gap can be luck.</div></div>`;
   }
-  const rows=tellRows(d.T[opp]), T2=d.T2&&d.T2[opp], rows2=T2&&T2.n>0?tellRows(T2):null;
+  const T2=d.T2&&d.T2[opp], rows2=T2&&T2.n>0?tellRows(T2):null, rows=tellRows(rows2&&d.TA&&d.TA[opp]?d.TA[opp]:d.T[opp]);
   // in the second half: since half-time beside the whole match, so a change shows (a small sample, said so)
   return `<div class="evid"><div class="evh">How ${esc(oppName)} are playing it <span>per 45 minutes${rows2?" &middot; whole match | since half-time":""}</span></div>
     ${rows.map((r,i)=>`<div class="evr ${r[3]}"><span class="evk">${r[0]}</span><span class="evv">${r[1]}${rows2?` | ${rows2[i][1]}`:""}</span></div>`).join("")}

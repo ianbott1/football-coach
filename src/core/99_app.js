@@ -458,13 +458,24 @@ function repairPlayed(d){
   if(T){ T.n=Math.max(0,T.n); T.right=Math.max(0,Math.min(T.right,T.n)) }
   return d;
 }
+/* null only when the slot is truly empty. A save that's there but won't open
+   (damaged, or another game's) comes back as {broken} and is never shown as
+   "Empty": an empty-looking slot invites a new career, which writes over it
+   (Muse: two careers gone from slots that read Empty). */
 async function loadSlot(n){
   await moveForeignSaves();
-  try{const r=await store.get(KEYFOR(n)); if(!r)return null;
-    const d=unsaveDup(JSON.parse(lzwUnpack(r.value)));
-    if(saveLeague(d)!==LEAGUE.id)return null;        // never open another game's save
-    return repairPlayed(migrateSave(d))}catch(e){return null}
+  let r=null; try{ r=await store.get(KEYFOR(n)) }catch(e){ return {broken:"storage"} }
+  if(!r||!r.value)return null;
+  try{ const d=unsaveDup(JSON.parse(lzwUnpack(r.value)));
+    if(saveLeague(d)!==LEAGUE.id)return {broken:"another game's career"};   // never open another game's save
+    return repairPlayed(migrateSave(d)) }catch(e){ return {broken:"damaged",err:String(e&&e.message||e)} }
 }
+/* One copy per game of the career you last opened, taken as it's opened: if
+   its slot is ever found empty or unreadable, the title screen offers it back. */
+const BAKKEY=()=>KEYBASE+"-lastopened";
+async function keepCopy(n){ try{ const r=await store.get(KEYFOR(n)); if(r&&r.value)await store.set(BAKKEY(),JSON.stringify({n:n,at:Date.now(),v:r.value})) }catch(e){} }
+async function readCopy(){ try{ const r=await store.get(BAKKEY()); if(!r)return null; const c=JSON.parse(r.value);
+  const d=unsaveDup(JSON.parse(lzwUnpack(c.v))); return d&&d.myTeam?{n:c.n,at:c.at,v:c.v,team:d.myTeam,coach:(d.career&&d.career.name)||"",seasons:(d.history||[]).length}:null }catch(e){ return null } }
 /* backups: a career saved as a file you keep, and opened again from it. A
    browser's storage can be cleared; a file on your computer or phone can't. */
 function downloadBackup(){
@@ -489,6 +500,7 @@ async function allSlots(){
   const out=[];
   for(let n=1;n<=NSLOTS;n++){
     const d=await loadSlot(n);
+    if(d&&d.broken){ out.push({n:n,broken:d.broken}); continue }
     // in the offseason the finished season is already in the career: take it out of "earlier seasons"
     // (it read "69-13 · 2 earlier seasons (183-63)" for 114-50: Muse)
     const N=d&&d.seasonNow, bk=N&&N.banked&&N.w!==undefined, C=d&&d.career&&(bk?{w:d.career.w-N.w,l:d.career.l-N.l,d:(d.career.d||0)-(N.d||0)}:d.career);
@@ -497,6 +509,9 @@ async function allSlots(){
       rec:C?(LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:C.w+"-"+C.l):"",titles:d.career?d.career.titles:0,
       now:d.seasonNow&&d.seasonNow.played?d.seasonNow:null}:{n:n,empty:true});
   }
+  // the copy of the last career opened, offered back when its slot is empty or unreadable
+  const c=await readCopy(), at=c&&out.find(x=>x.n===c.n);
+  if(c&&at&&(at.empty||at.broken))at.copy={team:c.team,coach:c.coach,seasons:c.seasons,at:c.at};
   return out;
 }
 
@@ -705,6 +720,10 @@ function openOffseason(){
   if(A.staffOpen&&A.staffOpen.oc)staffCands.oc=coordCandidates(rng,U.program[my],"oc",C.rep);
   if(A.staffOpen&&A.staffOpen.dc)staffCands.dc=coordCandidates(rng,U.program[my],"dc",C.rep);
   // an assistant you fired during the season doesn't come back: his job is open (Muse: he returned the next season)
+  // no two candidates with one name (two "Scott Blackmon"s, one unproven, one among the best: Instinct).
+  // Renamed without dice, so nothing else changes.
+  ["oc","dc"].forEach(side=>{ const L=staffCands[side]; if(!L)return; const seen=new Set();
+    L.forEach((c,i)=>{ let k=0; while(seen.has(c.n)&&k<COACH_FIRST.length){ c.n=COACH_FIRST[(i*7+k++)%COACH_FIRST.length]+" "+c.n.split(" ").slice(1).join(" ") } seen.add(c.n) }) });
   ["oc","dc"].forEach(side=>{ if(SEA.midFired&&SEA.midFired[side]&&!staffCands[side]){
     staffCands[side]=coordCandidates(rng,U.program[my],side,C.rep); A.staffOpen=Object.assign({},A.staffOpen||{},{[side]:true}) } });
   // a league can run its own market (soccer: relative to your club, not fixed bands)
@@ -1196,11 +1215,12 @@ function seatBadge(){
   if(!U||!U.coach)return "";
   const w=SEA.rec[my][0], l=SEA.rec[my][1];
   const prev=(S.history||[]).find(h=>h.year===SEA.year-1&&h.team===my);
-  if(prev&&seasonMissed(prev))return `<span class="seat hot">HOT SEAT</span>`;
-  if(w+l<4)return `<span class="seat cool">Settled</span>`;
+  // after a missed year the seat is hot until this one is on course: it stayed "HOT SEAT" at 24-4 (Ian)
+  const why=` title="You missed last season's target. Miss this one too and the job goes."`;   // says why (Instinct)
+  if(w+l<4)return prev&&seasonMissed(prev)?`<span class="seat hot"${why}>HOT SEAT</span>`:`<span class="seat cool">Settled</span>`;
   const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
   const paceW=Math.round(w/(w+l)*games), g=seasonGrade(paceW,games-paceW,"",exp);
-  if(g.miss)return `<span class="seat warm">Under pressure</span>`;
+  if(g.miss)return prev&&seasonMissed(prev)?`<span class="seat hot"${why}>HOT SEAT</span>`:`<span class="seat warm">Under pressure</span>`;
   return `<span class="seat cool">Secure</span>`;
 }
 
@@ -1347,8 +1367,9 @@ function teamCardHTML(my,rk,co){
           :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
           :need===0?`Target of ${e.w} wins already met.`
           :need>left+postMax||!alive?`${e.w} wins is out of reach now.`
-          :need>left?`${need} more win${need===1?"":"s"} from the ${e.w} expected: it will take a postseason run.`
-          :`${need} more win${need===1?"":"s"} from the ${e.w} expected.`}</span></div>`})()}
+          // plainly: the target, then what's left of it ("46 more wins from the 47 expected" read oddly: Grokbot, Ian)
+          :need>left?`Target: ${e.w} wins. ${need} to go: it will take a postseason run.`
+          :`Target: ${e.w} wins. ${need} to go.`}</span></div>`})()}
     </div>`;
   return h;
 }
@@ -1778,7 +1799,9 @@ function wkNav(w,last,maxW){
     <button class="wkbtn" data-wk="${w+1}" ${w>=maxW?"disabled":""} aria-label="Later">&rarr;</button></div>`;
 }
 function fixtureLine(g,mine){
-  const t=(x)=>`<div class="side"><span class="nm">${TL(x)}</span><span class="sc"></span></div>`;
+  // each side with its ranking (or seed) and record, as the results show them (Ian: "can't see the seeds or records")
+  const rk=SEA.poll.rankMap(), sd=x=>(SEA.seeds&&SEA.seeds[x])||(g.hseed&&x===g.home?g.hseed:g.aseed&&x===g.away?g.aseed:null);
+  const t=(x)=>`<div class="side"><span class="nm">${sd(x)?`<span class="rk">${sd(x)}</span>`:rkTag(rk[x])}${TL(x)} <span class="frec">${esc(recStr(x))}</span></span><span class="sc"></span></div>`;
   const chips=[]; if(g.title)chips.push(`<span class="chip ttl">${esc(g.title)}</span>`); if(g.site)chips.push(`<span class="chip ttl">${esc(g.site)}</span>`);
   const rv=LEAGUE.rivals.name(g.home,g.away); if(rv)chips.push(`<span class="chip riv">${esc(rv)}</span>`);
   return `<article class="game fixture${mine?" mine":""}"><div class="edge"></div><div class="gbody">
@@ -2032,7 +2055,7 @@ function seasonRowsFor(t){
     // yours only where you coached this club that year (after a move it showed your other job's grades)
     const mine=(h.team||S.myTeam)===t;
     return {year:h.year,hi:mine?hi:-1,rec:wdl(r[0],r[1],r[3]),rank:r[2],res:res,grade:(mine?h.grade:null),
-            champ:h.champion===t,conf:cc?LEAGUE.conf.names[cc]:null,
+            champ:h.champion===t,conf:cc?(LEAGUE.conf.names[cc]||cc.replace(/ champions$/,"")):null,
             coach:!!(h.coaching&&h.coaching.firedList.indexOf(t)>=0)};
   }).reverse();
 }
@@ -2147,6 +2170,9 @@ function teamCard(t){
 
 /* your own seasons, whichever club: after a move, the club card below is the
    new club's history, not yours (Muse) */
+/* a group title in the history: a conference, or hockey's "East champions" (a key that is no
+   conference: it read "undefined champion", Muse) */
+function groupChampName(k){ return LEAGUE.conf.names[k]?LEAGUE.conf.names[k]+" champion":String(k).replace(/s$/,"") }
 function yourSeasonsHTML(){
   // as soon as you've moved, even before a season at the new club is done (Muse saw no list)
   const H=S.history||[]; if(!H.length||new Set(H.map(h=>h.team||S.myTeam).concat([S.myTeam])).size<2)return "";
@@ -2176,12 +2202,15 @@ function dynastyView(){
         <div><b>${C.fired}</b><span>Fired</span></div>
       </div>
       <div class="grouphead" style="padding:14px 0 6px;border:none">Coaching stops</div>
-      ${C.stops.map(s=>`<div class="stop">
+      ${C.stops.map((s,si)=>{ /* the job you're in counts this season too (it read 0-0-0 mid-season: Muse) */
+        const cur=si===C.stops.length-1&&s.team===S.myTeam&&SEA&&SEA.rec[s.team]&&!(S.off&&S.off.year===SEA.year);
+        if(cur)s=Object.assign({},s,{w:s.w+SEA.rec[s.team][0],l:s.l+SEA.rec[s.team][1],d:(s.d||0)+((SEA.drw&&SEA.drw[s.team])||0)});
+        return `<div class="stop">
         <span class="dot" style="background:${teamColor(s.team)}"></span>
         <span class="stopteam">${esc(s.team)}</span>
         <span class="stopyr">${s.from}${s.to&&s.to>s.from?"\u2013"+s.to:s.to?"":"\u2013"}</span>
         <span class="stoprec">${wdl(s.w,s.l,s.d)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
-      </div>`).join("")}</div>`;
+      </div>`}).join("")}</div>`;
     h+=cabinetHTML();
     h+=yourSeasonsHTML();
     h+=teamCard(my);
@@ -2270,7 +2299,7 @@ function dynastyView(){
       <div class="ymain"><div class="yrec">${esc(x.champion)}</div>
       <div class="yres">${r?wdl(r[0],r[1],r[3]):""}${x.groupChamps?" &middot; "+
         (Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)
-          ?LEAGUE.conf.names[Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)]+" champion"
+          ?groupChampName(Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion))
           :"at-large"):""}</div></div></div>`;
   }).join("");
   if(LEAGUE.ui.historyHTML)h+=LEAGUE.ui.historyHTML();   // college basketball: past brackets
@@ -2348,7 +2377,9 @@ let simSheet=false;
 const ORG_WORD=(typeof LEAGUE!=="undefined"&&LEAGUE.text&&LEAGUE.text.unit)||"program";
 const SIM_STOPS=[["big","A big game is next (a rival, a top side"+(typeof LEAGUE!=="undefined"&&LEAGUE.cup?", a cup tie)":")")],["slide","We lose three in a row"],
   ["hurt","One of our players gets hurt"],["decide","Something needs a decision"]];
-function simStops(){ if(!S.simStops)S.simStops={big:true,slide:true,hurt:true,decide:true}; return S.simStops }
+/* off until you tick them (Ian: sim ahead should just sim). Saves that never touched them had them
+   all on by default; they start off too. */
+function simStops(){ if(!S.simStops||!S.simStopsV){ S.simStops={big:false,slide:false,hurt:false,decide:false}; S.simStopsV=2 } return S.simStops }
 function myGamesIn(w){ const my=S.myTeam; return SEA.gamesFor?SEA.gamesFor(my,w):SEA.sched.filter(g=>g.week===w&&(g.home===my||g.away===my)) }
 /* the step after your nth game from here */
 function afterGames(n){ let c=0; for(let w=SEA.step;w<LEAGUE.weeks;w++){ c+=myGamesIn(w).length; if(c>=n)return w+1 } return LEAGUE.weeks }
@@ -2417,7 +2448,7 @@ function digestBlock(){
   for(let i=flash.from;i<=last;i++){
     const W=SEA.weeks[i]; if(!W)continue;
     const gs=W.games.filter(x=>x.home===my||x.away===my).sort((x,y)=>(x.cup?1:0)-(y.cup?1:0));
-    if(!gs.length){ if(!LEAGUE.skipIdle)rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
+    if(!gs.length){ if(!LEAGUE.skipIdle&&!LEAGUE.daily)rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
       <span class="dres bye">Bye</span></div>`);continue}
     gs.forEach(g=>{ n++;
     const won=g.winner===my, opp=g.home===my?g.away:g.home;
@@ -2860,6 +2891,12 @@ function quickStart(slotN){
   newDynasty(J.t,S.setup.seed>>>0,"");
 }
 
+/* on an empty or unreadable slot: the copy taken when that career was last opened */
+function copyHTML(s){
+  if(!s.copy)return "";
+  const d=new Date(s.copy.at), when=isNaN(d)?"":` (opened ${d.toLocaleDateString(undefined,{month:"short",day:"numeric"})})`;
+  return `<button class="introskip wide copyback" data-copyback="${s.n}">Bring back ${esc(s.copy.team)}, ${esc(s.copy.coach)}'s career${when}</button>`;
+}
 function renderTitle(){
   const slots=S._slots||[];
   el("app").innerHTML=`<div class="titlewrap">
@@ -2872,10 +2909,15 @@ function renderTitle(){
     ${(()=>{ const free=slots.find(x=>x.empty); if(!free||slots.some(x=>!x.empty))return "";
       firstJobPicks=firstJobPicks||firstJobs(); const J=firstJobPicks[1];
       return `<button class="advance quickstart" id="qstart" data-qs="${free.n}">Quick start<small>${esc(J.t)} &middot; ${esc(J.d)}</small></button>` })()}
-    <div class="slots">${slots.map(s=>s.empty
+    <div class="slots">${slots.map(s=>s.broken
+      ? `<div class="slotwrap"><div class="slot broken"><span class="slotn">Slot ${s.n}</span>
+           <span class="slotmain">This save won't open</span>
+           <span class="slotsub">${s.broken==="damaged"?"The saved data is damaged.":"It holds "+esc(s.broken)+"."} It's kept as it is: nothing will write over it unless you erase it.</span></div>
+           <button class="slotdel" data-del="${s.n}" aria-label="Erase the save in slot ${s.n}">Erase</button></div>${copyHTML(s)}`
+      : s.empty
       ? `<button class="slot empty" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
-           <span class="slotmain">Empty &mdash; start a career</span></button>`
+           <span class="slotmain">Empty &mdash; start a career</span></button>${copyHTML(s)}`
       : `<div class="slotwrap"><button class="slot" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
@@ -2892,11 +2934,15 @@ function renderTitle(){
     tapTwice(b,"Tap again to erase",async()=>{
       try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){} await bumpRev(+b.dataset.del);
       S._slots=await allSlots(); render() }) });
+  document.querySelectorAll("[data-copyback]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
+    tapTwice(b,"Tap again to bring it back",async()=>{ const c=await readCopy(), n=+b.dataset.copyback; if(!c||c.n!==n)return;
+      try{ await store.set(KEYFOR(n),c.v) }catch(e){} await bumpRev(n); S._slots=await allSlots(); render() }) });
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
     const n=+b.dataset.slot;
     slot=n; await claimSlot(n);
     const d=await loadSlot(n); if(!(d&&d.myTeam))saveRev=null;
-    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();render()}
+    if(d&&d.broken)return;                         // never start a career over a save that's there
+    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();keepCopy(n);render()}
     else {S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,
              setup:{name:"",seed:Math.floor(Math.random()*899999+100000)}};
           S.title=false;render()}

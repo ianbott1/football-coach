@@ -144,10 +144,11 @@ function bbRead(T){
 const ASSIST=["normal","Leave it to your assistant"];
 /* The calls a coach can make. dp: {k, h (headline), b (the situation),
    opts: [[key, label], ...]}; the last option always leaves it to the assistant. */
-function readCall(stage,T,hint){
+function readCall(stage,T,hint,cur){
+  // "keep your setup" first when you have one, as in soccer (Instinct): "leave it to your assistant" hands the read back
   return {k:"read",stage:stage,h:stage===1?(BB.quarters?"End of the first quarter":"Ten minutes in"):"Half-time: their offense",
     b:stage===1?"How are they scoring? Pick the defense.":"Anything changed? Adjust the defense, or leave it.",
-    opts:Object.keys(DEFENSES).map(d=>[d,DEFENSES[d].l]).concat([ASSIST]),
+    opts:(stage===2&&cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
     tell:{tpa:T.tpa,fga:T.fga,paint:T.paint,pnr:T.pnr,n:T.n}, best:bbRead(T), pearl:hint||bbRead(T)};
 }
 function foulCall(half,X,T,seg){
@@ -314,6 +315,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const X=st.S[side];
     if(dp.k==="prep"){ if(DEFENSES[v]){ const t=st.S[other(side)].off; X.def=v; X.prepd=true;
       st.log.push({side:side,k:"prep",pick:v,truth:t,right:DEFENSES[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
+    if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:X.def,truth:t,right:DEFENSES[X.def].beats===t,evid:dp.best}); return }
     if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:v,truth:t,right:DEFENSES[v].beats===t,evid:dp.best}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }
     if(dp.k==="fouls"){ if(v!=="play")sitStar(X,dp.half); return }
@@ -346,7 +348,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         if(humans[sd])queueCall(sd,readCall(1,O.tell,O.lastCue)); else readIt(sd,0.45) });
       if(st.queue.length)return st.next()}
     if(s===4&&!st.halfDone){st.halfDone=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
-        if(humans[sd])queueCall(sd,readCall(2,O.tell,O.lastCue)); else if(rng.r()<0.3)readIt(sd,1) });
+        if(humans[sd])queueCall(sd,readCall(2,O.tell,O.lastCue,st.S[sd].def)); else if(rng.r()<0.3)readIt(sd,1) });
       queueCalls("half"); if(st.queue.length)return st.next()}
     if(s===SEGS-1&&!st.lateDone){st.lateDone=true; queueCalls("late"); if(st.queue.length)return st.next()}
     if(s===SEGS&&!st.lastDone){
