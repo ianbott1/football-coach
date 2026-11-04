@@ -1,5 +1,5 @@
 {
- "fp": "9fef131c118c7a33",
+ "fp": "1ab3a16d75c0bc07",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -155,59 +155,69 @@
    "fp": "9fef131c118c7a33",
    "from": "04e9ad640e888c5b",
    "note": "Grokbot pass 2 / Instinct round 5: basketball half-time read offers Keep your setup first; soccer whole-match column; headlines; target wording"
+  },
+  {
+   "fp": "aeaaecfa53e3e188",
+   "from": "9fef131c118c7a33",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
+  },
+  {
+   "fp": "1ab3a16d75c0bc07",
+   "from": "aeaaecfa53e3e188",
+   "note": "Nov 2026 round 12: hockey Dynasty shows overtime losses in your career, stops and all-time records (screens only; results unchanged from the previous record)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e1774286fe4eec62",
-    "post": "8f0f3125b2e74f7c",
-    "champion": "Washington",
-    "rec": "992d4f7773480a60",
-    "poll": "206170e204d6c6a4",
-    "heis": "16979613a8cfcbd8",
-    "history": "313fa1a849569be6",
-    "universe": "ed6b2f3a1b472058",
-    "screens": "86ea415b0da93796"
+    "games": "b60f8aaa5b7b7806",
+    "post": "cd58e633e964b2e1",
+    "champion": "Toronto",
+    "rec": "3d0a43f6a488195b",
+    "poll": "cf54987a27563789",
+    "heis": "003f71366db13367",
+    "history": "d7e8505680b44a1e",
+    "universe": "fe217462be8cff56",
+    "screens": "3e2faf2396b66aa7"
    },
    {
     "year": 2027,
-    "games": "34fd5f4b72165db5",
-    "post": "b07a3b7ed74ddfdf",
+    "games": "1a8a095491e47782",
+    "post": "7cbe8f2f7e9b42e8",
     "champion": "Toronto",
-    "rec": "907160080a9f80d0",
-    "poll": "4a78d3fa4627d86d",
-    "heis": "53df3055fedc8465",
-    "history": "199232672fa54fe7",
-    "universe": "2d4abdad8bc69e2b",
-    "screens": "501ce90b297984dc"
+    "rec": "7f0e4006d97653e7",
+    "poll": "3e6be4a0683b938a",
+    "heis": "4c644f1ea124991e",
+    "history": "57a08fe1737694b7",
+    "universe": "37f25f1b2e1955f0",
+    "screens": "50eac96dd4f78bcd"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "6d75344e0439cfaf",
-    "post": "d50a5820bea36e3f",
-    "champion": "Florida",
-    "rec": "3ed2584113e7f654",
-    "poll": "80198be0c09477da",
-    "heis": "709711487d15f028",
-    "history": "0af1fd328bf12077",
-    "universe": "b383b08dc440aeae",
-    "screens": "83d44be6e5ad2358"
+    "games": "d368b38fa49fc9c0",
+    "post": "08526b4e60097de9",
+    "champion": "Minnesota",
+    "rec": "305a97af6c7ef8de",
+    "poll": "30cac5d5e617af8a",
+    "heis": "350200e2d90beccc",
+    "history": "8fb4fa64de66f1fe",
+    "universe": "f8be9e4bf79befc7",
+    "screens": "5f63ef8fd528f5b4"
    },
    {
     "year": 2027,
-    "games": "dfd1c0c31863340d",
-    "post": "9d87bddbd6c8c6b1",
-    "champion": "Detroit",
-    "rec": "18633da635f4f196",
-    "poll": "1974494b8f10973f",
-    "heis": "46bdb7d2aebb5206",
-    "history": "76319712ddbcd142",
-    "universe": "9fabc6e72a9bf553",
-    "screens": "802dc6acdeebf5cc"
+    "games": "22bb09b5b80dc517",
+    "post": "1aaebb8c2b5dc814",
+    "champion": "Minnesota",
+    "rec": "68485d91025cfad0",
+    "poll": "f70f279ad8ef4f63",
+    "heis": "0b407779ff31638c",
+    "history": "8c2af90e97b7bc6d",
+    "universe": "7aedc5b3b2d03f86",
+    "screens": "9896c43383e655ec"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "19063a17524b1074",
+ "fp": "57a2c62ec19ed0b9",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -150,6 +150,11 @@
    "fp": "19063a17524b1074",
    "from": "42dfd8b6de8291cd",
    "note": "Football: more calls in live games (hot seat coaches play live)"
+  },
+  {
+   "fp": "57a2c62ec19ed0b9",
+   "from": "19063a17524b1074",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games; pro basketball and hockey seasons drawn with schedOrder (deterministic); hockey history rows keep overtime losses. Control build with those held back matched the previous fingerprints in all six."
   }
  ],
  "out": [
@@ -163,7 +168,7 @@
       "result": "Lost the conference championship",
       "grade": "B+"
      },
-     "book": "fc0a8c68122a79f7"
+     "book": "1eaf031242bd90d6"
     },
     {
      "team": "Tennessee",
@@ -172,7 +177,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "a77d4eacda6d280a"
+     "book": "660ae1e2a4749901"
     }
    ]
   },
@@ -182,20 +187,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "Lost in the wild card round",
+      "rec": "12-5",
+      "result": "Lost in the divisional round",
       "grade": "A-"
      },
-     "book": "f97f3dc3ba098fa4"
+     "book": "3610df9549968f92"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "Missed the playoffs",
-      "grade": "B+"
+      "rec": "11-6",
+      "result": "SUPER BOWL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "624cb6e9ec4adb9d"
+     "book": "3bd2ea6d579cc212"
     }
    ]
   },
@@ -206,19 +211,19 @@
      "team": "Kansas City",
      "last": {
       "rec": "10-7",
-      "result": "Lost in the divisional round",
-      "grade": "B+"
+      "result": "Lost in the wild card round",
+      "grade": "B"
      },
-     "book": "45c2431c50bda28f"
+     "book": "2a3fb2388002520a"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "6-11",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "13-4",
+      "result": "SUPER BOWL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "527e7b5579805eaa"
+     "book": "ecd6a3ef16bf9c50"
     }
    ]
   }

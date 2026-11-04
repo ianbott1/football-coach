@@ -293,7 +293,11 @@ function swapDepth(sea,i){
    at the last save, disagreed until the career was opened. Muse.) With no
    log for this season the choice hasn't changed since it began. */
 function noteChoice(k,was,now){
-  if(!SEA||S.off||SEA.phase==="done")return;
+  // logged in the offseason too, after the last game (so never applied to one): with no log for the
+  // season, a reload replays it with today's choice from the first game, and featuring someone new
+  // in the offseason rewrote last season (Grokbot: the final card went 54-28 to 53-29; measured in
+  // four games, hockey by 13 wins)
+  if(!SEA)return;
   // (called after the change: "was" is what held since the season began)
   if(!S.chLog||S.chLog.year!==SEA.year)S.chLog={year:SEA.year, ch:[],
     f0:k==="f"?(was===undefined?null:was):(S.featured===undefined?null:S.featured), d0:k==="d"?(was||null):(S.deploy||null)};
@@ -383,6 +387,10 @@ function save(){
       await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
     else await Promise.resolve();
     savePending=null;
+    // no career open, nothing to save. The title screen's "How to play" called save() on Skip, and
+    // with no career it wrote an empty one over slot 1 (slot's default): the slot-1 wipes, found by
+    // Grokbot in the code and reproduced in four games. Never again from anywhere.
+    if(!S||!S.myTeam)return false;
     if(staleTab)return false;
     if(saveRev!==null&&S.myTeam){ const cur=await readRev(slot);
       if(cur!==saveRev){ staleTab=true; render(); return false } }
@@ -537,6 +545,7 @@ function newDynasty(team,seed,coachName,roster){
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
   distinctLeague(u);
+  u.schedV=2;                                            // a schedule drawn the same way every time (schedOrder)
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -549,7 +558,19 @@ function newDynasty(team,seed,coachName,roster){
 function WK(){ return LEAGUE.text.week||"week" }
 function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
 /* a career's record: W-D-L where games can be drawn */
-function careerRec(C){ return LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:`${C.w}-${C.l}` }
+function careerRec(C,team,from,to){ const o=yourOTL(team,from,to); return o!==null?`${C.w}-${C.l-o}-${o}`:LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:`${C.w}-${C.l}` }
+/* hockey: your overtime losses, which careers and stops never kept (losses include them; Dynasty
+   read 44-40 for a 44-31-9 season: Grokbot). Each season you coached saved its record as
+   W-L-OTL, and the season being played counts too until it is banked. null outside hockey. */
+function yourOTL(team,from,to){
+  if(!LEAGUE.tracksOT||LEAGUE.draws||!LEAGUE.recText)return null;
+  let o=0;
+  (S.history||[]).forEach(h=>{ if(!h||(team&&h.team!==team)||(from!==undefined&&h.year<from)||(to!==undefined&&h.year>to))return;
+    const m=/^\d+-\d+-(\d+)$/.exec(h.rec||""); if(m)o+=+m[1] });
+  const banked=S.off&&SEA&&S.off.year===SEA.year;
+  if(SEA&&SEA.otl&&!banked&&(!team||team===S.myTeam)&&(from===undefined||SEA.year>=from)&&(to===undefined||SEA.year<=to))o+=SEA.otl[S.myTeam]||0;
+  return o;
+}
 /* the career so far including the season being played: a season is added to
    the career when the offseason opens, so mid-season (and after the last
    game, before the offseason) the career alone read 0-0 */
@@ -562,6 +583,18 @@ function ordinal(n){return n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
 /* a record, with draws where the game has them (W-D-L) */
 function wdl(w,l,d){ return LEAGUE.draws?`${w}-${d||0}-${l}`:`${w}-${l}` }
+/* a season's record from the history book's table: [w,l,rank,draws] in soccer, [w,l,rank,,otl] in
+   hockey (losses include overtime ones). Hockey's Dynasty and top-ten rows read 44-40, without
+   the overtime losses (Grokbot); entries written before they were kept fall back on the record
+   saved for the coach's own team. */
+function histRec(r,h,t){
+  if(!r)return "";
+  if(LEAGUE.recText&&!LEAGUE.draws){
+    if(r[4]!==undefined)return `${r[0]}-${r[1]-r[4]}-${r[4]}`;
+    if(h&&h.rec&&(h.team===t)&&/^\d+-\d+-\d+$/.test(h.rec))return h.rec;
+  }
+  return wdl(r[0],r[1],r[3]);
+}
 function recFmt(t,r){ return LEAGUE.recText?LEAGUE.recText(t,SEA,r):r[0]+"-"+r[1] }
 /* how many ranked teams wear a number: the top 25 in college, fewer in a 30-team league */
 const RANK_TOP=(LEAGUE.rankTop||25);
@@ -800,7 +833,8 @@ function endSeason(rng,choices,act,seasonTeam){
   const my=seasonTeam||S.myTeam, rk=SEA.poll.rankMap();
   const result=SEA.seasonResult(my);
   const teamRows={};
-  NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]; if(LEAGUE.draws)teamRows[t].push((SEA.drw&&SEA.drw[t])||0)});   // [w,l,rank,draws]
+  NAMES.forEach(t=>{teamRows[t]=[SEA.rec[t][0],SEA.rec[t][1],rk[t]]; if(LEAGUE.draws)teamRows[t].push((SEA.drw&&SEA.drw[t])||0);
+    else if(SEA.otl)teamRows[t].push(null,SEA.otl[t]||0)});   // [w,l,rank,draws]
   const {confChamps,post,pnote,cfpOf}=SEA.postRecord();
   LEAGUE.rivals.record(U,SEA);
   SEA.bankCareers(U);
@@ -846,6 +880,7 @@ function endSeason(rng,choices,act,seasonTeam){
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
   distinctLeague(U);
+  U.schedV=2;                                            // (schedOrder)
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -2030,10 +2065,10 @@ function leagueView(){
 }
 
 function allTime(t){
-  let w=0,l=0,d=0,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
+  let w=0,l=0,d=0,o=0,oAll=true,best=999,titles=0,confs=0,cfp=0,pw=0,pl=0,coach=0;
   S.history.forEach(h=>{
     const r=h.teams&&h.teams[t]; if(!r)return;
-    w+=r[0]; l+=r[1]; d+=r[3]||0; if(r[2]<best)best=r[2];
+    w+=r[0]; l+=r[1]; d+=r[3]||0; if(r[4]!==undefined&&r[4]!==null)o+=r[4]; else oAll=false; if(r[2]<best)best=r[2];
     if(h.champion===t)titles++;
     if(h.groupChamps&&Object.values(h.groupChamps).indexOf(t)>=0)confs++;
     if(h.seeds&&h.seeds[t])cfp++;
@@ -2043,7 +2078,9 @@ function allTime(t){
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
           post:pw+"-"+pl,postGames:pw+pl,coach:coach,now:rk,
-          d:d, pct:(w+l+d)?(w/(w+l+d)):null,seasons:S.history.length};
+          d:d, pct:(w+l+d)?(w/(w+l+d)):null,seasons:S.history.length,
+          // hockey: overtime losses, where every season kept them (from Nov 2026)
+          rec:(LEAGUE.tracksOT&&!LEAGUE.draws&&oAll&&S.history.length)?`${w}-${l-o}-${o}`:LEAGUE.draws?`${w}-${d}-${l}`:`${w}-${l}`};
 }
 
 function seasonRowsFor(t){
@@ -2054,7 +2091,7 @@ function seasonRowsFor(t){
     const cc=h.groupChamps?Object.keys(h.groupChamps).find(c=>h.groupChamps[c]===t):null;
     // yours only where you coached this club that year (after a move it showed your other job's grades)
     const mine=(h.team||S.myTeam)===t;
-    return {year:h.year,hi:mine?hi:-1,rec:wdl(r[0],r[1],r[3]),rank:r[2],res:res,grade:(mine?h.grade:null),
+    return {year:h.year,hi:mine?hi:-1,rec:histRec((h.teams&&h.teams[t])?r:null,h,t)||wdl(r[0],r[1],r[3]),rank:r[2],res:res,grade:(mine?h.grade:null),
             champ:h.champion===t,conf:cc?(LEAGUE.conf.names[cc]||cc.replace(/ champions$/,"")):null,
             coach:!!(h.coaching&&h.coaching.firedList.indexOf(t)>=0)};
   }).reverse();
@@ -2089,7 +2126,7 @@ function teamCard(t){
       ${LEAGUE.position?(LEAGUE.position(t)?ordinal(LEAGUE.position(t))+" in ":"no games yet in ")+esc(LEAGUE.conf.names[CONF[t]])
         :A.now<=RANK_TOP?"ranked #"+A.now:"unranked ("+ordinal(A.now)+")"}</div>
     <div class="stats">
-      <div><b>${LEAGUE.draws?A.w+"-"+A.d+"-"+A.l:A.w+"-"+A.l}</b><span>All-time</span></div>
+      <div><b>${A.rec}</b><span>All-time</span></div>
       <div><b>${A.pct!==null?A.pct.toFixed(3).replace(/^0/,""):"\u2013"}</b><span>Win %</span></div>
       <div><b>${A.best?"#"+A.best:"\u2013"}</b><span>Best finish</span></div>
     </div>
@@ -2209,7 +2246,7 @@ function dynastyView(){
         <span class="dot" style="background:${teamColor(s.team)}"></span>
         <span class="stopteam">${esc(s.team)}</span>
         <span class="stopyr">${s.from}${s.to&&s.to>s.from?"\u2013"+s.to:s.to?"":"\u2013"}</span>
-        <span class="stoprec">${wdl(s.w,s.l,s.d)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
+        <span class="stoprec">${careerRec(s,s.team,s.from,s.to)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
       </div>`}).join("")}</div>`;
     h+=cabinetHTML();
     h+=yourSeasonsHTML();
@@ -2241,7 +2278,7 @@ function dynastyView(){
         <span class="dot" style="background:${teamColor(t)}"></span>
         <div class="fmain"><div class="fname">${esc(t)}${t===my?' <span class="youtag">YOU</span>':''}</div>
         <div class="fnote">${bits.join(" &middot; ")}</div></div>
-        <div class="tstat"><span class="trec">${LEAGUE.draws?A.w+"-"+A.d+"-"+A.l:A.w+"-"+A.l}</span>
+        <div class="tstat"><span class="trec">${A.rec}</span>
         <span class="trk">${standTag(t,{[t]:A.now})}</span></div></div>`;
     }).join("");
     return h;
@@ -2297,7 +2334,7 @@ function dynastyView(){
       style="border-left:3px solid ${teamInk(x.champion)}">
       <span class="yr">${x.year}</span>
       <div class="ymain"><div class="yrec">${esc(x.champion)}</div>
-      <div class="yres">${r?wdl(r[0],r[1],r[3]):""}${x.groupChamps?" &middot; "+
+      <div class="yres">${r?histRec(r,x,x.champion):""}${x.groupChamps?" &middot; "+
         (Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion)
           ?groupChampName(Object.keys(x.groupChamps).find(c=>x.groupChamps[c]===x.champion))
           :"at-large"):""}</div></div></div>`;
@@ -2310,7 +2347,7 @@ function dynastyView(){
     return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${esc(t)}</span>
-      <span class="sall">${wdl(r[0],r[1],r[3])}</span></div>`}).join("");
+      <span class="sall">${histRec(r,last,t)}</span></div>`}).join("");
   if(S.origProgram&&U){
     const base=S.history[0].year;
     const d=NAMES.map(t=>[t,Math.round(U.program[t]-S.origProgram[t])])
@@ -2616,7 +2653,7 @@ function render(){
         <span class="dot" style="background:${teamColor(s.team)}"></span>
         <span class="stopteam">${esc(s.team)}</span>
         <span class="stopyr">${s.from}\u2013${s.to||s.from}</span>
-        <span class="stoprec">${wdl(s.w,s.l,s.d)}</span></div>`).join("")}
+        <span class="stoprec">${careerRec(s,s.team,s.from,s.to||s.from)}</span></div>`).join("")}
       <div class="actionbar"><button class="advance gold" id="reset2">New career</button></div>`;
     const r=el("reset2"); if(r)r.onclick=async()=>{
       try{await store.delete(KEYFOR(slot))}catch(e){} await bumpRev(slot); saveRev=null;
@@ -3018,10 +3055,10 @@ function renderIntro(){
     <div class="dots">${INTRO.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join("")}</div>
   </div>`;
   el("inext").onclick=()=>{
-    if(i===INTRO.length-1){S.introStep=null;S.introDone=true;S.title=true;save();render()}
+    if(i===INTRO.length-1){S.introStep=null;S.introDone=true;S.title=true;render()}
     else{S.introStep=i+1;render()}
   };
-  el("iskip").onclick=()=>{S.introStep=null;S.introDone=true;S.title=true;save();render()};
+  el("iskip").onclick=()=>{S.introStep=null;S.introDone=true;S.title=true;render()};
 }
 
 function helpPanel(){

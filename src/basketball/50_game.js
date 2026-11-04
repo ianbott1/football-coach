@@ -226,7 +226,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     ["home","away"].forEach(side=>{
       if(!humans[side])return;
       const L=lead(side); let dp=null;
-      if(when==="half")dp=halfCall(L);
+      // not at 20 either way: neither answer moves a game that's gone (Instinct: comfortable-lead busywork)
+      if(when==="half"){ if(Math.abs(L)<20)dp=halfCall(L) }
       else if(when==="late"&&L!==0&&Math.abs(L)<=9)dp=lateCall(L);
       else if(when==="last"&&L===-2)dp=lastCall();
       if(dp)queueCall(side,dp);
