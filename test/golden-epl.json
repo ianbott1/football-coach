@@ -1,5 +1,5 @@
 {
- "fp": "fdbdaae8d3c68e81",
+ "fp": "1877b5c671e0cb04",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -165,59 +165,64 @@
    "fp": "fdbdaae8d3c68e81",
    "from": "9efa2e71be7f6c31",
    "note": "Muse round 7 / Instinct round 3: soccer odds include featuring, your Coaches row is your career, Your seasons after a move, franchise strength in words, injured backups not recommended (screens only; no results move)"
+  },
+  {
+   "fp": "1877b5c671e0cb04",
+   "from": "fdbdaae8d3c68e81",
+   "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "c8a836c1493a8573",
-    "post": "d76b5b28d23e4b25",
-    "champion": "Liverpool",
-    "rec": "0e8fe23353d07949",
-    "poll": "99ec49b2cd611e3d",
-    "heis": "b52085e10a9aee19",
-    "history": "eec9a6693577fc76",
-    "universe": "ad8098afd5da5e56",
-    "screens": "585bd6c2ce23c441"
+    "games": "4b0ca7f355571526",
+    "post": "762965522ecbfe3c",
+    "champion": "Manchester City",
+    "rec": "62941de376fc55db",
+    "poll": "82904c5f44393491",
+    "heis": "96c742eeedcbcb70",
+    "history": "0cc5bcabe2374db6",
+    "universe": "aa5ac560167fd94d",
+    "screens": "f03e28bf4ace5a9e"
    },
    {
     "year": 2027,
-    "games": "6e128cf81c998361",
-    "post": "367e7991176e1299",
+    "games": "32ecb947e4d916dd",
+    "post": "b579646b62b74647",
     "champion": "Arsenal",
-    "rec": "306dca8c107dd6fb",
-    "poll": "0bef40b09f114e8c",
-    "heis": "61b1d170fd28a807",
-    "history": "6f9dbbcd251fe49b",
-    "universe": "8fe74ed2f462a615",
-    "screens": "e16f037867aca963"
+    "rec": "c808a2e964cba4fa",
+    "poll": "781e8e5b4818c08d",
+    "heis": "bb203c2b2d9a3278",
+    "history": "8a00384b8f1d46ed",
+    "universe": "94d40423664780f7",
+    "screens": "4ad928b101e5af53"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "97874898e2784de9",
-    "post": "4187359a7dfa47ec",
-    "champion": "Manchester City",
-    "rec": "bf56ea84439860c3",
-    "poll": "f1e6d424de08334c",
-    "heis": "35b811b30c3c7d9b",
-    "history": "58fd4d0d1d79782a",
-    "universe": "49584d25376128f8",
-    "screens": "cfc54daa8d406f43"
+    "games": "0e17883586bd37c1",
+    "post": "41b485407883566e",
+    "champion": "Aston Villa",
+    "rec": "df4753834332c033",
+    "poll": "49fd927511d09994",
+    "heis": "06d24a6f1c40846f",
+    "history": "a6c8f0c58c480270",
+    "universe": "8c894b5bdb42be75",
+    "screens": "a5b5e6334064fb17"
    },
    {
     "year": 2027,
-    "games": "4a15e3dbeb4a3a0c",
-    "post": "de64450a4e505d38",
-    "champion": "Manchester City",
-    "rec": "9ea9381ffef9b4a5",
-    "poll": "b0771262e8ab2be0",
-    "heis": "773291adde1b8df1",
-    "history": "5f77473fbc02c450",
-    "universe": "3dcbe485f2471ef1",
-    "screens": "abb4199750174d5b"
+    "games": "bc233b87ff6c0fde",
+    "post": "887b39d1800408b4",
+    "champion": "Arsenal",
+    "rec": "38f2fa18a45e9bfd",
+    "poll": "824b892f2cd61bc8",
+    "heis": "79759676587273ba",
+    "history": "8d166f116fa8b48d",
+    "universe": "c6f9717b4411d480",
+    "screens": "844af7668275e99b"
    }
   ],
   "schedules#60": [

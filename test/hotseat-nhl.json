@@ -1,5 +1,5 @@
 {
- "fp": "64e5a40d9979fd86",
+ "fp": "d24abb7056962ef1",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -105,6 +105,11 @@
    "fp": "64e5a40d9979fd86",
    "from": "1250d64705984f3e",
    "note": "Instinct round 2: hockey's ask curve reshaped (max for the top 1-2%, 6 of 768 contracts maxed, was 85), signing markups clamped at the max, fit labels, offseason record with OT losses, opaque action bar"
+  },
+  {
+   "fp": "d24abb7056962ef1",
+   "from": "64e5a40d9979fd86",
+   "note": "Round 8: hockey asks about the goalie only on split evidence"
   }
  ],
  "out": [
@@ -114,20 +119,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "47-25-12",
-      "result": "Lost in the second round",
-      "grade": "A-"
+      "rec": "41-30-13",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "0727471a7529dc2e"
+     "book": "86808b4c48ee9367"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "46-28-10",
-      "result": "Lost in the first round",
-      "grade": "B+"
+      "rec": "46-30-8",
+      "result": "Lost in the conference final",
+      "grade": "A"
      },
-     "book": "e1d807551089acb6"
+     "book": "ba53d121c8d284e4"
     }
    ]
   },
@@ -137,20 +142,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "28-43-13",
+      "rec": "25-44-15",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "2e76bd53a7d3dc48"
+     "book": "f191b6a49a4dfbc5"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "47-27-10",
-      "result": "Lost in the first round",
-      "grade": "B+"
+      "rec": "46-26-12",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "35fa8ff9527e54a2"
+     "book": "8325d664feba17a2"
     }
    ]
   },
@@ -160,20 +165,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-28-13",
+      "rec": "51-25-8",
       "result": "Lost in the first round",
-      "grade": "B"
+      "grade": "A-"
      },
-     "book": "031c45a4c10e2c08"
+     "book": "d4afc26682e1d866"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "38-35-11",
+      "rec": "29-44-11",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "D"
      },
-     "book": "dc54d254c7111296"
+     "book": "3193ed1d53150fc7"
     }
    ]
   }

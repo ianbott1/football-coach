@@ -94,7 +94,20 @@ function migrateSave(d){
   (d.coaches||[]).forEach(c=>{
     if(c.history)c.history=c.history.map(h=>migrateEntry(h,c.career,c.myTeam))});
   [d].concat(d.coaches||[]).forEach(c=>(c&&c.history||[]).forEach(backfillDraws));
+  // in the offseason the career already holds the finished season, which isn't in the history yet
+  const extra=!d.off?0:(d.seasonNow&&d.seasonNow.banked&&d.seasonNow.d!==undefined)?d.seasonNow.d:null;
+  if(extra!==null)[d].concat(d.off?[]:(d.coaches||[])).forEach(c=>{ if(c&&c.career&&c.history)careerDraws(c.career,c.history,c.myTeam,c===d?extra:0) });
   return d;
+}
+/* soccer: a career and its coaching stops that began before draws were kept
+   counted none (a stop read 54-0-48 against a true 54-36-48: Muse, three
+   rounds). Recounted from the seasons themselves, which do keep them. */
+function careerDraws(C,H,fallback,extra){
+  if(!LEAGUE.draws||!C.stops)return;
+  const rows=H.map(h=>{ const t=h.team||fallback, r=h.teams&&h.teams[t]; return r&&r[3]!==undefined?{y:h.year,t:t,d:r[3]}:null });
+  if(rows.some(x=>!x))return;                          // a season without draws: leave the counts as they are
+  C.stops.forEach((st,i)=>{ st.d=rows.filter(x=>x.t===st.team&&x.y>=st.from&&(st.to===undefined||x.y<=st.to)).reduce((a,x)=>a+x.d,0)+(i===C.stops.length-1?extra||0:0) });
+  C.d=rows.reduce((a,x)=>a+x.d,0)+(extra||0);
 }
 /* soccer seasons saved before Nov 2026 kept wins and losses but not draws, so
    a club's all-time record counted only the newer seasons' draws (Muse). A

@@ -110,8 +110,10 @@ function readScore(T){
   return out;
 }
 function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s[k]>s[a]?k:a,APPROACH_KEYS[0]) }
-function readCall(stage,T,hint){
-  const opts=Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l]).concat([["normal","Leave it to your assistant"]]);
+function readCall(stage,T,hint,cur){
+  // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
+  // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
+  const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup ("+COUNTERS[cur].l+")"]]:[]).concat(Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
   return {k:"read",stage:stage,h:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},
@@ -235,6 +237,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     ["home","away"].forEach(sd=>{ const X=st.S[sd], t=TELL[X.app], T=X.tell;
       T.to+=poisson(rng,t[0]); T.cr+=poisson(rng,t[1]); T.lb+=poisson(rng,t[2]);
       T.pos+=t[3]+rng.gauss(0,6); T.n++;
+      // the same numbers since half-time, for the second-half read: the whole-match ones mostly
+      // describe the first half (Instinct: they lagged the change). No dice of their own.
+      if(st.seg>=9){ const U=X.tell2=X.tell2||{to:0,cr:0,lb:0,pos:0,n:0}, k=X.tellLast;
+        if(k){ U.to+=T.to-k.to; U.cr+=T.cr-k.cr; U.lb+=T.lb-k.lb; U.pos+=T.pos-k.pos; U.n+=T.n-k.n } }
+      X.tellLast={to:T.to,cr:T.cr,lb:T.lb,pos:T.pos,n:T.n};
       // a line of commentary on it, now and then; once in a while a misleading one
       if(rng.r()<0.32){ const k=rng.r()<SC.cueTrue?X.app:rng.pick(APPROACH_KEYS), u=rng.int(100);
         ev.push({m:minute(),side:sd,k:"cue",cue:k,u:u}); if(u%3===0)X.lastCue=k }   // the ones the commentary reads out
@@ -257,6 +264,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     const d={seg:s,h:gH,a:gA,sh:st.h,sa:st.a,shots:[0,0],pp:[false,false],en:null,ot:0,mom:mom,ev:ev,
       E:{home:H.E.map(x=>Math.round(x*100)),away:A.E.map(x=>Math.round(x*100))},
       T:{home:Object.assign({},H.tell),away:Object.assign({},A.tell)},
+      T2:{home:H.tell2?Object.assign({},H.tell2):null,away:A.tell2?Object.assign({},A.tell2):null},
       st:{home:[H.sh,H.sot],away:[A.sh,A.sot]}};
     st.drives.push(d); return d;
   };
@@ -278,6 +286,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     const X=st.S[side];
     if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true;
       st.log.push({side:side,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
+    if(dp.k==="read"&&v==="keep"&&COUNTERS[X.ctr]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:X.ctr,truth:t,right:COUNTERS[X.ctr].beats===t,evid:dp.best}); return }
     if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t,evid:dp.best}) }
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak; st.log.push({side:side,k:"flank",pick:v,truth:t,right:v===t}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
@@ -309,12 +318,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       // half-time: the computer changes its approach now and then, more often when behind
       ["home","away"].forEach(sd=>{ if(humans[sd])return; const X=st.S[sd];
         if(rng.r()<(lead(sd)<0?0.5:0.25)){ X.app=rng.pick(APPROACH_KEYS.filter(k=>k!==X.app));
-          X.tell={to:0,cr:0,lb:0,pos:0,n:0}; X.lastCue=null } });
+          X.tell={to:0,cr:0,lb:0,pos:0,n:0}; X.tellLast={to:0,cr:0,lb:0,pos:0,n:0}; X.lastCue=null } });
       ["home","away"].forEach(sd=>{ const L=lead(sd); if(L!==0)queueCall(sd,halfCall(L));
         if(humans[sd])queueCall(sd,flankCall(st.S[sd].fl,st.S[sd].flLast)); else aimIt(sd) });
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
-      queueCall(sd,readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue))}); if(st.queue.length)return st.next()}
+      queueCall(sd,readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr))}); if(st.queue.length)return st.next()}
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===15&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>queueCall(sd,lateCall(lead(sd)))); if(st.queue.length)return st.next()}

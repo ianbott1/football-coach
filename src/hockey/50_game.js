@@ -262,16 +262,25 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
       if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
       if(st.queue.length)return st.next()}
+    /* your goalie: asked only when the evidence is split, a soft goal or goals
+       well over what the shots were worth, and after two only if something
+       new has gone in. Asked on a schedule, with the answer plain, it taught
+       players to skip it (Instinct). Not asked, the assistant's rule stands. */
+    function askGoalie(sd,X,per){
+      if(X.ga<2||X.backupIn)return;
+      const split=X.soft>0||X.ga>=X.xga+1.5, fresh=X.askedGa===undefined||X.ga>X.askedGa;
+      if(split&&fresh){ X.askedGa=X.ga; queueCall(sd,goalieCall(per,X)) } else cpuGoalie(sd);
+    }
     // first intermission: the read, and your goalie if he's let in two or more
     if(s===4&&!st.i1){st.i1=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], O=st.S[other(sd)];
         if(!humans[sd]){ readIt(sd,0.45); cpuGoalie(sd); return }
         queueCall(sd,readCall(O.tell,O.lastCue));
-        if(X.ga>=2&&!X.backupIn)queueCall(sd,goalieCall(1,X)) });
+        askGoalie(sd,X,1) });
       if(st.queue.length)return st.next()}
     // second intermission: the score, and your goalie
     if(s===8&&!st.i2){st.i2=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], L=lead(sd);
         if(!humans[sd]){ cpuGoalie(sd); return }
-        if(X.ga>=2&&!X.backupIn)queueCall(sd,goalieCall(2,X));
+        askGoalie(sd,X,2);
         if(L!==0)queueCall(sd,intCall(L)) });
       if(st.queue.length)return st.next()}
     if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1||L===-2)queueCall(sd,pullCall(L)) });

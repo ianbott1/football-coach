@@ -265,6 +265,27 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   the career was opened). S.chLog keeps each change (noteChoice); with no log
   for the season the choice never changed. Promotions and firings were
   already kept this way (S.promos, S.fires). test/regressions.js 21.
+- Two tabs on one career (Nov 2026, round 8): a tab left open on an older
+  state saved over newer progress without a word (measured in Chromium: six
+  games wiped). That was Muse's "ghost" careers back after an erase, title
+  summaries a season behind, a playoff series that changed on reload, and
+  likely featuring "carrying over" in college basketball. Each slot now has
+  a revision beside it (KEYFOR(n)+"-rev"): a tab saves only over the
+  revision it last read or wrote, and otherwise stops saving and says so;
+  the title screen re-reads the slots when another tab writes (storage
+  event) or the page comes back from the back-forward cache.
+  test/confirm-taps.js (two tabs) and regressions.js 26.
+- Read prompts are asked on evidence, not on a schedule: hockey's goalie
+  only with a soft goal or goals 1.5+ over expected (and after two, only if
+  more have gone in); otherwise the assistant's rule stands. Soccer's
+  second-half read shows since-half-time numbers beside the whole match
+  (whole-match rates lagged a change), and offers "Keep your setup" first.
+  Identical verdicts print once ("twice"); every call against the assistant
+  is weighed on the result card, not only the biggest. Calls per live game
+  (Nov 2026, median / p90): college football 2 / 3, pro football 2 / 3,
+  hockey 3 / 4, soccer 6 / 6, college basketball 4 / 5, pro 5 / 5. Football
+  is the gap: a spread-gated prompt plus more two-point and overtime calls
+  is the next design job (Instinct's proposal, round 3).
 - A push to main is the release: Pages deploys it within minutes (Instinct
   tested d501095 live within the hour). Say "live once Pages deploys", not
   "nothing is live until you push", when Ian has already pushed.

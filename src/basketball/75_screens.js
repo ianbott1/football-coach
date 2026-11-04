@@ -99,11 +99,14 @@ function evidenceHTML(g,my,d,dp){
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
+  // each number beside a team that isn't playing that way, measured on this engine (Nov 2026; the paint
+  // had none: Instinct; pro threes read 38% against a measured 43%)
+  const AV=BB.quarters?{three:43,paint:"14.0",pnr:"4.1"}:{three:39,paint:"9.9",pnr:"4.2"};
   return `<div class="evid"><div class="evh">How ${esc(g[opp])} are scoring <span>${BB.quarters?"per quarter":"per ten minutes"}</span></div>
     <div class="evr ${share>=45?'hi':share<=31?'lo':''}"><span class="evk">Shots from three</span><span class="evv">${share}% (${T.tpa} of ${T.fga})</span></div>
     <div class="evr"><span class="evk">Points in the paint</span><span class="evv">${paint}</span></div>
     <div class="evr ${T.pnr/n>=3.4?'hi':''}"><span class="evk">Pick-and-rolls run</span><span class="evv">${scr}</span></div>
-    ${firstReadTip()}<div class="evn">League average: 38% of shots from three, 4.4 pick-and-rolls ${BB.quarters?"a quarter":"every ten minutes"}. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
+    ${firstReadTip()}<div class="evn">League average: ${AV.three}% of shots from three, ${AV.paint} points in the paint, ${AV.pnr} pick-and-rolls ${BB.quarters?"a quarter":"every ten minutes"}. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
 }
 
 /* ---- the run of play ---- */

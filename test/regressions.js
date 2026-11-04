@@ -13,8 +13,8 @@ const GAMES=[['football-coach.html','Alabama'],['football-coach-pro.html','Denve
   ['basketball-coach-pro.html','Orlando'],['hockey-coach-pro.html','Vegas'],['soccer-coach.html','Dover Athletic']];
 const EXP=['S','SEA','U','POS','NAMES','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','openOffseason','commitOffseason',
   'rosterView','weekNews','teamPanel','attentionHTML','advLabel','ordinal','coachCard','careerNow','hkEventText','bbEventText','scEventText','nflPickSlot','BUILD_ID',
-  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView'];
-const SET=['stConf','dynTab'];
+  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView','claimSlot','save','staleTab','store','REVKEY','slot','allSlots','ownMark','readsHTML','callKey','impactHTML','bearYell','evidenceHTML','makeLiveGame','RNG'];
+const SET=['stConf','dynTab','live','flash'];
 
 /* 1. soccer: a draw is never a win, a loss, or "null" (rivalries, headlines) */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Dover Athletic',11,'T');
@@ -219,6 +219,66 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 /* 25. the team card says franchise strength in words */
 for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T');
   const c=strip(A.teamCard(A.S.myTeam)); ok(!/rating points/.test(c)&&/since \d{4}: (about where|a little|stronger|weaker|much)/.test(c),`${f}: the team card's strength line is in engine numbers ("${(c.match(/since \d{4}:[^&]{0,40}/)||[''])[0]}")`) }
+/* ---- Muse round 8 / Instinct round 4 (Nov 2026) ---- */
+/* 26. a tab open on an older state doesn't save over newer progress (it
+   silently wiped six games: the "ghost" careers, lagging title summaries
+   and a playoff series that changed on reload) */
+const tabsCheck=async()=>{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP}); A.newDynasty('Boston',5,'T');
+  if(!A.claimSlot)return ok(false,'no slot revisions (two tabs overwrite each other)');
+  await A.save(); await A.claimSlot(A.slot);
+  ok(await A.save()===true,'pro basketball: a save in the only open tab failed');
+  await A.store.set(A.REVKEY(A.slot),String(999));                 // another tab saved since
+  ok(await A.save()===false&&A.staleTab===true,'pro basketball: a tab saved over a newer revision');
+};
+/* 27. in the offseason, "earlier seasons" leaves out the finished one */
+const slotCheck=async()=>{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP}); A.newDynasty('Boston',6,'T');
+  play(A,999); off(A); play(A,999); A.openOffseason(); await A.save();
+  const S0=(await A.allSlots()).find(x=>!x.empty), C=A.S.career, N=A.SEA.rec[A.S.myTeam];
+  ok(S0&&S0.rec===`${C.w-N[0]}-${C.l-N[1]}`,`pro basketball: offseason slot says earlier seasons ${S0&&S0.rec}, want ${C.w-N[0]}-${C.l-N[1]}`); };
+/* 28. soccer: stops and careers saved without draws get them back on load */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Dover Athletic',11,'T');
+  for(let y=0;y<2;y++){ play(A,999); off(A) }
+  const want=JSON.stringify(A.S.career.stops.map(x=>x.d)), wd=A.S.career.d, old=JSON.parse(JSON.stringify(A.S));
+  old.career.stops.forEach(x=>delete x.d); delete old.career.d; const m=A.migrateSave(old);
+  ok(JSON.stringify(m.career.stops.map(x=>x.d))===want&&m.career.d===wd,`soccer: a stop saved without draws loads as ${JSON.stringify(m.career.stops.map(x=>x.d))} (want ${want})`); }
+/* 29. "Your seasons" shows as soon as you've moved */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Brentford',5,'T'); play(A,999); A.openOffseason(); A.S.off.move='Fulham';
+  for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
+  ok(A.S.myTeam==='Fulham'&&/Your seasons/.test(A.yourSeasonsHTML()),'soccer: no "Your seasons" after a move, before a season at the new club'); }
+/* 30. the odds say when they include your featuring */
+for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T'); if(!A.ownMark){ok(false,f+': no featuring mark on the odds');continue}
+  A.S.featured=1; A.SEA.featured=1; ok(/with featuring/.test(A.ownMark(A.S.myTeam)),`${f}: the odds don't say they include featuring`) }
+/* 31. hockey asks about your goalie only when the evidence is split */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Boston',5,'T'); let asked=0,plain=0,n=0;
+  for(let k=0;k<30&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){ const q=A.live.ask;
+      if(q&&q.dp.k==='goalie'){ asked++; if(!(q.dp.soft>0||q.dp.ga>=q.dp.xga+1.5))plain++ } q?A.answerLive(q.dp.opts[q.dp.opts.length-1][0]):A.liveTick() } n++ }
+  console.log(`  hockey: ${asked} goalie questions in ${n} games, ${plain} with the answer plain`);
+  ok(plain===0,`hockey: ${plain} goalie questions asked with no soft goal and goals near expected`); }
+/* 32. the same verdict twice reads once */
+{ const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP}); A.newDynasty('Duke',5,'T');
+  const r={k:'read',pick:'pack',truth:'paint',right:true}; A.S.played={[A.callKey(0)]:[{team:A.S.myTeam,reads:[r,Object.assign({},r)]}]};
+  const h=A.readsHTML(0); ok((h.match(/class="read ok"/g)||[]).length===1&&/twice/.test(h),'college basketball: an identical verdict printed twice'); }
+/* 33. soccer's second read: "keep your setup", and the numbers since half-time */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T'); let keep=0,half=0,seen=0;
+  for(let k=0;k<4;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){ const q=A.live.ask;
+      if(q&&q.dp.k==='read'&&q.dp.stage===2){ seen++; if(q.dp.opts[0][0]==='keep')keep++;
+        const d=A.live.drives[A.live.drives.length-1]; if(/since half-time/.test(A.evidenceHTML(A.live.g,A.S.myTeam,d,'read')))half++ }
+      q?A.answerLive(q.dp.opts[q.dp.stage===1?1:0][0]):A.liveTick() } }
+  ok(seen>0&&keep===seen&&half===seen,`soccer: second reads ${seen}, with "keep your setup" ${keep}, with since-half-time numbers ${half}`); }
+/* 34. every basketball read number has its league average */
+for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(f==='basketball-coach.html'?'Duke':'Boston',5,'T'); let h='';
+  for(let k=0;k<3&&!h;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){ const q=A.live.ask; if(q&&q.dp.k==='read'&&!h)h=strip(A.evidenceHTML(A.live.g,A.S.myTeam,A.live.drives[A.live.drives.length-1],q.dp));
+      q?A.answerLive(q.dp.opts[q.dp.opts.length-1][0]):A.liveTick() } }
+  ok(/League average:.*points in the paint/.test(h),`${f}: the read screen gives no league average for points in the paint`) }
+/* 35. every call against the assistant is weighed on the result card, not just the biggest */
+{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP});
+  const P=[{mine:110,theirs:104,impact:[{h:'Up 11 at the half',pick:'Slow it down',def:'Keep going',worth:-0.01,cf:{mine:108,theirs:104}},{h:'Down 6, late',pick:'Full-court press',def:'Stay in the half court',worth:0.06,cf:{mine:104,theirs:106}}]}];
+  ok(/Your other call against his[^<]*Up 11 at the half/.test(A.impactHTML(P)),'pro basketball: a second call against the assistant gets no verdict'); }
+/* 36. the Bears don't repeat a line in one game */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T');
+  A.live={g:{}}; A.live.ask={dp:{h:'Half-time'},q:9}; const a=A.bearYell('push',15); A.live.ask={dp:{h:'Late'},q:15}; const b=A.bearYell('push',21);
+  A.live.ask={dp:{h:'Half-time'},q:9}; ok(a!==b&&A.bearYell('push',15)===a,`soccer: the Bears said "${a}" twice in one game`); A.live=null; }
 
+(async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
-process.exit(bad?1:0);
+process.exit(bad?1:0); })();

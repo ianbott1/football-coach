@@ -130,8 +130,12 @@ function impactHTML(P){
   const out=(m,t)=>m>t?"win":m<t?(LEAGUE.draws?"defeat":"loss"):"draw";
   const res=out(p.mine,p.theirs), alt=out(c.cf.mine,c.cf.theirs);
   const altLine=`a ${c.cf.mine}-${c.cf.theirs} ${alt}`;
-  const avg=c.worth>=0.05?"wins clearly more often than his":c.worth>=0.02?"wins a little more often than his"
-    :c.worth>-0.02?"made little difference either way":c.worth>-0.05?"wins a little less often than his":"loses clearly more often than his";
+  const avgOf=w=>w>=0.05?"wins clearly more often than his":w>=0.02?"wins a little more often than his"
+    :w>-0.02?"made little difference either way":w>-0.05?"wins a little less often than his":"loses clearly more often than his";
+  const avg=avgOf(c.worth);
+  // every other call you made against his, weighed the same way: the ones left out (a slow-down, the
+  // press) read as if they were never weighed (Instinct)
+  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"").replace(/^made little/,"little")}`);
   // one replay is one roll of the dice: the headline credits the call only when
   // the average over many replays agrees (measured: on its own, the same-luck
   // replay disagreed with the average about as often as not)
@@ -142,7 +146,7 @@ function impactHTML(P){
     :worse?`Unlucky: the call was sound.`
     :`Same result either way tonight.`;
   return `<div class="impact"><div class="imphead">${head}</div>
-    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div></div>`;
+    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){

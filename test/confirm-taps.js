@@ -55,6 +55,19 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     ok(!errs.length,`${f}: page errors: ${errs[0]}`);
     await ctx.close();
   }
+  // two tabs on one career: the one left behind stops saving instead of wiping the newer progress
+  // (it wiped six games: Muse's "ghost" careers and lagging title summaries)
+  { const ctx=await b.newContext({viewport:{width:390,height:844}}); const url='file://'+path.join(DIST,'basketball-coach-pro.html');
+    const A=await ctx.newPage(); A.on('dialog',d=>d.dismiss()); await A.goto(url); await A.waitForTimeout(600); await A.click('#qstart'); await A.waitForTimeout(900);
+    const B=await ctx.newPage(); await B.goto(url); await B.waitForTimeout(800); await B.click('[data-slot="1"]'); await B.waitForTimeout(1200);
+    for(let i=0;i<6;i++)await B.evaluate(()=>simAdvance()); await B.waitForTimeout(400);
+    const want=await B.evaluate(()=>S.steps);
+    await A.evaluate(()=>{ S.featured=1; save() }); await A.waitForTimeout(500);
+    const C=await ctx.newPage(); await C.goto(url); await C.waitForTimeout(900); await C.click('[data-slot="1"]'); await C.waitForTimeout(1200);
+    const got=await C.evaluate(()=>S.steps);
+    ok(got===want,`two tabs: the older tab's save wiped the newer one (${got} steps saved, ${want} played)`);
+    ok(await A.evaluate(()=>!!document.getElementById('staletab')),'two tabs: the older tab doesn\'t say it has stopped saving');
+    await ctx.close(); }
   await b.close();
   console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: two-tap confirms work in a browser`);
   process.exit(bad?1:0);

@@ -251,7 +251,7 @@ function readText(e){
   const slack=Math.round(VERDICT_SLACK*100);
   if(e.right){ const o=e.pick===e.truth?e.other:e.best, or=e.pick===e.truth?e.or:e.br;
     if(o!==undefined&&Math.abs(e.pr-or)<=slack)
-      return `${e.h}: "${e.mine}" and "${o}" won about as often (${e.pr}% and ${or}% of replays): either was a good call.`;
-    return `${e.h}: "${e.mine}" was the better call: ${e.pr}% of replays won, against ${or!==undefined?or:"?"}% for "${o||"the other"}".` }
-  return `${e.h}: "${e.best}" was the better call, ${e.br}% against your ${e.pr}%.`;
+      return `${e.h}: "${e.mine}" and "${o}" won about as often (${e.pr}% and ${or}% of replays from that moment): either was a good call.`;
+    return `${e.h}: "${e.mine}" was the better call: ${e.pr}% of replays from that moment won, against ${or!==undefined?or:"?"}% for "${o||"the other"}".` }
+  return `${e.h}: "${e.best}" was the better call, ${e.br}% of replays from that moment against your ${e.pr}%.`;
 }

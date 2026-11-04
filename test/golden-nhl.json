@@ -1,5 +1,5 @@
 {
- "fp": "bdbee5c84f2d4a55",
+ "fp": "7b63a84a2c20e330",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -135,59 +135,64 @@
    "fp": "bdbee5c84f2d4a55",
    "from": "2c722c956a25da73",
    "note": "Muse round 7 / Instinct round 3: soccer odds include featuring, your Coaches row is your career, Your seasons after a move, franchise strength in words, injured backups not recommended (screens only; no results move)"
+  },
+  {
+   "fp": "7b63a84a2c20e330",
+   "from": "bdbee5c84f2d4a55",
+   "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "d2999ec9a74cbd3e",
-    "post": "4f0d3f9cb73b0f6d",
-    "champion": "Los Angeles",
-    "rec": "13d85b141d805f37",
-    "poll": "e96f5d234e794cc0",
-    "heis": "9e5a3b000418f0ce",
-    "history": "f74ba0572c6f0a3e",
-    "universe": "c24a5c89d241fd86",
-    "screens": "23fc62b78068ef72"
+    "games": "e1774286fe4eec62",
+    "post": "8f0f3125b2e74f7c",
+    "champion": "Washington",
+    "rec": "992d4f7773480a60",
+    "poll": "206170e204d6c6a4",
+    "heis": "16979613a8cfcbd8",
+    "history": "313fa1a849569be6",
+    "universe": "ed6b2f3a1b472058",
+    "screens": "d7c413a6e7e40a7d"
    },
    {
     "year": 2027,
-    "games": "3ce9e1a1d760d308",
-    "post": "5ffa45dc6005c815",
-    "champion": "Washington",
-    "rec": "0d457a4fe00a46f5",
-    "poll": "2d4d21c073ab4b9e",
-    "heis": "a3a1a7e8c72f5c64",
-    "history": "5fe3088789095910",
-    "universe": "3ee676e1f72c7657",
-    "screens": "d1a161ba542d9063"
+    "games": "34fd5f4b72165db5",
+    "post": "b07a3b7ed74ddfdf",
+    "champion": "Toronto",
+    "rec": "907160080a9f80d0",
+    "poll": "4a78d3fa4627d86d",
+    "heis": "53df3055fedc8465",
+    "history": "199232672fa54fe7",
+    "universe": "2d4abdad8bc69e2b",
+    "screens": "ba613470a9e8b0ed"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "0bb37f613a8122b4",
-    "post": "d5c9bc7158a616bf",
-    "champion": "Carolina",
-    "rec": "de36e59a5dff0a83",
-    "poll": "a66e4e334a78bddc",
-    "heis": "0cc42876587eba43",
-    "history": "a7e1f7a85f401d81",
-    "universe": "8fce4e9efef8d7dd",
-    "screens": "fc880d5db10886d4"
+    "games": "6d75344e0439cfaf",
+    "post": "d50a5820bea36e3f",
+    "champion": "Florida",
+    "rec": "3ed2584113e7f654",
+    "poll": "80198be0c09477da",
+    "heis": "709711487d15f028",
+    "history": "0af1fd328bf12077",
+    "universe": "b383b08dc440aeae",
+    "screens": "6c4c3e5ed0470577"
    },
    {
     "year": 2027,
-    "games": "1f112cdefddf0577",
-    "post": "b6a9cfbc62a61777",
-    "champion": "Winnipeg",
-    "rec": "e71b134e97f1ede4",
-    "poll": "490d4fc9d624b6f7",
-    "heis": "12f6ac64a4f962ae",
-    "history": "1644d7811121a549",
-    "universe": "a9aa940f478d6d67",
-    "screens": "c116462b62b44fbe"
+    "games": "dfd1c0c31863340d",
+    "post": "9d87bddbd6c8c6b1",
+    "champion": "Detroit",
+    "rec": "18633da635f4f196",
+    "poll": "1974494b8f10973f",
+    "heis": "46bdb7d2aebb5206",
+    "history": "76319712ddbcd142",
+    "universe": "9fabc6e72a9bf553",
+    "screens": "b3a90c63455e7263"
    }
   ],
   "schedules#60": [

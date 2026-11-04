@@ -363,6 +363,19 @@ let saveOK=null;                     // did the last save land? null = not tried
    state as it stands when it runs (compressing a long career takes a
    moment). In a browser it runs after the screen has drawn. */
 let savePending=null;
+/* One career, two tabs (or windows): each save bumps a revision kept beside
+   it, and a tab only saves over the revision it last read or wrote. A tab left
+   open on an older state wiped newer progress without a word (measured:
+   six games gone), which testers saw as careers "coming back" after an
+   erase, title summaries a season behind, and a playoff series that changed
+   on reload. Now the older tab stops saving and says so. */
+let saveRev=null, staleTab=false;
+const REVKEY=n=>KEYFOR(n)+"-rev";
+async function readRev(n){ try{ const r=await store.get(REVKEY(n)); return r?(+r.value||0):0 }catch(e){ return 0 } }
+async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
+async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
+function staleTabHTML(){ return staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
+  <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"" }
 function save(){
   if(savePending)return savePending;
   savePending=(async()=>{
@@ -370,9 +383,14 @@ function save(){
       await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
     else await Promise.resolve();
     savePending=null;
+    if(staleTab)return false;
+    if(saveRev!==null&&S.myTeam){ const cur=await readRev(slot);
+      if(cur!==saveRev){ staleTab=true; render(); return false } }
     S.league=LEAGUE.id;                                   // every save says which game it's from
-    if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0),done:SEA.phase==="done"};
+    if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0),done:SEA.phase==="done",
+      w:SEA.rec[S.myTeam][0],l:SEA.rec[S.myTeam][1],d:(SEA.drw&&SEA.drw[S.myTeam])||0,banked:!!(S.off&&S.off.year===SEA.year)};
   try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
+    if(saveOK&&S.myTeam)saveRev=await bumpRev(slot);
     return saveOK;
   })();
   return savePending;
@@ -465,15 +483,18 @@ function readBackup(text){
 async function restoreBackup(file,into){
   const text=await file.text(), d=readBackup(text);
   if(!d){ alert("That file isn't a backup from this game."); return false }
-  slot=into; S=d; S.title=false; rebuild(); S.expNow=S.expNow||expectations(); await save(); render(); return true;
+  slot=into; saveRev=null; staleTab=false; S=d; S.title=false; rebuild(); S.expNow=S.expNow||expectations(); await save(); render(); return true;
 }
 async function allSlots(){
   const out=[];
   for(let n=1;n<=NSLOTS;n++){
     const d=await loadSlot(n);
+    // in the offseason the finished season is already in the career: take it out of "earlier seasons"
+    // (it read "69-13 · 2 earlier seasons (183-63)" for 114-50: Muse)
+    const N=d&&d.seasonNow, bk=N&&N.banked&&N.w!==undefined, C=d&&d.career&&(bk?{w:d.career.w-N.w,l:d.career.l-N.l,d:(d.career.d||0)-(N.d||0)}:d.career);
     out.push(d&&d.myTeam?{n:n,team:d.myTeam,year:(d.uStart&&d.uStart.year)||2026,
       coach:(d.career&&d.career.name)||"",seasons:(d.history||[]).length,
-      rec:d.career?(LEAGUE.draws?`${d.career.w}-${d.career.d||0}-${d.career.l}`:d.career.w+"-"+d.career.l):"",titles:d.career?d.career.titles:0,
+      rec:C?(LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:C.w+"-"+C.l):"",titles:d.career?d.career.titles:0,
       now:d.seasonNow&&d.seasonNow.played?d.seasonNow:null}:{n:n,empty:true});
   }
   return out;
@@ -1018,7 +1039,9 @@ function readsHTML(step){
     const deb=c?`<div class="readnone"><b>${esc(c.h)}</b>: you chose "${esc(c.pick)}". ${c.opts.map(o=>`"${esc(o[0])}" won ${o[1]}%`).join(", ")} of replays: the options were that close, so the game turned on the plays, not the call.</div>`:"";
     return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${deb}</div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
-  return `<div class="reads">${R.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(readText(x))}</div>`).join("")}
+  // the same verdict twice (a read confirmed at half-time, a goalie kept twice) reads once, counted (Instinct)
+  const lines=[]; R.forEach(x=>{ const t=readText(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L)L.n++; else lines.push({t:t,right:x.right,n:1}) });
+  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(x.t)}${x.n>1?` <span class="readx">(${x.n===2?"twice":x.n+" times"})</span>`:""}</div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
@@ -1036,10 +1059,19 @@ function cupLineHTML(g,my){
 function oddsHTML(me,opp,atHome,neutral,wp){
   if(LEAGUE.wdl){ const [w,d,l]=LEAGUE.wdl(me,opp,atHome,neutral), P=x=>Math.round(x*100);
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
-      <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span></div>` }
+      <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span>${ownMark(me)}</div>` }
   return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
         <span class="opct">${Math.round(wp*100)}%</span>
-        <span class="olab">win probability</span></div>`;
+        <span class="olab">win probability</span>${ownMark(me)}</div>`;
+}
+/* the odds include your own choices: say so, since a point or two can hide
+   in the rounding (Muse saw soccer's odds not move) */
+function ownMark(me){
+  if(me!==S.myTeam||!SEA)return "";
+  const R=SEA.roster&&SEA.roster[S.myTeam], f=S.featured!==null&&S.featured!==undefined&&R&&R[S.featured]?R[S.featured]:null;
+  const dep=S.deploy&&Object.keys(S.deploy).some(k=>S.deploy[k]&&S.deploy[k]!=="bal");
+  if(!f&&!dep)return "";
+  return `<span class="olab omark">with ${[f?"featuring "+esc(f.n.split(" ").slice(-1)[0]):"",dep?"your ice time":""].filter(Boolean).join(" and ")}</span>`;
 }
 function winProb(me,opp,atHome,neutral){
   const v=t=>(SEA.hfa&&SEA.hfa[t])||LEAGUE.tuning.hfa;
@@ -2096,7 +2128,8 @@ function teamCard(t){
 /* your own seasons, whichever club: after a move, the club card below is the
    new club's history, not yours (Muse) */
 function yourSeasonsHTML(){
-  const H=S.history||[]; if(!H.length||new Set(H.map(h=>h.team||S.myTeam)).size<2)return "";
+  // as soon as you've moved, even before a season at the new club is done (Muse saw no list)
+  const H=S.history||[]; if(!H.length||new Set(H.map(h=>h.team||S.myTeam).concat([S.myTeam])).size<2)return "";
   return `<div class="grouphead">Your seasons</div>`+H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<div class="yrow ${h.honours&&h.honours.title?'gold':''}">
     <span class="yr">${h.year}</span>${h.grade?`<span class="ygrade">${esc(h.grade)}</span>`:""}
     <div class="ymain"><div class="yrec">${esc(h.team||"")} &middot; ${esc(h.rec||"")}</div>
@@ -2531,7 +2564,7 @@ function render(){
         <span class="stoprec">${wdl(s.w,s.l,s.d)}</span></div>`).join("")}
       <div class="actionbar"><button class="advance gold" id="reset2">New career</button></div>`;
     const r=el("reset2"); if(r)r.onclick=async()=>{
-      try{await store.delete(KEYFOR(slot))}catch(e){}
+      try{await store.delete(KEYFOR(slot))}catch(e){} await bumpRev(slot); saveRev=null;
       S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0};
       U=null;SEA=null;renderStart();};
     return;
@@ -2562,7 +2595,7 @@ function render(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${(checkAchievements(),achToastHTML())}${inOff?LEAGUE.ui.offseasonScreen():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
       (view==="team"?myTeamView():view==="scores"?scoresView():
@@ -2597,6 +2630,7 @@ function render(){
     dynCoach=b.dataset.coach; save(); render();});
   const cb=el("cback"); if(cb)cb.onclick=()=>{dynCoach=null;render()};
   const scf=el("stconf"); if(scf)scf.onchange=()=>{stConf=scf.value||null; render()};
+  const sg=el("stalego"); if(sg)sg.onclick=()=>{ try{location.reload()}catch(e){} };
   const cf=el("cfind"); if(cf)cf.oninput=()=>{coachQ=cf.value;
     const p=cf.selectionStart; render();
     const n=el("cfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
@@ -2616,7 +2650,7 @@ function render(){
   const hb=el("hlp"); if(hb)hb.onclick=()=>{S.help=true;render()};
   const rb=el("rst"); if(rb)rb.onclick=()=>tapTwice(rb,"Tap again to abandon this career",async()=>{
     {
-      try{await store.delete(KEYFOR(slot))}catch(e){}
+      try{await store.delete(KEYFOR(slot))}catch(e){} await bumpRev(slot); saveRev=null;
       // back to the title screen, where the empty slot starts a career properly
       // (it went straight to the team picker with no setup, and picking a team
       // threw: every game needed a reload; Muse saw it in hockey)
@@ -2795,7 +2829,7 @@ function firstJobs(){
 }
 let firstJobPicks=null;
 function quickStart(slotN){
-  slot=slotN;
+  slot=slotN; saveRev=null; staleTab=false;                // a new career here: its first save sets the revision
   const J=(firstJobPicks||firstJobs())[1];
   S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:false,introDone:true,
      setup:{name:"",seed:Math.floor(Math.random()*899999+100000),ready:true}};
@@ -2832,12 +2866,12 @@ function renderTitle(){
   // pressed "Erase" as a control, a keyboard, a screen reader, a test agent, pressed the slot and loaded the career)
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
     tapTwice(b,"Tap again to erase",async()=>{
-      try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){}
+      try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){} await bumpRev(+b.dataset.del);
       S._slots=await allSlots(); render() }) });
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=async(ev)=>{
     const n=+b.dataset.slot;
-    slot=n;
-    const d=await loadSlot(n);
+    slot=n; await claimSlot(n);
+    const d=await loadSlot(n); if(!(d&&d.myTeam))saveRev=null;
     if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();render()}
     else {S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,
              setup:{name:"",seed:Math.floor(Math.random()*899999+100000)}};
@@ -3040,7 +3074,32 @@ window.addEventListener("keydown",e=>{
   if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;render()}
 });
 
+/* the staff room never says the same line twice in one game (Instinct: the
+   Bears' "SEND EVERYONE" at 45' and again at 75'). Each prompt keeps the
+   line it got, so drawing the screen again doesn't change it. */
+if(typeof bearYell==="function"){ const pickBear=bearYell;
+  bearYell=function(kind,seed){
+    if(!live)return pickBear(kind,seed);
+    const said=live._said=live._said||{}, key=kind+"|"+seed+"|"+(live.ask?(live.ask.dp&&live.ask.dp.h)+"|"+live.ask.q:"");
+    if(said[key])return said[key];
+    const used=new Set(Object.values(said)); let line=pickBear(kind,seed);
+    for(let k=1;k<12&&used.has(line);k++)line=pickBear(kind,seed+k*5);
+    return said[key]=line;
+  } }
+/* another tab saved or erased: the title screen re-reads the slots, and a
+   career open on an older revision stops saving (see save); a page brought
+   back from the browser's back-forward cache re-reads too */
+function watchOtherTabs(){
+  try{
+    window.addEventListener("storage",async e=>{
+      if(!e.key||e.key.indexOf(KEYBASE)!==0)return;
+      if(S&&S.title){ S._slots=await allSlots(); render(); return }
+      if(S&&S.myTeam&&saveRev!==null&&e.key===REVKEY(slot)&&(+e.newValue||0)!==saveRev&&!staleTab){ staleTab=true; render() } });
+    window.addEventListener("pageshow",async e=>{ if(e.persisted&&S&&S.title){ S._slots=await allSlots(); render() } });
+  }catch(e){}
+}
 (async function(){
+  watchOtherTabs();
   S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true};
   S._slots=await allSlots();
   render();
