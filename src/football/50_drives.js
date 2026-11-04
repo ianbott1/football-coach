@@ -15,7 +15,11 @@ function situational(aggr,i,total,mine,theirs){
   const d=mine-theirs;
   return d>=17?"sit":d<=-9?"chase":aggr;
 }
-const MAX_CALLS = 3;          // how many decisions a single game will ask of you
+const MAX_CALLS = 6;          // how many decisions a single game will ask of you (it was 3, and most games asked 2:
+                              // testers, Nov 2026: "a coached game asks less of you than one real drive does")
+/* a call worth asking: not in a game that's decided (a fourth and 12 at 37-17, a fourth and 1
+   down 27 were asked and graded irrelevant: Instinct, Grokbot) */
+function callMatters(q,diff){ const a=Math.abs(diff); return !(a>=28||(q>=3&&a>=21)||(q===4&&a>=17)) }
 
 /* Aggression presets, used both as a pre-game plan and as an in-game choice. */
 /* A gameplan is a trade between talent and chance. gap scales how much the
@@ -200,6 +204,12 @@ function fourthDownCall(stall, togo, offElo, defElo){
       b:`${dist} yards is a long way for the kicker. Go for it, or flip the field.`,
       opts:[["go",`Go for it \u00b7 ${gp}% to convert`],["punt","Punt it away"]]};
   }
+  // fourth and short in your own half: the call coaches are second-guessed on most (added Nov 2026)
+  if (stall >= 30 && togo <= 2) {
+    return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
+      b:`Short yardage in your own half. Keep the drive alive, or punt and play the field?`,
+      opts:[["go",`Go for it \u00b7 ${gp}% to convert`],["punt","Punt it away"]]};
+  }
   return null;
 }
 
@@ -336,7 +346,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
 
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
-      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<2){
+      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
         if(dp){
           used.fourth=(used.fourth||0)+1; called();
@@ -344,10 +354,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
           return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
         }
       }
-      if(res.kind==="TD"&&!used.two){
+      if(res.kind==="TD"&&(used.two||0)<2){
         const dp=twoPointCall(mine,theirs,q,late);
         if(dp){
-          used.two=true; called();
+          used.two=(used.two||0)+1; called();
           st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr};
           if(home)st.h+=6; else st.a+=6;          // the touchdown is on the board while you decide
           return {ask:dp,mine:mine+6,theirs:theirs,q:q,side:side};

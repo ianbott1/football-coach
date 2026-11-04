@@ -46,7 +46,7 @@ for(const seed of [99,1,2,3,4,5,6,7]){
   games+=meet.length; twice+=Object.keys(seen).filter(k=>k.indexOf(PAIR)>=0&&seen[k]>1).length;
   meet.forEach(x=>{
     if(x.asks[TA]&&x.asks[TB])bothAsked++;
-    if(Object.values(x.asks).some(n=>n>3))overCap++;
+    if(Object.values(x.asks).some(n=>n>6))overCap++;      // the per-game cap (MAX_CALLS: 6 since Nov 2026, was 3)
     x.labels.forEach(([t,l])=>{
       const name=t===TA?'Coach A':'Coach B'; if(!(l||'').startsWith(name+"'s call")){wrongLabel++;}});
     // the result that counts is the one that was played
@@ -59,7 +59,7 @@ for(const seed of [99,1,2,3,4,5,6,7]){
 ok(games>=8, `the coaches met ${games} times in 8 seasons`);
 ok(twice===0, `no meeting was played live twice (${twice})`);
 ok(bothAsked>0, `both coaches were asked for calls in the same game (${bothAsked} of ${games} games)`);
-ok(overCap===0, 'neither side was asked more than 3 times in a game');
+ok(overCap===0, "neither side was asked more than 6 times in a game");
 ok(wrongLabel===0, `every call screen names the coach whose call it is (${wrongLabel} wrong)`);
 ok(notCounted===0, `the score that counts is the score that was played (${notCounted} not)`);
 // the waiting coach's plan is the one their side plays with

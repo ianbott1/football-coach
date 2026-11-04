@@ -1,5 +1,5 @@
 {
- "fp": "be49be4570da39f2",
+ "fp": "d36f08efafdd32be",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -140,6 +140,11 @@
    "fp": "be49be4570da39f2",
    "from": "b2ba972daf44cee9",
    "note": "Grokbot pass 1: objectives read the Standings table (reputation moves with them), NBA club name Mega Basket"
+  },
+  {
+   "fp": "d36f08efafdd32be",
+   "from": "be49be4570da39f2",
+   "note": "Football: more calls in live games (hot seat coaches play live)"
   }
  ],
  "out": [
@@ -150,19 +155,19 @@
      "team": "Alabama",
      "last": {
       "rec": "10-3",
-      "result": "Won the ReliaQuest Bowl",
+      "result": "Won the Citrus Bowl",
       "grade": "B-"
      },
-     "book": "a11848449bc147c9"
+     "book": "bd8654cb2e25ee72"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "9-5",
+      "result": "Won the Boca Raton Bowl",
+      "grade": "A+"
      },
-     "book": "3f0eea064b299758"
+     "book": "8c7b35f5e8cc8bb2"
     }
    ]
   },
@@ -172,20 +177,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-3",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A-"
+      "rec": "15-1",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "d0ab94c070c663fb"
+     "book": "6602191fadfc94d8"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
-      "result": "No bowl game",
-      "grade": "C"
+      "rec": "8-5",
+      "result": "Won the LA Bowl",
+      "grade": "A+"
      },
-     "book": "4a0b15c0d7c50c73"
+     "book": "76af7002cc8c0220"
     }
    ]
   },
@@ -195,20 +200,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Eliminated in the first round",
-      "grade": "C"
+      "rec": "12-3",
+      "result": "Eliminated in the semifinals",
+      "grade": "A"
      },
-     "book": "11e3206527d1d170"
+     "book": "7377c717cdeb91ba"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
+      "rec": "5-7",
       "result": "No bowl game",
-      "grade": "C+"
+      "grade": "B"
      },
-     "book": "4bc866eb66172dfd"
+     "book": "d22076abbdf51e45"
     }
    ]
   }

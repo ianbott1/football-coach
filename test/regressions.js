@@ -356,6 +356,14 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.07,cf:{mine:50,theirs:68}}]}];
   ok(/Same defeat either way tonight, but over many replays your call wins more often/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays'); }
+/* 53. football asks enough, and not in decided games (it asked 2 a game, some at 37-17) */
+for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Denver']]){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,8,'T');
+  const per=[]; let decided=0;
+  for(let k=0;k<14&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0,n=0; const L0=A.live; while(A.live&&!A.live.done&&m++<6000){ const q=A.live.ask;
+      if(q){ n++; const d=q.mine-q.theirs, a=Math.abs(d); if(q.dp.k==='fourth'&&(a>=28||(q.q>=3&&a>=21)||(q.q===4&&a>=17)))decided++; A.answerLive(q.dp.opts[0][0]) } else A.liveTick() } if(L0)per.push(n) }
+  per.sort((a,b)=>a-b); const med=per[per.length>>1];
+  console.log(`  ${f}: calls per game median ${med} (${per.join(',')})`);
+  ok(med>=3,`${f}: a median of ${med} calls a game`); ok(decided===0,`${f}: ${decided} fourth-down calls asked in a decided game`) }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

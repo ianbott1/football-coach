@@ -309,6 +309,19 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   the last simmed game of yours (_userDrives), so Rewatch showed another
   game (a 12-31 loss replayed as a 27-20 win) and box views disagreed with
   the score. regressions.js 42.
+- Football calls (Nov 2026): up to 6 a game (was 3), four fourth downs (was
+  two) and two two-point tries (was one), a new fourth-and-short call in
+  your own half (stall 30-43, 1-2 to go), and no fourth-down call in a
+  decided game (callMatters: 28+, 21+ after half-time, 17+ in the fourth).
+  Measured over 36 college and 51 pro live games: calls a game 2.5 -> 3.5,
+  graded calls (the options really differed) 1.2 -> 2.1, share graded
+  47-52% -> 58-59%; median 4 (college) and 3 (pro). Verdicts still agree
+  with 10x the replays 91%. Next: onside kicks and overtime calls need the
+  drive engine to break strict alternation of possession.
+- Real schedules can't be fetched from here: the NHL and NBA feeds are off
+  the allowlist, and Hockey-Reference's page comes back cut at Nov 10.
+  They need files from Ian (Hockey-Reference / Basketball-Reference export
+  the schedule as CSV; Premier League fixtures likewise).
 - A push to main is the release: Pages deploys it within minutes (Instinct
   tested d501095 live within the hour). Say "live once Pages deploys", not
   "nothing is live until you push", when Ian has already pushed.
