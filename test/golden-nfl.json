@@ -1,5 +1,5 @@
 {
- "fp": "9ba7cf39ef2c158c",
+ "fp": "f375b689474cb676",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -215,6 +215,11 @@
    "fp": "9ba7cf39ef2c158c",
    "from": "9ba7cf39ef2c158c",
    "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
+  },
+  {
+   "fp": "f375b689474cb676",
+   "from": "9ba7cf39ef2c158c",
+   "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
   }
  ],
  "result": {
@@ -229,7 +234,7 @@
     "heis": "4fae3ab392988611",
     "history": "23a1d91958dd6aa2",
     "universe": "a3b6172688389ae1",
-    "screens": "4499dda78f1fceec"
+    "screens": "e808731d41f67df7"
    },
    {
     "year": 2027,
@@ -241,7 +246,7 @@
     "heis": "6aa62e2d5b0d619d",
     "history": "c8184ce51240bdc7",
     "universe": "e3621cf5a79231f3",
-    "screens": "d85ef6b1672802d6"
+    "screens": "319aaf7e0dfce9be"
    },
    {
     "year": 2028,
@@ -253,7 +258,7 @@
     "heis": "80083c319ecb3780",
     "history": "41079c6153d31272",
     "universe": "7c785b21eb42cf75",
-    "screens": "ef80a2c34f2228fa"
+    "screens": "7ca10aafc1e15ad1"
    },
    {
     "year": 2029,
@@ -265,7 +270,7 @@
     "heis": "f47242f3509d113f",
     "history": "c588cd9c7c7ea2ca",
     "universe": "8ecd526fabc1df30",
-    "screens": "0f1c207485e4aa54"
+    "screens": "541538b22abe7a50"
    }
   ],
   "Tennessee#2024": [
@@ -279,7 +284,7 @@
     "heis": "47fbe057dba617c3",
     "history": "502e5b30e80a4bc5",
     "universe": "a78a624937b05b5c",
-    "screens": "3c459446c96eddb3"
+    "screens": "695af87b4a6fb01b"
    },
    {
     "year": 2027,
@@ -291,7 +296,7 @@
     "heis": "5920aaa5e2220fb2",
     "history": "6f439e4f058c6e69",
     "universe": "4f6c878f8b8a886f",
-    "screens": "b95c100dd6500019"
+    "screens": "673b69f269137b36"
    },
    {
     "year": 2028,
@@ -303,7 +308,7 @@
     "heis": "f5665e14fcb89df4",
     "history": "23d943ee25323b9f",
     "universe": "186324dfe9ee1763",
-    "screens": "cd6780d6cecaf8ed"
+    "screens": "cc417d7a377c727e"
    },
    {
     "year": 2029,
@@ -315,7 +320,7 @@
     "heis": "be3941753ba5b769",
     "history": "7d834bd4f2794d50",
     "universe": "ba81bcd6f630a5c9",
-    "screens": "7a53d5c556ee2200"
+    "screens": "f01ed85c3d0997be"
    }
   ],
   "Detroit#777": [
@@ -329,7 +334,7 @@
     "heis": "13df5e7e2aea9503",
     "history": "1583aac41f3e1d8b",
     "universe": "ed60048a150c6853",
-    "screens": "1cbfe6d16f926ce1"
+    "screens": "2b66a454278c78ab"
    },
    {
     "year": 2027,
@@ -341,7 +346,7 @@
     "heis": "33bbadd12d2df0e5",
     "history": "16def6cee0fdbd6f",
     "universe": "1a90b87e8235b3ab",
-    "screens": "2f4f3ab66e153e3b"
+    "screens": "771ce3036b3eecb5"
    },
    {
     "year": 2028,
@@ -353,7 +358,7 @@
     "heis": "4e7bc8a63fc80b4c",
     "history": "3b994ac8f58c022c",
     "universe": "5667a62a40a26b73",
-    "screens": "a358b4ec0bd364f7"
+    "screens": "c0949068f5f80d8d"
    }
   ],
   "NY Giants#31337": [
@@ -367,7 +372,7 @@
     "heis": "9cccf8d2fc162002",
     "history": "8c49d3ed48464d07",
     "universe": "2f8815baa55405cc",
-    "screens": "030781b41ab6f100"
+    "screens": "26e9ff87a33d03d9"
    },
    {
     "year": 2027,
@@ -379,7 +384,7 @@
     "heis": "15a80387b7436730",
     "history": "4cd20c1603e4bafd",
     "universe": "e593063f394ad60a",
-    "screens": "753c9151cf02250f"
+    "screens": "dccc601bd41a5fd5"
    },
    {
     "year": 2028,
@@ -391,7 +396,7 @@
     "heis": "d1ccd6c1f8bab5e9",
     "history": "da65f0bccff1fc27",
     "universe": "e0498393ac40d312",
-    "screens": "e04b74ff4a283d4e"
+    "screens": "7ebc3236aeffe66a"
    }
   ],
   "schedules#60": [

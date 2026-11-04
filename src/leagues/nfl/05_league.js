@@ -61,7 +61,8 @@ const LEAGUE={
     /* the MVP race compares each player with his position; this is the voters' premium on top */
     premium:{QB:+((typeof process!=="undefined"&&process.env&&process.env.QBP)||1.12),RB:1,WR:0.97,EDGE:0.95,WR2:0.8,CB:0.85,S:0.8,LB:0.8,DT:0.8,OT:0.6}},
 
-  tuning:{hfa:20, drives:10, gapScale:2.2, gameState:true},                  // less home field than on campus; fewer, longer drives
+  tuning:{wpK:{safe:180,balanced:210,aggressive:275},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+    hfa:20, drives:10, gapScale:2.2, gameState:true},                  // less home field than on campus; fewer, longer drives
   venues:{"Seattle":10,"Kansas City":9,"Green Bay":9,"Buffalo":8,"Denver":8,"Philadelphia":7,
     "New Orleans":7,"Baltimore":6,"Pittsburgh":6,"Minnesota":5,"LA Chargers":-6,"LA Rams":-4,
     "Las Vegas":-3,"Jacksonville":-2,"Tampa Bay":-2,"Arizona":-2},

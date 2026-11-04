@@ -1,5 +1,5 @@
 {
- "fp": "b2ba972daf44cee9",
+ "fp": "be49be4570da39f2",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -135,6 +135,11 @@
    "fp": "b2ba972daf44cee9",
    "from": "66222e167b736ebe",
    "note": "Round 6: payroll on team cards, OUT tag follows the player, starters/depth split, college standings picker, past brackets, milestones count your own seasons (screens and history only; no results move)"
+  },
+  {
+   "fp": "be49be4570da39f2",
+   "from": "b2ba972daf44cee9",
+   "note": "Grokbot pass 1: objectives read the Standings table (reputation moves with them), NBA club name Mega Basket"
   }
  ],
  "out": [
@@ -157,7 +162,7 @@
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "e5210a7845a17b38"
+     "book": "3f0eea064b299758"
     }
    ]
   },
@@ -171,7 +176,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A-"
      },
-     "book": "12ec111118c58a9d"
+     "book": "d0ab94c070c663fb"
     },
     {
      "team": "Rice",
@@ -180,7 +185,7 @@
       "result": "No bowl game",
       "grade": "C"
      },
-     "book": "aefee36936719665"
+     "book": "4a0b15c0d7c50c73"
     }
    ]
   },
@@ -194,7 +199,7 @@
       "result": "Eliminated in the first round",
       "grade": "C"
      },
-     "book": "50cd934a9fd4e3af"
+     "book": "11e3206527d1d170"
     },
     {
      "team": "Rice",
@@ -203,7 +208,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "ef720887371de287"
+     "book": "4bc866eb66172dfd"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "e6baf06a49af2614",
+ "fp": "827858f657bbedda",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -204,6 +204,11 @@
    "fp": "e6baf06a49af2614",
    "from": "e6baf06a49af2614",
    "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
+  },
+  {
+   "fp": "827858f657bbedda",
+   "from": "e6baf06a49af2614",
+   "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
   }
  ],
  "result": {
@@ -218,7 +223,7 @@
     "heis": "f4bffc65a63bcc64",
     "history": "9952067fdc1fb461",
     "universe": "c79efd00746c4319",
-    "screens": "b1086b072085e0f7"
+    "screens": "ebe949ae22d2a602"
    },
    {
     "year": 2027,
@@ -230,7 +235,7 @@
     "heis": "480803b9b658faca",
     "history": "ac3a15173a773d71",
     "universe": "7845d6f1024dda3b",
-    "screens": "7f86bb6a78473f19"
+    "screens": "a2579f04c685e4be"
    },
    {
     "year": 2028,
@@ -242,7 +247,7 @@
     "heis": "dd04a1940012247a",
     "history": "b5bdb2098a96e70c",
     "universe": "38ee269a6648d287",
-    "screens": "a0019513a41bb22c"
+    "screens": "85dd198091fc9e63"
    },
    {
     "year": 2029,
@@ -254,7 +259,7 @@
     "heis": "8d304a39ff6e17a2",
     "history": "e01b198c7ad1cae2",
     "universe": "e986ceeb574628cb",
-    "screens": "dccc9616c887aeea"
+    "screens": "30decc7906ee0db4"
    }
   ],
   "Rice#2024": [
@@ -268,7 +273,7 @@
     "heis": "62c67774006ebb20",
     "history": "02d5f003193c65d5",
     "universe": "5f6e50ee854d4a54",
-    "screens": "6fd025868855c1ad"
+    "screens": "90a68e7228351a45"
    },
    {
     "year": 2027,
@@ -280,7 +285,7 @@
     "heis": "4e4319a44375c65b",
     "history": "59fb5bc8dadf2fcb",
     "universe": "7d5a0760ca6e51a9",
-    "screens": "0343b26f84db71ac"
+    "screens": "bf905fa1fbf0379a"
    },
    {
     "year": 2028,
@@ -292,7 +297,7 @@
     "heis": "f4929038beaf492f",
     "history": "0c636b45336df982",
     "universe": "7e57573047680ae7",
-    "screens": "da20bb26d169322d"
+    "screens": "e2dcd6099d8c2abc"
    },
    {
     "year": 2029,
@@ -304,7 +309,7 @@
     "heis": "aacb35d7197a5573",
     "history": "29a62091281ea40e",
     "universe": "1d7b62e5e7fe578b",
-    "screens": "50a6bb872d4e7ed4"
+    "screens": "9c55becc58266aa8"
    }
   ],
   "Oregon#777": [
@@ -318,7 +323,7 @@
     "heis": "fde104829f9687a1",
     "history": "e1c18941586fa977",
     "universe": "501323d207357aeb",
-    "screens": "1ecd3f855e64a5c9"
+    "screens": "d57e612f14df9723"
    },
    {
     "year": 2027,
@@ -330,7 +335,7 @@
     "heis": "16871fc36811ec09",
     "history": "3d3bff6e053e14d4",
     "universe": "ed7a89e9ef4bcd02",
-    "screens": "d5121341a5d989e1"
+    "screens": "0b44c5c7456e584f"
    },
    {
     "year": 2028,
@@ -342,7 +347,7 @@
     "heis": "908583fabe0cc4b0",
     "history": "682db458c522f655",
     "universe": "0c506fd80c7bee56",
-    "screens": "50dee01d35d484fc"
+    "screens": "b30b015dc88eb503"
    }
   ],
   "Kent State#31337": [
@@ -356,7 +361,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "59730e241690a6ed",
     "universe": "29ba28273658b169",
-    "screens": "8745387204011d23"
+    "screens": "dd5b70e996b53d92"
    },
    {
     "year": 2027,
@@ -368,7 +373,7 @@
     "heis": "e3afac23d3079708",
     "history": "120b9f5080616f24",
     "universe": "2aa05bb9248e1180",
-    "screens": "4686ed8012cf1e4f"
+    "screens": "2547c1d39e49d397"
    },
    {
     "year": 2028,
@@ -380,7 +385,7 @@
     "heis": "1631e759996121aa",
     "history": "fc3c138ab3761df6",
     "universe": "ba477dea2dc9a385",
-    "screens": "5677a89272a0163c"
+    "screens": "85c593410bec13de"
    }
   ],
   "schedules#60": [

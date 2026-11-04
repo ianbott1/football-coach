@@ -76,6 +76,9 @@ function objStatus(o,my){
 }
 /* where a team stands in its group, for leagues without a table: by win share, then rating */
 function standRank(t){
+  // the order the Standings screen shows (conference record first): win share overall
+  // marked a team "top" that the table had second (Grokbot)
+  try{ const st=SEA.standings(null), L=st&&st[CONF[t]]; if(L&&L.length){ const i=L.findIndex(r=>r.team===t); if(i>=0)return i+1 } }catch(e){}
   const grp=NAMES.filter(x=>CONF[x]===CONF[t]);
   const r=x=>{const R=SEA.rec[x]; return R[0]/Math.max(1,R[0]+R[1])};
   grp.sort((x,y)=>r(y)-r(x)||SEA.elo[y]-SEA.elo[x]);

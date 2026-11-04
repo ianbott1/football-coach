@@ -73,7 +73,9 @@ function nflTargetsHTML(P,room){
       // the signing checks the cap after the draft, so the class is already paid for: there is no squeezing it
       // (Instinct: a "squeezing" target then had no room). This room is right on average, within about 5M either
       // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
-      if(on){left-=x.ask; fit=left>=2?"fits":left>=-3?"close: it depends on what the draft class costs":"won't fit as things stand";
+      // with the gap in money, so "won't fit" says why (Grokbot)
+      if(on){left-=x.ask; const gap=`about £${Math.abs(left).toFixed(1)}M`;
+        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"}`:`won't fit as things stand: ${gap} short`;
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>

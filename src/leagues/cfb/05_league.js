@@ -192,7 +192,8 @@ const LEAGUE={
   awards:{mvp:"Heisman",
     weights:{QB:1.14,RB:1.68,WR:1.68,WR2:0.7,OT:0.47,EDGE:1.02,DT:0.62,LB:0.85,CB:0.78,S:0.5}},
 
-  tuning:{
+  tuning:{wpK:{safe:380,balanced:440,aggressive:580},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+    
     hfa:62            // baseline home-field edge, Elo
   },
 

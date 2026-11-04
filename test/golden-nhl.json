@@ -1,5 +1,5 @@
 {
- "fp": "7b63a84a2c20e330",
+ "fp": "14f82384197e6368",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -140,6 +140,11 @@
    "fp": "7b63a84a2c20e330",
    "from": "bdbee5c84f2d4a55",
    "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
+  },
+  {
+   "fp": "14f82384197e6368",
+   "from": "7b63a84a2c20e330",
+   "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
   }
  ],
  "result": {
@@ -154,7 +159,7 @@
     "heis": "16979613a8cfcbd8",
     "history": "313fa1a849569be6",
     "universe": "ed6b2f3a1b472058",
-    "screens": "d7c413a6e7e40a7d"
+    "screens": "ac4c9594a3b8e5a0"
    },
    {
     "year": 2027,
@@ -166,7 +171,7 @@
     "heis": "53df3055fedc8465",
     "history": "199232672fa54fe7",
     "universe": "2d4abdad8bc69e2b",
-    "screens": "ba613470a9e8b0ed"
+    "screens": "7af5e925770aed1a"
    }
   ],
   "Edmonton#777": [
@@ -180,7 +185,7 @@
     "heis": "709711487d15f028",
     "history": "0af1fd328bf12077",
     "universe": "b383b08dc440aeae",
-    "screens": "6c4c3e5ed0470577"
+    "screens": "4c1f08547a7d9f84"
    },
    {
     "year": 2027,
@@ -192,7 +197,7 @@
     "heis": "46bdb7d2aebb5206",
     "history": "76319712ddbcd142",
     "universe": "9fabc6e72a9bf553",
-    "screens": "b3a90c63455e7263"
+    "screens": "195d6e21d09df91f"
    }
   ],
   "schedules#60": [

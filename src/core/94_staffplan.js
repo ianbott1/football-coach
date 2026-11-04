@@ -26,20 +26,25 @@ function staffPlanChanged(P){
   return resignDiff||P.fa!==D.fa||(P.draft&&P.draft!==D.draft)||(P.targets||[]).length||(P.board||[]).length
     ||P.trade||(P.bids||[]).length||(P.sales||[]).length;
 }
+/* The plan as it stands: the staff's, with your changes marked. It showed
+   only the staff's while the rows below changed ("Let go Quinn Pettigrew"
+   after you'd re-signed him: Grokbot, in every pro game). */
 function staffPlanHTML(P){
   const my=S.myTeam, R=U.roster[my], rec=staffResignPlan(), exp=Object.keys(P.asks||{}).map(Number);
-  const keep=exp.filter(i=>rec[i]&&R[i]), go=exp.filter(i=>!rec[i]&&R[i]);
-  const nm=i=>`${esc(R[i].n)} <span class="planpos">${esc(R[i].p)}</span>`;
+  const keep=exp.filter(i=>P.resign[i]&&R[i]), go=exp.filter(i=>!P.resign[i]&&R[i]);
+  const mine=i=>!!P.resign[i]!==!!rec[i]?` <span class="planyou">your change</span>`:"";
+  const nm=i=>`${esc(R[i].n)} <span class="planpos">${esc(R[i].p)}</span>${mine(i)}`;
   const FA=LEAGUE.offseason.faStyles, DR=LEAGUE.offseason.draftStyles, D=staffPlanDefaults();
+  const fa=FA[P.fa]?P.fa:D.fa, dr=DR[P.draft]?P.draft:D.draft, tg=(P.targets||[]).length, bd=(P.board||[]).length;
   const changed=staffPlanChanged(P);
-  return `<div class="plancard"><div class="bkick">Your staff's plan</div>
-    <div class="planlead">${changed?"You've changed some of it. Everything else is still the staff's call.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
+  return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
+    <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
     <div class="planrow"><b>Re-sign</b> ${keep.length?keep.map(nm).join(", "):"nobody"}</div>
-    ${go.length?`<div class="planrow"><b>Let go</b> ${go.map(i=>nm(i)+` <span class="planwhy">(${esc(staffWhy(R[i],i,false))})</span>`).join(", ")}</div>`:""}
-    <div class="planrow"><b>${LEAGUE.draws?"Free transfers":"Free agency"}</b> ${esc(FA[D.fa].l)}: ${esc(FA[D.fa].d.replace(/^Free transfers: (.)/,(m,c)=>c.toUpperCase()))}</div>
-    ${LEAGUE.draws?`<div class="planrow"><b>Transfers</b> none: the staff spend only on free transfers. Bid below if a player is worth the fee.</div>`
-      :`<div class="planrow"><b>Draft</b> ${esc(DR[D.draft].l)}: ${esc(DR[D.draft].d)}</div>
-    <div class="planrow"><b>Trades</b> none. Put a player on the block below if you want offers.</div>`}
+    ${go.length?`<div class="planrow"><b>Let go</b> ${go.map(i=>nm(i)+(mine(i)?"":` <span class="planwhy">(${esc(staffWhy(R[i],i,false))})</span>`)).join(", ")}</div>`:""}
+    <div class="planrow"><b>${LEAGUE.draws?"Free transfers":"Free agency"}</b> ${esc(FA[fa].l)}${fa!==D.fa?` <span class="planyou">your change</span>`:`: ${esc(FA[fa].d.replace(/^Free transfers: (.)/,(m,c)=>c.toUpperCase()))}`}${tg?` &middot; ${tg} target${tg===1?"":"s"} of yours first`:""}</div>
+    ${LEAGUE.draws?`<div class="planrow"><b>Transfers</b> ${(P.bids||[]).length?(P.bids.length+" bid"+(P.bids.length===1?"":"s")+" of yours"):"none: the staff spend only on free transfers. Bid below if a player is worth the fee."}${(P.sales||[]).length?` &middot; ${P.sales.length} sale${P.sales.length===1?"":"s"}`:""}</div>`
+      :`<div class="planrow"><b>Draft</b> ${esc(DR[dr].l)}${dr!==D.draft?` <span class="planyou">your change</span>`:`: ${esc(DR[dr].d)}`}${bd?` &middot; your board of ${bd} first`:""}</div>
+    <div class="planrow"><b>Trades</b> ${P.trade?`${esc(P.trade.giveName)} for ${esc(P.trade.n)} <span class="planyou">your change</span>`:"none. Put a player on the block below if you want offers."}</div>`}
     ${changed?`<button class="rewatch seedraw" data-staffplan="1">Back to the staff's plan</button>`:""}</div>`;
 }
 /* on a contract row: what the staff would do with him */
@@ -55,12 +60,14 @@ function staffPlanReset(){
 }
 /* college: the staff's plan is the even split and a balanced class */
 function collegePlanHTML(P){
-  const RF=LEAGUE.offseason.recruitFocus, bk=LEAGUE.offseason.budget.buckets;
-  return `<div class="plancard"><div class="bkick">Your staff's plan</div>
-    <div class="planlead">Everything below is already set to this. Change what you like, or nothing at all, and carry on.</div>
-    <div class="planrow"><b>Budget</b> a quarter each to ${bk.map(b=>esc(b.l)).join(", ")}</div>
-    <div class="planrow"><b>Recruiting</b> ${esc(RF.balanced?RF.balanced.l:"Balanced")}${RF.balanced?": "+esc(RF.balanced.d):""}</div>
-    ${P.portal!==undefined?`<div class="planrow"><b>Transfer portal</b> nobody: add players below if you want them.</div>`:""}</div>`;
+  const RF=LEAGUE.offseason.recruitFocus, bk=LEAGUE.offseason.budget.buckets, B=P.budget||{};
+  const even=bk.every(b=>(B[b.k]||0)===(B[bk[0].k]||0)), rf=RF[P.recruit]?P.recruit:"balanced", pt=(P.portal||[]).length, bd=(P.rboard||[]).length;
+  const changed=!even||rf!=="balanced"||pt||bd, you=` <span class="planyou">your change</span>`;
+  return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
+    <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
+    <div class="planrow"><b>Budget</b> ${even?`a quarter each to ${bk.map(b=>esc(b.l)).join(", ")}`:bk.map(b=>`${esc(b.l)} ${B[b.k]||0}`).join(", ")+you}</div>
+    <div class="planrow"><b>Recruiting</b> ${esc(RF[rf]?RF[rf].l:"Balanced")}${rf!=="balanced"?you:RF[rf]?": "+esc(RF[rf].d):""}${bd?` &middot; your board of ${bd}`:""}</div>
+    ${P.portal!==undefined?`<div class="planrow"><b>Transfer portal</b> ${pt?pt+" player"+(pt===1?"":"s")+" of yours"+you:"nobody: add players below if you want them."}</div>`:""}</div>`;
 }
 
 /* ---- how much the staff give away on a read ----
@@ -140,11 +147,16 @@ function impactHTML(P){
   // the average over many replays agrees (measured: on its own, the same-luck
   // replay disagreed with the average about as often as not)
   const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
-  const head=better&&c.worth>=0.02?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
-    :worse&&c.worth<=-0.02?`That call cost you this one.`
-    :better?`You won, but not because of the call.`
-    :worse?`Unlucky: the call was sound.`
-    :`Same result either way tonight.`;
+  // the headline says both things, tonight's dice and the average, and never lets them contradict
+  // ("You won, but not because of the call" above a replay that lost without it: Grokbot)
+  const small=Math.abs(c.worth)<0.02;
+  const head=better?(c.worth>=0.02?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
+        :small?`Your call won this one tonight; over many replays it makes little difference.`
+        :`Your call won this one tonight, though over many replays it loses more often.`)
+    :worse?(c.worth<=-0.02?`That call cost you this one.`
+        :small?`The call went against you tonight; over many replays it makes little difference.`
+        :`Unlucky: the call was sound.`)
+    :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight.`;
   return `<div class="impact"><div class="imphead">${head}</div>
     <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
 }
@@ -152,5 +164,7 @@ function impactHTML(P){
 function ledgerLine(){
   const L=S.callLedger&&S.callLedger[SEA.year]; if(!L||!L.n)return "";
   const w=L.worth, a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?(Math.round(a*10)/10):(Math.round(a*2)/2)} win${a>=0.75&&a<1.25?"":"s"}`;
-  return `Your ${L.n} call${L.n===1?"":"s"} this season: ${say} against leaving ${L.n===1?"it":"them"} to the assistant.`;
+  // says what it counts: every call that differed from the assistant's, graded or not (the big number
+  // beside it counts only graded ones, and the two read as a contradiction: Grokbot)
+  return `Every call you made differently from the assistant this season (${L.n}): ${say} against leaving ${L.n===1?"it":"them"} to him, over many replays.`;
 }

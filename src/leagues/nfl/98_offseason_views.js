@@ -73,7 +73,9 @@ function nflTargetsHTML(P,room){
       // the signing checks the cap after the draft, so the class is already paid for: there is no squeezing it
       // (Instinct: a "squeezing" target then had no room). This room is right on average, within about 5M either
       // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
-      if(on){left-=x.ask; fit=left>=2?"fits":left>=-3?"close: it depends on what the draft class costs":"won't fit as things stand";
+      // with the gap in money, so "won't fit" says why (Grokbot: it read "won't fit" with $10.4M of room)
+      if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=`after ~$${ROOKIE_ROOM}M kept for the draft class`;
+        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`won't fit as things stand: ${gap} short ${kept}`;
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
@@ -81,6 +83,7 @@ function nflTargetsHTML(P,room){
         <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${on?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free agents you want</div>`;
+  if(mine.length)h+=`<div class="note">Prices are this summer's asks plus about 10%; a player who improves over the summer can ask more by the time free agency opens.</div>`;
   h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet: your free-agency style will decide. Players you add get your first look, in your order, if you have the room.</div>`;
   const pool=pre.filter(x=>mine.indexOf(x.key)<0).slice(0,25);

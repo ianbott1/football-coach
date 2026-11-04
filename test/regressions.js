@@ -13,8 +13,8 @@ const GAMES=[['football-coach.html','Alabama'],['football-coach-pro.html','Denve
   ['basketball-coach-pro.html','Orlando'],['hockey-coach-pro.html','Vegas'],['soccer-coach.html','Dover Athletic']];
 const EXP=['S','SEA','U','POS','NAMES','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','openOffseason','commitOffseason',
   'rosterView','weekNews','teamPanel','attentionHTML','advLabel','ordinal','coachCard','careerNow','hkEventText','bbEventText','scEventText','nflPickSlot','BUILD_ID',
-  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView','claimSlot','save','staleTab','store','REVKEY','slot','allSlots','ownMark','readsHTML','callKey','impactHTML','bearYell','evidenceHTML','makeLiveGame','RNG'];
-const SET=['stConf','dynTab','live','flash'];
+  'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView','claimSlot','save','staleTab','store','REVKEY','slot','allSlots','ownMark','readsHTML','callKey','impactHTML','bearYell','evidenceHTML','makeLiveGame','RNG','playGame','PLANS','staffPlanHTML','stakesFor','objStatus','seasonObjectives','attentionHTML','plan'];
+const SET=['stConf','dynTab','live','flash','plan'];
 
 /* 1. soccer: a draw is never a win, a loss, or "null" (rivalries, headlines) */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Dover Athletic',11,'T');
@@ -257,7 +257,7 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 /* 32. the same verdict twice reads once */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP}); A.newDynasty('Duke',5,'T');
   const r={k:'read',pick:'pack',truth:'paint',right:true}; A.S.played={[A.callKey(0)]:[{team:A.S.myTeam,reads:[r,Object.assign({},r)]}]};
-  const h=A.readsHTML(0); ok((h.match(/class="read ok"/g)||[]).length===1&&/twice/.test(h),'college basketball: an identical verdict printed twice'); }
+  const h=A.readsHTML(0); ok((h.match(/class="read ok"/g)||[]).length===1&&/First read and Second read/.test(h),'college basketball: an identical verdict printed twice, or unlabelled'); }
 /* 33. soccer's second read: "keep your setup", and the numbers since half-time */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T'); let keep=0,half=0,seen=0;
   for(let k=0;k<4;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){ const q=A.live.ask;
@@ -278,6 +278,34 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T');
   A.live={g:{}}; A.live.ask={dp:{h:'Half-time'},q:9}; const a=A.bearYell('push',15); A.live.ask={dp:{h:'Late'},q:15}; const b=A.bearYell('push',21);
   A.live.ask={dp:{h:'Half-time'},q:9}; ok(a!==b&&A.bearYell('push',15)===a,`soccer: the Bears said "${a}" twice in one game`); A.live=null; }
+/* ---- Grokbot, first pass (Nov 2026) ---- */
+/* 37. the win chance shown is the engine's own, and the gameplan moves it */
+for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T');
+  const my=A.S.myTeam, opp=A.NAMES.filter(t=>t!==my).sort((a,b)=>Math.abs(A.SEA.elo[b]-A.SEA.elo[my]-150)-Math.abs(A.SEA.elo[a]-A.SEA.elo[my]-150)).pop();
+  for(const pl of ['safe','balanced','aggressive']){ A.plan=pl; const shown=A.winProb(my,opp,false,true), r=new A.RNG(3); let w=0,N=4000;
+    for(let i=0;i<N;i++){ const g=A.playGame(r,A.SEA.elo[my],A.SEA.elo[opp],pl,'balanced',{neutral:true}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
+    ok(Math.abs(shown-w/N)<0.04,`${f}: ${pl} shows ${(100*shown).toFixed(0)}% where the engine wins ${(100*w/N).toFixed(0)}% (gap ${Math.round(A.SEA.elo[my]-A.SEA.elo[opp])})`) }
+  A.plan='safe'; const a=A.winProb(my,opp,false,true); A.plan='aggressive'; const b=A.winProb(my,opp,false,true); A.plan='balanced';
+  // (hockey's plans barely move the engine's win chance, measured: they shape the scoring more than the result)
+  ok(/hockey/.test(f)?(a-0.5)*(a-b)>=0:Math.abs(a-b)>0.01,`${f}: the gameplan doesn't move the win chance shown (${(100*a).toFixed(1)} vs ${(100*b).toFixed(1)})`) }
+/* 38. the offseason plan card shows your changes */
+{ const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Seattle',5,'T'); play(A,999); A.openOffseason();
+  const P=A.S.off.picks, ex=Object.keys(P.asks||{}); if(ex.length){ const i=ex[0], was=!!P.resign[i]; P.resign[i]=!was;
+    const h=strip(A.staffPlanHTML(P)), nm=A.U.roster[A.S.myTeam][i].n;
+    ok(/Your plan/.test(h)&&new RegExp((was?'Let go':'Re-sign')+'[^.]*'+nm.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(h)&&/your change/.test(h),`pro football: after flipping ${nm}, the plan card says "${h.slice(0,160)}"`) } }
+/* 39. hockey's stakes count games left, not days */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Toronto',5,'T'); play(A,18);
+  const ng=A.SEA.sched.filter(g=>g.week>=A.SEA.step&&(g.home===A.S.myTeam||g.away===A.S.myTeam)).sort((a,b)=>a.week-b.week)[0];
+  const t=A.stakesFor(ng).map(x=>x.l).join(' '), m=t.match(/with (\d+) to play/);
+  ok(!m||+m[1]<=84,`hockey: "${m&&m[0]}" in an 84-game season`); ok(!/Nothing left but pride/.test(t),'hockey: the spoiler line at game 18'); }
+/* 40. a good assistant isn't put under fire by a losing run */
+{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP}); A.newDynasty('Alabama',5,'T'); const my=A.S.myTeam; A.SEA.rec[my]=[1,4];
+  A.SEA.oc[my].q=24; A.SEA.dc[my].q=0; const h=A.attentionHTML(my);
+  ok(!/data-fire="oc"/.test(h)&&/data-fire="dc"/.test(h),'college football: under-fire cards ignore how good the assistant is'); }
+/* 41. a result card's headline never contradicts its replay */
+{ const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
+  const P=[{mine:71,theirs:67,impact:[{h:'Half-time',pick:'Trap the ball handler',def:'Pack the paint',worth:-0.07,cf:{mine:61,theirs:70}}]}];
+  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/won this one tonight, though over many replays it loses more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

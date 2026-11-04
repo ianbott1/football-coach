@@ -819,6 +819,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .simwhy{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--sodium);margin:6px 0 2px}
 .reads{margin-top:10px;padding-top:9px;border-top:1px solid var(--line);text-align:left}
 .readx{color:var(--muted);white-space:nowrap}
+.readlab{color:var(--muted);font-weight:600}
 .read{display:flex;gap:8px;font-size:12.5px;line-height:1.4;margin:4px 0;color:var(--bone)}
 .read span{flex:none;font-weight:700}.read.ok span{color:var(--turf)}.read.no span{color:var(--flag)}
 .readtally{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:6px;text-transform:uppercase}
@@ -852,6 +853,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .planrow{font-size:13px;line-height:1.5;color:#C9CED9;margin-top:4px}
 .planrow b{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:6px;font-weight:500}
 .planwhy{color:var(--muted)}
+.planyou{font-family:var(--mono);font-size:9.5px;color:var(--vote);text-transform:uppercase;letter-spacing:.06em}
 .planpos{font-family:var(--mono);font-size:9.5px;color:var(--sodium)}
 .plancard .seedraw{margin-top:10px}
 .stafftag{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--muted);margin-top:6px}
@@ -874,5 +876,12 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selcard.in .selhead{color:var(--turf)}.selcard.out .selhead{color:var(--flag)}
 .selbig{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;margin:4px 0}
 .selsub{font-size:13.5px;color:var(--bone)}
+/* short screens (a phone on its side, a desktop zoomed to 175%+): the fixed bar and the sticky header
+   took a third to half of the view and covered cards (Grokbot). Below 640px of height they scroll with the page. */
+@media (max-height:640px){
+  .actionbar{position:static;background:var(--ink);padding:10px 16px 14px}
+  body{padding-bottom:16px}
+  .stick{position:static}
+}
 </style></head>
 <body><div id="app"></div>

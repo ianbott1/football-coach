@@ -286,6 +286,15 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   hockey 3 / 4, soccer 6 / 6, college basketball 4 / 5, pro 5 / 5. Football
   is the gap: a spread-gated prompt plus more two-point and overtime calls
   is the next design job (Instinct's proposal, round 3).
+- The win chance on screen is the engine's own (Nov 2026, Grokbot pass 1):
+  measured by playing thousands of games at each rating gap and plan, it
+  fits p=1/(1+10^(-gap/k)) within ~1 point, with k per league and plan
+  (LEAGUE.tuning.wpK): college football 380/440/580 (safe/balanced/bold),
+  pro 180/210/275, college basketball 380/420/470, pro 250ish, hockey
+  ~655 (plans barely move hockey's result). The textbook /400 had pro
+  football favourites at 70% that won 84%, hockey's at 70% that won 63%,
+  and the plan buttons never moved the number. Soccer's W/D/L model takes
+  fitted goal and edge factors per plan.
 - A push to main is the release: Pages deploys it within minutes (Instinct
   tested d501095 live within the hour). Say "live once Pages deploys", not
   "nothing is live until you push", when Ian has already pushed.

@@ -1,5 +1,5 @@
 {
- "fp": "0ae9061182d461f5",
+ "fp": "8d55f0c40472e6e1",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -205,6 +205,11 @@
    "fp": "0ae9061182d461f5",
    "from": "0ae9061182d461f5",
    "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
+  },
+  {
+   "fp": "8d55f0c40472e6e1",
+   "from": "0ae9061182d461f5",
+   "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
   }
  ],
  "result": {
@@ -219,7 +224,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "3f5f17f1cea58053",
     "universe": "29a92f3d60e09617",
-    "screens": "562ff4adf33ddfb5"
+    "screens": "0093cb9b9619c87b"
    },
    {
     "year": 2027,
@@ -231,7 +236,7 @@
     "heis": "64b059fcdf7e9d46",
     "history": "99de8296bf938c82",
     "universe": "bd3d3e718a7a23df",
-    "screens": "f3f1f610ee642072"
+    "screens": "c0696432f5cd25d0"
    }
   ],
   "Coppin State#2024": [
@@ -245,7 +250,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "5cd1a4d4402906a2",
     "universe": "9cb6dcc8e5340bbd",
-    "screens": "6cf5d38aed369e0b"
+    "screens": "55fc50547d2b8cad"
    },
    {
     "year": 2027,
@@ -257,7 +262,7 @@
     "heis": "5e653284efe7ed05",
     "history": "d4746daa8900bc99",
     "universe": "ed8086c25debe3aa",
-    "screens": "e0d0acc3b3d03804"
+    "screens": "f5cfac206fe27679"
    }
   ],
   "Gonzaga#777": [
@@ -271,7 +276,7 @@
     "heis": "c94713712b4e6c61",
     "history": "e4060c2b71079dba",
     "universe": "eee9d3d013e35123",
-    "screens": "e7bd354b1ca6bb4f"
+    "screens": "aa7d1af8db4edc2d"
    },
    {
     "year": 2027,
@@ -283,7 +288,7 @@
     "heis": "2c21cf7676ec0650",
     "history": "4a166164c632e93a",
     "universe": "e2f2c5eeb4e16444",
-    "screens": "6cf8124e3f30cddb"
+    "screens": "86b1570c9aea8893"
    }
   ],
   "schedules#60": [

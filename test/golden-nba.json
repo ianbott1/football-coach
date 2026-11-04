@@ -1,5 +1,5 @@
 {
- "fp": "04f7d3535038e9e7",
+ "fp": "e4b2dad52ea9c7af",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -145,6 +145,11 @@
    "fp": "04f7d3535038e9e7",
    "from": "04f7d3535038e9e7",
    "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
+  },
+  {
+   "fp": "e4b2dad52ea9c7af",
+   "from": "04f7d3535038e9e7",
+   "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
   }
  ],
  "result": {
@@ -157,9 +162,9 @@
     "rec": "d7ae1235bae99b43",
     "poll": "5a2da089622cdcd1",
     "heis": "2ccdc333a87126d8",
-    "history": "724781e719e07cd8",
-    "universe": "ffe5fefffc4dcc93",
-    "screens": "79373f953200a001"
+    "history": "ab8297026dfdd117",
+    "universe": "0fdc7c1422be9b66",
+    "screens": "427263e97f0e1a75"
    },
    {
     "year": 2027,
@@ -170,8 +175,8 @@
     "poll": "df61f3c6e1934d57",
     "heis": "d00aaf8480776c48",
     "history": "0e09fef71711b830",
-    "universe": "7537bfed45d855ad",
-    "screens": "87128515fc51063a"
+    "universe": "7f602b5b36f01d64",
+    "screens": "1a422b90809454d4"
    }
   ],
   "Detroit#777": [
@@ -184,8 +189,8 @@
     "poll": "d96e604f59d2c590",
     "heis": "22c9531ba0090e60",
     "history": "98b2e21d68c8c6bf",
-    "universe": "2dc6580ab638ef44",
-    "screens": "4072bddd80765e78"
+    "universe": "c099e0aa5322aabb",
+    "screens": "30489346a05c7fc3"
    },
    {
     "year": 2027,
@@ -195,9 +200,9 @@
     "rec": "867e39e7fd4fb6fe",
     "poll": "c0b3f4211297b788",
     "heis": "079d6a02c16c2b6a",
-    "history": "abc6206750985913",
-    "universe": "e03274d969fd6485",
-    "screens": "4711fcb4eff64b53"
+    "history": "3a71f0b25b1dc1f4",
+    "universe": "98aec36a31c8cb90",
+    "screens": "a88a5eb29086d13e"
    }
   ],
   "schedules#60": [

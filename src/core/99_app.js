@@ -598,7 +598,8 @@ function simPostOn(ph){
   while(SEA.phase!=="week"&&SEA.phase!=="done"&&g++<300){
     was=SEA.phase;
     SEA.userTeam=S.myTeam; SEA.advance(); SEA.forcedList=[]; SEA.forced=null; S.steps++;
-    if((LEAGUE.post.stopAfter||["selection"]).indexOf(was)>=0)break;     // a moment to see, not sim past: Selection Sunday, the field
+    if((LEAGUE.post.stopAfter||["selection"]).indexOf(was)>=0){ view="scores"; break }     // a moment to see, not sim past: Selection Sunday, the field
+    // (and shown: the click stopped there with the team page still up, so it looked like nothing happened: Grokbot)
     if(SEA.phase!=="done"&&SEA.postMatchup(S.myTeam))break;
   }
   LEAGUE.ui.afterAdvance(was);                  // the views follow the last round played (Selection Sunday's field)
@@ -1016,7 +1017,7 @@ function tallyHTML(){
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
-    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
+    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded calls only</div>
     ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
@@ -1040,8 +1041,12 @@ function readsHTML(step){
     return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${deb}</div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   // the same verdict twice (a read confirmed at half-time, a goalie kept twice) reads once, counted (Instinct)
-  const lines=[]; R.forEach(x=>{ const t=readText(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L)L.n++; else lines.push({t:t,right:x.right,n:1}) });
-  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(x.t)}${x.n>1?` <span class="readx">(${x.n===2?"twice":x.n+" times"})</span>`:""}</div>`).join("")}
+  // each line says which call it was (a right game plan beside a wrong read looked like a contradiction,
+  // and two identical lines couldn't be told apart: Grokbot)
+  const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
+    return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
+  const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,n:1,lb:lb?[lb]:[]}) });
+  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
@@ -1073,10 +1078,18 @@ function ownMark(me){
   if(!f&&!dep)return "";
   return `<span class="olab omark">with ${[f?"featuring "+esc(f.n.split(" ").slice(-1)[0]):"",dep?"your ice time":""].filter(Boolean).join(" and ")}</span>`;
 }
+/* The chance shown is the engine's own: each league's curve, measured by
+   playing thousands of games at each gap, and your gameplan's (the safe plan
+   steepens it, the bold one flattens it). It was the textbook /400 in every
+   sport: pro football's favourites showed 70% and won 84%, hockey's showed
+   70% and won 63%, and the plan buttons never moved the number (Grokbot,
+   Instinct). */
+function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }
 function winProb(me,opp,atHome,neutral){
   const v=t=>(SEA.hfa&&SEA.hfa[t])||LEAGUE.tuning.hfa;
   const hfa=neutral?0:(atHome?v(me):-v(opp));
-  return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa+(me===S.myTeam?ownEdge():0)-SEA.elo[opp])/400)));
+  const k=wpScale(me===S.myTeam||opp===S.myTeam?plan:"balanced");   // your plan shapes your games, whichever side asks
+  return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa+(me===S.myTeam?ownEdge():0)-SEA.elo[opp])/k)));
 }
 /* what your own choices add in your games, the same edge the games use: a
    featured starter who's healthy, and hockey's ice time (Muse: featuring
@@ -1118,7 +1131,8 @@ function streakOf(t){
 function stakesFor(ng){
   const my=S.myTeam, opp=ng.home===my?ng.away:ng.home;
   const rk=SEA.poll.rankMap();
-  const wk=SEA.step, left=LEAGUE.weeks-wk;
+  // games left, not steps left: in the daily leagues a step is a day ("154 to play" at game 18 of 84: Grokbot)
+  const wk=SEA.step, left=LEAGUE.daily?SEA.sched.filter(g=>!g.cup&&g.week>=wk&&g.week<LEAGUE.weeks&&(g.home===my||g.away===my)).length:LEAGUE.weeks-wk;
   const rec=SEA.rec[my], w=rec[0], l=rec[1];
   const cp=confPosition(my);
   const riv=LEAGUE.rivals.name(my,opp);
@@ -1147,7 +1161,10 @@ function stakesFor(ng){
   else if(st.won&&st.n>=5)out.push({p:58,tag:"STREAK",
     l:`${st.n} in a row. Nobody wants to be the one who ends it.`});
 
-  if(l>=6)out.push({p:40,tag:"SPOILER",
+  // out of it: a winning season no longer possible (it was six losses, a college football season,
+  // and fired at game 18 of 84 in hockey: Grokbot)
+  const nAll=SEA.sched.filter(g=>!g.cup&&g.week<LEAGUE.weeks&&(g.home===my||g.away===my)).length||12;
+  if(l>=Math.ceil(nAll/2))out.push({p:40,tag:"SPOILER",
     l:`Nothing left but pride and a chance to wreck somebody's season.`});
 
   // the quiet line: your game number where steps are days (hockey, basketball) or matchdays
@@ -1371,8 +1388,9 @@ function planPickerHTML(wp){
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
     <div class="pland">${esc(PLANS[plan].d)}${
-      wp!==null&&wp<0.35&&plan!=="aggressive"?" &mdash; as a big underdog, chaos is your friend.":
-      wp!==null&&wp>0.75&&plan!=="safe"?" &mdash; you're the favourite; variance is your enemy.":""}</div>
+      // a nudge about the plan you haven't picked, said as one (it read as advice for the highlighted plan: Grokbot)
+      wp!==null&&wp<0.35&&plan!=="aggressive"?` <span class="planwhy">As a big underdog, though, more chaos would help you: try ${esc(PLANS.aggressive.l)}.</span>`:
+      wp!==null&&wp>0.75&&plan!=="safe"?` <span class="planwhy">You're the favourite, though: less chaos would help you. Try ${esc(PLANS.safe.l)}.</span>`:""}</div>
   </div>`;
 }
 
@@ -1397,7 +1415,9 @@ function attentionHTML(my){
   ["oc","dc"].forEach(side=>{
     const st=side==="oc"?SEA.oc:SEA.dc;
     if(!st||!st[my]||st[my].interim||SEA.midFired[side])return;
-    if(!shortfall&&st[my].q>-25)return;
+    // a losing run puts an ordinary assistant under fire, not a good one ("SACK HIM" for a +24
+    // after an 11-3 year: Grokbot); a poor one is under fire whatever the record
+    if(st[my].q>-25&&!(shortfall&&st[my].q<10))return;
     out.push({k:"staff",side:side,
       h:`Your ${SPORT.staff[side].long} is under fire`,
       b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. An interim would be replacement level;
@@ -1457,7 +1477,7 @@ function nextUpHTML(my,rk){
     const cupNight=ng.cup&&LEAGUE.cup;
     h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(ngStep):LEAGUE.dates[ngStep]||"")}</div>
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
-      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.home===my?"HOME vs":"AWAY at"}</div>
+      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
@@ -2368,7 +2388,8 @@ function simRun(to){
     if(SEA.phase!=="week")break;
     // after it: did something happen you'd want to know about now?
     const st=streakOf(my);
-    if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=st.n)){why="slide";break}
+    // once per losing run: when it reaches three, not again at four, five... (it stopped after every defeat: Grokbot)
+    if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=3)){why="slide";break}
     if(stops.hurt&&hurtCount(my)>h0){why="hurt";break}
     if(stops.decide&&newDecision(my)){why="decide";break}
   }
@@ -2390,7 +2411,10 @@ function simSheetHTML(){
 function digestBlock(){
   const my=S.myTeam;
   const rows=[]; let n=0;
-  for(let i=flash.from;i<flash.to;i++){
+  // through the last week with games played: a cup week stopped between its two halves has its league
+  // game played already (the digest left it out: Grokbot, soccer)
+  const last=Math.min(SEA.weeks.length,flash.to+1)-1;
+  for(let i=flash.from;i<=last;i++){
     const W=SEA.weeks[i]; if(!W)continue;
     const gs=W.games.filter(x=>x.home===my||x.away===my).sort((x,y)=>(x.cup?1:0)-(y.cup?1:0));
     if(!gs.length){ if(!LEAGUE.skipIdle)rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
@@ -2403,13 +2427,13 @@ function digestBlock(){
       <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span>
       <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`) });
   }
-  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):"Weeks "+(flash.from+1)+"&ndash;"+flash.to} simulated</div>`;
+  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):last<=flash.from?"Week "+(flash.from+1):"Weeks "+(flash.from+1)+"&ndash;"+(last+1)} simulated</div>`;
   if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
   h+=`<div class="bsub">Now ${recStr(my)}${
     LEAGUE.position?(LEAGUE.position(my)?", "+ordinal(LEAGUE.position(my))+" in "+esc(LEAGUE.conf.names[CONF[my]]):"")
-      :rk[my]<=RANK_TOP?", ranked No. "+rk[my]:", unranked"}.</div></div>`;
+      :(LEAGUE.rankAll||rk[my]<=RANK_TOP)?", ranked No. "+rk[my]:", unranked"}.</div></div>`;   // as the header says it (it read "unranked" beside #11: Grokbot)
   return h;
 }
 

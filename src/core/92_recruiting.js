@@ -92,7 +92,8 @@ function recruitBoardHTML(P,num){
     ${on?`<button class="skip small" data-rbup="${esc(x.key)}" ${ix===0?"disabled":""}>&uarr;</button><button class="skip small" data-rbrm="${esc(x.key)}">Remove</button>`
         :`<button class="skip small" data-rbadd="${esc(x.key)}">Add</button>`}</div>`;
   let h=`<div class="grouphead">${num}. Recruiting board</div>
-    <div class="note">Open spots: ${Object.keys(open).map(k=>`${esc(POS[k].p)} (${open[k].map(esc).join(", ")} graduating)`).join("; ")||"none"}. Anyone who leaves early opens another. Each spot goes to your highest-ranked prospect there, if he commits; miss, and you get the newcomer you'd have had anyway. Your focus and budget move these ratings.</div>`;
+    <div class="note">Open spots: ${Object.keys(open).map(k=>`${esc(POS[k].p)} (${open[k].map(esc).join(", ")} graduating)`).join("; ")||"none"}. Anyone who leaves early opens another. Each spot goes to your highest-ranked prospect there, if he commits; miss, and you get the newcomer you'd have had anyway. Your focus and budget move these ratings.
+    <b>Likely</b>: most like him commit. <b>A battle</b>: about half do. <b>A long shot</b>: most go elsewhere.</div>`;   // the words, said (Grokbot: "unclear what A BATTLE means")
   h+=`<div class="divhead">Your board</div>`+(board.length?board.map((k,ix)=>row(by[k],true,ix)).join("")
     :`<div class="note">Empty: the staff recruit as usual. Add prospects below.</div>`);
   Object.keys(open).forEach(k=>{ const list=pool.filter(x=>x.i===+k&&board.indexOf(x.key)<0);

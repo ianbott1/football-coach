@@ -1,5 +1,5 @@
 {
- "fp": "1877b5c671e0cb04",
+ "fp": "9c889f2be850ccf5",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -170,6 +170,11 @@
    "fp": "1877b5c671e0cb04",
    "from": "fdbdaae8d3c68e81",
    "note": "Round 8: hockey asks about the goalie only on split evidence; soccer's second read offers Keep your setup first; verdicts collapse; odds marked when they include featuring; league averages on basketball reads"
+  },
+  {
+   "fp": "9c889f2be850ccf5",
+   "from": "1877b5c671e0cb04",
+   "note": "Grokbot pass 1: the engine's own win chance by gameplan, plan card shows your changes, labelled verdicts, honest headlines, games-left counts, NBA club name (Mega Basket); screens only apart from that name"
   }
  ],
  "result": {
@@ -184,7 +189,7 @@
     "heis": "96c742eeedcbcb70",
     "history": "0cc5bcabe2374db6",
     "universe": "aa5ac560167fd94d",
-    "screens": "f03e28bf4ace5a9e"
+    "screens": "24126b2acac4428e"
    },
    {
     "year": 2027,
@@ -196,7 +201,7 @@
     "heis": "bb203c2b2d9a3278",
     "history": "8a00384b8f1d46ed",
     "universe": "94d40423664780f7",
-    "screens": "4ad928b101e5af53"
+    "screens": "a8f440beec02893c"
    }
   ],
   "Wrexham#777": [
@@ -210,7 +215,7 @@
     "heis": "06d24a6f1c40846f",
     "history": "a6c8f0c58c480270",
     "universe": "8c894b5bdb42be75",
-    "screens": "a5b5e6334064fb17"
+    "screens": "e0a5a5106fe8767f"
    },
    {
     "year": 2027,
@@ -222,7 +227,7 @@
     "heis": "79759676587273ba",
     "history": "8d166f116fa8b48d",
     "universe": "c6f9717b4411d480",
-    "screens": "844af7668275e99b"
+    "screens": "763870650b707105"
    }
   ],
   "schedules#60": [

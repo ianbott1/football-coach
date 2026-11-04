@@ -819,6 +819,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .simwhy{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--sodium);margin:6px 0 2px}
 .reads{margin-top:10px;padding-top:9px;border-top:1px solid var(--line);text-align:left}
 .readx{color:var(--muted);white-space:nowrap}
+.readlab{color:var(--muted);font-weight:600}
 .read{display:flex;gap:8px;font-size:12.5px;line-height:1.4;margin:4px 0;color:var(--bone)}
 .read span{flex:none;font-weight:700}.read.ok span{color:var(--turf)}.read.no span{color:var(--flag)}
 .readtally{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:6px;text-transform:uppercase}
@@ -852,6 +853,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .planrow{font-size:13px;line-height:1.5;color:#C9CED9;margin-top:4px}
 .planrow b{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:6px;font-weight:500}
 .planwhy{color:var(--muted)}
+.planyou{font-family:var(--mono);font-size:9.5px;color:var(--vote);text-transform:uppercase;letter-spacing:.06em}
 .planpos{font-family:var(--mono);font-size:9.5px;color:var(--sodium)}
 .plancard .seedraw{margin-top:10px}
 .stafftag{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--muted);margin-top:6px}
@@ -874,9 +876,16 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selcard.in .selhead{color:var(--turf)}.selcard.out .selhead{color:var(--flag)}
 .selbig{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;margin:4px 0}
 .selsub{font-size:13.5px;color:var(--bone)}
+/* short screens (a phone on its side, a desktop zoomed to 175%+): the fixed bar and the sticky header
+   took a third to half of the view and covered cards (Grokbot). Below 640px of height they scroll with the page. */
+@media (max-height:640px){
+  .actionbar{position:static;background:var(--ink);padding:10px 16px 14px}
+  body{padding-bottom:16px}
+  .stick{position:static}
+}
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="34959da";
+<script>const BUILD_ID="a9a7ce4";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -931,7 +940,8 @@ const LEAGUE={
   awards:{mvp:"Hart Trophy", weights:{C:1,LW:1,RW:1,D:1,D2:1,G:1},
     /* the race compares each player with his position; this is the voters' premium on top */
     premium:{C:1.06,LW:1.02,RW:1.02,D:0.93,D2:0.9,G:0.97}},
-  tuning:{hfa:20, gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12,
+  tuning:{wpK:{safe:635,balanced:655,aggressive:685},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+    hfa:20, gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12,
     /* how much an edge is worth on the ice (the engine's are calibrated on
        their own; the league's spread is set against NHL history) */
     hk:{shotEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005),
@@ -4126,7 +4136,8 @@ function recruitBoardHTML(P,num){
     ${on?`<button class="skip small" data-rbup="${esc(x.key)}" ${ix===0?"disabled":""}>&uarr;</button><button class="skip small" data-rbrm="${esc(x.key)}">Remove</button>`
         :`<button class="skip small" data-rbadd="${esc(x.key)}">Add</button>`}</div>`;
   let h=`<div class="grouphead">${num}. Recruiting board</div>
-    <div class="note">Open spots: ${Object.keys(open).map(k=>`${esc(POS[k].p)} (${open[k].map(esc).join(", ")} graduating)`).join("; ")||"none"}. Anyone who leaves early opens another. Each spot goes to your highest-ranked prospect there, if he commits; miss, and you get the newcomer you'd have had anyway. Your focus and budget move these ratings.</div>`;
+    <div class="note">Open spots: ${Object.keys(open).map(k=>`${esc(POS[k].p)} (${open[k].map(esc).join(", ")} graduating)`).join("; ")||"none"}. Anyone who leaves early opens another. Each spot goes to your highest-ranked prospect there, if he commits; miss, and you get the newcomer you'd have had anyway. Your focus and budget move these ratings.
+    <b>Likely</b>: most like him commit. <b>A battle</b>: about half do. <b>A long shot</b>: most go elsewhere.</div>`;   // the words, said (Grokbot: "unclear what A BATTLE means")
   h+=`<div class="divhead">Your board</div>`+(board.length?board.map((k,ix)=>row(by[k],true,ix)).join("")
     :`<div class="note">Empty: the staff recruit as usual. Add prospects below.</div>`);
   Object.keys(open).forEach(k=>{ const list=pool.filter(x=>x.i===+k&&board.indexOf(x.key)<0);
@@ -4252,20 +4263,25 @@ function staffPlanChanged(P){
   return resignDiff||P.fa!==D.fa||(P.draft&&P.draft!==D.draft)||(P.targets||[]).length||(P.board||[]).length
     ||P.trade||(P.bids||[]).length||(P.sales||[]).length;
 }
+/* The plan as it stands: the staff's, with your changes marked. It showed
+   only the staff's while the rows below changed ("Let go Quinn Pettigrew"
+   after you'd re-signed him: Grokbot, in every pro game). */
 function staffPlanHTML(P){
   const my=S.myTeam, R=U.roster[my], rec=staffResignPlan(), exp=Object.keys(P.asks||{}).map(Number);
-  const keep=exp.filter(i=>rec[i]&&R[i]), go=exp.filter(i=>!rec[i]&&R[i]);
-  const nm=i=>`${esc(R[i].n)} <span class="planpos">${esc(R[i].p)}</span>`;
+  const keep=exp.filter(i=>P.resign[i]&&R[i]), go=exp.filter(i=>!P.resign[i]&&R[i]);
+  const mine=i=>!!P.resign[i]!==!!rec[i]?` <span class="planyou">your change</span>`:"";
+  const nm=i=>`${esc(R[i].n)} <span class="planpos">${esc(R[i].p)}</span>${mine(i)}`;
   const FA=LEAGUE.offseason.faStyles, DR=LEAGUE.offseason.draftStyles, D=staffPlanDefaults();
+  const fa=FA[P.fa]?P.fa:D.fa, dr=DR[P.draft]?P.draft:D.draft, tg=(P.targets||[]).length, bd=(P.board||[]).length;
   const changed=staffPlanChanged(P);
-  return `<div class="plancard"><div class="bkick">Your staff's plan</div>
-    <div class="planlead">${changed?"You've changed some of it. Everything else is still the staff's call.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
+  return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
+    <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
     <div class="planrow"><b>Re-sign</b> ${keep.length?keep.map(nm).join(", "):"nobody"}</div>
-    ${go.length?`<div class="planrow"><b>Let go</b> ${go.map(i=>nm(i)+` <span class="planwhy">(${esc(staffWhy(R[i],i,false))})</span>`).join(", ")}</div>`:""}
-    <div class="planrow"><b>${LEAGUE.draws?"Free transfers":"Free agency"}</b> ${esc(FA[D.fa].l)}: ${esc(FA[D.fa].d.replace(/^Free transfers: (.)/,(m,c)=>c.toUpperCase()))}</div>
-    ${LEAGUE.draws?`<div class="planrow"><b>Transfers</b> none: the staff spend only on free transfers. Bid below if a player is worth the fee.</div>`
-      :`<div class="planrow"><b>Draft</b> ${esc(DR[D.draft].l)}: ${esc(DR[D.draft].d)}</div>
-    <div class="planrow"><b>Trades</b> none. Put a player on the block below if you want offers.</div>`}
+    ${go.length?`<div class="planrow"><b>Let go</b> ${go.map(i=>nm(i)+(mine(i)?"":` <span class="planwhy">(${esc(staffWhy(R[i],i,false))})</span>`)).join(", ")}</div>`:""}
+    <div class="planrow"><b>${LEAGUE.draws?"Free transfers":"Free agency"}</b> ${esc(FA[fa].l)}${fa!==D.fa?` <span class="planyou">your change</span>`:`: ${esc(FA[fa].d.replace(/^Free transfers: (.)/,(m,c)=>c.toUpperCase()))}`}${tg?` &middot; ${tg} target${tg===1?"":"s"} of yours first`:""}</div>
+    ${LEAGUE.draws?`<div class="planrow"><b>Transfers</b> ${(P.bids||[]).length?(P.bids.length+" bid"+(P.bids.length===1?"":"s")+" of yours"):"none: the staff spend only on free transfers. Bid below if a player is worth the fee."}${(P.sales||[]).length?` &middot; ${P.sales.length} sale${P.sales.length===1?"":"s"}`:""}</div>`
+      :`<div class="planrow"><b>Draft</b> ${esc(DR[dr].l)}${dr!==D.draft?` <span class="planyou">your change</span>`:`: ${esc(DR[dr].d)}`}${bd?` &middot; your board of ${bd} first`:""}</div>
+    <div class="planrow"><b>Trades</b> ${P.trade?`${esc(P.trade.giveName)} for ${esc(P.trade.n)} <span class="planyou">your change</span>`:"none. Put a player on the block below if you want offers."}</div>`}
     ${changed?`<button class="rewatch seedraw" data-staffplan="1">Back to the staff's plan</button>`:""}</div>`;
 }
 /* on a contract row: what the staff would do with him */
@@ -4281,12 +4297,14 @@ function staffPlanReset(){
 }
 /* college: the staff's plan is the even split and a balanced class */
 function collegePlanHTML(P){
-  const RF=LEAGUE.offseason.recruitFocus, bk=LEAGUE.offseason.budget.buckets;
-  return `<div class="plancard"><div class="bkick">Your staff's plan</div>
-    <div class="planlead">Everything below is already set to this. Change what you like, or nothing at all, and carry on.</div>
-    <div class="planrow"><b>Budget</b> a quarter each to ${bk.map(b=>esc(b.l)).join(", ")}</div>
-    <div class="planrow"><b>Recruiting</b> ${esc(RF.balanced?RF.balanced.l:"Balanced")}${RF.balanced?": "+esc(RF.balanced.d):""}</div>
-    ${P.portal!==undefined?`<div class="planrow"><b>Transfer portal</b> nobody: add players below if you want them.</div>`:""}</div>`;
+  const RF=LEAGUE.offseason.recruitFocus, bk=LEAGUE.offseason.budget.buckets, B=P.budget||{};
+  const even=bk.every(b=>(B[b.k]||0)===(B[bk[0].k]||0)), rf=RF[P.recruit]?P.recruit:"balanced", pt=(P.portal||[]).length, bd=(P.rboard||[]).length;
+  const changed=!even||rf!=="balanced"||pt||bd, you=` <span class="planyou">your change</span>`;
+  return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
+    <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
+    <div class="planrow"><b>Budget</b> ${even?`a quarter each to ${bk.map(b=>esc(b.l)).join(", ")}`:bk.map(b=>`${esc(b.l)} ${B[b.k]||0}`).join(", ")+you}</div>
+    <div class="planrow"><b>Recruiting</b> ${esc(RF[rf]?RF[rf].l:"Balanced")}${rf!=="balanced"?you:RF[rf]?": "+esc(RF[rf].d):""}${bd?` &middot; your board of ${bd}`:""}</div>
+    ${P.portal!==undefined?`<div class="planrow"><b>Transfer portal</b> ${pt?pt+" player"+(pt===1?"":"s")+" of yours"+you:"nobody: add players below if you want them."}</div>`:""}</div>`;
 }
 
 /* ---- how much the staff give away on a read ----
@@ -4366,11 +4384,16 @@ function impactHTML(P){
   // the average over many replays agrees (measured: on its own, the same-luck
   // replay disagreed with the average about as often as not)
   const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
-  const head=better&&c.worth>=0.02?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
-    :worse&&c.worth<=-0.02?`That call cost you this one.`
-    :better?`You won, but not because of the call.`
-    :worse?`Unlucky: the call was sound.`
-    :`Same result either way tonight.`;
+  // the headline says both things, tonight's dice and the average, and never lets them contradict
+  // ("You won, but not because of the call" above a replay that lost without it: Grokbot)
+  const small=Math.abs(c.worth)<0.02;
+  const head=better?(c.worth>=0.02?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
+        :small?`Your call won this one tonight; over many replays it makes little difference.`
+        :`Your call won this one tonight, though over many replays it loses more often.`)
+    :worse?(c.worth<=-0.02?`That call cost you this one.`
+        :small?`The call went against you tonight; over many replays it makes little difference.`
+        :`Unlucky: the call was sound.`)
+    :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight.`;
   return `<div class="impact"><div class="imphead">${head}</div>
     <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
 }
@@ -4378,7 +4401,9 @@ function impactHTML(P){
 function ledgerLine(){
   const L=S.callLedger&&S.callLedger[SEA.year]; if(!L||!L.n)return "";
   const w=L.worth, a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?(Math.round(a*10)/10):(Math.round(a*2)/2)} win${a>=0.75&&a<1.25?"":"s"}`;
-  return `Your ${L.n} call${L.n===1?"":"s"} this season: ${say} against leaving ${L.n===1?"it":"them"} to the assistant.`;
+  // says what it counts: every call that differed from the assistant's, graded or not (the big number
+  // beside it counts only graded ones, and the two read as a contradiction: Grokbot)
+  return `Every call you made differently from the assistant this season (${L.n}): ${say} against leaving ${L.n===1?"it":"them"} to him, over many replays.`;
 }
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
@@ -4593,6 +4618,9 @@ function objStatus(o,my){
 }
 /* where a team stands in its group, for leagues without a table: by win share, then rating */
 function standRank(t){
+  // the order the Standings screen shows (conference record first): win share overall
+  // marked a team "top" that the table had second (Grokbot)
+  try{ const st=SEA.standings(null), L=st&&st[CONF[t]]; if(L&&L.length){ const i=L.findIndex(r=>r.team===t); if(i>=0)return i+1 } }catch(e){}
   const grp=NAMES.filter(x=>CONF[x]===CONF[t]);
   const r=x=>{const R=SEA.rec[x]; return R[0]/Math.max(1,R[0]+R[1])};
   grp.sort((x,y)=>r(y)-r(x)||SEA.elo[y]-SEA.elo[x]);
@@ -5077,7 +5105,9 @@ function nflTargetsHTML(P,room){
       // the signing checks the cap after the draft, so the class is already paid for: there is no squeezing it
       // (Instinct: a "squeezing" target then had no room). This room is right on average, within about 5M either
       // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
-      if(on){left-=x.ask; fit=left>=2?"fits":left>=-3?"close: it depends on what the draft class costs":"won't fit as things stand";
+      // with the gap in money, so "won't fit" says why (Grokbot: it read "won't fit" with $10.4M of room)
+      if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=`after ~$${ROOKIE_ROOM}M kept for the draft class`;
+        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`won't fit as things stand: ${gap} short ${kept}`;
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
@@ -5085,6 +5115,7 @@ function nflTargetsHTML(P,room){
         <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${on?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free agents you want</div>`;
+  if(mine.length)h+=`<div class="note">Prices are this summer's asks plus about 10%; a player who improves over the summer can ask more by the time free agency opens.</div>`;
   h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet: your free-agency style will decide. Players you add get your first look, in your order, if you have the room.</div>`;
   const pool=pre.filter(x=>mine.indexOf(x.key)<0).slice(0,25);
@@ -5902,7 +5933,8 @@ function simPostOn(ph){
   while(SEA.phase!=="week"&&SEA.phase!=="done"&&g++<300){
     was=SEA.phase;
     SEA.userTeam=S.myTeam; SEA.advance(); SEA.forcedList=[]; SEA.forced=null; S.steps++;
-    if((LEAGUE.post.stopAfter||["selection"]).indexOf(was)>=0)break;     // a moment to see, not sim past: Selection Sunday, the field
+    if((LEAGUE.post.stopAfter||["selection"]).indexOf(was)>=0){ view="scores"; break }     // a moment to see, not sim past: Selection Sunday, the field
+    // (and shown: the click stopped there with the team page still up, so it looked like nothing happened: Grokbot)
     if(SEA.phase!=="done"&&SEA.postMatchup(S.myTeam))break;
   }
   LEAGUE.ui.afterAdvance(was);                  // the views follow the last round played (Selection Sunday's field)
@@ -6320,7 +6352,7 @@ function tallyHTML(){
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
-    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%)</div>
+    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded calls only</div>
     ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
@@ -6344,8 +6376,12 @@ function readsHTML(step){
     return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${deb}</div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   // the same verdict twice (a read confirmed at half-time, a goalie kept twice) reads once, counted (Instinct)
-  const lines=[]; R.forEach(x=>{ const t=readText(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L)L.n++; else lines.push({t:t,right:x.right,n:1}) });
-  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span>${esc(x.t)}${x.n>1?` <span class="readx">(${x.n===2?"twice":x.n+" times"})</span>`:""}</div>`).join("")}
+  // each line says which call it was (a right game plan beside a wrong read looked like a contradiction,
+  // and two identical lines couldn't be told apart: Grokbot)
+  const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
+    return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
+  const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,n:1,lb:lb?[lb]:[]}) });
+  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
@@ -6377,10 +6413,18 @@ function ownMark(me){
   if(!f&&!dep)return "";
   return `<span class="olab omark">with ${[f?"featuring "+esc(f.n.split(" ").slice(-1)[0]):"",dep?"your ice time":""].filter(Boolean).join(" and ")}</span>`;
 }
+/* The chance shown is the engine's own: each league's curve, measured by
+   playing thousands of games at each gap, and your gameplan's (the safe plan
+   steepens it, the bold one flattens it). It was the textbook /400 in every
+   sport: pro football's favourites showed 70% and won 84%, hockey's showed
+   70% and won 63%, and the plan buttons never moved the number (Grokbot,
+   Instinct). */
+function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }
 function winProb(me,opp,atHome,neutral){
   const v=t=>(SEA.hfa&&SEA.hfa[t])||LEAGUE.tuning.hfa;
   const hfa=neutral?0:(atHome?v(me):-v(opp));
-  return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa+(me===S.myTeam?ownEdge():0)-SEA.elo[opp])/400)));
+  const k=wpScale(me===S.myTeam||opp===S.myTeam?plan:"balanced");   // your plan shapes your games, whichever side asks
+  return 1/(1+Math.pow(10,-((SEA.elo[me]+hfa+(me===S.myTeam?ownEdge():0)-SEA.elo[opp])/k)));
 }
 /* what your own choices add in your games, the same edge the games use: a
    featured starter who's healthy, and hockey's ice time (Muse: featuring
@@ -6422,7 +6466,8 @@ function streakOf(t){
 function stakesFor(ng){
   const my=S.myTeam, opp=ng.home===my?ng.away:ng.home;
   const rk=SEA.poll.rankMap();
-  const wk=SEA.step, left=LEAGUE.weeks-wk;
+  // games left, not steps left: in the daily leagues a step is a day ("154 to play" at game 18 of 84: Grokbot)
+  const wk=SEA.step, left=LEAGUE.daily?SEA.sched.filter(g=>!g.cup&&g.week>=wk&&g.week<LEAGUE.weeks&&(g.home===my||g.away===my)).length:LEAGUE.weeks-wk;
   const rec=SEA.rec[my], w=rec[0], l=rec[1];
   const cp=confPosition(my);
   const riv=LEAGUE.rivals.name(my,opp);
@@ -6451,7 +6496,10 @@ function stakesFor(ng){
   else if(st.won&&st.n>=5)out.push({p:58,tag:"STREAK",
     l:`${st.n} in a row. Nobody wants to be the one who ends it.`});
 
-  if(l>=6)out.push({p:40,tag:"SPOILER",
+  // out of it: a winning season no longer possible (it was six losses, a college football season,
+  // and fired at game 18 of 84 in hockey: Grokbot)
+  const nAll=SEA.sched.filter(g=>!g.cup&&g.week<LEAGUE.weeks&&(g.home===my||g.away===my)).length||12;
+  if(l>=Math.ceil(nAll/2))out.push({p:40,tag:"SPOILER",
     l:`Nothing left but pride and a chance to wreck somebody's season.`});
 
   // the quiet line: your game number where steps are days (hockey, basketball) or matchdays
@@ -6675,8 +6723,9 @@ function planPickerHTML(wp){
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
     <div class="pland">${esc(PLANS[plan].d)}${
-      wp!==null&&wp<0.35&&plan!=="aggressive"?" &mdash; as a big underdog, chaos is your friend.":
-      wp!==null&&wp>0.75&&plan!=="safe"?" &mdash; you're the favourite; variance is your enemy.":""}</div>
+      // a nudge about the plan you haven't picked, said as one (it read as advice for the highlighted plan: Grokbot)
+      wp!==null&&wp<0.35&&plan!=="aggressive"?` <span class="planwhy">As a big underdog, though, more chaos would help you: try ${esc(PLANS.aggressive.l)}.</span>`:
+      wp!==null&&wp>0.75&&plan!=="safe"?` <span class="planwhy">You're the favourite, though: less chaos would help you. Try ${esc(PLANS.safe.l)}.</span>`:""}</div>
   </div>`;
 }
 
@@ -6701,7 +6750,9 @@ function attentionHTML(my){
   ["oc","dc"].forEach(side=>{
     const st=side==="oc"?SEA.oc:SEA.dc;
     if(!st||!st[my]||st[my].interim||SEA.midFired[side])return;
-    if(!shortfall&&st[my].q>-25)return;
+    // a losing run puts an ordinary assistant under fire, not a good one ("SACK HIM" for a +24
+    // after an 11-3 year: Grokbot); a poor one is under fire whatever the record
+    if(st[my].q>-25&&!(shortfall&&st[my].q<10))return;
     out.push({k:"staff",side:side,
       h:`Your ${SPORT.staff[side].long} is under fire`,
       b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. An interim would be replacement level;
@@ -6761,7 +6812,7 @@ function nextUpHTML(my,rk){
     const cupNight=ng.cup&&LEAGUE.cup;
     h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(ngStep):LEAGUE.dates[ngStep]||"")}</div>
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
-      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.home===my?"HOME vs":"AWAY at"}</div>
+      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
@@ -7672,7 +7723,8 @@ function simRun(to){
     if(SEA.phase!=="week")break;
     // after it: did something happen you'd want to know about now?
     const st=streakOf(my);
-    if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=st.n)){why="slide";break}
+    // once per losing run: when it reaches three, not again at four, five... (it stopped after every defeat: Grokbot)
+    if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=3)){why="slide";break}
     if(stops.hurt&&hurtCount(my)>h0){why="hurt";break}
     if(stops.decide&&newDecision(my)){why="decide";break}
   }
@@ -7694,7 +7746,10 @@ function simSheetHTML(){
 function digestBlock(){
   const my=S.myTeam;
   const rows=[]; let n=0;
-  for(let i=flash.from;i<flash.to;i++){
+  // through the last week with games played: a cup week stopped between its two halves has its league
+  // game played already (the digest left it out: Grokbot, soccer)
+  const last=Math.min(SEA.weeks.length,flash.to+1)-1;
+  for(let i=flash.from;i<=last;i++){
     const W=SEA.weeks[i]; if(!W)continue;
     const gs=W.games.filter(x=>x.home===my||x.away===my).sort((x,y)=>(x.cup?1:0)-(y.cup?1:0));
     if(!gs.length){ if(!LEAGUE.skipIdle)rows.push(`<div class="drow"><span class="dwk">${W.label}</span>
@@ -7707,13 +7762,13 @@ function digestBlock(){
       <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span>
       <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`) });
   }
-  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):"Weeks "+(flash.from+1)+"&ndash;"+flash.to} simulated</div>`;
+  let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):last<=flash.from?"Week "+(flash.from+1):"Weeks "+(flash.from+1)+"&ndash;"+(last+1)} simulated</div>`;
   if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
   h+=`<div class="bsub">Now ${recStr(my)}${
     LEAGUE.position?(LEAGUE.position(my)?", "+ordinal(LEAGUE.position(my))+" in "+esc(LEAGUE.conf.names[CONF[my]]):"")
-      :rk[my]<=RANK_TOP?", ranked No. "+rk[my]:", unranked"}.</div></div>`;
+      :(LEAGUE.rankAll||rk[my]<=RANK_TOP)?", ranked No. "+rk[my]:", unranked"}.</div></div>`;   // as the header says it (it read "unranked" beside #11: Grokbot)
   return h;
 }
 
