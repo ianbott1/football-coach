@@ -51,7 +51,7 @@ function nbaSchedule(rng,R,year){
     let ok=true;
     for(let d=0;d<DAYS;d++){
       const busy=new Set(); const daysLeft=DAYS-d;
-      pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8));
+      schedOrder(pool,left,rng);
       for(let i=0;i<pool.length;i++){const g=pool[i];
         if(busy.has(g.home)||busy.has(g.away))continue;
         busy.add(g.home); busy.add(g.away); left[g.home]--; left[g.away]--;

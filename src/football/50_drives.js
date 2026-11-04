@@ -399,7 +399,9 @@ function decisionPoint(state, isUser){
       opts:[["sit","Bleed the clock"],["keep","Keep attacking"]]
     };
   }
-  if (q === 3 && idx === Math.floor(total/2) && Math.abs(diff) >= 17 && !used.half) {
+  // two scores either way at the break, but not three: up 24 at half, "manage it" was asked and
+  // changed nothing (Grokbot; Instinct: "comfortable-lead busywork")
+  if (q === 3 && idx === Math.floor(total/2) && Math.abs(diff) >= 14 && callMatters(q,diff) && !used.half) {
     return {
       k:"half",
       h: diff < 0 ? `Down ${-diff} at the break` : `Up ${diff} at the break`,

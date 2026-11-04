@@ -3,6 +3,20 @@
 function strHash(x){ let h=2166136261; x=String(x); for(let i=0;i<x.length;i++)h=Math.imul(h^x.charCodeAt(i),16777619)>>>0; return h }
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
   t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+/* The order games are tried on a schedule day: those whose teams have most left first, jittered.
+   It drew the jitter inside Array.sort's comparator, so the draws, and every one after, hung on
+   how many comparisons the sort made, which isn't fixed for a comparator that changes its mind:
+   on the same save one build in about four came out different (measured in pro basketball: a
+   reload replayed the season on another schedule, 36-46 became 49-33; Grokbot's 54-28 to 53-29).
+   Seasons begun from Nov 2026 (schedV 2) draw each game's jitter once and sort on that; a season
+   already under way keeps the old draw, which is what it has been getting nearly every time. */
+let SCHED_V=1;
+function schedOrder(pool,left,rng){
+  if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
+  const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
+  key.sort((a,b)=>(b.k-a.k)||(a.i-b.i));
+  key.forEach((x,i)=>pool[i]=x.g); return pool;
+}
 class RNG{
   constructor(seed){this.f=mulberry32(seed);this.sp=null}
   r(){return this.f()}

@@ -1,5 +1,5 @@
 {
- "fp": "cee4b31e1c55414e",
+ "fp": "197882de31c86255",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -135,6 +135,11 @@
    "fp": "cee4b31e1c55414e",
    "from": "cee4b31e1c55414e",
    "note": "Nov 2026: what your calls did (post-game line and season ledger)"
+  },
+  {
+   "fp": "197882de31c86255",
+   "from": "cee4b31e1c55414e",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games; pro basketball and hockey seasons drawn with schedOrder (deterministic); hockey history rows keep overtime losses. Control build with those held back matched the previous fingerprints in all six."
   }
  ],
  "out": [
@@ -144,20 +149,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "19-8-11",
+      "rec": "20-7-11",
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "6f105ce898025e28"
+     "book": "c22ed294fa8460ec"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "14-4-20",
-      "result": "Finished 11th in the Premier League",
+      "rec": "15-6-17",
+      "result": "Finished 10th in the Premier League",
       "grade": "B-"
      },
-     "book": "f4be5ea266f79da1"
+     "book": "80d9f4ddb5cec48e"
     }
    ]
   },
@@ -167,20 +172,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "19-14-5",
-      "result": "Finished 4th in the Premier League",
-      "grade": "B-"
+      "rec": "20-13-5",
+      "result": "Finished 2nd in the Premier League",
+      "grade": "B"
      },
-     "book": "b5351d57dcb58c04"
+     "book": "71e866cf67e0c5a0"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-8-18",
-      "result": "Finished 13th in the Premier League",
-      "grade": "C+"
+      "rec": "15-5-18",
+      "result": "Finished 11th in the Premier League",
+      "grade": "B-"
      },
-     "book": "55db98a490a0ab17"
+     "book": "a1788892ea3b8fa2"
     }
    ]
   },
@@ -190,20 +195,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "21-7-10",
-      "result": "Finished 4th in the Premier League",
-      "grade": "B-"
+      "rec": "24-6-8",
+      "result": "Finished 3rd in the Premier League",
+      "grade": "B"
      },
-     "book": "93623d9ba8edff47"
+     "book": "49493bcb7912fc26"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "15-8-15",
-      "result": "Finished 8th in the Premier League",
-      "grade": "B"
+      "rec": "18-7-13",
+      "result": "Finished 6th in the Premier League",
+      "grade": "B+"
      },
-     "book": "e267c9b6323c52fa"
+     "book": "3f8d127d033735b1"
     }
    ]
   }

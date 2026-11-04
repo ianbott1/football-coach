@@ -324,7 +324,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       ["home","away"].forEach(sd=>{ if(humans[sd])return; const X=st.S[sd];
         if(rng.r()<(lead(sd)<0?0.5:0.25)){ X.app=rng.pick(APPROACH_KEYS.filter(k=>k!==X.app));
           X.tell={to:0,cr:0,lb:0,pos:0,n:0}; X.tellLast={to:0,cr:0,lb:0,pos:0,n:0}; X.lastCue=null } });
-      ["home","away"].forEach(sd=>{ const L=lead(sd); if(L!==0)queueCall(sd,halfCall(L));
+      ["home","away"].forEach(sd=>{ const L=lead(sd); if(L!==0&&Math.abs(L)<=2)queueCall(sd,halfCall(L));   // three up at half, it's gone
         if(humans[sd])queueCall(sd,flankCall(st.S[sd].fl,st.S[sd].flLast)); else aimIt(sd) });
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);

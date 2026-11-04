@@ -108,12 +108,33 @@ Measured value, even sides at home (tests below):
    message:   node test/run-all.js --quick   (full: without --quick).
    One CPU: the quick suite takes ~8 minutes, the full one ~10-12.
    Don't wait on it with a pgrep loop: it matches its own command line.
+   `python3 build.py site` builds all six into dist/ and dist/site/;
+   plain `python3 build.py` builds college football only.
    Wait for the summary line in the output file instead.
 5. Check simulation changes against the calibration targets below.
 6. Tell Ian plainly when something is broken, a plan is wrong, or you made a
    mistake.
 
 Lessons from this project (each cost a bug that shipped or nearly did):
+- Never call the random generator inside an Array.sort comparator. The
+  number of comparisons isn't fixed for a comparator that changes its mind,
+  so every draw after it hangs on the sort: the NBA and NHL schedule builders
+  did, and about one season build in four came out different on the same
+  save (a reload replayed the season on another schedule; 36-46 became
+  49-33). Draw the keys first, then sort on them (schedOrder, core/20_engine).
+  test/confirm-taps.js swaps in a different correct sort and checks the
+  schedule doesn't change. Seasons begun before Nov 2026 (no u.schedV) keep
+  the old draw so a season under way isn't redrawn.
+- save() returns when no career is open (!S.myTeam). The title screen's
+  "How to play" Skip and last Next called save() and wrote an empty career
+  over slot 1 in all six games (found by Grokbot; my clean-profile repro
+  never opened the intro).
+- A choice that the replay reads (featuring, ice time) is logged with
+  noteChoice even in the offseason: rebuild() with no log uses today's
+  choice from the first game, so featuring someone new in the offseason
+  rewrote last season on reload.
+- Re-baselining goldens: build once with the intended change held back and
+  confirm the old fingerprints still match; then the --write note can say so.
 - A new game needs its own save key in SAVE_KEYS (core) and a case in
   test/saves.js, test/reload.js, test/golden.js, test/hotseat.js.
 - Test both layouts (test/layouts.js): at 1024px+ the buttons live in the
@@ -454,6 +475,13 @@ dynasty's first season (generated players have no earlier history).
                       mix); strength predicts the tables (rank corr 0.6-0.9)
 
 ## Known calibration gaps (measured)
+
+- Hockey's goalie call is nearly weightless (Nov 2026, test/hk-reads.js at
+  60,000 games): pulling him only on a real bad night is worth about +1 win
+  point over leaving it, and telling a bad night from bad luck (soft goals
+  vs simply two in) about +0.3 to +0.4, inside the noise of a 20,000-game
+  run. The check now asks only that it's positive. Grokbot scored hockey's
+  decision weight 5/10; this is part of why.
 
 - Pro basketball: 70-win seasons in ~19% of long-run seasons (real ~10%);
   max seen 79. Big mismatches (gap over 200) count half (BB.softGap) since an

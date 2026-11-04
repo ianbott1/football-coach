@@ -1,5 +1,5 @@
 {
- "fp": "3fc3867ddf375d8c",
+ "fp": "b1572df107eaef6a",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -90,6 +90,11 @@
    "fp": "3fc3867ddf375d8c",
    "from": "f19ad78721626db5",
    "note": "Grokbot pass 1: objectives read the Standings table (reputation moves with them), NBA club name Mega Basket"
+  },
+  {
+   "fp": "b1572df107eaef6a",
+   "from": "3fc3867ddf375d8c",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games; pro basketball and hockey seasons drawn with schedOrder (deterministic); hockey history rows keep overtime losses. Control build with those held back matched the previous fingerprints in all six."
   }
  ],
  "out": [
@@ -99,11 +104,11 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "56-26",
-      "result": "Lost in the conference finals",
-      "grade": "A-"
+      "rec": "46-36",
+      "result": "Lost in the first round",
+      "grade": "B-"
      },
-     "book": "1775aa6c07029296"
+     "book": "d70af1aa2997a24c"
     },
     {
      "team": "New York",
@@ -112,7 +117,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "7bda01d9e2a2720f"
+     "book": "13675abfeb20f2e5"
     }
    ]
   },
@@ -122,20 +127,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "11-71",
+      "rec": "32-50",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "d340640be543ec88"
+     "book": "c85ab3186e24fe51"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "50-32",
-      "result": "Lost in the first round",
-      "grade": "B-"
+      "rec": "38-44",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "8dcb59436c47c08a"
+     "book": "66887e1a6ec93a0e"
     }
    ]
   },
@@ -145,20 +150,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "36-46",
-      "result": "Lost in the first round",
-      "grade": "C-"
+      "rec": "44-38",
+      "result": "Lost in the play-in",
+      "grade": "C"
      },
-     "book": "8bb0efdc5ec7579f"
+     "book": "2c24b118a3a64f51"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "50-32",
-      "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "rec": "48-34",
+      "result": "Lost in the play-in",
+      "grade": "C+"
      },
-     "book": "7e78a2b353248d1f"
+     "book": "aa3ed114bd8fc9e4"
     }
    ]
   }

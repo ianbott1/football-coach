@@ -1,5 +1,5 @@
 {
- "fp": "d063ffe1fbb4282a",
+ "fp": "0839aeedd39f0d20",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -220,85 +220,90 @@
    "fp": "d063ffe1fbb4282a",
    "from": "10f01701316b6afb",
    "note": "Grokbot pass 2 / Instinct round 5: basketball half-time read offers Keep your setup first; soccer whole-match column; headlines; target wording"
+  },
+  {
+   "fp": "0839aeedd39f0d20",
+   "from": "d063ffe1fbb4282a",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "6f2e77d86daeebca",
-    "post": "6230ad9bb5bc765b",
+    "games": "4146526464baa0b8",
+    "post": "0335172c579fe936",
     "champion": "Maryland",
     "rec": "2de5774655a633b1",
-    "poll": "92025f95ade721fb",
+    "poll": "a741eaf77c0c1a5f",
     "heis": "f0ca3896b10da2b9",
-    "history": "c52541282b7f757d",
-    "universe": "98bfdd074fc48cf7",
-    "screens": "850625e0c08c21eb"
+    "history": "b404448de933d00c",
+    "universe": "04ec089d22742028",
+    "screens": "8f94e71c4a8417bb"
    },
    {
     "year": 2027,
-    "games": "f44bebac06e1f433",
-    "post": "f570a8b07f8b09eb",
-    "champion": "Texas",
-    "rec": "88262f6255ff2a0d",
-    "poll": "0e739f1ef68aa0b8",
-    "heis": "b7e8cf4cae44bfd2",
-    "history": "2dd2cf0833aabb5d",
-    "universe": "b6dca22a865bb3f9",
-    "screens": "1fe4cbe797ae5490"
+    "games": "5f6786dce300955e",
+    "post": "92977d07dee46f91",
+    "champion": "BYU",
+    "rec": "53c60be97eec79f0",
+    "poll": "f64b8cc31041e4e3",
+    "heis": "837e82652981ea58",
+    "history": "228db1f60dbdf687",
+    "universe": "be1f7876c0c2a5f7",
+    "screens": "acaee31f79d9ff3e"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "91aa88c890f486b9",
+    "games": "9b9f10d0af16f254",
     "post": "fc334b5963f6ab27",
     "champion": "Kansas",
     "rec": "433758fa94842a93",
-    "poll": "6f431daa7823364c",
+    "poll": "80c10fa49cc0c2e7",
     "heis": "13bfe33d01f2b2a1",
-    "history": "5bf6faab24053511",
-    "universe": "f8ec582363d901e4",
-    "screens": "ec44e99f42eae49b"
+    "history": "c8c9c6d4ec862e49",
+    "universe": "30281694f076c08c",
+    "screens": "d3076705d493dd99"
    },
    {
     "year": 2027,
-    "games": "eb951c480afe54c4",
+    "games": "2b5bf94211983664",
     "post": "03a5f95031f6c5c4",
     "champion": "UCLA",
     "rec": "5d0fdeac18b85c5a",
     "poll": "563b4d023f24bbfc",
     "heis": "8120dbad929bbaa3",
     "history": "a09136552097899c",
-    "universe": "e0e24d0e02bbac42",
-    "screens": "73999001095f868e"
+    "universe": "f55a6eb1f2df61dd",
+    "screens": "46986772076a8dbf"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "6b2b8015d733e4da",
+    "games": "8472432267b5c905",
     "post": "1285a7a2cde9c4f6",
     "champion": "UCLA",
     "rec": "ae0f02bf8058b23f",
     "poll": "df2b0e5f2ce4e60e",
     "heis": "c94713712b4e6c61",
-    "history": "6b6207bf21edb5ef",
-    "universe": "62d00ccfc48eb438",
-    "screens": "0727274168f5008a"
+    "history": "c1d7b51fae57c0da",
+    "universe": "91e4022317b5fd8d",
+    "screens": "7cb64c8c679f2b36"
    },
    {
     "year": 2027,
-    "games": "dcbdcfa07a2cd937",
+    "games": "23d133d8062786f2",
     "post": "8d6b4469ad42b373",
     "champion": "North Carolina",
     "rec": "6eabdab6b758f403",
     "poll": "14ed68296116577d",
     "heis": "97bdbce0e295541c",
     "history": "836c5e2056f43b41",
-    "universe": "f69bc2d3009200aa",
-    "screens": "70e703290b702ff5"
+    "universe": "9955c2cfa1b40685",
+    "screens": "25dc3b5956c4600a"
    }
   ],
   "schedules#60": [

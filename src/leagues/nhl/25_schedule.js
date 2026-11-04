@@ -29,7 +29,7 @@ function nbaSchedule(rng,R,year){
     let ok=true;
     for(let d=0;d<DAYS;d++){
       const busy=new Set(); const daysLeft=DAYS-d;
-      pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8));
+      schedOrder(pool,left,rng);
       for(let i=0;i<pool.length;i++){const g=pool[i];
         if(busy.has(g.home)||busy.has(g.away))continue;
         if(LEAGUE.skipIdle&&busy.size>=2*paceCap(pool.length+busy.size/2,daysLeft,rng))break;   // paced: the season's games spread to its last day
@@ -95,7 +95,7 @@ function nhlWithReal(rng,byDiv,sideOf){
     const left={}; NAMES.forEach(t=>left[t]=0); games.forEach(g=>{left[g.home]++;left[g.away]++});
     const pool=rng.shuffle(games.slice()), rest=[]; let ok=true;
     for(let d=first;d<DAYS;d++){ const b=new Set(), daysLeft=DAYS-d;
-      pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8));
+      schedOrder(pool,left,rng);
       const cap=paceCap(pool.length,daysLeft,rng);
       for(let i=0;i<pool.length;i++){const g=pool[i]; if(b.has(g.home)||b.has(g.away))continue; if(b.size>=2*cap)break;
         b.add(g.home); b.add(g.away); left[g.home]--; left[g.away]--;

@@ -1,5 +1,5 @@
 {
- "fp": "5e93f23084a67d3a",
+ "fp": "b6ad6fd7cc2dc79b",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -185,59 +185,64 @@
    "fp": "5e93f23084a67d3a",
    "from": "d593cd4a8e378571",
    "note": "Grokbot pass 2 / Instinct round 5: basketball half-time read offers Keep your setup first; soccer whole-match column; headlines; target wording"
+  },
+  {
+   "fp": "b6ad6fd7cc2dc79b",
+   "from": "5e93f23084a67d3a",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "4b0ca7f355571526",
-    "post": "762965522ecbfe3c",
-    "champion": "Manchester City",
-    "rec": "62941de376fc55db",
-    "poll": "82904c5f44393491",
-    "heis": "96c742eeedcbcb70",
-    "history": "0cc5bcabe2374db6",
-    "universe": "aa5ac560167fd94d",
-    "screens": "38c86b11c13d218e"
+    "games": "6323302a6381a9de",
+    "post": "9a7eaa0b88100f9f",
+    "champion": "Manchester United",
+    "rec": "7451d95e62f458f6",
+    "poll": "b2c5bfb9e24fa220",
+    "heis": "28fffd9e07af90a9",
+    "history": "d6e942a22ac13ee1",
+    "universe": "056824920fb8f54b",
+    "screens": "dd08bcc9281d39e8"
    },
    {
     "year": 2027,
-    "games": "32ecb947e4d916dd",
-    "post": "b579646b62b74647",
-    "champion": "Arsenal",
-    "rec": "c808a2e964cba4fa",
-    "poll": "781e8e5b4818c08d",
-    "heis": "bb203c2b2d9a3278",
-    "history": "8a00384b8f1d46ed",
-    "universe": "94d40423664780f7",
-    "screens": "244d39114563b01c"
+    "games": "4683d16eef4f94e3",
+    "post": "9ddb31d2617a777e",
+    "champion": "Manchester City",
+    "rec": "c7f702f036a5eae9",
+    "poll": "5506dd9bdf00199c",
+    "heis": "4a9d451755207b48",
+    "history": "ddebb0c48e47234e",
+    "universe": "240217f9902fd1f1",
+    "screens": "034b17781f7533e2"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "0e17883586bd37c1",
-    "post": "41b485407883566e",
+    "games": "d883a05a2ba5e72b",
+    "post": "e96e076136db7c94",
     "champion": "Aston Villa",
-    "rec": "df4753834332c033",
-    "poll": "49fd927511d09994",
+    "rec": "f3c951aff78e6907",
+    "poll": "7e3d72dd8141312d",
     "heis": "06d24a6f1c40846f",
-    "history": "a6c8f0c58c480270",
-    "universe": "8c894b5bdb42be75",
-    "screens": "12b8aa0519980d76"
+    "history": "0933fcc446e21a9c",
+    "universe": "8d753e187882540b",
+    "screens": "17bb99eb5ce3e4a2"
    },
    {
     "year": 2027,
-    "games": "bc233b87ff6c0fde",
-    "post": "887b39d1800408b4",
+    "games": "b2d05027e1ac1135",
+    "post": "c59663546c43df59",
     "champion": "Arsenal",
-    "rec": "38f2fa18a45e9bfd",
-    "poll": "824b892f2cd61bc8",
-    "heis": "79759676587273ba",
-    "history": "8d166f116fa8b48d",
-    "universe": "c6f9717b4411d480",
-    "screens": "5ad47557427a9405"
+    "rec": "a00918780b38d49a",
+    "poll": "0e760195e8ce56c0",
+    "heis": "3b953c750f69164c",
+    "history": "f0d63dff7092d685",
+    "universe": "fb4738dce8d74b40",
+    "screens": "43e8a41fff8c5f37"
    }
   ],
   "schedules#60": [

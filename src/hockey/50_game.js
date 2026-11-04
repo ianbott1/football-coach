@@ -105,8 +105,10 @@ function intCall(lead){
     : {k:"lock",h:`Up ${lead} after two`,q:"Twenty minutes left. Sit on it?",
        opts:[["sit","Lock it down: trap, block shots"],["keep","Keep playing our game"],ASSIST]};
 }
-function pullCall(lead){
-  return {k:"pull",h:`Down ${-lead}, late in the third`,q:"When does the goalie come out?",
+function pullCall(lead,shortTo){
+  // killing a penalty at the question (Grokbot: offered on a penalty kill, with no word of it)
+  const pk=shortTo?`, a man short until ${Math.floor(shortTo)}:${String(Math.round((shortTo%1)*60)).padStart(2,"0")}`:"";
+  return {k:"pull",h:`Down ${-lead}, late in the third${pk}`,q:pk?"When does the goalie come out? Early would mean six against four once he's out.":"When does the goalie come out?",
     opts:[["early","Early: over three minutes left"],["late","The usual: under two minutes"],ASSIST]};
 }
 /* the scouting report: the systems a club played in its last few games,
@@ -184,9 +186,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const sH=shotsIn(rng,lamH), sA=shotsIn(rng,lamA);
     let gH=shoot("home",sH,pH), gA=shoot("away",sA,pA);
     const Lh=st.lines.h, La=st.lines.a; let ppH=0,ppA=0;
-    if(rng.r()<HK.pens/SEGS){ ppH=shotsIn(rng,HK.ppShots); ev.push({m:minute(),side:"away",k:"pen",u:rng.int(100)});
+    const penAt=(sd,m)=>{ (st.penAt=st.penAt||{})[sd]=m; return m };
+    if(rng.r()<HK.pens/SEGS){ ppH=shotsIn(rng,HK.ppShots); ev.push({m:penAt("away",minute()),side:"away",k:"pen",u:rng.int(100)});
       const g=shoot("home",ppH,HK.ppSh*(1+e*HK.finishEdge)+st.S.away.form,true); gH+=g; Lh.ppg+=g; Lh.pp++; La.pim+=2 }
-    if(rng.r()<HK.pens/SEGS){ ppA=shotsIn(rng,HK.ppShots); ev.push({m:minute(),side:"home",k:"pen",u:rng.int(100)});
+    if(rng.r()<HK.pens/SEGS){ ppA=shotsIn(rng,HK.ppShots); ev.push({m:penAt("home",minute()),side:"home",k:"pen",u:rng.int(100)});
       const g=shoot("away",ppA,HK.ppSh*(1-e*HK.finishEdge)+st.S.home.form,true); gA+=g; La.ppg+=g; La.pp++; Lh.pim+=2 }
     Lh.sog+=sH+ppH; La.sog+=sA+ppA;
     st.h+=gH; st.a+=gA;
@@ -281,9 +284,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s===8&&!st.i2){st.i2=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], L=lead(sd);
         if(!humans[sd]){ cpuGoalie(sd); return }
         askGoalie(sd,X,2);
-        if(L!==0)queueCall(sd,intCall(L)) });
+        if(L!==0&&Math.abs(L)<=3)queueCall(sd,intCall(L)) });      // up four after two, it's gone
       if(st.queue.length)return st.next()}
-    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1||L===-2)queueCall(sd,pullCall(L)) });
+    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1||L===-2){ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
       if(st.queue.length)return st.next()}
     if(s>=SEGS){ if(st.h===st.a)overtime(); st.done=true; return fin() }
     const d=segment(s); st.seg++;

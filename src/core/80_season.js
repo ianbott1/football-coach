@@ -13,6 +13,7 @@ class Season{
     this.featCost=0;
     this.talent=new Talent(this.rng,tb,this.roster);
     this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
+    SCHED_V=u.schedV||1;                    // see schedOrder
     this.sched=LEAGUE.buildSchedule(this.rng,u.perceived,u.year);
     this.rec={};this.confrec={};
     NAMES.forEach(t=>{this.rec[t]=[0,0];this.confrec[t]=[0,0]});
@@ -250,7 +251,7 @@ class Season{
     return L }
   top25(prev){
     return this.poll.order().slice(0,25).map((t,i)=>({
-      rank:i+1,team:t,conf:CONF[t],rec:this.rec[t][0]+"-"+this.rec[t][1],
+      rank:i+1,team:t,conf:CONF[t],rec:LEAGUE.recText?LEAGUE.recText(t,this):this.rec[t][0]+"-"+this.rec[t][1],
       prev:prev?prev[t]:0,delta:prev&&prev[t]?prev[t]-(i+1):null}));
   }
   standings(prev){

@@ -1,5 +1,5 @@
 {
- "fp": "d36f08efafdd32be",
+ "fp": "b12379d7f156f86e",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -145,6 +145,11 @@
    "fp": "d36f08efafdd32be",
    "from": "be49be4570da39f2",
    "note": "Football: more calls in live games (hot seat coaches play live)"
+  },
+  {
+   "fp": "b12379d7f156f86e",
+   "from": "d36f08efafdd32be",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games; pro basketball and hockey seasons drawn with schedOrder (deterministic); hockey history rows keep overtime losses. Control build with those held back matched the previous fingerprints in all six."
   }
  ],
  "out": [
@@ -158,16 +163,16 @@
       "result": "Won the Citrus Bowl",
       "grade": "B-"
      },
-     "book": "bd8654cb2e25ee72"
+     "book": "d304c1f1a82cdf0b"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "9-5",
-      "result": "Won the Boca Raton Bowl",
+      "rec": "8-6",
+      "result": "Lost the Boca Raton Bowl",
       "grade": "A+"
      },
-     "book": "8c7b35f5e8cc8bb2"
+     "book": "108f8423f9e0ef4d"
     }
    ]
   },
@@ -181,16 +186,16 @@
       "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "6602191fadfc94d8"
+     "book": "4da6d292d1e830e8"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Won the LA Bowl",
-      "grade": "A+"
+      "rec": "2-10",
+      "result": "No bowl game",
+      "grade": "C"
      },
-     "book": "76af7002cc8c0220"
+     "book": "a67fe9ad57774100"
     }
    ]
   },
@@ -204,16 +209,16 @@
       "result": "Eliminated in the semifinals",
       "grade": "A"
      },
-     "book": "7377c717cdeb91ba"
+     "book": "b11f552ac97ae4cc"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "6-7",
+      "result": "Lost the New Orleans Bowl",
+      "grade": "A-"
      },
-     "book": "d22076abbdf51e45"
+     "book": "d8f87769a74c6e4d"
     }
    ]
   }

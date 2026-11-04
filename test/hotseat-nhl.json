@@ -1,5 +1,5 @@
 {
- "fp": "d24abb7056962ef1",
+ "fp": "20eaedf45125a86e",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -110,6 +110,11 @@
    "fp": "d24abb7056962ef1",
    "from": "64e5a40d9979fd86",
    "note": "Round 8: hockey asks about the goalie only on split evidence"
+  },
+  {
+   "fp": "20eaedf45125a86e",
+   "from": "d24abb7056962ef1",
+   "note": "Nov 2026 round 12: half-time questions skipped in decided games; pro basketball and hockey seasons drawn with schedOrder (deterministic); hockey history rows keep overtime losses. Control build with those held back matched the previous fingerprints in all six."
   }
  ],
  "out": [
@@ -119,20 +124,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "41-30-13",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "44-26-14",
+      "result": "Lost in the conference final",
+      "grade": "A-"
      },
-     "book": "86808b4c48ee9367"
+     "book": "86bac56c34da77ac"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "46-30-8",
-      "result": "Lost in the conference final",
-      "grade": "A"
+      "rec": "43-26-15",
+      "result": "Lost in the first round",
+      "grade": "B"
      },
-     "book": "ba53d121c8d284e4"
+     "book": "3682c600249bb61c"
     }
    ]
   },
@@ -142,20 +147,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "25-44-15",
+      "rec": "34-35-15",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "f191b6a49a4dfbc5"
+     "book": "9f8cc0a41ea6185d"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "46-26-12",
-      "result": "Lost in the second round",
-      "grade": "A-"
+      "rec": "32-39-13",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "8325d664feba17a2"
+     "book": "b7f798a3b16ef768"
     }
    ]
   },
@@ -165,20 +170,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "51-25-8",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "45-28-11",
+      "result": "Missed the playoffs",
+      "grade": "C"
      },
-     "book": "d4afc26682e1d866"
+     "book": "33a9ccbe71969899"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "29-44-11",
+      "rec": "31-37-16",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "3193ed1d53150fc7"
+     "book": "d2e15c6d1c67ddb7"
     }
    ]
   }
