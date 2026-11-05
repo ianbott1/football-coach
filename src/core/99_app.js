@@ -398,6 +398,7 @@ function auditTrophies(){
   if(C.ach.century&&careerNow(C).w<100)delete C.ach.century;
 }
 
+let replaceAsk=false;        // the title screen asking which career a new one replaces (all slots full)
 let lockNew=false;           // a schedule lock made on this load, not yet saved (rebuild)
 let introAt=null;            // the "How to play" page showing, or null: never in a save
 let saveOK=null;                     // did the last save land? null = not tried yet
@@ -2943,7 +2944,7 @@ function pickList(q){
 }
 
 function bindPicks(){
-  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>tapTwice(b,`Coach ${esc(b.dataset.t)}? Tap again to start`,()=>{
+  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>tapTwice(b,`<span class="pname">Tap again to start</span>`,()=>{   // short: the long question wrapped a word to a line on a small card (Grokbot)
     const want=(S.setup&&S.setup.coaches)||1;
     if(want>1){
       S.picking=S.picking||[];
@@ -3030,7 +3031,15 @@ function renderTitle(){
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
            <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} ${s.now.done?"finished":"so far"}: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
              ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
-           </button><button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button></div>`).join("")}</div>
+           </button>${replaceAsk
+             ?`<button class="slotdel repl" data-repl="${s.n}" aria-label="Replace the career in slot ${s.n} with a new one">Replace</button>`
+             :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}</div>`).join("")}</div>
+    ${(()=>{ if(!slots.length||slots.some(x=>x.empty||x.broken))return "";
+      // every slot full: a way into a new career (Muse: no entry point at all, short of erasing first)
+      return replaceAsk
+        ? `<div class="note">Pick the career to replace. Replacing erases it: to keep it, open it and save a backup file first.</div>
+           <button class="introskip wide" id="tnewx">Cancel</button>`
+        : `<button class="introskip wide" id="tnew">Start a new career</button>` })()}
     <button class="introskip wide" id="thow">How to play</button>
     <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
@@ -3041,6 +3050,12 @@ function renderTitle(){
     tapTwice(b,"Tap again to erase",async()=>{
       try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){} await bumpRev(+b.dataset.del);
       S._slots=await allSlots(); render() }) });
+  const tn=el("tnew"); if(tn)tn.onclick=()=>{ replaceAsk=true; render() };
+  const tx=el("tnewx"); if(tx)tx.onclick=()=>{ replaceAsk=false; render() };
+  document.querySelectorAll("[data-repl]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const n=+b.dataset.repl;
+    tapTwice(b,"Tap again to replace",async()=>{
+      try{await store.delete(KEYFOR(n))}catch(e){} await bumpRev(n); replaceAsk=false;
+      S._slots=await allSlots(); render(); const e=document.querySelector(`[data-slot="${n}"]`); if(e)e.click() }) });
   document.querySelectorAll("[data-copyback]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
     tapTwice(b,"Tap again to bring it back",async()=>{ const c=await readCopy(), n=+b.dataset.copyback; if(!c||c.n!==n)return;
       try{ await store.set(KEYFOR(n),c.v) }catch(e){} await bumpRev(n); S._slots=await allSlots(); render() }) });

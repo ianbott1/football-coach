@@ -1,5 +1,5 @@
 {
- "fp": "b12379d7f156f86e",
+ "fp": "92f911757268b777",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -160,6 +160,11 @@
    "fp": "b12379d7f156f86e",
    "from": "b12379d7f156f86e",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "92f911757268b777",
+   "from": "b12379d7f156f86e",
+   "note": "Nov 2026 round 20: after a turnover or a missed kick the next drive starts at the spot (it was random). College calibration 54.8 ppg (target ~54), pro 46.5 (NFL ~44-46)."
   }
  ],
  "out": [
@@ -173,16 +178,16 @@
       "result": "Won the Citrus Bowl",
       "grade": "B-"
      },
-     "book": "d304c1f1a82cdf0b"
+     "book": "4a89107d465d422c"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-6",
-      "result": "Lost the Boca Raton Bowl",
-      "grade": "A+"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
      },
-     "book": "108f8423f9e0ef4d"
+     "book": "91eed0d8e040ba48"
     }
    ]
   },
@@ -192,20 +197,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "15-1",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "9-4",
+      "result": "Eliminated in the first round",
+      "grade": "C+"
      },
-     "book": "4da6d292d1e830e8"
+     "book": "faeb0b2ee1aae3ed"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
+      "rec": "5-7",
       "result": "No bowl game",
-      "grade": "C"
+      "grade": "B"
      },
-     "book": "a67fe9ad57774100"
+     "book": "d025b995082e70fd"
     }
    ]
   },
@@ -215,20 +220,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-3",
-      "result": "Eliminated in the semifinals",
-      "grade": "A"
+      "rec": "15-1",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "b11f552ac97ae4cc"
+     "book": "b52da39131d9ac66"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the New Orleans Bowl",
-      "grade": "A-"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
      },
-     "book": "d8f87769a74c6e4d"
+     "book": "980100a6c3e3939c"
     }
    ]
   }

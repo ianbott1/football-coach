@@ -36,7 +36,8 @@ const SC_BASE = {
   flank:{right:1.17, wrong:0.93}, // overloading their weak flank, or the wrong one
   cueTrue:0.6,       // commentary that describes how a side really plays (else a random approach)
   flankTell:2.0,     // attacks that get through down the weak flank, against the other
-  favW:4,            // a club's usual approach: this many times as likely as any other
+  favW:7,            // a club's usual approach: this many times as likely as any other (was 4: the report's top
+                     // approach was the one played 49% of the time; Instinct: about two-thirds. Nov 2026)
   scouted:6,         // games in a scouting report
   misprep:{own:0.93, opp:1.05},  // set up from kick-off for the wrong thing: out of shape until you change it
   prepped:{own:1.05, opp:0.95}   // ...and for the right thing: drilled all week, sharper than a change made mid-game

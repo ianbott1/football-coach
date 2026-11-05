@@ -1,5 +1,5 @@
 {
- "fp": "57a2c62ec19ed0b9",
+ "fp": "c16b995b911e48a5",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -160,6 +160,11 @@
    "fp": "57a2c62ec19ed0b9",
    "from": "57a2c62ec19ed0b9",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "c16b995b911e48a5",
+   "from": "57a2c62ec19ed0b9",
+   "note": "Nov 2026 round 20: after a turnover or a missed kick the next drive starts at the spot (it was random). College calibration 54.8 ppg (target ~54), pro 46.5 (NFL ~44-46)."
   }
  ],
  "out": [
@@ -169,20 +174,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost the conference championship",
-      "grade": "B+"
+      "rec": "15-2",
+      "result": "Lost in the divisional round",
+      "grade": "A"
      },
-     "book": "1eaf031242bd90d6"
+     "book": "036576673f72f1dd"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "6-11",
+      "rec": "5-12",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "660ae1e2a4749901"
+     "book": "8a1049db7c388459"
     }
    ]
   },
@@ -192,20 +197,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the divisional round",
+      "rec": "11-6",
+      "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "3610df9549968f92"
+     "book": "1d80491bc3169954"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "11-6",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "10-7",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "3bd2ea6d579cc212"
+     "book": "8ab7995f8e448fd7"
     }
    ]
   },
@@ -215,20 +220,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the wild card round",
-      "grade": "B"
+      "rec": "12-5",
+      "result": "Lost in the divisional round",
+      "grade": "A-"
      },
-     "book": "2a3fb2388002520a"
+     "book": "c18dccf04d1ee73e"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "13-4",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "11-6",
+      "result": "Lost in the wild card round",
+      "grade": "A-"
      },
-     "book": "ecd6a3ef16bf9c50"
+     "book": "f4afc9c670663cae"
     }
    ]
   }

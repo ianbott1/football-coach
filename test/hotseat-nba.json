@@ -1,5 +1,5 @@
 {
- "fp": "1af594f376f266c0",
+ "fp": "47637b59c80e5d5f",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -105,6 +105,11 @@
    "fp": "1af594f376f266c0",
    "from": "b1572df107eaef6a",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "47637b59c80e5d5f",
+   "from": "1af594f376f266c0",
+   "note": "Nov 2026 round 20: the winning-streak objective is 6 in a row over seasons of 60+ games."
   }
  ],
  "out": [
@@ -173,7 +178,7 @@
       "result": "Lost in the play-in",
       "grade": "C+"
      },
-     "book": "19e3805396cb7e70"
+     "book": "83a974231feb8728"
     }
    ]
   }

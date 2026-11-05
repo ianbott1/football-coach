@@ -1,5 +1,5 @@
 {
- "fp": "c5ea84f72feb3a63",
+ "fp": "a94739361ff0cf17",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -190,6 +190,11 @@
    "fp": "c5ea84f72feb3a63",
    "from": "445a2133257021bc",
    "note": "Nov 2026 round 17: screen text only (graded calls list every option's replay rate on one scale; reads the card hadn't marked aren't counted; hockey career keeps this season's overtime losses in the offseason). Results identical to db42841 field by field."
+  },
+  {
+   "fp": "a94739361ff0cf17",
+   "from": "c5ea84f72feb3a63",
+   "note": "Nov 2026 round 20: the winning-streak objective is 6 in a row over seasons of 60+ games (5 was met in 24 of 24 hockey seasons). The only change this round touching pro basketball."
   }
  ],
  "result": {
@@ -204,7 +209,7 @@
     "heis": "92af6728a86e8a51",
     "history": "240bc20a04c68095",
     "universe": "6752e6df34bbb45a",
-    "screens": "6be7acbae61e8317"
+    "screens": "e95d15ee3e1d5a77"
    },
    {
     "year": 2027,
@@ -216,7 +221,7 @@
     "heis": "f05067ed4a16dbc5",
     "history": "33fea9a4f477b4c2",
     "universe": "f0a1b3ff65fd76cd",
-    "screens": "3ccfaa4d7b4e1bd5"
+    "screens": "78162975074a36d7"
    }
   ],
   "Detroit#777": [
@@ -230,7 +235,7 @@
     "heis": "bd7234824f88d455",
     "history": "89cf828b131144f8",
     "universe": "d17e4fe44c0ece14",
-    "screens": "acfca9c76287782d"
+    "screens": "1b2ee4122d610073"
    },
    {
     "year": 2027,
@@ -242,7 +247,7 @@
     "heis": "07c01106df0c9f70",
     "history": "fe4c87aa9446e46e",
     "universe": "9d2b2cac708c3f67",
-    "screens": "1c792504cdc2013a"
+    "screens": "d27d1fc0b893aebc"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "f2afdc1f401a9b84",
+ "fp": "c9dd4c5e92ebda29",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -130,6 +130,11 @@
    "fp": "f2afdc1f401a9b84",
    "from": "95ea525d91d020ec",
    "note": "Nov 2026 round 18: hockey's pay curve bends (cheaper middles, steeper top, max from ~70) for contracts signed from now on. Every other game unchanged; a hockey save from 26d992f replays identically mid-season and mid-offseason."
+  },
+  {
+   "fp": "c9dd4c5e92ebda29",
+   "from": "f2afdc1f401a9b84",
+   "note": "Nov 2026 round 20: a club's usual system is 5 times as likely (was 4): the scouting report's top system was played 64% of the time in real games, now 68%."
   }
  ],
  "out": [
@@ -139,20 +144,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-26-14",
-      "result": "Lost in the conference final",
-      "grade": "A-"
+      "rec": "40-29-15",
+      "result": "Lost in the second round",
+      "grade": "B"
      },
-     "book": "91e5e4af0cadd625"
+     "book": "77747067bda4de3a"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "43-26-15",
-      "result": "Lost in the first round",
-      "grade": "B"
+      "rec": "36-36-12",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "2a993d87762a294b"
+     "book": "06b09b78876ac5a8"
     }
    ]
   },
@@ -162,20 +167,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-33-13",
+      "rec": "41-28-15",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "accbec32eb7205db"
+     "book": "d1d070cc1a6acf76"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "38-31-15",
+      "rec": "37-32-15",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "50ad2b4563596dd0"
+     "book": "361e0caf24b8f2ea"
     }
    ]
   },
@@ -185,20 +190,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "52-26-6",
+      "rec": "42-27-15",
       "result": "Lost in the first round",
       "grade": "B"
      },
-     "book": "21618819be4b8187"
+     "book": "3777d3307b39af3f"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "34-37-13",
+      "rec": "36-34-14",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "a980d237e3922dd3"
+     "book": "2037a498d3694b24"
     }
    ]
   }

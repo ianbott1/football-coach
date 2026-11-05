@@ -109,7 +109,11 @@ class Season{
     // a game already played out live: match on the user's team so the ordering
     // a round happens to use can never lose the result
     const list=this.forcedList||(this.forced?[this.forced]:[]);
-    const fi=list.findIndex(F=>(a===F.team||b===F.team)&&(a===F.other||b===F.other)&&(F.cup===undefined||!!F.cup===cup));
+    // a cup tie takes only a cup result and a league game only a league one: a league result saves no cup
+    // flag, so it matched a cup tie against the same side in the same round, and the replay gave the cup
+    // tie the league score (Arsenal beat Brighton 2-1 in the cup, lost 2-3 in the league; replayed, the cup
+    // tie was 2-3 and the season after it changed)
+    const fi=list.findIndex(F=>(a===F.team||b===F.team)&&(a===F.other||b===F.other)&&!!F.cup===!!cup);
     if(fi>=0){
       const F=list[fi];
       list.splice(fi,1);

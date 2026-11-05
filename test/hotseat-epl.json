@@ -1,5 +1,5 @@
 {
- "fp": "197882de31c86255",
+ "fp": "d8a2aaa77bcd8bce",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -145,6 +145,11 @@
    "fp": "197882de31c86255",
    "from": "197882de31c86255",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "d8a2aaa77bcd8bce",
+   "from": "197882de31c86255",
+   "note": "Nov 2026 round 20: a club's usual approach is 7 times as likely (was 4): the scouting report's top approach was played 54% of the time in real matches, now 67%."
   }
  ],
  "out": [
@@ -154,20 +159,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-7-11",
+      "rec": "19-8-11",
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "c22ed294fa8460ec"
+     "book": "d60fa0e57dd50791"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "15-6-17",
-      "result": "Finished 10th in the Premier League",
-      "grade": "B-"
+      "rec": "18-4-16",
+      "result": "Finished 9th in the Premier League",
+      "grade": "B"
      },
-     "book": "80d9f4ddb5cec48e"
+     "book": "e99f0504d88f3988"
     }
    ]
   },
@@ -177,20 +182,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-13-5",
-      "result": "Finished 2nd in the Premier League",
-      "grade": "B"
+      "rec": "17-14-7",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "71e866cf67e0c5a0"
+     "book": "9471b56b54429922"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "15-5-18",
-      "result": "Finished 11th in the Premier League",
-      "grade": "B-"
+      "rec": "10-7-21",
+      "result": "Finished 16th in the Premier League",
+      "grade": "C"
      },
-     "book": "a1788892ea3b8fa2"
+     "book": "a7067c4e5491f79a"
     }
    ]
   },
@@ -200,20 +205,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "24-6-8",
+      "rec": "24-5-9",
       "result": "Finished 3rd in the Premier League",
       "grade": "B"
      },
-     "book": "49493bcb7912fc26"
+     "book": "744872bed3d2084e"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "18-7-13",
-      "result": "Finished 6th in the Premier League",
-      "grade": "B+"
+      "rec": "8-10-20",
+      "result": "Relegated (19th)",
+      "grade": "D"
      },
-     "book": "3f8d127d033735b1"
+     "book": "cfd4ca037f6b7302"
     }
    ]
   }

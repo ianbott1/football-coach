@@ -28,7 +28,9 @@ const BB_COLLEGE = {
   answer:{share:-0.10, p3:-0.03, p2:-0.035, f2:0.85, to:0.035, p2t:-0.015},   // the right defense on their style
   leak:{p2:0.012, p3:0.008},  // the wrong one: easier looks somewhere else
   cueTrue:0.4,          // commentary on a style that is about the real one
-  favW:4,               // a team's usual offense: this many times as likely as any other
+  favW:4,               // a team's usual offense: this many times as likely as any other. The report is right 61% of
+                        // the time in college (70% pro); 5 made it 72%, but more predictable opponents cut March upsets
+                        // (6 v 11 favourites 63.5% to 67.1%, real 61.5), so it stays (Nov 2026)
   scouted:6,            // games in a scouting report
   prepped:{p2:-0.008, p3:-0.008},   // the right defense, drilled all week: sharper than a mid-game switch
   misprep:{p2:0.008, p3:0.006},     // the wrong one from the tip: out of position until you change it

@@ -45,7 +45,7 @@ const HK_BASE = {
   backup:0.006,      // the backup: this much worse than the starter on average
   softBad:0.65, softOk:0.15,   // goals the commentary calls soft: on a bad night, on an ordinary one
   cueTrue:0.5,       // commentary on a system that is about the real one
-  favW:4,            // a club's usual system: this many times as likely as any other
+  favW:5,            // a club's usual system: this many times as likely as any other (4: 61%, as basketball)
   scouted:6,         // games in a scouting report
   misprep:{own:0.93, opp:1.05},  // set up all week for the wrong system: out of shape until you change it
   prepped:{own:1.05, opp:0.95}   // ...for the right one: drilled, sharper than a change made mid-game

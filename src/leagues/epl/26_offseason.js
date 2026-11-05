@@ -247,9 +247,12 @@ function nflPlace(roster,p){
   p.i=POS.findIndex(P=>P.p===p.p);
   const s=roster[p.i], b=roster[BK(p.i)];
   let out=null;
+  // a backup signed or bought this window (keep) isn't pushed out by a later arrival who wasn't: the
+  // newcomer goes instead (Brentford bought a midfielder, an academy graduate cut him, Cardiff had him)
+  const bKeep=b&&b.keep&&!p.keep;
   if(!s){roster[p.i]=p}
-  else if(p.r>s.r){out=b;roster[BK(p.i)]=s;roster[p.i]=p}
-  else {out=b;roster[BK(p.i)]=p}
+  else if(p.r>s.r){ if(bKeep)return p; out=b;roster[BK(p.i)]=s;roster[p.i]=p}
+  else { if(bKeep)return p; out=b;roster[BK(p.i)]=p}
   return out;
 }
 
@@ -388,7 +391,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const R=u.roster[t];
     while(payroll(R)>budgetOf(u,t)){
       let wi=-1,wv=-1;
-      R.forEach((p,i)=>{if(!p||i<POS.length)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});
+      R.forEach((p,i)=>{if(!p||i<POS.length||p.keep)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});   // not one you just signed
       if(wi<0){ // only starters left over: the most overpaid starter goes
         R.forEach((p,i)=>{if(!p)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}})}
       const out=R[wi]; R[wi]=null; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true});

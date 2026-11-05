@@ -177,6 +177,32 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   and hockey, 49% in soccer (four approaches). Instinct's target: about
   two-thirds. Soccer is short; raising it changes matches, so it waits for a
   measured round.
+- Football: after a turnover, a turnover on downs or a missed kick, the next
+  drive starts at the spot (nextStart(rng,kind,at); at = the drive's stall).
+  It was random (~42) whatever the spot. Calibration after: college 54.8
+  points a game (target ~54), pro 46.5 (NFL ~44-46), other targets unmoved.
+- Scouting: a club's usual system is favW times as likely as each other.
+  Measured in real games (report's top system played): soccer 54% -> 67% at
+  favW 7; hockey 64% -> 68% at 5. Basketball stays 4 (college 61%, pro
+  70%): 5 took college to 72% but more predictable opponents cut March
+  upsets (6 v 11 favourites 63.5% -> 67.1%, real 61.5).
+- Replay matching: a played result is matched to a cup tie only if it is a
+  cup result (!!F.cup===!!cup). A league result saves no cup flag, and it
+  took a cup tie against the same side in the same round (soccer reload).
+- Streak objective: 6 in a row for seasons of 60+ games (5 was met 24 of 24
+  in hockey). test/objectives.js checks a type's rate only from 15 samples.
+- Full slots: the title offers "Start a new career", then Replace (two taps)
+  on a career, which erases it and opens the new-career screens there.
+- Football plans rebalanced after the turnover change (aggressive td +0.022,
+  safe fg +0.035): at even strength the three within 0.4 points over 40,000
+  games (test/plans.js; the published build already had safe 51.2 against
+  aggressive 49.5, passing at 5,000 games by luck).
+- Soccer: a player signed or bought this window (keep) isn't pushed out by a
+  later arrival or the wage-cap trim; the newcomer goes instead (Brentford
+  bought a midfielder and an academy graduate cut him).
+- Tests read noise as failure three times this round (objectives "top" 1 of
+  8, recruiting with 3 programs, plans at 5,000 games). Sample sizes raised;
+  each was checked against a much larger run before changing anything.
 - save() returns when no career is open (!S.myTeam). The title screen's
   "How to play" Skip and last Next called save() and wrote an empty career
   over slot 1 in all six games (found by Grokbot; my clean-profile repro

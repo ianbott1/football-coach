@@ -30,9 +30,10 @@ function callMatters(q,diff){ const a=Math.abs(diff); return !(a>=28||(q>=3&&a>=
    and fewer turnovers when safe; more touchdowns and turnovers when
    risky), set so they don't change who wins. See test/plans.js. */
 const AGGR = {
-  safe:      {td:-0.015, fg:+0.040, to:-0.015, gap:1.30},
+  safe:      {td:-0.015, fg:+0.035, to:-0.015, gap:1.30},   // rebalanced Nov 2026 (turnovers now give the ball
+                                                            // at the spot): even strength within 0.4 of each other over 40,000 games
   balanced:  {td: 0,     fg: 0,     to: 0,     gap:1.00},
-  aggressive:{td:+0.015, fg:-0.045, to:+0.030, gap:0.55},
+  aggressive:{td:+0.022, fg:-0.045, to:+0.030, gap:0.55},
   // not a gameplan: the engine's own urgency, for overtime and for a fourth
   // down it has decided to go for (the old "aggressive" numbers)
   urgent:    {td:+0.082, fg:-0.060, to:+0.086, gap:1.00},
@@ -100,8 +101,17 @@ function goOdds(togo, offElo, defElo){
   return Math.max(0.12, Math.min(0.82, base + adj));
 }
 
-/* Where a drive starts, given how the previous one ended. */
-function nextStart(rng, prevKind){
+/* Where a drive starts, given how the previous one ended, and where: a turnover or a miss gives the
+   other side the ball at the spot (it was a random ~42 whatever the spot, so a fumble at their 10 handed
+   them the ball near midfield: "a kickoff after a Denver fumble", "started own 72": Grokbot) */
+function nextStart(rng, prevKind, at){
+  const cl=(x,a,b)=>Math.round(Math.max(a,Math.min(b,x)));
+  if (at!==undefined&&at!==null){
+    if (prevKind === "INT") return cl(100-at+rng.gauss(6,9), 2, 95);      // and a return
+    if (prevKind === "FUM") return cl(100-at+rng.gauss(2,4), 2, 95);
+    if (prevKind === "DOWNS") return cl(100-at, 4, 95);
+    if (prevKind === "MISS") return cl(Math.max(20,100-at+7), 20, 80);   // the spot of the kick, or the 20
+  }
   if (prevKind === "TD" || prevKind === "FG") return Math.round(rng.gauss(26, 6));
   if (prevKind === "PUNT") return Math.round(Math.max(4, Math.min(60, rng.gauss(24, 10))));
   if (prevKind === "INT" || prevKind === "FUM") return Math.round(Math.max(4, Math.min(75, rng.gauss(42, 16))));
@@ -124,7 +134,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   for(let i=0;i<st.total;i++){
     if(st.endAfter!==undefined&&i>st.endAfter)break;   // clock ran out
     const home=i%2===0;
-    const start=nextStart(rng,st.prev);
+    const start=nextStart(rng,st.prev,st.at);
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
     let aggr=home?st.aggrH:st.aggrA;
     if(!(opts.decide&&(home?opts.userIsHome:!opts.userIsHome)))
@@ -167,7 +177,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     if(home)st.h+=res.pts; else st.a+=res.pts;
     st.drives.push({home:home,q:q,start:start,pts:res.pts,kind:res.kind,
                     h:st.h,a:st.a,n:i+1,aggr:aggr});
-    st.prev=res.kind;
+    st.prev=res.kind; st.at=res.stall;
   }
   // overtime rather than an arbitrary tiebreak
   let ot=0;
@@ -249,7 +259,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
                  togo:res.togo||null};
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
     st.drives.push(drive);
-    st.prev=res.kind; st.i++; st.pend=null; st.stage=null;
+    st.prev=res.kind; st.at=res.stall; st.i++; st.pend=null; st.stage=null;
     return drive;
   }
 
@@ -329,7 +339,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       }
     }
 
-    const start=nextStart(rng,st.prev);
+    const start=nextStart(rng,st.prev,st.at);
 
     // ---- strategic call before the snap ----
     if(isUser&&calls()<MAX_CALLS&&!st.stage){
