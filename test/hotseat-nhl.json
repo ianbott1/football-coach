@@ -1,5 +1,5 @@
 {
- "fp": "a141ab7f602818ba",
+ "fp": "95ea525d91d020ec",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -120,6 +120,11 @@
    "fp": "a141ab7f602818ba",
    "from": "20eaedf45125a86e",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "95ea525d91d020ec",
+   "from": "a141ab7f602818ba",
+   "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
   }
  ],
  "out": [
@@ -133,7 +138,7 @@
       "result": "Lost in the conference final",
       "grade": "A-"
      },
-     "book": "86bac56c34da77ac"
+     "book": "271c4f045517454f"
     },
     {
      "team": "Montreal",
@@ -142,7 +147,7 @@
       "result": "Lost in the first round",
       "grade": "B"
      },
-     "book": "3682c600249bb61c"
+     "book": "262d6f040761cda6"
     }
    ]
   },
@@ -156,7 +161,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "9f8cc0a41ea6185d"
+     "book": "dc773a5e5d2004b9"
     },
     {
      "team": "Montreal",
@@ -165,7 +170,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "b7f798a3b16ef768"
+     "book": "9adc788809b64aea"
     }
    ]
   },
@@ -179,7 +184,7 @@
       "result": "Missed the playoffs",
       "grade": "C"
      },
-     "book": "33a9ccbe71969899"
+     "book": "a322473ebf0f9672"
     },
     {
      "team": "Montreal",
@@ -188,7 +193,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "962b4d4fd48449a0"
+     "book": "e503ba391b3e96a4"
     }
    ]
   }

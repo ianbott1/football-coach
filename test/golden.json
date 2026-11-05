@@ -1,5 +1,5 @@
 {
- "fp": "9fa3ee1e6047bcaf",
+ "fp": "0b65da09d01fafe9",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -254,6 +254,11 @@
    "fp": "9fa3ee1e6047bcaf",
    "from": "d2baf1fa349650b8",
    "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
+  },
+  {
+   "fp": "0b65da09d01fafe9",
+   "from": "9fa3ee1e6047bcaf",
+   "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
   }
  ],
  "result": {
@@ -268,7 +273,7 @@
     "heis": "bcce63fa1cc7f731",
     "history": "5b201afb1082757c",
     "universe": "0a04f4b084bb42d4",
-    "screens": "5aa51c46deb262c5"
+    "screens": "e0157bb34c21c6f2"
    },
    {
     "year": 2027,
@@ -280,7 +285,7 @@
     "heis": "9129c8a2e1156820",
     "history": "1f4c432aa3040b96",
     "universe": "b16d0992c97d7d78",
-    "screens": "c67abcd7a16a2e94"
+    "screens": "cf7b2e4370b5edb6"
    },
    {
     "year": 2028,
@@ -292,7 +297,7 @@
     "heis": "ef49f77c05b28ced",
     "history": "f76782175e59f0ca",
     "universe": "164af02c6a28b6b0",
-    "screens": "e8f84e37b10b009b"
+    "screens": "a8c5f2d8bac253dc"
    },
    {
     "year": 2029,
@@ -304,7 +309,7 @@
     "heis": "58dee64359932420",
     "history": "b9ee5172ea33be8f",
     "universe": "5daaf060a53ad8aa",
-    "screens": "28081b5dd7385728"
+    "screens": "f809f3b420696389"
    }
   ],
   "Rice#2024": [
@@ -318,7 +323,7 @@
     "heis": "62c67774006ebb20",
     "history": "e94b7f5d20cebb9e",
     "universe": "5ac0f41140a78dfc",
-    "screens": "ad2a3920c0f2c407"
+    "screens": "6fd858e9a529dbba"
    },
    {
     "year": 2027,
@@ -330,7 +335,7 @@
     "heis": "d4502773801b6a4d",
     "history": "b5729f9e38c814c9",
     "universe": "3d1b62219f3d709c",
-    "screens": "8fe995930454d469"
+    "screens": "a6d7437d494cc398"
    },
    {
     "year": 2028,
@@ -342,7 +347,7 @@
     "heis": "55a301692ea6ca0e",
     "history": "4cfc4e2519a593fb",
     "universe": "18894edbad3c17a9",
-    "screens": "d9b645b938092eac"
+    "screens": "b0ea220717edccca"
    },
    {
     "year": 2029,
@@ -354,7 +359,7 @@
     "heis": "d4265c429a4b0cdf",
     "history": "2e7b4eaa72e410b9",
     "universe": "d1905fdf7f40523e",
-    "screens": "c2452730883739e0"
+    "screens": "2dee24923e7ecb4c"
    }
   ],
   "Oregon#777": [
@@ -368,7 +373,7 @@
     "heis": "5ed593a7c45dd255",
     "history": "79e19aa075b47c78",
     "universe": "b02cda768d151db0",
-    "screens": "6affd875845a1f7a"
+    "screens": "5e6e993c23c4ec99"
    },
    {
     "year": 2027,
@@ -380,7 +385,7 @@
     "heis": "3aba6f0ad131fd36",
     "history": "68255e59ce695ea4",
     "universe": "7944a5d4e212ba07",
-    "screens": "950b8aebcb55dcf6"
+    "screens": "861c1d8baf4adad1"
    },
    {
     "year": 2028,
@@ -392,7 +397,7 @@
     "heis": "2d1e839371a3b83d",
     "history": "0be73668ce0e1a96",
     "universe": "fcf17233693190d5",
-    "screens": "722ab54649b807c2"
+    "screens": "31d401de14e3e26f"
    }
   ],
   "Kent State#31337": [
@@ -406,7 +411,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "18e1978a45c5e27c",
     "universe": "8b2a12652ccc6e09",
-    "screens": "1db3482a1447ed06"
+    "screens": "62176b291781064f"
    },
    {
     "year": 2027,
@@ -418,7 +423,7 @@
     "heis": "0f75b89a469b2b53",
     "history": "7bce1d976c71df52",
     "universe": "d7562469f69cdc89",
-    "screens": "b021a3fff63e672a"
+    "screens": "737b9a5264697a83"
    },
    {
     "year": 2028,
@@ -430,7 +435,7 @@
     "heis": "e20a147e9bbc6e0b",
     "history": "f902066afca5ec87",
     "universe": "2bd2c267484497fe",
-    "screens": "8b0b2bea52b41243"
+    "screens": "a687bcb01ec99a8b"
    }
   ],
   "schedules#60": [

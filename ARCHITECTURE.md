@@ -147,6 +147,18 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   it. test/storage.js checks it.
 - The "How to play" page is a module variable (introAt), never in a save:
   read from S, it only showed with no career loaded.
+- Pro basketball and hockey power rankings rank on a smoothed rating
+  (PowerRank.form: 0.3 of the way to the new Elo each game). Measured:
+  weekly moves of 8+ places fell from 7.1% to 2.6% (basketball) and 5.2%
+  to 1.5% (hockey); the final ranking tracks the standings as well or
+  better. A day's games are listed by rank, so a ranking change reorders
+  the golden "games" hash without changing any result: compare as sets.
+- "year N" for a head coach counts from the season he started (c.since,
+  coachYear()); the c.t count that drives the computer's patience still
+  goes up for a new hire in his first offseason, so don't read it as years.
+- Staff lines at a second read say what changed since the first (Pearl's
+  first read is kept on the second ask as pearl1); picks are unchanged, so
+  "leave it to the assistant" plays the same.
 - save() returns when no career is open (!S.myTeam). The title screen's
   "How to play" Skip and last Next called save() and wrote an empty career
   over slot 1 in all six games (found by Grokbot; my clean-profile repro

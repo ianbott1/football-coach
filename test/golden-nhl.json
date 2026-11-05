@@ -1,5 +1,5 @@
 {
- "fp": "de9a3c4c79efacde",
+ "fp": "7bf9cbaa770e1e51",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -180,59 +180,64 @@
    "fp": "de9a3c4c79efacde",
    "from": "43203ebc86e460a7",
    "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
+  },
+  {
+   "fp": "7bf9cbaa770e1e51",
+   "from": "de9a3c4c79efacde",
+   "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "b60f8aaa5b7b7806",
+    "games": "90dc5b0ee22d0568",
     "post": "cd58e633e964b2e1",
     "champion": "Toronto",
     "rec": "3d0a43f6a488195b",
-    "poll": "cf54987a27563789",
+    "poll": "b1f12eb7274f55a9",
     "heis": "003f71366db13367",
-    "history": "d7e8505680b44a1e",
-    "universe": "5f550e5c1f4c7bbe",
-    "screens": "4adb80ee29539a15"
+    "history": "4e1b33d4973fd7a5",
+    "universe": "9d726b0d367ee1f5",
+    "screens": "22a4d0aa8d9c0c19"
    },
    {
     "year": 2027,
-    "games": "1a8a095491e47782",
+    "games": "4cf4080670d5c920",
     "post": "7cbe8f2f7e9b42e8",
     "champion": "Toronto",
     "rec": "7f0e4006d97653e7",
-    "poll": "3e6be4a0683b938a",
+    "poll": "c3fda57152cce22a",
     "heis": "4c644f1ea124991e",
-    "history": "e789230a0d2f3a36",
-    "universe": "6118c5ee074ab3ec",
-    "screens": "0e664986bbe26429"
+    "history": "fba3860b93026b1a",
+    "universe": "b3827186eaf39e29",
+    "screens": "1e783e1c5d36dc2d"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "d368b38fa49fc9c0",
+    "games": "49531a1a957e4286",
     "post": "08526b4e60097de9",
     "champion": "Minnesota",
     "rec": "305a97af6c7ef8de",
-    "poll": "30cac5d5e617af8a",
+    "poll": "4b8879ecac7822ce",
     "heis": "350200e2d90beccc",
-    "history": "64149adcb5b3e4b6",
-    "universe": "4e76a48367ee25cb",
-    "screens": "617ee493769b70d0"
+    "history": "ba669f3d1704757f",
+    "universe": "4a25db918d543efd",
+    "screens": "3045481960fb090b"
    },
    {
     "year": 2027,
-    "games": "2b4a9b2a7f418d1f",
+    "games": "e38c41dcec6b8aa5",
     "post": "3ce5193dd7586d0f",
     "champion": "Colorado",
     "rec": "13b5adbfb243852b",
-    "poll": "fdd323e26e9eeb69",
+    "poll": "24276e7d583ce4bb",
     "heis": "2fc47010d565d512",
-    "history": "89b640be746535a0",
-    "universe": "55abc8ba1aa036c7",
-    "screens": "e35be8abb1546f58"
+    "history": "0c007b1e1e36b815",
+    "universe": "8d0e10674c7fac2d",
+    "screens": "a6831527321eddd1"
    }
   ],
   "schedules#60": [

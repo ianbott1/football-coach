@@ -888,7 +888,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="7eaaccb";
+<script>const BUILD_ID="955417a";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -6963,10 +6963,11 @@ function playoffPicture(){
     <div class="fnote">${esc(note[t])}</div></div>
     <span class="fcfp">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
     ${i<4?'<span class="byebadge">Bye</span>':''}</div>`).join("");
-  h+=`<div class="grouphead">First four out</div>`;
+  // why a better record can be out (Grokbot: 12-1 Liberty and 11-2 Navy out while 9-3 teams got in)
+  h+=`<div class="grouphead">First four out</div><div class="note">The ranking weighs who you beat, not only your record: a two-loss team from a strong conference can sit above a one-loss team from a weak one, and the at-large places go by the ranking.</div>`;
   h+=out.map(t=>`<div class="frow ${t===my?'mine':''}"><span class="sd">&mdash;</span>
     <span class="dot" style="background:${teamColor(t)}"></span>
-    <div class="fmain"><div class="fname">${esc(t)}</div></div>
+    <div class="fmain"><div class="fname">${esc(t)}</div><div class="fnote">No. ${rk[t]} in the ranking</div></div>
     <span class="fcfp">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span></div>`).join("");
   if(field.indexOf(my)<0)h+=`<div class="note">${esc(my)} is currently outside the field
     at ${rk[my]<=25?"No. "+rk[my]:rk[my]+"th"}.</div>`;
@@ -7025,10 +7026,10 @@ function bracketView(){
       <div class="fnote">${esc(SEA.notes[t]||"")}</div></div>
       <span class="fcfp">${esc(SEA.selRec[t]||"")}</span>
       ${SEA.seeds[t]<=4?'<span class="byebadge">Bye</span>':''}</div>`).join("");
-    h+=`<div class="grouphead">First four out</div>`;
+    h+=`<div class="grouphead">First four out</div><div class="note">The ranking weighs who you beat, not only your record: a two-loss team from a strong conference can sit above a one-loss team from a weak one, and the at-large places go by the ranking.</div>`;
     h+=SEA.firstOut.map(t=>`<div class="frow"><span class="sd">&mdash;</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
-      <div class="fmain"><div class="fname">${esc(t)}</div></div>
+      <div class="fmain"><div class="fname">${esc(t)}</div>${SEA.cfpRank&&SEA.cfpRank[t]?`<div class="fnote">No. ${SEA.cfpRank[t]} in the ranking on selection day</div>`:""}</div>
       <span class="fcfp">${esc(SEA.selRec[t]||"")}</span></div>`).join("");
     return h;
   }

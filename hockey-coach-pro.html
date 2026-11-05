@@ -888,7 +888,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="f0030a4";
+<script>const BUILD_ID="3f9c518";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1880,13 +1880,19 @@ class PowerRank{
       const ga=this.w[a]+this.l[a], gb=this.w[b]+this.l[b];
       // early on, how good a team is outweighs a 1-0 start
       const k=Math.min(1,Math.max(ga,gb)/(LEAGUE.schedule.games*0.35));   // record counts fully after a third of the season (the NFL's six of 17)
-      const sa=k*this.pct(a)*400+this.elo[a], sb=k*this.pct(b)*400+this.elo[b];
+      const sa=k*this.pct(a)*400+this.form(a), sb=k*this.pct(b)*400+this.form(b);
       return sb-sa;
     });
   }
   rankMap(){const o=this.order(),m={};o.forEach((t,i)=>m[t]=i+1);return m}
+  /* how good a team looks: its rating, smoothed over its last few games. One night moved a team
+     several places (Grokbot: #3 at 0-0 to #14 at 4-6; #8, #9, #4 inside a playoff round; measured
+     7% of weekly moves were 8+ places, against about 2 for a published power ranking) */
+  form(t){ return this.sm&&this.sm[t]!==undefined?this.sm[t]:this.elo[t] }
   update(res,elo){
-    res.forEach(r=>{this.w[r.winner]++; this.l[r.loser]++});
+    this.sm=this.sm||Object.assign({},this.elo);
+    res.forEach(r=>{this.w[r.winner]++; this.l[r.loser]++;
+      [r.winner,r.loser].forEach(t=>{ this.sm[t]+=0.3*(elo[t]-this.sm[t]) }) });
     NAMES.forEach(t=>{this.elo[t]=elo[t]});
     return this.rankMap();
   }

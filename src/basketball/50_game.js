@@ -346,10 +346,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(st.queue.length)return st.next() }
     // the reads: end of the first quarter (two segments), and the half
     if(s===2&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
-        if(humans[sd])queueCall(sd,readCall(1,O.tell,O.lastCue)); else readIt(sd,0.45) });
+        if(humans[sd]){ const d=readCall(1,O.tell,O.lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) } else readIt(sd,0.45) });
       if(st.queue.length)return st.next()}
     if(s===4&&!st.halfDone){st.halfDone=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
-        if(humans[sd])queueCall(sd,readCall(2,O.tell,O.lastCue,st.S[sd].def)); else if(rng.r()<0.3)readIt(sd,1) });
+        if(humans[sd]){ const d=readCall(2,O.tell,O.lastCue,st.S[sd].def); d.pearl1=(st.p1||{})[sd]; queueCall(sd,d) } else if(rng.r()<0.3)readIt(sd,1) });   // what Pearl read the first time
       queueCalls("half"); if(st.queue.length)return st.next()}
     if(s===SEGS-1&&!st.lateDone){st.lateDone=true; queueCalls("late"); if(st.queue.length)return st.next()}
     if(s===SEGS&&!st.lastDone){
