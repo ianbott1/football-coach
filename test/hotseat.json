@@ -1,5 +1,5 @@
 {
- "fp": "d57657fbe9530816",
+ "fp": "f16e81309c43de39",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -180,6 +180,11 @@
    "fp": "d57657fbe9530816",
    "from": "d57657fbe9530816",
    "note": "Round 23: hockey goalie call only within two goals; staff never repeat a sentence in a game; featuring scaled by the player. Controls: hockey without the goalie gate matches the last commit; college football differs only in screens."
+  },
+  {
+   "fp": "f16e81309c43de39",
+   "from": "d57657fbe9530816",
+   "note": "Round 24: punts land from where they're kicked (they started the opponent at ~24 from anywhere); fourth downs asked only with the game in reach (rough win chance 10-90%). Calibration unchanged (college 54.8 pts/game, favourites 0.699; pro 46.1, 0.694). Results change from season 1 (fewer asks shift the replies)."
   }
  ],
  "out": [
@@ -189,20 +194,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-3",
+      "rec": "11-3",
       "result": "Won the Citrus Bowl",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "735c94d3938c358d"
+     "book": "7e30bbf6ff75a31d"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "7-6",
+      "result": "Won the Myrtle Beach Bowl",
+      "grade": "A"
      },
-     "book": "dd1665b3830d66d4"
+     "book": "c3455bd0bbda8fa5"
     }
    ]
   },
@@ -212,20 +217,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Eliminated in the first round",
-      "grade": "C+"
+      "rec": "11-3",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A-"
      },
-     "book": "59d0300895abdeac"
+     "book": "c1b6c9ce61276614"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "4-8",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "855b0d81aebf2738"
+     "book": "43660ebc88ca2c3b"
     }
    ]
   },
@@ -235,20 +240,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-3",
-      "result": "Won the Citrus Bowl",
-      "grade": "B-"
+      "rec": "13-2",
+      "result": "Eliminated in the semifinals",
+      "grade": "A+"
      },
-     "book": "5924a6ae98b8b080"
+     "book": "717c0dcff7ed9c2b"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
-      "result": "No bowl game",
-      "grade": "C+"
+      "rec": "8-5",
+      "result": "Lost the LA Bowl",
+      "grade": "A+"
      },
-     "book": "7d45f14dcc20f80f"
+     "book": "de5aa07d715361f9"
     }
    ]
   }

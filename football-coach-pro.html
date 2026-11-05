@@ -891,7 +891,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="54362d5";
+<script>const BUILD_ID="8800ae6";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -2576,6 +2576,11 @@ const MAX_CALLS = 6;          // how many decisions a single game will ask of yo
 /* a call worth asking: not in a game that's decided (a fourth and 12 at 37-17, a fourth and 1
    down 27 were asked and graded irrelevant: Instinct, Grokbot) */
 function callMatters(q,diff){ const a=Math.abs(diff); return !(a>=28||(q>=3&&a>=21)||(q===4&&a>=17)) }
+/* a rough chance of winning from the score, the quarter and the strengths: a fourth down asked when it was
+   under 10% or over 90% moved 2.2-2.9 points; between, 9.2 (test/call-weight.js, 276 calls, Nov 2026; strength /15 fitted: kept 9.2, dropped 3.2) */
+function inReach(q,diff,edge){ const frac=Math.max(0.05,(4-Math.min(4,q)+0.5)/4), z=(diff+edge/15*frac)/(13*Math.sqrt(frac));
+  const p=0.5*(1+erfApprox(z/Math.SQRT2)); return p>=0.1&&p<=0.9 }
+function erfApprox(x){ const t=1/(1+0.3275911*Math.abs(x)), y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x); return x>=0?y:-y }
 
 /* Aggression presets, used both as a pre-game plan and as an in-game choice. */
 /* A gameplan is a trade between talent and chance. gap scales how much the
@@ -2660,6 +2665,7 @@ function goOdds(togo, offElo, defElo){
 /* Where a drive starts, given how the previous one ended, and where: a turnover or a miss gives the
    other side the ball at the spot (it was a random ~42 whatever the spot, so a fumble at their 10 handed
    them the ball near midfield: "a kickoff after a Denver fumble", "started own 72": Grokbot) */
+const PUNT_GROSS=45;
 function nextStart(rng, prevKind, at){
   const cl=(x,a,b)=>Math.round(Math.max(a,Math.min(b,x)));
   if (at!==undefined&&at!==null){
@@ -2667,6 +2673,10 @@ function nextStart(rng, prevKind, at){
     if (prevKind === "FUM") return cl(100-at+rng.gauss(2,4), 2, 95);
     if (prevKind === "DOWNS") return cl(100-at, 4, 95);
     if (prevKind === "MISS") return cl(Math.max(20,100-at+7), 20, 80);   // the spot of the kick, or the 20
+    // a punt goes from where it's kicked: ~45 yards and a short return, or a touchback. It was the
+    // opponent's 24 whatever the spot, so punting from your own 10 cost nothing and pinning them from
+    // midfield gained nothing, and going for it won most fourth downs (Instinct)
+    if (prevKind === "PUNT"){ const land=100-at-rng.gauss(PUNT_GROSS,7); return land<=0?20:cl(land+Math.max(0,rng.gauss(6,5)),2,70) }
   }
   if (prevKind === "TD" || prevKind === "FG") return Math.round(rng.gauss(26, 6));
   if (prevKind === "PUNT") return Math.round(Math.max(4, Math.min(60, rng.gauss(24, 10))));
@@ -2915,7 +2925,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
 
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
-      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)){
+      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
         if(dp){
           used.fourth=(used.fourth||0)+1; called();

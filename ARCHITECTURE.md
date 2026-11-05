@@ -121,6 +121,16 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Fourth downs (round 24, Instinct: "all 3 fourth downs favoured go"):
+- Punts were the opponent's ~24 from anywhere, so punting from your own 10
+  cost nothing and pinning them from midfield gained nothing. Now a punt
+  travels ~45 yards from the spot with a short return, or a touchback
+  (nextStart, PUNT_GROSS). Scoring and favourites unchanged.
+- Asked only with the game in reach (inReach: a rough win chance from the
+  score, quarter and strengths, 10-90%). Outside it a fourth down moved
+  ~3 points; inside, ~9 (276 calls). Best answer before: go 63% of clear
+  calls; after: go 52%, punt 34%, kick 14%.
+
 Featuring's edge scales with the player (featureEdge, core/80_season.js):
 FEATURE_EDGE x (1 + (rating - starters' average)/12), held to 0.5-1.3.
 
