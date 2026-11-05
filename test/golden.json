@@ -1,5 +1,5 @@
 {
- "fp": "7e2781e8fd93579a",
+ "fp": "6859a9134209cb62",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -274,6 +274,11 @@
    "fp": "7e2781e8fd93579a",
    "from": "cb84fb8d0df5a136",
    "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "6859a9134209cb62",
+   "from": "7e2781e8fd93579a",
+   "note": "Round 23: hockey goalie call only within two goals; staff never repeat a sentence in a game; featuring scaled by the player. Controls: hockey without the goalie gate matches the last commit; college football differs only in screens."
   }
  ],
  "result": {
@@ -288,7 +293,7 @@
     "heis": "e8012c88032629e6",
     "history": "56e1449c3a4ccdaf",
     "universe": "bf4a784d2b0340b0",
-    "screens": "186b50b68028d040"
+    "screens": "ffa65a59343f2891"
    },
    {
     "year": 2027,
@@ -300,7 +305,7 @@
     "heis": "eb11c51ab24e000a",
     "history": "3e3910aa9aecf9b0",
     "universe": "528a21b142209927",
-    "screens": "b29165cbff219439"
+    "screens": "62d25373a47d5c4e"
    },
    {
     "year": 2028,
@@ -312,7 +317,7 @@
     "heis": "5f5a29a6c1bc46b6",
     "history": "529d94236d099730",
     "universe": "c8ccec1ecf33f904",
-    "screens": "fddf42a822e707b3"
+    "screens": "438df9ad3cf98f89"
    },
    {
     "year": 2029,
@@ -324,7 +329,7 @@
     "heis": "2b52c817522ff2f6",
     "history": "89ca17e1a4d28b21",
     "universe": "dbff39863773df8c",
-    "screens": "c4c90dde9140a357"
+    "screens": "2f09371e49f6f88f"
    }
   ],
   "Rice#2024": [
@@ -338,7 +343,7 @@
     "heis": "d50fc447a311bacd",
     "history": "6237c809d8ccacca",
     "universe": "3722c757bb6e8e6f",
-    "screens": "7e96874fdd5b9bb8"
+    "screens": "3806b677f5d39c48"
    },
    {
     "year": 2027,
@@ -350,7 +355,7 @@
     "heis": "c54b6a14dfae0351",
     "history": "34a57757d76ac115",
     "universe": "5930314970b76194",
-    "screens": "b9e90073597a5a71"
+    "screens": "a00a6d1548923fb3"
    },
    {
     "year": 2028,
@@ -362,7 +367,7 @@
     "heis": "4029c31b9f65d78d",
     "history": "356c8de65491ee58",
     "universe": "74d0be42dd498d82",
-    "screens": "c70d6ae3d7d3e84a"
+    "screens": "4c4bc49e5e842a80"
    },
    {
     "year": 2029,
@@ -374,7 +379,7 @@
     "heis": "54403450fd58ed26",
     "history": "f12c0e49c8fd2b75",
     "universe": "eb23feb2e9531bfc",
-    "screens": "50051827c7f1938b"
+    "screens": "4df9d962027d3c59"
    }
   ],
   "Oregon#777": [
@@ -388,7 +393,7 @@
     "heis": "f961e0c509d66899",
     "history": "cc836f29383ccee7",
     "universe": "f6d799bc408c148b",
-    "screens": "bf990e98c4da4d5d"
+    "screens": "cdc4d67c5c66b5ce"
    },
    {
     "year": 2027,
@@ -400,7 +405,7 @@
     "heis": "9b1d4d79acc1e686",
     "history": "4fb52001c2263971",
     "universe": "f21ddf50e70d5c66",
-    "screens": "00f0fc3d54e87789"
+    "screens": "400b11311d8ef428"
    },
    {
     "year": 2028,
@@ -412,7 +417,7 @@
     "heis": "81dc67e1b8887d17",
     "history": "29639d5a2f59f3d4",
     "universe": "3b08b3106817ff35",
-    "screens": "cfc2c830a4373a4a"
+    "screens": "19b5103825f710e6"
    }
   ],
   "Kent State#31337": [
@@ -426,7 +431,7 @@
     "heis": "a8657824a899f58e",
     "history": "b1b8397d716cfd30",
     "universe": "f2f9222b2644a400",
-    "screens": "30762527722ba826"
+    "screens": "7ec0ac7ddc28b0fa"
    },
    {
     "year": 2027,
@@ -438,7 +443,7 @@
     "heis": "0bf337ae8cdd5650",
     "history": "7e405d42caa9cd93",
     "universe": "a8f3b923ab7802cf",
-    "screens": "c32b1919e70f8b62"
+    "screens": "43611a70d57b9289"
    },
    {
     "year": 2028,
@@ -450,7 +455,7 @@
     "heis": "966798a9450c2bb2",
     "history": "2f0275bf2ae5295e",
     "universe": "057653ec016dc62b",
-    "screens": "08522d1b76d87e32"
+    "screens": "df3123afb8a72be5"
    }
   ],
   "schedules#60": [

@@ -176,7 +176,7 @@ function liveCallView(){
       <div class="callsub">${esc(dp.b)}</div>
     </div>
     <div class="grouphead staffhead">The staff room</div>
-    <div class="staffroom">${staffTake(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
+    <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
         <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>

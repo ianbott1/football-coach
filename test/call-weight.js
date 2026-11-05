@@ -1,7 +1,7 @@
 /* How much each kind of call matters: for every call in a run of live games, the rest of the game
    replayed many times under each option; the spread between the best and the worst option's win rate.
    Ian's rule (Nov 2026): better decisions, not more; a call worth under about a point gets rebalanced
-   or cut.   node test/call-weight.js [file.html] [games=30] [runs=40]      env BY_H=late,pull: those kinds by situation
+   or cut.   node test/call-weight.js [file.html] [games=30] [runs=40]      env BY_H=late,pull: those kinds by situation; BY_F=ga,soft: by those fields of the call instead
    Nov 2026, before -> after round 21: soccer late 1.6 -> 5.5 (70', within a goal, sharper modes), soccer half 3.1 -> 5.1,
    hockey pull 1.7 -> 2.1 (down one only; the real choice is small), football protect gated at a 10-point lead.
    Strongest: game plan and reads, 10-16 points a call in every game but football. */
@@ -20,7 +20,7 @@ while(games<G&&A.SEA.phase!=='done'){ A.doAdvance(); let n=0;
     const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; return mine>th?1:mine===th?0.5:0 };
   const asks=[]; { const e=A.makeLiveGame(new A.RNG(seed),...L.args); let i=0,g=0; while(g++<3000){ const r=e.next(); if(r.done)break; if(r.ask){ asks.push(r.ask); e.reply(ans[i]!==undefined?ans[i]:A.impactDefault(r.ask)); i++ } } }
   asks.forEach((dp,j)=>{ const rates=dp.opts.map(o=>{ let s=0; for(let m=0;m<RUNS;m++)s+=play(j,o[0],m); return 100*s/RUNS });
-    const spread=Math.max(...rates)-Math.min(...rates), k=dp.k; const B=by[k]=by[k]||{n:0,sp:[],h:{}}; B.n++; B.sp.push(spread); (B.h[dp.h]=B.h[dp.h]||[]).push(spread) }) }
+    const spread=Math.max(...rates)-Math.min(...rates), k=dp.k; const B=by[k]=by[k]||{n:0,sp:[],h:{}}; B.n++; B.sp.push(spread); { const hk=process.env.BY_F?process.env.BY_F.split(',').map(f=>f+'='+(typeof dp[f]==='number'?Math.round(dp[f]):dp[f])).join(' '):dp.h; (B.h[hk]=B.h[hk]||[]).push(spread) } }) }
 const avg=a=>a.reduce((s,x)=>s+x,0)/a.length, q=(a,p)=>{const b=a.slice().sort((x,y)=>x-y);return b[Math.floor(p*(b.length-1))]};
 console.log(`${path.basename(file)}: ${games} live games, ${RUNS} replays per option`);
 Object.entries(by).sort((a,b)=>avg(b[1].sp)-avg(a[1].sp)).forEach(([k,B])=>{ console.log(`  ${k.padEnd(10)} ${String(B.n).padStart(3)} calls (${(B.n/games).toFixed(1)} a game) | best vs worst option: average ${avg(B.sp).toFixed(1)} pts, median ${q(B.sp,.5).toFixed(0)}, 90th ${q(B.sp,.9).toFixed(0)} | under 3 pts: ${(100*B.sp.filter(x=>x<3).length/B.n).toFixed(0)}%`);

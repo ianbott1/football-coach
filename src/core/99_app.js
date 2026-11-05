@@ -1198,7 +1198,7 @@ function winProb(me,opp,atHome,neutral){
 function ownEdge(){
   let e=0; const R=SEA.roster&&SEA.roster[S.myTeam];
   if(S.featured!==null&&S.featured!==undefined&&R&&R[S.featured]&&typeof FEATURE_EDGE!=="undefined"
-     &&!SEA.talent.active(S.myTeam).some(x=>x.idx===S.featured))e+=FEATURE_EDGE;
+     &&!SEA.talent.active(S.myTeam).some(x=>x.idx===S.featured))e+=featureEdge(SEA,S.myTeam,S.featured);
   if(typeof deployEdge==="function"&&SEA.userTeam===S.myTeam)e+=deployEdge(SEA,S.myTeam);
   return e;
 }
@@ -1355,7 +1355,7 @@ function rosterView(){
   const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
   const college=!!(LEAGUE.classes&&LEAGUE.classes.length), more=SPORT.featureMore||"gives a player the ball more";
   // what featuring does, in words: the sizes stay under the hood (Ian, Nov 2026)
-  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: the team plays a little better while he's healthy, and he develops faster over the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
+  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: the team plays a little better while he's healthy (more so the better he is), and he develops faster over the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
   // college players are seniors and declare early; pros are just older or younger
   h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${college&&F.c>=3

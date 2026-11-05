@@ -272,7 +272,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     function askGoalie(sd,X,per){
       if(X.ga<2||X.backupIn)return;
       const split=X.soft>0||X.ga>=X.xga+1.5, fresh=X.askedGa===undefined||X.ga>X.askedGa;
-      if(split&&fresh){ X.askedGa=X.ga; queueCall(sd,goalieCall(per,X)) } else cpuGoalie(sd);
+      // and only with the game in reach: down three or more, or up big, the swap moved 0-2.5 points
+      // (test/call-weight.js, Nov 2026); within two it was 10-22 (Instinct: make it rare and heavy)
+      if(split&&fresh&&Math.abs(lead(sd))<=2){ X.askedGa=X.ga; queueCall(sd,goalieCall(per,X)) } else cpuGoalie(sd);
     }
     // first intermission: the read, and your goalie if he's let in two or more
     // two down early: call your timeout and make the read now, not at the intermission (Instinct)

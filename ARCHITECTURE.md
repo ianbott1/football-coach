@@ -64,7 +64,8 @@ answer blunts it, the wrong one costs a little.
                 55'; the weak flank at half-time; score calls at HT (within
                 two) and 70' (within one)
     hockey      system (forecheck, trap, cycle) -> answer, first intermission;
-                your goalie after a bad period (a bad night vs bad luck);
+                your goalie after a bad period (a bad night vs bad luck), only
+                within two goals;
                 push/lock after two; when to pull the goalie (down one only)
     basketball  offence (threes, paint, pick-and-roll) -> defence, end of Q1
                 and the half; half-time, late and last-shot calls
@@ -119,6 +120,13 @@ the first read, it comes at once. Hockey calls a timeout at 10 or 15
 minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
+
+Featuring's edge scales with the player (featureEdge, core/80_season.js):
+FEATURE_EDGE x (1 + (rating - starters' average)/12), held to 0.5-1.3.
+
+The staff room never repeats a sentence in a game (staffFresh): a voice
+that would says "As I said earlier..." with its pick instead. Measured on
+10 college football games: 4 verbatim repeats in 102 lines before, 0 after.
 
 The offseason screen opens with the season's calls (seasonCallsHTML): the
 tally, and the call that helped most and the one that cost most, in words.

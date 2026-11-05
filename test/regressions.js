@@ -402,6 +402,16 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
 { const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP.concat(['milestones'])}); A.newDynasty('Boston',2,'T');
   ok(A.milestones(15,67,'',20).length===0&&A.milestones(60,22,'',2).length===1,'NBA: first-season wins milestone') }
 
+/* 60. featuring your best starter is worth more than featuring your weakest (Instinct) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['featureEdge'])}); A.newDynasty('Chelsea',3,'T');
+  const R=A.SEA.roster[A.S.myTeam], ix=A.POS.map((P,i)=>i).sort((a,b)=>R[a].r-R[b].r);
+  const lo=A.featureEdge(A.SEA,A.S.myTeam,ix[0]), hi=A.featureEdge(A.SEA,A.S.myTeam,ix[ix.length-1]);
+  ok(hi>lo&&lo>0,`soccer: featuring the best starter ${hi.toFixed(1)}, the weakest ${lo.toFixed(1)}`) }
+/* 61. hockey's goalie question only with the game in reach (two down or more, it moved nothing) */
+{ let wide=0,asked=0; for(const sd of [3,4]){ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Chicago',sd,'T');
+  for(let k=0;k<30&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='goalie'){ asked++; if(Math.abs(q.mine-q.theirs)>2)wide++ } A.answerLive(q.dp.opts[1][0]) } else A.liveTick() } } }
+  ok(asked>0&&!wide,`hockey: goalie asked ${asked} times, ${wide} with the game out of reach`) }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

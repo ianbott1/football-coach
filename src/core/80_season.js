@@ -1,4 +1,12 @@
 /* ============ Season state machine ============ */
+/* featuring's edge scales with the player: your best starter is worth more than your weakest
+   (Instinct: featuring anyone did the same). Six points above the starters' average, x1.3; six
+   below, x0.5 */
+function featureEdge(sea,team,idx){
+  const R=sea.roster&&sea.roster[team], p=R&&R[idx]; if(!p)return 0;
+  const avg=POS.reduce((t,P,i)=>t+R[i].r,0)/POS.length;
+  return FEATURE_EDGE*Math.max(0.5,Math.min(1.3,1+(p.r-avg)/12));
+}
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -51,7 +59,7 @@ class Season{
     if(this.featured!==null&&this.featured!==undefined&&this.roster){
       const pl=this.roster[this.userTeam]&&this.roster[this.userTeam][this.featured];
       const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
-      if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
+      if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*featureEdge(this,this.userTeam,this.featured);
     }
     // hockey: how you split the ice time (lines and pairings)
     if(typeof deployEdge==="function"&&(this.userTeam===a||this.userTeam===b))edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);
@@ -96,7 +104,7 @@ class Season{
       if(this.featured!==null&&this.featured!==undefined&&this.roster){
         const pl=this.roster[this.userTeam][this.featured];
         const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
-        if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
+        if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*featureEdge(this,this.userTeam,this.featured);
       }
       if(typeof deployEdge==="function")edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);   // hockey: the ice time
     }

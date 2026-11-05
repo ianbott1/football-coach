@@ -81,6 +81,26 @@ function collegePlanHTML(P){
    hints after) now gets hints. */
 function staffHints(){ return (S.advice||"hints")!=="full" }
 function staffAdvice(dp,ctx){
+  // the same ask re-rendered keeps its lines; a new one is checked against what each voice has said this game
+  const L=typeof live!=="undefined"&&live?live:null;
+  if(L&&L.staffFor&&L.staffFor.dp===dp)return L.staffFor.R;
+  const R=staffFresh(staffAdvice0(dp,ctx),dp,L);
+  if(L)L.staffFor={dp:dp,R:R};
+  return R;
+}
+/* a voice doesn't say the same sentence twice in a game (Instinct: the Capybara's "simply too far" on
+   three straight prompts; the Bears' "SEND EVERYONE" at 45' and 75'): the second time it points back */
+function staffFresh(R,dp,L){
+  if(!L)return R; const said=L.said=L.said||{};
+  return R.map(x=>{ const S0=said[x.who]=said[x.who]||[];
+    if(S0.indexOf(x.line)<0||!x.pick){ S0.push(x.line); return x }
+    const o=dp.opts.find(q=>q[0]===x.pick), lab=o?o[1].replace(/\s*\(.*\)$/,""):"the same as before";
+    const line=x.who==="bears"?`${lab.toUpperCase()}! We said it before. We'll say it louder.`
+      :x.who==="pearl"?pearlSay(`Same as I said before: ${lab.toLowerCase()}!`,dp.opts.length+S0.length)
+      :`As I said earlier, I'm afraid: ${lab.toLowerCase()}.`;
+    S0.push(line); return Object.assign({},x,{line:line}) });
+}
+function staffAdvice0(dp,ctx){
   const R=staffTake(dp,ctx);
   if(!staffHints()||(dp.k!=="read"&&dp.k!=="prep"))return R;
   const H=SPORT.hints||{};
