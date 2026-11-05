@@ -159,6 +159,24 @@ Lessons from this project (each cost a bug that shipped or nearly did):
 - Staff lines at a second read say what changed since the first (Pearl's
   first read is kept on the second ask as pearl1); picks are unchanged, so
   "leave it to the assistant" plays the same.
+- Legacy seasons (no u.schedV) lock their schedule on first load: S.schedLock
+  {year, sched, a, sp} is the schedule and the RNG state right after it, saved
+  at once (lockNew); Season uses it instead of drawing again. Cleared when a
+  new season starts. RNG keeps its state on the object (rng.a, rng.sp): same
+  numbers as the old closure. commitOffseason still runs on new RNG(0): its
+  rngA "carry on" never worked (the state was hidden), and restoring it now
+  would change every future offseason.
+- Verdict scale (football 75_screens GAP_SAME 3, GAP_CLEAR 7; the post-game
+  line's avgOf uses the same): within 3 points "about as often", 4 to 7 "a
+  little", beyond 7 "clearly". Graded calls list every option's replay share.
+- A read the evidence card hadn't marked (basketball: three-point share 45%+
+  or 31%-, pick-and-rolls 3.4+) and you got wrong is logged unclear: shown
+  with a dash, not counted in the season's tally.
+- Scouting reliability (model of the engine's weights, favW 4, 6 games
+  scouted): the report's top system is the one they play 61% in basketball
+  and hockey, 49% in soccer (four approaches). Instinct's target: about
+  two-thirds. Soccer is short; raising it changes matches, so it waits for a
+  measured round.
 - save() returns when no career is open (!S.myTeam). The title screen's
   "How to play" Skip and last Next called save() and wrote an empty career
   over slot 1 in all six games (found by Grokbot; my clean-profile repro
