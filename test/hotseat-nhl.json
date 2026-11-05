@@ -1,5 +1,5 @@
 {
- "fp": "95ea525d91d020ec",
+ "fp": "f2afdc1f401a9b84",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -125,6 +125,11 @@
    "fp": "95ea525d91d020ec",
    "from": "a141ab7f602818ba",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "f2afdc1f401a9b84",
+   "from": "95ea525d91d020ec",
+   "note": "Nov 2026 round 18: hockey's pay curve bends (cheaper middles, steeper top, max from ~70) for contracts signed from now on. Every other game unchanged; a hockey save from 26d992f replays identically mid-season and mid-offseason."
   }
  ],
  "out": [
@@ -138,7 +143,7 @@
       "result": "Lost in the conference final",
       "grade": "A-"
      },
-     "book": "271c4f045517454f"
+     "book": "91e5e4af0cadd625"
     },
     {
      "team": "Montreal",
@@ -147,7 +152,7 @@
       "result": "Lost in the first round",
       "grade": "B"
      },
-     "book": "262d6f040761cda6"
+     "book": "2a993d87762a294b"
     }
    ]
   },
@@ -157,20 +162,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-35-15",
+      "rec": "38-33-13",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "dc773a5e5d2004b9"
+     "book": "accbec32eb7205db"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "32-39-13",
+      "rec": "38-31-15",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "9adc788809b64aea"
+     "book": "50ad2b4563596dd0"
     }
    ]
   },
@@ -180,20 +185,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "45-28-11",
-      "result": "Missed the playoffs",
-      "grade": "C"
+      "rec": "52-26-6",
+      "result": "Lost in the first round",
+      "grade": "B"
      },
-     "book": "a322473ebf0f9672"
+     "book": "21618819be4b8187"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "31-37-16",
+      "rec": "34-37-13",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "e503ba391b3e96a4"
+     "book": "a980d237e3922dd3"
     }
    ]
   }

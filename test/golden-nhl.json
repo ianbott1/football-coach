@@ -1,5 +1,5 @@
 {
- "fp": "a8609ba7f1c5f4c6",
+ "fp": "0a777a5f486e0c6b",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -190,6 +190,11 @@
    "fp": "a8609ba7f1c5f4c6",
    "from": "7bf9cbaa770e1e51",
    "note": "Nov 2026 round 17: screen text only (graded calls list every option's replay rate on one scale; reads the card hadn't marked aren't counted; hockey career keeps this season's overtime losses in the offseason). Results identical to db42841 field by field."
+  },
+  {
+   "fp": "0a777a5f486e0c6b",
+   "from": "a8609ba7f1c5f4c6",
+   "note": "Nov 2026 round 18: hockey's pay curve bends (cheaper middles, steeper top, max from ~70) for contracts signed from now on. Every other game unchanged; a hockey save from 26d992f replays identically mid-season and mid-offseason."
   }
  ],
  "result": {
@@ -202,21 +207,21 @@
     "rec": "3d0a43f6a488195b",
     "poll": "b1f12eb7274f55a9",
     "heis": "003f71366db13367",
-    "history": "4e1b33d4973fd7a5",
-    "universe": "9d726b0d367ee1f5",
-    "screens": "9b491edd11981cd2"
+    "history": "4538f1cb3f93548c",
+    "universe": "e1a5e0212a2f54e4",
+    "screens": "2f17edf0b632bc05"
    },
    {
     "year": 2027,
-    "games": "4cf4080670d5c920",
-    "post": "7cbe8f2f7e9b42e8",
-    "champion": "Toronto",
-    "rec": "7f0e4006d97653e7",
-    "poll": "c3fda57152cce22a",
-    "heis": "4c644f1ea124991e",
-    "history": "fba3860b93026b1a",
-    "universe": "b3827186eaf39e29",
-    "screens": "8513e02be8fd5485"
+    "games": "ddace91a637fa28c",
+    "post": "240757577bcb36f3",
+    "champion": "Carolina",
+    "rec": "7eb8d35c1c860d90",
+    "poll": "d69a9182be25679b",
+    "heis": "1b313dbc2784a159",
+    "history": "132021f11b6deac9",
+    "universe": "d332f7bf5eb1139c",
+    "screens": "7deca7dd20c2b0da"
    }
   ],
   "Edmonton#777": [
@@ -228,21 +233,21 @@
     "rec": "305a97af6c7ef8de",
     "poll": "4b8879ecac7822ce",
     "heis": "350200e2d90beccc",
-    "history": "ba669f3d1704757f",
-    "universe": "4a25db918d543efd",
-    "screens": "fbaa89d5a4ef31df"
+    "history": "b6a3cb05697f7faa",
+    "universe": "dd25a85b1e277f07",
+    "screens": "590fcc602400b47b"
    },
    {
     "year": 2027,
-    "games": "e38c41dcec6b8aa5",
-    "post": "3ce5193dd7586d0f",
-    "champion": "Colorado",
-    "rec": "13b5adbfb243852b",
-    "poll": "24276e7d583ce4bb",
-    "heis": "2fc47010d565d512",
-    "history": "0c007b1e1e36b815",
-    "universe": "8d0e10674c7fac2d",
-    "screens": "1348015a3984b903"
+    "games": "c8475f646f4482cc",
+    "post": "9f1e04273328d4b2",
+    "champion": "Columbus",
+    "rec": "5951ea00e29e0e4d",
+    "poll": "c77877f8b21b693d",
+    "heis": "a57db983379f07af",
+    "history": "e3eb0b3b395793cb",
+    "universe": "400f5756b991c842",
+    "screens": "a70168b1cfb34aef"
    }
   ],
   "schedules#60": [

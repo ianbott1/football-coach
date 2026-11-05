@@ -542,11 +542,15 @@ dynasty's first season (generated players have no earlier history).
   no kick is offered (the punt-or-go band) "go" is best about two times in
   three; that band, not the kick curve, is why most fourth downs favour
   going (Instinct). A model question still open.
-- Hockey pay: teams carry 12 contracts, not an NHL roster's 23, so each
-  player stands for about two and the cap is spread over fewer people (a
-  60-64 rated player earns about $12.4M on existing contracts; asks follow
-  the same scale). Testers read it as inflated. Rescaling the economy is
-  Ian's call.
+- Hockey pay (decided Nov 2026, Ian, on all three testers' advice): a
+  convex curve for contracts signed from now on (HK_B 1.8, HK_A 16.3, HK_0
+  47): a 55 about $4M, a 62 $10.6M, a 66 $15.7M, the maximum from ~70.
+  Teams carry 12 contracts, not 23, so each player stands for about two;
+  the curve fixes relative prices (a 67 was priced like the best). Over 12
+  seasons (test/hk-economy.js): median payroll 61% of the cap (was 80%),
+  max deals per team unchanged, top-six retention 79% (78%), points spread
+  13.6 (NHL ~14). Deals already signed run at their numbers: an older save
+  replays identically mid-season and mid-offseason.
 
 - Hockey's goalie call is nearly weightless (Nov 2026, test/hk-reads.js at
   60,000 games): pulling him only on a real bad night is worth about +1 win

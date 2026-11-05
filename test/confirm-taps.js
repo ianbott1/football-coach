@@ -172,6 +172,13 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     ok(runs.every(r=>r.lock),'a season from an older build was not given a schedule lock');
     ok(runs.every(r=>r.sched===runs[0].sched&&r.rec===runs[0].rec),`a locked season's schedule or record changed between loads (${runs.map(r=>r.rec).join(', ')})`);
     await ctx.close(); }
+  // zoomed to 200% and 300% (a 1280x900 window: 640x450 and 427x300), Play is on screen and the bar
+  // takes under a fifth of it (Grokbot: below the whole schedule, or half the view)
+  for(const [w,h] of [[640,450],[427,300]]){ const ctx=await b.newContext({viewport:{width:w,height:h}}); const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss());
+    await p.goto('file://'+path.join(DIST,'football-coach.html')); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
+    const r=await p.evaluate(()=>{ const a=document.getElementById('adv'), rb=a.closest('.actionbar').getBoundingClientRect(), ra=a.getBoundingClientRect(); return {vis:ra.top>=0&&ra.bottom<=innerHeight+1, share:rb.height/innerHeight} });
+    ok(r.vis&&r.share<0.2,`at ${w}x${h}: Play ${r.vis?'on screen':'off screen'}, the bar ${Math.round(100*r.share)}% of the view`);
+    await ctx.close() }
   // featuring someone new in the offseason doesn't replay last season with him on reload
   // (Grokbot: the final card went 54-28 to 53-29; it moved hockey by 13 wins)
   for(const f of ['basketball-coach-pro.html','hockey-coach-pro.html']){

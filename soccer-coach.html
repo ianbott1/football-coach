@@ -879,16 +879,19 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .selcard.in .selhead{color:var(--turf)}.selcard.out .selhead{color:var(--flag)}
 .selbig{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;margin:4px 0}
 .selsub{font-size:13.5px;color:var(--bone)}
-/* short screens (a phone on its side, a desktop zoomed to 175%+): the fixed bar and the sticky header
-   took a third to half of the view and covered cards (Grokbot). Below 640px of height they scroll with the page. */
+/* short screens (a phone on its side, a desktop zoomed to 200-300%): the full bar took a third to half
+   of the view (Grokbot), and unpinned it ended up below the whole schedule, Play last (Grokbot, twice).
+   Pinned, as one compact row: Play takes the width, the others shrink beside it. The header scrolls away. */
 @media (max-height:640px){
-  .actionbar{position:static;background:var(--ink);padding:10px 16px 14px}
-  body{padding-bottom:16px}
+  .actionbar{position:fixed;background:var(--ink);padding:6px 10px 8px;display:flex;gap:6px;align-items:stretch;max-width:none}
+  .actionbar .skip{flex:0 0 auto;width:auto;margin:0;padding:8px 10px;font-size:12px;letter-spacing:.04em}
+  .actionbar .advance{flex:1 1 auto;width:auto;margin:0;padding:9px 10px;font-size:15px}
+  body{padding-bottom:60px}
   .stick{position:static}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="4de0048";
+<script>const BUILD_ID="bea3fca";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up

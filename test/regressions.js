@@ -88,7 +88,10 @@ for(const [f,cap,hard] of [['football-coach-pro.html',110,true],['hockey-coach-p
     meds.push(pay[pay.length>>1]/cap);
     if(hard)ok(pay[pay.length-1]<=cap+0.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} over the ${cap} hard cap`);
     else ok(pay[pay.length-1]<=200.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} past the tax line`) }
-  const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=0.6&&m<=0.95,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ~70-85%)`);
+  // hockey's curve bends (Nov 2026, Ian's call): cheaper middles leave a typical payroll near 60% of the
+  // cap, the best-built teams still at it; the others stay ~70-85%
+  const lo=/hockey/.test(f)?0.5:0.6, want=/hockey/.test(f)?"~55-70%":"~70-85%";
+  const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=lo&&m<=0.95,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ${want})`);
   console.log(`  ${f}: typical payroll ${Math.round(100*m)}% of the cap`); }
 
 /* 8. a build stamp on every game */
