@@ -165,9 +165,9 @@ function halfCall(lead){
 }
 function lateCall(lead){
   return lead<0
-    ? {k:"chase",h:`Down ${-lead}, ${BB.lateLeft||"four"} minutes left`,b:"Throw on the full-court press, or play it straight? The press forces turnovers and gives up easy baskets.",
+    ? {k:"chase",h:`Down ${-lead}, ${BB.lateLeft||"five"} minutes left`,b:"Throw on the full-court press, or play it straight? The press forces turnovers and gives up easy baskets.",
        opts:[["press","Full-court press"],["keep","Play it straight"],ASSIST]}
-    : {k:"protect",h:`Up ${lead}, ${BB.lateLeft||"four"} minutes left`,b:"Milk the clock, or keep attacking?",
+    : {k:"protect",h:`Up ${lead}, ${BB.lateLeft||"five"} minutes left`,b:"Milk the clock, or keep attacking?",
        opts:[["sit","Milk the clock"],["keep","Keep attacking"],ASSIST]};
 }
 function lastCall(){

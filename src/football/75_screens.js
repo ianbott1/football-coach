@@ -32,10 +32,10 @@ function driveScript(g,drives){
       text = rng.r()<0.56 ? `${nm(0)} ${y}-yd TD pass to ${nm(rng.r()<0.62?2:3)}`
            : rng.r()<0.8  ? `${nm(1)} ${y}-yd TD run`
                           : `${nm(0)} ${Math.round(rng.range(1,12))}-yd TD run`;
-    } else if(d.kind==="FG"){ text=`${Math.round(rng.range(19,52))}-yd field goal`; }
+    } else if(d.kind==="FG"){ const r=Math.round(rng.range(19,52)); text=`${d.stall?fgDistance(d.stall):r}-yd field goal`; }   // the kick's own length (it was made up: 72 on one screen, 63 on another)
     else if(d.kind==="INT"){ text=`intercepted by ${dn(8)}`; }
     else if(d.kind==="FUM"){ text=`fumble, recovered by ${dn(7)}`; }
-    else if(d.kind==="MISS"){ text=`${Math.round(rng.range(38,56))}-yd attempt is no good`; }
+    else if(d.kind==="MISS"){ const r=Math.round(rng.range(38,56)); text=`${d.stall?fgDistance(d.stall):r}-yd attempt is no good`; }
     else { text=rng.pick(OUTTXT[d.kind]||["punt"]); }
     const sec=Math.max(5,Math.round(890-((d.n-1)%6+1)*140-rng.range(0,50)));
     return {n:d.n,q:d.q,clock:Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0"),
@@ -100,10 +100,13 @@ function liveScoreboard(){
   const g=live.g, my=S.myTeam;
   const H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
-  const q=last?last.q:1;
-  const kick=!live.drives.length;
+  // during a call it's the drive being played, not the last one finished (Grokbot: "KICKOFF" with a
+  // fourth-and-3 call up, "drive 1" after the other side had scored)
+  const ask=live.ask&&!live.ask.post;
+  const q=ask&&live.ask.q?live.ask.q:last?last.q:1;
+  const kick=!live.drives.length&&!ask;
   return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${kick?"KICKOFF":"Q"+q+" &middot; drive "+live.drives.length}
+    <div class="wlabel"><span class="live"></span>${kick?"KICKOFF":"Q"+q+" &middot; drive "+(live.drives.length+(ask?1:0))}
       ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
@@ -147,12 +150,14 @@ function liveView(){
 }
 
 function driveWord(d){
-  if(d.note)return d.note;
+  // read after the team's name, so each says what the team did ("Florida State the kick is no good",
+  // "Denver overtime": Grokbot); an overtime drive is told by how it ended
+  if(d.note&&d.note!=="overtime")return d.note;
   if(d.kind==="TD")return "touchdown";
   if(d.kind==="FG")return "field goal";
   if(d.kind==="INT")return "intercepted";
   if(d.kind==="FUM")return "fumbled, recovered by the defense";
-  if(d.kind==="MISS")return "the kick is no good";
+  if(d.kind==="MISS")return "missed the field goal";
   if(d.kind==="DOWNS")return "turned over on downs";
   return "forced to punt";
 }
@@ -238,7 +243,8 @@ function callVerdicts(args,seed,answers,meHome){
     const alt=opts.filter(o=>o!==pick).reduce((a,o)=>a===null||rate[o]>rate[a]?o:a,null);
     out.push({k:"call",pick:pick,truth:best,right:rate[pick]>=rate[best]-VERDICT_SLACK,
       other:alt!==null?lab(alt):undefined, or:alt!==null?Math.round(rate[alt]*100):undefined,
-      h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100)});
+      h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100),
+      rk:Object.fromEntries(opts.map(o=>[o,Math.round(rate[o]*100)]))});     // every option's rate, for the post-game line
   });
   out.judged=judged;
   if(out.close)delete out.close.spread;                       // calls you made that could be graded, whether or not any were

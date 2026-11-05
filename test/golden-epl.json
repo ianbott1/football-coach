@@ -1,5 +1,5 @@
 {
- "fp": "b6ad6fd7cc2dc79b",
+ "fp": "99e20f1d5fe40243",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -190,6 +190,11 @@
    "fp": "b6ad6fd7cc2dc79b",
    "from": "5e93f23084a67d3a",
    "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
+  },
+  {
+   "fp": "99e20f1d5fe40243",
+   "from": "b6ad6fd7cc2dc79b",
+   "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
   }
  ],
  "result": {
@@ -204,7 +209,7 @@
     "heis": "28fffd9e07af90a9",
     "history": "d6e942a22ac13ee1",
     "universe": "056824920fb8f54b",
-    "screens": "dd08bcc9281d39e8"
+    "screens": "ce81056b292b73d1"
    },
    {
     "year": 2027,
@@ -230,7 +235,7 @@
     "heis": "06d24a6f1c40846f",
     "history": "0933fcc446e21a9c",
     "universe": "8d753e187882540b",
-    "screens": "17bb99eb5ce3e4a2"
+    "screens": "3260fc67c9dc8ea7"
    },
    {
     "year": 2027,
@@ -242,7 +247,7 @@
     "heis": "3b953c750f69164c",
     "history": "f0d63dff7092d685",
     "universe": "fb4738dce8d74b40",
-    "screens": "43e8a41fff8c5f37"
+    "screens": "7d16eb00b8b18237"
    }
   ],
   "schedules#60": [

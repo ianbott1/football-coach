@@ -176,7 +176,11 @@ for(const [f] of GAMES.filter(g=>/pro|soccer/.test(g[0]))){ const A=load({settab
   let maxed=0,n=0;
   for(let y=0;y<2;y++){ let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance(); A.openOffseason();
     A.nflFreeAgentPreview(A.U,A.S.myTeam).forEach(x=>ok(x.ask<=A.MAX_SAL+0.05,`hockey: free agent ${x.n} estimated at ${x.ask}, over the ${A.MAX_SAL} max`));
-    if(y===0){ const pv=A.nflFreeAgentPreview(A.U,A.S.myTeam); A.S.off.picks.targets=pv.slice(0,3).map(x=>x.key); const card=strip(A.LEAGUE.ui.offseasonBanner?A.LEAGUE.ui.offseasonScreen():''); ok(card.indexOf(A.recStr(A.S.myTeam))>=0,`hockey: the offseason card's record isn't ${A.recStr(A.S.myTeam)} (overtime losses merged)`);
+    if(y===0){ const pv=A.nflFreeAgentPreview(A.U,A.S.myTeam); A.S.off.picks.targets=pv.slice(0,3).map(x=>x.key);
+      { const was=[A.S.off.jobs,A.S.off.poach]; A.S.off.poach=A.NAMES.filter(t=>t!==A.S.myTeam).slice(0,2); const jc=strip(A.LEAGUE.ui.offseasonScreen()); A.S.off.poach=was[1];
+        // a job offer's last season, with overtime losses (Instinct: 42-42 for 42-30-12)
+        const ls=(jc.match(/Last season (\d+-\d+(-\d+)?)/g)||[]); ok(ls.length>0&&ls.every(x=>/\d+-\d+-\d+/.test(x)),`hockey: job offers read ${ls.join(', ')||'nothing'}`) }
+      const card=strip(A.LEAGUE.ui.offseasonBanner?A.LEAGUE.ui.offseasonScreen():''); ok(card.indexOf(A.recStr(A.S.myTeam))>=0,`hockey: the offseason card's record isn't ${A.recStr(A.S.myTeam)} (overtime losses merged)`);
       ok(/fits|close: it depends|won't fit/.test(card)&&!/squeezing the draft class/.test(card),'hockey: a target "fits only by squeezing the draft class" (the class is paid before free agency)') }
     for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
     A.NAMES.forEach(t=>A.U.roster[t].forEach(p=>{ if(p&&p.k){ n++; if(p.k.sal>=A.MAX_SAL-0.05)maxed++ } })) }

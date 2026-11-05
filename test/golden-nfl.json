@@ -1,5 +1,5 @@
 {
- "fp": "16fcefb5853775fd",
+ "fp": "347d1065fea61353",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -240,6 +240,16 @@
    "fp": "16fcefb5853775fd",
    "from": "9fc7dbee0fc6fce7",
    "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
+  },
+  {
+   "fp": "2c77674e1ced4367",
+   "from": "16fcefb5853775fd",
+   "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
+  },
+  {
+   "fp": "347d1065fea61353",
+   "from": "2c77674e1ced4367",
+   "note": "Nov 2026 round 13: screen text only (the post-game call line now uses the graded call's replays and margin). Every result matched the edd5e32 build field by field."
   }
  ],
  "result": {
@@ -254,7 +264,7 @@
     "heis": "24392d787fa10090",
     "history": "796450e803597948",
     "universe": "6da29820fffa55c3",
-    "screens": "50f86d522d8c74b5"
+    "screens": "ae4a4648a5f94a86"
    },
    {
     "year": 2027,
@@ -266,7 +276,7 @@
     "heis": "5a53055da9f378f9",
     "history": "510186627c498c61",
     "universe": "4b215ec2e0d8212d",
-    "screens": "8f77eb87614c3d86"
+    "screens": "d30b4430f5d269a3"
    },
    {
     "year": 2028,
@@ -278,7 +288,7 @@
     "heis": "b931c0c693b2bb9b",
     "history": "62983d6ffa91c5ee",
     "universe": "289ffc1d08b9e0ac",
-    "screens": "f4fc0d30e1436b5c"
+    "screens": "0c6635aa17a00be8"
    },
    {
     "year": 2029,
@@ -290,7 +300,7 @@
     "heis": "814286cd02dc8b41",
     "history": "0d407aa3e677df10",
     "universe": "54c1c45608c75891",
-    "screens": "dc1d8825f2ab106d"
+    "screens": "ee5784820d8ba317"
    }
   ],
   "Tennessee#2024": [
@@ -304,7 +314,7 @@
     "heis": "fe4bd732f788ef73",
     "history": "8eaa468617b18bf7",
     "universe": "d5eaeb77b5ede938",
-    "screens": "5eabd073ad9b53c9"
+    "screens": "5a57a42bf9d8f02e"
    },
    {
     "year": 2027,
@@ -316,7 +326,7 @@
     "heis": "fb51c46fd3854e02",
     "history": "5e2ff3d19e63fa09",
     "universe": "8210cb80690241fb",
-    "screens": "39f8ffa8fa064820"
+    "screens": "1e07c5c7d32c2ace"
    },
    {
     "year": 2028,
@@ -328,7 +338,7 @@
     "heis": "098e0dcea91e70d1",
     "history": "d06444e4259dac26",
     "universe": "6f03c83b87f1f529",
-    "screens": "f5ed1d6472b2b4d7"
+    "screens": "9031130b7e1b9b08"
    },
    {
     "year": 2029,
@@ -340,7 +350,7 @@
     "heis": "f0ed46da4b02c8c5",
     "history": "fcdc13beda679f21",
     "universe": "c993e236308ef05a",
-    "screens": "e81e22855e0bd668"
+    "screens": "29cbdcdea75e3297"
    }
   ],
   "Detroit#777": [
@@ -354,7 +364,7 @@
     "heis": "ecdb97a40b30b912",
     "history": "cf0b246c6e7c13c3",
     "universe": "46d7afd93ec6eb11",
-    "screens": "12bf0da791b66177"
+    "screens": "7d13b38d18c95e91"
    },
    {
     "year": 2027,
@@ -366,7 +376,7 @@
     "heis": "a353d6ca0505868b",
     "history": "feb7e058c79731c2",
     "universe": "1c6a417232850868",
-    "screens": "5d754def5f0a3858"
+    "screens": "d12516152392f727"
    },
    {
     "year": 2028,
@@ -378,7 +388,7 @@
     "heis": "bf0bb531501b592b",
     "history": "271b65141fb1ba38",
     "universe": "d97a3394df9c3d5f",
-    "screens": "98726ec9285b8561"
+    "screens": "04a4f2dfd6541921"
    }
   ],
   "NY Giants#31337": [
@@ -392,7 +402,7 @@
     "heis": "8966740a15a9e397",
     "history": "dd1057a49885271e",
     "universe": "18a04c041a342706",
-    "screens": "6e0f1008f4acc031"
+    "screens": "a3470e1d8aa74848"
    },
    {
     "year": 2027,
@@ -404,7 +414,7 @@
     "heis": "b0f31832f9defa16",
     "history": "5e0409f3704a2345",
     "universe": "91a181d957d2c53f",
-    "screens": "5147d33e7b1e813f"
+    "screens": "5cb7aef26b14dc31"
    },
    {
     "year": 2028,
@@ -416,7 +426,7 @@
     "heis": "f6cfe3f76c4bf2ac",
     "history": "1d8ddac972552d72",
     "universe": "0d4c378af59afb33",
-    "screens": "6b610f0f4f466d41"
+    "screens": "e6ff00d03d7c6ac3"
    }
   ],
   "schedules#60": [

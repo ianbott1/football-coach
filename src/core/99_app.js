@@ -121,7 +121,7 @@ function liveTick(){
         live.eng.reply(live.replay[live.ri++]);
         continue;
       }
-      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs,
+      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam};
       render();
       return;
@@ -176,6 +176,10 @@ function finishLive(){
   // what your calls did: the same game with the assistant's call, and its worth over many replays
   if(!live.h2h&&live.args&&(live.replay||[]).length&&typeof callImpact==="function"){
     const I=callImpact(live.args,liveSeed(live.step),live.replay,meHome);
+    // where a graded call is the same call, its replays decide both lines: two samples of the same
+    // question disagreed in words (Grokbot, three reports)
+    I.forEach(c=>{ const v=(live.eng.log||[]).find(x=>x.k==="call"&&x.h===c.h&&x.rk&&x.rk[c.pk]!==undefined&&x.rk[c.dk]!==undefined);
+      if(v)c.worth=Math.round((v.rk[c.pk]-v.rk[c.dk])*10)/1000 });
     if(I.length){ played.impact=I;
       const L=S.callLedger=S.callLedger||{}, Y=L[SEA.year]=L[SEA.year]||{n:0,worth:0};
       I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000});
@@ -360,8 +364,38 @@ function rebuild(){
   }
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;   // and now, what's chosen now
   SEA.plan=plan;
+  replayCarousel();
+  auditTrophies();
+}
+/* Opening the offseason runs the league's coaching carousel, and it changes the league itself:
+   head coaches hired and fired, coordinators hired away, every coach's record. A reload rebuilt
+   the league from the season's start without it, so a coordinator hired away was still on your
+   staff (Grokbot) and the next season began from another league (measured: head coaches,
+   coordinators, rankings and history all differed). Replayed here with the same dice and the
+   same inputs, kept when it first ran (older saves work them out again). */
+function replayCarousel(){
+  if(!SEA||SEA.phase!=="done")return;
+  const yr=SEA.year, my=S.myTeam; let users;
+  if(isHotSeat()){ if(!(S.carousel&&S.carousel.year===yr))return; users=S.carousel.users }
+  else{ if(!(S.off&&S.off.year===yr))return; users=S.off.act&&S.off.act.users }
+  if(!users){
+    if(isHotSeat()){ users={}; S.coaches.forEach((c,i)=>{ const cur=i===(S.turn||0), t=cur?my:c.myTeam, H=(cur?S.history:c.history)||[];
+      users[t]=missedTwiceFor(t,H,(cur?S.expNow:c.expNow)||LEAGUE.goals.expectations(U.program[t])) }) }
+    else users={[my]:missedTwice(my,S.expNow||expectations())};
+  }
+  const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
+  recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year,SEA.drw);
+  offseasonCoaching(U,rng,SEA.rec,SEA.elo,users);
+}
+/* trophies the record can check, checked against it: a save from before a fix keeps a trophy it
+   never earned (Muse: Century, "win 100 games", shown at 64 career wins). Only ones the record
+   decides outright: the rest were earned in a moment the save doesn't keep. */
+function auditTrophies(){
+  const C=S.career; if(!C||!C.ach||!SEA||!S.myTeam)return;
+  if(C.ach.century&&careerNow(C).w<100)delete C.ach.century;
 }
 
+let introAt=null;            // the "How to play" page showing, or null: never in a save
 let saveOK=null;                     // did the last save land? null = not tried yet
 /* Saves are coalesced: calls made in the same burst share one save, of the
    state as it stands when it runs (compressing a long career takes a
@@ -726,14 +760,15 @@ function openOffseason(){
         const e=(cur?S.expNow:c.expNow)||LEAGUE.goals.expectations(U.program[t]);
         users[t]=missedTwiceFor(t,H,e);
       });
-      S.carousel={year:SEA.year,act:offseasonCoaching(U,rng,SEA.rec,SEA.elo,users)};
+      S.carousel={year:SEA.year,act:offseasonCoaching(U,rng,SEA.rec,SEA.elo,users),users:users};
     }
     const X=S.carousel.act;
     A=Object.assign({},X,{userOpen:!!X.userOpenBy[my],candidates:X.candidatesBy[my]||null,
       staffOpen:X.staffOpenBy[my]||{oc:false,dc:false}});
   }else{
     recordCoaches(U,SEA.rec,SEA.champion,SEA.confChampions(),SEA.year,SEA.drw);
-    A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,{[my]:missedTwice(my,exp)});
+    const users={[my]:missedTwice(my,exp)};
+    A=offseasonCoaching(U,rng,SEA.rec,SEA.elo,users); A.users=users;   // kept: a reload replays this (replayCarousel)
   }
   const titles=SEA.honours(my);
   C.rep=C.rep*0.94;                       // reputations fade, good and bad
@@ -1048,12 +1083,12 @@ function heroResult(){
   if(half)return `<div class="hero half">
     <div class="hlabel"><span class="live"></span>HALFTIME${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.home===my?"vs":"at"} ${esc(opp)}</div>
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>
     <div class="hfoot">Second half under way&hellip;</div></div>`;
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${g.cup&&g.neutral?"v":g.home===my?"vs":"at"} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${readsHTML(flash&&flash.step)}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
       return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
@@ -1252,10 +1287,13 @@ function seatBadge(){
   const prev=(S.history||[]).find(h=>h.year===SEA.year-1&&h.team===my);
   // after a missed year the seat is hot until this one is on course: it stayed "HOT SEAT" at 24-4 (Ian)
   const why=` title="You missed last season's target. Miss this one too and the job goes."`;   // says why (Instinct)
-  if(w+l<4)return prev&&seasonMissed(prev)?`<span class="seat hot"${why}>HOT SEAT</span>`:`<span class="seat cool">Settled</span>`;
+  // the reason is on the badge itself, not only on hover: a touch screen never showed it (Grokbot:
+  // "hot seat at 0-0 with no reason")
+  const hot=`<span class="seat hot"${why}>HOT SEAT &middot; missed last year</span>`;
+  if(w+l<4)return prev&&seasonMissed(prev)?hot:`<span class="seat cool">Settled</span>`;
   const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
   const paceW=Math.round(w/(w+l)*games), g=seasonGrade(paceW,games-paceW,"",exp);
-  if(g.miss)return prev&&seasonMissed(prev)?`<span class="seat hot"${why}>HOT SEAT</span>`:`<span class="seat warm">Under pressure</span>`;
+  if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
   return `<span class="seat cool">Secure</span>`;
 }
 
@@ -1476,8 +1514,9 @@ function attentionHTML(my){
     if(st[my].q>-25&&!(shortfall&&st[my].q<10))return;
     out.push({k:"staff",side:side,
       h:`Your ${SPORT.staff[side].long} is under fire`,
-      b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. An interim would be replacement level;
-        you'd hire properly in the offseason.`});
+      // says why he's under fire (Grokbot: "under fire" after a 1-5 run, no reason given)
+      b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. ${st[my].q<=-25?"One of the weakest at the job in the league.":`You're ${w}-${l}, and he isn't good enough to be spared it.`}
+        An interim would be replacement level; you'd hire properly in the offseason.`});
   });
   if(!out.length)return "";
   return `<div class="grouphead">Needs a decision</div>`+
@@ -1591,12 +1630,12 @@ function scheduleHTML(team,compact){
       const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
       const otl=!won&&g.ot, drew=!!g.draw;             // hockey: a point for losing in overtime; soccer: a draw
       rows.push(`<div class="srow"><span class="spos ${won?'wl-w':drew||otl?'wl-o':'wl-l'}">${won?"W":drew?"D":otl?"OTL":"L"}</span>
-        <span class="steam">${g.home===team?"vs":g.cup&&g.neutral?"v":"at"} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
+        <span class="steam">${haWord(g,team)} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
-        <span class="steam">${g.home===team?"vs":g.cup&&g.neutral?"v":"at"} ${rkTag(rk)}${TL(opp)}${
+        <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sall">${esc(g.cup&&LEAGUE.cup?LEAGUE.cup.date(w):LEAGUE.dates[w]||"")}</span></div>`);
     }
@@ -1608,7 +1647,7 @@ function scheduleHTML(team,compact){
     const won=g.winner===team, opp=g.home===team?g.away:g.home;
     const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
     rows.push(`<div class="srow post"><span class="spos ${won?'wl-w':'wl-l'}">${won?"W":"L"}</span>
-      <span class="steam">${esc(opp)} <em class="rivmark sod">${esc(n)}</em></span>
+      <span class="steam">${haWord(g,team)} ${esc(opp)} <em class="rivmark sod">${esc(n)}</em></span>
       <span class="sconf">${ms}-${os}</span></div>`);
   });
   return rows.join("");
@@ -1833,6 +1872,10 @@ function wkNav(w,last,maxW){
     <div class="wkmid"><h2>${esc(LEAGUE.daily?(LEAGUE.dates[w]||wkLabel(w)):wkLabel(w))}</h2><span>${LEAGUE.daily?"":esc(LEAGUE.dates[w]||"")}${w>last?(LEAGUE.daily?"to come":" &middot; to come"):w<last?(LEAGUE.daily?"played":" &middot; played"):""}</span></div>
     <button class="wkbtn" data-wk="${w+1}" ${w>=maxW?"disabled":""} aria-label="Later">&rarr;</button></div>`;
 }
+/* home, away or neither: a neutral site (a bowl, a Super Bowl, a tournament) is "vs" for both
+   sides, never "at" (Grokbot: "AT CHARLOTTE" for a conference tournament game; no marker on the
+   Super Bowl); soccer's cup ties keep their "v" */
+function haWord(g,team){ return g.neutral?(g.cup?"v":"vs"):g.home===team?"vs":"at" }
 function fixtureLine(g,mine){
   // each side with its ranking (or seed) and record, as the results show them (Ian: "can't see the seeds or records")
   const rk=SEA.poll.rankMap(), sd=x=>(SEA.seeds&&SEA.seeds[x])||(g.hseed&&x===g.home?g.hseed:g.aseed&&x===g.away?g.aseed:null);
@@ -2493,7 +2536,7 @@ function digestBlock(){
     const gl=LEAGUE.myGameLabel?LEAGUE.myGameLabel(SEA.weeks.slice(0,i+1).reduce((c,w2)=>c+w2.games.filter(x=>!x.cup&&(x.home===my||x.away===my)).length,0)):W.label;
     rows.push(`<div class="drow"><span class="dwk">${g.cup?"Cup":gl}</span>
       <span class="dres ${won?'w':g.draw||g.ot?'o':'l'}">${won?"W":g.draw?"D":g.ot?"OTL":"L"} ${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span>
-      <span class="dopp">${g.home===my?"vs":"at"} ${esc(opp)}</span></div>`) });
+      <span class="dopp">${haWord(g,my)} ${esc(opp)}</span></div>`) });
   }
   let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):last<=flash.from?"Week "+(flash.from+1):"Weeks "+(flash.from+1)+"&ndash;"+(last+1)} simulated</div>`;
   if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
@@ -2612,13 +2655,13 @@ function render(){
       S.watchSpeed=x.dataset.speed; save(); tickWatch();});
     return;
   }
+  if(introAt!==null){renderIntro();return}
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
         <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br>
         <span class="wm-b">Coach</span></h1></div>`;return}
     renderTitle();return}
-  if(S.introStep!==null&&S.introStep!==undefined&&!S.myTeam){renderIntro();return}
   if(!S.myTeam&&S.setup&&!S.setup.ready){renderSetup();return}
   if(!S.myTeam){renderStart();return}
   if(S.help){
@@ -2733,6 +2776,7 @@ function render(){
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
   document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; save()} render()});
   // (the bottom bar's Sim ahead button is bound with skip2, above)
+  // it asks, and says where the career is saved, or that it isn't (storage blocked: leaving loses it)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
   const sn=el("snd"); if(sn)sn.onclick=()=>{S.sound=!soundOn(); save(); if(soundOn()){sfx("tap"); if(musicOn())musicStart()} else musicStop(); render()};
   const mu=el("mus"); if(mu)mu.onclick=()=>{S.music=!musicOn(); if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render()};
@@ -2884,7 +2928,7 @@ function pickList(q){
 }
 
 function bindPicks(){
-  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>tapTwice(b,`Coach ${esc(b.dataset.t)}? Tap again to start`,()=>{
     const want=(S.setup&&S.setup.coaches)||1;
     if(want>1){
       S.picking=S.picking||[];
@@ -2897,8 +2941,10 @@ function bindPicks(){
     }else{
       newDynasty(b.dataset.t,(S.setup.seed)>>>0,S.setup.name);
     }
-  });
+  }));
 }
+/* back to the title screen with nothing open */
+function toTitle(){ introAt=null; S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true}; saveRev=null; render() }
 
 function owlMark(size){
   return `<span class="owlmark" style="width:${size}px;height:${size}px">${owlSVG("owlmini",false)}</span>`;
@@ -2984,7 +3030,9 @@ function renderTitle(){
              setup:{name:"",seed:Math.floor(Math.random()*899999+100000)}};
           S.title=false;render()}
   });
-  el("thow").onclick=()=>{S.title=false;S.introStep=0;render()};
+  // the page of "How to play" lives outside the career: it read S.introStep, and only with no
+  // career loaded, so after leaving a career for the title screen the button resumed it (Muse)
+  el("thow").onclick=()=>{introAt=0;render()};
   const rf=el("restorefile"); if(rf)rf.onchange=async()=>{ const f=rf.files&&rf.files[0]; if(!f)return;
     const free=slots.find(x=>x.empty); let into=free?free.n:1;
     if(!free&&!confirm("Every slot is full. Replace the career in slot 1 with this backup?"))return;
@@ -3021,8 +3069,10 @@ function renderSetup(){
       <input class="seedbox" data-coname="${i+1}" maxlength="26"
         placeholder="Coach ${i+2} name"
         value="${esc((S.setup.names&&S.setup.names[i+1])||"")}">`).join("")}</div>`:""}
-    <div class="titlebtns"><button class="advance" id="cgo">Choose your ${ORG_WORD}</button></div>
+    <div class="titlebtns"><button class="advance" id="cgo">Choose your ${ORG_WORD}</button>
+      <button class="introskip" id="cback">Back</button></div>
   </div>`;
+  el("cback").onclick=()=>toTitle();
   el("crand").onclick=()=>{S.setup.name=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
   const grab=()=>{
     S.setup.name=(el("cname").value||"").trim()||rng.pick(COACH_FIRST)+" "+rng.pick(LAST);
@@ -3042,7 +3092,7 @@ function renderSetup(){
 }
 
 function renderIntro(){
-  const i=S.introStep||0;
+  const i=introAt||0;
   const card=INTRO[i];
   el("app").innerHTML=`<div class="introwrap">
     <div class="kicker">How this works &middot; ${i+1} of ${INTRO.length}</div>
@@ -3055,10 +3105,12 @@ function renderIntro(){
     <div class="dots">${INTRO.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join("")}</div>
   </div>`;
   el("inext").onclick=()=>{
-    if(i===INTRO.length-1){S.introStep=null;S.introDone=true;S.title=true;render()}
-    else{S.introStep=i+1;render()}
+    if(i===INTRO.length-1){ introAt=null; S.introDone=true; S.title=true; render();
+      // "Pick your team" picks one: a new career in the first empty slot (it went back to the title)
+      const e=document.querySelector(".slot.empty[data-slot]"); if(e)e.click() }
+    else{introAt=i+1;render()}
   };
-  el("iskip").onclick=()=>{S.introStep=null;S.introDone=true;S.title=true;render()};
+  el("iskip").onclick=()=>{introAt=null;S.introDone=true;S.title=true;render()};
 }
 
 function helpPanel(){
@@ -3136,8 +3188,11 @@ function renderStart(){
       ${ORG_WORD} &mdash; and higher expectations to go with it.</span></div>
     <div class="tierkey">${TIERS.map(t=>`<span class="${t.c}">${esc(t.l)}</span>`).join("")}</div>
     <div id="picks">${pickList("")}</div>
+    <div class="titlebtns"><button class="introskip" id="pback">Back</button></div>
     <div style="height:40px"></div>`;
   bindPicks();
+  // back a step: to the setup, nothing started (testers: no way out of a new career once begun)
+  el("pback").onclick=()=>{ if(S.setup){S.setup.ready=false} S.picking=null; render() };
   const f=el("find");
   if(f)f.oninput=()=>{el("picks").innerHTML=pickList(f.value);bindPicks()};
 }

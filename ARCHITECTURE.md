@@ -131,6 +131,22 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   test/confirm-taps.js swaps in a different correct sort and checks the
   schedule doesn't change. Seasons begun before Nov 2026 (no u.schedV) keep
   the old draw so a season under way isn't redrawn.
+- Opening the offseason changes the league (the coaching carousel: hires,
+  firings, coordinators hired away, coaches' records). rebuild() replays it
+  on load (replayCarousel, same dice, inputs kept in S.off.act.users or
+  S.carousel.users). Without it a reload in the offseason started the next
+  season from another league. test/reload.js reloads mid-offseason, goes on
+  and compares season 2, head coaches and coordinators. Coach ids are a page
+  counter (COACH_ID) and aren't compared; nothing reads them.
+- One question, one answer: the graded call and the post-game line weigh
+  the same call with the same replays (the graded call's rates, kept as rk,
+  decide the post-game worth) and the same 3-point margin
+  (test/verdict-agree.js). Two samples of one question disagreed in words.
+- The title button's prompt is a safeguard, not friction: it says where the
+  career is saved, or warns that it isn't (storage blocked) before you lose
+  it. test/storage.js checks it.
+- The "How to play" page is a module variable (introAt), never in a save:
+  read from S, it only showed with no career loaded.
 - save() returns when no career is open (!S.myTeam). The title screen's
   "How to play" Skip and last Next called save() and wrote an empty career
   over slot 1 in all six games (found by Grokbot; my clean-profile repro

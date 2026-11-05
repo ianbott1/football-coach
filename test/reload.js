@@ -41,7 +41,19 @@ const state=api=>{const E=api.SEA;return {
     let g=0; while(A.SEA.step<7&&g++<50)step(A); await check('week 7');
     while(A.SEA.phase==='week'&&g++<80)step(A); await check('end of regular season');
     while(A.SEA.phase!=='done'&&g++<120)step(A); await check('end of postseason');
-    offseason(A); await check('start of season 2');
+    // reload in the offseason, then go on: the same season 2 as not reloading (the coaching carousel
+    // changes the league when the offseason opens, and a reload rebuilt the league without it:
+    // a coordinator hired away stayed on staff, Grokbot)
+    { A.openOffseason(); const R=mk()(file); await R.loadSave(JSON.stringify(A.S)); offseason(R); offseason(A); n++;
+      // the active coach's stash of history is a stand-in (saved as a pointer to S.history), and coach
+      // ids are a page counter: neither is compared
+      const st=X=>{ const o=state(X), t=X.S.turn||0; o.coaches=o.coaches.map((c,i)=>i===t?'active':c); return o };
+      const noId=c=>{ const o={}; for(const k in c){ const x=Object.assign({},c[k]); delete x.id; o[k]=x } return o };
+      const a=st(A), b=st(R), d=Object.keys(a).filter(k=>h(a[k])!==h(b[k]));
+      const ua=h(A.U?noId(A.U.coach):null), ub=h(R.U?noId(R.U.coach):null), oa=h(A.U?[A.U.oc,A.U.dc]:null), ob=h(R.U?[R.U.oc,R.U.dc]:null);
+      if(ua!==ub)d.push('head coaches'); if(oa!==ob)d.push('coordinators');
+      if(d.length){bad++; console.log(`  ${label} season 2 after a reload in the offseason: ${d.join(', ')} differ`)} }
+    await check('start of season 2');
     while(A.SEA.step<5&&g++<160)step(A); await check('season 2 week 5');
   }
   console.log(bad?`MISMATCH ${bad} of ${n} reloads`:`MATCH ${n} of ${n} reloads`);

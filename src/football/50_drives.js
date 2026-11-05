@@ -201,7 +201,9 @@ function fourthDownCall(stall, togo, offElo, defElo){
   }
   if (stall >= 44) {
     return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
-      b:`${dist} yards is a long way for the kicker. Go for it, or flip the field.`,
+      // too far to kick, and it says so (Grokbot: "72 yards is a long way for the kicker", and Go or Punt
+      // with no word on why there was no kick)
+      b:`Too far to kick: it would be a ${dist}-yard try. Go for it, or punt and flip the field.`,
       opts:[["go",`Go for it \u00b7 ${gp}% to convert`],["punt","Punt it away"]]};
   }
   // fourth and short in your own half: the call coaches are second-guessed on most (added Nov 2026)
@@ -245,6 +247,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
                  h:st.h,a:st.a,n:st.i+1,aggr:aggr,note:res.note||null,
                  converted:(res.converted===undefined?null:res.converted),
                  togo:res.togo||null};
+    if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
     st.drives.push(drive);
     st.prev=res.kind; st.i++; st.pend=null; st.stage=null;
     return drive;
@@ -308,18 +311,18 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
           }
         } else if(choice==="kick"){
           res = rng.r()<fgOdds(P.res.stall)
-            ? {pts:3,kind:"FG",stall:P.res.stall,note:fgDistance(P.res.stall)+"-yd kick is good"}
-            : {pts:0,kind:"MISS",stall:P.res.stall,note:fgDistance(P.res.stall)+"-yd kick is no good"};
+            ? {pts:3,kind:"FG",stall:P.res.stall,note:"kicked a "+fgDistance(P.res.stall)+"-yard field goal"}
+            : {pts:0,kind:"MISS",stall:P.res.stall,note:"missed a "+fgDistance(P.res.stall)+"-yard field goal"};
         } else res={pts:0,kind:"PUNT",stall:P.res.stall,note:"punted it away"};
         return {drive:push(home,P.q,P.start,res,P.aggr),h:st.h,a:st.a};
       } else if(stage==="two"){
         let res;
         if(choice==="two"){
-          res = rng.r()<0.47 ? {pts:8,kind:"TD",stall:100,note:"two-point conversion good"}
-                             : {pts:6,kind:"TD",stall:100,note:"two-point try failed"};
+          res = rng.r()<0.47 ? {pts:8,kind:"TD",stall:100,note:"scored, and the two-point try was good"}
+                             : {pts:6,kind:"TD",stall:100,note:"scored, but the two-point try failed"};
         } else {
           res = rng.r()<0.97 ? {pts:7,kind:"TD",stall:100}
-                             : {pts:6,kind:"TD",stall:100,note:"extra point missed"};
+                             : {pts:6,kind:"TD",stall:100,note:"scored, but missed the extra point"};
         }
         if(home)st.h-=6; else st.a-=6;            // put on the board at the question; push adds the whole score
         return {drive:push(home,P.q,P.start,res,P.aggr),h:st.h,a:st.a};
@@ -394,7 +397,7 @@ function decisionPoint(state, isUser){
   if (veryLate && diff > 0 && diff <= 14 && !used.protect) {
     return {
       k:"protect",
-      h:`Up ${diff} late`,
+      h: q>=4?`Up ${diff} late`:`Up ${diff}, end of the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)
       b:`Sit on it and shorten the game, or keep the throttle down.`,
       opts:[["sit","Bleed the clock"],["keep","Keep attacking"]]
     };

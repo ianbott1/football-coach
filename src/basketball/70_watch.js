@@ -19,7 +19,10 @@ function isBigGame(g,team,seaRankMap,rivalName){
 function segClock(s){
   if(s==="last")return "0:02";
   if(s>=8)return "OT"+(s-7>1?(s-7):"");
-  if(BB.quarters)return "Q"+(Math.floor(s/2)+1)+" "+(s%2?"0:00":"6:00");   // the pros: four 12-minute quarters
+  // the end of a period says so ("1st 0:00" at half-time: Grokbot)
+  if(BB.quarters)return s%2?(s===7?"End of Q4":"End of Q"+(Math.floor(s/2)+1)):"Q"+(Math.floor(s/2)+1)+" 6:00";   // the pros: four 12-minute quarters
+  if(s===3)return "Half-time";
+  if(s===7)return "End of 2nd";
   const half=s<4?"1st":"2nd", left=20-5*((s%4)+1);
   return half+" "+left+":00";
 }

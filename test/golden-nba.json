@@ -1,5 +1,5 @@
 {
- "fp": "75745ea8715fd2ce",
+ "fp": "2d30df453a3cf331",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -165,6 +165,11 @@
    "fp": "75745ea8715fd2ce",
    "from": "432d3ceac3e8ac9f",
    "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
+  },
+  {
+   "fp": "2d30df453a3cf331",
+   "from": "75745ea8715fd2ce",
+   "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
   }
  ],
  "result": {
@@ -179,7 +184,7 @@
     "heis": "92af6728a86e8a51",
     "history": "893cb08fa6b01a02",
     "universe": "137d5f6e978449c3",
-    "screens": "54fc2c0af7a08b85"
+    "screens": "8318f32e575ea141"
    },
    {
     "year": 2027,
@@ -191,7 +196,7 @@
     "heis": "f05067ed4a16dbc5",
     "history": "5527fd5ee870e807",
     "universe": "edfa017d4d5b8f4e",
-    "screens": "08957ada4829d9f7"
+    "screens": "ea2e9aa6d9a41842"
    }
   ],
   "Detroit#777": [
@@ -205,7 +210,7 @@
     "heis": "bd7234824f88d455",
     "history": "6162bb9ef29814ee",
     "universe": "859de79662461a78",
-    "screens": "7742ca92423b341e"
+    "screens": "e16df0092e047c6d"
    },
    {
     "year": 2027,
@@ -217,7 +222,7 @@
     "heis": "07c01106df0c9f70",
     "history": "7fd52873a5634286",
     "universe": "22cbf1a2d1215553",
-    "screens": "b5088b2b683f3487"
+    "screens": "4375b30f3236bc65"
    }
   ],
   "schedules#60": [

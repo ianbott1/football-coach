@@ -1,5 +1,5 @@
 {
- "fp": "0839aeedd39f0d20",
+ "fp": "d25c4f49c7cd8a0e",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -225,6 +225,11 @@
    "fp": "0839aeedd39f0d20",
    "from": "d063ffe1fbb4282a",
    "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
+  },
+  {
+   "fp": "d25c4f49c7cd8a0e",
+   "from": "0839aeedd39f0d20",
+   "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
   }
  ],
  "result": {
@@ -239,7 +244,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "b404448de933d00c",
     "universe": "04ec089d22742028",
-    "screens": "8f94e71c4a8417bb"
+    "screens": "e44899c234ced75e"
    },
    {
     "year": 2027,
@@ -251,7 +256,7 @@
     "heis": "837e82652981ea58",
     "history": "228db1f60dbdf687",
     "universe": "be1f7876c0c2a5f7",
-    "screens": "acaee31f79d9ff3e"
+    "screens": "e7340d19f9d45590"
    }
   ],
   "Coppin State#2024": [
@@ -265,7 +270,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "c8c9c6d4ec862e49",
     "universe": "30281694f076c08c",
-    "screens": "d3076705d493dd99"
+    "screens": "1a112e9657f88f28"
    },
    {
     "year": 2027,
@@ -277,7 +282,7 @@
     "heis": "8120dbad929bbaa3",
     "history": "a09136552097899c",
     "universe": "f55a6eb1f2df61dd",
-    "screens": "46986772076a8dbf"
+    "screens": "8f98fa10d03d0586"
    }
   ],
   "Gonzaga#777": [
@@ -291,7 +296,7 @@
     "heis": "c94713712b4e6c61",
     "history": "c1d7b51fae57c0da",
     "universe": "91e4022317b5fd8d",
-    "screens": "7cb64c8c679f2b36"
+    "screens": "a4ba3a0af6087367"
    },
    {
     "year": 2027,
@@ -303,7 +308,7 @@
     "heis": "97bdbce0e295541c",
     "history": "836c5e2056f43b41",
     "universe": "9955c2cfa1b40685",
-    "screens": "25dc3b5956c4600a"
+    "screens": "deaddcf1b0777606"
    }
   ],
   "schedules#60": [

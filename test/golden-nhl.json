@@ -1,5 +1,5 @@
 {
- "fp": "1ab3a16d75c0bc07",
+ "fp": "709abfc9b51192af",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -165,6 +165,11 @@
    "fp": "1ab3a16d75c0bc07",
    "from": "aeaaecfa53e3e188",
    "note": "Nov 2026 round 12: hockey Dynasty shows overtime losses in your career, stops and all-time records (screens only; results unchanged from the previous record)"
+  },
+  {
+   "fp": "709abfc9b51192af",
+   "from": "1ab3a16d75c0bc07",
+   "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
   }
  ],
  "result": {
@@ -179,7 +184,7 @@
     "heis": "003f71366db13367",
     "history": "d7e8505680b44a1e",
     "universe": "fe217462be8cff56",
-    "screens": "3e2faf2396b66aa7"
+    "screens": "224651f6d1a2615a"
    },
    {
     "year": 2027,
@@ -191,7 +196,7 @@
     "heis": "4c644f1ea124991e",
     "history": "57a08fe1737694b7",
     "universe": "37f25f1b2e1955f0",
-    "screens": "50eac96dd4f78bcd"
+    "screens": "0dd90f73d8ebbda3"
    }
   ],
   "Edmonton#777": [
@@ -205,7 +210,7 @@
     "heis": "350200e2d90beccc",
     "history": "8fb4fa64de66f1fe",
     "universe": "f8be9e4bf79befc7",
-    "screens": "5f63ef8fd528f5b4"
+    "screens": "e730a3d3de8190f1"
    },
    {
     "year": 2027,
@@ -217,7 +222,7 @@
     "heis": "0b407779ff31638c",
     "history": "8c2af90e97b7bc6d",
     "universe": "7aedc5b3b2d03f86",
-    "screens": "9896c43383e655ec"
+    "screens": "973b67039d0b590d"
    }
   ],
   "schedules#60": [
