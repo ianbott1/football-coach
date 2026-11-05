@@ -342,7 +342,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .wl-w{color:var(--turf)!important;font-weight:600}.wl-l{color:var(--flag)!important;font-weight:600}
 .steam{flex:1;font-family:var(--cond);font-size:16px;font-weight:500;white-space:nowrap;
  overflow:hidden;text-overflow:ellipsis}
-.sconf{font-family:var(--mono);font-size:13px;width:46px;text-align:right;flex:0 0 46px;color:var(--bone)}
+.sconf{font-family:var(--mono);font-size:13px;width:46px;text-align:right;flex:0 0 46px;color:var(--bone);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* a long division name ran into the record: "Metropolitan48-36" (Grokbot) */
 .sconf.up{color:var(--turf)}.sconf.dn{color:var(--flag)}
 .sall{font-family:var(--mono);font-size:13px;color:#B4BCCB;width:46px;text-align:right;
  flex:0 0 46px}
@@ -888,7 +888,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="a12036e";
+<script>const BUILD_ID="1839081";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1055,7 +1055,7 @@ const SPORT={
     if(P==="G"){ if(L.so)return {v:120+L.sv,txt:`a ${L.sv}-save shutout`};
       if(L.sv>=40)return {v:80+L.sv,txt:`${L.sv} saves`}; return null }
     if(L.goals>=3)return {v:100+L.goals*20+L.ast*6,txt:`a hat trick${L.goals>3?" (and then some: "+L.goals+" goals)":""}${L.ast?" and "+L.ast+" assist"+(L.ast===1?"":"s"):""}`};
-    if(L.pts>=4)return {v:60+L.pts*12,txt:`${L.pts} points (${L.goals} goals, ${L.ast} assists)`};
+    if(L.pts>=4)return {v:60+L.pts*12,txt:`${L.pts} points (${nOf(L.goals,"goal")}, ${nOf(L.ast,"assist")})`};
     return null;
   },
   riser:{l:"Rising assistant",
@@ -1145,7 +1145,7 @@ function statLine(pos,s){
   if(!s||!s.g)return "";
   if(pos==="G"){ const sa=(s.sv||0)+(s.ga||0), sv=sa?(s.sv/sa):0;
     return `${sv.toFixed(3).replace(/^0/,"")} save %, ${((s.ga||0)/s.g).toFixed(2)} GAA${s.so?", "+s.so+" shutout"+(s.so===1?"":"s"):""}` }
-  return `${s.goals||0} goals, ${s.ast||0} assists, ${s.pts||0} points`;
+  return `${nOf(s.goals||0,"goal")}, ${nOf(s.ast||0,"assist")}, ${nOf(s.pts||0,"point")}`;
 }
 /* award production, from what a player actually did */
 function statProd(pos,s){
@@ -1331,6 +1331,8 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
    reload replayed the season on another schedule, 36-46 became 49-33; Grokbot's 54-28 to 53-29).
    Seasons begun from Nov 2026 (schedV 2) draw each game's jitter once and sort on that; a season
    already under way keeps the old draw, which is what it has been getting nearly every time. */
+/* "1 goal", "2 goals": a count and its word ("1 GOALS, 1 ASSISTS": Grokbot) */
+function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s")) }
 let SCHED_V=1;
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
@@ -3169,7 +3171,7 @@ function hkEventText(g,e,swapped){
 const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function rowsOf(g,drives){
-  const rows=[], sw={home:false,away:false}; let last=null;
+  const rows=[], sw={home:false,away:false}; let last=null; const said=new Set();
   drives.forEach(d=>{
     let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
     if(d.seg>=SEGS){ (d.ev||[]).forEach(e=>{ const t=hkEventText(g,e,sw); rows.push({m:d.so?"SO":"OT",team:t.team,tag:"OT GOAL",text:t.text,h:d.sh,a:d.sa,goal:true}) });
@@ -3181,11 +3183,14 @@ function rowsOf(g,drives){
       let t=hkEventText(g,e,sw);
       // two goals by one side in the same minute read as one goal twice (Grokbot: the same scorer at
       // 42', near-identical text): the second gets another scorer and finish (names are words only)
-      if(e.k==="goal"&&last&&last.m===e.m&&last.side===e.side)
-        for(let k=1;k<6;k++){
+      // ...and no goal reads word for word like an earlier one in the game (Grokbot saw it again, at
+      // other minutes: each goal's words come from a number 0-99, so two can match)
+      const sameAs=x=>(last&&last.m===e.m&&last.side===e.side&&x.text.slice(0,12)===last.text.slice(0,12))||said.has(x.text);
+      if(e.k==="goal"&&sameAs(t))
+        for(let k=1;k<8;k++){
           const t2=hkEventText(g,Object.assign({},e,{u:((e.u||0)+37*k)%100}),sw);
-          if(t2.text.slice(0,12)!==last.text.slice(0,12)){ t=t2; break } }
-      if(e.k==="goal")last={m:e.m,side:e.side,text:t.text};
+          if(!sameAs(t2)){ t=t2; break } }
+      if(e.k==="goal"){ last={m:e.m,side:e.side,text:t.text}; said.add(t.text) }
       rows.push({m:e.m+"'",team:t.team,tag:t.tag,text:t.text,h:sh,a:sa,cue:t.cue,goal:e.k==="goal"}) });
   });
   return rows;
@@ -4054,7 +4059,7 @@ function nflCareerLine(a){
   if(!c)return yrs;
   const n=x=>(x||0).toLocaleString();
   if(a.p==="G")return c.sv?`${n(c.sv)} saves, ${n(c.so)} shutouts in ${yrs}`:yrs;
-  return c.pts?`${n(c.goals)} goals, ${n(c.ast)} assists, ${n(c.pts)} points in ${yrs}`:yrs;
+  return c.pts?`${nOf(n(c.goals),"goal")}, ${nOf(n(c.ast),"assist")}, ${nOf(n(c.pts),"point")} in ${yrs}`:yrs;
 }
 const NFL_LEADERS=[
   {k:"pts",label:"Points"},{k:"goals",label:"Goals"},{k:"ast",label:"Assists"},
@@ -4601,7 +4606,9 @@ function seasonObjectives(my){
   const out=[], games=myLeagueGames(my);
   // a rival on the schedule
   const rg=games.find(g=>LEAGUE.rivals.name(my,g.home===my?g.away:g.home));
-  if(rg){ const o=rg.home===my?rg.away:rg.home; out.push({k:"rival",opp:o,l:`Beat ${o}`}) }
+  // three or more meetings: the season series, not one win (Grokbot: "Beat Montreal" done after 1 of 4)
+  if(rg){ const o=rg.home===my?rg.away:rg.home, n=games.filter(g=>g.home===o||g.away===o).length, need=Math.floor(n/2)+1;
+    out.push(n>=3?{k:"rival",opp:o,n:n,need:need,l:`Win the season series against ${o} (${need} of ${n})`}:{k:"rival",opp:o,l:`Beat ${o}`}) }
   // a cup run, where there is a cup
   if(LEAGUE.cup&&SEA.cup){ const tier=DIVS[CONF[my]].tier, R=LEAGUE.cup.rounds;
     const want=tier<=2?7:tier<=4?4:2;    // the quarter-finals; the third round; the first round proper
@@ -4630,6 +4637,10 @@ function objStatus(o,my){
   const played=[].concat(...SEA.weeks.slice(0,LEAGUE.weeks).map(w=>w.games)).filter(g=>!g.cup&&(g.home===my||g.away===my));
   const done=SEA.phase!=="week";
   if(o.k==="rival"){ const m=played.filter(g=>g.home===o.opp||g.away===o.opp);
+    if(o.need){ const w=m.filter(g=>g.winner===my).length, l=m.length-w;
+      if(w>=o.need)return {s:"met",t:`Won ${w} of ${m.length}`};
+      if(l>o.n-o.need)return {s:"miss",t:`Lost ${l} of ${o.n}`};
+      return {s:"on",t:`${w} of ${o.need} won, ${o.n-m.length} to play`} }
     if(m.some(g=>g.winner===my))return {s:"met",t:"Done"};
     const left=myLeagueGames(my).filter(g=>(g.home===o.opp||g.away===o.opp)&&g.week>=SEA.step).length;
     return left&&!done?{s:"on",t:`${left} meeting${left===1?"":"s"} to come`}:{s:"miss",t:"Missed"} }
@@ -4968,7 +4979,7 @@ function nflPower(){
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${nflClinchTag(t)}${TL(t)}</span>
       <span class="sconf">${esc(LEAGUE.conf.names[CONF[t]])}</span>
-      <span class="sall">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
+      <span class="sall">${recStr(t)}</span>
       <span class="sconf ${d>0?'up':d<0?'dn':''}">${d>0?"&#9650;"+d:d<0?"&#9660;"+(-d):""}</span></div>`;
   }).join("")+NFL_LEGEND;
 }
@@ -6488,7 +6499,9 @@ function tallyHTML(){
 /* this season's games of yours: watched live (they can hold calls) or simmed (they can't) */
 function simmedThisSeason(){
   const my=S.myTeam, pre=SEA.year+":";
-  const all=SEA.weeks.reduce((c,W)=>c+W.games.filter(g=>g.home===my||g.away===my).length,0);
+  // postseason games too: a bowl was watched but not counted ("watched 5 of your 12" after 13: Grokbot)
+  const post=typeof SEA.postGamesFor==="function"?SEA.postGamesFor(my).length:0;
+  const all=SEA.weeks.reduce((c,W)=>c+W.games.filter(g=>g.home===my||g.away===my).length,0)+post;
   const watched=Object.keys(S.played||{}).filter(k=>k.indexOf(pre)===0).reduce((c,k)=>c+S.played[k].filter(p=>p.team===my).length,0);
   return {all:all, watched:Math.min(watched,all), sim:Math.max(0,all-watched)};
 }
@@ -6509,7 +6522,7 @@ function readsHTML(step){
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
     return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
   const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,n:1,lb:lb?[lb]:[]}) });
-  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}</b> `:""}${esc(x.t)}</div></div>`).join("")}
+  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */

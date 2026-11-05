@@ -20,7 +20,7 @@ function nflPower(){
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${nflClinchTag(t)}${TL(t)}</span>
       <span class="sconf">${esc(LEAGUE.conf.names[CONF[t]])}</span>
-      <span class="sall">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
+      <span class="sall">${recStr(t)}</span>
       <span class="sconf ${d>0?'up':d<0?'dn':''}">${d>0?"&#9650;"+d:d<0?"&#9660;"+(-d):""}</span></div>`;
   }).join("")+NFL_LEGEND;
 }

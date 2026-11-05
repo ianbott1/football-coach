@@ -1,5 +1,5 @@
 {
- "fp": "21932d993bb85b29",
+ "fp": "d2baf1fa349650b8",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -239,6 +239,16 @@
    "fp": "21932d993bb85b29",
    "from": "e930882a9297c65f",
    "note": "Nov 2026 round 13: screen text only (the post-game call line now uses the graded call's replays and margin). Every result matched the edd5e32 build field by field."
+  },
+  {
+   "fp": "ee5e5f8f2723c4c6",
+   "from": "21932d993bb85b29",
+   "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "d2baf1fa349650b8",
+   "from": "ee5e5f8f2723c4c6",
+   "note": "Nov 2026 round 14: the watched-games counter counts postseason games (screens only; results unchanged)."
   }
  ],
  "result": {
@@ -253,7 +263,7 @@
     "heis": "bcce63fa1cc7f731",
     "history": "5b201afb1082757c",
     "universe": "3b33f69eaecbdcb1",
-    "screens": "059aa20db17736d7"
+    "screens": "5aa51c46deb262c5"
    },
    {
     "year": 2027,
@@ -265,7 +275,7 @@
     "heis": "9129c8a2e1156820",
     "history": "1f4c432aa3040b96",
     "universe": "81d231cc74aabc64",
-    "screens": "dc4217ae7d9d64c9"
+    "screens": "c67abcd7a16a2e94"
    },
    {
     "year": 2028,
@@ -277,7 +287,7 @@
     "heis": "ef49f77c05b28ced",
     "history": "f76782175e59f0ca",
     "universe": "050631a43fe44e19",
-    "screens": "f2576d4778c8cfbd"
+    "screens": "e8f84e37b10b009b"
    },
    {
     "year": 2029,
@@ -289,7 +299,7 @@
     "heis": "58dee64359932420",
     "history": "b9ee5172ea33be8f",
     "universe": "c7284ca8382d3448",
-    "screens": "bd02306ce669841c"
+    "screens": "28081b5dd7385728"
    }
   ],
   "Rice#2024": [
@@ -303,7 +313,7 @@
     "heis": "62c67774006ebb20",
     "history": "e94b7f5d20cebb9e",
     "universe": "cce0d7d9fd06c57f",
-    "screens": "503e0e62940c8d92"
+    "screens": "ad2a3920c0f2c407"
    },
    {
     "year": 2027,
@@ -315,7 +325,7 @@
     "heis": "d4502773801b6a4d",
     "history": "b5729f9e38c814c9",
     "universe": "411adddc48396a10",
-    "screens": "2a0c008f65eeaa2e"
+    "screens": "8fe995930454d469"
    },
    {
     "year": 2028,
@@ -327,19 +337,19 @@
     "heis": "55a301692ea6ca0e",
     "history": "4cfc4e2519a593fb",
     "universe": "262d4bc91cc328dc",
-    "screens": "61629adf22030285"
+    "screens": "d9b645b938092eac"
    },
    {
     "year": 2029,
-    "games": "4948d181d0a6d2f0",
+    "games": "7dd10f185574385a",
     "post": "72842d645dda5d47",
     "champion": "LSU",
     "rec": "9ff33b92fcd74b4b",
     "poll": "4c14cad3cd57ab7b",
     "heis": "d4265c429a4b0cdf",
     "history": "2e7b4eaa72e410b9",
-    "universe": "53d41303ae237e9c",
-    "screens": "cd6583bb13465773"
+    "universe": "6250fc8eacd99022",
+    "screens": "c2452730883739e0"
    }
   ],
   "Oregon#777": [
@@ -353,19 +363,19 @@
     "heis": "5ed593a7c45dd255",
     "history": "79e19aa075b47c78",
     "universe": "5c0b80bc379e694d",
-    "screens": "ea4f5ed091c2940f"
+    "screens": "6affd875845a1f7a"
    },
    {
     "year": 2027,
-    "games": "e6cc3fb4ca977e98",
+    "games": "11f6fc30c1a5c068",
     "post": "58736021f2aaacc1",
     "champion": "Ohio State",
     "rec": "1fcbaff687fbcd06",
     "poll": "25a15590a9805bd3",
     "heis": "3aba6f0ad131fd36",
-    "history": "d626cece2306d62b",
-    "universe": "1b57912952146c29",
-    "screens": "fca530fa13e00492"
+    "history": "68255e59ce695ea4",
+    "universe": "78e90f78a550032e",
+    "screens": "950b8aebcb55dcf6"
    },
    {
     "year": 2028,
@@ -376,8 +386,8 @@
     "poll": "4a4d609dd8946fcf",
     "heis": "2d1e839371a3b83d",
     "history": "0be73668ce0e1a96",
-    "universe": "23bf703f61c810b4",
-    "screens": "f80a87e6e7926ceb"
+    "universe": "d7d11ee2a058ebc6",
+    "screens": "722ab54649b807c2"
    }
   ],
   "Kent State#31337": [
@@ -391,7 +401,7 @@
     "heis": "eb2739b75cbf53ed",
     "history": "18e1978a45c5e27c",
     "universe": "d29a00caceaa697c",
-    "screens": "f03a2c8675fa51c5"
+    "screens": "1db3482a1447ed06"
    },
    {
     "year": 2027,
@@ -403,7 +413,7 @@
     "heis": "0f75b89a469b2b53",
     "history": "7bce1d976c71df52",
     "universe": "d0075a1cff2e7a32",
-    "screens": "41528a9e3d82b46e"
+    "screens": "b021a3fff63e672a"
    },
    {
     "year": 2028,
@@ -415,7 +425,7 @@
     "heis": "e20a147e9bbc6e0b",
     "history": "f902066afca5ec87",
     "universe": "40baabbdfe0b6e1d",
-    "screens": "4e8cbb6a8c2f5c68"
+    "screens": "8b0b2bea52b41243"
    }
   ],
   "schedules#60": [

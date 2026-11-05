@@ -10,6 +10,8 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
    reload replayed the season on another schedule, 36-46 became 49-33; Grokbot's 54-28 to 53-29).
    Seasons begun from Nov 2026 (schedV 2) draw each game's jitter once and sort on that; a season
    already under way keeps the old draw, which is what it has been getting nearly every time. */
+/* "1 goal", "2 goals": a count and its word ("1 GOALS, 1 ASSISTS": Grokbot) */
+function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s")) }
 let SCHED_V=1;
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }

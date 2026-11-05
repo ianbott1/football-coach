@@ -498,6 +498,26 @@ dynasty's first season (generated players have no earlier history).
 
 ## Known calibration gaps (measured)
 
+- Played vs simmed scoring (Nov 2026, one season x3 per game, calls cycled):
+  your live games against the league's simmed games, points per team:
+  college football 26.6 / 26.8, pro football 23.8 / 22.4, college basketball
+  72.1 / 72.4, pro basketball 115.8 / 114.6, hockey 3.1 / 3.1, soccer
+  1.6 / 1.4 (Arsenal: a strong side). In a browser, 20 hand-played Saint
+  Joseph's games averaged 74.4. Calls barely move totals (college
+  basketball: 72.0 to 72.9 whichever option you always take). Testers'
+  high hand-played samples were small; no engine gap found.
+- Field goals: fgOdds is a smooth curve (FG_CURVE) used only for your
+  fourth-down calls; the computer's drives resolve kicks their own way, so
+  CPU calibration doesn't move. Fourth downs graded over 6 careers: where
+  no kick is offered (the punt-or-go band) "go" is best about two times in
+  three; that band, not the kick curve, is why most fourth downs favour
+  going (Instinct). A model question still open.
+- Hockey pay: teams carry 12 contracts, not an NHL roster's 23, so each
+  player stands for about two and the cap is spread over fewer people (a
+  60-64 rated player earns about $12.4M on existing contracts; asks follow
+  the same scale). Testers read it as inflated. Rescaling the economy is
+  Ian's call.
+
 - Hockey's goalie call is nearly weightless (Nov 2026, test/hk-reads.js at
   60,000 games): pulling him only on a real bad night is worth about +1 win
   point over leaving it, and telling a bad night from bad luck (soft goals

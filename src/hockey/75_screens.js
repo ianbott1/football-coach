@@ -47,7 +47,7 @@ function hkEventText(g,e,swapped){
 const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function rowsOf(g,drives){
-  const rows=[], sw={home:false,away:false}; let last=null;
+  const rows=[], sw={home:false,away:false}; let last=null; const said=new Set();
   drives.forEach(d=>{
     let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
     if(d.seg>=SEGS){ (d.ev||[]).forEach(e=>{ const t=hkEventText(g,e,sw); rows.push({m:d.so?"SO":"OT",team:t.team,tag:"OT GOAL",text:t.text,h:d.sh,a:d.sa,goal:true}) });
@@ -59,11 +59,14 @@ function rowsOf(g,drives){
       let t=hkEventText(g,e,sw);
       // two goals by one side in the same minute read as one goal twice (Grokbot: the same scorer at
       // 42', near-identical text): the second gets another scorer and finish (names are words only)
-      if(e.k==="goal"&&last&&last.m===e.m&&last.side===e.side)
-        for(let k=1;k<6;k++){
+      // ...and no goal reads word for word like an earlier one in the game (Grokbot saw it again, at
+      // other minutes: each goal's words come from a number 0-99, so two can match)
+      const sameAs=x=>(last&&last.m===e.m&&last.side===e.side&&x.text.slice(0,12)===last.text.slice(0,12))||said.has(x.text);
+      if(e.k==="goal"&&sameAs(t))
+        for(let k=1;k<8;k++){
           const t2=hkEventText(g,Object.assign({},e,{u:((e.u||0)+37*k)%100}),sw);
-          if(t2.text.slice(0,12)!==last.text.slice(0,12)){ t=t2; break } }
-      if(e.k==="goal")last={m:e.m,side:e.side,text:t.text};
+          if(!sameAs(t2)){ t=t2; break } }
+      if(e.k==="goal"){ last={m:e.m,side:e.side,text:t.text}; said.add(t.text) }
       rows.push({m:e.m+"'",team:t.team,tag:t.tag,text:t.text,h:sh,a:sa,cue:t.cue,goal:e.k==="goal"}) });
   });
   return rows;

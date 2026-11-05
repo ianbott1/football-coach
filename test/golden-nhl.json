@@ -1,5 +1,5 @@
 {
- "fp": "709abfc9b51192af",
+ "fp": "43203ebc86e460a7",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -170,6 +170,11 @@
    "fp": "709abfc9b51192af",
    "from": "1ab3a16d75c0bc07",
    "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
+  },
+  {
+   "fp": "43203ebc86e460a7",
+   "from": "709abfc9b51192af",
+   "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
   }
  ],
  "result": {
@@ -183,8 +188,8 @@
     "poll": "cf54987a27563789",
     "heis": "003f71366db13367",
     "history": "d7e8505680b44a1e",
-    "universe": "fe217462be8cff56",
-    "screens": "224651f6d1a2615a"
+    "universe": "415d93712e4957b6",
+    "screens": "4adb80ee29539a15"
    },
    {
     "year": 2027,
@@ -194,9 +199,9 @@
     "rec": "7f0e4006d97653e7",
     "poll": "3e6be4a0683b938a",
     "heis": "4c644f1ea124991e",
-    "history": "57a08fe1737694b7",
-    "universe": "37f25f1b2e1955f0",
-    "screens": "0dd90f73d8ebbda3"
+    "history": "e789230a0d2f3a36",
+    "universe": "143fffb7b4f37d67",
+    "screens": "0e664986bbe26429"
    }
   ],
   "Edmonton#777": [
@@ -208,21 +213,21 @@
     "rec": "305a97af6c7ef8de",
     "poll": "30cac5d5e617af8a",
     "heis": "350200e2d90beccc",
-    "history": "8fb4fa64de66f1fe",
-    "universe": "f8be9e4bf79befc7",
-    "screens": "e730a3d3de8190f1"
+    "history": "64149adcb5b3e4b6",
+    "universe": "6f8ab4efac17d665",
+    "screens": "617ee493769b70d0"
    },
    {
     "year": 2027,
-    "games": "22bb09b5b80dc517",
-    "post": "1aaebb8c2b5dc814",
-    "champion": "Minnesota",
-    "rec": "68485d91025cfad0",
-    "poll": "f70f279ad8ef4f63",
-    "heis": "0b407779ff31638c",
-    "history": "8c2af90e97b7bc6d",
-    "universe": "7aedc5b3b2d03f86",
-    "screens": "973b67039d0b590d"
+    "games": "2b4a9b2a7f418d1f",
+    "post": "3ce5193dd7586d0f",
+    "champion": "Colorado",
+    "rec": "13b5adbfb243852b",
+    "poll": "fdd323e26e9eeb69",
+    "heis": "2fc47010d565d512",
+    "history": "89b640be746535a0",
+    "universe": "2818c6ce921718b8",
+    "screens": "e35be8abb1546f58"
    }
   ],
   "schedules#60": [

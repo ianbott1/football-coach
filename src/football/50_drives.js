@@ -82,14 +82,14 @@ function rollDrive(rng, offElo, defElo, startYd, aggr){
 }
 
 /* Field-goal success by distance (stall yard -> attempt length). */
+/* a smooth curve through the old steps' middles: every yard counts (it was a staircase: 80% from 33 to
+   40 yards, 66% from 41 to 47, so a 41-yarder and a 47-yarder were the same kick: Grokbot, Instinct) */
+const FG_CURVE=[[18,0.97],[25,0.95],[32,0.88],[40,0.78],[47,0.65],[54,0.48],[60,0.32],[70,0.15]];
 function fgOdds(stall){
-  const dist = (100-stall) + 17;
-  if (dist<=25) return 0.96;
-  if (dist<=32) return 0.90;
-  if (dist<=40) return 0.80;
-  if (dist<=47) return 0.66;
-  if (dist<=54) return 0.48;
-  return 0.30;
+  const d=(100-stall)+17, C=FG_CURVE;
+  if(d<=C[0][0])return C[0][1];
+  for(let i=1;i<C.length;i++){ if(d<=C[i][0]){ const [a,pa]=C[i-1],[b,pb]=C[i]; return pa+(pb-pa)*(d-a)/(b-a) } }
+  return C[C.length-1][1];
 }
 function fgDistance(stall){ return (100-stall)+17; }
 

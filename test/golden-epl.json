@@ -195,6 +195,11 @@
    "fp": "99e20f1d5fe40243",
    "from": "b6ad6fd7cc2dc79b",
    "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
+  },
+  {
+   "fp": "99e20f1d5fe40243",
+   "from": "99e20f1d5fe40243",
+   "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
   }
  ],
  "result": {

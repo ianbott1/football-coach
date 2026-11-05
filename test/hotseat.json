@@ -150,6 +150,11 @@
    "fp": "b12379d7f156f86e",
    "from": "d36f08efafdd32be",
    "note": "Nov 2026 round 12: half-time questions skipped in decided games; pro basketball and hockey seasons drawn with schedOrder (deterministic); hockey history rows keep overtime losses. Control build with those held back matched the previous fingerprints in all six."
+  },
+  {
+   "fp": "b12379d7f156f86e",
+   "from": "b12379d7f156f86e",
+   "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
   }
  ],
  "out": [

@@ -1,5 +1,5 @@
 {
- "fp": "20eaedf45125a86e",
+ "fp": "a141ab7f602818ba",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -115,6 +115,11 @@
    "fp": "20eaedf45125a86e",
    "from": "d24abb7056962ef1",
    "note": "Nov 2026 round 12: half-time questions skipped in decided games; pro basketball and hockey seasons drawn with schedOrder (deterministic); hockey history rows keep overtime losses. Control build with those held back matched the previous fingerprints in all six."
+  },
+  {
+   "fp": "a141ab7f602818ba",
+   "from": "20eaedf45125a86e",
+   "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
   }
  ],
  "out": [
@@ -183,7 +188,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "d2e15c6d1c67ddb7"
+     "book": "962b4d4fd48449a0"
     }
    ]
   }
