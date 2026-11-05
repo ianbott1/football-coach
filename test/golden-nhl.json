@@ -1,5 +1,5 @@
 {
- "fp": "7bf9cbaa770e1e51",
+ "fp": "a8609ba7f1c5f4c6",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -185,6 +185,11 @@
    "fp": "7bf9cbaa770e1e51",
    "from": "de9a3c4c79efacde",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "a8609ba7f1c5f4c6",
+   "from": "7bf9cbaa770e1e51",
+   "note": "Nov 2026 round 17: screen text only (graded calls list every option's replay rate on one scale; reads the card hadn't marked aren't counted; hockey career keeps this season's overtime losses in the offseason). Results identical to db42841 field by field."
   }
  ],
  "result": {
@@ -199,7 +204,7 @@
     "heis": "003f71366db13367",
     "history": "4e1b33d4973fd7a5",
     "universe": "9d726b0d367ee1f5",
-    "screens": "22a4d0aa8d9c0c19"
+    "screens": "9b491edd11981cd2"
    },
    {
     "year": 2027,
@@ -211,7 +216,7 @@
     "heis": "4c644f1ea124991e",
     "history": "fba3860b93026b1a",
     "universe": "b3827186eaf39e29",
-    "screens": "1e783e1c5d36dc2d"
+    "screens": "8513e02be8fd5485"
    }
   ],
   "Edmonton#777": [
@@ -225,7 +230,7 @@
     "heis": "350200e2d90beccc",
     "history": "ba669f3d1704757f",
     "universe": "4a25db918d543efd",
-    "screens": "3045481960fb090b"
+    "screens": "fbaa89d5a4ef31df"
    },
    {
     "year": 2027,
@@ -237,7 +242,7 @@
     "heis": "2fc47010d565d512",
     "history": "0c007b1e1e36b815",
     "universe": "8d0e10674c7fac2d",
-    "screens": "a6831527321eddd1"
+    "screens": "1348015a3984b903"
    }
   ],
   "schedules#60": [

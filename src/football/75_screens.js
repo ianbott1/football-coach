@@ -21,7 +21,7 @@ function driveScript(g,drives){
   const RH=SEA.roster[g.home], RA=SEA.roster[g.away];
   const OUTTXT={PUNT:["three and out","forced to punt","stalls out, punt","goes backwards, punt"],
                 DOWNS:["turned over on downs"],MISS:["the field goal is no good"],   // a field goal: "the kick" read as a missed extra point (Grokbot)
-                INT:["intercepted"],FUM:["fumble, recovered by the defense"]};
+                INT:["threw an interception"],FUM:["fumble, recovered by the defense"]};
   return drives.map(d=>{
     const off=d.home?RH:RA, def=d.home?RA:RH;
     const nm=i=>off&&off[i]?off[i].n:"the offense";
@@ -155,7 +155,7 @@ function driveWord(d){
   if(d.note&&d.note!=="overtime")return d.note;
   if(d.kind==="TD")return "touchdown";
   if(d.kind==="FG")return "field goal";
-  if(d.kind==="INT")return "intercepted";
+  if(d.kind==="INT")return "threw an interception";   // after the team's name ("TCU intercepted" read as TCU's catch: Grokbot)
   if(d.kind==="FUM")return "fumbled, recovered by the defense";
   if(d.kind==="MISS")return "missed the field goal";
   if(d.kind==="DOWNS")return "turned over on downs";
@@ -244,14 +244,31 @@ function callVerdicts(args,seed,answers,meHome){
     out.push({k:"call",pick:pick,truth:best,right:rate[pick]>=rate[best]-VERDICT_SLACK,
       other:alt!==null?lab(alt):undefined, or:alt!==null?Math.round(rate[alt]*100):undefined,
       h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100),
-      rk:Object.fromEntries(opts.map(o=>[o,Math.round(rate[o]*100)]))});     // every option's rate, for the post-game line
+      rk:Object.fromEntries(opts.map(o=>[o,Math.round(rate[o]*100)])),     // every option's rate, for the post-game line
+      pk:pick, keys:Object.fromEntries(opts.map(o=>[o,lab(o)]))});
   });
   out.judged=judged;
   if(out.close)delete out.close.spread;                       // calls you made that could be graded, whether or not any were
   return out;
 }
+/* one scale for every verdict, the graded call and the post-game line alike (they disagreed: "about as
+   often" above "wins clearly more often", 3 points "better call" and 7 "a little": Grokbot, Muse) */
+const GAP_SAME=3, GAP_CLEAR=7;
+function gapWord(d){ const a=Math.abs(d); return a<=GAP_SAME?"same":a<=GAP_CLEAR?"little":"clear" }
 function readText(e){
   if(e.k!=="call")return "";
+  // every option's share of replays, so what was compared is on the screen
+  if(e.rk&&e.keys){
+    const ks=Object.keys(e.rk), lab=k=>e.keys[k]||k, mine=e.rk[e.pk], top=Math.max(...ks.map(k=>e.rk[k]));
+    const list=ks.slice().sort((a,b)=>e.rk[b]-e.rk[a]).map(k=>`"${lab(k)}" ${e.rk[k]}%`).join(", ");
+    const gone=top<35, safe=Math.min(...ks.map(k=>e.rk[k]))>65;
+    const d=mine-top, w=gapWord(d), best=ks.filter(k=>e.rk[k]===top&&k!==e.pk).map(lab)[0];
+    const say=gone?" Neither saved it: the game was mostly gone whichever you chose."
+      :safe?" The game was mostly won whichever you chose."
+      :w==="same"?(ks.every(k=>gapWord(e.rk[k]-top)==="same")?" Any of them was a good call.":" As good as any.")
+      :w==="little"?` "${best}" was a little better.`:` "${best}" was clearly better.`;
+    return `${e.h}: replays from that moment won ${list}. You chose "${lab(e.pk)}".${say}`;
+  }
   // inside the margin the replays can't separate, both ways read the same:
   // a point either side isn't "the better call"
   const slack=Math.round(VERDICT_SLACK*100);

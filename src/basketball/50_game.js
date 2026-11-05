@@ -312,12 +312,17 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s>=4&&s<=6&&!X.asked2&&X.f>=BB.foulOut-2)return 2; return 0 };
   const sitStar=(X,half)=>{ X.sitTo=half===1?4:6 };
   st.log=[];            // the person's reads, and what was true (for the result screen)
+  // did the numbers on the card mark what they were doing? (the card's own marks: three-point share
+  // 45%+ or 31%- , pick-and-rolls 3.4+ a stretch). If not, a miss isn't held against you (Instinct: 38%
+  // threes against a 39% average, nothing marked, and "wrong: they were bombing threes")
+  const shownOf=(dp,t)=>{ const T=dp.tell; if(!T)return true; const sh=100*T.tpa/Math.max(1,T.fga), n=Math.max(1,T.n);
+    return t==="threes"?sh>=45:t==="paint"?sh<=31:t==="pnr"?T.pnr/n>=3.4:true };
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(DEFENSES[v]){ const t=st.S[other(side)].off; X.def=v; X.prepd=true;
       st.log.push({side:side,k:"prep",pick:v,truth:t,right:DEFENSES[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
-    if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:X.def,truth:t,right:DEFENSES[X.def].beats===t,evid:dp.best}); return }
-    if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:v,truth:t,right:DEFENSES[v].beats===t,evid:dp.best}) }
+    if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}); return }
+    if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,k:"read",pick:v,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }
     if(dp.k==="fouls"){ if(v!=="play")sitStar(X,dp.half); return }
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }

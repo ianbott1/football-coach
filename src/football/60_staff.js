@@ -174,7 +174,7 @@ function staffTake(dp, ctx){
     R.push({who:"bears", pick:"go",
       line:bearYell(kick!==null?"fourthKick":"fourthPunt", seed)});
     R.push({who:"pearl", pick:mid, line:pearlSay(mid==="kick" ? `${kick}% for three points! I'll take three points.`
-      : mid==="go"  ? (diff<0 ? `We're behind. We need points, not a punt. Let's go for it!`        // from the situation, not one canned line (it said "brilliant all day" on drive 1)
+      : mid==="go"  ? (diff<0&&((ctx.q||0)>=3||diff<=-8) ? `We're behind. We need points, not a punt. Let's go for it!`   // not at 0-7 in the first quarter (Grokbot)        // from the situation, not one canned line (it said "brilliant all day" on drive 1)
                      : (ctx.q||0)<=4 ? `It's early, and they've earned a shot. ${go}% to convert: let's go!`
                      : go>=60 ? `${go}% to convert? I'll take those odds every time!`
                      : `They've moved it well. Let them finish the drive!`)

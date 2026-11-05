@@ -318,7 +318,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
       if(st.queue.length)return st.next()}
     if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45);
-      queueCall(sd,readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue))}); if(st.queue.length)return st.next()}
+      { const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }}); if(st.queue.length)return st.next()}
     if(s===9&&!st.ht){st.ht=true;
       // half-time: the computer changes its approach now and then, more often when behind
       ["home","away"].forEach(sd=>{ if(humans[sd])return; const X=st.S[sd];
@@ -328,7 +328,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
         if(humans[sd])queueCall(sd,flankCall(st.S[sd].fl,st.S[sd].flLast)); else aimIt(sd) });
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
-      queueCall(sd,readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr))}); if(st.queue.length)return st.next()}
+      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===15&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>queueCall(sd,lateCall(lead(sd)))); if(st.queue.length)return st.next()}

@@ -161,6 +161,17 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     await p.goto(url); await p.waitForTimeout(700); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);
     ok(await p.evaluate(()=>!(S.career.ach&&S.career.ach.century)),'a Century trophy at '+(await p.evaluate(()=>careerNow(S.career).w))+' career wins survived a reload');
     await ctx.close(); }
+  // a season begun before the deterministic draw locks its schedule on the first load, and every
+  // load after uses it (Muse: such a season reloaded in the offseason as 58-24, played 53-29)
+  { const ctx=await b.newContext(); const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss());
+    const url='file://'+path.join(DIST,'basketball-coach-pro.html'); await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
+    await p.evaluate(async()=>{ S.watchMode="never"; for(let k=0;k<30;k++)simAdvance(); await new Promise(r=>setTimeout(r,300)); delete S.uStart.schedV; delete S.schedLock; await save() });   // as an older build saved it
+    const runs=[];
+    for(let k=0;k<3;k++){ await p.goto(url); await p.waitForTimeout(600); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);
+      runs.push(await p.evaluate(()=>({lock:!!S.schedLock, sched:JSON.stringify(SEA.sched).length+':'+SEA.sched.slice(0,40).map(g=>g.home+g.away).join(''), rec:recStr(S.myTeam)}))) }
+    ok(runs.every(r=>r.lock),'a season from an older build was not given a schedule lock');
+    ok(runs.every(r=>r.sched===runs[0].sched&&r.rec===runs[0].rec),`a locked season's schedule or record changed between loads (${runs.map(r=>r.rec).join(', ')})`);
+    await ctx.close(); }
   // featuring someone new in the offseason doesn't replay last season with him on reload
   // (Grokbot: the final card went 54-28 to 53-29; it moved hockey by 13 wins)
   for(const f of ['basketball-coach-pro.html','hockey-coach-pro.html']){

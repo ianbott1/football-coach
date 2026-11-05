@@ -126,7 +126,12 @@ function staffTake(dp, ctx){
   if(dp.k==="read"){
     const p=dp.pearl&&APPROACH[dp.pearl]?APPROACH[dp.pearl].counter:"normal";
     R.push({who:"bears", pick:"long", line:bearYell("read",seed)});
-    R.push({who:"pearl", pick:p, line:pearlSay(dp.pearl&&PEARL_READ[dp.pearl]?"I just saw it! "+PEARL_READ[dp.pearl]:"I haven't seen enough yet. Let the assistant decide!",seed)});
+    // the second read against her first, as in basketball (Muse: at 55' she didn't refer to it at all)
+    const again=dp.stage===2&&dp.pearl1!==undefined;
+    R.push({who:"pearl", pick:p, line:pearlSay(!(dp.pearl&&PEARL_READ[dp.pearl])?"I haven't seen enough yet. Let the assistant decide!"
+      :again&&dp.pearl1===dp.pearl?`Same as I saw at 25 minutes: ${APPROACH[dp.pearl].l||"the same thing"}. If we're set up for it, stay with it!`
+      :again?"It's changed since the first read! "+PEARL_READ[dp.pearl]
+      :"I just saw it! "+PEARL_READ[dp.pearl],seed)});
     R.push({who:"capy", pick:"second", line:"It seems to me dropping off a little rarely hurts anyone. Though I confess I haven't looked at the numbers."});
     return R;
   }

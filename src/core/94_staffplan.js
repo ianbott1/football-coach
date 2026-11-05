@@ -84,7 +84,12 @@ function staffAdvice(dp,ctx){
   const R=staffTake(dp,ctx);
   if(!staffHints()||(dp.k!=="read"&&dp.k!=="prep"))return R;
   const H=SPORT.hints||{};
+  // a second read says whether the place to look has moved since the first (hints are the default, so
+  // the same line twice was what most players saw: Instinct)
+  const again=dp.stage===2&&dp.pearl1!==undefined;
   const line=dp.k==="prep"?"Look at what they did most, and ask whether today is any different. Who's the stronger side?"
+    :again&&dp.pearl1===dp.pearl?"Same place to look as before. Has anything in the numbers moved?"
+    :again&&H[dp.pearl]?"Something's moved since the first read. "+H[dp.pearl]
     :(H[dp.pearl]||"I've got a feeling, but you've got the numbers. What do they say?");
   return R.map(x=>x.who==="pearl"?Object.assign({},x,{pick:null,line:pearlSay(line,(ctx.mine||0)*7+(ctx.q||0))}):x);
 }
@@ -142,8 +147,9 @@ function impactHTML(P){
   const altLine=`a ${c.cf.mine}-${c.cf.theirs} ${alt}`;
   // one margin with the graded calls: within 3 points is "about as often" there and "little difference"
   // here (they disagreed: "won about as often (100% and 97%)" beside "wins clearly more often": Grokbot)
-  const avgOf=w=>w>0.06?"wins clearly more often than his":w>0.03?"wins a little more often than his"
-    :w>=-0.03?"made little difference either way":w>=-0.06?"wins a little less often than his":"loses clearly more often than his";
+  // the same scale as the graded call: within 3 points the same, 4 to 7 a little, beyond 7 clearly
+  const avgOf=w=>w>0.07?"wins clearly more often than his":w>0.03?"wins a little more often than his"
+    :w>=-0.03?"made little difference either way":w>=-0.07?"wins a little less often than his":"loses clearly more often than his";
   const avg=avgOf(c.worth);
   // every other call you made against his, weighed the same way: the ones left out (a slow-down, the
   // press) read as if they were never weighed (Instinct)

@@ -15,6 +15,12 @@ class Season{
     this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
     SCHED_V=u.schedV||1;                    // see schedOrder
     this.sched=LEAGUE.buildSchedule(this.rng,u.perceived,u.year);
+    // a season begun before the deterministic draw (schedV 1) can come out differently on each load:
+    // the first load on this build keeps its schedule and the dice after it (rebuild saves the lock),
+    // and every load after that uses them (Muse: a reload in the offseason turned 53-29 into 58-24)
+    if(SCHED_V<2&&u.schedLock&&u.schedLock.year===u.year){
+      this.sched=JSON.parse(JSON.stringify(u.schedLock.sched)); this.rng.a=u.schedLock.a; this.rng.sp=u.schedLock.sp;
+    }else if(SCHED_V<2)this._lock={year:u.year,sched:JSON.parse(JSON.stringify(this.sched)),a:this.rng.a,sp:this.rng.sp};
     this.rec={};this.confrec={};
     NAMES.forEach(t=>{this.rec[t]=[0,0];this.confrec[t]=[0,0]});
     this.step=0; this.weeks=[]; this.champion=null;

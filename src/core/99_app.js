@@ -188,7 +188,7 @@ function finishLive(){
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
-      R.forEach(x=>{T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
+      R.forEach(x=>{ if(x.unclear)return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // a read the screen couldn't show isn't counted
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -341,7 +341,10 @@ function rebuild(){
   syncConf(U);
   NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct
   U.userTeam=S.myTeam;
+  if(S.schedLock&&S.schedLock.year===U.year)U.schedLock=S.schedLock;
   SEA=new Season(U,S.seasonSeed);
+  if(SEA._lock&&!(S.schedLock&&S.schedLock.year===U.year)){ S.schedLock=SEA._lock; lockNew=true }   // kept from now on
+  delete U.schedLock;
   SEA.userTeam=S.myTeam;
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   const CL=S.chLog&&S.chLog.year===SEA.year?S.chLog:null;   // the choices as they were made (noteChoice)
@@ -395,6 +398,7 @@ function auditTrophies(){
   if(C.ach.century&&careerNow(C).w<100)delete C.ach.century;
 }
 
+let lockNew=false;           // a schedule lock made on this load, not yet saved (rebuild)
 let introAt=null;            // the "How to play" page showing, or null: never in a save
 let saveOK=null;                     // did the last save land? null = not tried yet
 /* Saves are coalesced: calls made in the same burst share one save, of the
@@ -601,8 +605,10 @@ function yourOTL(team,from,to){
   let o=0;
   (S.history||[]).forEach(h=>{ if(!h||(team&&h.team!==team)||(from!==undefined&&h.year<from)||(to!==undefined&&h.year>to))return;
     const m=/^\d+-\d+-(\d+)$/.exec(h.rec||""); if(m)o+=+m[1] });
-  const banked=S.off&&SEA&&S.off.year===SEA.year;
-  if(SEA&&SEA.otl&&!banked&&(!team||team===S.myTeam)&&(from===undefined||SEA.year>=from)&&(to===undefined||SEA.year<=to))o+=SEA.otl[S.myTeam]||0;
+  // this season's, unless its entry is already in the history: in the offseason its wins and losses are
+  // in the career but its entry isn't written yet (Instinct: the offseason career read 41-43, three seasons)
+  const inBook=(S.history||[]).some(h=>h&&h.year===SEA.year&&h.team===S.myTeam&&/^\d+-\d+-\d+$/.test(h.rec||""));
+  if(SEA&&SEA.otl&&!inBook&&(!team||team===S.myTeam)&&(from===undefined||SEA.year>=from)&&(to===undefined||SEA.year<=to))o+=SEA.otl[S.myTeam]||0;
   return o;
 }
 /* the career so far including the season being played: a season is added to
@@ -808,7 +814,9 @@ function commitOffseason(){
   const P=S.off.picks, A=S.off.act, C=S.career;
   if(A.userOpen&&S.off.move===null)return;
   if(LEAGUE.ui.offseasonBlock()!==null)return;
-  const rng=new RNG(0); rng.a=S.off.rngA[0]; rng.sp=S.off.rngA[1];
+  // rngA was meant to carry the stream on, but the state it read was hidden (undefined), so every
+  // offseason has run on seed 0 from here: kept, or every future offseason would change (Nov 2026)
+  const rng=new RNG(0); rng.sp=S.off.rngA[1];
   const oldTeam=S.myTeam;
   let dest=S.off.move;
   if(dest==="retire"){S.retired=true;save();render();return}
@@ -916,6 +924,7 @@ function endSeason(rng,choices,act,seasonTeam){
   });
   distinctLeague(U);
   U.schedV=2;                                            // (schedOrder)
+  delete S.schedLock;                                    // a new season draws its own, the same way every time
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -1136,8 +1145,8 @@ function readsHTML(step){
   // and two identical lines couldn't be told apart: Grokbot)
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
     return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
-  const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,n:1,lb:lb?[lb]:[]}) });
-  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
+  const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
+  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
@@ -3040,7 +3049,7 @@ function renderTitle(){
     slot=n; await claimSlot(n);
     const d=await loadSlot(n); if(!(d&&d.myTeam))saveRev=null;
     if(d&&d.broken)return;                         // never start a career over a save that's there
-    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();keepCopy(n);flash=resumeFlash();render()}
+    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();keepCopy(n);flash=resumeFlash();if(lockNew){lockNew=false;save()}render()}
     else {S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,
              setup:{name:"",seed:Math.floor(Math.random()*899999+100000)}};
           S.title=false;render()}

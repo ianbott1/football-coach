@@ -20,7 +20,11 @@ function schedOrder(pool,left,rng){
   key.forEach((x,i)=>pool[i]=x.g); return pool;
 }
 class RNG{
-  constructor(seed){this.f=mulberry32(seed);this.sp=null}
+  // mulberry32 with its state on the object (this.a), so a save can keep it: the same numbers as the
+  // closure, which hid it (a schedule lock needs it: rebuild)
+  constructor(seed){ this.a=seed|0; this.sp=null;
+    this.f=()=>{ let a=this.a|0; a=a+0x6D2B79F5|0; this.a=a; let t=Math.imul(a^a>>>15,1|a);
+      t=t+Math.imul(t^t>>>7,61|t)^t; return((t^t>>>14)>>>0)/4294967296 } }
   r(){return this.f()}
   int(n){return Math.floor(this.f()*n)}
   range(a,b){return a+this.f()*(b-a)}
