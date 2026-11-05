@@ -888,7 +888,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="bcdb677";
+<script>const BUILD_ID="854ba80";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -3684,10 +3684,12 @@ function readText(e){
     const list=ks.slice().sort((a,b)=>e.rk[b]-e.rk[a]).map(k=>`"${lab(k)}" ${e.rk[k]}%`).join(", ");
     const gone=top<35, safe=Math.min(...ks.map(k=>e.rk[k]))>65;
     const d=mine-top, w=gapWord(d), best=ks.filter(k=>e.rk[k]===top&&k!==e.pk).map(lab)[0];
-    const say=gone?" Neither saved it: the game was mostly gone whichever you chose."
+    // "mostly gone/won either way" only when the options were within the margin: with a real gap it said
+    // that above a footer saying one "wins a little more often"
+    const say=w!=="same"?(w==="little"?` "${best}" was a little better.`:` "${best}" was clearly better.`)
+      :gone?" Neither saved it: the game was mostly gone whichever you chose."
       :safe?" The game was mostly won whichever you chose."
-      :w==="same"?(ks.every(k=>gapWord(e.rk[k]-top)==="same")?" Any of them was a good call.":" As good as any.")
-      :w==="little"?` "${best}" was a little better.`:` "${best}" was clearly better.`;
+      :ks.every(k=>gapWord(e.rk[k]-top)==="same")?" Any of them was a good call.":" As good as any.";
     return `${e.h}: replays from that moment won ${list}. You chose "${lab(e.pk)}".${say}`;
   }
   // inside the margin the replays can't separate, both ways read the same:
