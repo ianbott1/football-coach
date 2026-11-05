@@ -1,5 +1,5 @@
 {
- "fp": "957c9195119fec55",
+ "fp": "7393e4008ef0209d",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -200,6 +200,11 @@
    "fp": "957c9195119fec55",
    "from": "a94739361ff0cf17",
    "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "7393e4008ef0209d",
+   "from": "957c9195119fec55",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
   }
  ],
  "result": {
@@ -212,9 +217,9 @@
     "rec": "51324d99653791d7",
     "poll": "997f72e9f908016b",
     "heis": "92af6728a86e8a51",
-    "history": "240bc20a04c68095",
+    "history": "6c1479a3fb85e58b",
     "universe": "6752e6df34bbb45a",
-    "screens": "895364c6ba6c1350"
+    "screens": "26bd1131ec7f485b"
    },
    {
     "year": 2027,
@@ -226,7 +231,7 @@
     "heis": "f05067ed4a16dbc5",
     "history": "33fea9a4f477b4c2",
     "universe": "f0a1b3ff65fd76cd",
-    "screens": "5bc5cfb7236a9c65"
+    "screens": "d5d0fbaf2bfe70ba"
    }
   ],
   "Detroit#777": [
@@ -238,9 +243,9 @@
     "rec": "ce16209c7ce67a88",
     "poll": "d955e18e73ba585e",
     "heis": "bd7234824f88d455",
-    "history": "89cf828b131144f8",
+    "history": "84e6b4bf52d45bd3",
     "universe": "d17e4fe44c0ece14",
-    "screens": "4a2bb95c089c4759"
+    "screens": "b4256269855c0242"
    },
    {
     "year": 2027,
@@ -252,7 +257,7 @@
     "heis": "07c01106df0c9f70",
     "history": "fe4c87aa9446e46e",
     "universe": "9d2b2cac708c3f67",
-    "screens": "b49289a93dc7b7ea"
+    "screens": "e1c982ac358a8b05"
    }
   ],
   "schedules#60": [

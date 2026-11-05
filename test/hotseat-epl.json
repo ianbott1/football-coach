@@ -1,5 +1,5 @@
 {
- "fp": "a34c56feb6b23235",
+ "fp": "300da27ba624ebac",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -155,6 +155,11 @@
    "fp": "a34c56feb6b23235",
    "from": "d8a2aaa77bcd8bce",
    "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "300da27ba624ebac",
+   "from": "a34c56feb6b23235",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
   }
  ],
  "out": [
@@ -177,7 +182,7 @@
       "result": "Finished 10th in the Premier League",
       "grade": "B-"
      },
-     "book": "6c8bc9a0c7e6a84e"
+     "book": "a8601298738858fa"
     }
    ]
   },
@@ -200,7 +205,7 @@
       "result": "Finished 16th in the Premier League",
       "grade": "C"
      },
-     "book": "5de92ad9fb6846ce"
+     "book": "ab7cef654a24acae"
     }
    ]
   },
@@ -223,7 +228,7 @@
       "result": "Finished 17th in the Premier League",
       "grade": "C-"
      },
-     "book": "f90a9f427e0fa6d4"
+     "book": "8783ad73ae9c6c33"
     }
    ]
   }

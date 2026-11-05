@@ -1,5 +1,5 @@
 {
- "fp": "7039a76614029140",
+ "fp": "3d9d27c1437c98d9",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -140,6 +140,11 @@
    "fp": "7039a76614029140",
    "from": "c9dd4c5e92ebda29",
    "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "3d9d27c1437c98d9",
+   "from": "7039a76614029140",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
   }
  ],
  "out": [
@@ -153,7 +158,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "cbf718353796484c"
+     "book": "dd70721b8747bd48"
     },
     {
      "team": "Montreal",
@@ -162,7 +167,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "3919503725af3d66"
+     "book": "e5f8300945566cbb"
     }
    ]
   },
@@ -176,7 +181,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "00413db0ac5e4b69"
+     "book": "8c6870bf53b7979d"
     },
     {
      "team": "Montreal",
@@ -185,7 +190,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "b2a94eaa00242573"
+     "book": "9e450c37b3d54462"
     }
    ]
   },
@@ -195,20 +200,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "42-33-9",
-      "result": "Losing season",
+      "rec": "43-32-9",
+      "result": "Missed the playoffs",
       "grade": "C-"
      },
-     "book": "9b5676fe44ee2c95"
+     "book": "72cf8fa28d4a60b7"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "43-30-11",
+      "rec": "42-30-12",
       "result": "Lost in the first round",
       "grade": "B"
      },
-     "book": "96dcc00d2b1320ff"
+     "book": "eee47111d9fbc022"
     }
    ]
   }

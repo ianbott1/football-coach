@@ -386,6 +386,22 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   for(let k=0;k<12&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='late'){ asked++; if(!/^(Level|Up 1|Down 1),/.test(q.dp.h))wide++ } A.answerLive(q.dp.opts[0][0]) } else A.liveTick() } }
   ok(asked>0&&!wide,`soccer: late call asked ${asked} times, ${wide} of them two or more goals apart`) }
 
+/* 57. two down early in hockey: the read comes now, as a timeout (Instinct: 0-3 and nothing to decide) */
+{ let early=0,games=0,miss=0; for(const sd of [3,4,5]){ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('San Jose',sd,'T');
+  for(let k=0;k<30&&A.SEA.phase==='week';k++){ A.doAdvance(); if(!A.live)continue; games++; let m=0,saw=false,down2=false;
+    while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='read'&&/^Timeout/.test(q.dp.h)){ saw=true; if(q.theirs-q.mine<2)miss++ } if(q.dp.k==='read'&&!/^Timeout/.test(q.dp.h)&&down2)miss++; A.answerLive(q.dp.opts[0][0]) }
+      else { const L=A.live; A.liveTick(); const e=L.eng; if(e&&e.seg>=2&&e.seg<4&&!saw){ const mine=L.g.home===A.S.myTeam?e.h-e.a:e.a-e.h; if(mine<=-2)down2=true } } } if(saw)early++ } }
+  console.log(`  hockey: ${early} early timeouts in ${games} games`); ok(early>0&&!miss,`hockey: ${early} early reads, ${miss} asked wrongly or twice`) }
+/* 58. the offseason screen has the season's calls, and never "would have gone with Leave it to your assistant" */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Brighton',6,'T'); let i=0;
+  for(let k=0;k<200&&A.SEA.phase!=='done';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ const o=q.dp.opts; A.answerLive(o[(i++)%o.length][0]) } else A.liveTick() } }
+  A.openOffseason(); const t=strip(A.LEAGUE.ui.offseasonScreen());
+  ok(/Your calls/.test(t)&&/The season's big calls/.test(t),'soccer: no season calls summary on the offseason screen');
+  ok(!/gone with Leave it/.test(t),'soccer: "would have gone with Leave it to your assistant"') }
+/* 59. a first-season milestone needs a good season: 15-67 in the NBA was one */
+{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP.concat(['milestones'])}); A.newDynasty('Boston',2,'T');
+  ok(A.milestones(15,67,'',20).length===0&&A.milestones(60,22,'',2).length===1,'NBA: first-season wins milestone') }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

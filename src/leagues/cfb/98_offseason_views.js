@@ -90,6 +90,7 @@ function offseasonScreen(){
     ${nOf(A.hires.length,"program")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
+  h+=seasonCallsHTML();
 
   const C=S.career;
   const jobRow=(t,tag)=>`<div class="cand ${S.off.move===t?'on':''}" data-job="${esc(t)}">

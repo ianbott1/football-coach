@@ -111,11 +111,11 @@ function readScore(T){
   return out;
 }
 function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s[k]>s[a]?k:a,APPROACH_KEYS[0]) }
-function readCall(stage,T,hint,cur){
+function readCall(stage,T,hint,cur,early){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
   // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
   const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup: "+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
-  return {k:"read",stage:stage,h:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
+  return {k:"read",stage:stage,h:early?early:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},
     best:bestRead(T), pearl:hint||bestRead(T)};
@@ -318,7 +318,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
       if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
       if(st.queue.length)return st.next()}
-    if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45);
+    // two down before the first read: it comes now, not at 25' (Instinct: 0-3 and nothing to decide)
+    if(s>=3&&s<5&&!st.r1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
+      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, two down`); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }); if(st.queue.length)return st.next()}
+    if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45); if((st.r1e||{})[sd])return;
       { const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }}); if(st.queue.length)return st.next()}
     if(s===9&&!st.ht){st.ht=true;
       // half-time: the computer changes its approach now and then, more often when behind

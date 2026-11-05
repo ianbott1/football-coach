@@ -183,3 +183,18 @@ function ledgerLine(){
   // beside it counts only graded ones, and the two read as a contradiction: Grokbot)
   return `Every call you made differently from the assistant this season (${L.n}): ${say} against leaving ${L.n===1?"it":"them"} to him, over many replays.`;
 }
+/* the season's calls, in the offseason review: the tally, and the call that helped most and the
+   one that cost most, in words (Instinct: a season-end summary of your decisions) */
+function seasonCallsHTML(){
+  const yr=SEA.year, me=S.myTeam, P=[];
+  Object.keys(S.played||{}).forEach(k=>{ if(k.split(":")[0]!==String(yr))return;
+    (S.played[k]||[]).forEach(p=>{ if(p.team!==me)return; (p.impact||[]).forEach(c=>{ if(typeof c.worth==="number")P.push({c:c,p:p}) }) }) });
+  const t=tallyHTML();
+  P.sort((a,b)=>b.c.worth-a.c.worth);
+  const one=(x,lab)=>`<div class="cand"><div class="candtop"><div><div class="fname">${lab}</div>
+    <div class="fnote">${esc(x.c.h)}, against ${esc(x.p.other)} (${x.p.mine}&ndash;${x.p.theirs})</div></div></div>
+    <div class="cdesc">You: ${esc(x.c.pick)}.${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
+  const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
+  if(!t&&!best&&!worst)return "";
+  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"The one that paid"):"")+(worst&&worst!==best?one(worst,"The one that cost you"):""):"");
+}

@@ -1683,7 +1683,7 @@ function milestones(wins,losses,result,rank,team,history){
   // milestone whose arithmetic didn't add up)
   const mine=H.filter(h=>(h.team||my)===my).map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
   if(!mine.length){
-    if(wins>=11)out.push(`${wins} wins in your first season in charge.`);
+    if(wins+losses>0&&wins>=Math.max(10,Math.ceil(0.7*(wins+losses))))out.push(`${wins} wins in your first season in charge.`);   // was 11 wins in any game: a 15-67 first NBA season was a "milestone"
     return out;
   }
   const bestW=Math.max(...mine.map(r=>r[0]));

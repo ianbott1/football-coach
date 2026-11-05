@@ -87,8 +87,8 @@ function hkRead(T){
   return SYSTEM_KEYS.reduce((a,k)=>out[k]>out[a]?k:a,SYSTEM_KEYS[0]);
 }
 const ASSIST=["normal","Leave it to your assistant"];
-function readCall(T,hint){
-  return {k:"read",h:"First intermission",q:"How are they playing us? Pick the answer.",
+function readCall(T,hint,early){
+  return {k:"read",h:early||"First intermission",q:"How are they playing us? Pick the answer.",
     opts:Object.keys(ANSWERS).map(a=>[a,ANSWERS[a].l]).concat([ASSIST]),
     tell:{to:T.to,fe:T.fe,cy:T.cy,n:T.n}, best:hkRead(T), pearl:hint||hkRead(T)};
 }
@@ -275,9 +275,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(split&&fresh){ X.askedGa=X.ga; queueCall(sd,goalieCall(per,X)) } else cpuGoalie(sd);
     }
     // first intermission: the read, and your goalie if he's let in two or more
+    // two down early: call your timeout and make the read now, not at the intermission (Instinct)
+    if(s>=2&&s<4&&!st.i1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
+        const O=st.S[other(sd)]; queueCall(sd,readCall(O.tell,O.lastCue,`Timeout: two down, ${s*5} minutes in`)) });
+      if(st.queue.length)return st.next()}
     if(s===4&&!st.i1){st.i1=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], O=st.S[other(sd)];
         if(!humans[sd]){ readIt(sd,0.45); cpuGoalie(sd); return }
-        queueCall(sd,readCall(O.tell,O.lastCue));
+        if(!(st.r1e||{})[sd])queueCall(sd,readCall(O.tell,O.lastCue));
         askGoalie(sd,X,1) });
       if(st.queue.length)return st.next()}
     // second intermission: the score, and your goalie

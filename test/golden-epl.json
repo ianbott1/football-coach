@@ -1,5 +1,5 @@
 {
- "fp": "e6465ade8222f114",
+ "fp": "999795f83e18e683",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -215,6 +215,11 @@
    "fp": "e6465ade8222f114",
    "from": "10f17a03a4217b34",
    "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "999795f83e18e683",
+   "from": "e6465ade8222f114",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
   }
  ],
  "result": {
@@ -229,7 +234,7 @@
     "heis": "470a825398f7baf1",
     "history": "6ec4ec35c0880139",
     "universe": "a41cc729b1f0edee",
-    "screens": "b742284c3a2ce362"
+    "screens": "a8af3d852568651b"
    },
    {
     "year": 2027,
@@ -241,33 +246,33 @@
     "heis": "41d16c5283a889a9",
     "history": "0e1588aa205c2ad6",
     "universe": "b2cfd1bd8ae9ec5c",
-    "screens": "51376ffc5a850a76"
+    "screens": "4d70558ba235cbb5"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "bb5563f5cc78908c",
-    "post": "2ca0c5c6934766bf",
+    "games": "4587ab13832fe157",
+    "post": "1a55f6e4f9bdd2fe",
     "champion": "Arsenal",
-    "rec": "e597431294b37aa2",
-    "poll": "9d300d9801c01d47",
-    "heis": "536f488c119ec6b5",
-    "history": "19d3cdffed7cd0be",
-    "universe": "a12e4f4aa0628454",
-    "screens": "deb59717fa9b84c5"
+    "rec": "eef8b14a26b992d9",
+    "poll": "1367f5eb4cd5d470",
+    "heis": "3f9bdf37e7cbe703",
+    "history": "7524fd2166403864",
+    "universe": "eca5d3a71311a986",
+    "screens": "2c868309d651e98f"
    },
    {
     "year": 2027,
-    "games": "60708e2b18af2284",
-    "post": "a7852fa871fb0ab5",
+    "games": "ffad39e15b34ac4b",
+    "post": "a7c469b9f19da131",
     "champion": "Manchester City",
-    "rec": "def560147149303c",
-    "poll": "470622a6b245322d",
-    "heis": "135b9f103a8dbab9",
-    "history": "5218620066a391b6",
-    "universe": "509f1fa55962b465",
-    "screens": "185834c01e1d8482"
+    "rec": "22fe0c1f3840a4eb",
+    "poll": "10a8f717932cdfea",
+    "heis": "6fc7bce51fae9b7e",
+    "history": "815b2b469214fcc2",
+    "universe": "4e74e148592b6b24",
+    "screens": "60c64fcd8af618a9"
    }
   ],
   "schedules#60": [

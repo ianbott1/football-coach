@@ -1,5 +1,5 @@
 {
- "fp": "d755abb1fc88ff81",
+ "fp": "d57657fbe9530816",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -170,6 +170,11 @@
    "fp": "d755abb1fc88ff81",
    "from": "92f911757268b777",
    "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "d57657fbe9530816",
+   "from": "d755abb1fc88ff81",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
   }
  ],
  "out": [
@@ -183,7 +188,7 @@
       "result": "Won the Citrus Bowl",
       "grade": "B-"
      },
-     "book": "c938d3e53ef06af2"
+     "book": "735c94d3938c358d"
     },
     {
      "team": "Rice",
@@ -206,7 +211,7 @@
       "result": "Eliminated in the first round",
       "grade": "C+"
      },
-     "book": "92faf4fd17763cf5"
+     "book": "59d0300895abdeac"
     },
     {
      "team": "Rice",
@@ -229,7 +234,7 @@
       "result": "Won the Citrus Bowl",
       "grade": "B-"
      },
-     "book": "77c76852b82218de"
+     "book": "5924a6ae98b8b080"
     },
     {
      "team": "Rice",

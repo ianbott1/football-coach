@@ -1,5 +1,5 @@
 {
- "fp": "fda5009684b6fa32",
+ "fp": "0ed4f5dad2e47957",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -205,59 +205,64 @@
    "fp": "fda5009684b6fa32",
    "from": "4ec2c7c177a2dea5",
    "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "0ed4f5dad2e47957",
+   "from": "fda5009684b6fa32",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "244d6b669a45d31c",
-    "post": "477f417910103ed6",
-    "champion": "Washington",
-    "rec": "914cf2e5f1e87d20",
-    "poll": "48976319e17685a4",
-    "heis": "a776cc00d8a37778",
-    "history": "2e3a111a3a716bb3",
-    "universe": "2ed312067c98a009",
-    "screens": "dbad6b825b0d6b9f"
+    "games": "8c68b6359bdf1baa",
+    "post": "53c157f724fce752",
+    "champion": "Toronto",
+    "rec": "56adf4031f70c6f7",
+    "poll": "e249d7ad9678e302",
+    "heis": "f04d7b34853b2e09",
+    "history": "47eb1d16879f542a",
+    "universe": "1d815a0f01822e40",
+    "screens": "3ed62cf023c2ba64"
    },
    {
     "year": 2027,
-    "games": "1cf0efcf6622f7b0",
-    "post": "42fa3f6b0922ba0c",
-    "champion": "Winnipeg",
-    "rec": "7404fd4f38fa0bd3",
-    "poll": "f52e165b505f3a06",
-    "heis": "058a191a1a287a5d",
-    "history": "5f8d34b422ceb315",
-    "universe": "066956d2135d0c6a",
-    "screens": "01d8249868517053"
+    "games": "7205de85add35fae",
+    "post": "aa1be2fc1426adcd",
+    "champion": "St. Louis",
+    "rec": "1e521479fa1a9adf",
+    "poll": "07e28ea691ec50c7",
+    "heis": "88d4b6b7cc56ca68",
+    "history": "e16d30497abc64fd",
+    "universe": "58013fab1538c8e5",
+    "screens": "fc772fc7facb745e"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "ce530066b188cb8a",
-    "post": "0f0a2fe31e574fdd",
-    "champion": "Vegas",
-    "rec": "18cb8bfa5a46577a",
-    "poll": "9c83c95a54bd44f2",
-    "heis": "8a15d44af11bacbe",
-    "history": "db7f5e2feda3f424",
-    "universe": "baeeaeeae072f110",
-    "screens": "65663e1fc9ad076c"
+    "games": "16e5bfdb515eb700",
+    "post": "3d82b85609c8121f",
+    "champion": "Florida",
+    "rec": "4a743b2073db5a56",
+    "poll": "b29553acfacfd975",
+    "heis": "865ab904d825c10e",
+    "history": "366cd911662b8707",
+    "universe": "5813110b75a8cab6",
+    "screens": "9e5744f209f4f614"
    },
    {
     "year": 2027,
-    "games": "9424c6caca8952fb",
-    "post": "61bbe5e349b358ea",
-    "champion": "Detroit",
-    "rec": "20d2aa2eafad35c2",
-    "poll": "a7eae1bf92f78315",
-    "heis": "4ac930ce4a9e5b4a",
-    "history": "4bb53d4bf354b339",
-    "universe": "35c5c398cc6b94db",
-    "screens": "2567d02dd41f34b1"
+    "games": "ba32fe85bc725390",
+    "post": "2c9870a05c2a126b",
+    "champion": "Vancouver",
+    "rec": "ef9879a1a9089621",
+    "poll": "27ea70822bc67149",
+    "heis": "213c6c21cb069831",
+    "history": "de12c3791d571902",
+    "universe": "a451a8e021b35f6b",
+    "screens": "eaf759db613c97a6"
    }
   ],
   "schedules#60": [

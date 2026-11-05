@@ -114,6 +114,15 @@ are no longer asked. The pull down one stays at ~2.5: the real choice is
 small, and an honest one. Remaining small: college basketball protect (1.5,
 five calls in 30 games), pro football protect (1.9).
 
+Calls on events, not only the clock (round 22, Instinct): two down before
+the first read, it comes at once. Hockey calls a timeout at 10 or 15
+minutes (about 1 game in 10; worth 12-17 points, as much as the
+intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
+intermission read is then skipped for that side.
+
+The offseason screen opens with the season's calls (seasonCallsHTML): the
+tally, and the call that helped most and the one that cost most, in words.
+
 Measured value, even sides at home (tests below):
 
     soccer      numbers +3.2 win pts, Pearl +2.2, guess -2.1; flank +1.6,
