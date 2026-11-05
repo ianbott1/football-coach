@@ -102,10 +102,13 @@ function evidenceHTML(g,my,d,dp){
   // each number beside a team that isn't playing that way, measured on this engine (Nov 2026; the paint
   // had none: Instinct; pro threes read 38% against a measured 43%)
   const AV=BB.quarters?{three:43,paint:"14.0",pnr:"4.1"}:{three:39,paint:"9.9",pnr:"4.2"};
-  return `<div class="evid"><div class="evh">How ${esc(g[opp])} are scoring <span>${BB.quarters?"per quarter":"per ten minutes"}</span></div>
-    <div class="evr ${share>=45?'hi':share<=31?'lo':''}"><span class="evk">Shots from three</span><span class="evv">${share}% (${T.tpa} of ${T.fga})</span></div>
-    <div class="evr"><span class="evk">Points in the paint</span><span class="evv">${paint}</span></div>
-    <div class="evr ${T.pnr/n>=3.4?'hi':''}"><span class="evk">Pick-and-rolls run</span><span class="evv">${scr}</span></div>
+  // each row says what it measures: the share is the whole game so far, the other two a rate (Grokbot:
+  // "18 of 43" under a "per ten minutes" header, counts that read as 40 threes a half)
+  const per=BB.quarters?"a quarter":"every ten minutes";
+  return `<div class="evid"><div class="evh">How ${esc(g[opp])} are scoring</div>
+    <div class="evr ${share>=45?'hi':share<=31?'lo':''}"><span class="evk">Their shots from three, so far</span><span class="evv">${share}%</span></div>
+    <div class="evr"><span class="evk">Points in the paint, ${per}</span><span class="evv">${paint}</span></div>
+    <div class="evr ${T.pnr/n>=3.4?'hi':''}"><span class="evk">Pick-and-rolls run, ${per}</span><span class="evv">${scr}</span></div>
     ${firstReadTip()}<div class="evn">League average: ${AV.three}% of shots from three, ${AV.paint} points in the paint, ${AV.pnr} pick-and-rolls ${BB.quarters?"a quarter":"every ten minutes"}. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
 }
 

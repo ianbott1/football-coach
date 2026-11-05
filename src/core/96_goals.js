@@ -20,7 +20,9 @@ function seasonObjectives(my){
   const out=[], games=myLeagueGames(my);
   // a rival on the schedule
   const rg=games.find(g=>LEAGUE.rivals.name(my,g.home===my?g.away:g.home));
-  if(rg){ const o=rg.home===my?rg.away:rg.home; out.push({k:"rival",opp:o,l:`Beat ${o}`}) }
+  // three or more meetings: the season series, not one win (Grokbot: "Beat Montreal" done after 1 of 4)
+  if(rg){ const o=rg.home===my?rg.away:rg.home, n=games.filter(g=>g.home===o||g.away===o).length, need=Math.floor(n/2)+1;
+    out.push(n>=3?{k:"rival",opp:o,n:n,need:need,l:`Win the season series against ${o} (${need} of ${n})`}:{k:"rival",opp:o,l:`Beat ${o}`}) }
   // a cup run, where there is a cup
   if(LEAGUE.cup&&SEA.cup){ const tier=DIVS[CONF[my]].tier, R=LEAGUE.cup.rounds;
     const want=tier<=2?7:tier<=4?4:2;    // the quarter-finals; the third round; the first round proper
@@ -49,6 +51,10 @@ function objStatus(o,my){
   const played=[].concat(...SEA.weeks.slice(0,LEAGUE.weeks).map(w=>w.games)).filter(g=>!g.cup&&(g.home===my||g.away===my));
   const done=SEA.phase!=="week";
   if(o.k==="rival"){ const m=played.filter(g=>g.home===o.opp||g.away===o.opp);
+    if(o.need){ const w=m.filter(g=>g.winner===my).length, l=m.length-w;
+      if(w>=o.need)return {s:"met",t:`Won ${w} of ${m.length}`};
+      if(l>o.n-o.need)return {s:"miss",t:`Lost ${l} of ${o.n}`};
+      return {s:"on",t:`${w} of ${o.need} won, ${o.n-m.length} to play`} }
     if(m.some(g=>g.winner===my))return {s:"met",t:"Done"};
     const left=myLeagueGames(my).filter(g=>(g.home===o.opp||g.away===o.opp)&&g.week>=SEA.step).length;
     return left&&!done?{s:"on",t:`${left} meeting${left===1?"":"s"} to come`}:{s:"miss",t:"Missed"} }

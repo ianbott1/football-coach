@@ -29,7 +29,9 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
       ok(!!(await p.$('[data-slot]')),`${f}: Start over didn't return to the title screen`);
       const sl=await p.$('[data-slot]'); if(sl){ await sl.click(); await p.waitForTimeout(400) }
       const cg=await p.$('#cgo'); if(cg){ await cg.click(); await p.waitForTimeout(400) }
-      const pk=(await p.$$('.pick'))[4]; if(pk){ await pk.click(); await p.waitForTimeout(900) }
+      const pk=(await p.$$('.pick'))[4]; if(pk){ await pk.click(); await p.waitForTimeout(200);
+        ok(!(await p.$('#rst')),`${f}: one tap on a team started the career (no second tap to confirm)`);
+        if(!(await p.$('#rst'))){ await pk.click({timeout:2000}).catch(()=>{}) } await p.waitForTimeout(900) }
       ok(!!(await p.$('#rst')),`${f}: after Start over, a new career didn't begin (${errs[0]||'no error'})`);
       ok(!errs.length,`${f}: page errors after Start over: ${errs[0]}`);
       await p.evaluate(()=>localStorage.clear()); }
@@ -129,6 +131,36 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     ok(r===0,`${f}: the season's schedule depends on how the browser sorts`);
     await ctx.close();
   }
+  // How to play after leaving a career for the title screen opens the tutorial, not the career (Muse);
+  // its last button opens a new career; Back leaves the new-career screens with nothing started
+  for(const f of ['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html']){
+    const ctx=await b.newContext({viewport:{width:1280,height:900}}); const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss());
+    const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    const url='file://'+path.join(DIST,f); await p.goto(url); await p.waitForTimeout(600); await p.click('#qstart'); await p.waitForTimeout(900);
+    await p.click('#ttl',{timeout:3000}).catch(()=>{}); await p.waitForTimeout(400); { const q=await p.$('#quitgo'); if(q)await q.click() } await p.waitForTimeout(600);
+    ok(!!(await p.$('[data-slot]')),`${f}: the title button didn't reach the title screen`);
+    await p.click('#thow',{timeout:3000}).catch(()=>{}); await p.waitForTimeout(300);
+    ok(!!(await p.$('#iskip'))&&!(await p.$('#rst')),`${f}: How to play from the title screen, after a career, didn't open the tutorial`);
+    for(let i=0;i<20&&(await p.$('#inext'));i++){ await p.click('#inext',{timeout:2000}).catch(()=>{}); await p.waitForTimeout(150) }
+    await p.waitForTimeout(400);
+    ok(!!(await p.$('#cgo')),`${f}: the tutorial's last button didn't open a new career`);
+    const cb=await p.$('#cback'); if(cb){ await cb.click(); await p.waitForTimeout(400) }
+    ok(!!(await p.$('[data-slot]'))&&!(await p.$('#cgo')),`${f}: Back on the new-career screen didn't return to the title`);
+    const em=await p.$('.slot.empty[data-slot]'); if(em){ await em.click(); await p.waitForTimeout(300); await p.click('#cgo',{timeout:2000}).catch(()=>{}); await p.waitForTimeout(400);
+      const pb=await p.$('#pback'); ok(!!pb,`${f}: no Back on the team picker`); if(pb){ await pb.click(); await p.waitForTimeout(300) }
+      ok(!!(await p.$('#cgo')),`${f}: Back on the team picker didn't return to the setup`) }
+    const slots=await p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(k)).length);
+    ok(slots===1,`${f}: after the tutorial and Back, ${slots} saves (one expected)`);
+    ok(!errs.length,`${f}: page errors on the title paths: ${errs[0]}`);
+    await ctx.close();
+  }
+  // a trophy the record says wasn't earned is taken back on load (Muse: Century at 64 career wins)
+  { const ctx=await b.newContext(); const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss());
+    const url='file://'+path.join(DIST,'hockey-coach-pro.html'); await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
+    await p.evaluate(async()=>{ S.career.ach=Object.assign({},S.career.ach,{century:2026}); await save() });
+    await p.goto(url); await p.waitForTimeout(700); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);
+    ok(await p.evaluate(()=>!(S.career.ach&&S.career.ach.century)),'a Century trophy at '+(await p.evaluate(()=>careerNow(S.career).w))+' career wins survived a reload');
+    await ctx.close(); }
   // featuring someone new in the offseason doesn't replay last season with him on reload
   // (Grokbot: the final card went 54-28 to 53-29; it moved hockey by 13 wins)
   for(const f of ['basketball-coach-pro.html','hockey-coach-pro.html']){

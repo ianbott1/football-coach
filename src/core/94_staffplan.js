@@ -128,7 +128,7 @@ function callImpact(args,seed,answers,meHome,runs){
     const cf=play(j,def);                    // the same dice, his call
     let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
-    out.push({h:A.dp.h, pick:lab(pick), def:lab(def), cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
+    out.push({h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
   });
   return out;
 }
@@ -140,8 +140,10 @@ function impactHTML(P){
   const out=(m,t)=>m>t?"win":m<t?(LEAGUE.draws?"defeat":"loss"):"draw";
   const res=out(p.mine,p.theirs), alt=out(c.cf.mine,c.cf.theirs);
   const altLine=`a ${c.cf.mine}-${c.cf.theirs} ${alt}`;
-  const avgOf=w=>w>=0.05?"wins clearly more often than his":w>=0.02?"wins a little more often than his"
-    :w>-0.02?"made little difference either way":w>-0.05?"wins a little less often than his":"loses clearly more often than his";
+  // one margin with the graded calls: within 3 points is "about as often" there and "little difference"
+  // here (they disagreed: "won about as often (100% and 97%)" beside "wins clearly more often": Grokbot)
+  const avgOf=w=>w>0.06?"wins clearly more often than his":w>0.03?"wins a little more often than his"
+    :w>=-0.03?"made little difference either way":w>=-0.06?"wins a little less often than his":"loses clearly more often than his";
   const avg=avgOf(c.worth);
   // every other call you made against his, weighed the same way: the ones left out (a slow-down, the
   // press) read as if they were never weighed (Instinct)
@@ -152,11 +154,11 @@ function impactHTML(P){
   const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
   // the headline says both things, tonight's dice and the average, and never lets them contradict
   // ("You won, but not because of the call" above a replay that lost without it: Grokbot)
-  const small=Math.abs(c.worth)<0.02;
-  const head=better?(c.worth>=0.02?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
+  const small=Math.abs(c.worth)<=0.03;
+  const head=better?(c.worth>0.03?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
         :small?`Your call won this one tonight; over many replays it makes little difference.`
         :`Your call won this one tonight, though over many replays it loses more often.`)
-    :worse?(c.worth<=-0.02?`That call cost you this one.`
+    :worse?(c.worth<-0.03?`That call cost you this one.`
         :small?`The call went against you tonight; over many replays it makes little difference.`
         :`Unlucky: the call was sound.`)
     :c.cf.mine===p.mine&&c.cf.theirs===p.theirs?(small?`Same score either way tonight: on these dice the call changed nothing.`
@@ -165,7 +167,7 @@ function impactHTML(P){
     // the headline and the replays agree in one sentence ("Same defeat either way" above "wins clearly more often": Grokbot)
     :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`;
   return `<div class="impact"><div class="imphead">${head}</div>
-    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<0.02||worse&&c.worth>-0.02?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
+    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<=0.03||worse&&c.worth>=-0.03?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){

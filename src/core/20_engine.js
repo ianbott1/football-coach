@@ -10,6 +10,8 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
    reload replayed the season on another schedule, 36-46 became 49-33; Grokbot's 54-28 to 53-29).
    Seasons begun from Nov 2026 (schedV 2) draw each game's jitter once and sort on that; a season
    already under way keeps the old draw, which is what it has been getting nearly every time. */
+/* "1 goal", "2 goals": a count and its word ("1 GOALS, 1 ASSISTS": Grokbot) */
+function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s")) }
 let SCHED_V=1;
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
@@ -448,8 +450,8 @@ function offseasonCoaching(u,rng,rec,elo,users){
     cands.sort((a,b)=>u.coach[b].q-u.coach[a].q);
     const from=cands[0], c=u.coach[from];
     poached.push({to:job,from:from,name:c.n,q:c.q});
-    u.coach[job]=Object.assign({},c,{t:0,hired:true});   // his record travels with him
-    u.coach[from]=newCoach(rng,u.program[from]);
+    u.coach[job]=Object.assign({},c,{t:0,hired:true,since:u.year+1});   // his record travels with him
+    u.coach[from]=newCoach(rng,u.program[from]); u.coach[from].since=u.year+1;
     hires.push({team:from,name:u.coach[from].n,q:u.coach[from].q,reason:"replacing "+c.n});
     fired.splice(fired.indexOf(job),1);
     if(fired.indexOf(from)<0)fired.push(from);
@@ -468,7 +470,7 @@ function offseasonCoaching(u,rng,rec,elo,users){
     const co=side==="oc"?u.oc[from]:u.dc[from];
     if(!co||co.q<26)return;
     coordMoves.push({name:co.n,from:from,to:job,side:side});
-    u.coach[job]={id:COACH_ID++,n:co.n,q:Math.round(co.q*0.85),t:0,hired:true,
+    u.coach[job]={id:COACH_ID++,n:co.n,q:Math.round(co.q*0.85),t:0,hired:true,since:u.year+1,
                   w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
     const fresh=newCoordinator(rng,u.program[from],side);
     if(side==="oc")u.oc[from]=fresh; else u.dc[from]=fresh;
@@ -484,7 +486,7 @@ function offseasonCoaching(u,rng,rec,elo,users){
     if(isUser(t))return;                          // a person's job, not an AI hire
     if(u.coach[t].hired&&u.coach[t].t===0)return;
     const old=u.coach[t].n;
-    u.coach[t]=newCoach(rng,u.program[t]);
+    u.coach[t]=newCoach(rng,u.program[t]); u.coach[t].since=u.year+1;   // his first season (coachYear)
     hires.push({team:t,name:u.coach[t].n,q:u.coach[t].q,reason:"replacing "+old});
   });
 

@@ -97,8 +97,13 @@ function portalHTML(num){
   h+=`<div class="grouphead">Transfers you want</div>`+(mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet. Players you add get your first look, in your order, if they'd start or beat your backup at their position.</div>`);
   h+=`<div class="note">Whether he picks you depends on how far he is above what your program usually gets, and how far down from his old program you'd be. <b>Likely</b>: most like him come. <b>A battle</b>: about half do. <b>A long shot</b>: most go elsewhere. Up to ${PORTAL_MAX} can sign with you in one summer.</div>`;
-  const pool=all.filter(e=>e.from!==my&&mine.indexOf(e.key)<0).slice(0,25);
-  h+=`<div class="grouphead">Likely in the portal &mdash; the best 25</div>`+pool.map(e=>row(e,false)).join("");
+  // the ones within your reach first, then the best of the rest: a mid-major's "best 25" were all long
+  // shots (Grokbot, twice), so the list showed nobody it could sign
+  const rest=all.filter(e=>e.from!==my&&mine.indexOf(e.key)<0);
+  const reach=rest.filter(e=>portalChance(U,my,e)>=0.4).slice(0,15), far=rest.filter(e=>reach.indexOf(e)<0).slice(0,10);
+  h+=`<div class="grouphead">In the portal, within your reach</div>`+(reach.length?reach.map(e=>row(e,false)).join("")
+    :`<div class="note">Nobody in the portal looks likely to pick you this summer.</div>`);
+  h+=`<div class="grouphead">The best of the rest: long shots</div>`+far.map(e=>row(e,false)).join("");
   return h;
 }
 function offseasonScreen(){

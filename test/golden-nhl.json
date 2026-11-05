@@ -1,5 +1,5 @@
 {
- "fp": "1ab3a16d75c0bc07",
+ "fp": "7bf9cbaa770e1e51",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -165,59 +165,79 @@
    "fp": "1ab3a16d75c0bc07",
    "from": "aeaaecfa53e3e188",
    "note": "Nov 2026 round 12: hockey Dynasty shows overtime losses in your career, stops and all-time records (screens only; results unchanged from the previous record)"
+  },
+  {
+   "fp": "709abfc9b51192af",
+   "from": "1ab3a16d75c0bc07",
+   "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
+  },
+  {
+   "fp": "43203ebc86e460a7",
+   "from": "709abfc9b51192af",
+   "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "de9a3c4c79efacde",
+   "from": "43203ebc86e460a7",
+   "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
+  },
+  {
+   "fp": "7bf9cbaa770e1e51",
+   "from": "de9a3c4c79efacde",
+   "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "b60f8aaa5b7b7806",
+    "games": "90dc5b0ee22d0568",
     "post": "cd58e633e964b2e1",
     "champion": "Toronto",
     "rec": "3d0a43f6a488195b",
-    "poll": "cf54987a27563789",
+    "poll": "b1f12eb7274f55a9",
     "heis": "003f71366db13367",
-    "history": "d7e8505680b44a1e",
-    "universe": "fe217462be8cff56",
-    "screens": "3e2faf2396b66aa7"
+    "history": "4e1b33d4973fd7a5",
+    "universe": "9d726b0d367ee1f5",
+    "screens": "22a4d0aa8d9c0c19"
    },
    {
     "year": 2027,
-    "games": "1a8a095491e47782",
+    "games": "4cf4080670d5c920",
     "post": "7cbe8f2f7e9b42e8",
     "champion": "Toronto",
     "rec": "7f0e4006d97653e7",
-    "poll": "3e6be4a0683b938a",
+    "poll": "c3fda57152cce22a",
     "heis": "4c644f1ea124991e",
-    "history": "57a08fe1737694b7",
-    "universe": "37f25f1b2e1955f0",
-    "screens": "50eac96dd4f78bcd"
+    "history": "fba3860b93026b1a",
+    "universe": "b3827186eaf39e29",
+    "screens": "1e783e1c5d36dc2d"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "d368b38fa49fc9c0",
+    "games": "49531a1a957e4286",
     "post": "08526b4e60097de9",
     "champion": "Minnesota",
     "rec": "305a97af6c7ef8de",
-    "poll": "30cac5d5e617af8a",
+    "poll": "4b8879ecac7822ce",
     "heis": "350200e2d90beccc",
-    "history": "8fb4fa64de66f1fe",
-    "universe": "f8be9e4bf79befc7",
-    "screens": "5f63ef8fd528f5b4"
+    "history": "ba669f3d1704757f",
+    "universe": "4a25db918d543efd",
+    "screens": "3045481960fb090b"
    },
    {
     "year": 2027,
-    "games": "22bb09b5b80dc517",
-    "post": "1aaebb8c2b5dc814",
-    "champion": "Minnesota",
-    "rec": "68485d91025cfad0",
-    "poll": "f70f279ad8ef4f63",
-    "heis": "0b407779ff31638c",
-    "history": "8c2af90e97b7bc6d",
-    "universe": "7aedc5b3b2d03f86",
-    "screens": "9896c43383e655ec"
+    "games": "e38c41dcec6b8aa5",
+    "post": "3ce5193dd7586d0f",
+    "champion": "Colorado",
+    "rec": "13b5adbfb243852b",
+    "poll": "24276e7d583ce4bb",
+    "heis": "2fc47010d565d512",
+    "history": "0c007b1e1e36b815",
+    "universe": "8d0e10674c7fac2d",
+    "screens": "a6831527321eddd1"
    }
   ],
   "schedules#60": [

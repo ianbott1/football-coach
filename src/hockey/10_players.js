@@ -82,7 +82,7 @@ function statLine(pos,s){
   if(!s||!s.g)return "";
   if(pos==="G"){ const sa=(s.sv||0)+(s.ga||0), sv=sa?(s.sv/sa):0;
     return `${sv.toFixed(3).replace(/^0/,"")} save %, ${((s.ga||0)/s.g).toFixed(2)} GAA${s.so?", "+s.so+" shutout"+(s.so===1?"":"s"):""}` }
-  return `${s.goals||0} goals, ${s.ast||0} assists, ${s.pts||0} points`;
+  return `${nOf(s.goals||0,"goal")}, ${nOf(s.ast||0,"assist")}, ${nOf(s.pts||0,"point")}`;
 }
 /* award production, from what a player actually did */
 function statProd(pos,s){

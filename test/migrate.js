@@ -35,7 +35,9 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // coach, Nov 2026), which reorders the list: compare the rows as a set, without records
       const coachList=x=>x.replace(/<span class="trec">[^<]*<\/span>/g,'').replace(/((?:<div class="frow cpick[^"]*"[\s\S]*?<\/div><\/div>\s*)+)/g,m=>m.split(/(?=<div class="frow cpick)/).map(r=>r.replace(/class="frow cpick[^"]*"/,'class="frow cpick"').trim()).sort().join(''));
       // in a hot seat the people's rows were double-counted, so who makes the shortlist changes too: that list isn't compared there
-      want.forEach((w,i)=>{checks++;if(roster&&/youtag/.test(w)&&/class="trec"/.test(w))return; if(coachList(noSeat(w))!==coachList(noSeat(got[i]))){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`)}});
+      // the under-fire card says why now (Nov 2026: "under fire" with no reason, Grokbot)
+      const noWhy=x=>x.replace(/ (One of the weakest at the job in the league\.|You're \d+-\d+, and he isn't good enough to be spared it\.)\n?\s*/g,' ');
+      want.forEach((w,i)=>{checks++;if(roster&&/youtag/.test(w)&&/class="trec"/.test(w))return; if(coachList(noSeat(noWhy(w)))!==coachList(noSeat(noWhy(got[i])))){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`)}});
       // the game's name on the card changed on purpose ("College Football Coach"),
       // and the owl's markup gained a (college: empty) helmet slot
       const renamed=x=>JSON.stringify(x).replace(/<!-- college: a football[\s\S]*?E45B4E[^>]*>/g,'')   // the college owl's football, new on purpose

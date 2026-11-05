@@ -30,7 +30,7 @@ const SPORT={
     if(P==="G"){ if(L.so)return {v:120+L.sv,txt:`a ${L.sv}-save shutout`};
       if(L.sv>=40)return {v:80+L.sv,txt:`${L.sv} saves`}; return null }
     if(L.goals>=3)return {v:100+L.goals*20+L.ast*6,txt:`a hat trick${L.goals>3?" (and then some: "+L.goals+" goals)":""}${L.ast?" and "+L.ast+" assist"+(L.ast===1?"":"s"):""}`};
-    if(L.pts>=4)return {v:60+L.pts*12,txt:`${L.pts} points (${L.goals} goals, ${L.ast} assists)`};
+    if(L.pts>=4)return {v:60+L.pts*12,txt:`${L.pts} points (${nOf(L.goals,"goal")}, ${nOf(L.ast,"assist")})`};
     return null;
   },
   riser:{l:"Rising assistant",

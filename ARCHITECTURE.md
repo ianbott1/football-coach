@@ -49,6 +49,12 @@ is headed by the date; schedules list games, not days), text.bye.
 
 ## In-game calls: the design rule
 
+Decided by Ian, Nov 2026: better decisions, not more decisions. No live
+win-probability ticker (it kills the magic); a call shows its stakes in
+words. Every call type is measured (win-rate effect over 60,000 games); one
+worth under about a point is rebalanced or cut, and new call types are added
+only where they matter. No target for calls per game.
+
 Every call has a right answer you can work out from evidence on the screen,
 and its worth is measured. Each sport's engine gives every side a hidden way
 of playing that leaves marks in the numbers and the commentary; the right
@@ -125,6 +131,34 @@ Lessons from this project (each cost a bug that shipped or nearly did):
   test/confirm-taps.js swaps in a different correct sort and checks the
   schedule doesn't change. Seasons begun before Nov 2026 (no u.schedV) keep
   the old draw so a season under way isn't redrawn.
+- Opening the offseason changes the league (the coaching carousel: hires,
+  firings, coordinators hired away, coaches' records). rebuild() replays it
+  on load (replayCarousel, same dice, inputs kept in S.off.act.users or
+  S.carousel.users). Without it a reload in the offseason started the next
+  season from another league. test/reload.js reloads mid-offseason, goes on
+  and compares season 2, head coaches and coordinators. Coach ids are a page
+  counter (COACH_ID) and aren't compared; nothing reads them.
+- One question, one answer: the graded call and the post-game line weigh
+  the same call with the same replays (the graded call's rates, kept as rk,
+  decide the post-game worth) and the same 3-point margin
+  (test/verdict-agree.js). Two samples of one question disagreed in words.
+- The title button's prompt is a safeguard, not friction: it says where the
+  career is saved, or warns that it isn't (storage blocked) before you lose
+  it. test/storage.js checks it.
+- The "How to play" page is a module variable (introAt), never in a save:
+  read from S, it only showed with no career loaded.
+- Pro basketball and hockey power rankings rank on a smoothed rating
+  (PowerRank.form: 0.3 of the way to the new Elo each game). Measured:
+  weekly moves of 8+ places fell from 7.1% to 2.6% (basketball) and 5.2%
+  to 1.5% (hockey); the final ranking tracks the standings as well or
+  better. A day's games are listed by rank, so a ranking change reorders
+  the golden "games" hash without changing any result: compare as sets.
+- "year N" for a head coach counts from the season he started (c.since,
+  coachYear()); the c.t count that drives the computer's patience still
+  goes up for a new hire in his first offseason, so don't read it as years.
+- Staff lines at a second read say what changed since the first (Pearl's
+  first read is kept on the second ask as pearl1); picks are unchanged, so
+  "leave it to the assistant" plays the same.
 - save() returns when no career is open (!S.myTeam). The title screen's
   "How to play" Skip and last Next called save() and wrote an empty career
   over slot 1 in all six games (found by Grokbot; my clean-profile repro
@@ -475,6 +509,26 @@ dynasty's first season (generated players have no earlier history).
                       mix); strength predicts the tables (rank corr 0.6-0.9)
 
 ## Known calibration gaps (measured)
+
+- Played vs simmed scoring (Nov 2026, one season x3 per game, calls cycled):
+  your live games against the league's simmed games, points per team:
+  college football 26.6 / 26.8, pro football 23.8 / 22.4, college basketball
+  72.1 / 72.4, pro basketball 115.8 / 114.6, hockey 3.1 / 3.1, soccer
+  1.6 / 1.4 (Arsenal: a strong side). In a browser, 20 hand-played Saint
+  Joseph's games averaged 74.4. Calls barely move totals (college
+  basketball: 72.0 to 72.9 whichever option you always take). Testers'
+  high hand-played samples were small; no engine gap found.
+- Field goals: fgOdds is a smooth curve (FG_CURVE) used only for your
+  fourth-down calls; the computer's drives resolve kicks their own way, so
+  CPU calibration doesn't move. Fourth downs graded over 6 careers: where
+  no kick is offered (the punt-or-go band) "go" is best about two times in
+  three; that band, not the kick curve, is why most fourth downs favour
+  going (Instinct). A model question still open.
+- Hockey pay: teams carry 12 contracts, not an NHL roster's 23, so each
+  player stands for about two and the cap is spread over fewer people (a
+  60-64 rated player earns about $12.4M on existing contracts; asks follow
+  the same scale). Testers read it as inflated. Rescaling the economy is
+  Ian's call.
 
 - Hockey's goalie call is nearly weightless (Nov 2026, test/hk-reads.js at
   60,000 games): pulling him only on a real bad night is worth about +1 win

@@ -183,20 +183,20 @@ function offseasonScreen(){
         U.program[t]>=1780?"contender":U.program[t]>=1680?"solid job":
         U.program[t]>=1600?"middling job":"rebuild"}</div></div>
       <span class="cgrade">${esc(tag)}</span></div>
-    <div class="cdesc">Last season ${last.rec[t]?last.rec[t][0]+"-"+last.rec[t][1]:"&mdash;"}.
+    <div class="cdesc">Last season ${last.rec[t]?LEAGUE.recText(t,last):"&mdash;"}.
       ${U.program[t]>U.program[my]?"A step up.":U.program[t]<U.program[my]-120?"A step down.":"A lateral move."}</div></div>`;
 
   if(A.userOpen){
     h+=`<div class="firedbox"><div class="bkick">You have been let go</div>
       <div class="btitle">${esc(my)} has fired you.</div>
-      <div class="bsub">Career ${C.w}-${C.l} &middot; you are ${esc(repGrade(C.rep))}.
+      <div class="bsub">Career ${careerRec(C)} &middot; you are ${esc(repGrade(C.rep))}.
       ${S.off.jobs.length?"These teams will take you.":"Nobody is calling."}</div></div>`;
     h+=`<div class="grouphead">1. Where do you go next?</div>`;
     h+=S.off.jobs.map(t=>jobRow(t,U.program[t]>U.program[my]?"step up":"opening")).join("");
     h+=`<div class="cand ${S.off.move==="retire"?'on':''}" data-job="retire">
       <div class="candtop"><div><div class="fname">Retire</div>
       <div class="fnote">End your career here</div></div></div>
-      <div class="cdesc">Walk away with a ${C.w}-${C.l} record and ${C.titles}
+      <div class="cdesc">Walk away with a ${careerRec(C)} record and ${C.titles}
         championship${C.titles===1?"":"s"}.</div></div>`;
   }else if(S.off.poach.length){
     h+=`<div class="grouphead">1. You have offers</div>`;
@@ -213,7 +213,7 @@ function offseasonScreen(){
       <div class="coachbar plain" style="padding:12px 16px">
       <div class="cleft"><div class="cname">${esc(C.name)} <span class="youtag">YOU</span></div>
       <div class="cmeta">Year ${(U.coach[my]?U.coach[my].t:0)+1} at ${esc(my)}
-        &middot; career ${C.w}-${C.l} &middot; ${esc(repGrade(C.rep))}</div></div></div>`;
+        &middot; career ${careerRec(C)} &middot; ${esc(repGrade(C.rep))}</div></div></div>`;
   }
 
   const SC=S.off.staff||{};

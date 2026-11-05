@@ -1,5 +1,5 @@
 {
- "fp": "0839aeedd39f0d20",
+ "fp": "b70fd7bf73b0220b",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -225,6 +225,26 @@
    "fp": "0839aeedd39f0d20",
    "from": "d063ffe1fbb4282a",
    "note": "Nov 2026 round 12: half-time questions skipped in decided games (football 14-20 margin at the break, basketball under 20, hockey 3 or less after two, soccer 2 or less); pro basketball and hockey seasons drawn with schedOrder (deterministic: the draw was in a sort comparator); hockey history rows keep overtime losses. Control build with the first two held back matched the previous golden on every result."
+  },
+  {
+   "fp": "d25c4f49c7cd8a0e",
+   "from": "0839aeedd39f0d20",
+   "note": "Nov 2026 round 13: screen text only (home/away/neutral word, drive notes, kick distances, basketball clock and evidence labels, hot seat reasons, portal lists). Every result matched the edd5e32 build field by field."
+  },
+  {
+   "fp": "d25c4f49c7cd8a0e",
+   "from": "d25c4f49c7cd8a0e",
+   "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "d348b613843a68b7",
+   "from": "d25c4f49c7cd8a0e",
+   "note": "Nov 2026 round 14: the watched-games counter counts postseason games (screens only; results unchanged)."
+  },
+  {
+   "fp": "b70fd7bf73b0220b",
+   "from": "d348b613843a68b7",
+   "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
   }
  ],
  "result": {
@@ -238,8 +258,8 @@
     "poll": "a741eaf77c0c1a5f",
     "heis": "f0ca3896b10da2b9",
     "history": "b404448de933d00c",
-    "universe": "04ec089d22742028",
-    "screens": "8f94e71c4a8417bb"
+    "universe": "4d85a2415a1e71f3",
+    "screens": "744857bd1a649e2f"
    },
    {
     "year": 2027,
@@ -250,8 +270,8 @@
     "poll": "f64b8cc31041e4e3",
     "heis": "837e82652981ea58",
     "history": "228db1f60dbdf687",
-    "universe": "be1f7876c0c2a5f7",
-    "screens": "acaee31f79d9ff3e"
+    "universe": "288b44306a5a8f58",
+    "screens": "c06d1f95c8c6615f"
    }
   ],
   "Coppin State#2024": [
@@ -264,8 +284,8 @@
     "poll": "80c10fa49cc0c2e7",
     "heis": "13bfe33d01f2b2a1",
     "history": "c8c9c6d4ec862e49",
-    "universe": "30281694f076c08c",
-    "screens": "d3076705d493dd99"
+    "universe": "8d48a97d91873151",
+    "screens": "68e5584ac50a8eb2"
    },
    {
     "year": 2027,
@@ -276,8 +296,8 @@
     "poll": "563b4d023f24bbfc",
     "heis": "8120dbad929bbaa3",
     "history": "a09136552097899c",
-    "universe": "f55a6eb1f2df61dd",
-    "screens": "46986772076a8dbf"
+    "universe": "76e76c740640a8f8",
+    "screens": "23e9f881dabaf849"
    }
   ],
   "Gonzaga#777": [
@@ -290,8 +310,8 @@
     "poll": "df2b0e5f2ce4e60e",
     "heis": "c94713712b4e6c61",
     "history": "c1d7b51fae57c0da",
-    "universe": "91e4022317b5fd8d",
-    "screens": "7cb64c8c679f2b36"
+    "universe": "be8791e4f8589775",
+    "screens": "7fbb5a6d4588029b"
    },
    {
     "year": 2027,
@@ -302,8 +322,8 @@
     "poll": "14ed68296116577d",
     "heis": "97bdbce0e295541c",
     "history": "836c5e2056f43b41",
-    "universe": "9955c2cfa1b40685",
-    "screens": "25dc3b5956c4600a"
+    "universe": "78e8feb4032cc688",
+    "screens": "7447aba7d2b1ed48"
    }
   ],
   "schedules#60": [

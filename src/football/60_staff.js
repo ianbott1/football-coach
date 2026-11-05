@@ -182,7 +182,7 @@ function staffTake(dp, ctx){
     R.push({who:"capy", pick:safe, line:
       safe==="punt" ? (kick!==null
           ? `It seems to me ${kick}% is rather more of a wish than a plan. I'd punt.`
-          : `That is, I do believe, simply too far. Give it back and defend.`)
+          : `Too far to kick, and ${go}% to convert is more risk than I care for. Give it back and defend.`)   // with the number the staff room shows (it said "simply too far" beside 69-72%: Grokbot)
       : safe==="kick" ? `I do believe ${kick}% is about as comfortable as we're likely to get.`
       :                 `I'm not enthusiastic, but nothing safer appears to be on offer.`});
   }

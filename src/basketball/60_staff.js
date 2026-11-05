@@ -151,9 +151,19 @@ function staffTake(dp, ctx){
   }
   else if(dp.k==="read"){
     R.push({who:"bears", pick:"trap", line:bearYell("read",seed)});
-    R.push({who:"pearl", pick:dp.pearl&&STYLE[dp.pearl]?STYLE[dp.pearl].answer:"normal",
-      line:pearlSay(dp.pearl&&PEARL_STYLE[dp.pearl]?"I just saw it! "+PEARL_STYLE[dp.pearl]:"I haven't seen enough to say!",seed)});
-    R.push({who:"capy", pick:"pack", line:`It seems to me protecting the rim rarely hurts. I haven't, I confess, looked at the shot chart.`});
+    // the second read says what's changed since the first, or that nothing has: the same line at ten
+    // minutes and at half-time read as if she wasn't watching (Instinct). Her pick is the same as ever.
+    const cur=(dp.stage===2&&dp.opts[0]&&dp.opts[0][0]==="keep")?(dp.opts[0][1]||"").replace(/^Keep your setup: /,""):null;
+    const her=dp.pearl&&STYLE[dp.pearl]?STYLE[dp.pearl].answer:"normal", herD=DEFENSES[her]?DEFENSES[her].l:null;
+    R.push({who:"pearl", pick:her,
+      line:pearlSay(!(dp.pearl&&PEARL_STYLE[dp.pearl])?"I haven't seen enough to say!"
+        // against her own first read, not your setup (she'd have said "it's changed" to anyone who ignored her)
+        :dp.stage===2&&dp.pearl1&&dp.pearl1===dp.pearl?`Same story as the first half: they're still ${STYLE[dp.pearl].l}. ${cur&&herD===cur?"We're set up right, so let's keep at it!":`We should be in the ${herD}!`}`
+        :dp.stage===2&&dp.pearl1?`It's changed since the first half! ${PEARL_STYLE[dp.pearl]}`
+        :"I just saw it! "+PEARL_STYLE[dp.pearl],seed)});
+    R.push({who:"capy", pick:"pack", line:dp.stage===2&&cur
+      ? `I'd still rather protect the rim, whatever they did in the first half. I haven't looked at the shot chart since, either.`
+      : `It seems to me protecting the rim rarely hurts. I haven't, I confess, looked at the shot chart.`});
   }
   else if(dp.k==="half"){
     const down=diff<0;
