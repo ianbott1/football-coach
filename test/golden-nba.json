@@ -1,5 +1,5 @@
 {
- "fp": "2d30df453a3cf331",
+ "fp": "6755a3bf3c83a49f",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -175,6 +175,11 @@
    "fp": "2d30df453a3cf331",
    "from": "2d30df453a3cf331",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "6755a3bf3c83a49f",
+   "from": "2d30df453a3cf331",
+   "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
   }
  ],
  "result": {
@@ -188,7 +193,7 @@
     "poll": "bdf4d7ea8156a878",
     "heis": "92af6728a86e8a51",
     "history": "893cb08fa6b01a02",
-    "universe": "137d5f6e978449c3",
+    "universe": "8323722391ef04aa",
     "screens": "8318f32e575ea141"
    },
    {
@@ -200,7 +205,7 @@
     "poll": "3d4b205ef05af16c",
     "heis": "f05067ed4a16dbc5",
     "history": "5527fd5ee870e807",
-    "universe": "edfa017d4d5b8f4e",
+    "universe": "7822024e48e45dfc",
     "screens": "ea2e9aa6d9a41842"
    }
   ],
@@ -214,7 +219,7 @@
     "poll": "ec18f68d9cc1ff41",
     "heis": "bd7234824f88d455",
     "history": "6162bb9ef29814ee",
-    "universe": "859de79662461a78",
+    "universe": "d03491fd92365a58",
     "screens": "e16df0092e047c6d"
    },
    {
@@ -226,7 +231,7 @@
     "poll": "e2f1c7e23dfebec8",
     "heis": "07c01106df0c9f70",
     "history": "7fd52873a5634286",
-    "universe": "22cbf1a2d1215553",
+    "universe": "570b5e463a28b71f",
     "screens": "4375b30f3236bc65"
    }
   ],

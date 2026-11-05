@@ -814,12 +814,12 @@ function commitOffseason(){
   if(dest==="retire"){S.retired=true;save();render();return}
   if(dest&&dest!==oldTeam){
     // the program you leave hires someone else; you take the new job
-    U.coach[oldTeam]=newCoach(rng,U.program[oldTeam]);
+    U.coach[oldTeam]=newCoach(rng,U.program[oldTeam]); U.coach[oldTeam].since=SEA.year+1;
     C.fired+=(A.userOpen?1:0);
     C.stops.push({team:dest,from:SEA.year+1,w:0,l:0,titles:0});
     S.myTeam=dest; U.userTeam=dest; U.phil="balanced";
     U.coach[dest]=Object.assign({},U.coach[oldTeam]||{},
-      {id:0,n:C.name,q:0,t:0,hired:true,you:true});
+      {id:0,n:C.name,q:0,t:0,hired:true,you:true,since:SEA.year+1});
   }
   ["oc","dc"].forEach(side=>{
     const cands=S.off.staff&&S.off.staff[side];
@@ -1415,7 +1415,7 @@ function teamCardHTML(my,rk,co){
       <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
-        <div class="cmeta">Head coach &middot; ${co.t<=0?"first season":"year "+(co.t+1)}
+        <div class="cmeta">Head coach &middot; ${coachYear(co)<=1?"first season":"year "+coachYear(co)}
         &middot; ${coachGrade(co.q)}</div></div>
       ${seatBadge()}</div>`:""}
     ${(()=>{const O=(SEA.oc&&SEA.oc[my])||(U.oc&&U.oc[my]);
@@ -1992,13 +1992,17 @@ function coachRows(){
     return Object.assign({},r,{w:C.w,l:C.l,d:C.d||0,titles:C.titles,confs:C.confs,stops:C.stops.slice()}) });
 }
 
+/* "year N" at his club. Every coach's count goes up once an offseason, a new hire's too, so a coach
+   hired this summer read "year 2" in his first season (Muse: the YEAR label lagged after a move). The
+   count drives the computer's patience, so it stays; hires since Nov 2026 say when they started. */
+function coachYear(c){ const y=c&&c.since!==undefined&&SEA?SEA.year-c.since+1:(c?c.t+1:1); return Math.max(1,y) }
 function coachCard(c){
   const grade=coachGrade(c.q);
   // soccer: draws count as games (it showed 22-16-8 as "22-8, .733")
   const dd=LEAGUE.draws?(c.d||0):0, pct=(c.w+c.l+dd)?(c.w/(c.w+c.l+dd)).toFixed(3).replace(/^0/,""):"\u2013";
   let h=`<div class="idcard" style="border-left:4px solid ${c.you?"var(--vote)":teamInk(c.team)}">
     <div class="iname" style="color:${c.you?"var(--vote)":teamInk(c.team)}">${esc(c.n)}</div>
-    <div class="imeta">${c.you?"You &middot; ":""}head coach, ${esc(c.team)} &middot; year ${c.t+1}
+    <div class="imeta">${c.you?"You &middot; ":""}head coach, ${esc(c.team)} &middot; year ${coachYear(c)}
       &middot; ${esc(grade)}</div>
     <div class="stats">
       <div><b>${LEAGUE.draws?`${c.w}-${dd}-${c.l}`:`${c.w}-${c.l}`}</b><span>Career</span></div>
@@ -2035,7 +2039,7 @@ function coachesView(){
   h+=rows.slice(0,60).map(c=>`<div class="frow cpick ${c.you?'mine':''}" data-coach="${esc(c.team)}">
     <span class="dot" style="background:${teamColor(c.team)}"></span>
     <div class="fmain"><div class="fname">${esc(c.n)}${c.you?' <span class="youtag">YOU</span>':''}</div>
-    <div class="fnote">${esc(c.team)} &middot; year ${c.t+1}${
+    <div class="fnote">${esc(c.team)} &middot; year ${coachYear(c)}${
       c.stops&&c.stops.length>1?" &middot; "+c.stops.length+" jobs":""}</div></div>
     <div class="tstat"><span class="trec">${wdl(c.w,c.l,c.d)}</span>
     <span class="trk">${c.titles?c.titles+"\u00d7 natl":(c.confs?c.confs+"\u00d7 conf":"")}</span></div></div>`).join("");
@@ -2183,7 +2187,7 @@ function teamCard(t){
     </div>
     ${U&&U.coach&&U.coach[t]?`<div class="coachbar plain cpick" data-coach="${esc(t)}">
       <div class="cleft"><div class="cname">${esc(U.coach[t].n)}</div>
-      <div class="cmeta">Head coach &middot; ${U.coach[t].t<=0?"first season":"year "+(U.coach[t].t+1)}
+      <div class="cmeta">Head coach &middot; ${coachYear(U.coach[t])<=1?"first season":"year "+coachYear(U.coach[t])}
       &middot; ${coachGrade(U.coach[t].q)}</div></div></div>
       ${U.oc&&U.oc[t]?`<div class="staffbar plain">
         <div class="stline"><span class="stlab">${SPORT.staff.oc.short}</span><span class="stn">${esc(U.oc[t].n)}</span>
@@ -2945,6 +2949,15 @@ function bindPicks(){
     }
   }));
 }
+/* the last result card, when a career is opened: it lived only in memory, so a reload lost it
+   (Grokbot: the FINAL card disappears after any reload) */
+function resumeFlash(){
+  if(!SEA||S.off||!S.myTeam||SEA.phase==="done")return null;
+  const st=SEA.step-1; if(st<0)return null;
+  const W=SEA.weeks[st], my=S.myTeam;
+  if(st<LEAGUE.weeks)return W&&W.games.some(g=>g.home===my||g.away===my)?{type:"week",step:st}:null;
+  return SEA.postGamesFor(my).length?{type:"post"}:null;
+}
 /* back to the title screen with nothing open */
 function toTitle(){ introAt=null; S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true}; saveRev=null; render() }
 
@@ -3027,7 +3040,7 @@ function renderTitle(){
     slot=n; await claimSlot(n);
     const d=await loadSlot(n); if(!(d&&d.myTeam))saveRev=null;
     if(d&&d.broken)return;                         // never start a career over a save that's there
-    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();keepCopy(n);render()}
+    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();keepCopy(n);flash=resumeFlash();render()}
     else {S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,
              setup:{name:"",seed:Math.floor(Math.random()*899999+100000)}};
           S.title=false;render()}

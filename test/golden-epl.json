@@ -1,5 +1,5 @@
 {
- "fp": "99e20f1d5fe40243",
+ "fp": "748524ea890fe31e",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -200,6 +200,11 @@
    "fp": "99e20f1d5fe40243",
    "from": "99e20f1d5fe40243",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "748524ea890fe31e",
+   "from": "99e20f1d5fe40243",
+   "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
   }
  ],
  "result": {
@@ -213,8 +218,8 @@
     "poll": "b2c5bfb9e24fa220",
     "heis": "28fffd9e07af90a9",
     "history": "d6e942a22ac13ee1",
-    "universe": "056824920fb8f54b",
-    "screens": "ce81056b292b73d1"
+    "universe": "1f4c3ac1f93f2e5c",
+    "screens": "df7f599bc8708f1a"
    },
    {
     "year": 2027,
@@ -225,8 +230,8 @@
     "poll": "5506dd9bdf00199c",
     "heis": "4a9d451755207b48",
     "history": "ddebb0c48e47234e",
-    "universe": "240217f9902fd1f1",
-    "screens": "034b17781f7533e2"
+    "universe": "ec89723d24e15b75",
+    "screens": "18448fb0416c4867"
    }
   ],
   "Wrexham#777": [
@@ -239,8 +244,8 @@
     "poll": "7e3d72dd8141312d",
     "heis": "06d24a6f1c40846f",
     "history": "0933fcc446e21a9c",
-    "universe": "8d753e187882540b",
-    "screens": "3260fc67c9dc8ea7"
+    "universe": "d4b9b4436be72092",
+    "screens": "5f24a75b5dd16da2"
    },
    {
     "year": 2027,
@@ -251,8 +256,8 @@
     "poll": "0e760195e8ce56c0",
     "heis": "3b953c750f69164c",
     "history": "f0d63dff7092d685",
-    "universe": "fb4738dce8d74b40",
-    "screens": "7d16eb00b8b18237"
+    "universe": "afb3783c5bb07821",
+    "screens": "3551b37a1b70f274"
    }
   ],
   "schedules#60": [

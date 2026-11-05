@@ -66,6 +66,12 @@ function nflBoardHTML(P){
    fills whatever is left. */
 function nflTargetsHTML(P,room){
   const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
+  // where he'd fit on your side, from your own players (the tag read a field nobody set, so every one was
+  // "depth: better than your backup", even beside a 60-rated starter: Grokbot)
+  const R=U.roster[S.myTeam]||[];
+  const place=x=>{ const i=POS.findIndex(P=>P.p===x.p); if(i<0)return "";
+    const st=R[i], bk=R[BK(i)];
+    return !st||x.r>st.r?"would start":!bk||x.r>bk.r?"depth: better than your backup":"no better than yours" };
   const mine=(P.targets||[]).filter(k=>byKey[k]);
   let left=room-0.5;                                // leave a little room for the academy
   const seenPos={};
@@ -79,15 +85,18 @@ function nflTargetsHTML(P,room){
         if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
-      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span> <span class="ptag">${x.starter?"would start":"depth: better than your backup"}</span></div>
+      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span> <span class="ptag">${place(x)}</span></div>
         <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about ${money(x.ask)} a year${on?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free transfers you want</div>`;
   h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet: your assistant's style will decide. Players you add get your first look, in your order, if the wages fit.</div>`;
-  const pool=pre.filter(x=>mine.indexOf(x.key)<0).slice(0,25);
-  h+=`<div class="grouphead">Out of contract this summer &mdash; the best 25</div>`+
-    (pool.length?pool.map(x=>row(x,false)).join(""):`<div class="note">Nobody worth chasing this year.</div>`);
+  // the ones your wages can pay first, then the best of the rest (a League One club was offered 82-rated
+  // Man City and Arsenal players at about £21M a year against a £16M wage budget: Grokbot)
+  const rest=pre.filter(x=>mine.indexOf(x.key)<0), fits=x=>x.ask<=Math.max(0,room)*1.05+0.2, can=rest.filter(fits).slice(0,20), dear=rest.filter(x=>!fits(x)).slice(0,5);
+  h+=`<div class="grouphead">Out of contract this summer &mdash; within your wage room (${money(Math.max(0,room))})</div>`+
+    (can.length?can.map(x=>row(x,false)).join(""):`<div class="note">Nobody worth chasing fits your wages this year.</div>`);
+  if(dear.length)h+=`<div class="grouphead">The best of the rest: beyond your wages unless you free some</div>`+dear.map(x=>row(x,false)).join("");
   return h;
 }
 /* The transfer window: your kitty, bids for your players, your bids (in

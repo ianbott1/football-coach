@@ -1,5 +1,5 @@
 {
- "fp": "4db4ff2d097d47cf",
+ "fp": "23bf49cf76511eff",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -255,6 +255,11 @@
    "fp": "4db4ff2d097d47cf",
    "from": "347d1065fea61353",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "23bf49cf76511eff",
+   "from": "4db4ff2d097d47cf",
+   "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
   }
  ],
  "result": {
@@ -268,7 +273,7 @@
     "poll": "665c31160c6598bf",
     "heis": "24392d787fa10090",
     "history": "796450e803597948",
-    "universe": "6da29820fffa55c3",
+    "universe": "5fa49e32538c5925",
     "screens": "4399a9340409764b"
    },
    {
@@ -280,7 +285,7 @@
     "poll": "b310c976d038ba66",
     "heis": "5a53055da9f378f9",
     "history": "510186627c498c61",
-    "universe": "4b215ec2e0d8212d",
+    "universe": "bb9c8ed04c499acf",
     "screens": "cf53412a36126dbc"
    },
    {
@@ -292,7 +297,7 @@
     "poll": "061e59579b8f549d",
     "heis": "b931c0c693b2bb9b",
     "history": "62983d6ffa91c5ee",
-    "universe": "289ffc1d08b9e0ac",
+    "universe": "973f186db1025041",
     "screens": "80b065265fc11390"
    },
    {
@@ -304,7 +309,7 @@
     "poll": "dbc919db83923334",
     "heis": "814286cd02dc8b41",
     "history": "534eb0d6c3059f75",
-    "universe": "f024145bf48cf9ed",
+    "universe": "6b3e11e0062707ea",
     "screens": "43f9dd4f26ecafa0"
    }
   ],
@@ -318,7 +323,7 @@
     "poll": "089e88c701e6ae89",
     "heis": "fe4bd732f788ef73",
     "history": "8eaa468617b18bf7",
-    "universe": "d5eaeb77b5ede938",
+    "universe": "4370501a15758478",
     "screens": "05ced5d0ac9ad84e"
    },
    {
@@ -330,7 +335,7 @@
     "poll": "4687cea6d90f4ca1",
     "heis": "fb51c46fd3854e02",
     "history": "5e2ff3d19e63fa09",
-    "universe": "8210cb80690241fb",
+    "universe": "9e7a442b34e20bc2",
     "screens": "c5ca057ce9044b36"
    },
    {
@@ -342,7 +347,7 @@
     "poll": "22e98d51893f67ab",
     "heis": "098e0dcea91e70d1",
     "history": "d06444e4259dac26",
-    "universe": "6f03c83b87f1f529",
+    "universe": "3b63cec5b3622484",
     "screens": "519cb4e4ab17f7ce"
    },
    {
@@ -354,7 +359,7 @@
     "poll": "398a14d7df7741b4",
     "heis": "f0ed46da4b02c8c5",
     "history": "fcdc13beda679f21",
-    "universe": "c993e236308ef05a",
+    "universe": "0b1233d72dde4155",
     "screens": "29cbdcdea75e3297"
    }
   ],
@@ -368,7 +373,7 @@
     "poll": "81384c0f028768c0",
     "heis": "5013027a699bdc7f",
     "history": "0d70b2bb882aea7a",
-    "universe": "25b3a4203b975273",
+    "universe": "bb08ce58d147cf6b",
     "screens": "4791aca78f21d9d5"
    },
    {
@@ -380,7 +385,7 @@
     "poll": "7245a327136d69d5",
     "heis": "6cd0743d94c695b9",
     "history": "cbdb860020a2875a",
-    "universe": "baa6ed40ab49f873",
+    "universe": "b69dd7b984dac9d0",
     "screens": "ba9f447db3fdc6c8"
    },
    {
@@ -392,7 +397,7 @@
     "poll": "9521f2aba1c78089",
     "heis": "5a42ce6665fa4678",
     "history": "9e94d721c2a7cf09",
-    "universe": "8de231e50927cbe8",
+    "universe": "47efeb8ff2e1e21f",
     "screens": "2a6ff2cbe3d353e4"
    }
   ],
@@ -406,7 +411,7 @@
     "poll": "d5a9ef8eeb161db1",
     "heis": "8966740a15a9e397",
     "history": "dd1057a49885271e",
-    "universe": "ad8e7117e58ad6f2",
+    "universe": "1f4ff495d63161a2",
     "screens": "a923fcdea8399373"
    },
    {
@@ -418,7 +423,7 @@
     "poll": "2e4e6eadb1aecc99",
     "heis": "b0f31832f9defa16",
     "history": "59e93a1fdba7c189",
-    "universe": "fb24a6f50536ef8f",
+    "universe": "d447ec763566c71d",
     "screens": "e24e04c85957f2e9"
    },
    {
@@ -430,7 +435,7 @@
     "poll": "ee8c881d85f3553b",
     "heis": "f6cfe3f76c4bf2ac",
     "history": "1d8ddac972552d72",
-    "universe": "ed2638d9d69e4e49",
+    "universe": "3fb31c7aa6a6f311",
     "screens": "6fada186e6fdd3ee"
    }
   ],

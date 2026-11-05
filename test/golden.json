@@ -1,5 +1,5 @@
 {
- "fp": "d2baf1fa349650b8",
+ "fp": "9fa3ee1e6047bcaf",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -249,6 +249,11 @@
    "fp": "d2baf1fa349650b8",
    "from": "ee5e5f8f2723c4c6",
    "note": "Nov 2026 round 14: the watched-games counter counts postseason games (screens only; results unchanged)."
+  },
+  {
+   "fp": "9fa3ee1e6047bcaf",
+   "from": "d2baf1fa349650b8",
+   "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
   }
  ],
  "result": {
@@ -262,7 +267,7 @@
     "poll": "c320b698f2d2227f",
     "heis": "bcce63fa1cc7f731",
     "history": "5b201afb1082757c",
-    "universe": "3b33f69eaecbdcb1",
+    "universe": "0a04f4b084bb42d4",
     "screens": "5aa51c46deb262c5"
    },
    {
@@ -274,7 +279,7 @@
     "poll": "6ddd0b277453ecee",
     "heis": "9129c8a2e1156820",
     "history": "1f4c432aa3040b96",
-    "universe": "81d231cc74aabc64",
+    "universe": "b16d0992c97d7d78",
     "screens": "c67abcd7a16a2e94"
    },
    {
@@ -286,7 +291,7 @@
     "poll": "086094de84dd9fcb",
     "heis": "ef49f77c05b28ced",
     "history": "f76782175e59f0ca",
-    "universe": "050631a43fe44e19",
+    "universe": "164af02c6a28b6b0",
     "screens": "e8f84e37b10b009b"
    },
    {
@@ -298,7 +303,7 @@
     "poll": "52c5200aa8dde647",
     "heis": "58dee64359932420",
     "history": "b9ee5172ea33be8f",
-    "universe": "c7284ca8382d3448",
+    "universe": "5daaf060a53ad8aa",
     "screens": "28081b5dd7385728"
    }
   ],
@@ -312,7 +317,7 @@
     "poll": "6c79e7b59d96d1f1",
     "heis": "62c67774006ebb20",
     "history": "e94b7f5d20cebb9e",
-    "universe": "cce0d7d9fd06c57f",
+    "universe": "5ac0f41140a78dfc",
     "screens": "ad2a3920c0f2c407"
    },
    {
@@ -324,7 +329,7 @@
     "poll": "fde56316b045a1f0",
     "heis": "d4502773801b6a4d",
     "history": "b5729f9e38c814c9",
-    "universe": "411adddc48396a10",
+    "universe": "3d1b62219f3d709c",
     "screens": "8fe995930454d469"
    },
    {
@@ -336,7 +341,7 @@
     "poll": "5cdd88376155ae7f",
     "heis": "55a301692ea6ca0e",
     "history": "4cfc4e2519a593fb",
-    "universe": "262d4bc91cc328dc",
+    "universe": "18894edbad3c17a9",
     "screens": "d9b645b938092eac"
    },
    {
@@ -348,7 +353,7 @@
     "poll": "4c14cad3cd57ab7b",
     "heis": "d4265c429a4b0cdf",
     "history": "2e7b4eaa72e410b9",
-    "universe": "6250fc8eacd99022",
+    "universe": "d1905fdf7f40523e",
     "screens": "c2452730883739e0"
    }
   ],
@@ -362,7 +367,7 @@
     "poll": "c6a5088ed508cc43",
     "heis": "5ed593a7c45dd255",
     "history": "79e19aa075b47c78",
-    "universe": "5c0b80bc379e694d",
+    "universe": "b02cda768d151db0",
     "screens": "6affd875845a1f7a"
    },
    {
@@ -374,7 +379,7 @@
     "poll": "25a15590a9805bd3",
     "heis": "3aba6f0ad131fd36",
     "history": "68255e59ce695ea4",
-    "universe": "78e90f78a550032e",
+    "universe": "7944a5d4e212ba07",
     "screens": "950b8aebcb55dcf6"
    },
    {
@@ -386,7 +391,7 @@
     "poll": "4a4d609dd8946fcf",
     "heis": "2d1e839371a3b83d",
     "history": "0be73668ce0e1a96",
-    "universe": "d7d11ee2a058ebc6",
+    "universe": "fcf17233693190d5",
     "screens": "722ab54649b807c2"
    }
   ],
@@ -400,7 +405,7 @@
     "poll": "85ef89b335f92c9b",
     "heis": "eb2739b75cbf53ed",
     "history": "18e1978a45c5e27c",
-    "universe": "d29a00caceaa697c",
+    "universe": "8b2a12652ccc6e09",
     "screens": "1db3482a1447ed06"
    },
    {
@@ -412,7 +417,7 @@
     "poll": "a04fb15d15aff770",
     "heis": "0f75b89a469b2b53",
     "history": "7bce1d976c71df52",
-    "universe": "d0075a1cff2e7a32",
+    "universe": "d7562469f69cdc89",
     "screens": "b021a3fff63e672a"
    },
    {
@@ -424,7 +429,7 @@
     "poll": "c96986eb0ea7a770",
     "heis": "e20a147e9bbc6e0b",
     "history": "f902066afca5ec87",
-    "universe": "40baabbdfe0b6e1d",
+    "universe": "2bd2c267484497fe",
     "screens": "8b0b2bea52b41243"
    }
   ],
