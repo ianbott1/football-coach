@@ -49,6 +49,12 @@ is headed by the date; schedules list games, not days), text.bye.
 
 ## In-game calls: the design rule
 
+Decided by Ian, Nov 2026: better decisions, not more decisions. No live
+win-probability ticker (it kills the magic); a call shows its stakes in
+words. Every call type is measured (win-rate effect over 60,000 games); one
+worth under about a point is rebalanced or cut, and new call types are added
+only where they matter. No target for calls per game.
+
 Every call has a right answer you can work out from evidence on the screen,
 and its worth is measured. Each sport's engine gives every side a hidden way
 of playing that leaves marks in the numbers and the commentary; the right
