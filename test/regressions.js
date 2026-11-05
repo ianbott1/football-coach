@@ -372,6 +372,20 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   console.log(`  ${f}: calls per game median ${med} (${per.join(',')})`);
   ok(med>=3,`${f}: a median of ${med} calls a game`); ok(decided===0,`${f}: ${decided} fourth-down calls asked in a decided game`) }
 
+/* 54. hockey's game lines show overtime losses (Grokbot: scores read "Seattle 9-28" beside a 9-21-7 table) */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Toronto',5,'T'); let g=0; while(A.SEA.step<40&&g++<200)A.SEA.advance();
+  const W=A.SEA.weeks[A.SEA.weeks.length-1], bad2=W.games.filter(x=>!/^\d+-\d+-\d+$/.test(x.hrec||''));
+  ok(!bad2.length,`hockey: ${bad2.length} game lines with a two-part record (${bad2[0]&&bad2[0].hrec})`) }
+/* 55. your coordinator takes a head job: you hire his replacement (Grokbot: a stranger was simply in his chair) */
+{ const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP.concat(['U','openOffseason'])}); A.newDynasty(A.NAMES[5],5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance(); A.openOffseason();
+  const cm=(A.S.off.act.coordMoves||[]).filter(m=>m.from===A.S.myTeam);
+  ok(cm.length===1,`pro football seed 5: expected your coordinator to leave for a head job (${cm.length})`);
+  if(cm.length)ok(A.S.off.act.staffOpen[cm[0].side]&&A.S.off.staff[cm[0].side]&&A.S.off.staff[cm[0].side].length>0,`pro football: ${cm[0].name} left and no hire was offered`) }
+/* 56. the soccer late call comes within a goal only (two up or down, it moved nothing: test/call-weight.js) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',4,'T'); let wide=0,asked=0;
+  for(let k=0;k<12&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='late'){ asked++; if(!/^(Level|Up 1|Down 1),/.test(q.dp.h))wide++ } A.answerLive(q.dp.opts[0][0]) } else A.liveTick() } }
+  ok(asked>0&&!wide,`soccer: late call asked ${asked} times, ${wide} of them two or more goals apart`) }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

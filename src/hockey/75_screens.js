@@ -7,8 +7,9 @@
 const HK_UNIT={C:0,LW:1,RW:2,D:3,D2:4,G:5};
 function hkPlayer(team,unit,u){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
-  const i=HK_UNIT[unit]; const p=R[i], b=R[BK(i)];
-  const pick=(b&&(u%10)<3)?b:p; return pick?pick.n:null;
+  const i=HK_UNIT[unit], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
+  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // an injured player is not on the ice (Grokbot: "out 91+ game days" took a penalty)
+  const pick=(b&&(u%10)<3)||!p?b:p; return pick?pick.n:null;
 }
 const surname=n=>n?n.split(" ").slice(-1)[0]:"";
 function hkSkater(team,u){

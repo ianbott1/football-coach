@@ -14,8 +14,8 @@
    pile up; a centre-back on a yellow can see a second.
 
    Your calls: the read (25', and again at 55'), at half-time when you're
-   ahead or behind, your changes (60', or wait to 70'), and the last fifteen
-   minutes. Every call's last option is "carry on": what a skipped game does. */
+   ahead or behind, your changes (60', or wait to 70'), and the last twenty
+   minutes when it's within a goal. Every call's last option is "carry on": what a skipped game does. */
 const SEGS = 18;
 const DRIVES_PER_TEAM = 9;                     // the live clock's pace: 18 spells a game
 const SC_BASE = {
@@ -49,9 +49,9 @@ const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
   aggressive:{own:0.60, opp:0.63},   // sit deep and counter: fewer chances, more luck
-  push:      {own:1.35, opp:1.30},   // all-out attack
-  sit:       {own:0.62, opp:0.84},   // park the bus
-  win:       {own:1.18, opp:1.15},   // level late: go for the win
+  push:      {own:1.55, opp:1.45},   // all-out attack (was 1.35/1.30; sit 0.62/0.84; win 1.18/1.15: the late call moved 1.6 points. Nov 2026)
+  sit:       {own:0.50, opp:0.80},   // park the bus
+  win:       {own:1.35, opp:1.25},   // level late: go for the win
   point:     {own:0.75, opp:0.78},   // level late: take the point
   urgent:    {own:1.00, opp:1.00}
 };
@@ -92,11 +92,11 @@ function halfCall(lead){
 }
 function lateCall(lead){
   const A=["normal","Leave it to your assistant"];
-  if(lead<0)return {k:"late",h:`Down ${-lead}, fifteen minutes left`,q:"Throw everything at it?",
+  if(lead<0)return {k:"late",h:`Down ${-lead}, twenty minutes left`,q:"Throw everything at it?",
     opts:[["push","All-out attack"],["keep","Keep our shape"],A]};
-  if(lead>0)return {k:"late",h:`Up ${lead}, fifteen minutes left`,q:"See it out?",
+  if(lead>0)return {k:"late",h:`Up ${lead}, twenty minutes left`,q:"See it out?",
     opts:[["sit","Park the bus"],["keep","Keep going"],A]};
-  return {k:"late",h:"Level, fifteen minutes left",q:"Go for the win, or take the point?",
+  return {k:"late",h:"Level, twenty minutes left",q:"Go for the win, or take the point?",
     opts:[["win","Go for the win"],["point","Take the point"],A]};
 }
 /* the evidence on one side's approach so far: each tell against its baseline */
@@ -332,7 +332,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(s===15&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>queueCall(sd,lateCall(lead(sd)))); if(st.queue.length)return st.next()}
+    if(s===14&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd))) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
     if(s>=SEGS){ if(st.h===st.a){ if(st.playoff)extraTime(); else st.draw=true } st.done=true; return fin() }
     const d=segment(s); st.seg++;
     return {drive:d,h:st.h,a:st.a};

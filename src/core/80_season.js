@@ -222,6 +222,7 @@ class Season{
      postseason only where the sport counts it (college: bowls and the
      tournament are part of the record; the pros and English play-offs aren't) */
   countsInRecord(){ return this.phase==="week"||!!LEAGUE.postRecord }
+  _rs(t){ return LEAGUE.recText?LEAGUE.recText(t,this,this.rec[t]):this.rec[t][0]+"-"+this.rec[t][1] }   // the record a game line shows: hockey keeps its overtime losses, soccer its draws (Grokbot)
   cupWeek(w){ return this.sched.some(g=>g.week===w&&g.cup) }
   _week(part){
     const w=this.step, prev=this.rankMap(), out=[];
@@ -229,7 +230,7 @@ class Season{
       this.sched.filter(g=>g.week===w&&g.cup).forEach(g=>{
         const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site,round:g.round});
         r.hrank=prev[g.home];r.arank=prev[g.away];
-        r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1]; r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+        r.hrec=this._rs(g.home); r.arec=this._rs(g.away);
         if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
         out.push(r) });
       this.poll.update(out,this.elo);
@@ -240,9 +241,10 @@ class Season{
     this.sched.filter(g=>g.week===w&&!(part==="league"&&g.cup)).forEach(g=>{
       const r=this._resolve(g.home,g.away,g.neutral,g.cup?{conf:false,cup:true,title:g.title,site:g.site,round:g.round}:{conf:g.conf});
       if(g.conf&&!r.draw){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
+      if(g.conf&&!r.draw&&r.ot&&LEAGUE.tracksOT){this.confotl=this.confotl||{}; this.confotl[r.loser]=(this.confotl[r.loser]||0)+1}   // hockey's division record keeps its overtime losses (Grokbot: "14-14")
       r.hrank=prev[g.home];r.arank=prev[g.away];
-      r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];
-      r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+      r.hrec=this._rs(g.home);
+      r.arec=this._rs(g.away);
       if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
       out.push(r);
     });

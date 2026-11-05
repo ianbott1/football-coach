@@ -140,12 +140,12 @@ function offseasonBanner(){
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
     <div class="bsub">${esc(last.champion)} won the Stanley Cup.
-      ${(last.coaching.hires||[]).length} teams hired a new head coach.</div>
+      ${nOf((last.coaching.hires||[]).length,"team")} hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
       const mine=(X.draft||[]).filter(d=>d.team===my);
       if(!mine.length)return "";
-      return `<div class="grouphead">Draft &mdash; ${last.year+1}</div>`+
+      return `<div class="grouphead">Draft &mdash; rookies for the ${last.year+1} season</div>`+
         mine.map(d=>`<div class="drow">
           <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
           <div class="fmain"><div class="fname">${esc(d.n)}
@@ -171,7 +171,7 @@ function offseasonScreen(){
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the Stanley Cup.
-    ${A.hires.length} teams changed coaches.</div>
+    ${nOf(A.hires.length,"team")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
 

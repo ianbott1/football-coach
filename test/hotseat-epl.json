@@ -1,5 +1,5 @@
 {
- "fp": "d8a2aaa77bcd8bce",
+ "fp": "a34c56feb6b23235",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -150,6 +150,11 @@
    "fp": "d8a2aaa77bcd8bce",
    "from": "197882de31c86255",
    "note": "Nov 2026 round 20: a club's usual approach is 7 times as likely (was 4): the scouting report's top approach was played 54% of the time in real matches, now 67%."
+  },
+  {
+   "fp": "a34c56feb6b23235",
+   "from": "d8a2aaa77bcd8bce",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "out": [
@@ -159,20 +164,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "19-8-11",
-      "result": "Finished 6th in the Premier League",
-      "grade": "C+"
+      "rec": "20-10-8",
+      "result": "Finished 4th in the Premier League",
+      "grade": "B-"
      },
-     "book": "d60fa0e57dd50791"
+     "book": "a2f81135595c7f7a"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "18-4-16",
-      "result": "Finished 9th in the Premier League",
-      "grade": "B"
+      "rec": "16-5-17",
+      "result": "Finished 10th in the Premier League",
+      "grade": "B-"
      },
-     "book": "e99f0504d88f3988"
+     "book": "6c8bc9a0c7e6a84e"
     }
    ]
   },
@@ -182,11 +187,11 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "17-14-7",
-      "result": "Finished 5th in the Premier League",
-      "grade": "B-"
+      "rec": "16-16-6",
+      "result": "Finished 6th in the Premier League",
+      "grade": "C+"
      },
-     "book": "9471b56b54429922"
+     "book": "c2568a0895d91060"
     },
     {
      "team": "Tottenham Hotspur",
@@ -195,7 +200,7 @@
       "result": "Finished 16th in the Premier League",
       "grade": "C"
      },
-     "book": "a7067c4e5491f79a"
+     "book": "5de92ad9fb6846ce"
     }
    ]
   },
@@ -205,20 +210,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "24-5-9",
-      "result": "Finished 3rd in the Premier League",
-      "grade": "B"
+      "rec": "21-7-10",
+      "result": "PREMIER LEAGUE CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "744872bed3d2084e"
+     "book": "17fddfc79d818735"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "8-10-20",
-      "result": "Relegated (19th)",
-      "grade": "D"
+      "rec": "10-9-19",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "cfd4ca037f6b7302"
+     "book": "f90a9f427e0fa6d4"
     }
    ]
   }

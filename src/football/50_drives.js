@@ -404,7 +404,7 @@ function decisionPoint(state, isUser){
       opts:[["push","Open it up"],["normal","Stay patient"]]
     };
   }
-  if (veryLate && diff > 0 && diff <= 14 && !used.protect) {
+  if (veryLate && diff > 0 && diff <= 10 && !used.protect) {   // up 12 to 14 the choice moved nothing (test/call-weight.js, Nov 2026)
     return {
       k:"protect",
       h: q>=4?`Up ${diff} late`:`Up ${diff}, end of the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)

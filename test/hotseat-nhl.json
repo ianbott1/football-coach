@@ -1,5 +1,5 @@
 {
- "fp": "c9dd4c5e92ebda29",
+ "fp": "7039a76614029140",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -135,6 +135,11 @@
    "fp": "c9dd4c5e92ebda29",
    "from": "f2afdc1f401a9b84",
    "note": "Nov 2026 round 20: a club's usual system is 5 times as likely (was 4): the scouting report's top system was played 64% of the time in real games, now 68%."
+  },
+  {
+   "fp": "7039a76614029140",
+   "from": "c9dd4c5e92ebda29",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "out": [
@@ -144,20 +149,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-29-15",
-      "result": "Lost in the second round",
-      "grade": "B"
+      "rec": "42-31-11",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "77747067bda4de3a"
+     "book": "cbf718353796484c"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "36-36-12",
+      "rec": "33-38-13",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "06b09b78876ac5a8"
+     "book": "3919503725af3d66"
     }
    ]
   },
@@ -167,20 +172,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "41-28-15",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "46-33-5",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "d1d070cc1a6acf76"
+     "book": "00413db0ac5e4b69"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "37-32-15",
+      "rec": "38-30-16",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "361e0caf24b8f2ea"
+     "book": "b2a94eaa00242573"
     }
    ]
   },
@@ -190,20 +195,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "42-27-15",
-      "result": "Lost in the first round",
-      "grade": "B"
+      "rec": "42-33-9",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "3777d3307b39af3f"
+     "book": "9b5676fe44ee2c95"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "36-34-14",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "43-30-11",
+      "result": "Lost in the first round",
+      "grade": "B"
      },
-     "book": "2037a498d3694b24"
+     "book": "96dcc00d2b1320ff"
     }
    ]
   }

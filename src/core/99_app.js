@@ -1024,12 +1024,12 @@ function liveRec(team){
 }
 
 function liveConf(team){
-  const w=SEA.confrec[team][0], l=SEA.confrec[team][1];
-  if(reveal!=="half")return [w,l];
+  const w=SEA.confrec[team][0], l=SEA.confrec[team][1], o=(SEA.confotl&&SEA.confotl[team])||0;   // [wins, losses (overtime ones included), overtime losses]
+  if(reveal!=="half")return [w,l,o];
   const g=heroGame();
-  if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l];
-  if(g.draw)return [w,l];
-  return g.winner===team?[w-1,l]:[w,l-1];
+  if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l,o];
+  if(g.draw)return [w,l,o];
+  return g.winner===team?[w-1,l,o]:[w,l-1,g.ot&&LEAGUE.tracksOT?o-1:o];
 }
 
 /* the game the result card shows: on a cup night the cup tie, otherwise
@@ -1421,7 +1421,7 @@ function teamCardHTML(my,rk,co){
     <div class="stats">
       <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
       ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
-        :`<div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
+        :`<div><b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
       <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
@@ -1906,9 +1906,9 @@ function fixturesView(w,last,maxW){
   const yours=gs.filter(mine); if(yours.length)h+=`<div class="grouphead">Yours</div>`+yours.map(line).join("");
   if(LEAGUE.groupFilter){ const g0=grpNow(), sel=g0==="CUP"?CONF[my]:g0, groups=sel==="ALL"?LEAGUE.conf.order:[sel];
     groups.forEach(c=>{ const L=gs.filter(g=>!g.cup&&CONF[g.home]===c); if(L.length)h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${L.length} games</div><div class="${wide?'gamegrid':''}">`+L.map(line).join("")+`</div>` });
-    const cupG=gs.filter(g=>g.cup); if(cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+    const cupG=gs.filter(g=>g.cup); if(cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("");
     return h }
-  return h+`<div class="grouphead">Everyone &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
+  return h+`<div class="grouphead">Everyone &mdash; ${nOf(gs.length,"game")}</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
 }
 function scoresView(){
   if(!SEA.weeks.length&&scoreWk===null)
@@ -1924,12 +1924,12 @@ function scoresView(){
     const cupG=W.games.filter(g=>g.cup), g0=grpNow(), sel=g0==="CUP"&&!cupG.length?CONF[S.myTeam]:g0;
     let h=wkNav(w,last,maxW)+grpTabsHTML(cupG.length>0)+(sel===CONF[S.myTeam]&&w===last?newsBlock():"");
     const line=g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam);
-    if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("")+
+    if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("")+
       `<button class="rewatch seedraw" data-cupview="1">See the whole draw</button>`;
     const groups=sel==="ALL"?LEAGUE.conf.order:[sel];
     groups.forEach(c=>{ const gs=W.games.filter(g=>!g.cup&&CONF[g.home]===c); if(!gs.length)return;
-      h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>` });
-    if(sel==="ALL"&&cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+      h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${nOf(gs.length,"game")}</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>` });
+    if(sel==="ALL"&&cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("");
     return h;
   }
   const marq=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)<=25);
@@ -1938,7 +1938,7 @@ function scoresView(){
   if(w===last)h+=newsBlock();
   if(marq.length)h+=`<div class="grouphead">Ranked teams</div>`+
     marq.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("");
-  if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${rest.length} games</div>`+
+  if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${nOf(rest.length,"game")}</div>`+
     `<div class="${wide?'gamegrid':''}">`+
     rest.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("")+`</div>`;
   return h;
@@ -2134,12 +2134,16 @@ function allTime(t){
     if(h.post&&h.post[t]){pw+=h.post[t][0]; pl+=h.post[t][1]}
     if(h.coaching&&h.coaching.firedList.indexOf(t)>=0)coach++;
   });
+  // the season under way counts too, until it's archived (Grokbot: all-time 0-0 forty games into a first season)
+  let cur=false;
+  if(SEA&&SEA.rec&&SEA.rec[t]&&!S.history.some(h=>h.year===SEA.year)){ const r=(SEA.regRec||SEA.rec)[t]; cur=r[0]+r[1]>0;
+    w+=r[0]; l+=r[1]; d+=(SEA.drw&&SEA.drw[t])||0; o+=(SEA.otl&&SEA.otl[t])||0 }
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
           post:pw+"-"+pl,postGames:pw+pl,coach:coach,now:rk,
           d:d, pct:(w+l+d)?(w/(w+l+d)):null,seasons:S.history.length,
           // hockey: overtime losses, where every season kept them (from Nov 2026)
-          rec:(LEAGUE.tracksOT&&!LEAGUE.draws&&oAll&&S.history.length)?`${w}-${l-o}-${o}`:LEAGUE.draws?`${w}-${d}-${l}`:`${w}-${l}`};
+          rec:(LEAGUE.tracksOT&&!LEAGUE.draws&&oAll&&(S.history.length||cur))?`${w}-${l-o}-${o}`:LEAGUE.draws?`${w}-${d}-${l}`:`${w}-${l}`};
 }
 
 function seasonRowsFor(t){

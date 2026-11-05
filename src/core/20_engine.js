@@ -350,7 +350,7 @@ function newUniverse(seed){
 function seatHeat(u,rec,elo,t){
   // expectation is the program's own baseline; heat is falling short of it repeatedly
   const w=rec[t][0], l=rec[t][1], wp=w/Math.max(1,w+l);
-    const shortfall=(u.program[t]-elo[t])/45;
+  const shortfall=(u.program[t]-elo[t])/((typeof LEAGUE!=="undefined"&&LEAGUE.seatSpread)||45);   // hockey's strengths sit closer together: the same shortfall is a bigger miss
   let heat=u.bad[t]*1.4 + Math.max(0,shortfall) + (wp<HOT_SEAT?1.2:0);
   if(u.coach[t]&&u.coach[t].t<=1)heat-=1.6;         // rookies get a grace year
   if(u.coach[t]&&u.coach[t].q>=30)heat-=0.6;
@@ -483,6 +483,9 @@ function offseasonCoaching(u,rng,rec,elo,users){
 
   const userOpenBy={}, candidatesBy={}, staffOpenBy={};
   Object.keys(users).forEach(t=>{userOpenBy[t]=fired.indexOf(t)>=0; staffOpenBy[t]={oc:false,dc:false}});
+  // your coordinator took a head job: you hire his replacement, as when one leaves any other way
+  // (Grokbot: "takes the head job at Kansas City" and a stranger was simply in his chair)
+  coordMoves.forEach(m=>{ if(isUser(m.from))staffOpenBy[m.from][m.side]=true });
   const openJobs=fired.slice();
   Object.keys(users).forEach(t=>{candidatesBy[t]=userOpenBy[t]?coachCandidates(rng,u.program[t]):null});
 

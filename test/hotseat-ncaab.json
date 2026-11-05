@@ -155,6 +155,11 @@
    "fp": "6af328dff9819eea",
    "from": "6af328dff9819eea",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "6af328dff9819eea",
+   "from": "6af328dff9819eea",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "out": [

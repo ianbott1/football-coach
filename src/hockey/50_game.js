@@ -286,7 +286,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         askGoalie(sd,X,2);
         if(L!==0&&Math.abs(L)<=3)queueCall(sd,intCall(L)) });      // up four after two, it's gone
       if(st.queue.length)return st.next()}
-    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1||L===-2){ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
+    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
       if(st.queue.length)return st.next()}
     if(s>=SEGS){ if(st.h===st.a)overtime(); st.done=true; return fin() }
     const d=segment(s); st.seg++;

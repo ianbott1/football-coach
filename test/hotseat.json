@@ -1,5 +1,5 @@
 {
- "fp": "92f911757268b777",
+ "fp": "d755abb1fc88ff81",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -165,6 +165,11 @@
    "fp": "92f911757268b777",
    "from": "b12379d7f156f86e",
    "note": "Nov 2026 round 20: after a turnover or a missed kick the next drive starts at the spot (it was random). College calibration 54.8 ppg (target ~54), pro 46.5 (NFL ~44-46)."
+  },
+  {
+   "fp": "d755abb1fc88ff81",
+   "from": "92f911757268b777",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "out": [
@@ -178,7 +183,7 @@
       "result": "Won the Citrus Bowl",
       "grade": "B-"
      },
-     "book": "4a89107d465d422c"
+     "book": "c938d3e53ef06af2"
     },
     {
      "team": "Rice",
@@ -187,7 +192,7 @@
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "91eed0d8e040ba48"
+     "book": "dd1665b3830d66d4"
     }
    ]
   },
@@ -201,7 +206,7 @@
       "result": "Eliminated in the first round",
       "grade": "C+"
      },
-     "book": "faeb0b2ee1aae3ed"
+     "book": "92faf4fd17763cf5"
     },
     {
      "team": "Rice",
@@ -210,7 +215,7 @@
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "d025b995082e70fd"
+     "book": "855b0d81aebf2738"
     }
    ]
   },
@@ -220,20 +225,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "15-1",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "10-3",
+      "result": "Won the Citrus Bowl",
+      "grade": "B-"
      },
-     "book": "b52da39131d9ac66"
+     "book": "77c76852b82218de"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "3-9",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "C+"
      },
-     "book": "980100a6c3e3939c"
+     "book": "7d45f14dcc20f80f"
     }
    ]
   }

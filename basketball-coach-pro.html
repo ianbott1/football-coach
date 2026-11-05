@@ -891,7 +891,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="dfa349f";
+<script>const BUILD_ID="2b6512d";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -1590,7 +1590,7 @@ function newUniverse(seed){
 function seatHeat(u,rec,elo,t){
   // expectation is the program's own baseline; heat is falling short of it repeatedly
   const w=rec[t][0], l=rec[t][1], wp=w/Math.max(1,w+l);
-    const shortfall=(u.program[t]-elo[t])/45;
+  const shortfall=(u.program[t]-elo[t])/((typeof LEAGUE!=="undefined"&&LEAGUE.seatSpread)||45);   // hockey's strengths sit closer together: the same shortfall is a bigger miss
   let heat=u.bad[t]*1.4 + Math.max(0,shortfall) + (wp<HOT_SEAT?1.2:0);
   if(u.coach[t]&&u.coach[t].t<=1)heat-=1.6;         // rookies get a grace year
   if(u.coach[t]&&u.coach[t].q>=30)heat-=0.6;
@@ -1723,6 +1723,9 @@ function offseasonCoaching(u,rng,rec,elo,users){
 
   const userOpenBy={}, candidatesBy={}, staffOpenBy={};
   Object.keys(users).forEach(t=>{userOpenBy[t]=fired.indexOf(t)>=0; staffOpenBy[t]={oc:false,dc:false}});
+  // your coordinator took a head job: you hire his replacement, as when one leaves any other way
+  // (Grokbot: "takes the head job at Kansas City" and a stranger was simply in his chair)
+  coordMoves.forEach(m=>{ if(isUser(m.from))staffOpenBy[m.from][m.side]=true });
   const openJobs=fired.slice();
   Object.keys(users).forEach(t=>{candidatesBy[t]=userOpenBy[t]?coachCandidates(rng,u.program[t]):null});
 
@@ -3564,6 +3567,7 @@ class Season{
      postseason only where the sport counts it (college: bowls and the
      tournament are part of the record; the pros and English play-offs aren't) */
   countsInRecord(){ return this.phase==="week"||!!LEAGUE.postRecord }
+  _rs(t){ return LEAGUE.recText?LEAGUE.recText(t,this,this.rec[t]):this.rec[t][0]+"-"+this.rec[t][1] }   // the record a game line shows: hockey keeps its overtime losses, soccer its draws (Grokbot)
   cupWeek(w){ return this.sched.some(g=>g.week===w&&g.cup) }
   _week(part){
     const w=this.step, prev=this.rankMap(), out=[];
@@ -3571,7 +3575,7 @@ class Season{
       this.sched.filter(g=>g.week===w&&g.cup).forEach(g=>{
         const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site,round:g.round});
         r.hrank=prev[g.home];r.arank=prev[g.away];
-        r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1]; r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+        r.hrec=this._rs(g.home); r.arec=this._rs(g.away);
         if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
         out.push(r) });
       this.poll.update(out,this.elo);
@@ -3582,9 +3586,10 @@ class Season{
     this.sched.filter(g=>g.week===w&&!(part==="league"&&g.cup)).forEach(g=>{
       const r=this._resolve(g.home,g.away,g.neutral,g.cup?{conf:false,cup:true,title:g.title,site:g.site,round:g.round}:{conf:g.conf});
       if(g.conf&&!r.draw){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
+      if(g.conf&&!r.draw&&r.ot&&LEAGUE.tracksOT){this.confotl=this.confotl||{}; this.confotl[r.loser]=(this.confotl[r.loser]||0)+1}   // hockey's division record keeps its overtime losses (Grokbot: "14-14")
       r.hrank=prev[g.home];r.arank=prev[g.away];
-      r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];
-      r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+      r.hrec=this._rs(g.home);
+      r.arec=this._rs(g.away);
       if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
       out.push(r);
     });
@@ -5184,13 +5189,13 @@ function offseasonBanner(){
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
     <div class="bsub">${esc(last.champion)} won the NBA title.
-      ${(last.coaching.hires||[]).length} teams hired a new head coach.</div>
+      ${nOf((last.coaching.hires||[]).length,"team")} hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
       const mine=(X.draft||[]).filter(d=>d.team===my), gone=X.boardGone||[];
       if(!mine.length&&!gone.length)return "";
       const goneH=gone.length?`<div class="note">Gone before your pick: ${gone.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to)} at #${x.overall}`).join(", ")}. Your board takes the highest player on it who's still there.</div>`:"";
-      return `<div class="grouphead">Draft &mdash; ${last.year+1}</div>`+goneH+
+      return `<div class="grouphead">Draft &mdash; rookies for the ${last.year+1} season</div>`+goneH+
         mine.map(d=>`<div class="drow">
           <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
           <div class="fmain"><div class="fname">${esc(d.n)}
@@ -5216,7 +5221,7 @@ function offseasonScreen(){
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the NBA title.
-    ${A.hires.length} teams changed coaches.</div>
+    ${nOf(A.hires.length,"team")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
 
@@ -6372,12 +6377,12 @@ function liveRec(team){
 }
 
 function liveConf(team){
-  const w=SEA.confrec[team][0], l=SEA.confrec[team][1];
-  if(reveal!=="half")return [w,l];
+  const w=SEA.confrec[team][0], l=SEA.confrec[team][1], o=(SEA.confotl&&SEA.confotl[team])||0;   // [wins, losses (overtime ones included), overtime losses]
+  if(reveal!=="half")return [w,l,o];
   const g=heroGame();
-  if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l];
-  if(g.draw)return [w,l];
-  return g.winner===team?[w-1,l]:[w,l-1];
+  if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l,o];
+  if(g.draw)return [w,l,o];
+  return g.winner===team?[w-1,l,o]:[w,l-1,g.ot&&LEAGUE.tracksOT?o-1:o];
 }
 
 /* the game the result card shows: on a cup night the cup tie, otherwise
@@ -6769,7 +6774,7 @@ function teamCardHTML(my,rk,co){
     <div class="stats">
       <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
       ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
-        :`<div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
+        :`<div><b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
       <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
@@ -7254,9 +7259,9 @@ function fixturesView(w,last,maxW){
   const yours=gs.filter(mine); if(yours.length)h+=`<div class="grouphead">Yours</div>`+yours.map(line).join("");
   if(LEAGUE.groupFilter){ const g0=grpNow(), sel=g0==="CUP"?CONF[my]:g0, groups=sel==="ALL"?LEAGUE.conf.order:[sel];
     groups.forEach(c=>{ const L=gs.filter(g=>!g.cup&&CONF[g.home]===c); if(L.length)h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${L.length} games</div><div class="${wide?'gamegrid':''}">`+L.map(line).join("")+`</div>` });
-    const cupG=gs.filter(g=>g.cup); if(cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+    const cupG=gs.filter(g=>g.cup); if(cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("");
     return h }
-  return h+`<div class="grouphead">Everyone &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
+  return h+`<div class="grouphead">Everyone &mdash; ${nOf(gs.length,"game")}</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
 }
 function scoresView(){
   if(!SEA.weeks.length&&scoreWk===null)
@@ -7272,12 +7277,12 @@ function scoresView(){
     const cupG=W.games.filter(g=>g.cup), g0=grpNow(), sel=g0==="CUP"&&!cupG.length?CONF[S.myTeam]:g0;
     let h=wkNav(w,last,maxW)+grpTabsHTML(cupG.length>0)+(sel===CONF[S.myTeam]&&w===last?newsBlock():"");
     const line=g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam);
-    if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("")+
+    if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("")+
       `<button class="rewatch seedraw" data-cupview="1">See the whole draw</button>`;
     const groups=sel==="ALL"?LEAGUE.conf.order:[sel];
     groups.forEach(c=>{ const gs=W.games.filter(g=>!g.cup&&CONF[g.home]===c); if(!gs.length)return;
-      h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>` });
-    if(sel==="ALL"&&cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+      h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${nOf(gs.length,"game")}</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>` });
+    if(sel==="ALL"&&cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("");
     return h;
   }
   const marq=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)<=25);
@@ -7286,7 +7291,7 @@ function scoresView(){
   if(w===last)h+=newsBlock();
   if(marq.length)h+=`<div class="grouphead">Ranked teams</div>`+
     marq.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("");
-  if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${rest.length} games</div>`+
+  if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${nOf(rest.length,"game")}</div>`+
     `<div class="${wide?'gamegrid':''}">`+
     rest.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("")+`</div>`;
   return h;
@@ -7482,12 +7487,16 @@ function allTime(t){
     if(h.post&&h.post[t]){pw+=h.post[t][0]; pl+=h.post[t][1]}
     if(h.coaching&&h.coaching.firedList.indexOf(t)>=0)coach++;
   });
+  // the season under way counts too, until it's archived (Grokbot: all-time 0-0 forty games into a first season)
+  let cur=false;
+  if(SEA&&SEA.rec&&SEA.rec[t]&&!S.history.some(h=>h.year===SEA.year)){ const r=(SEA.regRec||SEA.rec)[t]; cur=r[0]+r[1]>0;
+    w+=r[0]; l+=r[1]; d+=(SEA.drw&&SEA.drw[t])||0; o+=(SEA.otl&&SEA.otl[t])||0 }
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
           post:pw+"-"+pl,postGames:pw+pl,coach:coach,now:rk,
           d:d, pct:(w+l+d)?(w/(w+l+d)):null,seasons:S.history.length,
           // hockey: overtime losses, where every season kept them (from Nov 2026)
-          rec:(LEAGUE.tracksOT&&!LEAGUE.draws&&oAll&&S.history.length)?`${w}-${l-o}-${o}`:LEAGUE.draws?`${w}-${d}-${l}`:`${w}-${l}`};
+          rec:(LEAGUE.tracksOT&&!LEAGUE.draws&&oAll&&(S.history.length||cur))?`${w}-${l-o}-${o}`:LEAGUE.draws?`${w}-${d}-${l}`:`${w}-${l}`};
 }
 
 function seasonRowsFor(t){

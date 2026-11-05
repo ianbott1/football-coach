@@ -1,5 +1,5 @@
 {
- "fp": "c16b995b911e48a5",
+ "fp": "533fbfc3ea3b683f",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -165,6 +165,11 @@
    "fp": "c16b995b911e48a5",
    "from": "57a2c62ec19ed0b9",
    "note": "Nov 2026 round 20: after a turnover or a missed kick the next drive starts at the spot (it was random). College calibration 54.8 ppg (target ~54), pro 46.5 (NFL ~44-46)."
+  },
+  {
+   "fp": "533fbfc3ea3b683f",
+   "from": "c16b995b911e48a5",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "out": [
@@ -178,7 +183,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "036576673f72f1dd"
+     "book": "0950383622d78fde"
     },
     {
      "team": "Tennessee",
@@ -187,7 +192,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "8a1049db7c388459"
+     "book": "89e406dc32056fd3"
     }
    ]
   },
@@ -197,20 +202,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
-      "result": "Lost the conference championship",
+      "rec": "12-5",
+      "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "1d80491bc3169954"
+     "book": "38f2e8f640f5f444"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost the Super Bowl",
+      "rec": "11-6",
+      "result": "Lost in the wild card round",
       "grade": "A"
      },
-     "book": "8ab7995f8e448fd7"
+     "book": "b3e6ca6660007af7"
     }
    ]
   },
@@ -220,20 +225,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
+      "rec": "11-6",
       "result": "Lost in the divisional round",
-      "grade": "A-"
+      "grade": "B+"
      },
-     "book": "c18dccf04d1ee73e"
+     "book": "cc5dbfd280450671"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "11-6",
       "result": "Lost in the wild card round",
-      "grade": "A-"
+      "grade": "A"
      },
-     "book": "f4afc9c670663cae"
+     "book": "6e1bbc2fbb0ff767"
     }
    ]
   }

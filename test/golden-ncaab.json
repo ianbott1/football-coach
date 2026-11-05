@@ -1,5 +1,5 @@
 {
- "fp": "cc13f08575caa235",
+ "fp": "e925b9126d050e8e",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -250,6 +250,11 @@
    "fp": "cc13f08575caa235",
    "from": "b70fd7bf73b0220b",
    "note": "Nov 2026 round 17: screen text only (graded calls list every option's replay rate on one scale; reads the card hadn't marked aren't counted; hockey career keeps this season's overtime losses in the offseason). Results identical to db42841 field by field."
+  },
+  {
+   "fp": "e925b9126d050e8e",
+   "from": "cc13f08575caa235",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "result": {
@@ -264,7 +269,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "b404448de933d00c",
     "universe": "4d85a2415a1e71f3",
-    "screens": "686ca8e752a10602"
+    "screens": "4e1a25ded83fca63"
    },
    {
     "year": 2027,
@@ -276,7 +281,7 @@
     "heis": "837e82652981ea58",
     "history": "228db1f60dbdf687",
     "universe": "288b44306a5a8f58",
-    "screens": "d2f77c25533b74f5"
+    "screens": "e9bfc937f7955419"
    }
   ],
   "Coppin State#2024": [
@@ -290,7 +295,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "c8c9c6d4ec862e49",
     "universe": "8d48a97d91873151",
-    "screens": "6071f0f72d4e426b"
+    "screens": "3c93d49d1bf13f94"
    },
    {
     "year": 2027,
@@ -302,7 +307,7 @@
     "heis": "8120dbad929bbaa3",
     "history": "a09136552097899c",
     "universe": "76e76c740640a8f8",
-    "screens": "d3974ea854cfba30"
+    "screens": "71648fc8d3edc2aa"
    }
   ],
   "Gonzaga#777": [
@@ -316,7 +321,7 @@
     "heis": "c94713712b4e6c61",
     "history": "c1d7b51fae57c0da",
     "universe": "be8791e4f8589775",
-    "screens": "628a73ec65e67f52"
+    "screens": "941eb2f8759c45a7"
    },
    {
     "year": 2027,
@@ -328,7 +333,7 @@
     "heis": "97bdbce0e295541c",
     "history": "836c5e2056f43b41",
     "universe": "78e8feb4032cc688",
-    "screens": "35ac26698472c73a"
+    "screens": "a627b14c0f92d8b1"
    }
   ],
   "schedules#60": [

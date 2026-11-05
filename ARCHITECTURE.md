@@ -61,10 +61,11 @@ of playing that leaves marks in the numbers and the commentary; the right
 answer blunts it, the wrong one costs a little.
 
     soccer      approach (press, block, flanks, direct) -> counter, at 25' and
-                55'; the weak flank at half-time; score calls at HT and 75'
+                55'; the weak flank at half-time; score calls at HT (within
+                two) and 70' (within one)
     hockey      system (forecheck, trap, cycle) -> answer, first intermission;
                 your goalie after a bad period (a bad night vs bad luck);
-                push/lock after two; when to pull the goalie
+                push/lock after two; when to pull the goalie (down one only)
     basketball  offence (threes, paint, pick-and-roll) -> defence, end of Q1
                 and the half; half-time, late and last-shot calls
     football    the original calls (fourth downs, two-point tries, the clock)
@@ -90,6 +91,28 @@ verdict agrees with one from 10x the replays ~87% of the time.
   (engine st.log -> played.reads -> readText); a season tally is kept.
 - Measured and dropped as calls (worth nothing either way): soccer
   substitutions, basketball foul trouble (sit your star or not).
+
+What each kind of call is worth (test/call-weight.js, Nov 2026): every call
+in a run of live games, the rest of the game replayed 40 times under each
+option on the same luck; the spread between the best and the worst option's
+win rate. Average points per call:
+
+    soccer      game plan 10.6, reads 7.8, flank 6.4, late 5.5, half 5.1
+    hockey      reads 15.9, game plan 14.5, goalie 8.3, lock 7.3, push 7.3,
+                pull 2.1
+    basketball  college: plan 12.9, reads 10.7, half 4.6, chase 3.3;
+                pro: plan 10.9, reads 9.7, half 5.5, chase 5.0
+    football    college fourth 6.2, half 4.4, protect 3.3; pro fourth 5.0,
+                two-point/half ~3.8, protect 1.9
+
+Acted on (round 21): soccer's late call was 1.6 (82% under 3 points); asked
+at 70' instead of 75', only within a goal, with sharper modes (push
+1.55/1.45, sit 0.50/0.80, win 1.35/1.25; engine calibration unchanged:
+2.72 goals, 28% draws), it is 5.5 and the half-time call went 3.1 -> 5.1.
+Hockey's pull down two and football's protect at 11-14 measured 0.0 and
+are no longer asked. The pull down one stays at ~2.5: the real choice is
+small, and an honest one. Remaining small: college basketball protect (1.5,
+five calls in 30 games), pro football protect (1.9).
 
 Measured value, even sides at home (tests below):
 
@@ -546,9 +569,13 @@ dynasty's first season (generated players have no earlier history).
                       mean ~94 (84 games), sd ~14. Game totals spread like a
                       Poisson at that mean (12+ goals ~2%). Your games by plan
                       (Nov 2026): skate with them 6.7, balanced 6.2, clog it
-                      up 5.2. Skater points: first-line C median ~65 (best
-                      ~100; a top team skating with them gets ~90, as real
-                      Vegas did), first-pair D ~35, second pair ~20.
+                      up 5.2. Skater points: first-line C ~65 at a 60 rating,
+                      ~75 at 63-69; league best 95-112, top goal scorers
+                      45-57 and rated 63+ (round 21: goals x0.78, forwards'
+                      assists x1.12, rating slope 0.45 -> 0.7; a 62 winger
+                      led with 60 goals before), first-pair D ~35-45.
+                      Coaching changes: ~2 the first summer, ~5 after
+                      (seatSpread 30; at 45 it was ~1).
     soccer            2.75 goals/game, ~27% draws, ~41% home wins (league
                       mix); strength predicts the tables (rank corr 0.6-0.9)
 

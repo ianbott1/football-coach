@@ -222,7 +222,7 @@ function offseasonScreen(){
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the Premier League.
-    ${A.hires.length} clubs changed managers.</div>
+    ${nOf(A.hires.length,"club")} changed managers.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
 

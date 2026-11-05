@@ -60,7 +60,7 @@ function offseasonBanner(){
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
     <div class="bsub">${esc(last.champion)} won the national title.
-      ${(last.coaching.hires||[]).length} programs hired a new head coach.</div>
+      ${nOf((last.coaching.hires||[]).length,"program")} hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
       const mine=(last.league.draft||[]).filter(d=>d.team===my);
@@ -120,7 +120,7 @@ function offseasonScreen(){
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the national title.
-    ${A.hires.length} programs changed coaches.</div>
+    ${nOf(A.hires.length,"program")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
 

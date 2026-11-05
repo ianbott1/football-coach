@@ -1,5 +1,5 @@
 {
- "fp": "a94739361ff0cf17",
+ "fp": "957c9195119fec55",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -195,6 +195,11 @@
    "fp": "a94739361ff0cf17",
    "from": "c5ea84f72feb3a63",
    "note": "Nov 2026 round 20: the winning-streak objective is 6 in a row over seasons of 60+ games (5 was met in 24 of 24 hockey seasons). The only change this round touching pro basketball."
+  },
+  {
+   "fp": "957c9195119fec55",
+   "from": "a94739361ff0cf17",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "result": {
@@ -209,7 +214,7 @@
     "heis": "92af6728a86e8a51",
     "history": "240bc20a04c68095",
     "universe": "6752e6df34bbb45a",
-    "screens": "e95d15ee3e1d5a77"
+    "screens": "895364c6ba6c1350"
    },
    {
     "year": 2027,
@@ -221,7 +226,7 @@
     "heis": "f05067ed4a16dbc5",
     "history": "33fea9a4f477b4c2",
     "universe": "f0a1b3ff65fd76cd",
-    "screens": "78162975074a36d7"
+    "screens": "5bc5cfb7236a9c65"
    }
   ],
   "Detroit#777": [
@@ -235,7 +240,7 @@
     "heis": "bd7234824f88d455",
     "history": "89cf828b131144f8",
     "universe": "d17e4fe44c0ece14",
-    "screens": "1b2ee4122d610073"
+    "screens": "4a2bb95c089c4759"
    },
    {
     "year": 2027,
@@ -247,7 +252,7 @@
     "heis": "07c01106df0c9f70",
     "history": "fe4c87aa9446e46e",
     "universe": "9d2b2cac708c3f67",
-    "screens": "d27d1fc0b893aebc"
+    "screens": "b49289a93dc7b7ea"
    }
   ],
   "schedules#60": [

@@ -110,6 +110,11 @@
    "fp": "47637b59c80e5d5f",
    "from": "1af594f376f266c0",
    "note": "Nov 2026 round 20: the winning-streak objective is 6 in a row over seasons of 60+ games."
+  },
+  {
+   "fp": "47637b59c80e5d5f",
+   "from": "47637b59c80e5d5f",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
   }
  ],
  "out": [
