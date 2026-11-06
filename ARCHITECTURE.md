@@ -121,6 +121,23 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 27 (Grokbot, college football on 42f0682):
+- One grading rule in football: a call is graded only when its options'
+  replay win rates spread more than 3 points; closer ones are listed as
+  "Close either way" (every call made is on the card) and never count in
+  the tally. The headline is judged like the bullets, against the best
+  option (q, sp on the impact entry), not against the assistant alone.
+- The post-game line names both numbers: the play's odds ("53% to
+  convert") and the share of replays won ("won the game in 71%"); they
+  were read as the live odds changing.
+- Fourth and 10 or more is left to the assistant (4.7 points a call, 60%
+  under 3).
+- Fired screen: no "best season of your tenure"; a note that the plan is
+  for wherever you go; a move reads "You take over as head coach".
+- Standings show today's poll rank (the weekly snapshot lagged a week).
+- Not reproduced: the coach-name field dropping letters (typed slowly in
+  a browser on a fresh setup: intact).
+
 Round 26 (Muse's deep-play pass, on an older build; each point checked on
 this one):
 - Post-game card: the decision leads, the dice follow ("A good call, though

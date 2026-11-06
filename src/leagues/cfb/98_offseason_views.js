@@ -20,8 +20,8 @@ function offseasonBanner(){
   if(myPoach)news=`<div class="bnews flag"><b>${esc(myPoach.name)} left for
     ${esc(myPoach.to)}.</b> ${myHire?esc(myHire.name)+" takes over.":""}</div>`;
   else if(last.coaching.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
-    ${esc(myHire.name)} is your new head coach.</div>`;
-  else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
+    ${myHire.name===(S.career&&S.career.name)?"You take over as head coach.":esc(myHire.name)+" is your new head coach."}</div>`;
+  else if(myHire)news=myHire.name===(S.career&&S.career.name)?`<div class="bnews"><b>You</b> take over as head coach.</div>`:`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
   const cls=last.league.classes?last.league.classes[my]:null;
   const early=last.league.early?last.league.early[my]:null;
   let rec="";
@@ -85,7 +85,7 @@ function offseasonScreen(){
     <div class="gradebox"><span class="grade">${gr.g}</span>
       <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
-    ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
+    ${(S.off&&S.off.act&&S.off.act.userOpen?[]:miles).map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the national title.
     ${nOf(A.hires.length,"program")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
@@ -148,6 +148,7 @@ function offseasonScreen(){
   });
   const step=(A.userOpen||S.off.poach.length)?1:0;
   const B=P.budget, used=LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
+  if(A.userOpen)h+=`<div class="note">Pick your next job first: the plan, budget and board below are for wherever you go.</div>`;   // it read as the old program's (Grokbot)
   h+=collegePlanHTML(P);
   h+=`<div class="grouphead">${step?"2":"1"}. Budget &mdash; ${S.off.pool} to spend</div>`;
   h+=coachMark("budget","You must spend every point. Facilities compound for years but only if you keep the job; retention and development pay off right away.");

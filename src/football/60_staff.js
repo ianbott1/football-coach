@@ -173,7 +173,7 @@ function staffTake(dp, ctx){
                : (has("punt") ? "punt" : (kick!==null ? "kick" : "go"));
     R.push({who:"bears", pick:"go",
       line:bearYell(kick!==null?"fourthKick":"fourthPunt", seed)});
-    R.push({who:"pearl", pick:mid, line:pearlSay(mid==="kick" ? `${kick}% for three points! I'll take three points.`
+    R.push({who:"pearl", pick:mid, line:pearlSay(mid==="kick" ? [`${kick}% for three points! I'll take three points.`,`Three points! ${kick}%! Kick it!`,`Points are points. ${kick}% says kick.`][seed%3]
       : mid==="go"  ? (diff<0&&((ctx.q||0)>=3||diff<=-8) ? `We're behind. We need points, not a punt. Let's go for it!`   // not at 0-7 in the first quarter (Grokbot)        // from the situation, not one canned line (it said "brilliant all day" on drive 1)
                      : (ctx.q||0)<=4 ? `It's early, and they've earned a shot. ${go}% to convert: let's go!`
                      : go>=60 ? `${go}% to convert? I'll take those odds every time!`
@@ -181,9 +181,9 @@ function staffTake(dp, ctx){
       :               `Nothing lovely on offer here. Give it back and go get it again.`,seed)});
     R.push({who:"capy", pick:safe, line:
       safe==="punt" ? (kick!==null
-          ? `It seems to me ${kick}% is rather more of a wish than a plan. I'd punt.`
+          ? [`It seems to me ${kick}% is rather more of a wish than a plan. I'd punt.`,`${kick}% from there? I'd sooner pin them deep and let the defense earn it.`,`A miss hands them the ball at the spot. I'd punt, if it's all the same.`][seed%3]
           : `Too far to kick, and ${go}% to convert is more risk than I care for. Give it back and defend.`)   // with the number the staff room shows (it said "simply too far" beside 69-72%: Grokbot)
-      : safe==="kick" ? `I do believe ${kick}% is about as comfortable as we're likely to get.`
+      : safe==="kick" ? [`I do believe ${kick}% is about as comfortable as we're likely to get.`,`${kick}% for points, and no turnover on downs to regret. I'll take the kick.`,`A kick at ${kick}%. Points on the board are points nobody can take back.`][seed%3]
       :                 `I'm not enthusiastic, but nothing safer appears to be on offer.`});
   }
   else if(dp.k==="two"){
@@ -203,7 +203,7 @@ function staffTake(dp, ctx){
     R.push({who:"bears", pick:"keep", line:bearYell("protect",seed)});
     R.push({who:"pearl", pick:"keep", line:pearlSay(diff>=13
       ? `We're playing so well! Let's just keep playing.`
-      : `Whatever we did to get here \u2014 more of that, please.`,seed)});
+      : [`Whatever we did to get here \u2014 more of that, please.`,`Don't change a thing. It's working!`,`We're winning! Keep doing the winning thing.`][seed%3],seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
   else if(dp.k==="half"){

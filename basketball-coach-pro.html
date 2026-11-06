@@ -898,7 +898,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="aec5fba";
+<script>const BUILD_ID="c300c18";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -4433,11 +4433,14 @@ function impactHTML(P){
   // the decision first, tonight's dice second (Muse, six testers: "Same defeat either way tonight, but..."
   // led half the cards and taught players that nothing they did mattered). A call within 3 points of his
   // isn't headlined at all: one quiet line says tonight's calls were close
-  const small=Math.abs(c.worth)<=0.03;
+  // where the call was graded against every option, judge it the same way (q: points behind the best option;
+  // sp: best minus worst); elsewhere against the assistant's call
+  const graded=c.q!==undefined;
+  const small=graded?c.sp<=3:Math.abs(c.worth)<=0.03;
   if(small){ const n=C.length;
     return `<div class="impact quiet"><div class="impbody">${n===1?`Your call tonight (${esc(c.h)}: "${esc(c.pick)}") was close either way: over many replays it makes little difference against the assistant's.`
       :`Your ${n} calls against the assistant's tonight were all close either way: over many replays none of them made much difference.`}</div></div>`; }
-  const good=c.worth>0, strong=Math.abs(c.worth)>0.07;
+  const good=graded?c.q>=-3:c.worth>0, strong=graded?(good?c.worth>0.07:c.q<-7):Math.abs(c.worth)>0.07;
   const verdict=good?(strong?"A strong call":"A good call"):(strong?"The wrong call":"Not quite the right call");
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
                     :(better?"though it worked tonight: his wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
@@ -4468,7 +4471,7 @@ function seasonCallsHTML(){
     <div class="cdesc">You: ${esc(x.c.pick)}.${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
-  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"The one that paid"):"")+(worst&&worst!==best?one(worst,"The one that cost you"):""):"");
+  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");
 }
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
@@ -5215,8 +5218,8 @@ function offseasonBanner(){
   if(myPoach)news=`<div class="bnews flag"><b>${esc(myPoach.name)} left for
     ${esc(myPoach.to)}.</b> ${myHire?esc(myHire.name)+" takes over.":""}</div>`;
   else if(last.coaching.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
-    ${esc(myHire.name)} is your new head coach.</div>`;
-  else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
+    ${myHire.name===(S.career&&S.career.name)?"You take over as head coach.":esc(myHire.name)+" is your new head coach."}</div>`;
+  else if(myHire)news=myHire.name===(S.career&&S.career.name)?`<div class="bnews"><b>You</b> take over as head coach.</div>`:`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
   const X=last.league||{};
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
@@ -5279,7 +5282,7 @@ function offseasonScreen(){
     <div class="gradebox"><span class="grade">${gr.g}</span>
       <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
-    ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
+    ${(S.off&&S.off.act&&S.off.act.userOpen?[]:miles).map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the NBA title.
     ${nOf(A.hires.length,"team")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
@@ -5586,6 +5589,7 @@ function finishLive(){
     const V=callVerdicts(live.args,liveSeed(live.step),live.replay,meHome);
     if(V.judged)played.judged=V.judged;
     if(V.close)played.close=V.close;               // the nearest thing to a graded call, for a quiet game's debrief
+    if(V.closes&&V.closes.length)played.closes=V.closes;   // every call made that the replays couldn't separate: listed, not graded (Grokbot: 5 calls, 3 lines)
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
   // what your calls did: the same game with the assistant's call, and its worth over many replays
   if(!live.h2h&&live.args&&(live.replay||[]).length&&typeof callImpact==="function"){
@@ -5593,7 +5597,11 @@ function finishLive(){
     // where a graded call is the same call, its replays decide both lines: two samples of the same
     // question disagreed in words (Grokbot, three reports)
     I.forEach(c=>{ const v=(live.eng.log||[]).find(x=>x.k==="call"&&x.h===c.h&&x.rk&&x.rk[c.pk]!==undefined&&x.rk[c.dk]!==undefined);
-      if(v)c.worth=Math.round((v.rk[c.pk]-v.rk[c.dk])*10)/1000 });
+      if(v){ c.worth=Math.round((v.rk[c.pk]-v.rk[c.dk])*10)/1000;
+        // the headline judges the call as the bullets do, against the best option (Grokbot: "A strong call" above
+        // "As good as any", "A good call" beside a cross)
+        const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])) }
+      else if(played.closes&&played.closes.some(x=>x.h===c.h)){ c.q=0; c.sp=0 } });
     if(I.length){ played.impact=I;
       const L=S.callLedger=S.callLedger||{}, Y=L[SEA.year]=L[SEA.year]||{n:0,worth:0};
       I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000});
@@ -6558,12 +6566,13 @@ function simmedThisSeason(){
 function readsHTML(step){
   if(step===undefined||step===null||typeof readText!=="function"||!S.played)return "";
   const P=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&(p.reads||p.judged)&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)));
-  const R=[].concat(...P.map(p=>p.reads||[]));
+  const R=[].concat(...P.map(p=>p.reads||[])), CL=[].concat(...P.map(p=>p.closes||[]));
+  const closeLines=CL.map(c=>`<div class="read na"><span>&ndash;</span><div><b class="readlab">Close either way:</b> ${esc(c.h)}: you chose "${esc(c.pick)}". ${c.opts.map(o=>`"${esc(o[0])}" won ${o[1]}%`).join(", ")} of replays, too close to call right or wrong.</div></div>`).join("");
   // calls made, none close enough to grade: say so, or the card looks broken
   if(!R.length){ const n=P.reduce((a,p)=>a+(p.judged||0),0);
     const c=P.map(p=>p.close).filter(Boolean)[0];
     const deb=c?`<div class="readnone"><b>${esc(c.h)}</b>: you chose "${esc(c.pick)}". ${c.opts.map(o=>`"${esc(o[0])}" won ${o[1]}%`).join(", ")} of replays: the options were that close, so the game turned on the plays, not the call.</div>`:"";
-    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${deb}</div>`:"" }
+    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${CL.length?closeLines:deb}</div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   // the same verdict twice (a read confirmed at half-time, a goalie kept twice) reads once, counted (Instinct)
   // each line says which call it was (a right game plan beside a wrong read looked like a contradiction,
@@ -6571,7 +6580,7 @@ function readsHTML(step){
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
     return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
   const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
-  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
+  return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
@@ -7370,6 +7379,9 @@ function scoresView(){
 
 function standingsView(){
   const st=SEA.weeks.length?SEA.weeks[SEA.weeks.length-1].standings:SEA.standings(null);
+  // the rank beside a team is today's poll, as on the poll tab (the week's snapshot kept the poll from
+  // before its games: Vanderbilt #12 in the poll, #14 here, Grokbot)
+  const nowRk=reveal==="half"?null:SEA.poll.rankMap();
   let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
   const mine=CONF[S.myTeam];
   let order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
@@ -7389,7 +7401,7 @@ function standingsView(){
     const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}">
       <span class="spos ${mark?'qual':''}">${i+1}</span>
       <span class="dot" style="background:${teamColor(r.team)}"></span>
-      <span class="steam">${LEAGUE.ui.clinchTag?LEAGUE.ui.clinchTag(r.team):""}${rkTag(r.rank)}${TL(r.team)}</span>
+      <span class="steam">${LEAGUE.ui.clinchTag?LEAGUE.ui.clinchTag(r.team):""}${rkTag(nowRk?nowRk[r.team]:r.rank)}${TL(r.team)}</span>
       <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span></div>`;
     h+=`<div class="cbox"><div class="chead">${esc(LEAGUE.conf.names[c])}</div>`;
     if(hasDivisions(c)){

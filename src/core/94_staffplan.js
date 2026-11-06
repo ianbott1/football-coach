@@ -180,11 +180,14 @@ function impactHTML(P){
   // the decision first, tonight's dice second (Muse, six testers: "Same defeat either way tonight, but..."
   // led half the cards and taught players that nothing they did mattered). A call within 3 points of his
   // isn't headlined at all: one quiet line says tonight's calls were close
-  const small=Math.abs(c.worth)<=0.03;
+  // where the call was graded against every option, judge it the same way (q: points behind the best option;
+  // sp: best minus worst); elsewhere against the assistant's call
+  const graded=c.q!==undefined;
+  const small=graded?c.sp<=3:Math.abs(c.worth)<=0.03;
   if(small){ const n=C.length;
     return `<div class="impact quiet"><div class="impbody">${n===1?`Your call tonight (${esc(c.h)}: "${esc(c.pick)}") was close either way: over many replays it makes little difference against the assistant's.`
       :`Your ${n} calls against the assistant's tonight were all close either way: over many replays none of them made much difference.`}</div></div>`; }
-  const good=c.worth>0, strong=Math.abs(c.worth)>0.07;
+  const good=graded?c.q>=-3:c.worth>0, strong=graded?(good?c.worth>0.07:c.q<-7):Math.abs(c.worth)>0.07;
   const verdict=good?(strong?"A strong call":"A good call"):(strong?"The wrong call":"Not quite the right call");
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
                     :(better?"though it worked tonight: his wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
@@ -215,5 +218,5 @@ function seasonCallsHTML(){
     <div class="cdesc">You: ${esc(x.c.pick)}.${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
-  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"The one that paid"):"")+(worst&&worst!==best?one(worst,"The one that cost you"):""):"");
+  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");
 }

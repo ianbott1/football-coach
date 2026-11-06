@@ -1,5 +1,5 @@
 {
- "fp": "5d3e0fc89dcbd753",
+ "fp": "f45d5bd66bac1137",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -230,6 +230,11 @@
    "fp": "5d3e0fc89dcbd753",
    "from": "999795f83e18e683",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "f45d5bd66bac1137",
+   "from": "5d3e0fc89dcbd753",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
   }
  ],
  "result": {
@@ -244,7 +249,7 @@
     "heis": "470a825398f7baf1",
     "history": "ac3d3b90d41d1680",
     "universe": "a41cc729b1f0edee",
-    "screens": "6d162046eced2987"
+    "screens": "9e38ad4e6d96dd9f"
    },
    {
     "year": 2027,
@@ -256,7 +261,7 @@
     "heis": "41d16c5283a889a9",
     "history": "3562b4332c831153",
     "universe": "b2cfd1bd8ae9ec5c",
-    "screens": "42b8d1778c96be09"
+    "screens": "349b2c5137d0e310"
    }
   ],
   "Wrexham#777": [
@@ -270,7 +275,7 @@
     "heis": "3f9bdf37e7cbe703",
     "history": "f32339a8302a6217",
     "universe": "eca5d3a71311a986",
-    "screens": "f1b041883303bc5f"
+    "screens": "49b8d011d29327b3"
    },
    {
     "year": 2027,
@@ -282,7 +287,7 @@
     "heis": "6fc7bce51fae9b7e",
     "history": "6793486507996a23",
     "universe": "4e74e148592b6b24",
-    "screens": "3e3acf7dd876bbc8"
+    "screens": "139ef81f65330fa8"
    }
   ],
   "schedules#60": [

@@ -38,9 +38,11 @@ for(const [f,team] of GAMES){
       // the headline credits or blames the call only when the average agrees
       const c=I.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,I[0]);
       // the decision leads (Muse): "good"/"strong" only for a call that wins more often, "wrong"/"not quite" only for one that loses more
-      if(/^A (good|strong) call/.test(head))ok(c.worth>0.03,`${f}: "${head}" with a call worth ${c.worth}`);
-      if(/^(The wrong call|Not quite the right call)/.test(head))ok(c.worth<-0.03,`${f}: "${head}" with a call worth ${c.worth}`);
-      if(head==='?')ok(Math.abs(c.worth)<=0.03,`${f}: no headline for a call worth ${c.worth}`) }
+      // a call graded against every option (football) is judged as its bullets are: q points behind the best, sp the spread
+      const g=c.q!==undefined;
+      if(/^A (good|strong) call/.test(head))ok(g?(c.q>=-3&&c.sp>3):c.worth>0.03,`${f}: "${head}" with a call worth ${c.worth} (q ${c.q}, spread ${c.sp})`);
+      if(/^(The wrong call|Not quite the right call)/.test(head))ok(g?c.q<-3:c.worth<-0.03,`${f}: "${head}" with a call worth ${c.worth} (q ${c.q})`);
+      if(head==='?')ok(g?c.sp<=3:Math.abs(c.worth)<=0.03,`${f}: no headline for a call worth ${c.worth} (q ${c.q}, spread ${c.sp})`) }
   }
   const Y=A.S.callLedger&&A.S.callLedger[A.SEA.year];
   ok(calls>0,`${f}: no call ever got an impact (${games} live games)`);

@@ -1,5 +1,5 @@
 {
- "fp": "1395cf60d3cff15f",
+ "fp": "3e670cb0fc36f1c6",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -230,6 +230,11 @@
    "fp": "1395cf60d3cff15f",
    "from": "5b0a9c05675802d3",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "3e670cb0fc36f1c6",
+   "from": "1395cf60d3cff15f",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
   }
  ],
  "result": {
@@ -244,7 +249,7 @@
     "heis": "1884646e04c965cf",
     "history": "075e06d7c30b66af",
     "universe": "89973d8cfacd3ffe",
-    "screens": "b1ca59a50efde6b6"
+    "screens": "deb92dbeb71438ad"
    },
    {
     "year": 2027,
@@ -256,7 +261,7 @@
     "heis": "ac6801fa4e52a9cb",
     "history": "d42da527670238a6",
     "universe": "5fdf6a8e849d0fa1",
-    "screens": "9d3610e65c6ee8d0"
+    "screens": "c172fd766278e9f1"
    }
   ],
   "Edmonton#777": [
@@ -270,7 +275,7 @@
     "heis": "ade43a62bf6e0213",
     "history": "e86ca79c165c80b5",
     "universe": "ebbc7e179f6cdd16",
-    "screens": "89e66146ac3a6cc1"
+    "screens": "d597024093bffdf6"
    },
    {
     "year": 2027,
@@ -282,7 +287,7 @@
     "heis": "5c182bc261349631",
     "history": "c88578736f2d767b",
     "universe": "0bc3604885579c57",
-    "screens": "010ffa585a56b24d"
+    "screens": "f9247bc808a230a4"
    }
   ],
   "schedules#60": [

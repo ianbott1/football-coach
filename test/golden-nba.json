@@ -1,5 +1,5 @@
 {
- "fp": "f3c316b80c6df5f5",
+ "fp": "1b1e4e215af2e1fe",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -215,6 +215,11 @@
    "fp": "f3c316b80c6df5f5",
    "from": "f3c316b80c6df5f5",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "1b1e4e215af2e1fe",
+   "from": "f3c316b80c6df5f5",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
   }
  ],
  "result": {
@@ -229,7 +234,7 @@
     "heis": "92af6728a86e8a51",
     "history": "6c1479a3fb85e58b",
     "universe": "6752e6df34bbb45a",
-    "screens": "06ef770d2a82bcf7"
+    "screens": "8a4b713148423921"
    },
    {
     "year": 2027,
@@ -241,7 +246,7 @@
     "heis": "f05067ed4a16dbc5",
     "history": "33fea9a4f477b4c2",
     "universe": "f0a1b3ff65fd76cd",
-    "screens": "b38f4349dfd81fdb"
+    "screens": "d98a536b374d2a78"
    }
   ],
   "Detroit#777": [
@@ -255,7 +260,7 @@
     "heis": "bd7234824f88d455",
     "history": "84e6b4bf52d45bd3",
     "universe": "d17e4fe44c0ece14",
-    "screens": "60ed0bdc1f76e8d4"
+    "screens": "b0e6238309ebeea4"
    },
    {
     "year": 2027,
@@ -267,7 +272,7 @@
     "heis": "07c01106df0c9f70",
     "history": "fe4c87aa9446e46e",
     "universe": "9d2b2cac708c3f67",
-    "screens": "19583a37454523be"
+    "screens": "a0ecc6acc493af6d"
    }
   ],
   "schedules#60": [

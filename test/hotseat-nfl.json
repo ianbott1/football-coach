@@ -1,5 +1,5 @@
 {
- "fp": "f5ac6d16ff3d3e74",
+ "fp": "bb5c0d8143659374",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -190,6 +190,16 @@
    "fp": "f5ac6d16ff3d3e74",
    "from": "f5ac6d16ff3d3e74",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "bb5c0d8143659374",
+   "from": "f5ac6d16ff3d3e74",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "bb5c0d8143659374",
+   "from": "bb5c0d8143659374",
+   "note": "Round 27: graded on the rounded rates the card shows."
   }
  ],
  "out": [
@@ -203,16 +213,16 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "14537660d22c1cc4"
+     "book": "77ac60f4bda2bcae"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "6-11",
+      "rec": "8-9",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B"
      },
-     "book": "41c2a3ea87ddbbdd"
+     "book": "1c086f74d3a0f198"
     }
    ]
   },
@@ -222,20 +232,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
+      "rec": "12-5",
       "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "e214b9e756633b7d"
+     "book": "b82bd0d23a9bf2f2"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
-      "grade": "A"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "B-"
      },
-     "book": "6918826bf0647485"
+     "book": "2b9b52b62c2d187d"
     }
    ]
   },
@@ -245,20 +255,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "14-3",
-      "result": "Lost in the divisional round",
-      "grade": "A"
+      "rec": "12-5",
+      "result": "Lost in the wild card round",
+      "grade": "A-"
      },
-     "book": "e2cb50eaea321187"
+     "book": "0ce604efbdbf78de"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "14-3",
-      "result": "SUPER BOWL CHAMPIONS",
+      "result": "Lost the conference championship",
       "grade": "A+"
      },
-     "book": "cdc7fe1132fcdcb3"
+     "book": "1d57b242b2dd2b86"
     }
    ]
   }

@@ -434,6 +434,26 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
     if(L0)(L0.drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==='foul'&&e.f>((A.LEAGUE.tuning&&A.LEAGUE.tuning.bb&&A.LEAGUE.tuning.bb.foulOut)||5))over++; if(e.k==='out')outs++ })) } }
   ok(!over,`basketball: ${over} fouls past the limit (${outs} foul-outs seen)`) }
 
+/* 65. football: every call made is on the card, a coin flip is never a tick, and the headline agrees with the bullets (Grokbot) */
+{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP.concat(['impactHTML','callKey'])}); A.newDynasty('Arkansas',5,'T'); let i=0, bad=0, made=0, shown=0, flip=0;
+  for(let k=0;k<12&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; const L0=A.live; let n=0; while(A.live&&!A.live.done&&m++<6000){ const q=A.live.ask; if(q){ n++; const o=q.dp.opts; A.answerLive(o[(i++)%o.length][0]) } else A.liveTick() }
+    if(!L0)continue; const P=(A.S.played[A.callKey(L0.step)]||[]).filter(p=>p.team===A.S.myTeam); const p=P[P.length-1]; if(!p)continue;
+    const graded=(p.reads||[]).filter(r=>r.k==='call'), close=(p.closes||[]);
+    made+=p.judged||0; shown+=graded.length+close.length;
+    graded.forEach(r=>{ const v=Object.values(r.rk), sp=Math.max(...v)-Math.min(...v); if(sp<=3)flip++ });
+    const h=A.impactHTML(P), head=(h.match(/imphead">([^<]*)/)||[])[1]||'';
+    (p.impact||[]).forEach(c=>{ if(c.q===undefined)return; const top=Math.abs(c.worth)>=Math.max(...(p.impact||[]).map(x=>Math.abs(x.worth)));
+      if(!top)return; if(/^A (good|strong)/.test(head)&&!(c.q>=-3&&c.sp>3))bad++; if(/^(The wrong|Not quite)/.test(head)&&!(c.q<-3))bad++; if(head&&c.sp<=3)bad++ }) }
+  ok(made>0&&made===shown,`college football: ${made} calls made, ${shown} on the cards`); ok(!flip,`college football: ${flip} coin-flip calls graded`); ok(!bad,`college football: ${bad} headlines that disagree with the bullets`) }
+/* 66. fired: no milestone under "has fired you", and a move reads as yours */
+{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8'); const m={exports:{}}; new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
+  const api=m.exports.load(D('football-coach.html')); api.newDynasty('Arkansas',5,'T',null);
+  for(let y=0;y<2;y++){ let g=0; while(api.SEA.phase!=='done'&&g++<900)api.SEA.advance(); api.openOffseason();
+    if(y===1){ api.S.off.act.userOpen=true; api.S.off.move=null; api.view('team'); const t=strip(global.__nodes.app.innerHTML);
+      ok(/fired you/.test(t)&&!/Best season of your tenure/.test(t),'college football: a milestone under "has fired you"'); api.S.off.move=api.S.off.jobs[0] }
+    for(let c=0;c<4&&api.S.off;c++){ if(api.S.off.act.userOpen&&api.S.off.move===null)api.S.off.move=api.S.myTeam; api.commitOffseason() } }
+  api.view('team'); const t2=strip(global.__nodes.app.innerHTML); ok(!new RegExp(api.S.career.name+' is your new head coach').test(t2),'college football: your own move reads as someone else taking the job') }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

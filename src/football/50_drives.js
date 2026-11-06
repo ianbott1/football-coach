@@ -207,6 +207,9 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
 
 /* A decision offered when a drive dies in makeable territory. */
 function fourthDownCall(stall, togo, offElo, defElo){
+  // fourth and 10 or more: left to the assistant. It moved 4.7 points a call, 60% under 3 (test/call-weight.js,
+  // 276 calls); Grokbot was asked about a fourth and 12 on the opening drive
+  if (togo >= 10) return null;
   const dist = fgDistance(stall);
   const yard = Math.max(1, 100 - stall);
   const gp = Math.round(goOdds(togo, offElo, defElo)*100);

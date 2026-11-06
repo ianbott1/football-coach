@@ -1,5 +1,5 @@
 {
- "fp": "f16e81309c43de39",
+ "fp": "c325966d883e440c",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -195,6 +195,16 @@
    "fp": "f16e81309c43de39",
    "from": "f16e81309c43de39",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "c325966d883e440c",
+   "from": "f16e81309c43de39",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "c325966d883e440c",
+   "from": "c325966d883e440c",
+   "note": "Round 27: graded on the rounded rates the card shows."
   }
  ],
  "out": [
@@ -208,16 +218,16 @@
       "result": "Won the Citrus Bowl",
       "grade": "B"
      },
-     "book": "7e30bbf6ff75a31d"
+     "book": "6fd6cf4fe994e0aa"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "7-6",
-      "result": "Won the Myrtle Beach Bowl",
+      "result": "Lost the Boca Raton Bowl",
       "grade": "A"
      },
-     "book": "c3455bd0bbda8fa5"
+     "book": "d8a244708473ad9b"
     }
    ]
   },
@@ -227,20 +237,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-3",
+      "rec": "12-2",
       "result": "Eliminated in the quarterfinals",
-      "grade": "A-"
+      "grade": "A"
      },
-     "book": "c1b6c9ce61276614"
+     "book": "edb0a7cae6d04c05"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
-      "result": "No bowl game",
-      "grade": "B-"
+      "rec": "6-7",
+      "result": "Lost the Myrtle Beach Bowl",
+      "grade": "A-"
      },
-     "book": "43660ebc88ca2c3b"
+     "book": "ca81ac2c8c2b0361"
     }
    ]
   },
@@ -250,20 +260,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "13-2",
-      "result": "Eliminated in the semifinals",
-      "grade": "A+"
+      "rec": "10-3",
+      "result": "Won the ReliaQuest Bowl",
+      "grade": "B-"
      },
-     "book": "717c0dcff7ed9c2b"
+     "book": "e081e1ce6ad8584c"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the LA Bowl",
-      "grade": "A+"
+      "rec": "2-10",
+      "result": "No bowl game",
+      "grade": "C"
      },
-     "book": "de5aa07d715361f9"
+     "book": "6c8d3181ee6a334d"
     }
    ]
   }
