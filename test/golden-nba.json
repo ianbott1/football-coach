@@ -1,5 +1,5 @@
 {
- "fp": "4c7cd007765755f6",
+ "fp": "81e6d9aec03d64d6",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -235,6 +235,11 @@
    "fp": "4c7cd007765755f6",
    "from": "4c7cd007765755f6",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "81e6d9aec03d64d6",
+   "from": "4c7cd007765755f6",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
   }
  ],
  "result": {
@@ -261,7 +266,7 @@
     "heis": "087e88fc9aafa4be",
     "history": "c5832c35f4721fc7",
     "universe": "0c7deddaace9e943",
-    "screens": "dc88da8dd560e379"
+    "screens": "5ea15a5f24d26fa2"
    }
   ],
   "Detroit#777": [
@@ -275,7 +280,7 @@
     "heis": "bd7234824f88d455",
     "history": "dad66f97499b3f50",
     "universe": "42b6e0f4b5a90ca1",
-    "screens": "dd29d07ecea4e307"
+    "screens": "943bda781a50f5d1"
    },
    {
     "year": 2027,

@@ -1,5 +1,5 @@
 {
- "fp": "90c82f306211716b",
+ "fp": "63a17dde44b07f4f",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -250,6 +250,11 @@
    "fp": "90c82f306211716b",
    "from": "90c82f306211716b",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "63a17dde44b07f4f",
+   "from": "90c82f306211716b",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
   }
  ],
  "result": {
@@ -264,7 +269,7 @@
     "heis": "c2e2e7ee00062fc9",
     "history": "17d4c32f4dd78a6d",
     "universe": "b981f92c61f4710b",
-    "screens": "78ae3525edc55581"
+    "screens": "416b0c35f6d0ac34"
    },
    {
     "year": 2027,
@@ -276,7 +281,7 @@
     "heis": "f6d8bae41ea01921",
     "history": "f70f34aa11d25341",
     "universe": "85c5c2e52c83c1bc",
-    "screens": "97a97a13110a5370"
+    "screens": "0ae4a278ccfc1604"
    }
   ],
   "Wrexham#777": [
@@ -290,7 +295,7 @@
     "heis": "8e3670250269e87c",
     "history": "d3858b4222ddfc08",
     "universe": "8a0a73e24c3621c6",
-    "screens": "13553de208c33de3"
+    "screens": "1638f0df9ae340bd"
    },
    {
     "year": 2027,
@@ -302,7 +307,7 @@
     "heis": "d7aa153f710514bd",
     "history": "4dba379e58cb953f",
     "universe": "e195cc0384e4d46b",
-    "screens": "9f716d3d26573df6"
+    "screens": "b8e2d819537ab87b"
    }
   ],
   "schedules#60": [

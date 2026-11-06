@@ -1,5 +1,5 @@
 {
- "fp": "ba93a735b9a33913",
+ "fp": "7310f677c97be951",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -290,6 +290,11 @@
    "fp": "ba93a735b9a33913",
    "from": "ba93a735b9a33913",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "7310f677c97be951",
+   "from": "ba93a735b9a33913",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
   }
  ],
  "result": {
@@ -356,7 +361,7 @@
     "heis": "c94713712b4e6c61",
     "history": "f1681237b458e683",
     "universe": "7e0dd9bfd94a78d3",
-    "screens": "9c791105b91280d0"
+    "screens": "67d0b14047751edb"
    },
    {
     "year": 2027,

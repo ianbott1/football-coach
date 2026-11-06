@@ -1,5 +1,5 @@
 {
- "fp": "5a60b4b90fcbbb18",
+ "fp": "5916973d77fa2630",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -315,6 +315,11 @@
    "fp": "5a60b4b90fcbbb18",
    "from": "5a60b4b90fcbbb18",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "5916973d77fa2630",
+   "from": "5a60b4b90fcbbb18",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
   }
  ],
  "result": {
@@ -365,7 +370,7 @@
     "heis": "04a7239b76750bd5",
     "history": "4f2a49adc56dbba5",
     "universe": "1316f10ed156c90c",
-    "screens": "02c54fb27f9f91c1"
+    "screens": "082f30da8fbabbfe"
    }
   ],
   "Tennessee#2024": [
@@ -379,7 +384,7 @@
     "heis": "edef69b72a0a3b1c",
     "history": "4d693dacdb53f10a",
     "universe": "476f28e38e312b9c",
-    "screens": "eea36e8da481d34c"
+    "screens": "ac9bd5bf9ba5c61c"
    },
    {
     "year": 2027,
@@ -391,7 +396,7 @@
     "heis": "6bed61f547e6a5aa",
     "history": "96d7772bd8eedd1a",
     "universe": "9d147708bb4ff488",
-    "screens": "807848c0cbdf82dd"
+    "screens": "f1ca45aa0625fd92"
    },
    {
     "year": 2028,
@@ -403,7 +408,7 @@
     "heis": "4ffc3e02b21259c9",
     "history": "6d37ab402bd5c8a9",
     "universe": "f0b31ff8f6a3e101",
-    "screens": "86c0aa4f90249d8f"
+    "screens": "6ec845b26d7b0dc4"
    },
    {
     "year": 2029,
@@ -479,7 +484,7 @@
     "heis": "1abd79befad82495",
     "history": "065d42c063954679",
     "universe": "408da06025ab4677",
-    "screens": "488ce6e91ef1712d"
+    "screens": "85301dbf2835654c"
    },
    {
     "year": 2028,

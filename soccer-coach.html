@@ -898,7 +898,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="820fe8f";
+<script>const BUILD_ID="0de07a8";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -5477,7 +5477,9 @@ function offseasonBanner(){
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
   // ...and how it got there from last season's (Muse: £3.3M to £9.4M with no reconciliation)
   const sum=a=>(a||[]).reduce((t,x)=>t+(x.sal||0),0), why=X.payBefore!=null&&X.payroll!=null?(()=>{ const re=sum(X.resigned), si=sum(X.signed), nl=(X.released||[]).length+(X.retired||[]).length;
-    const parts=[re?`${money2(re)} on ${nOf(X.resigned.length,"new deal")} for your own players`:"",si?`${money2(si)} on ${nOf(X.signed.length,"signing")}`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
+    // what changed, without arithmetic that can't close: the old wages of re-signed and departed players
+    // aren't kept, so the parts never summed (Grokbot: £10.9M against an actual £10.5M)
+    const parts=[re?`${nOf(X.resigned.length,"new deal")} for your own players (${money2(re)} a year now, replacing their old ones)`:"",si?`${nOf(X.signed.length,"signing")} (${money2(si)})`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
     return ` Last season's was ${money2(X.payBefore)}${parts.length?`; since then, ${parts.join(", ")}`:""}.` })():"";
   if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.${why}</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
@@ -6780,9 +6782,9 @@ function heroResult(){
     const T=RANK_TOP;
     if(cur[my]<=T&&pv[my]>T)move=`<div class="hmove up">${LEAGUE.text.entered}${cur[my]}</div>`;
     else if(cur[my]>T&&pv[my]<=T)move=`<div class="hmove dn">${LEAGUE.text.dropped||"Dropped out of the poll"}</div>`;
-    else if(cur[my]<=T&&d>0)move=`<div class="hmove up">&#9650; Up ${d} to #${cur[my]}</div>`;
-    else if(cur[my]<=T&&d<0)move=`<div class="hmove dn">&#9660; Down ${-d} to #${cur[my]}</div>`;
-    else if(cur[my]<=T)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
+    else if(cur[my]<=T&&d>0)move=`<div class="hmove up">&#9650; Up ${d} to #${cur[my]} in ${esc(LEAGUE.text.ranking||"the rankings")}</div>`;
+    else if(cur[my]<=T&&d<0)move=`<div class="hmove dn">&#9660; Down ${-d} to #${cur[my]} in ${esc(LEAGUE.text.ranking||"the rankings")}</div>`;   // what dropped (Grokbot: "Down 3 to 86")
+    else if(cur[my]<=T)move=`<div class="hmove flat">Holding at #${cur[my]} in ${esc(LEAGUE.text.ranking||"the rankings")}</div>`;
   }
   if(LEAGUE.position&&LEAGUE.positionLine)move=`<div class="hmove flat">${LEAGUE.positionLine(my)}</div>`;
   // a playoff game says where the series stands, and a defeat that ends the season says so (Muse: Winnipeg's
@@ -7011,10 +7013,19 @@ function seatBadge(){
   const why=` title="You missed last season's target. Miss this one too and the job goes."`;   // says why (Instinct)
   // the reason is on the badge itself, not only on hover: a touch screen never showed it (Grokbot:
   // "hot seat at 0-0 with no reason")
-  const hot=`<span class="seat hot"${why}>HOT SEAT &middot; missed last year</span>`;
+  // and names the target missed, so a second-round exit isn't read as failure out of nowhere (Grokbot, hockey)
+  const hot=`<span class="seat hot"${why}>HOT SEAT &middot; missed last year${prev&&prev.exp?`'s target (${esc(String(prev.exp).replace(/^Target:\s*/i,"").toLowerCase())})`:""}</span>`;
   if(w+l<4)return prev&&seasonMissed(prev)?hot:`<span class="seat cool">Settled</span>`;
   const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
-  const paceW=Math.round(w/(w+l)*games), g=seasonGrade(paceW,games-paceW,"",exp);
+  const paceW=Math.round(w/(w+l)*games);
+  // a league table grades by position, and a season without a result graded "on course" every week:
+  // "Secure" all season, then fired (Grokbot, QPR). Grade where the table has you now.
+  let g;
+  if(LEAGUE.draws&&typeof SEA.table==="function"&&typeof CONF!=="undefined"&&typeof DIVS!=="undefined"){
+    const d=CONF[my], tb=SEA.table(d), pos=tb.indexOf(my)+1, R=DIVS[d]||{};
+    const res=R.down&&pos>tb.length-R.down?`Relegated (${pos}th)`:`Finished ${pos}th`;
+    g=seasonGrade(w,l,res,exp) }
+  else g=seasonGrade(paceW,games-paceW,"",exp);
   if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
   return `<span class="seat cool">Secure</span>`;
 }

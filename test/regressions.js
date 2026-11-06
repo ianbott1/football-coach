@@ -458,6 +458,17 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
     for(let c=0;c<4&&api.S.off;c++){ if(api.S.off.act.userOpen&&api.S.off.move===null)api.S.off.move=api.S.myTeam; api.commitOffseason() } }
   api.view('team'); const t2=strip(global.__nodes.app.innerHTML); ok(!new RegExp(api.S.career.name+' is your new head coach').test(t2),'college football: your own move reads as someone else taking the job') }
 
+/* 69. soccer: the board warns before it fires you, and a hot seat names the target you missed (Grokbot: Secure to fired) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['seatBadge'])}); A.newDynasty('Queens Park Rangers',3,'T'); let fired=0, lastEnd='', named=0, hot=0;
+  for(let y=0;y<3;y++){ let g=0; while(A.SEA.phase!=='done'&&g++<2000)A.SEA.advance(); lastEnd=strip(A.seatBadge());
+    if(/HOT SEAT/.test(lastEnd)){ hot++; if(/target \(/.test(lastEnd))named++ }
+    A.openOffseason(); if(A.S.off.act.userOpen){ fired++; break } for(let c=0;c<6&&A.S.off;c++)A.commitOffseason() }
+  ok(fired&&!/Secure/.test(lastEnd),`soccer: fired ${fired} times, badge before it read "${lastEnd}"`); ok(hot&&named===hot,`soccer: ${named} of ${hot} hot-seat badges name the target`) }
+/* 70. soccer: the summer payroll line names what changed and never shows sums that can't close (Grokbot: £10.9M against £10.5M) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['offseasonBanner'])}); A.newDynasty('Burnley',9,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<2000)A.SEA.advance();
+  A.openOffseason(); for(let c=0;c<6&&A.S.off;c++)A.commitOffseason(); const t=strip(A.offseasonBanner());
+  ok(/Payroll after the summer:.*Last season's was/.test(t)&&!/other changes|£0\.0M/.test(t),'soccer: the payroll line is missing or shows sums that do not close') }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

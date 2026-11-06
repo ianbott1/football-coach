@@ -1,5 +1,5 @@
 {
- "fp": "9a73d610361ca384",
+ "fp": "def0ccefc1bb331a",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -319,6 +319,11 @@
    "fp": "9a73d610361ca384",
    "from": "9a73d610361ca384",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "def0ccefc1bb331a",
+   "from": "9a73d610361ca384",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
   }
  ],
  "result": {
@@ -357,7 +362,7 @@
     "heis": "75ac82ec63ebc2c9",
     "history": "aeffdf8e7f58342b",
     "universe": "285fd2092d05d639",
-    "screens": "146e588314a6114a"
+    "screens": "1bd82b4720955843"
    },
    {
     "year": 2029,
@@ -369,7 +374,7 @@
     "heis": "40d8a8b83f6227de",
     "history": "5057c2b25254beae",
     "universe": "9e85fa9c19540e9e",
-    "screens": "819b8025f5eab002"
+    "screens": "fd6654657cef8e00"
    }
   ],
   "Rice#2024": [
@@ -419,7 +424,7 @@
     "heis": "7bdcb6abc58aeffc",
     "history": "d943ce3dfa7a6dd7",
     "universe": "44689dc558826c0d",
-    "screens": "2e71626bc93c74a9"
+    "screens": "297effccf726efe8"
    }
   ],
   "Oregon#777": [
@@ -483,7 +488,7 @@
     "heis": "c407e7790dc93d7a",
     "history": "94efe6e8c2fe5a1f",
     "universe": "9129bf8e73367f37",
-    "screens": "38985f2f9059460c"
+    "screens": "f28ff2048144faa4"
    },
    {
     "year": 2028,

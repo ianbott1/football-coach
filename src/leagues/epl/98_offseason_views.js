@@ -162,7 +162,9 @@ function offseasonBanner(){
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
   // ...and how it got there from last season's (Muse: £3.3M to £9.4M with no reconciliation)
   const sum=a=>(a||[]).reduce((t,x)=>t+(x.sal||0),0), why=X.payBefore!=null&&X.payroll!=null?(()=>{ const re=sum(X.resigned), si=sum(X.signed), nl=(X.released||[]).length+(X.retired||[]).length;
-    const parts=[re?`${money2(re)} on ${nOf(X.resigned.length,"new deal")} for your own players`:"",si?`${money2(si)} on ${nOf(X.signed.length,"signing")}`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
+    // what changed, without arithmetic that can't close: the old wages of re-signed and departed players
+    // aren't kept, so the parts never summed (Grokbot: £10.9M against an actual £10.5M)
+    const parts=[re?`${nOf(X.resigned.length,"new deal")} for your own players (${money2(re)} a year now, replacing their old ones)`:"",si?`${nOf(X.signed.length,"signing")} (${money2(si)})`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
     return ` Last season's was ${money2(X.payBefore)}${parts.length?`; since then, ${parts.join(", ")}`:""}.` })():"";
   if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.${why}</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
