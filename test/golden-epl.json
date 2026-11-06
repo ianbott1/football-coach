@@ -1,5 +1,5 @@
 {
- "fp": "999795f83e18e683",
+ "fp": "5d3e0fc89dcbd753",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -225,6 +225,11 @@
    "fp": "999795f83e18e683",
    "from": "999795f83e18e683",
    "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "5d3e0fc89dcbd753",
+   "from": "999795f83e18e683",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {
@@ -237,9 +242,9 @@
     "rec": "fc503783b678b6d5",
     "poll": "cdea666e832ff310",
     "heis": "470a825398f7baf1",
-    "history": "6ec4ec35c0880139",
+    "history": "ac3d3b90d41d1680",
     "universe": "a41cc729b1f0edee",
-    "screens": "a8af3d852568651b"
+    "screens": "6d162046eced2987"
    },
    {
     "year": 2027,
@@ -249,9 +254,9 @@
     "rec": "261246d30d5ef952",
     "poll": "af28cae4cdb6012f",
     "heis": "41d16c5283a889a9",
-    "history": "0e1588aa205c2ad6",
+    "history": "3562b4332c831153",
     "universe": "b2cfd1bd8ae9ec5c",
-    "screens": "4d70558ba235cbb5"
+    "screens": "42b8d1778c96be09"
    }
   ],
   "Wrexham#777": [
@@ -263,9 +268,9 @@
     "rec": "eef8b14a26b992d9",
     "poll": "1367f5eb4cd5d470",
     "heis": "3f9bdf37e7cbe703",
-    "history": "7524fd2166403864",
+    "history": "f32339a8302a6217",
     "universe": "eca5d3a71311a986",
-    "screens": "2c868309d651e98f"
+    "screens": "f1b041883303bc5f"
    },
    {
     "year": 2027,
@@ -275,9 +280,9 @@
     "rec": "22fe0c1f3840a4eb",
     "poll": "10a8f717932cdfea",
     "heis": "6fc7bce51fae9b7e",
-    "history": "815b2b469214fcc2",
+    "history": "6793486507996a23",
     "universe": "4e74e148592b6b24",
-    "screens": "60c64fcd8af618a9"
+    "screens": "3e3acf7dd876bbc8"
    }
   ],
   "schedules#60": [

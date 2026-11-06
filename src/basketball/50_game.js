@@ -262,10 +262,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     for(let i=0;i<Math.max(nn,nA);i++){
       dh+=possession(rng,ehH,mH,st.lines.h,pressA,modH); da+=possession(rng,ehA,mA,st.lines.a,pressH,modA);
       // the stars' fouls: on defense, while on the floor
-      if(s<SEGS){ if(onH&&rng.r()<pStar){H.f++; ev.push({side:"home",k:"foul",f:H.f,u:rng.int(100)})}
-        if(onA&&rng.r()<pStar){A.f++; ev.push({side:"away",k:"foul",f:A.f,u:rng.int(100)})} }
+      // a star who fouls out mid-stretch is gone at once (Muse: an "8th foul" in a six-foul league); the
+      // dice are drawn as before, so nothing else in the game moves
+      if(s<SEGS){ if(onH&&rng.r()<pStar){ const u=rng.int(100); if(!H.out){ H.f++; ev.push({side:"home",k:"foul",f:H.f,u:u}); if(H.f>=BB.foulOut){H.out=true; H.outEv={side:"home",k:"out"}; ev.push(H.outEv)} } }
+        if(onA&&rng.r()<pStar){ const u=rng.int(100); if(!A.out){ A.f++; ev.push({side:"away",k:"foul",f:A.f,u:u}); if(A.f>=BB.foulOut){A.out=true; A.outEv={side:"away",k:"out"}; ev.push(A.outEv)} } } }
     }
-    [["home",H],["away",A]].forEach(([sd,X])=>{ if(!X.out&&X.f>=BB.foulOut){X.out=true; ev.push({side:sd,k:"out",u:rng.int(100)})} });
+    [["home",H],["away",A]].forEach(([sd,X])=>{ if(X.outEv&&X.outEv.u===undefined){ X.outEv.u=rng.int(100); delete X.outEv }   // drawn where it always was
+      else if(!X.out&&X.f>=BB.foulOut){X.out=true; ev.push({side:sd,k:"out",u:rng.int(100)})} });
     // the last minute of regulation: whoever is behind by one to eight fouls
     // to stop the clock, sending the leader to the line and getting the ball
     // back, up to four times (extra possessions: the game lasts longer)

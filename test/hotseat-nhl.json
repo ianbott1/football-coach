@@ -1,5 +1,5 @@
 {
- "fp": "ccf1c89fd43f025e",
+ "fp": "289d2a3412d76a18",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -160,6 +160,11 @@
    "fp": "ccf1c89fd43f025e",
    "from": "ccf1c89fd43f025e",
    "note": "Round 25: hockey finish reworded (\"rebound\" is a basketball word to the screens test)."
+  },
+  {
+   "fp": "289d2a3412d76a18",
+   "from": "ccf1c89fd43f025e",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "out": [
@@ -173,7 +178,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "95f0f8771136730e"
+     "book": "37ac395741f06434"
     },
     {
      "team": "Montreal",
@@ -182,7 +187,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "dd9d4834f127cd90"
+     "book": "9cf411402bcc4dcb"
     }
    ]
   },
@@ -196,7 +201,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "02b8851560d93b52"
+     "book": "bb48b83c6766a5ed"
     },
     {
      "team": "Montreal",
@@ -205,7 +210,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "0f3e900bf35f7818"
+     "book": "ed37c46996bdb4b2"
     }
    ]
   },
@@ -219,7 +224,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "ffd993af68a00d1a"
+     "book": "87cc54a578a1bbb5"
     },
     {
      "team": "Montreal",
@@ -228,7 +233,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "189d06b8d5c3abc8"
+     "book": "6414e3cde70bae6e"
     }
    ]
   }

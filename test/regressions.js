@@ -280,7 +280,7 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
 /* 35. every call against the assistant is weighed on the result card, not just the biggest */
 { const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP});
   const P=[{mine:110,theirs:104,impact:[{h:'Up 11 at the half',pick:'Slow it down',def:'Keep going',worth:-0.01,cf:{mine:108,theirs:104}},{h:'Down 6, late',pick:'Full-court press',def:'Stay in the half court',worth:0.06,cf:{mine:104,theirs:106}}]}];
-  ok(/Your other call against his[^<]*Up 11 at the half/.test(A.impactHTML(P)),'pro basketball: a second call against the assistant gets no verdict'); }
+  ok(/1 other call was close either way/.test(A.impactHTML(P)),'pro basketball: a second call against the assistant gets no verdict'); }   // a close one is counted, not headlined (Muse)
 /* 36. the Bears don't repeat a line in one game */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T');
   A.live={g:{}}; A.live.ask={dp:{h:'Half-time'},q:9}; const a=A.bearYell('push',15); A.live.ask={dp:{h:'Late'},q:15}; const b=A.bearYell('push',21);
@@ -312,7 +312,7 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
 /* 41. a result card's headline never contradicts its replay */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:71,theirs:67,impact:[{h:'Half-time',pick:'Trap the ball handler',def:'Pack the paint',worth:-0.07,cf:{mine:61,theirs:70}}]}];
-  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/won this one tonight, though over many replays it loses more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
+  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/Not quite the right call, though it worked tonight: his wins more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
 /* ---- Muse round 9 / Ian (Nov 2026) ---- */
 /* 42. a game's drives are its own: Rewatch showed another game (a 12-31 loss replayed as a 27-20 win) */
 for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,7,'T'); let bad=0,n=0;
@@ -362,7 +362,10 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 /* 52. a same-result headline carries the replay verdict when it's big */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.07,cf:{mine:50,theirs:68}}]}];
-  ok(/Same defeat either way tonight, but over many replays your call wins more often/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays'); }
+  ok(/A good call, though tonight's dice gave the same result either way/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays');
+  // and a call within 3 points of the assistant's gets no headline at all, one quiet line (Muse: "little difference" taught that nothing matters)
+  const Q=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.01,cf:{mine:53,theirs:66}}]}], q=A.impactHTML(Q);
+  ok(!/imphead/.test(q)&&/close either way/.test(strip(q)),'college basketball: a close call still headlined'); }
 /* 53. football asks enough, and not in decided games (it asked 2 a game, some at 37-17) */
 for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Denver']]){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,8,'T');
   const per=[], close=[]; let decided=0;
@@ -424,6 +427,12 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
 /* 63. the draft board marks who's likely there at your pick */
 { const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP}); A.newDynasty('Detroit',4,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance(); A.openOffseason();
   const t=strip(A.LEAGUE.ui.offseasonScreen()); ok(/likely gone/.test(t)&&/likely there/.test(t)&&/picks? before yours/.test(t),'NBA: the draft board has no availability marks') }
+
+/* 64. a star never picks up more fouls than the league allows (Muse: an "8th foul" in a six-foul league) */
+{ let over=0,outs=0; for(const f of ['basketball-coach-pro.html','basketball-coach.html']){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(A.NAMES[3],6,'T');
+  for(let k=0;k<25&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; const L0=A.live; while(A.live&&!A.live.done&&m++<6000){ if(A.live.ask)A.answerLive(A.live.ask.dp.opts[0][0]); else A.liveTick() }
+    if(L0)(L0.drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==='foul'&&e.f>((A.LEAGUE.tuning&&A.LEAGUE.tuning.bb&&A.LEAGUE.tuning.bb.foulOut)||5))over++; if(e.k==='out')outs++ })) } }
+  ok(!over,`basketball: ${over} fouls past the limit (${outs} foul-outs seen)`) }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

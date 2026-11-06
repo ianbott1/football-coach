@@ -1,5 +1,5 @@
 {
- "fp": "f92766f4f24dcc71",
+ "fp": "d995a68cdde6d2f9",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -285,6 +285,11 @@
    "fp": "f92766f4f24dcc71",
    "from": "56bfeec7eb1b3a87",
    "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "d995a68cdde6d2f9",
+   "from": "f92766f4f24dcc71",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {
@@ -423,7 +428,7 @@
     "heis": "eed4ff8658851763",
     "history": "f52c55acec44b5ec",
     "universe": "98be5092045a7c05",
-    "screens": "b55c377541934324"
+    "screens": "73f21d3cf5c418c6"
    }
   ],
   "NY Giants#31337": [

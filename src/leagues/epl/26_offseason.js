@@ -294,6 +294,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   const rep={resigned:{},released:{},retired:{},grew:{},drafted:{},signed:{},filled:{}};
   NAMES.forEach(t=>{rep.resigned[t]=[];rep.released[t]=[];rep.retired[t]=[];rep.grew[t]=[];
     rep.drafted[t]=[];rep.signed[t]=[];rep.filled[t]=[]});
+  rep.payBefore={}; NAMES.forEach(t=>rep.payBefore[t]=payroll(u.roster[t]||[]));   // last season's wage bill, for the summer's arithmetic (Muse)
   const pool=[];                                        // free agents
   const risers=[],fallers=[];
   u.alumni=u.alumni||{};
@@ -551,6 +552,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[], payroll:C.cap?C.cap[my]:null,
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     transfers:(C.transfers&&C.transfers[my])||[], kittyLeft:(C.kittyLeft&&C.kittyLeft[my])||0,
+    payBefore:C.payBefore?C.payBefore[my]:null,
     payroll:off.cap?off.cap[my]:null,
     // every club's season in words, frozen before promotion and relegation moved anyone
     res:(typeof SEA!=="undefined"&&SEA)?Object.fromEntries(NAMES.map(t=>[t,SEA.seasonResult(t)])):null,

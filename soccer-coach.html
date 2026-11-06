@@ -554,6 +554,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .restab tr.mine td{color:var(--sodium)}
 .stkeyin{font-size:11px;color:var(--muted)}
 .readnone{font-size:12.5px;color:var(--muted);line-height:1.45;padding:4px 0}
+.impact.quiet{border-left-color:var(--line);background:none}
 .impact{margin-top:10px;padding:10px 12px;border-left:3px solid var(--sodium);background:rgba(244,166,58,.07);border-radius:4px}.imphead{font-family:var(--cond);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.02em}.impbody{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:3px}
 .introskip{background:none;border:1px solid var(--line);color:var(--muted);
  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
@@ -897,7 +898,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="f4e0a09";
+<script>const BUILD_ID="a9d6578";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -2156,6 +2157,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   const rep={resigned:{},released:{},retired:{},grew:{},drafted:{},signed:{},filled:{}};
   NAMES.forEach(t=>{rep.resigned[t]=[];rep.released[t]=[];rep.retired[t]=[];rep.grew[t]=[];
     rep.drafted[t]=[];rep.signed[t]=[];rep.filled[t]=[]});
+  rep.payBefore={}; NAMES.forEach(t=>rep.payBefore[t]=payroll(u.roster[t]||[]));   // last season's wage bill, for the summer's arithmetic (Muse)
   const pool=[];                                        // free agents
   const risers=[],fallers=[];
   u.alumni=u.alumni||{};
@@ -2413,6 +2415,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[], payroll:C.cap?C.cap[my]:null,
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     transfers:(C.transfers&&C.transfers[my])||[], kittyLeft:(C.kittyLeft&&C.kittyLeft[my])||0,
+    payBefore:C.payBefore?C.payBefore[my]:null,
     payroll:off.cap?off.cap[my]:null,
     // every club's season in words, frozen before promotion and relegation moved anyone
     res:(typeof SEA!=="undefined"&&SEA)?Object.fromEntries(NAMES.map(t=>[t,SEA.seasonResult(t)])):null,
@@ -4617,27 +4620,26 @@ function impactHTML(P){
   const avg=avgOf(c.worth);
   // every other call you made against his, weighed the same way: the ones left out (a slow-down, the
   // press) read as if they were never weighed (Instinct)
-  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"").replace(/^made little/,"little")}`);
   // one replay is one roll of the dice: the headline credits the call only when
   // the average over many replays agrees (measured: on its own, the same-luck
   // replay disagreed with the average about as often as not)
   const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
-  // the headline says both things, tonight's dice and the average, and never lets them contradict
-  // ("You won, but not because of the call" above a replay that lost without it: Grokbot)
+  // the decision first, tonight's dice second (Muse, six testers: "Same defeat either way tonight, but..."
+  // led half the cards and taught players that nothing they did mattered). A call within 3 points of his
+  // isn't headlined at all: one quiet line says tonight's calls were close
   const small=Math.abs(c.worth)<=0.03;
-  const head=better?(c.worth>0.03?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
-        :small?`Your call won this one tonight; over many replays it makes little difference.`
-        :`Your call won this one tonight, though over many replays it loses more often.`)
-    :worse?(c.worth<-0.03?`That call cost you this one.`
-        :small?`The call went against you tonight; over many replays it makes little difference.`
-        :`Unlucky: the call was sound.`)
-    :c.cf.mine===p.mine&&c.cf.theirs===p.theirs?(small?`Same score either way tonight: on these dice the call changed nothing.`
-        :`Same score either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`)
-    :small?`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight.`
-    // the headline and the replays agree in one sentence ("Same defeat either way" above "wins clearly more often": Grokbot)
-    :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`;
+  if(small){ const n=C.length;
+    return `<div class="impact quiet"><div class="impbody">${n===1?`Your call tonight (${esc(c.h)}: "${esc(c.pick)}") was close either way: over many replays it makes little difference against the assistant's.`
+      :`Your ${n} calls against the assistant's tonight were all close either way: over many replays none of them made much difference.`}</div></div>`; }
+  const good=c.worth>0, strong=Math.abs(c.worth)>0.07;
+  const verdict=good?(strong?"A strong call":"A good call"):(strong?"The wrong call":"Not quite the right call");
+  const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
+                    :(better?"though it worked tonight: his wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
+  const head=`${verdict}, ${tonight}`;
+  const rest=C.filter(x=>x!==c&&Math.abs(x.worth)>0.03).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"")}`);
+  const close=C.filter(x=>x!==c&&Math.abs(x.worth)<=0.03).length;
   return `<div class="impact"><div class="imphead">${head}</div>
-    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<=0.03||worse&&c.worth>=-0.03?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
+    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". Over many replays from that moment, your call ${avg}. With tonight's luck and the assistant's call ("${esc(c.def)}"), the game ends ${altLine}.</div>${rest.length||close?`<div class="impbody imprest">${rest.length?`Your other ${rest.length===1?"call that mattered":rest.length+" calls that mattered"}: ${rest.join("; ")}.`:""}${close?` ${nOf(close,"other call")} ${close===1?"was":"were"} close either way.`:""}</div>`:""}</div>`;
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){
@@ -5466,7 +5468,11 @@ function offseasonBanner(){
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
-  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
+  // ...and how it got there from last season's (Muse: £3.3M to £9.4M with no reconciliation)
+  const sum=a=>(a||[]).reduce((t,x)=>t+(x.sal||0),0), why=X.payBefore!=null&&X.payroll!=null?(()=>{ const re=sum(X.resigned), si=sum(X.signed), nl=(X.released||[]).length+(X.retired||[]).length;
+    const parts=[re?`${money2(re)} on ${nOf(X.resigned.length,"new deal")} for your own players`:"",si?`${money2(si)} on ${nOf(X.signed.length,"signing")}`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
+    return ` Last season's was ${money2(X.payBefore)}${parts.length?`; since then, ${parts.join(", ")}`:""}.` })():"";
+  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.${why}</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
     rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
@@ -6760,6 +6766,16 @@ function heroResult(){
     else if(cur[my]<=T)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
   }
   if(LEAGUE.position&&LEAGUE.positionLine)move=`<div class="hmove flat">${LEAGUE.positionLine(my)}</div>`;
+  // a playoff game says where the series stands, and a defeat that ends the season says so (Muse: Winnipeg's
+  // Game 6 elimination looked exactly like a November game)
+  if(flash&&flash.type==="post"&&!g.draw&&!half){
+    const X=SEA.series&&g.series&&(SEA.series[g.series]||[]).find(x=>x.games&&x.games.indexOf(g)>=0);
+    if(X){ const a=X.w[my]||0, b=X.w[opp]||0;
+      move=X.winner===my?(SEA.champion===my?`<div class="hmove up">Champions: won the series ${a}&ndash;${b}</div>`:`<div class="hmove up">Series won ${a}&ndash;${b}: through to the next round</div>`)
+        :X.winner?`<div class="hmove dn">Season over: out of the playoffs, ${a}&ndash;${b} in the series</div>`
+        :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
+    else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):SEA.phase==="done"))move=`<div class="hmove dn">Season over</div>`;
+    else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
     move=`<div class="hmove ${won?'up':'dn'}">${won?(nx?"Into the "+esc(nx.name):"FA CUP WINNERS"):"Out of the FA Cup"}</div><button class="rewatch seedraw" data-cupview="1">See the draw</button>` }
   if(half)return `<div class="hero half">

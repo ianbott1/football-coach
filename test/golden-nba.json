@@ -210,6 +210,11 @@
    "fp": "f3c316b80c6df5f5",
    "from": "7393e4008ef0209d",
    "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "f3c316b80c6df5f5",
+   "from": "f3c316b80c6df5f5",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {

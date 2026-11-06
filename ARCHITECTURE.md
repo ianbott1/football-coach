@@ -121,6 +121,26 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 26 (Muse's deep-play pass, on an older build; each point checked on
+this one):
+- Post-game card: the decision leads, the dice follow ("A good call, though
+  tonight's dice gave the same result either way"). A call within 3 points
+  of the assistant's gets no headline, one quiet line. Before, "Same defeat
+  either way tonight, but..." led about half the cards.
+- Playoff results say where the series stands, and a defeat that ends the
+  season says so ("Season over: out of the playoffs, 3-4 in the series").
+- A star who fouls out collects no more fouls (an "8th foul" in a six-foul
+  league); the dice are drawn as before, so no result moved.
+- Hockey's draft says when a board name went earlier (as football and
+  basketball did); soccer's payroll line shows last season's figure and
+  what changed it; a college basketball portal target says who he'd push
+  down (it can be the recruit you just signed).
+- Not reproduced on this build, measured: soccer's flank panel points at
+  the weak side 27 of 30 times and a right pick was never graded worse;
+  "fits" free-agent targets signed 35 of 35 (hockey, NBA, pro football);
+  the NBA's best team scores 120 and allows 112 live (Muse saw 139/132);
+  the NBA half-time "keep" was best in 4 of 30 second reads, not always.
+
 Round 25 (Grokbot's list):
 - Phone width (390px), checked in a browser for sideways scroll and clipped
   text on every tab of all six: BASKETBALL ran off the title screen

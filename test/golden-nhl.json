@@ -1,5 +1,5 @@
 {
- "fp": "5b0a9c05675802d3",
+ "fp": "1395cf60d3cff15f",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -225,6 +225,11 @@
    "fp": "5b0a9c05675802d3",
    "from": "5b0a9c05675802d3",
    "note": "Round 25: hockey finish reworded (\"rebound\" is a basketball word to the screens test)."
+  },
+  {
+   "fp": "1395cf60d3cff15f",
+   "from": "5b0a9c05675802d3",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {
@@ -237,7 +242,7 @@
     "rec": "2770016e5cbd2399",
     "poll": "bc8fe85dc7243c48",
     "heis": "1884646e04c965cf",
-    "history": "4e5c07a34986c477",
+    "history": "075e06d7c30b66af",
     "universe": "89973d8cfacd3ffe",
     "screens": "b1ca59a50efde6b6"
    },
@@ -249,7 +254,7 @@
     "rec": "1554eac94d94d2bb",
     "poll": "e6c330d1da3730f1",
     "heis": "ac6801fa4e52a9cb",
-    "history": "2c631d59553e4dfa",
+    "history": "d42da527670238a6",
     "universe": "5fdf6a8e849d0fa1",
     "screens": "9d3610e65c6ee8d0"
    }
@@ -263,9 +268,9 @@
     "rec": "f8b507393ab8b036",
     "poll": "6f621d6cf426f6ec",
     "heis": "ade43a62bf6e0213",
-    "history": "8f99473c90180cf8",
+    "history": "e86ca79c165c80b5",
     "universe": "ebbc7e179f6cdd16",
-    "screens": "3c433418fed4a1d2"
+    "screens": "89e66146ac3a6cc1"
    },
    {
     "year": 2027,
@@ -275,7 +280,7 @@
     "rec": "483595cb7ad308e8",
     "poll": "83139b47e7e06207",
     "heis": "5c182bc261349631",
-    "history": "26db365e5de348bc",
+    "history": "c88578736f2d767b",
     "universe": "0bc3604885579c57",
     "screens": "010ffa585a56b24d"
    }

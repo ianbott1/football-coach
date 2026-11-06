@@ -1088,6 +1088,16 @@ function heroResult(){
     else if(cur[my]<=T)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
   }
   if(LEAGUE.position&&LEAGUE.positionLine)move=`<div class="hmove flat">${LEAGUE.positionLine(my)}</div>`;
+  // a playoff game says where the series stands, and a defeat that ends the season says so (Muse: Winnipeg's
+  // Game 6 elimination looked exactly like a November game)
+  if(flash&&flash.type==="post"&&!g.draw&&!half){
+    const X=SEA.series&&g.series&&(SEA.series[g.series]||[]).find(x=>x.games&&x.games.indexOf(g)>=0);
+    if(X){ const a=X.w[my]||0, b=X.w[opp]||0;
+      move=X.winner===my?(SEA.champion===my?`<div class="hmove up">Champions: won the series ${a}&ndash;${b}</div>`:`<div class="hmove up">Series won ${a}&ndash;${b}: through to the next round</div>`)
+        :X.winner?`<div class="hmove dn">Season over: out of the playoffs, ${a}&ndash;${b} in the series</div>`
+        :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
+    else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):SEA.phase==="done"))move=`<div class="hmove dn">Season over</div>`;
+    else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
     move=`<div class="hmove ${won?'up':'dn'}">${won?(nx?"Into the "+esc(nx.name):"FA CUP WINNERS"):"Out of the FA Cup"}</div><button class="rewatch seedraw" data-cupview="1">See the draw</button>` }
   if(half)return `<div class="hero half">

@@ -1,5 +1,5 @@
 {
- "fp": "300da27ba624ebac",
+ "fp": "9392be5be01bf8f2",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -165,6 +165,11 @@
    "fp": "300da27ba624ebac",
    "from": "300da27ba624ebac",
    "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "9392be5be01bf8f2",
+   "from": "300da27ba624ebac",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "out": [
@@ -178,7 +183,7 @@
       "result": "Finished 4th in the Premier League",
       "grade": "B-"
      },
-     "book": "a2f81135595c7f7a"
+     "book": "57a97bc8d95cd44e"
     },
     {
      "team": "Tottenham Hotspur",
@@ -187,7 +192,7 @@
       "result": "Finished 10th in the Premier League",
       "grade": "B-"
      },
-     "book": "a8601298738858fa"
+     "book": "dda2b9205a225502"
     }
    ]
   },
@@ -201,7 +206,7 @@
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "c2568a0895d91060"
+     "book": "845c2e3119a4bdc5"
     },
     {
      "team": "Tottenham Hotspur",
@@ -210,7 +215,7 @@
       "result": "Finished 16th in the Premier League",
       "grade": "C"
      },
-     "book": "ab7cef654a24acae"
+     "book": "7ae03a7f36bc4a3b"
     }
    ]
   },
@@ -224,7 +229,7 @@
       "result": "PREMIER LEAGUE CHAMPIONS",
       "grade": "A+"
      },
-     "book": "17fddfc79d818735"
+     "book": "b10054a4816a8b6c"
     },
     {
      "team": "Tottenham Hotspur",
@@ -233,7 +238,7 @@
       "result": "Finished 17th in the Premier League",
       "grade": "C-"
      },
-     "book": "8783ad73ae9c6c33"
+     "book": "6cfaaa064ca84534"
     }
    ]
   }

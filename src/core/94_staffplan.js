@@ -173,27 +173,26 @@ function impactHTML(P){
   const avg=avgOf(c.worth);
   // every other call you made against his, weighed the same way: the ones left out (a slow-down, the
   // press) read as if they were never weighed (Instinct)
-  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"").replace(/^made little/,"little")}`);
   // one replay is one roll of the dice: the headline credits the call only when
   // the average over many replays agrees (measured: on its own, the same-luck
   // replay disagreed with the average about as often as not)
   const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
-  // the headline says both things, tonight's dice and the average, and never lets them contradict
-  // ("You won, but not because of the call" above a replay that lost without it: Grokbot)
+  // the decision first, tonight's dice second (Muse, six testers: "Same defeat either way tonight, but..."
+  // led half the cards and taught players that nothing they did mattered). A call within 3 points of his
+  // isn't headlined at all: one quiet line says tonight's calls were close
   const small=Math.abs(c.worth)<=0.03;
-  const head=better?(c.worth>0.03?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
-        :small?`Your call won this one tonight; over many replays it makes little difference.`
-        :`Your call won this one tonight, though over many replays it loses more often.`)
-    :worse?(c.worth<-0.03?`That call cost you this one.`
-        :small?`The call went against you tonight; over many replays it makes little difference.`
-        :`Unlucky: the call was sound.`)
-    :c.cf.mine===p.mine&&c.cf.theirs===p.theirs?(small?`Same score either way tonight: on these dice the call changed nothing.`
-        :`Same score either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`)
-    :small?`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight.`
-    // the headline and the replays agree in one sentence ("Same defeat either way" above "wins clearly more often": Grokbot)
-    :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`;
+  if(small){ const n=C.length;
+    return `<div class="impact quiet"><div class="impbody">${n===1?`Your call tonight (${esc(c.h)}: "${esc(c.pick)}") was close either way: over many replays it makes little difference against the assistant's.`
+      :`Your ${n} calls against the assistant's tonight were all close either way: over many replays none of them made much difference.`}</div></div>`; }
+  const good=c.worth>0, strong=Math.abs(c.worth)>0.07;
+  const verdict=good?(strong?"A strong call":"A good call"):(strong?"The wrong call":"Not quite the right call");
+  const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
+                    :(better?"though it worked tonight: his wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
+  const head=`${verdict}, ${tonight}`;
+  const rest=C.filter(x=>x!==c&&Math.abs(x.worth)>0.03).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"")}`);
+  const close=C.filter(x=>x!==c&&Math.abs(x.worth)<=0.03).length;
   return `<div class="impact"><div class="imphead">${head}</div>
-    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<=0.03||worse&&c.worth>=-0.03?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
+    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". Over many replays from that moment, your call ${avg}. With tonight's luck and the assistant's call ("${esc(c.def)}"), the game ends ${altLine}.</div>${rest.length||close?`<div class="impbody imprest">${rest.length?`Your other ${rest.length===1?"call that mattered":rest.length+" calls that mattered"}: ${rest.join("; ")}.`:""}${close?` ${nOf(close,"other call")} ${close===1?"was":"were"} close either way.`:""}</div>`:""}</div>`;
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){
