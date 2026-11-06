@@ -83,12 +83,15 @@ function nflTargetsHTML(P,room){
       // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
       // with the gap in money, so "won't fit" says why (Grokbot: it read "won't fit" with $10.4M of room)
       if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=`after ~$${ROOKIE_ROOM}M kept for the draft class`;
-        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`won't fit as things stand: ${gap} short ${kept}`;
-        if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
+        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`probably won't fit: ${gap} short ${kept} (about half like this still sign: the class and the fill-ins vary)`;
+        if(seenPos[x.p])fit="you already want a "+x.p+": the second signs only if there is still room at "+x.p+" after the first"; seenPos[x.p]=1}
+      // the list you choose from says it too, against what's left after the players you've already added
+      // (Grokbot: "fits" only showed after adding)
+      else { const l2=left-x.ask; fit=l2>=2?"would fit":l2>=-3?"close":"probably wouldn't fit"; }
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
-        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${on?" &middot; "+fit:""}</div></div>
+        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${fit?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free agents you want</div>`;
   if(mine.length)h+=`<div class="note">Prices are this summer's asks plus about 10%; a player who improves over the summer can ask more by the time free agency opens.</div>`;
@@ -139,9 +142,9 @@ function offseasonBanner(){
     mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-Pro team.</div>`:"";
   const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
-    cm.map(m=>esc(m.name)+" ("+m.side.toUpperCase()+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
+    cm.map(m=>esc(m.name)+" ("+((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
   const cmo=(last.coaching.coordMoves||[]).filter(m=>m.from!==my).slice(0,2).map(m=>
-    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${m.side.toUpperCase()},
+    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())},
       hired as head coach at ${esc(m.to)}.</div>`).join("");
   const bigMoves=(last.coaching.poached||[]).slice(0,3).map(p=>
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
@@ -153,7 +156,8 @@ function offseasonBanner(){
     ${(function(){
       const mine=(X.draft||[]).filter(d=>d.team===my), gone=X.boardGone||[];
       if(!mine.length&&!gone.length)return "";
-      const goneH=gone.length?`<div class="note">Gone before your pick: ${gone.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to)} at #${x.overall}`).join(", ")}. Your board takes the highest player on it who's still there.</div>`:"";
+      // each with the pick of yours he went before (Grokbot: one listed "before your pick" went after your first, before your second)
+      const goneH=gone.length?`<div class="note">Taken before you could get them: ${gone.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to)} at #${x.overall}${x.yours?`, before your #${x.yours}`:""}`).join(", ")}. Your board takes the highest player on it who's still there.</div>`:"";
       return `<div class="grouphead">Draft &mdash; rookies for the ${last.year+1} season</div>`+goneH+
         mine.map(d=>`<div class="drow">
           <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>

@@ -280,7 +280,7 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
 /* 35. every call against the assistant is weighed on the result card, not just the biggest */
 { const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP});
   const P=[{mine:110,theirs:104,impact:[{h:'Up 11 at the half',pick:'Slow it down',def:'Keep going',worth:-0.01,cf:{mine:108,theirs:104}},{h:'Down 6, late',pick:'Full-court press',def:'Stay in the half court',worth:0.06,cf:{mine:104,theirs:106}}]}];
-  ok(/1 other call was close either way/.test(A.impactHTML(P)),'pro basketball: a second call against the assistant gets no verdict'); }   // a close one is counted, not headlined (Muse)
+  ok(/Up 11 at the half[^;<]*: close either way/.test(strip(A.impactHTML(P))),'pro basketball: a second call against the assistant gets no verdict'); }   // every other call is named, with a sized word (round 28)   // a close one is counted, not headlined (Muse)
 /* 36. the Bears don't repeat a line in one game */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T');
   A.live={g:{}}; A.live.ask={dp:{h:'Half-time'},q:9}; const a=A.bearYell('push',15); A.live.ask={dp:{h:'Late'},q:15}; const b=A.bearYell('push',21);
@@ -312,7 +312,7 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
 /* 41. a result card's headline never contradicts its replay */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:71,theirs:67,impact:[{h:'Half-time',pick:'Trap the ball handler',def:'Pack the paint',worth:-0.07,cf:{mine:61,theirs:70}}]}];
-  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/Not quite the right call, though it worked tonight: his wins more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
+  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/a little worse than the assistant's/.test(h)&&!/won this one tonight/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
 /* ---- Muse round 9 / Ian (Nov 2026) ---- */
 /* 42. a game's drives are its own: Rewatch showed another game (a 12-31 loss replayed as a 27-20 win) */
 for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,7,'T'); let bad=0,n=0;
@@ -362,7 +362,10 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 /* 52. a same-result headline carries the replay verdict when it's big */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.07,cf:{mine:50,theirs:68}}]}];
-  ok(/A good call, though tonight's dice gave the same result either way/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays');
+  // round 28: 7 points is "a little", a plain line with the gap named, no headline (Muse: headlines for marginal calls)
+  { const h=strip(A.impactHTML(P)); ok(!/imphead/.test(A.impactHTML(P))&&/a little better than the assistant's/.test(h),'college basketball: same-result headline ignores the replays') }
+  const P2=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.12,cf:{mine:50,theirs:68}}]}];
+  ok(/A strong call, though tonight's dice gave the same result either way/.test(strip(A.impactHTML(P2))),'college basketball: a clear call gets no headline');
   // and a call within 3 points of the assistant's gets no headline at all, one quiet line (Muse: "little difference" taught that nothing matters)
   const Q=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.01,cf:{mine:53,theirs:66}}]}], q=A.impactHTML(Q);
   ok(!/imphead/.test(q)&&/close either way/.test(strip(q)),'college basketball: a close call still headlined'); }
@@ -435,15 +438,16 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   ok(!over,`basketball: ${over} fouls past the limit (${outs} foul-outs seen)`) }
 
 /* 65. football: every call made is on the card, a coin flip is never a tick, and the headline agrees with the bullets (Grokbot) */
-{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP.concat(['impactHTML','callKey'])}); A.newDynasty('Arkansas',5,'T'); let i=0, bad=0, made=0, shown=0, flip=0;
+{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP.concat(['impactHTML','callKey','callClarity'])}); A.newDynasty('Arkansas',5,'T'); let i=0, bad=0, made=0, shown=0, flip=0;
   for(let k=0;k<12&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; const L0=A.live; let n=0; while(A.live&&!A.live.done&&m++<6000){ const q=A.live.ask; if(q){ n++; const o=q.dp.opts; A.answerLive(o[(i++)%o.length][0]) } else A.liveTick() }
     if(!L0)continue; const P=(A.S.played[A.callKey(L0.step)]||[]).filter(p=>p.team===A.S.myTeam); const p=P[P.length-1]; if(!p)continue;
     const graded=(p.reads||[]).filter(r=>r.k==='call'), close=(p.closes||[]);
     made+=p.judged||0; shown+=graded.length+close.length;
     graded.forEach(r=>{ const v=Object.values(r.rk), sp=Math.max(...v)-Math.min(...v); if(sp<=3)flip++ });
     const h=A.impactHTML(P), head=(h.match(/imphead">([^<]*)/)||[])[1]||'';
-    (p.impact||[]).forEach(c=>{ if(c.q===undefined)return; const top=Math.abs(c.worth)>=Math.max(...(p.impact||[]).map(x=>Math.abs(x.worth)));
-      if(!top)return; if(/^A (good|strong)/.test(head)&&!(c.q>=-3&&c.sp>3))bad++; if(/^(The wrong|Not quite)/.test(head)&&!(c.q<-3))bad++; if(head&&c.sp<=3)bad++ }) }
+    // round 28: a headline only for a clear call (callClarity beyond 7), good or wrong as its sign says
+    const ks=(p.impact||[]).map(c=>A.callClarity(c)), best=ks.reduce((a,k)=>Math.abs(k)>Math.abs(a)?k:a,0);
+    if(head){ if(Math.abs(best)<=7)bad++; else if(/^A strong/.test(head)!==(best>0))bad++ } }
   ok(made>0&&made===shown,`college football: ${made} calls made, ${shown} on the cards`); ok(!flip,`college football: ${flip} coin-flip calls graded`); ok(!bad,`college football: ${bad} headlines that disagree with the bullets`) }
 /* 66. fired: no milestone under "has fired you", and a move reads as yours */
 { const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8'); const m={exports:{}}; new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);

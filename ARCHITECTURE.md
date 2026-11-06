@@ -121,6 +121,41 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 28 (Instinct round 9; Muse; Grokbot on pro football, college and pro
+basketball):
+- Hockey: a played overtime game lost its overtime (the engine scores it
+  inside its finish; the live loop never got that stretch: 7 of 7 OT games
+  recorded 3-3 style). syncTail copies the engine's last stretch across.
+- A knockout defeat ends the season on the card, with the round
+  ("Season over: beaten in the AFC Wild Card").
+- Post-game card: the headline comes first and only for a clear call
+  (beyond 7 points: callClarity, graded calls against the best option);
+  a read crossed on the same call is never headlined as good; the single
+  same-luck replay score is gone (a 117-85 win "became a 103-116 loss");
+  every other call is listed with a sized word.
+- Labels that overstate: same-position targets ("the second signs only if
+  there is still room"), "probably won't fit" (about half still sign),
+  draft "taken before you could get them ... before your #N", "would fit"
+  on every free-agent row, portal push-out on every row, the assistant's
+  hand-off worded as such, "mostly gone" only under 15%, a missed target
+  after the season as a result, "level with them" at level records.
+- Second reads list your current setup once ("keep"), basketball and soccer.
+- Pro football power ranking: strength moves 35% of the way each week, the
+  record weighs in over 10 games (moves weeks 1-6 were 6.5..2.7 places a
+  team, now 4.7..1.9).
+- Football late calls say roughly how long is left; pre-game odds say
+  "to win, before the game"; a "Since last season" line before week one
+  (who left, who arrived); the result card lands on the team page.
+- Phone: bar buttons ignore taps for 0.7 s after a game ends; How to play
+  and Help open at the top.
+- Basketball commentary never names an injured player; prospects in one
+  class never share a name; coaching-move lines use each sport's staff
+  label (no "OC" in basketball); Dynasty stop rows run to this season.
+- Not reproduced, measured: NBA live scoring 117.8/114.7 through the real
+  buttons in a browser (Muse saw 145/140 on a save carried across builds:
+  asked for the backup file); animation speed after a call (kept); the
+  coach name losing letters (typed at 0.9 s a key: intact).
+
 Round 27 (Grokbot, college football on 42f0682):
 - One grading rule in football: a call is graded only when its options'
   replay win rates spread more than 3 points; closer ones are listed as

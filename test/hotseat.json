@@ -205,6 +205,21 @@
    "fp": "c325966d883e440c",
    "from": "c325966d883e440c",
    "note": "Round 27: graded on the rounded rates the card shows."
+  },
+  {
+   "fp": "c325966d883e440c",
+   "from": "c325966d883e440c",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "c325966d883e440c",
+   "from": "c325966d883e440c",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "c325966d883e440c",
+   "from": "c325966d883e440c",
+   "note": "Round 28: a stop's years extend only once the season has a game."
   }
  ],
  "out": [

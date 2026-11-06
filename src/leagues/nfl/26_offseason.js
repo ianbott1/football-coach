@@ -121,6 +121,8 @@ function nflDraftClass(u,team){
   if(!u.draftClass||u.draftClass.year!==u.year){
     const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
     const list=nflProspects(rng,7*32); list.forEach((p,i)=>p.pid=i);
+    // no two prospects in one class share a name (two "Tanner Mbeki"s: Grokbot); renamed by hash, so no draw moves
+    { const seen=new Set(); list.forEach(p=>{ let n=p.n, k=0; while(seen.has(n)&&k<LAST.length){ n=n.split(" ")[0]+" "+LAST[(strHash(p.n+"|"+p.pid)+k)%LAST.length]; k++ } p.n=n; seen.add(n) }) }
     u.draftClass={year:u.year,list:list};
   }
   const C=u.draftClass;
@@ -321,7 +323,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const p=prospects[bi]; p.taken=true;
     // a player on someone's board taken before their turn: say so, or the board looks ignored
     Object.keys(U_CH).forEach(ut2=>{ const B=(U_CH[ut2]&&U_CH[ut2].board)||[];
-      if(ut2!==t&&B.indexOf(p.pid)>=0){ rep.boardGone=rep.boardGone||{}; (rep.boardGone[ut2]=rep.boardGone[ut2]||[]).push({n:p.n,p:p.p,to:t,overall:overall}) } });
+      if(ut2!==t&&B.indexOf(p.pid)>=0){ rep.boardGone=rep.boardGone||{}; (rep.boardGone[ut2]=rep.boardGone[ut2]||[]).push({n:p.n,p:p.p,to:t,overall:overall,yours:(()=>{ const i=order.indexOf(ut2); if(i<0)return null; for(let r2=1;r2<=7;r2++){ const o=(r2-1)*32+i+1; if(o>overall)return o } return null })()}) } });
     p.draft={round:rd,pick:k+1,overall:overall,team:t,year:u.year};
     p.k={sal:rookieSal(overall),yrs:4}; p.joined=u.year+1; p.drafted=true;
     const g=nflGain(R,p);

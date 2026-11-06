@@ -67,7 +67,9 @@ function objStatus(o,my){
   if(o.k==="above"){ const pos=t=>LEAGUE.position?LEAGUE.position(t):standRank(t);
     const a=pos(my), b=pos(o.opp);
     if(done)return a<b?{s:"met",t:"Done"}:{s:"miss",t:"Missed"};
-    return {s:"on",t:a<b?"Ahead of them now":"Behind them now"} }
+    // level on record (0-0 in week one sorts one of you first): say level, not behind (Grokbot)
+    const rw=t=>SEA.rec&&SEA.rec[t]?SEA.rec[t][0]-SEA.rec[t][1]:0, lvl=rw(my)===rw(o.opp)&&!LEAGUE.position;
+    return {s:"on",t:lvl?"Level with them now":a<b?"Ahead of them now":"Behind them now"} }
   if(o.k==="top"){ const pos=LEAGUE.position?LEAGUE.position(my):standRank(my);
     if(done)return pos===1?{s:"met",t:"Done"}:{s:"miss",t:"Missed"};
     return {s:"on",t:pos===1?"Top now":"Not top now"} }

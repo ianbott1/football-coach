@@ -1,5 +1,5 @@
 {
- "fp": "3e670cb0fc36f1c6",
+ "fp": "cf602ad42e73be7d",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -235,6 +235,21 @@
    "fp": "3e670cb0fc36f1c6",
    "from": "1395cf60d3cff15f",
    "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "28c2871c888ab0a0",
+   "from": "3e670cb0fc36f1c6",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "cf602ad42e73be7d",
+   "from": "28c2871c888ab0a0",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "cf602ad42e73be7d",
+   "from": "cf602ad42e73be7d",
+   "note": "Round 28: a stop's years extend only once the season has a game."
   }
  ],
  "result": {
@@ -249,7 +264,7 @@
     "heis": "1884646e04c965cf",
     "history": "075e06d7c30b66af",
     "universe": "89973d8cfacd3ffe",
-    "screens": "deb92dbeb71438ad"
+    "screens": "241987c9c5371502"
    },
    {
     "year": 2027,
@@ -261,7 +276,7 @@
     "heis": "ac6801fa4e52a9cb",
     "history": "d42da527670238a6",
     "universe": "5fdf6a8e849d0fa1",
-    "screens": "c172fd766278e9f1"
+    "screens": "5fb0a91f3ed427df"
    }
   ],
   "Edmonton#777": [
@@ -274,8 +289,8 @@
     "poll": "6f621d6cf426f6ec",
     "heis": "ade43a62bf6e0213",
     "history": "e86ca79c165c80b5",
-    "universe": "ebbc7e179f6cdd16",
-    "screens": "d597024093bffdf6"
+    "universe": "c0fe615fa3ba8013",
+    "screens": "3a88f4e35e37165e"
    },
    {
     "year": 2027,
@@ -286,8 +301,8 @@
     "poll": "83139b47e7e06207",
     "heis": "5c182bc261349631",
     "history": "c88578736f2d767b",
-    "universe": "0bc3604885579c57",
-    "screens": "f9247bc808a230a4"
+    "universe": "e17dfd98a94fc184",
+    "screens": "521f021656a67d51"
    }
   ],
   "schedules#60": [

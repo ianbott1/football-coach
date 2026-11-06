@@ -282,7 +282,8 @@ function readTextBase(e){
     :`They were ${APPROACH[e.truth].l}: the answer was "${COUNTERS[APPROACH[e.truth].counter].l}".`;
   if(e.k==="prep")return e.right?`Your preparation was right: they came out ${APPROACH[e.truth].l}.`
     :`You set up for the wrong thing: they came out ${APPROACH[e.truth].l}.`;
-  if(e.k==="flank")return e.right?`Right flank: their ${e.truth}-back was the weak one.`
+  // "Right flank:" meant "correct" and read as the right-hand flank, naming the wrong side beside a tick (Muse)
+  if(e.k==="flank")return e.right?`You read it correctly: the ${e.truth} flank was their weak one.`
     :`Their weak side was the ${e.truth} flank, not the ${e.pick}.`;
   return "";
 }

@@ -11,7 +11,7 @@ let bad=0,checks=0; const ok=(c,m)=>{checks++; if(!c){bad++; if(bad<=15)console.
 const GAMES=[['football-coach.html','Alabama'],['football-coach-pro.html','Denver'],['basketball-coach.html','Duke'],
   ['basketball-coach-pro.html','Orlando'],['hockey-coach-pro.html','Vegas'],['soccer-coach.html','Arsenal']];
 for(const [f,team] of GAMES){
-  const A=load({file:D(f),expose:['S','SEA','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','callImpact','impactHTML','ledgerLine','makeLiveGame','RNG','liveSeed','callKey','impactDefault']});
+  const A=load({file:D(f),expose:['S','SEA','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','callImpact','impactHTML','ledgerLine','makeLiveGame','RNG','liveSeed','callKey','impactDefault','callClarity']});
   A.newDynasty(team,8,'T'); A.S.watchMode='all';
   const heads={}; let games=0, calls=0, ms=0, msMax=0, agree=0, sumWorth=0, sumDiff=0, reproduced=0;
   for(let k=0;k<14&&A.SEA.phase==='week';k++){
@@ -39,10 +39,11 @@ for(const [f,team] of GAMES){
       const c=I.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,I[0]);
       // the decision leads (Muse): "good"/"strong" only for a call that wins more often, "wrong"/"not quite" only for one that loses more
       // a call graded against every option (football) is judged as its bullets are: q points behind the best, sp the spread
-      const g=c.q!==undefined;
-      if(/^A (good|strong) call/.test(head))ok(g?(c.q>=-3&&c.sp>3):c.worth>0.03,`${f}: "${head}" with a call worth ${c.worth} (q ${c.q}, spread ${c.sp})`);
-      if(/^(The wrong call|Not quite the right call)/.test(head))ok(g?c.q<-3:c.worth<-0.03,`${f}: "${head}" with a call worth ${c.worth} (q ${c.q})`);
-      if(head==='?')ok(g?c.sp<=3:Math.abs(c.worth)<=0.03,`${f}: no headline for a call worth ${c.worth} (q ${c.q}, spread ${c.sp})`) }
+      // round 28: the clearest call leads, and only beyond 7 points (callClarity) does it get a headline
+      const ks=I.map(x=>A.callClarity(x)), k=ks.reduce((a,x)=>Math.abs(x)>Math.abs(a)?x:a,0), crossed=(P.reads||[]).some(r=>r.right===false);
+      if(/^A strong call/.test(head))ok(k>7,`${f}: "${head}" with the clearest call at ${k}`);
+      if(/^The wrong call/.test(head))ok(k<-7,`${f}: "${head}" with the clearest call at ${k}`);
+      if(head==='?')ok(Math.abs(k)<=7||(k>0&&crossed),`${f}: no headline with the clearest call at ${k}`) }
   }
   const Y=A.S.callLedger&&A.S.callLedger[A.SEA.year];
   ok(calls>0,`${f}: no call ever got an impact (${games} live games)`);

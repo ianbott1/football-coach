@@ -6,10 +6,13 @@
 /* ---- names ---- */
 function bbPlayer(team,i,u){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
-  const p=R[i], b=R[BK(i)]; const pick=(b&&(u%10)<2)?b:p; return pick?pick.n:null;
+  // an injured player isn't on the floor (Grokbot: "OUT 4 more weeks", and he hit threes)
+  const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
+  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)]; const pick=(b&&(u%10)<2)||!p?b:p; return pick?pick.n:null;
 }
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
-  let best=0; for(let i=1;i<5;i++)if(R[i]&&R[best]&&R[i].r>R[best].r)best=i; return R[best]?R[best].n:"his star" }
+  const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
+  let best=-1; for(let i=0;i<5;i++)if(R[i]&&!hurt.has(i)&&(best<0||R[i].r>R[best].r))best=i; return best>=0?R[best].n:"his star" }
 const surname=n=>n?n.split(" ").slice(-1)[0]:"";
 const ordw=n=>["","first","second","third","fourth","fifth","sixth"][n]||n+"th";
 const BB_CUE={

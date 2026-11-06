@@ -1,5 +1,5 @@
 {
- "fp": "8680f0d6054837db",
+ "fp": "9a73d610361ca384",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -304,6 +304,21 @@
    "fp": "8680f0d6054837db",
    "from": "b42fa66421ffbb10",
    "note": "Round 27: graded on the rounded rates the card shows."
+  },
+  {
+   "fp": "e2dd66b401fcc3ef",
+   "from": "8680f0d6054837db",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "9a73d610361ca384",
+   "from": "e2dd66b401fcc3ef",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "9a73d610361ca384",
+   "from": "9a73d610361ca384",
+   "note": "Round 28: a stop's years extend only once the season has a game."
   }
  ],
  "result": {
@@ -318,7 +333,7 @@
     "heis": "b16fc23e36f51661",
     "history": "1459d4a8cb778661",
     "universe": "0ec4ea15858bab2c",
-    "screens": "fc2b3c8016b4637e"
+    "screens": "14546a4cbb20051e"
    },
    {
     "year": 2027,
@@ -330,7 +345,7 @@
     "heis": "ea2576ca68b5bb59",
     "history": "f5b6a18613a4db55",
     "universe": "99077913a3e8927b",
-    "screens": "cbc6b056f62ca46f"
+    "screens": "5f531a366a793e51"
    },
    {
     "year": 2028,
@@ -342,7 +357,7 @@
     "heis": "75ac82ec63ebc2c9",
     "history": "aeffdf8e7f58342b",
     "universe": "285fd2092d05d639",
-    "screens": "77afc79eae39b86f"
+    "screens": "146e588314a6114a"
    },
    {
     "year": 2029,
@@ -354,7 +369,7 @@
     "heis": "40d8a8b83f6227de",
     "history": "5057c2b25254beae",
     "universe": "9e85fa9c19540e9e",
-    "screens": "d754c53fdb33edc9"
+    "screens": "819b8025f5eab002"
    }
   ],
   "Rice#2024": [
@@ -368,7 +383,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "fda2310ee12ebd95",
     "universe": "dc01e05deac1336b",
-    "screens": "6e00dbd515dbfe19"
+    "screens": "66ade6a1fd85beb2"
    },
    {
     "year": 2027,
@@ -380,7 +395,7 @@
     "heis": "00c30658a131e69b",
     "history": "1366becdf24a1373",
     "universe": "e5ad96887551b511",
-    "screens": "212b1597133ca48c"
+    "screens": "0cb4c04e1dc70208"
    },
    {
     "year": 2028,
@@ -392,7 +407,7 @@
     "heis": "199badc9945a6fb1",
     "history": "e2ec1240de3bf2a6",
     "universe": "69cfcb2cac6f6097",
-    "screens": "24586427b327259c"
+    "screens": "3d99973062148547"
    },
    {
     "year": 2029,
@@ -404,7 +419,7 @@
     "heis": "7bdcb6abc58aeffc",
     "history": "d943ce3dfa7a6dd7",
     "universe": "44689dc558826c0d",
-    "screens": "f93fc440f4d263fc"
+    "screens": "2e71626bc93c74a9"
    }
   ],
   "Oregon#777": [
@@ -418,7 +433,7 @@
     "heis": "8262a1c51666f45f",
     "history": "f0156481cf34731a",
     "universe": "90a5328a03bb2a2e",
-    "screens": "c82ad9de3e7fc731"
+    "screens": "11b2aa8ccecd15ad"
    },
    {
     "year": 2027,
@@ -430,7 +445,7 @@
     "heis": "6e07ec24e943201a",
     "history": "eba5d05126b1da37",
     "universe": "1db894b0870a76bb",
-    "screens": "21649232f0cfb91c"
+    "screens": "cff536fc0ee242ef"
    },
    {
     "year": 2028,
@@ -442,7 +457,7 @@
     "heis": "7edb9087b97ad609",
     "history": "c7459853b530b5c6",
     "universe": "37128ca4534c000a",
-    "screens": "1a8c71544f47f73f"
+    "screens": "baa8dc9689fbcb44"
    }
   ],
   "Kent State#31337": [
@@ -456,7 +471,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "339ec898a5a5b972",
     "universe": "ffb4b7f7593759fa",
-    "screens": "047ec77fce89b29c"
+    "screens": "98e5db3a94bba493"
    },
    {
     "year": 2027,
@@ -468,7 +483,7 @@
     "heis": "c407e7790dc93d7a",
     "history": "94efe6e8c2fe5a1f",
     "universe": "9129bf8e73367f37",
-    "screens": "5dbaa145dddca72f"
+    "screens": "38985f2f9059460c"
    },
    {
     "year": 2028,
@@ -480,7 +495,7 @@
     "heis": "8afb54588e2a90ba",
     "history": "4c868b5f0965ef30",
     "universe": "674a60bfff0bfc8c",
-    "screens": "8e6c99fc505218d2"
+    "screens": "c1d2b9dec49f3f91"
    }
   ],
   "schedules#60": [

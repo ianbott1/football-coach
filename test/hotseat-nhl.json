@@ -1,5 +1,5 @@
 {
- "fp": "289d2a3412d76a18",
+ "fp": "c706ee73ece8aaa9",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -170,6 +170,21 @@
    "fp": "289d2a3412d76a18",
    "from": "289d2a3412d76a18",
    "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "289d2a3412d76a18",
+   "from": "289d2a3412d76a18",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "c706ee73ece8aaa9",
+   "from": "289d2a3412d76a18",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "c706ee73ece8aaa9",
+   "from": "c706ee73ece8aaa9",
+   "note": "Round 28: a stop's years extend only once the season has a game."
   }
  ],
  "out": [
@@ -229,7 +244,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "87cc54a578a1bbb5"
+     "book": "2f87ef5cbfb23940"
     },
     {
      "team": "Montreal",
@@ -238,7 +253,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "6414e3cde70bae6e"
+     "book": "74620d2184c5b456"
     }
    ]
   }

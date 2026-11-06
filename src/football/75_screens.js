@@ -267,7 +267,7 @@ function readText(e){
     // the play's own odds beside the game's: "53% to convert" live and "won 71%" after are different numbers
     // (Grokbot read them as the live odds changing)
     const list=ks.slice().sort((a,b)=>e.rk[b]-e.rk[a]).map(k=>`"${lab(k)}"${e.odds&&e.odds[k]?` (${e.odds[k]})`:""} ${e.rk[k]}%`).join(", ");
-    const gone=top<35, safe=Math.min(...ks.map(k=>e.rk[k]))>65;
+    const gone=top<15, safe=Math.min(...ks.map(k=>e.rk[k]))>85;   // "mostly gone" at 30% and 26% in a 0-0 first quarter told the player nothing (Instinct)
     const d=mine-top, w=gapWord(d), best=ks.filter(k=>e.rk[k]===top&&k!==e.pk).map(lab)[0];
     // "mostly gone/won either way" only when the options were within the margin: with a real gap it said
     // that above a footer saying one "wins a little more often"

@@ -1,5 +1,5 @@
 {
- "fp": "bb5c0d8143659374",
+ "fp": "c3ccb30add1b5890",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -200,6 +200,21 @@
    "fp": "bb5c0d8143659374",
    "from": "bb5c0d8143659374",
    "note": "Round 27: graded on the rounded rates the card shows."
+  },
+  {
+   "fp": "38e9d19fda0f66d4",
+   "from": "bb5c0d8143659374",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "c3ccb30add1b5890",
+   "from": "38e9d19fda0f66d4",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "c3ccb30add1b5890",
+   "from": "c3ccb30add1b5890",
+   "note": "Round 28: a stop's years extend only once the season has a game."
   }
  ],
  "out": [
@@ -213,7 +228,7 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "77ac60f4bda2bcae"
+     "book": "b09bcde1a8bdc48d"
     },
     {
      "team": "Tennessee",
@@ -222,7 +237,7 @@
       "result": "Losing season",
       "grade": "B"
      },
-     "book": "1c086f74d3a0f198"
+     "book": "3134bb24aeb5ce4e"
     }
    ]
   },
@@ -236,7 +251,7 @@
       "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "b82bd0d23a9bf2f2"
+     "book": "bd2baf85c3c53177"
     },
     {
      "team": "Tennessee",
@@ -245,7 +260,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "2b9b52b62c2d187d"
+     "book": "748682ceb65adcb6"
     }
    ]
   },
@@ -259,7 +274,7 @@
       "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "0ce604efbdbf78de"
+     "book": "d5b941b81ea2a371"
     },
     {
      "team": "Tennessee",
@@ -268,7 +283,7 @@
       "result": "Lost the conference championship",
       "grade": "A+"
      },
-     "book": "1d57b242b2dd2b86"
+     "book": "a5a0b3acd94d338b"
     }
    ]
   }
