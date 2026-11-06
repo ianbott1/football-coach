@@ -121,6 +121,22 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 29 (Grokbot's remaining reports: pro basketball, hockey, soccer):
+- Soccer's job security is graded by table position, not a win pace that
+  ignores draws: Queens Park Rangers (seed 3) read Secure all season and
+  were then fired; now "Under pressure" through the year before and "HOT
+  SEAT" in the season that ends in the sack.
+- A hot-seat badge names the target missed ("HOT SEAT · missed last year's
+  target (mid-table)"), in all six games.
+- Rank moves say where to ("Down 5 to #11 in the poll", "in the rankings" in the pro games).
+- Soccer's summer payroll line no longer adds parts that can't close (the
+  old wages of re-signed and departed players aren't kept): last season's
+  figure, then the new deals, signings and players gone, named.
+- test/golden.js SCREENS=dir writes each season's screen text, so a
+  screens-only fingerprint change can be read line by line against HEAD.
+- The Championship play-offs (3rd-8th) are right: the EFL expanded them
+  from 2026-27.
+
 Round 28 (Instinct round 9; Muse; Grokbot on pro football, college and pro
 basketball):
 - Hockey: a played overtime game lost its overtime (the engine scores it
