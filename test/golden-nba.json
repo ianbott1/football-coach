@@ -1,5 +1,5 @@
 {
- "fp": "81e6d9aec03d64d6",
+ "fp": "fa423937a1e936c3",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -240,6 +240,11 @@
    "fp": "81e6d9aec03d64d6",
    "from": "4c7cd007765755f6",
    "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
+  },
+  {
+   "fp": "fa423937a1e936c3",
+   "from": "81e6d9aec03d64d6",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "result": {
@@ -252,21 +257,21 @@
     "rec": "d84520261319679a",
     "poll": "80a5246492d869ce",
     "heis": "c38d29addfc16e0e",
-    "history": "a2d4ce8fc3b945dc",
-    "universe": "ade88ff9337b217a",
-    "screens": "626d7a84f6eabbb1"
+    "history": "3da533279fa960a0",
+    "universe": "1f1cf5415368fae1",
+    "screens": "c3b05c78f395afa4"
    },
    {
     "year": 2027,
-    "games": "6a3f4029bc765a88",
-    "post": "6d87339d7672f9f1",
-    "champion": "Sacramento",
-    "rec": "d051c61ee2513df1",
-    "poll": "6ff2824bbec2a392",
-    "heis": "087e88fc9aafa4be",
-    "history": "c5832c35f4721fc7",
-    "universe": "0c7deddaace9e943",
-    "screens": "5ea15a5f24d26fa2"
+    "games": "91efb197cdcf190f",
+    "post": "ef39dd2530f3ced3",
+    "champion": "San Antonio",
+    "rec": "a65d3f3aeaf8a42e",
+    "poll": "6b2f9b52853f0640",
+    "heis": "260456000ed947dd",
+    "history": "0a9a85c6270e32eb",
+    "universe": "ffba4b76758471cd",
+    "screens": "cfdde8c637b83530"
    }
   ],
   "Detroit#777": [
@@ -278,21 +283,21 @@
     "rec": "b3e59bdb6df02848",
     "poll": "75918a16147f7149",
     "heis": "bd7234824f88d455",
-    "history": "dad66f97499b3f50",
-    "universe": "42b6e0f4b5a90ca1",
-    "screens": "943bda781a50f5d1"
+    "history": "6ab65bb9cba3be6f",
+    "universe": "b62c9d03236a2082",
+    "screens": "e5faec541b5406ba"
    },
    {
     "year": 2027,
-    "games": "6ff1694c029e2bf8",
-    "post": "17bf38f9b5191b7a",
-    "champion": "Oklahoma City",
-    "rec": "022e958cfd85f6bd",
-    "poll": "229544c48398b0c3",
-    "heis": "7ecdf1fc2d92a12c",
-    "history": "e5acbd19c7e8fc92",
-    "universe": "99932ff552b5ebc3",
-    "screens": "d69b2d270e43f9aa"
+    "games": "38c963fbcc0f56cf",
+    "post": "cf1db8722651bb07",
+    "champion": "Miami",
+    "rec": "668302576478346c",
+    "poll": "633f058040eb97bc",
+    "heis": "b44854aa8e531d80",
+    "history": "532b8e6e16201893",
+    "universe": "77060088d01a685b",
+    "screens": "8c7581c282cacf13"
    }
   ],
   "schedules#60": [

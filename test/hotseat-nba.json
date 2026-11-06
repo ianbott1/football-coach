@@ -1,5 +1,5 @@
 {
- "fp": "2517ce5881796dc1",
+ "fp": "1dd9d611afa754f2",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -150,6 +150,11 @@
    "fp": "2517ce5881796dc1",
    "from": "2517ce5881796dc1",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "1dd9d611afa754f2",
+   "from": "2517ce5881796dc1",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "out": [
@@ -163,7 +168,7 @@
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "256f71d1bdf7111d"
+     "book": "0df4d23cb971c5f1"
     },
     {
      "team": "New York",
@@ -172,7 +177,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "554d003315891698"
+     "book": "27207f093c4c264a"
     }
    ]
   },
@@ -182,20 +187,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-50",
+      "rec": "25-57",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "3b929f074f898e88"
+     "book": "182984df31c4e609"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "38-44",
-      "result": "Losing season",
+      "rec": "32-50",
+      "result": "Lost in the play-in",
       "grade": "D"
      },
-     "book": "b4f4d8de62508292"
+     "book": "e54890e46c8870d0"
     }
    ]
   },
@@ -205,20 +210,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-38",
-      "result": "Lost in the play-in",
-      "grade": "C"
+      "rec": "18-64",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "a09258d4b7627d95"
+     "book": "4358327cc44d0b60"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "48-34",
+      "rec": "42-40",
       "result": "Lost in the play-in",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "d2525afefb4ef960"
+     "book": "75b54023f4de96e0"
     }
    ]
   }

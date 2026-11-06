@@ -1,5 +1,5 @@
 {
- "fp": "c3ccb30add1b5890",
+ "fp": "8a5be8bf3a5307f8",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -215,6 +215,11 @@
    "fp": "c3ccb30add1b5890",
    "from": "c3ccb30add1b5890",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "8a5be8bf3a5307f8",
+   "from": "c3ccb30add1b5890",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "out": [
@@ -228,7 +233,7 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "b09bcde1a8bdc48d"
+     "book": "3520aa790c1432c0"
     },
     {
      "team": "Tennessee",
@@ -237,7 +242,7 @@
       "result": "Losing season",
       "grade": "B"
      },
-     "book": "3134bb24aeb5ce4e"
+     "book": "d0a183258d0eb51d"
     }
    ]
   },
@@ -247,20 +252,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
-      "grade": "A-"
+      "rec": "14-3",
+      "result": "Lost the conference championship",
+      "grade": "A"
      },
-     "book": "bd2baf85c3c53177"
+     "book": "89bf3269610132da"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "7-10",
-      "result": "Losing season",
-      "grade": "B-"
+      "rec": "10-7",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "748682ceb65adcb6"
+     "book": "b2f13bab75dab665"
     }
    ]
   },
@@ -270,20 +275,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
-      "grade": "A-"
+      "rec": "13-4",
+      "result": "Lost in the divisional round",
+      "grade": "A"
      },
-     "book": "d5b941b81ea2a371"
+     "book": "b9ad4a62b1cb0102"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "14-3",
-      "result": "Lost the conference championship",
+      "rec": "12-5",
+      "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "a5a0b3acd94d338b"
+     "book": "b042a46ee437ef93"
     }
    ]
   }

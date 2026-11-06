@@ -857,6 +857,13 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .seedraw{display:block;margin:10px auto 0}
 .nogo{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 .drow .skip.small{width:auto;flex:none;margin:0;padding:7px 14px}
+.dnrev{animation:dnrev .25s ease-out both}@keyframes dnrev{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.dnrev{animation:none}}
+.dnopen{margin:10px 0 4px}
+.dnrow{flex-wrap:wrap}.dnrow .fmain{flex:1 1 100%}.dnrow .skip.small{margin-left:auto}.dnrow .skip.small+.skip.small{margin-left:8px}
+.dnline{display:flex;align-items:baseline;gap:8px;padding:6px 16px;font-size:12.5px;border-bottom:1px solid var(--line)}
+.dnline .dpick{flex:0 0 38px}.dnwho{flex:1 1 auto;min-width:0}.dnsc{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.dnfold summary{padding:8px 16px;font-size:12px;color:var(--muted);cursor:pointer}.drow .dnpick{border-color:var(--sodium)}
 .plancard{margin:12px 16px 4px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--turf);border-radius:8px;background:var(--panel2)}
 .plancard .bkick{color:var(--turf)}
 .planlead{font-size:13.5px;margin:6px 0 10px;line-height:1.45}

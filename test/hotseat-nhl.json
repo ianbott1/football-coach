@@ -1,5 +1,5 @@
 {
- "fp": "c706ee73ece8aaa9",
+ "fp": "48f304ba99faae13",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -185,6 +185,11 @@
    "fp": "c706ee73ece8aaa9",
    "from": "c706ee73ece8aaa9",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "48f304ba99faae13",
+   "from": "c706ee73ece8aaa9",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "out": [
@@ -198,7 +203,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "37ac395741f06434"
+     "book": "595a61a6baf0062e"
     },
     {
      "team": "Montreal",
@@ -207,7 +212,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "9cf411402bcc4dcb"
+     "book": "48d3b327e1616831"
     }
    ]
   },
@@ -217,20 +222,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-33-13",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "42-31-11",
+      "result": "Lost in the second round",
+      "grade": "B+"
      },
-     "book": "bb48b83c6766a5ed"
+     "book": "d589af401462dbec"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "34-39-11",
+      "rec": "38-32-14",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "ed37c46996bdb4b2"
+     "book": "5914ebbf272d1326"
     }
    ]
   },
@@ -240,20 +245,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "55-22-7",
+      "rec": "45-28-11",
       "result": "Lost in the first round",
-      "grade": "B+"
+      "grade": "B-"
      },
-     "book": "2f87ef5cbfb23940"
+     "book": "86649f3f09ab1569"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "36-36-12",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "43-29-12",
+      "result": "Lost in the second round",
+      "grade": "B+"
      },
-     "book": "74620d2184c5b456"
+     "book": "6e2789d6e9f036d6"
     }
    ]
   }

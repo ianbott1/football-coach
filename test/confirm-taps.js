@@ -209,6 +209,26 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     ok(after===before,`${f}: featuring in the offseason rewrote last season on reload (${before} became ${after})`);
     await ctx.close();
   }
+  // draft night in a real browser: the class is full, the room opens, a workout and a two-tap pick land, and a
+  // reload comes back to the next pick (Node passed while every browser drew an empty class: settings read as 0)
+  for(const [f,R,wk] of [['football-coach-pro.html',7,true],['basketball-coach-pro.html',2,true],['hockey-coach-pro.html',2,false]]){
+    const ctx=await b.newContext({viewport:{width:390,height:844}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.dismiss());
+    const url='file://'+path.join(DIST,f); await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
+    const n=await p.evaluate(async()=>{ S.watchMode="never"; let g=0; while(SEA.phase!=="done"&&g++<5000)simAdvance(); await new Promise(r=>setTimeout(r,300)); openOffseason(); render(); return nflDraftClass(U,dnTeam()).list.length });
+    ok(n>R*30,`${f}: draft class of ${n} in a browser`);
+    const open=await p.$('[data-dnopen]'); ok(!!open,`${f}: no way into draft night`); if(!open){ await ctx.close(); continue }
+    await open.click(); await p.waitForTimeout(400);
+    const w=await p.$('[data-dnwork]'); ok(!!w===wk,`${f}: workouts ${w?"offered":"missing"}`); if(w){ await w.click(); await p.waitForTimeout(300) }
+    const d=await p.$('[data-dnpick]'); ok(!!d,`${f}: nothing to draft`);
+    if(d){ await d.click(); await p.waitForTimeout(150); await d.click(); await p.waitForTimeout(600) }
+    const st=await p.evaluate(async()=>{ await save(); return {hand:(S.off.picks.hand||[]).length,clock:(document.body.innerText.match(/PICK \d+ · #\d+/i)||[""])[0]} });
+    ok(st.hand===1,`${f}: ${st.hand} picks recorded after one`);
+    await p.waitForTimeout(400); await p.goto(url); await p.waitForTimeout(700); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);
+    const back=await p.evaluate(()=>({dn:!!(S.off&&S.off.dn),hand:S.off&&(S.off.picks.hand||[]).length,clock:(document.body.innerText.match(/PICK \d+ · #\d+/i)||[""])[0]}));
+    ok(back.dn&&back.hand===1&&back.clock===st.clock,`${f}: after a reload draft night is ${JSON.stringify(back)}, was ${JSON.stringify(st)}`);
+    ok(!errs.length,`${f}: page errors on draft night: ${errs[0]}`);
+    await ctx.close();
+  }
   await b.close();
   console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: two-tap confirms work in a browser`);
   process.exit(bad?1:0);

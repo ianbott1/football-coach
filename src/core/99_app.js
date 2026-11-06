@@ -2820,8 +2820,8 @@ function render(){
         const ug=SEA.phase==="week"?SEA.nextGame(S.myTeam):SEA.postMatchup(S.myTeam);
         return ug?`<button class="skip" id="simone">Sim game</button>`:""})()}
       <button class="advance ${done||inOff?'gold':''}" id="adv" ${
-        inOff&&((S.off.act.userOpen&&S.off.move===null)||LEAGUE.ui.offseasonBlock()!==null)?'disabled':''}>${
-        inOff?(S.off.act.userOpen&&S.off.move===null?"Pick your next job above"
+        inOff&&!(S.off.dn&&dnOn())&&((S.off.act.userOpen&&S.off.move===null)||LEAGUE.ui.offseasonBlock()!==null)?'disabled':''}>${
+        inOff&&S.off.dn&&dnOn()?"Back to the offseason":inOff?(S.off.act.userOpen&&S.off.move===null?"Pick your next job above"
               :LEAGUE.ui.offseasonBlock()!==null?LEAGUE.ui.offseasonBlock():
               S.off.move==="retire"?"Retire"
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
@@ -2871,6 +2871,7 @@ function render(){
       S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true};
       U=null;SEA=null;flash=null;live=null;render();}});
   const advance=()=>{
+    if(S.off&&S.off.dn&&dnOn()){S.off.dn=false;save();render();window.scrollTo({top:0});return}
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team"&&!wide)view="scores";
     doAdvance();
@@ -2896,6 +2897,7 @@ function render(){
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
   };
   el("adv").onclick=()=>{ if(settling())return;
+    if(S.off&&S.off.dn&&dnOn()){S.off.dn=false;save();render();window.scrollTo({top:0});return}
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team")view="scores";
     doAdvance();
@@ -2927,7 +2929,7 @@ function render(){
     if(SEA)SEA.featured=S.featured;
     save(); render();});
   document.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{
-    S.off.move=(b.dataset.job===S.myTeam?null:b.dataset.job);save();render()});
+    const was=S.off.move; S.off.move=(b.dataset.job===S.myTeam?null:b.dataset.job); if(S.off.move!==was&&typeof dnReset==="function")dnReset(); save();render()});
   document.querySelectorAll("[data-phil]").forEach(b=>b.onclick=()=>{
     S.off.picks.phil=b.dataset.phil;save();render()});
 }

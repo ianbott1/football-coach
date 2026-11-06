@@ -99,14 +99,15 @@ function nflDraftOrder(rec,elo){
   return NAMES.slice().sort((a,b)=>out(a)-out(b)||pct(a)-pct(b)||elo[a]-elo[b]);
 }
 
-function nflProspects(rng,n){
+function nflProspects(rng,n,sh){
   const out=[];
   for(let i=0;i<n;i++){
     const q=i/n;
     const posIdx=rng.int(POS.length);
     const age=21+rng.int(3);
-    const r=Math.round(Math.max(45,Math.min(80,rng.gauss(64-13*Math.pow(q,0.7),3.5))));
-    const pot=Math.round(Math.min(99,r+Math.max(2,rng.gauss(11-5*q,4))));
+    const r0=Math.round(Math.max(45,Math.min(80,rng.gauss(64-13*Math.pow(q,0.7),3.5*DRAFT_K.sd))));
+    const pot0=Math.round(Math.min(99,r0+Math.max(2,rng.gauss(11-5*q,4))));
+    const {r,pot}=sh?draftShape(sh,r0,pot0,45,86):{r:r0,pot:pot0};      // core/91_draftnight
     out.push({n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:age,age:age,r:r,pot:pot,
               hz:0,prod:0,st:0,from:rng.pick(LEAGUE.draftTeams)});
   }
@@ -120,17 +121,14 @@ function nflProspects(rng,n){
 function nflDraftClass(u,team){
   if(!u.draftClass||u.draftClass.year!==u.year){
     const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
-    const list=nflProspects(rng,7*32); list.forEach((p,i)=>p.pid=i);
+    const list=nflProspects(rng,Math.round(7*32*DRAFT_K.deep),new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x7ab1)>>>0)); list.forEach((p,i)=>p.pid=i);
     // no two prospects in one class share a name (two "Tanner Mbeki"s: Grokbot); renamed by hash, so no draw moves
     { const seen=new Set(); list.forEach(p=>{ let n=p.n, k=0; while(seen.has(n)&&k<LAST.length){ n=n.split(" ")[0]+" "+LAST[(strHash(p.n+"|"+p.pid)+k)%LAST.length]; k++ } p.n=n; seen.add(n) }) }
     u.draftClass={year:u.year,list:list};
   }
   const C=u.draftClass;
   if(team&&C.scoutedFor!==team){
-    const noise=Math.max(0.8,2.6-orgEdge(u,team)*1.2);
-    let th=0; for(let i=0;i<team.length;i++)th=(th*31+team.charCodeAt(i))|0;
-    const r2=new RNG((((u.seed||0)*40503)^(u.year*104729)^th)>>>0);
-    C.list.forEach(p=>{p.sr=Math.round(p.r+r2.gauss(0,noise)); p.spot=Math.round(Math.max(p.sr,p.pot+r2.gauss(0,noise*1.6)))});
+    C.list.forEach(p=>{ const x=scoutRead(u,team,p,false); p.sr=x.sr; p.spot=x.spot });   // core/91_draftnight
     C.scoutedFor=team;
   }
   return C;
@@ -233,6 +231,8 @@ function nflPlace(roster,p){
 
 function nflRun(u,rng,healthy,elo,rec,choices){
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
+  // draft night: its own dice, on the rosters as the season ended (core/91_draftnight)
+  const DN=draftNight(u,rec,elo,U_CH,7);
   const chFor=t=>U_CH[t]||null, ut=choices.userTeam;
   if(ut&&choices.coach){const c=choices.coach;
     u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0}}
@@ -302,37 +302,9 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   Object.keys(U_CH).forEach(t=>{const ch=U_CH[t]; if(ch&&ch.trade)nflApplyTrade(u,t,ch.trade,rep,leave,pool)});
   NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
 
-  // 4. the draft
-  const order=nflDraftOrder(rec,elo);
-  // the class shown on the offseason screen (a copy: the class itself isn't consumed)
-  const prospects=nflDraftClass(u).list.map(p=>Object.assign({},p));
+  // 4. the draft: drawn before the summer began (draft night), placed now
   delete u.draftClass;
-  const picks=[];
-  for(let rd=1;rd<=7;rd++)order.forEach((t,k)=>{
-    const R=u.roster[t], ch=chFor(t), overall=(rd-1)*32+k+1;
-    const style=(ch&&ch.draft)||"bpa";
-    const score=p=>style==="need"?nflGain(R,p)*1.6+p.r*0.3
-                  :style==="upside"?p.pot*1.2+p.r*0.2+nflGain(R,p)*0.3
-                  :p.r+(p.pot-p.r)*0.45+nflGain(R,p)*0.5;
-    const scout=2.5-orgEdge(u,t)*1.4;                  // how often a team misjudges a prospect
-    let bi=0,bs=-1e9; prospects.forEach((p,i)=>{if(p.taken)return; const s=score(p)+rng.gauss(0,scout); if(s>bs){bs=s;bi=i}});
-    // a coach's own board comes first: the highest player on it still there
-    const board=(ch&&ch.board)||[];
-    const mine=board.map(id=>prospects.findIndex(p=>p.pid===id&&!p.taken)).find(i=>i>=0);
-    if(mine!==undefined)bi=mine;
-    const p=prospects[bi]; p.taken=true;
-    // a player on someone's board taken before their turn: say so, or the board looks ignored
-    Object.keys(U_CH).forEach(ut2=>{ const B=(U_CH[ut2]&&U_CH[ut2].board)||[];
-      if(ut2!==t&&B.indexOf(p.pid)>=0){ rep.boardGone=rep.boardGone||{}; (rep.boardGone[ut2]=rep.boardGone[ut2]||[]).push({n:p.n,p:p.p,to:t,overall:overall,yours:(()=>{ const i=order.indexOf(ut2); if(i<0)return null; for(let r2=1;r2<=7;r2++){ const o=(r2-1)*32+i+1; if(o>overall)return o } return null })()}) } });
-    p.draft={round:rd,pick:k+1,overall:overall,team:t,year:u.year};
-    p.k={sal:rookieSal(overall),yrs:4}; p.joined=u.year+1; p.drafted=true;
-    const g=nflGain(R,p);
-    const made=g>0.6||!R[p.i]||!R[BK(p.i)];
-    if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r});
-      if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")}}
-    rep.drafted[t].push({n:p.n,p:p.p,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made});
-    picks.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made,pid:p.pid});
-  });
+  const picks=placeDraftNight(u,DN,rep,pool,leave,null);
 
   // a draft class can tip a team over: release the worst-value backups until it fits
   NAMES.forEach(t=>{
@@ -434,10 +406,17 @@ LEAGUE.offseason={
     nflDraftClass(u,t);                              // made now, so the screen can show it
     return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null}};
   },
-  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null}},
+  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null,
+                       hand:P.hand||null, handDone:!!P.handDone, workouts:P.workouts||[]}},   // draft night's picks (core/91_draftnight)
   faStyles:{contend:{l:"Spend to contend",d:"Chase the best players available, whatever their age. Uses nearly every dollar."},
             balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
+  workouts:3,
+  // draft night's shape here (core/91_draftnight): the old spread, fog 1.4. The full shape made the league
+  // top-heavy (favourites .665, 13+ win teams 4.4 a season); this keeps favourites in the NFL band (.656)
+  // with about half the draft's weight (a well-run draft: starters +0.5 after five drafts). Measured Nov 2026.
+  draftShape:{sd:1.0, fog:1.4, shift:1.5},
+  draftRounds:7,
   draftStyles:{bpa:{l:"Best available",d:"Take the best player on the board, whatever the position."},
                need:{l:"Draft for need",d:"Fill the weakest spots on the roster, even if it means reaching."},
                upside:{l:"Swing for upside",d:"Raw prospects with the highest ceilings. Slower to pay off."}}

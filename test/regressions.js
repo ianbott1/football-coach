@@ -469,6 +469,25 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   A.openOffseason(); for(let c=0;c<6&&A.S.off;c++)A.commitOffseason(); const t=strip(A.offseasonBanner());
   ok(/Payroll after the summer:.*Last season's was/.test(t)&&!/other changes|£0\.0M/.test(t),'soccer: the payroll line is missing or shows sums that do not close') }
 
+/* 71. draft night: the draft shown pick by pick is the draft that happens, your picks are the players drafted, and a skipped night is the staff's */
+for(const [f,team,R] of [['football-coach-pro.html','Chicago',7],['basketball-coach-pro.html','Detroit',2],['hockey-coach-pro.html','Toronto',2]]){
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['draftNight','dnState','dnOn','draftNightHTML','dnSectionHTML'])}); A.newDynasty(team,5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<5000)A.SEA.advance(); A.openOffseason();
+  const my=A.S.myTeam, P=A.S.off.picks, yr=A.SEA.year; P.hand=[]; const stops=[];
+  ok(A.dnOn()&&/Go to draft night/.test(strip(A.dnSectionHTML())),`${f}: no way into draft night`);
+  for(let k=0;k<R+2;k++){ const D0=A.dnState(); if(!D0.stop)break; stops.push(D0.stop.overall); const av=D0.prospects.filter(p=>!p.taken); P.hand.push(av[Math.min(3,av.length-1)].pid) }
+  ok(stops.length===R,`${f}: stopped for ${stops.length} picks of ${R}`);
+  A.S.off.dn=true; ok(/Your class is in/.test(strip(A.draftNightHTML())),`${f}: draft night not finished after every pick`); A.S.off.dn=false;
+  const shown=A.draftNight(A.U,A.SEA.rec,A.SEA.elo,{[my]:{draft:P.draft,board:P.board,hand:P.hand}},R,null).picks.map(d=>d.team+':'+d.pid).join(',');
+  const R0=A.LEAGUE.offseason.run; let B=null; A.LEAGUE.offseason.run=function(){ B=R0.apply(this,arguments); return B };
+  for(let c=0;c<4&&A.S.off;c++)A.commitOffseason();
+  const real=B.draft.picks.map(d=>d.team+':'+d.pid).join(','), mine=B.draft.picks.filter(d=>d.team===my).map(d=>d.pid);
+  ok(shown===real,`${f}: the draft shown on draft night is not the draft that happened`);
+  ok(mine.join()===P.hand.join(),`${f}: your picks ${P.hand} but drafted ${mine}`) }
+/* 72. draft night: a change of job clears picks made for the other team; a hot seat keeps the board */
+{ const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP.concat(['dnOn','dnReset'])}); A.newDynasty('Chicago',5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<5000)A.SEA.advance(); A.openOffseason();
+  A.S.off.picks.hand=[3]; A.S.off.picks.workouts=[4]; A.dnReset(); ok(!A.S.off.picks.hand&&!A.S.off.picks.workouts,'draft night: picks survive a change of job');
+  A.S.coaches=[{},{}]; ok(!A.dnOn(),'draft night: offered in a hot seat (it keeps the board)'); A.S.coaches=null; }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

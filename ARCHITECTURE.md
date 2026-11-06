@@ -121,6 +121,53 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 30: draft night (pro football, pro basketball, hockey; core/91_draftnight.js):
+- The draft is drawn on its own dice (draftRng) from the rosters as the season
+  ended, so it can be shown pick by pick before the summer runs; the drafted
+  players join rosters at the same step as before (placeDraftNight). Each
+  team's later picks see its earlier rookies (a scratch roster per team).
+  Control: the same code on the old dice and timing reproduced the old
+  fingerprints exactly. Every pick draws the same dice whoever is taken, so
+  your choice changes later picks only through who is left. The NBA and NHL
+  lottery is the first draw, so it is known when the offseason opens.
+- Draft night: the lottery, the picks before yours revealed, on the clock
+  with your scouts' board, "likely there at #N" (a mock of the picks before
+  your next), where he'd fit ("may not make the roster": the summer keeps a
+  rookie only if he helps), your staff's pick, pick / let the staff pick /
+  staff make the rest. Picks are kept as made (S.off.picks.hand); a reload
+  resumes at the same pick; a pick you leave goes to your board, then your
+  staff. A change of job clears them (dnReset). A hot seat keeps the board.
+- Measured first (test/draft-night.js, test/draft-years.js): the old draft
+  was weightless. After four drafts, perfect knowledge of every class moved
+  starters by under 0.3 and wins within noise: prospects near your pick were
+  a point or two apart, most rookies never make a roster, and the staff's
+  pick used near-true ratings.
+- Reshaped (DRAFT_DEF, overridable per league and from the environment):
+  class spread 1.6x, hidden stars (8%: +6 now, +6 ceiling) and busts (10%),
+  reads 1.8x foggier, 30% of prospects hard to read (everyone misjudges them
+  2.2x; your scouts say "scouts unsure"), classes 1.4x deeper, the class 2.5
+  lower to keep each league's talent (starters within 0.5). Your staff pick
+  from your scouts' reads. Private workouts (3 a year) give a 0.3x read on
+  chosen players. Effect, smart drafting (workouts on unsure players near
+  each pick) against the staff after five drafts: pro basketball starters
+  +1.2, +4.6 wins a season; history checks pass (194 seasons).
+- Pro football: the full shape made its league top-heavy (favourites .665,
+  13+ win teams 4.4 a season, unbeaten 9 per 100 seasons, against .633 /
+  3.6 / 4). With every new setting neutral the league matched the release,
+  so the misjudgment itself loosens the league: a draft that rewards finding
+  the misjudged player also lets bad teams miss. Settled with Ian on a middle
+  ground (spread 1.0, fog 1.4, shift 1.5): favourites .656, 13+ win teams
+  4.2 (just over the band), a well-run draft +0.5 on starters.
+- Hockey: draftees are 18 and a pick who doesn't make the roster is gone (no
+  junior system), so no draft shape gave picks weight (7 drafts: starters
+  +0.0). Draft night stays as presence; no workouts. A prospect pipeline is
+  the fix, a separate job.
+- Settings read from the environment only for a set string: in a browser
+  the lookup gave false, read as 0, and every class was empty (the Node
+  suite passed). test/confirm-taps.js now runs draft night in Chromium.
+- Names: the college games have their own runDraft; draft night's are
+  draftNight / placeDraftNight (a collision would have broken college).
+
 Round 29 (Grokbot's remaining reports: pro basketball, hockey, soccer):
 - Soccer's job security is graded by table position, not a win pace that
   ignores draws: Queens Park Rangers (seed 3) read Secure all season and
@@ -599,7 +646,8 @@ audits (bb-screens, nba-screens, nhl-screens, epl-screens), the reads
 call's worth), offseason systems (draftboard, fatargets, trades, bb-portal),
 and long-run history checks against the real leagues (bb-march,
 nba-history, nhl-history).
-Reports (run by hand): calibrate, advisors, calls, the engine harnesses
+Reports (run by hand): draft-night and draft-years (what a hand pick is
+worth), calibrate, advisors, calls, the engine harnesses
 (bb-engine, hk-engine, hk-decisions), the long-run recorders.
 
 ## Soccer: the pyramid and the cup

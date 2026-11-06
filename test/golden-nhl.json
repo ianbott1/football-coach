@@ -1,5 +1,5 @@
 {
- "fp": "82a4131d754c9b52",
+ "fp": "1f190e31db9e379b",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -255,6 +255,11 @@
    "fp": "82a4131d754c9b52",
    "from": "cf602ad42e73be7d",
    "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
+  },
+  {
+   "fp": "1f190e31db9e379b",
+   "from": "82a4131d754c9b52",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "result": {
@@ -267,21 +272,21 @@
     "rec": "2770016e5cbd2399",
     "poll": "bc8fe85dc7243c48",
     "heis": "1884646e04c965cf",
-    "history": "075e06d7c30b66af",
-    "universe": "89973d8cfacd3ffe",
-    "screens": "17c290815c7ca3d9"
+    "history": "dc00afae2614d19e",
+    "universe": "4bc4292195091ab1",
+    "screens": "a6ed368bae9ca58e"
    },
    {
     "year": 2027,
-    "games": "d5e954e103a35962",
-    "post": "c5a4df804cc41537",
-    "champion": "St. Louis",
-    "rec": "1554eac94d94d2bb",
-    "poll": "e6c330d1da3730f1",
-    "heis": "ac6801fa4e52a9cb",
-    "history": "d42da527670238a6",
-    "universe": "5fdf6a8e849d0fa1",
-    "screens": "5381dc27487194f3"
+    "games": "5a46bba6d692c66d",
+    "post": "bff7acaf3e10c736",
+    "champion": "Carolina",
+    "rec": "fd0315ec8f0c5f25",
+    "poll": "1c40930099d92e49",
+    "heis": "91711ffd13fdd053",
+    "history": "8c34204a782f55dc",
+    "universe": "3e9ea1a52e030882",
+    "screens": "2a0d36b3ed16b845"
    }
   ],
   "Edmonton#777": [
@@ -293,21 +298,21 @@
     "rec": "f8b507393ab8b036",
     "poll": "6f621d6cf426f6ec",
     "heis": "ade43a62bf6e0213",
-    "history": "e86ca79c165c80b5",
-    "universe": "c0fe615fa3ba8013",
-    "screens": "2c85975de87aa476"
+    "history": "5ec7095ce3f37332",
+    "universe": "58f7db0c34f4e2a3",
+    "screens": "84f0245058a9858d"
    },
    {
     "year": 2027,
-    "games": "5b02f1859b47625d",
-    "post": "eb3a60c20b07837b",
-    "champion": "Vancouver",
-    "rec": "483595cb7ad308e8",
-    "poll": "83139b47e7e06207",
-    "heis": "5c182bc261349631",
-    "history": "c88578736f2d767b",
-    "universe": "e17dfd98a94fc184",
-    "screens": "ec0ccc9038c99399"
+    "games": "4b4b32f9409be5f8",
+    "post": "f7338585110b6308",
+    "champion": "Minnesota",
+    "rec": "3370c5c96d269e5a",
+    "poll": "b0c88ffada2dab8c",
+    "heis": "76e4f5d582d7a7fe",
+    "history": "7051b0b703ea5df5",
+    "universe": "edcdb36be22f2fe6",
+    "screens": "ccf044dd75a84b3e"
    }
   ],
   "schedules#60": [
