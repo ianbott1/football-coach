@@ -25,7 +25,8 @@ function offseason(f,team,seed,strategy){
     others:A.NAMES.filter(t=>t!==my).map(t=>A.U.roster[t].map(p=>p?p.n+':'+p.r:'-').join(',')).join('|'),
     banner:String(A.offseasonBanner?A.offseasonBanner():"")};
 }
-for(const [f,teams] of [['football-coach.html',['Iowa State','Alabama','Toledo']],['basketball-coach.html',['Butler','Duke','Drake']]]){
+// six football programs: with three, a sensible board's edge (~+1.5 a spot over nine) read -0.9 or +0.1 by luck (Nov 2026)
+for(const [f,teams] of [['football-coach.html',['Iowa State','Alabama','Toledo','Rice','Oregon','Kansas']],['basketball-coach.html',['Butler','Duke','Drake']]]){
   const gain={best:[0,0],smart:[0,0],likely:[0,0]};
   for(const team of teams)for(const seed of [3,11]){
     const base=offseason(f,team,seed,'none');

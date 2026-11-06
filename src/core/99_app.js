@@ -188,7 +188,7 @@ function finishLive(){
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
-      R.forEach(x=>{T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
+      R.forEach(x=>{ if(x.unclear)return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // a read the screen couldn't show isn't counted
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -341,7 +341,10 @@ function rebuild(){
   syncConf(U);
   NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct
   U.userTeam=S.myTeam;
+  if(S.schedLock&&S.schedLock.year===U.year)U.schedLock=S.schedLock;
   SEA=new Season(U,S.seasonSeed);
+  if(SEA._lock&&!(S.schedLock&&S.schedLock.year===U.year)){ S.schedLock=SEA._lock; lockNew=true }   // kept from now on
+  delete U.schedLock;
   SEA.userTeam=S.myTeam;
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
   const CL=S.chLog&&S.chLog.year===SEA.year?S.chLog:null;   // the choices as they were made (noteChoice)
@@ -395,6 +398,8 @@ function auditTrophies(){
   if(C.ach.century&&careerNow(C).w<100)delete C.ach.century;
 }
 
+let replaceAsk=false;        // the title screen asking which career a new one replaces (all slots full)
+let lockNew=false;           // a schedule lock made on this load, not yet saved (rebuild)
 let introAt=null;            // the "How to play" page showing, or null: never in a save
 let saveOK=null;                     // did the last save land? null = not tried yet
 /* Saves are coalesced: calls made in the same burst share one save, of the
@@ -601,8 +606,10 @@ function yourOTL(team,from,to){
   let o=0;
   (S.history||[]).forEach(h=>{ if(!h||(team&&h.team!==team)||(from!==undefined&&h.year<from)||(to!==undefined&&h.year>to))return;
     const m=/^\d+-\d+-(\d+)$/.exec(h.rec||""); if(m)o+=+m[1] });
-  const banked=S.off&&SEA&&S.off.year===SEA.year;
-  if(SEA&&SEA.otl&&!banked&&(!team||team===S.myTeam)&&(from===undefined||SEA.year>=from)&&(to===undefined||SEA.year<=to))o+=SEA.otl[S.myTeam]||0;
+  // this season's, unless its entry is already in the history: in the offseason its wins and losses are
+  // in the career but its entry isn't written yet (Instinct: the offseason career read 41-43, three seasons)
+  const inBook=(S.history||[]).some(h=>h&&h.year===SEA.year&&h.team===S.myTeam&&/^\d+-\d+-\d+$/.test(h.rec||""));
+  if(SEA&&SEA.otl&&!inBook&&(!team||team===S.myTeam)&&(from===undefined||SEA.year>=from)&&(to===undefined||SEA.year<=to))o+=SEA.otl[S.myTeam]||0;
   return o;
 }
 /* the career so far including the season being played: a season is added to
@@ -808,7 +815,9 @@ function commitOffseason(){
   const P=S.off.picks, A=S.off.act, C=S.career;
   if(A.userOpen&&S.off.move===null)return;
   if(LEAGUE.ui.offseasonBlock()!==null)return;
-  const rng=new RNG(0); rng.a=S.off.rngA[0]; rng.sp=S.off.rngA[1];
+  // rngA was meant to carry the stream on, but the state it read was hidden (undefined), so every
+  // offseason has run on seed 0 from here: kept, or every future offseason would change (Nov 2026)
+  const rng=new RNG(0); rng.sp=S.off.rngA[1];
   const oldTeam=S.myTeam;
   let dest=S.off.move;
   if(dest==="retire"){S.retired=true;save();render();return}
@@ -916,6 +925,7 @@ function endSeason(rng,choices,act,seasonTeam){
   });
   distinctLeague(U);
   U.schedV=2;                                            // (schedOrder)
+  delete S.schedLock;                                    // a new season draws its own, the same way every time
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations();
@@ -1014,12 +1024,12 @@ function liveRec(team){
 }
 
 function liveConf(team){
-  const w=SEA.confrec[team][0], l=SEA.confrec[team][1];
-  if(reveal!=="half")return [w,l];
+  const w=SEA.confrec[team][0], l=SEA.confrec[team][1], o=(SEA.confotl&&SEA.confotl[team])||0;   // [wins, losses (overtime ones included), overtime losses]
+  if(reveal!=="half")return [w,l,o];
   const g=heroGame();
-  if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l];
-  if(g.draw)return [w,l];
-  return g.winner===team?[w-1,l]:[w,l-1];
+  if(!g||!g.conf||(g.home!==team&&g.away!==team))return [w,l,o];
+  if(g.draw)return [w,l,o];
+  return g.winner===team?[w-1,l,o]:[w,l-1,g.ot&&LEAGUE.tracksOT?o-1:o];
 }
 
 /* the game the result card shows: on a cup night the cup tie, otherwise
@@ -1078,6 +1088,16 @@ function heroResult(){
     else if(cur[my]<=T)move=`<div class="hmove flat">Holding at #${cur[my]}</div>`;
   }
   if(LEAGUE.position&&LEAGUE.positionLine)move=`<div class="hmove flat">${LEAGUE.positionLine(my)}</div>`;
+  // a playoff game says where the series stands, and a defeat that ends the season says so (Muse: Winnipeg's
+  // Game 6 elimination looked exactly like a November game)
+  if(flash&&flash.type==="post"&&!g.draw&&!half){
+    const X=SEA.series&&g.series&&(SEA.series[g.series]||[]).find(x=>x.games&&x.games.indexOf(g)>=0);
+    if(X){ const a=X.w[my]||0, b=X.w[opp]||0;
+      move=X.winner===my?(SEA.champion===my?`<div class="hmove up">Champions: won the series ${a}&ndash;${b}</div>`:`<div class="hmove up">Series won ${a}&ndash;${b}: through to the next round</div>`)
+        :X.winner?`<div class="hmove dn">Season over: out of the playoffs, ${a}&ndash;${b} in the series</div>`
+        :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
+    else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):SEA.phase==="done"))move=`<div class="hmove dn">Season over</div>`;
+    else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
     move=`<div class="hmove ${won?'up':'dn'}">${won?(nx?"Into the "+esc(nx.name):"FA CUP WINNERS"):"Out of the FA Cup"}</div><button class="rewatch seedraw" data-cupview="1">See the draw</button>` }
   if(half)return `<div class="hero half">
@@ -1136,8 +1156,8 @@ function readsHTML(step){
   // and two identical lines couldn't be told apart: Grokbot)
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
     return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
-  const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,n:1,lb:lb?[lb]:[]}) });
-  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':'no'}"><span>${x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
+  const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
+  return `<div class="reads">${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
@@ -1188,7 +1208,7 @@ function winProb(me,opp,atHome,neutral){
 function ownEdge(){
   let e=0; const R=SEA.roster&&SEA.roster[S.myTeam];
   if(S.featured!==null&&S.featured!==undefined&&R&&R[S.featured]&&typeof FEATURE_EDGE!=="undefined"
-     &&!SEA.talent.active(S.myTeam).some(x=>x.idx===S.featured))e+=FEATURE_EDGE;
+     &&!SEA.talent.active(S.myTeam).some(x=>x.idx===S.featured))e+=featureEdge(SEA,S.myTeam,S.featured);
   if(typeof deployEdge==="function"&&SEA.userTeam===S.myTeam)e+=deployEdge(SEA,S.myTeam);
   return e;
 }
@@ -1345,7 +1365,7 @@ function rosterView(){
   const avg=Math.round(POS.reduce((s,P,i)=>s+R[i].r,0)/POS.length);
   const college=!!(LEAGUE.classes&&LEAGUE.classes.length), more=SPORT.featureMore||"gives a player the ball more";
   // what featuring does, in words: the sizes stay under the hood (Ian, Nov 2026)
-  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: the team plays a little better while he's healthy, and he develops faster over the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
+  let h=coachMark("roster",`Each position shows your starter and the man behind him. Featuring ${more}: the team plays a little better while he's healthy (more so the better he is), and he develops faster over the offseason. You can also hand the job to a backup \u2014 costly now if he isn't ready, but he develops far faster once he's playing.`);
   const F=(S.featured!==null&&S.featured!==undefined)?R[S.featured]:null;
   // college players are seniors and declare early; pros are just older or younger
   h+=`<div class="note">${F?`Featuring <b>${esc(F.n)}</b>${college&&F.c>=3
@@ -1411,7 +1431,7 @@ function teamCardHTML(my,rk,co){
     <div class="stats">
       <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
       ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
-        :`<div><b>${(()=>{const r=liveConf(my);return r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
+        :`<div><b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
       <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
@@ -1673,7 +1693,7 @@ function milestones(wins,losses,result,rank,team,history){
   // milestone whose arithmetic didn't add up)
   const mine=H.filter(h=>(h.team||my)===my).map(h=>h.teams&&h.teams[my]?h.teams[my]:null).filter(Boolean);
   if(!mine.length){
-    if(wins>=11)out.push(`${wins} wins in your first season in charge.`);
+    if(wins+losses>0&&wins>=Math.max(10,Math.ceil(0.7*(wins+losses))))out.push(`${wins} wins in your first season in charge.`);   // was 11 wins in any game: a 15-67 first NBA season was a "milestone"
     return out;
   }
   const bestW=Math.max(...mine.map(r=>r[0]));
@@ -1896,9 +1916,9 @@ function fixturesView(w,last,maxW){
   const yours=gs.filter(mine); if(yours.length)h+=`<div class="grouphead">Yours</div>`+yours.map(line).join("");
   if(LEAGUE.groupFilter){ const g0=grpNow(), sel=g0==="CUP"?CONF[my]:g0, groups=sel==="ALL"?LEAGUE.conf.order:[sel];
     groups.forEach(c=>{ const L=gs.filter(g=>!g.cup&&CONF[g.home]===c); if(L.length)h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${L.length} games</div><div class="${wide?'gamegrid':''}">`+L.map(line).join("")+`</div>` });
-    const cupG=gs.filter(g=>g.cup); if(cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+    const cupG=gs.filter(g=>g.cup); if(cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("");
     return h }
-  return h+`<div class="grouphead">Everyone &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
+  return h+`<div class="grouphead">Everyone &mdash; ${nOf(gs.length,"game")}</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
 }
 function scoresView(){
   if(!SEA.weeks.length&&scoreWk===null)
@@ -1914,12 +1934,12 @@ function scoresView(){
     const cupG=W.games.filter(g=>g.cup), g0=grpNow(), sel=g0==="CUP"&&!cupG.length?CONF[S.myTeam]:g0;
     let h=wkNav(w,last,maxW)+grpTabsHTML(cupG.length>0)+(sel===CONF[S.myTeam]&&w===last?newsBlock():"");
     const line=g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam);
-    if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("")+
+    if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("")+
       `<button class="rewatch seedraw" data-cupview="1">See the whole draw</button>`;
     const groups=sel==="ALL"?LEAGUE.conf.order:[sel];
     groups.forEach(c=>{ const gs=W.games.filter(g=>!g.cup&&CONF[g.home]===c); if(!gs.length)return;
-      h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${gs.length} games</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>` });
-    if(sel==="ALL"&&cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${cupG.length} ties</div>`+cupG.map(line).join("");
+      h+=`<div class="grouphead">${esc(LEAGUE.conf.names[c])} &mdash; ${nOf(gs.length,"game")}</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>` });
+    if(sel==="ALL"&&cupG.length)h+=`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("");
     return h;
   }
   const marq=W.games.filter(g=>Math.min(g.hrank||999,g.arank||999)<=25);
@@ -1928,7 +1948,7 @@ function scoresView(){
   if(w===last)h+=newsBlock();
   if(marq.length)h+=`<div class="grouphead">Ranked teams</div>`+
     marq.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("");
-  if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${rest.length} games</div>`+
+  if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${nOf(rest.length,"game")}</div>`+
     `<div class="${wide?'gamegrid':''}">`+
     rest.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("")+`</div>`;
   return h;
@@ -2124,12 +2144,16 @@ function allTime(t){
     if(h.post&&h.post[t]){pw+=h.post[t][0]; pl+=h.post[t][1]}
     if(h.coaching&&h.coaching.firedList.indexOf(t)>=0)coach++;
   });
+  // the season under way counts too, until it's archived (Grokbot: all-time 0-0 forty games into a first season)
+  let cur=false;
+  if(SEA&&SEA.rec&&SEA.rec[t]&&!S.history.some(h=>h.year===SEA.year)){ const r=(SEA.regRec||SEA.rec)[t]; cur=r[0]+r[1]>0;
+    w+=r[0]; l+=r[1]; d+=(SEA.drw&&SEA.drw[t])||0; o+=(SEA.otl&&SEA.otl[t])||0 }
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
           post:pw+"-"+pl,postGames:pw+pl,coach:coach,now:rk,
           d:d, pct:(w+l+d)?(w/(w+l+d)):null,seasons:S.history.length,
           // hockey: overtime losses, where every season kept them (from Nov 2026)
-          rec:(LEAGUE.tracksOT&&!LEAGUE.draws&&oAll&&S.history.length)?`${w}-${l-o}-${o}`:LEAGUE.draws?`${w}-${d}-${l}`:`${w}-${l}`};
+          rec:(LEAGUE.tracksOT&&!LEAGUE.draws&&oAll&&(S.history.length||cur))?`${w}-${l-o}-${o}`:LEAGUE.draws?`${w}-${d}-${l}`:`${w}-${l}`};
 }
 
 function seasonRowsFor(t){
@@ -2638,10 +2662,18 @@ function render(){
     const bk=el("cback"); if(bk)bk.onclick=()=>{cardFor=null;cardMsg="";render()};
     return;
   }
+  { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
     el("app").innerHTML=live.ask?liveCallView():liveView();
     if(live.ask){
       document.querySelectorAll("[data-call]").forEach(b=>b.onclick=()=>answerLive(b.dataset.call));
+      // on a phone the answers can sit below the evidence: a pinned button says how many and jumps to them,
+      // and goes once they're on screen (Grokbot: decision buttons below the fold at 390px)
+      const co=document.querySelector(".callopts");
+      if(co&&typeof IntersectionObserver!=="undefined"){ const n=co.querySelectorAll("[data-call]").length;
+        const j=document.createElement("button"); j.id="tocall"; j.className="tocall"; j.textContent=`Your ${n} options \u2193`;
+        j.onclick=()=>co.scrollIntoView({behavior:"smooth",block:"center"}); document.body.appendChild(j);
+        const io=new IntersectionObserver(es=>{ es.forEach(e=>{ j.style.display=e.isIntersecting?"none":"" }) },{threshold:0.2}); io.observe(co); }
     }else{
       const pz=el("wpause"); if(pz)pz.onclick=()=>{live.paused=!live.paused;S.watchStep=live.paused;save();liveTick()};
       const st2=el("wstep"); if(st2)st2.onclick=()=>{live.paused=true;S.watchStep=true;liveTick()};
@@ -2665,7 +2697,7 @@ function render(){
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
-        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br>
+        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark${SPORT.word.length>8?" wm-long":""}"><span class="wm-a">${esc(SPORT.word)}</span><br>
         <span class="wm-b">Coach</span></h1></div>`;return}
     renderTitle();return}
   if(!S.myTeam&&S.setup&&!S.setup.ready){renderSetup();return}
@@ -2673,7 +2705,7 @@ function render(){
   if(S.help){
     el("app").innerHTML=`<div class="stick"><div class="topbar">
       <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-      <span class="tb-team" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
+      <span class="tb-team${S.myTeam.length>13?" tb-long tb-xl":S.myTeam.length>9?" tb-long":""}" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
       </div></div>${helpPanel()}`;
     const c=el("hclose"); if(c)c.onclick=()=>{S.help=false;render()};
     document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{
@@ -2719,7 +2751,7 @@ function render(){
     <div class="stick">
       <div class="topbar">
         <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-          <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
+          <span class="tb-team${my.length>13?" tb-long tb-xl":my.length>9?" tb-long":""}" style="color:${teamInk(my)}">${esc(my)}</span></div>
         <div class="tb-right">${recFmt(my,liveRec(my))}
           ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
           <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button><button class="reset ${musicOn()?'':'off'}" id="mus" title="Music ${musicOn()?'on':'off'}">&#9835;</button>
@@ -2934,7 +2966,7 @@ function pickList(q){
 }
 
 function bindPicks(){
-  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>tapTwice(b,`Coach ${esc(b.dataset.t)}? Tap again to start`,()=>{
+  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>tapTwice(b,`<span class="pname">Tap again to start</span>`,()=>{   // short: the long question wrapped a word to a line on a small card (Grokbot)
     const want=(S.setup&&S.setup.coaches)||1;
     if(want>1){
       S.picking=S.picking||[];
@@ -3002,7 +3034,7 @@ function renderTitle(){
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
     </div>
-    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
+    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark${SPORT.word.length>8?" wm-long":""}"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">${esc(LEAGUE.text.tagline||"Build a program. Win it all.")}</div>
     ${(()=>{ const free=slots.find(x=>x.empty); if(!free||slots.some(x=>!x.empty))return "";
       firstJobPicks=firstJobPicks||firstJobs(); const J=firstJobPicks[1];
@@ -3021,7 +3053,15 @@ function renderTitle(){
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
            <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} ${s.now.done?"finished":"so far"}: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
              ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
-           </button><button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button></div>`).join("")}</div>
+           </button>${replaceAsk
+             ?`<button class="slotdel repl" data-repl="${s.n}" aria-label="Replace the career in slot ${s.n} with a new one">Replace</button>`
+             :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}</div>`).join("")}</div>
+    ${(()=>{ if(!slots.length||slots.some(x=>x.empty||x.broken))return "";
+      // every slot full: a way into a new career (Muse: no entry point at all, short of erasing first)
+      return replaceAsk
+        ? `<div class="note">Pick the career to replace. Replacing erases it: to keep it, open it and save a backup file first.</div>
+           <button class="introskip wide" id="tnewx">Cancel</button>`
+        : `<button class="introskip wide" id="tnew">Start a new career</button>` })()}
     <button class="introskip wide" id="thow">How to play</button>
     <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
@@ -3032,6 +3072,12 @@ function renderTitle(){
     tapTwice(b,"Tap again to erase",async()=>{
       try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){} await bumpRev(+b.dataset.del);
       S._slots=await allSlots(); render() }) });
+  const tn=el("tnew"); if(tn)tn.onclick=()=>{ replaceAsk=true; render() };
+  const tx=el("tnewx"); if(tx)tx.onclick=()=>{ replaceAsk=false; render() };
+  document.querySelectorAll("[data-repl]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const n=+b.dataset.repl;
+    tapTwice(b,"Tap again to replace",async()=>{
+      try{await store.delete(KEYFOR(n))}catch(e){} await bumpRev(n); replaceAsk=false;
+      S._slots=await allSlots(); render(); const e=document.querySelector(`[data-slot="${n}"]`); if(e)e.click() }) });
   document.querySelectorAll("[data-copyback]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
     tapTwice(b,"Tap again to bring it back",async()=>{ const c=await readCopy(), n=+b.dataset.copyback; if(!c||c.n!==n)return;
       try{ await store.set(KEYFOR(n),c.v) }catch(e){} await bumpRev(n); S._slots=await allSlots(); render() }) });
@@ -3040,7 +3086,7 @@ function renderTitle(){
     slot=n; await claimSlot(n);
     const d=await loadSlot(n); if(!(d&&d.myTeam))saveRev=null;
     if(d&&d.broken)return;                         // never start a career over a save that's there
-    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();keepCopy(n);flash=resumeFlash();render()}
+    if(d&&d.myTeam){S=d;S.title=false;rebuild();S.expNow=S.expNow||expectations();keepCopy(n);flash=resumeFlash();if(lockNew){lockNew=false;save()}render()}
     else {S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,
              setup:{name:"",seed:Math.floor(Math.random()*899999+100000)}};
           S.title=false;render()}
@@ -3193,6 +3239,7 @@ function renderStart(){
         (${taken.length+1} of ${n})</div>`+
         (taken.length?`<div class="note">Already taken: ${taken.map(esc).join(", ")}</div>`:"");
     })()}
+    <button class="backbtn" id="pback2">&larr; Back</button>
     ${(S.picking&&S.picking.length)?"":(()=>{ firstJobPicks=firstJobPicks||firstJobs();
       return `<div class="grouphead">Good first jobs</div><div class="firstjobs">${firstJobPicks.map(J=>`<button class="pick firstjob" data-t="${esc(J.t)}">
         <span class="dot" style="background:${teamColor(J.t)}"></span><span class="fjl">${esc(J.l)}</span>
@@ -3208,6 +3255,7 @@ function renderStart(){
   bindPicks();
   // back a step: to the setup, nothing started (testers: no way out of a new career once begun)
   el("pback").onclick=()=>{ if(S.setup){S.setup.ready=false} S.picking=null; render() };
+  { const b2=el("pback2"); if(b2)b2.onclick=el("pback").onclick }   // at the top too: the bottom one sat under 132 teams (Grokbot)
   const f=el("find");
   if(f)f.oninput=()=>{el("picks").innerHTML=pickList(f.value);bindPicks()};
 }

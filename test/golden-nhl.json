@@ -1,5 +1,5 @@
 {
- "fp": "7bf9cbaa770e1e51",
+ "fp": "1395cf60d3cff15f",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -185,59 +185,104 @@
    "fp": "7bf9cbaa770e1e51",
    "from": "de9a3c4c79efacde",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "a8609ba7f1c5f4c6",
+   "from": "7bf9cbaa770e1e51",
+   "note": "Nov 2026 round 17: screen text only (graded calls list every option's replay rate on one scale; reads the card hadn't marked aren't counted; hockey career keeps this season's overtime losses in the offseason). Results identical to db42841 field by field."
+  },
+  {
+   "fp": "0a777a5f486e0c6b",
+   "from": "a8609ba7f1c5f4c6",
+   "note": "Nov 2026 round 18: hockey's pay curve bends (cheaper middles, steeper top, max from ~70) for contracts signed from now on. Every other game unchanged; a hockey save from 26d992f replays identically mid-season and mid-offseason."
+  },
+  {
+   "fp": "4ec2c7c177a2dea5",
+   "from": "0a777a5f486e0c6b",
+   "note": "Nov 2026 round 20: a club's usual system is 5 times as likely (was 4): the scouting report's top system was played 64% of the time in real games, now 68%."
+  },
+  {
+   "fp": "fda5009684b6fa32",
+   "from": "4ec2c7c177a2dea5",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "0ed4f5dad2e47957",
+   "from": "fda5009684b6fa32",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "5ca020fafa9845b8",
+   "from": "0ed4f5dad2e47957",
+   "note": "Round 23: hockey goalie call only within two goals; staff never repeat a sentence in a game; featuring scaled by the player. Controls: hockey without the goalie gate matches the last commit; college football differs only in screens."
+  },
+  {
+   "fp": "5b0a9c05675802d3",
+   "from": "5ca020fafa9845b8",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "5b0a9c05675802d3",
+   "from": "5b0a9c05675802d3",
+   "note": "Round 25: hockey finish reworded (\"rebound\" is a basketball word to the screens test)."
+  },
+  {
+   "fp": "1395cf60d3cff15f",
+   "from": "5b0a9c05675802d3",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "90dc5b0ee22d0568",
-    "post": "cd58e633e964b2e1",
-    "champion": "Toronto",
-    "rec": "3d0a43f6a488195b",
-    "poll": "b1f12eb7274f55a9",
-    "heis": "003f71366db13367",
-    "history": "4e1b33d4973fd7a5",
-    "universe": "9d726b0d367ee1f5",
-    "screens": "22a4d0aa8d9c0c19"
+    "games": "4b9acb13b7936243",
+    "post": "a2d79b7061373bbb",
+    "champion": "Florida",
+    "rec": "2770016e5cbd2399",
+    "poll": "bc8fe85dc7243c48",
+    "heis": "1884646e04c965cf",
+    "history": "075e06d7c30b66af",
+    "universe": "89973d8cfacd3ffe",
+    "screens": "b1ca59a50efde6b6"
    },
    {
     "year": 2027,
-    "games": "4cf4080670d5c920",
-    "post": "7cbe8f2f7e9b42e8",
-    "champion": "Toronto",
-    "rec": "7f0e4006d97653e7",
-    "poll": "c3fda57152cce22a",
-    "heis": "4c644f1ea124991e",
-    "history": "fba3860b93026b1a",
-    "universe": "b3827186eaf39e29",
-    "screens": "1e783e1c5d36dc2d"
+    "games": "d5e954e103a35962",
+    "post": "c5a4df804cc41537",
+    "champion": "St. Louis",
+    "rec": "1554eac94d94d2bb",
+    "poll": "e6c330d1da3730f1",
+    "heis": "ac6801fa4e52a9cb",
+    "history": "d42da527670238a6",
+    "universe": "5fdf6a8e849d0fa1",
+    "screens": "9d3610e65c6ee8d0"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "49531a1a957e4286",
-    "post": "08526b4e60097de9",
-    "champion": "Minnesota",
-    "rec": "305a97af6c7ef8de",
-    "poll": "4b8879ecac7822ce",
-    "heis": "350200e2d90beccc",
-    "history": "ba669f3d1704757f",
-    "universe": "4a25db918d543efd",
-    "screens": "3045481960fb090b"
+    "games": "b17e27f2c677f05a",
+    "post": "17713e04bdfae27e",
+    "champion": "Vegas",
+    "rec": "f8b507393ab8b036",
+    "poll": "6f621d6cf426f6ec",
+    "heis": "ade43a62bf6e0213",
+    "history": "e86ca79c165c80b5",
+    "universe": "ebbc7e179f6cdd16",
+    "screens": "89e66146ac3a6cc1"
    },
    {
     "year": 2027,
-    "games": "e38c41dcec6b8aa5",
-    "post": "3ce5193dd7586d0f",
-    "champion": "Colorado",
-    "rec": "13b5adbfb243852b",
-    "poll": "24276e7d583ce4bb",
-    "heis": "2fc47010d565d512",
-    "history": "0c007b1e1e36b815",
-    "universe": "8d0e10674c7fac2d",
-    "screens": "a6831527321eddd1"
+    "games": "5b02f1859b47625d",
+    "post": "eb3a60c20b07837b",
+    "champion": "Vancouver",
+    "rec": "483595cb7ad308e8",
+    "poll": "83139b47e7e06207",
+    "heis": "5c182bc261349631",
+    "history": "c88578736f2d767b",
+    "universe": "0bc3604885579c57",
+    "screens": "010ffa585a56b24d"
    }
   ],
   "schedules#60": [

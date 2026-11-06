@@ -88,7 +88,10 @@ for(const [f,cap,hard] of [['football-coach-pro.html',110,true],['hockey-coach-p
     meds.push(pay[pay.length>>1]/cap);
     if(hard)ok(pay[pay.length-1]<=cap+0.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} over the ${cap} hard cap`);
     else ok(pay[pay.length-1]<=200.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} past the tax line`) }
-  const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=0.6&&m<=0.95,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ~70-85%)`);
+  // hockey's curve bends (Nov 2026, Ian's call): cheaper middles leave a typical payroll near 60% of the
+  // cap, the best-built teams still at it; the others stay ~70-85%
+  const lo=/hockey/.test(f)?0.5:0.6, want=/hockey/.test(f)?"~55-70%":"~70-85%";
+  const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=lo&&m<=0.95,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ${want})`);
   console.log(`  ${f}: typical payroll ${Math.round(100*m)}% of the cap`); }
 
 /* 8. a build stamp on every game */
@@ -277,7 +280,7 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
 /* 35. every call against the assistant is weighed on the result card, not just the biggest */
 { const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP});
   const P=[{mine:110,theirs:104,impact:[{h:'Up 11 at the half',pick:'Slow it down',def:'Keep going',worth:-0.01,cf:{mine:108,theirs:104}},{h:'Down 6, late',pick:'Full-court press',def:'Stay in the half court',worth:0.06,cf:{mine:104,theirs:106}}]}];
-  ok(/Your other call against his[^<]*Up 11 at the half/.test(A.impactHTML(P)),'pro basketball: a second call against the assistant gets no verdict'); }
+  ok(/1 other call was close either way/.test(A.impactHTML(P)),'pro basketball: a second call against the assistant gets no verdict'); }   // a close one is counted, not headlined (Muse)
 /* 36. the Bears don't repeat a line in one game */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T');
   A.live={g:{}}; A.live.ask={dp:{h:'Half-time'},q:9}; const a=A.bearYell('push',15); A.live.ask={dp:{h:'Late'},q:15}; const b=A.bearYell('push',21);
@@ -309,7 +312,7 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
 /* 41. a result card's headline never contradicts its replay */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:71,theirs:67,impact:[{h:'Half-time',pick:'Trap the ball handler',def:'Pack the paint',worth:-0.07,cf:{mine:61,theirs:70}}]}];
-  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/won this one tonight, though over many replays it loses more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
+  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/Not quite the right call, though it worked tonight: his wins more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
 /* ---- Muse round 9 / Ian (Nov 2026) ---- */
 /* 42. a game's drives are its own: Rewatch showed another game (a 12-31 loss replayed as a 27-20 win) */
 for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,7,'T'); let bad=0,n=0;
@@ -359,15 +362,77 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 /* 52. a same-result headline carries the replay verdict when it's big */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.07,cf:{mine:50,theirs:68}}]}];
-  ok(/Same defeat either way tonight, but over many replays your call wins more often/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays'); }
+  ok(/A good call, though tonight's dice gave the same result either way/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays');
+  // and a call within 3 points of the assistant's gets no headline at all, one quiet line (Muse: "little difference" taught that nothing matters)
+  const Q=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.01,cf:{mine:53,theirs:66}}]}], q=A.impactHTML(Q);
+  ok(!/imphead/.test(q)&&/close either way/.test(strip(q)),'college basketball: a close call still headlined'); }
 /* 53. football asks enough, and not in decided games (it asked 2 a game, some at 37-17) */
 for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Denver']]){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,8,'T');
-  const per=[]; let decided=0;
-  for(let k=0;k<14&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0,n=0; const L0=A.live; while(A.live&&!A.live.done&&m++<6000){ const q=A.live.ask;
-      if(q){ n++; const d=q.mine-q.theirs, a=Math.abs(d); if(q.dp.k==='fourth'&&(a>=28||(q.q>=3&&a>=21)||(q.q===4&&a>=17)))decided++; A.answerLive(q.dp.opts[0][0]) } else A.liveTick() } if(L0)per.push(n) }
-  per.sort((a,b)=>a-b); const med=per[per.length>>1];
-  console.log(`  ${f}: calls per game median ${med} (${per.join(',')})`);
-  ok(med>=3,`${f}: a median of ${med} calls a game`); ok(decided===0,`${f}: ${decided} fourth-down calls asked in a decided game`) }
+  const per=[], close=[]; let decided=0;
+  // no target for calls per game (Ian, Nov 2026), but a close game should get its calls (Grokbot): counted in games
+  // decided by 8 or fewer; a blowout or a mismatch can have none
+  for(let k=0;k<17&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0,n=0; const L0=A.live; while(A.live&&!A.live.done&&m++<6000){ const q=A.live.ask;
+      if(q){ n++; const d=q.mine-q.theirs, a=Math.abs(d); if(q.dp.k==='fourth'&&(a>=28||(q.q>=3&&a>=21)||(q.q===4&&a>=17)))decided++; A.answerLive(q.dp.opts[0][0]) } else A.liveTick() }
+    if(L0&&L0.done){ const e=L0.eng; (Math.abs(e.h-e.a)<=8?close:per).push(n) } }
+  close.sort((a,b)=>a-b); const med=close[close.length>>1];
+  console.log(`  ${f}: calls in close games, median ${med} (${close.join(',')}); others ${per.join(',')}`);
+  ok(close.length<3||med>=3,`${f}: a median of ${med} calls in a close game`); ok(decided===0,`${f}: ${decided} fourth-down calls asked in a decided game`) }
+
+/* 54. hockey's game lines show overtime losses (Grokbot: scores read "Seattle 9-28" beside a 9-21-7 table) */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Toronto',5,'T'); let g=0; while(A.SEA.step<40&&g++<200)A.SEA.advance();
+  const W=A.SEA.weeks[A.SEA.weeks.length-1], bad2=W.games.filter(x=>!/^\d+-\d+-\d+$/.test(x.hrec||''));
+  ok(!bad2.length,`hockey: ${bad2.length} game lines with a two-part record (${bad2[0]&&bad2[0].hrec})`) }
+/* 55. your coordinator takes a head job: you hire his replacement (Grokbot: a stranger was simply in his chair) */
+{ let A,cm=[]; for(let sd=1;sd<=40&&!cm.length;sd++){ A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP.concat(['U','openOffseason'])}); A.newDynasty(A.NAMES[5],sd,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance(); A.openOffseason();
+    cm=(A.S.off.act.coordMoves||[]).filter(m=>m.from===A.S.myTeam) }
+  ok(cm.length===1,`pro football: no seed in 40 where your coordinator left for a head job (${cm.length})`);
+  if(cm.length)ok(A.S.off.act.staffOpen[cm[0].side]&&A.S.off.staff[cm[0].side]&&A.S.off.staff[cm[0].side].length>0,`pro football: ${cm[0].name} left and no hire was offered`) }
+/* 56. the soccer late call comes within a goal only (two up or down, it moved nothing: test/call-weight.js) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',4,'T'); let wide=0,asked=0;
+  for(let k=0;k<12&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='late'){ asked++; if(!/^(Level|Up 1|Down 1),/.test(q.dp.h))wide++ } A.answerLive(q.dp.opts[0][0]) } else A.liveTick() } }
+  ok(asked>0&&!wide,`soccer: late call asked ${asked} times, ${wide} of them two or more goals apart`) }
+
+/* 57. two down early in hockey: the read comes now, as a timeout (Instinct: 0-3 and nothing to decide) */
+{ let early=0,games=0,miss=0; for(const sd of [3,4,5]){ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('San Jose',sd,'T');
+  for(let k=0;k<30&&A.SEA.phase==='week';k++){ A.doAdvance(); if(!A.live)continue; games++; let m=0,saw=false,down2=false;
+    while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='read'&&/^Timeout/.test(q.dp.h)){ saw=true; if(q.theirs-q.mine<2)miss++ } if(q.dp.k==='read'&&!/^Timeout/.test(q.dp.h)&&down2)miss++; A.answerLive(q.dp.opts[0][0]) }
+      else { const L=A.live; A.liveTick(); const e=L.eng; if(e&&e.seg>=2&&e.seg<4&&!saw){ const mine=L.g.home===A.S.myTeam?e.h-e.a:e.a-e.h; if(mine<=-2)down2=true } } } if(saw)early++ } }
+  console.log(`  hockey: ${early} early timeouts in ${games} games`); ok(early>0&&!miss,`hockey: ${early} early reads, ${miss} asked wrongly or twice`) }
+/* 58. the offseason screen has the season's calls, and never "would have gone with Leave it to your assistant" */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Brighton',6,'T'); let i=0;
+  for(let k=0;k<200&&A.SEA.phase!=='done';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ const o=q.dp.opts; A.answerLive(o[(i++)%o.length][0]) } else A.liveTick() } }
+  A.openOffseason(); const t=strip(A.LEAGUE.ui.offseasonScreen());
+  ok(/Your calls/.test(t)&&/The season's big calls/.test(t),'soccer: no season calls summary on the offseason screen');
+  ok(!/gone with Leave it/.test(t),'soccer: "would have gone with Leave it to your assistant"') }
+/* 59. a first-season milestone needs a good season: 15-67 in the NBA was one */
+{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP.concat(['milestones'])}); A.newDynasty('Boston',2,'T');
+  ok(A.milestones(15,67,'',20).length===0&&A.milestones(60,22,'',2).length===1,'NBA: first-season wins milestone') }
+
+/* 60. featuring your best starter is worth more than featuring your weakest (Instinct) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['featureEdge'])}); A.newDynasty('Chelsea',3,'T');
+  const R=A.SEA.roster[A.S.myTeam], ix=A.POS.map((P,i)=>i).sort((a,b)=>R[a].r-R[b].r);
+  const lo=A.featureEdge(A.SEA,A.S.myTeam,ix[0]), hi=A.featureEdge(A.SEA,A.S.myTeam,ix[ix.length-1]);
+  ok(hi>lo&&lo>0,`soccer: featuring the best starter ${hi.toFixed(1)}, the weakest ${lo.toFixed(1)}`) }
+/* 61. hockey's goalie question only with the game in reach (two down or more, it moved nothing) */
+{ let wide=0,asked=0; for(const sd of [3,4]){ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Chicago',sd,'T');
+  for(let k=0;k<30&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='goalie'){ asked++; if(Math.abs(q.mine-q.theirs)>2)wide++ } A.answerLive(q.dp.opts[1][0]) } else A.liveTick() } } }
+  ok(asked>0&&!wide,`hockey: goalie asked ${asked} times, ${wide} with the game out of reach`) }
+
+/* 62. hockey play-by-play: no template phrase twice in a game until its pool runs out (Grokbot) */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP.concat(['gameScript'])}); A.newDynasty('Toronto',4,'T'); let g=0; while(A.SEA.step<20&&g++<200)A.SEA.advance();
+  const tpl=t=>t.replace(/[A-Z][a-z'.-]+( [A-Z][a-z'.-]+)*/g,'X'); let games=0,rep=0;
+  A.SEA.weeks.slice(0,20).forEach(W=>W.games.slice(0,6).forEach(G=>{ const gs=A.gameScript(G,A.SEA.roster[G.home],A.SEA.roster[G.away],7); const rows=gs&&(gs.rows||gs); if(!Array.isArray(rows))return; games++;
+    const seen={}; rows.forEach(x=>(x.text||'').split(/(?<=\.)\s+/).forEach(s=>{ const k=tpl(s); if(k.length<8)return; if(seen[k])rep++; seen[k]=1 })) }));
+  console.log(`  hockey: ${(rep/games).toFixed(2)} repeated phrases a game in ${games}`); ok(games>50&&rep/games<1,`hockey: ${(rep/games).toFixed(2)} repeated play-by-play phrases a game`) }
+/* 63. the draft board marks who's likely there at your pick */
+{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP}); A.newDynasty('Detroit',4,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance(); A.openOffseason();
+  const t=strip(A.LEAGUE.ui.offseasonScreen()); ok(/likely gone/.test(t)&&/likely there/.test(t)&&/picks? before yours/.test(t),'NBA: the draft board has no availability marks') }
+
+/* 64. a star never picks up more fouls than the league allows (Muse: an "8th foul" in a six-foul league) */
+{ let over=0,outs=0; for(const f of ['basketball-coach-pro.html','basketball-coach.html']){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(A.NAMES[3],6,'T');
+  for(let k=0;k<25&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; const L0=A.live; while(A.live&&!A.live.done&&m++<6000){ if(A.live.ask)A.answerLive(A.live.ask.dp.opts[0][0]); else A.liveTick() }
+    if(L0)(L0.drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==='foul'&&e.f>((A.LEAGUE.tuning&&A.LEAGUE.tuning.bb&&A.LEAGUE.tuning.bb.foulOut)||5))over++; if(e.k==='out')outs++ })) } }
+  ok(!over,`basketball: ${over} fouls past the limit (${outs} foul-outs seen)`) }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

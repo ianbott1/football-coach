@@ -41,7 +41,9 @@ function seasonObjectives(my){
     out.push({k:"home",n:t,of:H.length,l:`Win ${t} of your ${H.length} home games`}) }
   // a run of wins, when there's room for a third
   const n=games.length;
-  out.push({k:"streak",n:n<=13?3:n<=40?4:5,l:`Win ${n<=13?3:n<=40?4:5} games in a row`});
+  // six over 82-84 games: five was met in 24 of 24 hockey seasons (an average side gets six about half the time)
+  const sk=n<=13?3:n<=40?4:n<=60?5:6;
+  out.push({k:"streak",n:sk,l:`Win ${sk} games in a row`});
   const list=out.slice(0,3);
   S.obj={year:SEA.year,team:my,list:list};
   return list;

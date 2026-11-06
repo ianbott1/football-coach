@@ -1,5 +1,5 @@
 {
- "fp": "b12379d7f156f86e",
+ "fp": "f16e81309c43de39",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -160,6 +160,41 @@
    "fp": "b12379d7f156f86e",
    "from": "b12379d7f156f86e",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "92f911757268b777",
+   "from": "b12379d7f156f86e",
+   "note": "Nov 2026 round 20: after a turnover or a missed kick the next drive starts at the spot (it was random). College calibration 54.8 ppg (target ~54), pro 46.5 (NFL ~44-46)."
+  },
+  {
+   "fp": "d755abb1fc88ff81",
+   "from": "92f911757268b777",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "d57657fbe9530816",
+   "from": "d755abb1fc88ff81",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "d57657fbe9530816",
+   "from": "d57657fbe9530816",
+   "note": "Round 23: hockey goalie call only within two goals; staff never repeat a sentence in a game; featuring scaled by the player. Controls: hockey without the goalie gate matches the last commit; college football differs only in screens."
+  },
+  {
+   "fp": "f16e81309c43de39",
+   "from": "d57657fbe9530816",
+   "note": "Round 24: punts land from where they're kicked (they started the opponent at ~24 from anywhere); fourth downs asked only with the game in reach (rough win chance 10-90%). Calibration unchanged (college 54.8 pts/game, favourites 0.699; pro 46.1, 0.694). Results change from season 1 (fewer asks shift the replies)."
+  },
+  {
+   "fp": "f16e81309c43de39",
+   "from": "f16e81309c43de39",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "f16e81309c43de39",
+   "from": "f16e81309c43de39",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "out": [
@@ -169,20 +204,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-3",
+      "rec": "11-3",
       "result": "Won the Citrus Bowl",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "d304c1f1a82cdf0b"
+     "book": "7e30bbf6ff75a31d"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-6",
-      "result": "Lost the Boca Raton Bowl",
-      "grade": "A+"
+      "rec": "7-6",
+      "result": "Won the Myrtle Beach Bowl",
+      "grade": "A"
      },
-     "book": "108f8423f9e0ef4d"
+     "book": "c3455bd0bbda8fa5"
     }
    ]
   },
@@ -192,20 +227,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "15-1",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "11-3",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A-"
      },
-     "book": "4da6d292d1e830e8"
+     "book": "c1b6c9ce61276614"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
+      "rec": "4-8",
       "result": "No bowl game",
-      "grade": "C"
+      "grade": "B-"
      },
-     "book": "a67fe9ad57774100"
+     "book": "43660ebc88ca2c3b"
     }
    ]
   },
@@ -215,20 +250,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-3",
+      "rec": "13-2",
       "result": "Eliminated in the semifinals",
-      "grade": "A"
+      "grade": "A+"
      },
-     "book": "b11f552ac97ae4cc"
+     "book": "717c0dcff7ed9c2b"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the New Orleans Bowl",
-      "grade": "A-"
+      "rec": "8-5",
+      "result": "Lost the LA Bowl",
+      "grade": "A+"
      },
-     "book": "d8f87769a74c6e4d"
+     "book": "de5aa07d715361f9"
     }
    ]
   }

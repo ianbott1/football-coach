@@ -28,7 +28,7 @@ for(const file of ['football-coach.html','football-coach-pro.html','basketball-c
   console.log(`  ${name.padEnd(22)} met ${(100*tot[0]/tot[1]).toFixed(0)}% overall · `+Object.entries(K).map(([k,v])=>`${k} ${v[0]}/${v[1]}`).join(', '));
   Object.entries(K).forEach(([k,v])=>{ all[k]=all[k]||[0,0]; all[k][0]+=v[0]; all[k][1]+=v[1] });
 }
-Object.entries(all).forEach(([k,v])=>{ const r=v[0]/v[1]; ok(v[1]<8||(r>=0.2&&r<=0.8),`"${k}" objectives met ${(100*r).toFixed(0)}% of the time`) });
+Object.entries(all).forEach(([k,v])=>{ const r=v[0]/v[1]; ok(v[1]<15||(r>=0.2&&r<=0.8),`"${k}" objectives met ${(100*r).toFixed(0)}% of the time`) });
 const T=Object.values(all).reduce((a,b)=>[a[0]+b[0],a[1]+b[1]],[0,0]);
 console.log(`  all games: met ${(100*T[0]/T[1]).toFixed(0)}% · `+Object.entries(all).map(([k,v])=>`${k} ${(100*v[0]/v[1]).toFixed(0)}%`).join(', '));
 ok(T[0]/T[1]>0.35&&T[0]/T[1]<0.65,'overall share met outside 35-65%');

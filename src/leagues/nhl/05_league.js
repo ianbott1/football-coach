@@ -67,6 +67,7 @@ const LEAGUE={
       <text x="36" y="51.2" text-anchor="middle" font-family="Impact,'Arial Black',sans-serif" font-size="7.5" fill="#F4F1EA">99</text>`},
   /* W-L-OTL, as hockey writes it; points: two a win, one an overtime loss */
   // the regular season's record: playoff games don't count in the standings
+  seatSpread:30,   // seat heat: strengths sit closer than in the other games; at 45, about one coaching change a summer (Grokbot: "0 teams changed coaches"), at 30 about five, as in the NBA game
   recText(t,sea,r){ const [w,l]=r||(sea.regRec||sea.rec)[t], o=(sea.otl&&sea.otl[t])||0; return `${w}-${l-o}-${o}` },
   standingsCol:{label:"Pts", val:(t,sea)=>LEAGUE.points(t,sea)},
   stepLabel:w=>`Day ${w+1}`,                  // a calendar day, not your game number

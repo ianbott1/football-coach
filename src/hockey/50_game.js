@@ -45,7 +45,7 @@ const HK_BASE = {
   backup:0.006,      // the backup: this much worse than the starter on average
   softBad:0.65, softOk:0.15,   // goals the commentary calls soft: on a bad night, on an ordinary one
   cueTrue:0.5,       // commentary on a system that is about the real one
-  favW:4,            // a club's usual system: this many times as likely as any other
+  favW:5,            // a club's usual system: this many times as likely as any other (4: 61%, as basketball)
   scouted:6,         // games in a scouting report
   misprep:{own:0.93, opp:1.05},  // set up all week for the wrong system: out of shape until you change it
   prepped:{own:1.05, opp:0.95}   // ...for the right one: drilled, sharper than a change made mid-game
@@ -87,8 +87,8 @@ function hkRead(T){
   return SYSTEM_KEYS.reduce((a,k)=>out[k]>out[a]?k:a,SYSTEM_KEYS[0]);
 }
 const ASSIST=["normal","Leave it to your assistant"];
-function readCall(T,hint){
-  return {k:"read",h:"First intermission",q:"How are they playing us? Pick the answer.",
+function readCall(T,hint,early){
+  return {k:"read",h:early||"First intermission",q:"How are they playing us? Pick the answer.",
     opts:Object.keys(ANSWERS).map(a=>[a,ANSWERS[a].l]).concat([ASSIST]),
     tell:{to:T.to,fe:T.fe,cy:T.cy,n:T.n}, best:hkRead(T), pearl:hint||hkRead(T)};
 }
@@ -272,12 +272,18 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     function askGoalie(sd,X,per){
       if(X.ga<2||X.backupIn)return;
       const split=X.soft>0||X.ga>=X.xga+1.5, fresh=X.askedGa===undefined||X.ga>X.askedGa;
-      if(split&&fresh){ X.askedGa=X.ga; queueCall(sd,goalieCall(per,X)) } else cpuGoalie(sd);
+      // and only with the game in reach: down three or more, or up big, the swap moved 0-2.5 points
+      // (test/call-weight.js, Nov 2026); within two it was 10-22 (Instinct: make it rare and heavy)
+      if(split&&fresh&&Math.abs(lead(sd))<=2){ X.askedGa=X.ga; queueCall(sd,goalieCall(per,X)) } else cpuGoalie(sd);
     }
     // first intermission: the read, and your goalie if he's let in two or more
+    // two down early: call your timeout and make the read now, not at the intermission (Instinct)
+    if(s>=2&&s<4&&!st.i1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
+        const O=st.S[other(sd)]; queueCall(sd,readCall(O.tell,O.lastCue,`Timeout: two down, ${s*5} minutes in`)) });
+      if(st.queue.length)return st.next()}
     if(s===4&&!st.i1){st.i1=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], O=st.S[other(sd)];
         if(!humans[sd]){ readIt(sd,0.45); cpuGoalie(sd); return }
-        queueCall(sd,readCall(O.tell,O.lastCue));
+        if(!(st.r1e||{})[sd])queueCall(sd,readCall(O.tell,O.lastCue));
         askGoalie(sd,X,1) });
       if(st.queue.length)return st.next()}
     // second intermission: the score, and your goalie
@@ -286,7 +292,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         askGoalie(sd,X,2);
         if(L!==0&&Math.abs(L)<=3)queueCall(sd,intCall(L)) });      // up four after two, it's gone
       if(st.queue.length)return st.next()}
-    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1||L===-2){ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
+    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
       if(st.queue.length)return st.next()}
     if(s>=SEGS){ if(st.h===st.a)overtime(); st.done=true; return fin() }
     const d=segment(s); st.seg++;

@@ -1,5 +1,5 @@
 {
- "fp": "1af594f376f266c0",
+ "fp": "9bb81c62244379ad",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -105,6 +105,31 @@
    "fp": "1af594f376f266c0",
    "from": "b1572df107eaef6a",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "47637b59c80e5d5f",
+   "from": "1af594f376f266c0",
+   "note": "Nov 2026 round 20: the winning-streak objective is 6 in a row over seasons of 60+ games."
+  },
+  {
+   "fp": "47637b59c80e5d5f",
+   "from": "47637b59c80e5d5f",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "9bb81c62244379ad",
+   "from": "47637b59c80e5d5f",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "9bb81c62244379ad",
+   "from": "9bb81c62244379ad",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "9bb81c62244379ad",
+   "from": "9bb81c62244379ad",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "out": [
@@ -118,7 +143,7 @@
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "951fa8740ff2254c"
+     "book": "256f71d1bdf7111d"
     },
     {
      "team": "New York",
@@ -127,7 +152,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "3ad3a61a4aff61be"
+     "book": "bdad8bae178556b9"
     }
    ]
   },
@@ -141,7 +166,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "9477769715d1df27"
+     "book": "3b929f074f898e88"
     },
     {
      "team": "New York",
@@ -150,7 +175,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "e47b4686c05aa7b9"
+     "book": "1ecbbd9a6f896d65"
     }
    ]
   },
@@ -164,7 +189,7 @@
       "result": "Lost in the play-in",
       "grade": "C"
      },
-     "book": "94427e49eb7bd62d"
+     "book": "a09258d4b7627d95"
     },
     {
      "team": "New York",
@@ -173,7 +198,7 @@
       "result": "Lost in the play-in",
       "grade": "C+"
      },
-     "book": "19e3805396cb7e70"
+     "book": "8c78937510b21d40"
     }
    ]
   }

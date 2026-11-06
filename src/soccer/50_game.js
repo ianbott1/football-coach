@@ -14,8 +14,8 @@
    pile up; a centre-back on a yellow can see a second.
 
    Your calls: the read (25', and again at 55'), at half-time when you're
-   ahead or behind, your changes (60', or wait to 70'), and the last fifteen
-   minutes. Every call's last option is "carry on": what a skipped game does. */
+   ahead or behind, your changes (60', or wait to 70'), and the last twenty
+   minutes when it's within a goal. Every call's last option is "carry on": what a skipped game does. */
 const SEGS = 18;
 const DRIVES_PER_TEAM = 9;                     // the live clock's pace: 18 spells a game
 const SC_BASE = {
@@ -36,7 +36,8 @@ const SC_BASE = {
   flank:{right:1.17, wrong:0.93}, // overloading their weak flank, or the wrong one
   cueTrue:0.6,       // commentary that describes how a side really plays (else a random approach)
   flankTell:2.0,     // attacks that get through down the weak flank, against the other
-  favW:4,            // a club's usual approach: this many times as likely as any other
+  favW:7,            // a club's usual approach: this many times as likely as any other (was 4: the report's top
+                     // approach was the one played 49% of the time; Instinct: about two-thirds. Nov 2026)
   scouted:6,         // games in a scouting report
   misprep:{own:0.93, opp:1.05},  // set up from kick-off for the wrong thing: out of shape until you change it
   prepped:{own:1.05, opp:0.95}   // ...and for the right thing: drilled all week, sharper than a change made mid-game
@@ -48,9 +49,9 @@ const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
   aggressive:{own:0.60, opp:0.63},   // sit deep and counter: fewer chances, more luck
-  push:      {own:1.35, opp:1.30},   // all-out attack
-  sit:       {own:0.62, opp:0.84},   // park the bus
-  win:       {own:1.18, opp:1.15},   // level late: go for the win
+  push:      {own:1.55, opp:1.45},   // all-out attack (was 1.35/1.30; sit 0.62/0.84; win 1.18/1.15: the late call moved 1.6 points. Nov 2026)
+  sit:       {own:0.50, opp:0.80},   // park the bus
+  win:       {own:1.35, opp:1.25},   // level late: go for the win
   point:     {own:0.75, opp:0.78},   // level late: take the point
   urgent:    {own:1.00, opp:1.00}
 };
@@ -91,11 +92,11 @@ function halfCall(lead){
 }
 function lateCall(lead){
   const A=["normal","Leave it to your assistant"];
-  if(lead<0)return {k:"late",h:`Down ${-lead}, fifteen minutes left`,q:"Throw everything at it?",
+  if(lead<0)return {k:"late",h:`Down ${-lead}, twenty minutes left`,q:"Throw everything at it?",
     opts:[["push","All-out attack"],["keep","Keep our shape"],A]};
-  if(lead>0)return {k:"late",h:`Up ${lead}, fifteen minutes left`,q:"See it out?",
+  if(lead>0)return {k:"late",h:`Up ${lead}, twenty minutes left`,q:"See it out?",
     opts:[["sit","Park the bus"],["keep","Keep going"],A]};
-  return {k:"late",h:"Level, fifteen minutes left",q:"Go for the win, or take the point?",
+  return {k:"late",h:"Level, twenty minutes left",q:"Go for the win, or take the point?",
     opts:[["win","Go for the win"],["point","Take the point"],A]};
 }
 /* the evidence on one side's approach so far: each tell against its baseline */
@@ -110,11 +111,11 @@ function readScore(T){
   return out;
 }
 function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s[k]>s[a]?k:a,APPROACH_KEYS[0]) }
-function readCall(stage,T,hint,cur){
+function readCall(stage,T,hint,cur,early){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
   // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
   const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup: "+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
-  return {k:"read",stage:stage,h:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
+  return {k:"read",stage:stage,h:early?early:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},
     best:bestRead(T), pearl:hint||bestRead(T)};
@@ -317,8 +318,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
       if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
       if(st.queue.length)return st.next()}
-    if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45);
-      queueCall(sd,readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue))}); if(st.queue.length)return st.next()}
+    // two down before the first read: it comes now, not at 25' (Instinct: 0-3 and nothing to decide)
+    if(s>=3&&s<5&&!st.r1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
+      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, two down`); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }); if(st.queue.length)return st.next()}
+    if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45); if((st.r1e||{})[sd])return;
+      { const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }}); if(st.queue.length)return st.next()}
     if(s===9&&!st.ht){st.ht=true;
       // half-time: the computer changes its approach now and then, more often when behind
       ["home","away"].forEach(sd=>{ if(humans[sd])return; const X=st.S[sd];
@@ -328,10 +332,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
         if(humans[sd])queueCall(sd,flankCall(st.S[sd].fl,st.S[sd].flLast)); else aimIt(sd) });
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
-      queueCall(sd,readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr))}); if(st.queue.length)return st.next()}
+      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(s===15&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>queueCall(sd,lateCall(lead(sd)))); if(st.queue.length)return st.next()}
+    if(s===14&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd))) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
     if(s>=SEGS){ if(st.h===st.a){ if(st.playoff)extraTime(); else st.draw=true } st.done=true; return fin() }
     const d=segment(s); st.seg++;
     return {drive:d,h:st.h,a:st.a};

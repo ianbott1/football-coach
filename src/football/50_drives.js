@@ -20,6 +20,11 @@ const MAX_CALLS = 6;          // how many decisions a single game will ask of yo
 /* a call worth asking: not in a game that's decided (a fourth and 12 at 37-17, a fourth and 1
    down 27 were asked and graded irrelevant: Instinct, Grokbot) */
 function callMatters(q,diff){ const a=Math.abs(diff); return !(a>=28||(q>=3&&a>=21)||(q===4&&a>=17)) }
+/* a rough chance of winning from the score, the quarter and the strengths: a fourth down asked when it was
+   under 10% or over 90% moved 2.2-2.9 points; between, 9.2 (test/call-weight.js, 276 calls, Nov 2026; strength /15 fitted: kept 9.2, dropped 3.2) */
+function inReach(q,diff,edge){ const frac=Math.max(0.05,(4-Math.min(4,q)+0.5)/4), z=(diff+edge/15*frac)/(13*Math.sqrt(frac));
+  const p=0.5*(1+erfApprox(z/Math.SQRT2)); return p>=0.1&&p<=0.9 }
+function erfApprox(x){ const t=1/(1+0.3275911*Math.abs(x)), y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x); return x>=0?y:-y }
 
 /* Aggression presets, used both as a pre-game plan and as an in-game choice. */
 /* A gameplan is a trade between talent and chance. gap scales how much the
@@ -30,9 +35,10 @@ function callMatters(q,diff){ const a=Math.abs(diff); return !(a>=28||(q>=3&&a>=
    and fewer turnovers when safe; more touchdowns and turnovers when
    risky), set so they don't change who wins. See test/plans.js. */
 const AGGR = {
-  safe:      {td:-0.015, fg:+0.040, to:-0.015, gap:1.30},
+  safe:      {td:-0.015, fg:+0.035, to:-0.015, gap:1.30},   // rebalanced Nov 2026 (turnovers now give the ball
+                                                            // at the spot): even strength within 0.4 of each other over 40,000 games
   balanced:  {td: 0,     fg: 0,     to: 0,     gap:1.00},
-  aggressive:{td:+0.015, fg:-0.045, to:+0.030, gap:0.55},
+  aggressive:{td:+0.022, fg:-0.045, to:+0.030, gap:0.55},
   // not a gameplan: the engine's own urgency, for overtime and for a fourth
   // down it has decided to go for (the old "aggressive" numbers)
   urgent:    {td:+0.082, fg:-0.060, to:+0.086, gap:1.00},
@@ -100,8 +106,22 @@ function goOdds(togo, offElo, defElo){
   return Math.max(0.12, Math.min(0.82, base + adj));
 }
 
-/* Where a drive starts, given how the previous one ended. */
-function nextStart(rng, prevKind){
+/* Where a drive starts, given how the previous one ended, and where: a turnover or a miss gives the
+   other side the ball at the spot (it was a random ~42 whatever the spot, so a fumble at their 10 handed
+   them the ball near midfield: "a kickoff after a Denver fumble", "started own 72": Grokbot) */
+const PUNT_GROSS=45;
+function nextStart(rng, prevKind, at){
+  const cl=(x,a,b)=>Math.round(Math.max(a,Math.min(b,x)));
+  if (at!==undefined&&at!==null){
+    if (prevKind === "INT") return cl(100-at+rng.gauss(6,9), 2, 95);      // and a return
+    if (prevKind === "FUM") return cl(100-at+rng.gauss(2,4), 2, 95);
+    if (prevKind === "DOWNS") return cl(100-at, 4, 95);
+    if (prevKind === "MISS") return cl(Math.max(20,100-at+7), 20, 80);   // the spot of the kick, or the 20
+    // a punt goes from where it's kicked: ~45 yards and a short return, or a touchback. It was the
+    // opponent's 24 whatever the spot, so punting from your own 10 cost nothing and pinning them from
+    // midfield gained nothing, and going for it won most fourth downs (Instinct)
+    if (prevKind === "PUNT"){ const land=100-at-rng.gauss(PUNT_GROSS,7); return land<=0?20:cl(land+Math.max(0,rng.gauss(6,5)),2,70) }
+  }
   if (prevKind === "TD" || prevKind === "FG") return Math.round(rng.gauss(26, 6));
   if (prevKind === "PUNT") return Math.round(Math.max(4, Math.min(60, rng.gauss(24, 10))));
   if (prevKind === "INT" || prevKind === "FUM") return Math.round(Math.max(4, Math.min(75, rng.gauss(42, 16))));
@@ -124,7 +144,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   for(let i=0;i<st.total;i++){
     if(st.endAfter!==undefined&&i>st.endAfter)break;   // clock ran out
     const home=i%2===0;
-    const start=nextStart(rng,st.prev);
+    const start=nextStart(rng,st.prev,st.at);
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
     let aggr=home?st.aggrH:st.aggrA;
     if(!(opts.decide&&(home?opts.userIsHome:!opts.userIsHome)))
@@ -167,7 +187,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     if(home)st.h+=res.pts; else st.a+=res.pts;
     st.drives.push({home:home,q:q,start:start,pts:res.pts,kind:res.kind,
                     h:st.h,a:st.a,n:i+1,aggr:aggr});
-    st.prev=res.kind;
+    st.prev=res.kind; st.at=res.stall;
   }
   // overtime rather than an arbitrary tiebreak
   let ot=0;
@@ -249,7 +269,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
                  togo:res.togo||null};
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
     st.drives.push(drive);
-    st.prev=res.kind; st.i++; st.pend=null; st.stage=null;
+    st.prev=res.kind; st.at=res.stall; st.i++; st.pend=null; st.stage=null;
     return drive;
   }
 
@@ -329,7 +349,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       }
     }
 
-    const start=nextStart(rng,st.prev);
+    const start=nextStart(rng,st.prev,st.at);
 
     // ---- strategic call before the snap ----
     if(isUser&&calls()<MAX_CALLS&&!st.stage){
@@ -349,7 +369,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
 
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
-      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)){
+      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
         if(dp){
           used.fourth=(used.fourth||0)+1; called();
@@ -394,7 +414,7 @@ function decisionPoint(state, isUser){
       opts:[["push","Open it up"],["normal","Stay patient"]]
     };
   }
-  if (veryLate && diff > 0 && diff <= 14 && !used.protect) {
+  if (veryLate && diff > 0 && diff <= 10 && !used.protect) {   // up 12 to 14 the choice moved nothing (test/call-weight.js, Nov 2026)
     return {
       k:"protect",
       h: q>=4?`Up ${diff} late`:`Up ${diff}, end of the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)

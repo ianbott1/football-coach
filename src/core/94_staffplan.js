@@ -81,10 +81,35 @@ function collegePlanHTML(P){
    hints after) now gets hints. */
 function staffHints(){ return (S.advice||"hints")!=="full" }
 function staffAdvice(dp,ctx){
+  // the same ask re-rendered keeps its lines; a new one is checked against what each voice has said this game
+  const L=typeof live!=="undefined"&&live?live:null;
+  if(L&&L.staffFor&&L.staffFor.dp===dp)return L.staffFor.R;
+  const R=staffFresh(staffAdvice0(dp,ctx),dp,L);
+  if(L)L.staffFor={dp:dp,R:R};
+  return R;
+}
+/* a voice doesn't say the same sentence twice in a game (Instinct: the Capybara's "simply too far" on
+   three straight prompts; the Bears' "SEND EVERYONE" at 45' and 75'): the second time it points back */
+function staffFresh(R,dp,L){
+  if(!L)return R; const said=L.said=L.said||{};
+  return R.map(x=>{ const S0=said[x.who]=said[x.who]||[];
+    if(S0.indexOf(x.line)<0||!x.pick){ S0.push(x.line); return x }
+    const o=dp.opts.find(q=>q[0]===x.pick), lab=o?o[1].replace(/\s*\(.*\)$/,""):"the same as before";
+    const line=x.who==="bears"?`${lab.toUpperCase()}! We said it before. We'll say it louder.`
+      :x.who==="pearl"?pearlSay(`Same as I said before: ${lab.toLowerCase()}!`,dp.opts.length+S0.length)
+      :`As I said earlier, I'm afraid: ${lab.toLowerCase()}.`;
+    S0.push(line); return Object.assign({},x,{line:line}) });
+}
+function staffAdvice0(dp,ctx){
   const R=staffTake(dp,ctx);
   if(!staffHints()||(dp.k!=="read"&&dp.k!=="prep"))return R;
   const H=SPORT.hints||{};
+  // a second read says whether the place to look has moved since the first (hints are the default, so
+  // the same line twice was what most players saw: Instinct)
+  const again=dp.stage===2&&dp.pearl1!==undefined;
   const line=dp.k==="prep"?"Look at what they did most, and ask whether today is any different. Who's the stronger side?"
+    :again&&dp.pearl1===dp.pearl?"Same place to look as before. Has anything in the numbers moved?"
+    :again&&H[dp.pearl]?"Something's moved since the first read. "+H[dp.pearl]
     :(H[dp.pearl]||"I've got a feeling, but you've got the numbers. What do they say?");
   return R.map(x=>x.who==="pearl"?Object.assign({},x,{pick:null,line:pearlSay(line,(ctx.mine||0)*7+(ctx.q||0))}):x);
 }
@@ -142,32 +167,32 @@ function impactHTML(P){
   const altLine=`a ${c.cf.mine}-${c.cf.theirs} ${alt}`;
   // one margin with the graded calls: within 3 points is "about as often" there and "little difference"
   // here (they disagreed: "won about as often (100% and 97%)" beside "wins clearly more often": Grokbot)
-  const avgOf=w=>w>0.06?"wins clearly more often than his":w>0.03?"wins a little more often than his"
-    :w>=-0.03?"made little difference either way":w>=-0.06?"wins a little less often than his":"loses clearly more often than his";
+  // the same scale as the graded call: within 3 points the same, 4 to 7 a little, beyond 7 clearly
+  const avgOf=w=>w>0.07?"wins clearly more often than his":w>0.03?"wins a little more often than his"
+    :w>=-0.03?"made little difference either way":w>=-0.07?"wins a little less often than his":"loses clearly more often than his";
   const avg=avgOf(c.worth);
   // every other call you made against his, weighed the same way: the ones left out (a slow-down, the
   // press) read as if they were never weighed (Instinct)
-  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"").replace(/^made little/,"little")}`);
   // one replay is one roll of the dice: the headline credits the call only when
   // the average over many replays agrees (measured: on its own, the same-luck
   // replay disagreed with the average about as often as not)
   const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
-  // the headline says both things, tonight's dice and the average, and never lets them contradict
-  // ("You won, but not because of the call" above a replay that lost without it: Grokbot)
+  // the decision first, tonight's dice second (Muse, six testers: "Same defeat either way tonight, but..."
+  // led half the cards and taught players that nothing they did mattered). A call within 3 points of his
+  // isn't headlined at all: one quiet line says tonight's calls were close
   const small=Math.abs(c.worth)<=0.03;
-  const head=better?(c.worth>0.03?(res==="draw"?`Your call saved a point.`:`Your call won this game.`)
-        :small?`Your call won this one tonight; over many replays it makes little difference.`
-        :`Your call won this one tonight, though over many replays it loses more often.`)
-    :worse?(c.worth<-0.03?`That call cost you this one.`
-        :small?`The call went against you tonight; over many replays it makes little difference.`
-        :`Unlucky: the call was sound.`)
-    :c.cf.mine===p.mine&&c.cf.theirs===p.theirs?(small?`Same score either way tonight: on these dice the call changed nothing.`
-        :`Same score either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`)
-    :small?`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight.`
-    // the headline and the replays agree in one sentence ("Same defeat either way" above "wins clearly more often": Grokbot)
-    :`Same ${res==="draw"?"draw":res==="win"?"win":"defeat"} either way tonight, but over many replays your call ${c.worth>0?"wins more often":"loses more often"}.`;
+  if(small){ const n=C.length;
+    return `<div class="impact quiet"><div class="impbody">${n===1?`Your call tonight (${esc(c.h)}: "${esc(c.pick)}") was close either way: over many replays it makes little difference against the assistant's.`
+      :`Your ${n} calls against the assistant's tonight were all close either way: over many replays none of them made much difference.`}</div></div>`; }
+  const good=c.worth>0, strong=Math.abs(c.worth)>0.07;
+  const verdict=good?(strong?"A strong call":"A good call"):(strong?"The wrong call":"Not quite the right call");
+  const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
+                    :(better?"though it worked tonight: his wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
+  const head=`${verdict}, ${tonight}`;
+  const rest=C.filter(x=>x!==c&&Math.abs(x.worth)>0.03).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"")}`);
+  const close=C.filter(x=>x!==c&&Math.abs(x.worth)<=0.03).length;
   return `<div class="impact"><div class="imphead">${head}</div>
-    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". The same game with the same luck and the assistant's call ("${esc(c.def)}") ends ${altLine}. Over many replays, your call ${avg}.${better&&c.worth<=0.03||worse&&c.worth>=-0.03?" One game is one roll of the dice.":""}</div>${rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} against his, over many replays: ${rest.join("; ")}.</div>`:""}</div>`;
+    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". Over many replays from that moment, your call ${avg}. With tonight's luck and the assistant's call ("${esc(c.def)}"), the game ends ${altLine}.</div>${rest.length||close?`<div class="impbody imprest">${rest.length?`Your other ${rest.length===1?"call that mattered":rest.length+" calls that mattered"}: ${rest.join("; ")}.`:""}${close?` ${nOf(close,"other call")} ${close===1?"was":"were"} close either way.`:""}</div>`:""}</div>`;
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){
@@ -176,4 +201,19 @@ function ledgerLine(){
   // says what it counts: every call that differed from the assistant's, graded or not (the big number
   // beside it counts only graded ones, and the two read as a contradiction: Grokbot)
   return `Every call you made differently from the assistant this season (${L.n}): ${say} against leaving ${L.n===1?"it":"them"} to him, over many replays.`;
+}
+/* the season's calls, in the offseason review: the tally, and the call that helped most and the
+   one that cost most, in words (Instinct: a season-end summary of your decisions) */
+function seasonCallsHTML(){
+  const yr=SEA.year, me=S.myTeam, P=[];
+  Object.keys(S.played||{}).forEach(k=>{ if(k.split(":")[0]!==String(yr))return;
+    (S.played[k]||[]).forEach(p=>{ if(p.team!==me)return; (p.impact||[]).forEach(c=>{ if(typeof c.worth==="number")P.push({c:c,p:p}) }) }) });
+  const t=tallyHTML();
+  P.sort((a,b)=>b.c.worth-a.c.worth);
+  const one=(x,lab)=>`<div class="cand"><div class="candtop"><div><div class="fname">${lab}</div>
+    <div class="fnote">${esc(x.c.h)}, against ${esc(x.p.other)} (${x.p.mine}&ndash;${x.p.theirs})</div></div></div>
+    <div class="cdesc">You: ${esc(x.c.pick)}.${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
+  const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
+  if(!t&&!best&&!worst)return "";
+  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"The one that paid"):"")+(worst&&worst!==best?one(worst,"The one that cost you"):""):"");
 }

@@ -208,6 +208,7 @@ function watchView(){
 /* what the evidence said, when it pointed the other way: a read the numbers
    got wrong is a noisy sample, not a coin flip, and the verdict says so */
 function readNote(e){
+  if(e.k==="read"&&e.unclear)return " The numbers on the card hadn't shown it yet, so this one isn't counted against you.";
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&STYLE[e.evid])
     return e.right?` The numbers pointed to ${STYLE[e.evid].l}; your read was better than they were.`
       :` The numbers at the time pointed to ${STYLE[e.evid].l}: a short stretch can mislead.`;

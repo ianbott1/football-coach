@@ -1,5 +1,5 @@
 {
- "fp": "197882de31c86255",
+ "fp": "9392be5be01bf8f2",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -145,6 +145,31 @@
    "fp": "197882de31c86255",
    "from": "197882de31c86255",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "d8a2aaa77bcd8bce",
+   "from": "197882de31c86255",
+   "note": "Nov 2026 round 20: a club's usual approach is 7 times as likely (was 4): the scouting report's top approach was played 54% of the time in real matches, now 67%."
+  },
+  {
+   "fp": "a34c56feb6b23235",
+   "from": "d8a2aaa77bcd8bce",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "300da27ba624ebac",
+   "from": "a34c56feb6b23235",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "300da27ba624ebac",
+   "from": "300da27ba624ebac",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "9392be5be01bf8f2",
+   "from": "300da27ba624ebac",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "out": [
@@ -154,20 +179,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-7-11",
-      "result": "Finished 6th in the Premier League",
-      "grade": "C+"
+      "rec": "20-10-8",
+      "result": "Finished 4th in the Premier League",
+      "grade": "B-"
      },
-     "book": "c22ed294fa8460ec"
+     "book": "57a97bc8d95cd44e"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "15-6-17",
+      "rec": "16-5-17",
       "result": "Finished 10th in the Premier League",
       "grade": "B-"
      },
-     "book": "80d9f4ddb5cec48e"
+     "book": "dda2b9205a225502"
     }
    ]
   },
@@ -177,20 +202,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-13-5",
-      "result": "Finished 2nd in the Premier League",
-      "grade": "B"
+      "rec": "16-16-6",
+      "result": "Finished 6th in the Premier League",
+      "grade": "C+"
      },
-     "book": "71e866cf67e0c5a0"
+     "book": "845c2e3119a4bdc5"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "15-5-18",
-      "result": "Finished 11th in the Premier League",
-      "grade": "B-"
+      "rec": "10-7-21",
+      "result": "Finished 16th in the Premier League",
+      "grade": "C"
      },
-     "book": "a1788892ea3b8fa2"
+     "book": "7ae03a7f36bc4a3b"
     }
    ]
   },
@@ -200,20 +225,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "24-6-8",
-      "result": "Finished 3rd in the Premier League",
-      "grade": "B"
+      "rec": "21-7-10",
+      "result": "PREMIER LEAGUE CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "49493bcb7912fc26"
+     "book": "b10054a4816a8b6c"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "18-7-13",
-      "result": "Finished 6th in the Premier League",
-      "grade": "B+"
+      "rec": "10-9-19",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "3f8d127d033735b1"
+     "book": "6cfaaa064ca84534"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "445a2133257021bc",
+ "fp": "f3c316b80c6df5f5",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -185,6 +185,36 @@
    "fp": "445a2133257021bc",
    "from": "6755a3bf3c83a49f",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "c5ea84f72feb3a63",
+   "from": "445a2133257021bc",
+   "note": "Nov 2026 round 17: screen text only (graded calls list every option's replay rate on one scale; reads the card hadn't marked aren't counted; hockey career keeps this season's overtime losses in the offseason). Results identical to db42841 field by field."
+  },
+  {
+   "fp": "a94739361ff0cf17",
+   "from": "c5ea84f72feb3a63",
+   "note": "Nov 2026 round 20: the winning-streak objective is 6 in a row over seasons of 60+ games (5 was met in 24 of 24 hockey seasons). The only change this round touching pro basketball."
+  },
+  {
+   "fp": "957c9195119fec55",
+   "from": "a94739361ff0cf17",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "7393e4008ef0209d",
+   "from": "957c9195119fec55",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "f3c316b80c6df5f5",
+   "from": "7393e4008ef0209d",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "f3c316b80c6df5f5",
+   "from": "f3c316b80c6df5f5",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {
@@ -197,9 +227,9 @@
     "rec": "51324d99653791d7",
     "poll": "997f72e9f908016b",
     "heis": "92af6728a86e8a51",
-    "history": "240bc20a04c68095",
+    "history": "6c1479a3fb85e58b",
     "universe": "6752e6df34bbb45a",
-    "screens": "ee6b4ee411562d6d"
+    "screens": "06ef770d2a82bcf7"
    },
    {
     "year": 2027,
@@ -211,7 +241,7 @@
     "heis": "f05067ed4a16dbc5",
     "history": "33fea9a4f477b4c2",
     "universe": "f0a1b3ff65fd76cd",
-    "screens": "65b8d39bd6f535c2"
+    "screens": "b38f4349dfd81fdb"
    }
   ],
   "Detroit#777": [
@@ -223,9 +253,9 @@
     "rec": "ce16209c7ce67a88",
     "poll": "d955e18e73ba585e",
     "heis": "bd7234824f88d455",
-    "history": "89cf828b131144f8",
+    "history": "84e6b4bf52d45bd3",
     "universe": "d17e4fe44c0ece14",
-    "screens": "b6d87d8da83c1fa8"
+    "screens": "60ed0bdc1f76e8d4"
    },
    {
     "year": 2027,
@@ -237,7 +267,7 @@
     "heis": "07c01106df0c9f70",
     "history": "fe4c87aa9446e46e",
     "universe": "9d2b2cac708c3f67",
-    "screens": "b74f8a78ad94884a"
+    "screens": "19583a37454523be"
    }
   ],
   "schedules#60": [

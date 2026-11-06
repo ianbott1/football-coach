@@ -61,10 +61,12 @@ of playing that leaves marks in the numbers and the commentary; the right
 answer blunts it, the wrong one costs a little.
 
     soccer      approach (press, block, flanks, direct) -> counter, at 25' and
-                55'; the weak flank at half-time; score calls at HT and 75'
+                55'; the weak flank at half-time; score calls at HT (within
+                two) and 70' (within one)
     hockey      system (forecheck, trap, cycle) -> answer, first intermission;
-                your goalie after a bad period (a bad night vs bad luck);
-                push/lock after two; when to pull the goalie
+                your goalie after a bad period (a bad night vs bad luck), only
+                within two goals;
+                push/lock after two; when to pull the goalie (down one only)
     basketball  offence (threes, paint, pick-and-roll) -> defence, end of Q1
                 and the half; half-time, late and last-shot calls
     football    the original calls (fourth downs, two-point tries, the clock)
@@ -90,6 +92,90 @@ verdict agrees with one from 10x the replays ~87% of the time.
   (engine st.log -> played.reads -> readText); a season tally is kept.
 - Measured and dropped as calls (worth nothing either way): soccer
   substitutions, basketball foul trouble (sit your star or not).
+
+What each kind of call is worth (test/call-weight.js, Nov 2026): every call
+in a run of live games, the rest of the game replayed 40 times under each
+option on the same luck; the spread between the best and the worst option's
+win rate. Average points per call:
+
+    soccer      game plan 10.6, reads 7.8, flank 6.4, late 5.5, half 5.1
+    hockey      reads 15.9, game plan 14.5, goalie 8.3, lock 7.3, push 7.3,
+                pull 2.1
+    basketball  college: plan 12.9, reads 10.7, half 4.6, chase 3.3;
+                pro: plan 10.9, reads 9.7, half 5.5, chase 5.0
+    football    college fourth 6.2, half 4.4, protect 3.3; pro fourth 5.0,
+                two-point/half ~3.8, protect 1.9
+
+Acted on (round 21): soccer's late call was 1.6 (82% under 3 points); asked
+at 70' instead of 75', only within a goal, with sharper modes (push
+1.55/1.45, sit 0.50/0.80, win 1.35/1.25; engine calibration unchanged:
+2.72 goals, 28% draws), it is 5.5 and the half-time call went 3.1 -> 5.1.
+Hockey's pull down two and football's protect at 11-14 measured 0.0 and
+are no longer asked. The pull down one stays at ~2.5: the real choice is
+small, and an honest one. Remaining small: college basketball protect (1.5,
+five calls in 30 games), pro football protect (1.9).
+
+Calls on events, not only the clock (round 22, Instinct): two down before
+the first read, it comes at once. Hockey calls a timeout at 10 or 15
+minutes (about 1 game in 10; worth 12-17 points, as much as the
+intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
+intermission read is then skipped for that side.
+
+Round 26 (Muse's deep-play pass, on an older build; each point checked on
+this one):
+- Post-game card: the decision leads, the dice follow ("A good call, though
+  tonight's dice gave the same result either way"). A call within 3 points
+  of the assistant's gets no headline, one quiet line. Before, "Same defeat
+  either way tonight, but..." led about half the cards.
+- Playoff results say where the series stands, and a defeat that ends the
+  season says so ("Season over: out of the playoffs, 3-4 in the series").
+- A star who fouls out collects no more fouls (an "8th foul" in a six-foul
+  league); the dice are drawn as before, so no result moved.
+- Hockey's draft says when a board name went earlier (as football and
+  basketball did); soccer's payroll line shows last season's figure and
+  what changed it; a college basketball portal target says who he'd push
+  down (it can be the recruit you just signed).
+- Not reproduced on this build, measured: soccer's flank panel points at
+  the weak side 27 of 30 times and a right pick was never graded worse;
+  "fits" free-agent targets signed 35 of 35 (hockey, NBA, pro football);
+  the NBA's best team scores 120 and allows 112 live (Muse saw 139/132);
+  the NBA half-time "keep" was best in 4 of 30 second reads, not always.
+
+Round 25 (Grokbot's list):
+- Phone width (390px), checked in a browser for sideways scroll and clipped
+  text on every tab of all six: BASKETBALL ran off the title screen
+  (.wm-long); long team names in the top bar step down (.tb-long, .tb-xl);
+  division names in pro rankings had a 46px column ("Paci...", .divn);
+  rivalry names get their own line; the team picker has Back at the top
+  as well as under the list; the intro's buttons sit in one place on
+  every page; a call screen whose answers are below the fold pins "Your N
+  options" (#tocall) until they're on screen.
+- Hockey play-by-play: larger phrase pools and no template twice in a game
+  until its pool runs out (pickFresh): 5.4 repeats a game -> 0.5.
+- Draft boards (pro football, basketball, hockey) mark each prospect
+  likely gone / might be there / likely there at your first pick: a mock
+  draft from your own scouts' numbers (nothing hidden shown). Checked
+  against real drafts: gone 78-88% / 28-51% / 10-15% of the time.
+
+Fourth downs (round 24, Instinct: "all 3 fourth downs favoured go"):
+- Punts were the opponent's ~24 from anywhere, so punting from your own 10
+  cost nothing and pinning them from midfield gained nothing. Now a punt
+  travels ~45 yards from the spot with a short return, or a touchback
+  (nextStart, PUNT_GROSS). Scoring and favourites unchanged.
+- Asked only with the game in reach (inReach: a rough win chance from the
+  score, quarter and strengths, 10-90%). Outside it a fourth down moved
+  ~3 points; inside, ~9 (276 calls). Best answer before: go 63% of clear
+  calls; after: go 52%, punt 34%, kick 14%.
+
+Featuring's edge scales with the player (featureEdge, core/80_season.js):
+FEATURE_EDGE x (1 + (rating - starters' average)/12), held to 0.5-1.3.
+
+The staff room never repeats a sentence in a game (staffFresh): a voice
+that would says "As I said earlier..." with its pick instead. Measured on
+10 college football games: 4 verbatim repeats in 102 lines before, 0 after.
+
+The offseason screen opens with the season's calls (seasonCallsHTML): the
+tally, and the call that helped most and the one that cost most, in words.
 
 Measured value, even sides at home (tests below):
 
@@ -159,6 +245,50 @@ Lessons from this project (each cost a bug that shipped or nearly did):
 - Staff lines at a second read say what changed since the first (Pearl's
   first read is kept on the second ask as pearl1); picks are unchanged, so
   "leave it to the assistant" plays the same.
+- Legacy seasons (no u.schedV) lock their schedule on first load: S.schedLock
+  {year, sched, a, sp} is the schedule and the RNG state right after it, saved
+  at once (lockNew); Season uses it instead of drawing again. Cleared when a
+  new season starts. RNG keeps its state on the object (rng.a, rng.sp): same
+  numbers as the old closure. commitOffseason still runs on new RNG(0): its
+  rngA "carry on" never worked (the state was hidden), and restoring it now
+  would change every future offseason.
+- Verdict scale (football 75_screens GAP_SAME 3, GAP_CLEAR 7; the post-game
+  line's avgOf uses the same): within 3 points "about as often", 4 to 7 "a
+  little", beyond 7 "clearly". Graded calls list every option's replay share.
+- A read the evidence card hadn't marked (basketball: three-point share 45%+
+  or 31%-, pick-and-rolls 3.4+) and you got wrong is logged unclear: shown
+  with a dash, not counted in the season's tally.
+- Scouting reliability (model of the engine's weights, favW 4, 6 games
+  scouted): the report's top system is the one they play 61% in basketball
+  and hockey, 49% in soccer (four approaches). Instinct's target: about
+  two-thirds. Soccer is short; raising it changes matches, so it waits for a
+  measured round.
+- Football: after a turnover, a turnover on downs or a missed kick, the next
+  drive starts at the spot (nextStart(rng,kind,at); at = the drive's stall).
+  It was random (~42) whatever the spot. Calibration after: college 54.8
+  points a game (target ~54), pro 46.5 (NFL ~44-46), other targets unmoved.
+- Scouting: a club's usual system is favW times as likely as each other.
+  Measured in real games (report's top system played): soccer 54% -> 67% at
+  favW 7; hockey 64% -> 68% at 5. Basketball stays 4 (college 61%, pro
+  70%): 5 took college to 72% but more predictable opponents cut March
+  upsets (6 v 11 favourites 63.5% -> 67.1%, real 61.5).
+- Replay matching: a played result is matched to a cup tie only if it is a
+  cup result (!!F.cup===!!cup). A league result saves no cup flag, and it
+  took a cup tie against the same side in the same round (soccer reload).
+- Streak objective: 6 in a row for seasons of 60+ games (5 was met 24 of 24
+  in hockey). test/objectives.js checks a type's rate only from 15 samples.
+- Full slots: the title offers "Start a new career", then Replace (two taps)
+  on a career, which erases it and opens the new-career screens there.
+- Football plans rebalanced after the turnover change (aggressive td +0.022,
+  safe fg +0.035): at even strength the three within 0.4 points over 40,000
+  games (test/plans.js; the published build already had safe 51.2 against
+  aggressive 49.5, passing at 5,000 games by luck).
+- Soccer: a player signed or bought this window (keep) isn't pushed out by a
+  later arrival or the wage-cap trim; the newcomer goes instead (Brentford
+  bought a midfielder and an academy graduate cut him).
+- Tests read noise as failure three times this round (objectives "top" 1 of
+  8, recruiting with 3 programs, plans at 5,000 games). Sample sizes raised;
+  each was checked against a much larger run before changing anything.
 - save() returns when no career is open (!S.myTeam). The title screen's
   "How to play" Skip and last Next called save() and wrote an empty career
   over slot 1 in all six games (found by Grokbot; my clean-profile repro
@@ -502,9 +632,13 @@ dynasty's first season (generated players have no earlier history).
                       mean ~94 (84 games), sd ~14. Game totals spread like a
                       Poisson at that mean (12+ goals ~2%). Your games by plan
                       (Nov 2026): skate with them 6.7, balanced 6.2, clog it
-                      up 5.2. Skater points: first-line C median ~65 (best
-                      ~100; a top team skating with them gets ~90, as real
-                      Vegas did), first-pair D ~35, second pair ~20.
+                      up 5.2. Skater points: first-line C ~65 at a 60 rating,
+                      ~75 at 63-69; league best 95-112, top goal scorers
+                      45-57 and rated 63+ (round 21: goals x0.78, forwards'
+                      assists x1.12, rating slope 0.45 -> 0.7; a 62 winger
+                      led with 60 goals before), first-pair D ~35-45.
+                      Coaching changes: ~2 the first summer, ~5 after
+                      (seatSpread 30; at 45 it was ~1).
     soccer            2.75 goals/game, ~27% draws, ~41% home wins (league
                       mix); strength predicts the tables (rank corr 0.6-0.9)
 
@@ -524,11 +658,15 @@ dynasty's first season (generated players have no earlier history).
   no kick is offered (the punt-or-go band) "go" is best about two times in
   three; that band, not the kick curve, is why most fourth downs favour
   going (Instinct). A model question still open.
-- Hockey pay: teams carry 12 contracts, not an NHL roster's 23, so each
-  player stands for about two and the cap is spread over fewer people (a
-  60-64 rated player earns about $12.4M on existing contracts; asks follow
-  the same scale). Testers read it as inflated. Rescaling the economy is
-  Ian's call.
+- Hockey pay (decided Nov 2026, Ian, on all three testers' advice): a
+  convex curve for contracts signed from now on (HK_B 1.8, HK_A 16.3, HK_0
+  47): a 55 about $4M, a 62 $10.6M, a 66 $15.7M, the maximum from ~70.
+  Teams carry 12 contracts, not 23, so each player stands for about two;
+  the curve fixes relative prices (a 67 was priced like the best). Over 12
+  seasons (test/hk-economy.js): median payroll 61% of the cap (was 80%),
+  max deals per team unchanged, top-six retention 79% (78%), points spread
+  13.6 (NHL ~14). Deals already signed run at their numbers: an older save
+  replays identically mid-season and mid-offseason.
 
 - Hockey's goalie call is nearly weightless (Nov 2026, test/hk-reads.js at
   60,000 games): pulling him only on a real bad night is worth about +1 win

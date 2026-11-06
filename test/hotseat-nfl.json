@@ -1,5 +1,5 @@
 {
- "fp": "57a2c62ec19ed0b9",
+ "fp": "f5ac6d16ff3d3e74",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -160,6 +160,36 @@
    "fp": "57a2c62ec19ed0b9",
    "from": "57a2c62ec19ed0b9",
    "note": "Nov 2026 round 14: field goal odds a smooth curve (was a staircase); the rival objective is the season series where you meet 3+ times; hockey stat words pluralised. A control build with the first two held back matched the a06221f fingerprints on every result (hockey's records differ only in '1 goal' for '1 goals')."
+  },
+  {
+   "fp": "c16b995b911e48a5",
+   "from": "57a2c62ec19ed0b9",
+   "note": "Nov 2026 round 20: after a turnover or a missed kick the next drive starts at the spot (it was random). College calibration 54.8 ppg (target ~54), pro 46.5 (NFL ~44-46)."
+  },
+  {
+   "fp": "533fbfc3ea3b683f",
+   "from": "c16b995b911e48a5",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "533fbfc3ea3b683f",
+   "from": "533fbfc3ea3b683f",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "f5ac6d16ff3d3e74",
+   "from": "533fbfc3ea3b683f",
+   "note": "Round 24: punts land from where they're kicked (they started the opponent at ~24 from anywhere); fourth downs asked only with the game in reach (rough win chance 10-90%). Calibration unchanged (college 54.8 pts/game, favourites 0.699; pro 46.1, 0.694). Results change from season 1 (fewer asks shift the replies)."
+  },
+  {
+   "fp": "f5ac6d16ff3d3e74",
+   "from": "f5ac6d16ff3d3e74",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "f5ac6d16ff3d3e74",
+   "from": "f5ac6d16ff3d3e74",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "out": [
@@ -169,11 +199,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
+      "rec": "11-6",
       "result": "Lost the conference championship",
-      "grade": "B+"
+      "grade": "A-"
      },
-     "book": "1eaf031242bd90d6"
+     "book": "14537660d22c1cc4"
     },
     {
      "team": "Tennessee",
@@ -182,7 +212,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "660ae1e2a4749901"
+     "book": "41c2a3ea87ddbbdd"
     }
    ]
   },
@@ -192,20 +222,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the divisional round",
+      "rec": "13-4",
+      "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "3610df9549968f92"
+     "book": "e214b9e756633b7d"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "11-6",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "12-5",
+      "result": "Lost in the wild card round",
+      "grade": "A"
      },
-     "book": "3bd2ea6d579cc212"
+     "book": "6918826bf0647485"
     }
    ]
   },
@@ -215,20 +245,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the wild card round",
-      "grade": "B"
+      "rec": "14-3",
+      "result": "Lost in the divisional round",
+      "grade": "A"
      },
-     "book": "2a3fb2388002520a"
+     "book": "e2cb50eaea321187"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "13-4",
+      "rec": "14-3",
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "ecd6a3ef16bf9c50"
+     "book": "cdc7fe1132fcdcb3"
     }
    ]
   }

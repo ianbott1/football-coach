@@ -62,14 +62,17 @@ function blankStats(pos){const o={g:0}; (STAT_KEYS[pos]||[]).forEach(k=>o[k]=0);
 /* scaled (x0.72) so a first-line centre scores like one: ~65 points in an
    84-game season, the best near 100; a first-pair defenceman ~35 (it was 92
    and 48: a dozen players can't carry all of a team's scoring) */
-const ROLE={C:{goals:0.195,ast:0.19,sog:0.24},LW:{goals:0.18,ast:0.15,sog:0.22},RW:{goals:0.18,ast:0.15,sog:0.22},
-            D:{goals:0.085,ast:0.12,sog:0.17},D2:{goals:0.055,ast:0.075,sog:0.12}};   // a second pair: ~22 points, not the first pair's ~35
+/* goals x0.78, forwards' assists x1.12, and rating counts half again as much (Grokbot, Nov 2026: a 57-rated centre with
+   35 goals; a 62 winger led the league with 60; five players over 54, where the NHL has one or two near 50) */
+const HK_GSH=0.78, HK_ASH=1.12, HK_STAR=0.7;
+const ROLE={C:{goals:0.195*HK_GSH,ast:0.19*HK_ASH,sog:0.24},LW:{goals:0.18*HK_GSH,ast:0.15*HK_ASH,sog:0.22},RW:{goals:0.18*HK_GSH,ast:0.15*HK_ASH,sog:0.22},
+            D:{goals:0.085*HK_GSH,ast:0.12,sog:0.17},D2:{goals:0.055*HK_GSH,ast:0.075,sog:0.12}};   // defencemen's assists as they were   // a second pair: ~22 points, not the first pair's ~35
 /* one game's line for one first-unit player, consistent with his rating and the score */
 function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const P=POS[posIdx].p;
   if(P==="G"){ const sa=Math.max(oppPts,Math.round(rng.gauss(29,4.5)));
     return {sv:sa-oppPts, ga:oppPts, so:oppPts===0?1:0} }
-  const R=ROLE[P], q=(pl.r-60)/20, star=Math.max(0.5,1+q*0.45+rng.gauss(0,0.2)), first=1-(HK_STAT_BENCH?HK_STAT_BENCH[posIdx]:POS[posIdx].bench);
+  const R=ROLE[P], q=(pl.r-60)/20, star=Math.max(0.4,1+q*HK_STAR+rng.gauss(0,0.2)), first=1-(HK_STAT_BENCH?HK_STAT_BENCH[posIdx]:POS[posIdx].bench);
   const pick=(n,p)=>{let k=0;for(let i=0;i<n;i++)if(rng.r()<p)k++;return k};
   const goals=pick(forPts,Math.min(0.9,R.goals*first*star));
   const ast=pick(Math.round(forPts*1.7),Math.min(0.9,R.ast*first*star*0.55));

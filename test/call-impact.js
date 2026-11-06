@@ -33,12 +33,14 @@ for(const [f,team] of GAMES){
       ok(c.cf&&Number.isFinite(c.cf.mine)&&Number.isFinite(c.worth)&&c.worth>=-1&&c.worth<=1,`${f}: a call's impact is malformed ${JSON.stringify(c)}`);
       const s=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0; const d=s({mine:P.mine,theirs:P.theirs})-s(c.cf); sumDiff+=d;
       if((d>0&&c.worth>0)||(d<0&&c.worth<0))agree++ });
-    if(I.length){ const h=A.impactHTML([P]); ok(/class="impact"/.test(h)&&!/undefined|null|NaN/.test(h),`${f}: the post-game line reads "${h.replace(/<[^>]+>/g,' ').slice(0,140)}"`);
+    if(I.length){ const h=A.impactHTML([P]); ok(/class="impact( quiet)?"/.test(h)&&!/undefined|null|NaN/.test(h),`${f}: the post-game line reads "${h.replace(/<[^>]+>/g,' ').slice(0,140)}"`);
       const head=(h.match(/class="imphead">([^<]*)</)||[])[1]||'?'; heads[head]=(heads[head]||0)+1;
       // the headline credits or blames the call only when the average agrees
       const c=I.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,I[0]);
-      if(/won this game|saved a point/.test(head))ok(c.worth>=0.02,`${f}: "${head}" with a call worth ${c.worth}`);
-      if(/cost you/.test(head))ok(c.worth<=-0.02,`${f}: "${head}" with a call worth ${c.worth}`) }
+      // the decision leads (Muse): "good"/"strong" only for a call that wins more often, "wrong"/"not quite" only for one that loses more
+      if(/^A (good|strong) call/.test(head))ok(c.worth>0.03,`${f}: "${head}" with a call worth ${c.worth}`);
+      if(/^(The wrong call|Not quite the right call)/.test(head))ok(c.worth<-0.03,`${f}: "${head}" with a call worth ${c.worth}`);
+      if(head==='?')ok(Math.abs(c.worth)<=0.03,`${f}: no headline for a call worth ${c.worth}`) }
   }
   const Y=A.S.callLedger&&A.S.callLedger[A.SEA.year];
   ok(calls>0,`${f}: no call ever got an impact (${games} live games)`);

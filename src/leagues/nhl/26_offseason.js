@@ -34,10 +34,17 @@ const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of 
    ~70% of the cap (measured; it was ~80% with 45 maxed). Ratings are
    compressed (median 55, top 5% 67), so a payroll near the cap and a rare
    max pull against each other; this is the balance. HK_A/HK_B/HK_0 tune it. */
-const HK_A=+((typeof process!=="undefined"&&process.env&&process.env.HK_A)||19), HK_B=+((typeof process!=="undefined"&&process.env&&process.env.HK_B)||1.0), HK_0=+((typeof process!=="undefined"&&process.env&&process.env.HK_0)||48);
+/* Nov 2026, the curve bends (Instinct: a 67's $18.9M ask sat by the $20.8M maximum, no separation from
+   the best; Grokbot: a 62 asking $12.7M looked wrong). Cheaper middles, a steeper top, the maximum still
+   from ~70: a 55 about $4M, a 62 $10.6M, a 66 $15.7M, a 68 $18.7M. Measured over 12 seasons: median
+   payroll 61% of the cap (was 80%), max deals 0.38 a team (0.38), top-six players kept 79% (78%),
+   points spread 13.6 (12.3; the NHL ~14). It prices contracts signed from now on: a deal already signed
+   runs at its number to its end. */
+const HK_A=+((typeof process!=="undefined"&&process.env&&process.env.HK_A)||16.3), HK_B=+((typeof process!=="undefined"&&process.env&&process.env.HK_B)||1.8), HK_0=+((typeof process!=="undefined"&&process.env&&process.env.HK_0)||47);
+const HK_L=+((typeof process!=="undefined"&&process.env&&process.env.HK_L)||0);   // a flat lift for regulars (ramps in from HK_0 to ~7 points above)
 function nflAsk(r,pos,age){
   const x=Math.max(0,(r-HK_0)/20);
-  let s=0.85+HK_A*Math.pow(x,HK_B);
+  let s=0.85+HK_L*Math.min(1,x*3)+HK_A*Math.pow(x,HK_B);
   const a=age-(AGE_SHIFT[pos]||0);
   if(a>=31)s*=0.78; else if(a>=29)s*=0.9;
   return Math.round(Math.max(0.85,Math.min(MAX_SAL,s))*100)/100;
@@ -349,6 +356,10 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const mine=board.map(id=>prospects.findIndex(p=>p.pid===id&&!p.taken)).find(i=>i>=0);
     if(mine!==undefined)bi=mine;
     const p=prospects[bi]; p.taken=true;
+    // a player on someone's board taken before their turn: say so, as in the other drafts (Muse: hockey's
+    // board names went with no word)
+    Object.keys(U_CH).forEach(ut2=>{ const B=(U_CH[ut2]&&U_CH[ut2].board)||[];
+      if(ut2!==t&&B.indexOf(p.pid)>=0){ rep.boardGone=rep.boardGone||{}; (rep.boardGone[ut2]=rep.boardGone[ut2]||[]).push({n:p.n,p:p.p,to:t,overall:overall}) } });
     p.draft={round:rd,pick:k+1,overall:overall,team:t,year:u.year};
     p.k={sal:rookieSal(overall),yrs:4}; p.joined=u.year+1; p.drafted=true;
     const g=nflGain(R,p);
@@ -509,6 +520,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[], payroll:C.cap?C.cap[my]:null,
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
+    boardGone:(C.boardGone&&C.boardGone[my])||[],
     payroll:off.cap?off.cap[my]:null};
 };
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};

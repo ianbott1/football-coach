@@ -1,4 +1,12 @@
 /* ============ Season state machine ============ */
+/* featuring's edge scales with the player: your best starter is worth more than your weakest
+   (Instinct: featuring anyone did the same). Six points above the starters' average, x1.3; six
+   below, x0.5 */
+function featureEdge(sea,team,idx){
+  const R=sea.roster&&sea.roster[team], p=R&&R[idx]; if(!p)return 0;
+  const avg=POS.reduce((t,P,i)=>t+R[i].r,0)/POS.length;
+  return FEATURE_EDGE*Math.max(0.5,Math.min(1.3,1+(p.r-avg)/12));
+}
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -15,6 +23,12 @@ class Season{
     this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
     SCHED_V=u.schedV||1;                    // see schedOrder
     this.sched=LEAGUE.buildSchedule(this.rng,u.perceived,u.year);
+    // a season begun before the deterministic draw (schedV 1) can come out differently on each load:
+    // the first load on this build keeps its schedule and the dice after it (rebuild saves the lock),
+    // and every load after that uses them (Muse: a reload in the offseason turned 53-29 into 58-24)
+    if(SCHED_V<2&&u.schedLock&&u.schedLock.year===u.year){
+      this.sched=JSON.parse(JSON.stringify(u.schedLock.sched)); this.rng.a=u.schedLock.a; this.rng.sp=u.schedLock.sp;
+    }else if(SCHED_V<2)this._lock={year:u.year,sched:JSON.parse(JSON.stringify(this.sched)),a:this.rng.a,sp:this.rng.sp};
     this.rec={};this.confrec={};
     NAMES.forEach(t=>{this.rec[t]=[0,0];this.confrec[t]=[0,0]});
     this.step=0; this.weeks=[]; this.champion=null;
@@ -45,7 +59,7 @@ class Season{
     if(this.featured!==null&&this.featured!==undefined&&this.roster){
       const pl=this.roster[this.userTeam]&&this.roster[this.userTeam][this.featured];
       const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
-      if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
+      if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*featureEdge(this,this.userTeam,this.featured);
     }
     // hockey: how you split the ice time (lines and pairings)
     if(typeof deployEdge==="function"&&(this.userTeam===a||this.userTeam===b))edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);
@@ -90,7 +104,7 @@ class Season{
       if(this.featured!==null&&this.featured!==undefined&&this.roster){
         const pl=this.roster[this.userTeam][this.featured];
         const hurt=this.talent.active(this.userTeam).some(x=>x.idx===this.featured);
-        if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*FEATURE_EDGE;
+        if(pl&&!hurt)edge+=(this.userTeam===a?1:-1)*featureEdge(this,this.userTeam,this.featured);
       }
       if(typeof deployEdge==="function")edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);   // hockey: the ice time
     }
@@ -103,7 +117,11 @@ class Season{
     // a game already played out live: match on the user's team so the ordering
     // a round happens to use can never lose the result
     const list=this.forcedList||(this.forced?[this.forced]:[]);
-    const fi=list.findIndex(F=>(a===F.team||b===F.team)&&(a===F.other||b===F.other)&&(F.cup===undefined||!!F.cup===cup));
+    // a cup tie takes only a cup result and a league game only a league one: a league result saves no cup
+    // flag, so it matched a cup tie against the same side in the same round, and the replay gave the cup
+    // tie the league score (Arsenal beat Brighton 2-1 in the cup, lost 2-3 in the league; replayed, the cup
+    // tie was 2-3 and the season after it changed)
+    const fi=list.findIndex(F=>(a===F.team||b===F.team)&&(a===F.other||b===F.other)&&!!F.cup===!!cup);
     if(fi>=0){
       const F=list[fi];
       list.splice(fi,1);
@@ -212,6 +230,7 @@ class Season{
      postseason only where the sport counts it (college: bowls and the
      tournament are part of the record; the pros and English play-offs aren't) */
   countsInRecord(){ return this.phase==="week"||!!LEAGUE.postRecord }
+  _rs(t){ return LEAGUE.recText?LEAGUE.recText(t,this,this.rec[t]):this.rec[t][0]+"-"+this.rec[t][1] }   // the record a game line shows: hockey keeps its overtime losses, soccer its draws (Grokbot)
   cupWeek(w){ return this.sched.some(g=>g.week===w&&g.cup) }
   _week(part){
     const w=this.step, prev=this.rankMap(), out=[];
@@ -219,7 +238,7 @@ class Season{
       this.sched.filter(g=>g.week===w&&g.cup).forEach(g=>{
         const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site,round:g.round});
         r.hrank=prev[g.home];r.arank=prev[g.away];
-        r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1]; r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+        r.hrec=this._rs(g.home); r.arec=this._rs(g.away);
         if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
         out.push(r) });
       this.poll.update(out,this.elo);
@@ -230,9 +249,10 @@ class Season{
     this.sched.filter(g=>g.week===w&&!(part==="league"&&g.cup)).forEach(g=>{
       const r=this._resolve(g.home,g.away,g.neutral,g.cup?{conf:false,cup:true,title:g.title,site:g.site,round:g.round}:{conf:g.conf});
       if(g.conf&&!r.draw){this.confrec[r.winner][0]++;this.confrec[r.loser][1]++}
+      if(g.conf&&!r.draw&&r.ot&&LEAGUE.tracksOT){this.confotl=this.confotl||{}; this.confotl[r.loser]=(this.confotl[r.loser]||0)+1}   // hockey's division record keeps its overtime losses (Grokbot: "14-14")
       r.hrank=prev[g.home];r.arank=prev[g.away];
-      r.hrec=this.rec[g.home][0]+"-"+this.rec[g.home][1];
-      r.arec=this.rec[g.away][0]+"-"+this.rec[g.away][1];
+      r.hrec=this._rs(g.home);
+      r.arec=this._rs(g.away);
       if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
       out.push(r);
     });

@@ -1,5 +1,5 @@
 {
- "fp": "95ea525d91d020ec",
+ "fp": "289d2a3412d76a18",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -125,6 +125,46 @@
    "fp": "95ea525d91d020ec",
    "from": "a141ab7f602818ba",
    "note": "Nov 2026 round 16: pro basketball and hockey power rankings use a smoothed rating (results identical as sets; a day's games are listed by rank, so order, the poll, history ranks and key order moved); college football explains the playoff field; Pearl's half-time read says what changed."
+  },
+  {
+   "fp": "f2afdc1f401a9b84",
+   "from": "95ea525d91d020ec",
+   "note": "Nov 2026 round 18: hockey's pay curve bends (cheaper middles, steeper top, max from ~70) for contracts signed from now on. Every other game unchanged; a hockey save from 26d992f replays identically mid-season and mid-offseason."
+  },
+  {
+   "fp": "c9dd4c5e92ebda29",
+   "from": "f2afdc1f401a9b84",
+   "note": "Nov 2026 round 20: a club's usual system is 5 times as likely (was 4): the scouting report's top system was played 64% of the time in real games, now 68%."
+  },
+  {
+   "fp": "7039a76614029140",
+   "from": "c9dd4c5e92ebda29",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "3d9d27c1437c98d9",
+   "from": "7039a76614029140",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "ccf1c89fd43f025e",
+   "from": "3d9d27c1437c98d9",
+   "note": "Round 23: hockey goalie call only within two goals; staff never repeat a sentence in a game; featuring scaled by the player. Controls: hockey without the goalie gate matches the last commit; college football differs only in screens."
+  },
+  {
+   "fp": "ccf1c89fd43f025e",
+   "from": "ccf1c89fd43f025e",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "ccf1c89fd43f025e",
+   "from": "ccf1c89fd43f025e",
+   "note": "Round 25: hockey finish reworded (\"rebound\" is a basketball word to the screens test)."
+  },
+  {
+   "fp": "289d2a3412d76a18",
+   "from": "ccf1c89fd43f025e",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "out": [
@@ -134,20 +174,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-26-14",
-      "result": "Lost in the conference final",
-      "grade": "A-"
+      "rec": "47-27-10",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "271c4f045517454f"
+     "book": "37ac395741f06434"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "43-26-15",
-      "result": "Lost in the first round",
-      "grade": "B"
+      "rec": "40-35-9",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "262d6f040761cda6"
+     "book": "9cf411402bcc4dcb"
     }
    ]
   },
@@ -157,20 +197,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-35-15",
+      "rec": "38-33-13",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "dc773a5e5d2004b9"
+     "book": "bb48b83c6766a5ed"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "32-39-13",
+      "rec": "34-39-11",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "9adc788809b64aea"
+     "book": "ed37c46996bdb4b2"
     }
    ]
   },
@@ -180,20 +220,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "45-28-11",
-      "result": "Missed the playoffs",
-      "grade": "C"
+      "rec": "55-22-7",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "a322473ebf0f9672"
+     "book": "87cc54a578a1bbb5"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "31-37-16",
+      "rec": "36-36-12",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "e503ba391b3e96a4"
+     "book": "6414e3cde70bae6e"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "748524ea890fe31e",
+ "fp": "5d3e0fc89dcbd753",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -205,59 +205,84 @@
    "fp": "748524ea890fe31e",
    "from": "99e20f1d5fe40243",
    "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
+  },
+  {
+   "fp": "10f17a03a4217b34",
+   "from": "748524ea890fe31e",
+   "note": "Nov 2026 round 20: a club's usual approach is 7 times as likely (was 4): the scouting report's top approach was played 54% of the time in real matches, now 67%."
+  },
+  {
+   "fp": "e6465ade8222f114",
+   "from": "10f17a03a4217b34",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "999795f83e18e683",
+   "from": "e6465ade8222f114",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "999795f83e18e683",
+   "from": "999795f83e18e683",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "5d3e0fc89dcbd753",
+   "from": "999795f83e18e683",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "6323302a6381a9de",
-    "post": "9a7eaa0b88100f9f",
-    "champion": "Manchester United",
-    "rec": "7451d95e62f458f6",
-    "poll": "b2c5bfb9e24fa220",
-    "heis": "28fffd9e07af90a9",
-    "history": "d6e942a22ac13ee1",
-    "universe": "1f4c3ac1f93f2e5c",
-    "screens": "df7f599bc8708f1a"
+    "games": "adfe5db7eeac71df",
+    "post": "b00f97b826b26ce2",
+    "champion": "Manchester City",
+    "rec": "fc503783b678b6d5",
+    "poll": "cdea666e832ff310",
+    "heis": "470a825398f7baf1",
+    "history": "ac3d3b90d41d1680",
+    "universe": "a41cc729b1f0edee",
+    "screens": "6d162046eced2987"
    },
    {
     "year": 2027,
-    "games": "4683d16eef4f94e3",
-    "post": "9ddb31d2617a777e",
-    "champion": "Manchester City",
-    "rec": "c7f702f036a5eae9",
-    "poll": "5506dd9bdf00199c",
-    "heis": "4a9d451755207b48",
-    "history": "ddebb0c48e47234e",
-    "universe": "ec89723d24e15b75",
-    "screens": "18448fb0416c4867"
+    "games": "ee0f73d2041b94f6",
+    "post": "ea1dbf60620496c0",
+    "champion": "Arsenal",
+    "rec": "261246d30d5ef952",
+    "poll": "af28cae4cdb6012f",
+    "heis": "41d16c5283a889a9",
+    "history": "3562b4332c831153",
+    "universe": "b2cfd1bd8ae9ec5c",
+    "screens": "42b8d1778c96be09"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "d883a05a2ba5e72b",
-    "post": "e96e076136db7c94",
-    "champion": "Aston Villa",
-    "rec": "f3c951aff78e6907",
-    "poll": "7e3d72dd8141312d",
-    "heis": "06d24a6f1c40846f",
-    "history": "0933fcc446e21a9c",
-    "universe": "d4b9b4436be72092",
-    "screens": "5f24a75b5dd16da2"
+    "games": "4587ab13832fe157",
+    "post": "1a55f6e4f9bdd2fe",
+    "champion": "Arsenal",
+    "rec": "eef8b14a26b992d9",
+    "poll": "1367f5eb4cd5d470",
+    "heis": "3f9bdf37e7cbe703",
+    "history": "f32339a8302a6217",
+    "universe": "eca5d3a71311a986",
+    "screens": "f1b041883303bc5f"
    },
    {
     "year": 2027,
-    "games": "b2d05027e1ac1135",
-    "post": "c59663546c43df59",
-    "champion": "Arsenal",
-    "rec": "a00918780b38d49a",
-    "poll": "0e760195e8ce56c0",
-    "heis": "3b953c750f69164c",
-    "history": "f0d63dff7092d685",
-    "universe": "afb3783c5bb07821",
-    "screens": "3551b37a1b70f274"
+    "games": "ffad39e15b34ac4b",
+    "post": "a7c469b9f19da131",
+    "champion": "Manchester City",
+    "rec": "22fe0c1f3840a4eb",
+    "poll": "10a8f717932cdfea",
+    "heis": "6fc7bce51fae9b7e",
+    "history": "6793486507996a23",
+    "universe": "4e74e148592b6b24",
+    "screens": "3e3acf7dd876bbc8"
    }
   ],
   "schedules#60": [

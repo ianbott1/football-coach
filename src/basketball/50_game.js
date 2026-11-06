@@ -28,7 +28,9 @@ const BB_COLLEGE = {
   answer:{share:-0.10, p3:-0.03, p2:-0.035, f2:0.85, to:0.035, p2t:-0.015},   // the right defense on their style
   leak:{p2:0.012, p3:0.008},  // the wrong one: easier looks somewhere else
   cueTrue:0.4,          // commentary on a style that is about the real one
-  favW:4,               // a team's usual offense: this many times as likely as any other
+  favW:4,               // a team's usual offense: this many times as likely as any other. The report is right 61% of
+                        // the time in college (70% pro); 5 made it 72%, but more predictable opponents cut March upsets
+                        // (6 v 11 favourites 63.5% to 67.1%, real 61.5), so it stays (Nov 2026)
   scouted:6,            // games in a scouting report
   prepped:{p2:-0.008, p3:-0.008},   // the right defense, drilled all week: sharper than a mid-game switch
   misprep:{p2:0.008, p3:0.006},     // the wrong one from the tip: out of position until you change it
@@ -260,10 +262,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     for(let i=0;i<Math.max(nn,nA);i++){
       dh+=possession(rng,ehH,mH,st.lines.h,pressA,modH); da+=possession(rng,ehA,mA,st.lines.a,pressH,modA);
       // the stars' fouls: on defense, while on the floor
-      if(s<SEGS){ if(onH&&rng.r()<pStar){H.f++; ev.push({side:"home",k:"foul",f:H.f,u:rng.int(100)})}
-        if(onA&&rng.r()<pStar){A.f++; ev.push({side:"away",k:"foul",f:A.f,u:rng.int(100)})} }
+      // a star who fouls out mid-stretch is gone at once (Muse: an "8th foul" in a six-foul league); the
+      // dice are drawn as before, so nothing else in the game moves
+      if(s<SEGS){ if(onH&&rng.r()<pStar){ const u=rng.int(100); if(!H.out){ H.f++; ev.push({side:"home",k:"foul",f:H.f,u:u}); if(H.f>=BB.foulOut){H.out=true; H.outEv={side:"home",k:"out"}; ev.push(H.outEv)} } }
+        if(onA&&rng.r()<pStar){ const u=rng.int(100); if(!A.out){ A.f++; ev.push({side:"away",k:"foul",f:A.f,u:u}); if(A.f>=BB.foulOut){A.out=true; A.outEv={side:"away",k:"out"}; ev.push(A.outEv)} } } }
     }
-    [["home",H],["away",A]].forEach(([sd,X])=>{ if(!X.out&&X.f>=BB.foulOut){X.out=true; ev.push({side:sd,k:"out",u:rng.int(100)})} });
+    [["home",H],["away",A]].forEach(([sd,X])=>{ if(X.outEv&&X.outEv.u===undefined){ X.outEv.u=rng.int(100); delete X.outEv }   // drawn where it always was
+      else if(!X.out&&X.f>=BB.foulOut){X.out=true; ev.push({side:sd,k:"out",u:rng.int(100)})} });
     // the last minute of regulation: whoever is behind by one to eight fouls
     // to stop the clock, sending the leader to the line and getting the ball
     // back, up to four times (extra possessions: the game lasts longer)
@@ -312,12 +317,17 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s>=4&&s<=6&&!X.asked2&&X.f>=BB.foulOut-2)return 2; return 0 };
   const sitStar=(X,half)=>{ X.sitTo=half===1?4:6 };
   st.log=[];            // the person's reads, and what was true (for the result screen)
+  // did the numbers on the card mark what they were doing? (the card's own marks: three-point share
+  // 45%+ or 31%- , pick-and-rolls 3.4+ a stretch). If not, a miss isn't held against you (Instinct: 38%
+  // threes against a 39% average, nothing marked, and "wrong: they were bombing threes")
+  const shownOf=(dp,t)=>{ const T=dp.tell; if(!T)return true; const sh=100*T.tpa/Math.max(1,T.fga), n=Math.max(1,T.n);
+    return t==="threes"?sh>=45:t==="paint"?sh<=31:t==="pnr"?T.pnr/n>=3.4:true };
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(DEFENSES[v]){ const t=st.S[other(side)].off; X.def=v; X.prepd=true;
       st.log.push({side:side,k:"prep",pick:v,truth:t,right:DEFENSES[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
-    if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:X.def,truth:t,right:DEFENSES[X.def].beats===t,evid:dp.best}); return }
-    if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off; st.log.push({side:side,k:"read",pick:v,truth:t,right:DEFENSES[v].beats===t,evid:dp.best}) }
+    if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}); return }
+    if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,k:"read",pick:v,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }
     if(dp.k==="fouls"){ if(v!=="play")sitStar(X,dp.half); return }
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }

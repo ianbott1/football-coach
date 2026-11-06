@@ -161,6 +161,41 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     await p.goto(url); await p.waitForTimeout(700); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);
     ok(await p.evaluate(()=>!(S.career.ach&&S.career.ach.century)),'a Century trophy at '+(await p.evaluate(()=>careerNow(S.career).w))+' career wins survived a reload');
     await ctx.close(); }
+  // a season begun before the deterministic draw locks its schedule on the first load, and every
+  // load after uses it (Muse: such a season reloaded in the offseason as 58-24, played 53-29)
+  { const ctx=await b.newContext(); const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss());
+    const url='file://'+path.join(DIST,'basketball-coach-pro.html'); await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
+    await p.evaluate(async()=>{ S.watchMode="never"; for(let k=0;k<30;k++)simAdvance(); await new Promise(r=>setTimeout(r,300)); delete S.uStart.schedV; delete S.schedLock; await save() });   // as an older build saved it
+    const runs=[];
+    for(let k=0;k<3;k++){ await p.goto(url); await p.waitForTimeout(600); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);
+      runs.push(await p.evaluate(()=>({lock:!!S.schedLock, sched:JSON.stringify(SEA.sched).length+':'+SEA.sched.slice(0,40).map(g=>g.home+g.away).join(''), rec:recStr(S.myTeam)}))) }
+    ok(runs.every(r=>r.lock),'a season from an older build was not given a schedule lock');
+    ok(runs.every(r=>r.sched===runs[0].sched&&r.rec===runs[0].rec),`a locked season's schedule or record changed between loads (${runs.map(r=>r.rec).join(', ')})`);
+    await ctx.close(); }
+  // zoomed to 200% and 300% (a 1280x900 window: 640x450 and 427x300), Play is on screen and the bar
+  // takes under a fifth of it (Grokbot: below the whole schedule, or half the view)
+  for(const [w,h] of [[640,450],[427,300]]){ const ctx=await b.newContext({viewport:{width:w,height:h}}); const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss());
+    await p.goto('file://'+path.join(DIST,'football-coach.html')); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
+    const r=await p.evaluate(()=>{ const a=document.getElementById('adv'), rb=a.closest('.actionbar').getBoundingClientRect(), ra=a.getBoundingClientRect(); return {vis:ra.top>=0&&ra.bottom<=innerHeight+1, share:rb.height/innerHeight} });
+    ok(r.vis&&r.share<0.2,`at ${w}x${h}: Play ${r.vis?'on screen':'off screen'}, the bar ${Math.round(100*r.share)}% of the view`);
+    await ctx.close() }
+  // all three slots full: "Start a new career" asks which to replace; Replace takes two taps and opens
+  // the new-career screens in that slot; Cancel leaves everything (Muse: no way in with full slots)
+  { const ctx=await b.newContext({viewport:{width:1280,height:900}}); const p=await ctx.newPage(); p.on('dialog',d=>d.dismiss());
+    const url='file://'+path.join(DIST,'hockey-coach-pro.html'); await p.goto(url); await p.waitForTimeout(500);
+    for(const n of [1,2,3]){ await p.evaluate(async n=>{ slot=n; await claimSlot(n); newDynasty(NAMES[n*3],n*7,'T'+n); await save() },n) }
+    await p.goto(url); await p.waitForTimeout(800);
+    const tn=await p.$('#tnew'); ok(!!tn,'all slots full: no way to start a new career');
+    if(tn){ await tn.click(); await p.waitForTimeout(300);
+      ok((await p.$$('[data-repl]')).length===3,'"Start a new career" did not ask which career to replace');
+      await p.click('#tnewx'); await p.waitForTimeout(300); ok(!(await p.$('[data-repl]'))&&!!(await p.$('#tnew')),'Cancel did not leave the replace choice');
+      await p.click('#tnew'); await p.waitForTimeout(300);
+      const r=await p.$('[data-repl="2"]'); await r.click(); await p.waitForTimeout(200);
+      ok(await p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(k)).length)===3,'one tap of Replace erased a career');
+      await r.click(); await p.waitForTimeout(800);
+      ok(!!(await p.$('#cgo')),'Replace did not open the new-career screen');
+      ok(await p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(k)).length)===2,'Replace did not clear the slot it replaced') }
+    await ctx.close(); }
   // featuring someone new in the offseason doesn't replay last season with him on reload
   // (Grokbot: the final card went 54-28 to 53-29; it moved hockey by 13 wins)
   for(const f of ['basketball-coach-pro.html','hockey-coach-pro.html']){

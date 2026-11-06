@@ -60,7 +60,7 @@ function offseasonBanner(){
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
     <div class="bsub">${esc(last.champion)} won the national title.
-      ${(last.coaching.hires||[]).length} programs hired a new head coach.</div>
+      ${nOf((last.coaching.hires||[]).length,"program")} hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
       const mine=(last.league.draft||[]).filter(d=>d.team===my);
@@ -88,8 +88,16 @@ function portalHTML(num){
   const row=(e,on,i)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(e.n)} <span class="dpos">${esc(e.p)}</span></div>
-        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)} &middot; <b>${portalChanceWord(portalChance(U,my,e))}</b></div></div>
+        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)} &middot; <b>${portalChanceWord(portalChance(U,my,e))}</b>${on?" &middot; "+bumpWord(e):""}</div></div>
       <button class="skip small" ${on?`data-ptrm="${esc(e.key)}"`:`data-ptadd="${esc(e.key)}"`}>${on?"Remove":"Add"}</button></div>`;
+  // who he'd push down, on today's roster: a transfer who starts sends your backup there away, and that can
+  // be the recruit you've just signed (Muse: a recruit lost his spot to the coach's own portal signing, unwarned)
+  const R=U.roster[my]||[];
+  const bumpWord=e=>{ const i=POS.findIndex(P=>P.p===e.p); if(i<0)return "";
+    const st=R[i], bk=R[BK(i)];
+    if(!st||e.r>st.r)return `he'd start over ${st?esc(st.n):"nobody"}${bk?`, and ${esc(bk.n)} or a new ${esc(e.p)} recruit would lose his place`:""}`;
+    if(!bk||e.r>bk.r)return `he'd back up ${esc(st.n)}${bk?`; ${esc(bk.n)} or a new ${esc(e.p)} recruit would lose his place`:""}`;
+    return `on today's roster he wouldn't make your top two at ${esc(e.p)}` };
   let h=`<div class="grouphead">${num}. Transfer portal</div>`;
   const losing=all.filter(e=>e.from===my);
   h+=losing.length?`<div class="note">Likely to leave you: ${losing.map(e=>`${esc(e.n)} (${esc(e.p)}, ${e.r}), ${esc(e.why)}`).join("; ")}.</div>`
@@ -120,9 +128,10 @@ function offseasonScreen(){
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the national title.
-    ${A.hires.length} programs changed coaches.</div>
+    ${nOf(A.hires.length,"program")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;
+  h+=seasonCallsHTML();
 
   const C=S.career;
   const jobRow=(t,tag)=>`<div class="cand ${S.off.move===t?'on':''}" data-job="${esc(t)}">

@@ -247,9 +247,12 @@ function nflPlace(roster,p){
   p.i=POS.findIndex(P=>P.p===p.p);
   const s=roster[p.i], b=roster[BK(p.i)];
   let out=null;
+  // a backup signed or bought this window (keep) isn't pushed out by a later arrival who wasn't: the
+  // newcomer goes instead (Brentford bought a midfielder, an academy graduate cut him, Cardiff had him)
+  const bKeep=b&&b.keep&&!p.keep;
   if(!s){roster[p.i]=p}
-  else if(p.r>s.r){out=b;roster[BK(p.i)]=s;roster[p.i]=p}
-  else {out=b;roster[BK(p.i)]=p}
+  else if(p.r>s.r){ if(bKeep)return p; out=b;roster[BK(p.i)]=s;roster[p.i]=p}
+  else { if(bKeep)return p; out=b;roster[BK(p.i)]=p}
   return out;
 }
 
@@ -291,6 +294,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   const rep={resigned:{},released:{},retired:{},grew:{},drafted:{},signed:{},filled:{}};
   NAMES.forEach(t=>{rep.resigned[t]=[];rep.released[t]=[];rep.retired[t]=[];rep.grew[t]=[];
     rep.drafted[t]=[];rep.signed[t]=[];rep.filled[t]=[]});
+  rep.payBefore={}; NAMES.forEach(t=>rep.payBefore[t]=payroll(u.roster[t]||[]));   // last season's wage bill, for the summer's arithmetic (Muse)
   const pool=[];                                        // free agents
   const risers=[],fallers=[];
   u.alumni=u.alumni||{};
@@ -388,7 +392,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const R=u.roster[t];
     while(payroll(R)>budgetOf(u,t)){
       let wi=-1,wv=-1;
-      R.forEach((p,i)=>{if(!p||i<POS.length)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});
+      R.forEach((p,i)=>{if(!p||i<POS.length||p.keep)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});   // not one you just signed
       if(wi<0){ // only starters left over: the most overpaid starter goes
         R.forEach((p,i)=>{if(!p)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}})}
       const out=R[wi]; R[wi]=null; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true});
@@ -548,6 +552,7 @@ LEAGUE.historyExtras=function(sea,off,my){
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[], payroll:C.cap?C.cap[my]:null,
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     transfers:(C.transfers&&C.transfers[my])||[], kittyLeft:(C.kittyLeft&&C.kittyLeft[my])||0,
+    payBefore:C.payBefore?C.payBefore[my]:null,
     payroll:off.cap?off.cap[my]:null,
     // every club's season in words, frozen before promotion and relegation moved anyone
     res:(typeof SEA!=="undefined"&&SEA)?Object.fromEntries(NAMES.map(t=>[t,SEA.seasonResult(t)])):null,

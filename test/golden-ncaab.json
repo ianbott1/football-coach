@@ -1,5 +1,5 @@
 {
- "fp": "b70fd7bf73b0220b",
+ "fp": "3bef9c2a4d73213b",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -245,6 +245,31 @@
    "fp": "b70fd7bf73b0220b",
    "from": "d348b613843a68b7",
    "note": "Nov 2026 round 15: new head coaches record the season they start (since), for the year label; soccer's free-transfer list sorts by wage room. Results identical to 0e8b0be; the stored league differs only by the since field (checked in all six)."
+  },
+  {
+   "fp": "cc13f08575caa235",
+   "from": "b70fd7bf73b0220b",
+   "note": "Nov 2026 round 17: screen text only (graded calls list every option's replay rate on one scale; reads the card hadn't marked aren't counted; hockey career keeps this season's overtime losses in the offseason). Results identical to db42841 field by field."
+  },
+  {
+   "fp": "e925b9126d050e8e",
+   "from": "cc13f08575caa235",
+   "note": "Round 21: call weight (soccer late call at 70' within a goal, sharper late modes; hockey pull only down one; football protect up to 10), game-line records in each league's format, hockey scoring lines, hockey coaching changes, your coordinator's replacement is your hire, all-time includes the season under way. Controls: basketball differs only in screens; football without the protect gate matches the last commit until a user coordinator move; hockey without the pull gate and record format matches season-1 results."
+  },
+  {
+   "fp": "8f177eea04563f39",
+   "from": "e925b9126d050e8e",
+   "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "3bef9c2a4d73213b",
+   "from": "8f177eea04563f39",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "3bef9c2a4d73213b",
+   "from": "3bef9c2a4d73213b",
+   "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
   }
  ],
  "result": {
@@ -259,7 +284,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "b404448de933d00c",
     "universe": "4d85a2415a1e71f3",
-    "screens": "744857bd1a649e2f"
+    "screens": "588e316ee3d09fc4"
    },
    {
     "year": 2027,
@@ -271,7 +296,7 @@
     "heis": "837e82652981ea58",
     "history": "228db1f60dbdf687",
     "universe": "288b44306a5a8f58",
-    "screens": "c06d1f95c8c6615f"
+    "screens": "7aa0133737141c5c"
    }
   ],
   "Coppin State#2024": [
@@ -283,9 +308,9 @@
     "rec": "433758fa94842a93",
     "poll": "80c10fa49cc0c2e7",
     "heis": "13bfe33d01f2b2a1",
-    "history": "c8c9c6d4ec862e49",
+    "history": "1da019f57745029a",
     "universe": "8d48a97d91873151",
-    "screens": "68e5584ac50a8eb2"
+    "screens": "fe4cabe312b7ae59"
    },
    {
     "year": 2027,
@@ -297,7 +322,7 @@
     "heis": "8120dbad929bbaa3",
     "history": "a09136552097899c",
     "universe": "76e76c740640a8f8",
-    "screens": "23e9f881dabaf849"
+    "screens": "df5f12234ba96543"
    }
   ],
   "Gonzaga#777": [
@@ -309,9 +334,9 @@
     "rec": "ae0f02bf8058b23f",
     "poll": "df2b0e5f2ce4e60e",
     "heis": "c94713712b4e6c61",
-    "history": "c1d7b51fae57c0da",
+    "history": "f4bc55a3ccd34a53",
     "universe": "be8791e4f8589775",
-    "screens": "7fbb5a6d4588029b"
+    "screens": "ca3ddc270542656c"
    },
    {
     "year": 2027,
@@ -323,7 +348,7 @@
     "heis": "97bdbce0e295541c",
     "history": "836c5e2056f43b41",
     "universe": "78e8feb4032cc688",
-    "screens": "7447aba7d2b1ed48"
+    "screens": "d6c860b1fcd65e71"
    }
   ],
   "schedules#60": [
