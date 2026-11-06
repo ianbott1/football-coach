@@ -121,6 +121,22 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 25 (Grokbot's list):
+- Phone width (390px), checked in a browser for sideways scroll and clipped
+  text on every tab of all six: BASKETBALL ran off the title screen
+  (.wm-long); long team names in the top bar step down (.tb-long, .tb-xl);
+  division names in pro rankings had a 46px column ("Paci...", .divn);
+  rivalry names get their own line; the team picker has Back at the top
+  as well as under the list; the intro's buttons sit in one place on
+  every page; a call screen whose answers are below the fold pins "Your N
+  options" (#tocall) until they're on screen.
+- Hockey play-by-play: larger phrase pools and no template twice in a game
+  until its pool runs out (pickFresh): 5.4 repeats a game -> 0.5.
+- Draft boards (pro football, basketball, hockey) mark each prospect
+  likely gone / might be there / likely there at your first pick: a mock
+  draft from your own scouts' numbers (nothing hidden shown). Checked
+  against real drafts: gone 78-88% / 28-51% / 10-15% of the time.
+
 Fourth downs (round 24, Instinct: "all 3 fourth downs favoured go"):
 - Punts were the opponent's ~24 from anywhere, so punting from your own 10
   cost nothing and pinning them from midfield gained nothing. Now a punt

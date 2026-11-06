@@ -184,6 +184,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  text-align:center;margin-top:12px;line-height:1.05}
 .callsub{font-size:13.5px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5}
 .callopts{display:flex;flex-direction:column;gap:8px;padding:20px 16px}
+.tocall{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:30;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:20px;border:1px solid var(--sodium);background:var(--ink,#11141c);color:var(--sodium);box-shadow:0 4px 16px rgba(0,0,0,.5)}
+@media(max-width:480px){.calltitle{font-size:23px}}
 .callbtn{margin:0}
 .wspeed{display:flex;gap:5px;max-width:728px;margin:0 auto 7px}
 .spbtn{flex:1;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
@@ -244,6 +246,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .rivmark{font-family:var(--mono);font-size:8.5px;font-style:normal;letter-spacing:.08em;
  text-transform:uppercase;color:var(--flag);margin-left:5px}
 .rivmark.sod{color:var(--sodium)}
+.dgone,.dmaybe,.dthere{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;margin-left:6px;white-space:nowrap}.dgone{color:var(--flag)}.dmaybe{color:var(--muted)}.dthere{color:var(--turf)}
 .byelbl{font-size:11px;color:var(--muted);white-space:nowrap}
 .idcard{margin:16px;padding:16px;border:1px solid var(--line);background:var(--panel2)}
 .idcard{padding-left:14px}
@@ -344,6 +347,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  overflow:hidden;text-overflow:ellipsis}
 .sconf{font-family:var(--mono);font-size:13px;width:46px;text-align:right;flex:0 0 46px;color:var(--bone);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* a long division name ran into the record: "Metropolitan48-36" (Grokbot) */
 .sconf.up{color:var(--turf)}.sconf.dn{color:var(--flag)}
+.sconf.divn{width:auto;flex:0 0 auto;min-width:40px;max-width:82px;font-size:11px;text-align:left;color:var(--muted)}   /* a division name, not a rank change: "Paci…", "Cent…" at 390px (Grokbot) */
 .sall{font-family:var(--mono);font-size:13px;color:#B4BCCB;width:46px;text-align:right;
  flex:0 0 46px}
 .shead{background:none!important;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -495,6 +499,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .wm-league{margin:20px 0 0}
 .wm-league+.wordmark{margin-top:6px}
 .wm-a{color:var(--sodium)}
+.wordmark.wm-long{font-size:clamp(40px,13vw,108px)}   /* BASKETBALL ran past a 390px screen */
 .wm-b{color:var(--bone)}
 .slots{width:100%;margin-top:34px;display:flex;flex-direction:column;gap:8px}
 .slot{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;
@@ -527,13 +532,13 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .namebox{font-family:var(--body);font-size:19px;letter-spacing:0;margin-bottom:9px}
 .setupwrap .seedbox{width:100%}
 
-.introwrap{max-width:600px;margin:0 auto;padding:56px 24px 40px;min-height:100vh;
- display:flex;flex-direction:column;justify-content:center}
+.introwrap{max-width:600px;margin:0 auto;padding:56px 24px 40px;min-height:min(100vh,760px);
+ display:flex;flex-direction:column;justify-content:flex-start}   /* buttons in one place on every page: centred, Next moved with each page's length */
 .introh{font-family:var(--cond);font-size:42px;font-weight:700;line-height:1.02;
  text-transform:uppercase;margin:12px 0 16px}
 .introb{font-size:15.5px;color:var(--muted);line-height:1.62}
 .introb b{color:var(--bone);font-weight:600}
-.intronav{display:flex;gap:10px;align-items:center;margin-top:32px}
+.intronav{display:flex;gap:10px;align-items:center;margin-top:auto;padding-top:32px}
 .intronav .advance{flex:1;margin:0}
 .restorelbl{display:block;text-align:center;cursor:pointer}
 .tallycard{display:flex;align-items:center;gap:14px;padding:12px 16px}
@@ -806,7 +811,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .reset.off{opacity:.45;text-decoration:line-through}
 /* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
-@media(max-width:480px){.tb-yr{display:none}.tb-team{margin-left:0;font-size:19px}
+@media(max-width:480px){.steam .rivmark{display:block;margin:1px 0 0;overflow:hidden;text-overflow:ellipsis}   /* the rivalry's name on its own line: it was cut off at 390px */
+.tb-yr{display:none}.tb-team{margin-left:0;font-size:19px}.tb-team.tb-long{font-size:15px}.tb-team.tb-xl{font-size:13px}
  .tb-right .reset{padding:4px 7px;margin-left:4px}.tb-right{font-size:12px}}
 .cupw{font-weight:700;color:var(--bone)}
 .cupsc{font-family:var(--mono);font-size:12px;color:var(--sodium);margin:0 4px}
@@ -891,7 +897,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="1acfe45";
+<script>const BUILD_ID="d98f931";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -3175,46 +3181,57 @@ function hkSkater(team,u){
 }
 function hkGoalie(team,backup){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "the goalie";
   const p=backup?R[BK(5)]:R[5]; return p?p.n:"the goalie" }
-const HK_FINISH=["snaps one in off the post","jams a loose puck home at the crease","tips in a point shot","wires one over the glove","walks in alone and finishes","one-times it from the circle"];
+const HK_FINISH=["snaps one in off the post","jams a loose puck home at the crease","tips in a point shot","wires one over the glove","walks in alone and finishes","one-times it from the circle",
+  "pounces on the loose puck","goes five-hole","finishes a two-on-one","bats it in out of mid-air","picks the top corner","banks it in off a skate"];
+/* the words around a goal or save: no template twice in a game until the pool runs out (Grokbot: the
+   same phrases over and over; 5.4 repeats a game, measured Nov 2026) */
+const HK_AFTER=["No chance for {g}.","Nothing {g} could do.","{g} never saw it.","{g} was screened on it.","",""];
+const HK_SOFT=["A soft one: {g} should have had it.","That one squeezed through {g}.","Soft goal. {g} looked lost.","{g} will want that one back."];
+const HK_SAVE=["Big save by {g} on {s}","{g} robs {s}","{s} denied by {g}'s pad","{g} gloves down a {s} shot","{g} stretches across to stop {s}"];
+function pickFresh(a,u,key,used){
+  if(!used)return a[u%a.length];
+  const S=used[key]=used[key]||new Set(); if(S.size>=a.length)S.clear();
+  for(let k=0;k<a.length;k++){ const i=(u+k)%a.length; if(!S.has(i)){ S.add(i); return a[i] } }
+  return a[u%a.length];
+}
 const HK_PENS=["hooking","tripping","holding","high-sticking","slashing","interference","roughing"];
 const HK_CUE={
-  forecheck:["{t} two men in deep on the forecheck again; we can't get it out","{t} hem us in our own end: another giveaway","{t} pressure the puck carrier behind our net"],
-  trap:["{t} sit back in a 1-3-1; we can't get through the middle","Another failed zone entry against {t}'s trap","{t} clog up the neutral zone and wait"],
-  cycle:["{t} cycle it low below our goal line for a whole shift","{t} grind down the boards and won't give it up","{t} work it low-to-high and get it to the point"]
+  forecheck:["{t} two men in deep on the forecheck again; we can't get it out","{t} hem us in our own end: another giveaway","{t} pressure the puck carrier behind our net","{t} on our D before he can turn: iced it again"],
+  trap:["{t} sit back in a 1-3-1; we can't get through the middle","Another failed zone entry against {t}'s trap","{t} clog up the neutral zone and wait","We dump it in again; {t} won't let us carry it"],
+  cycle:["{t} cycle it low below our goal line for a whole shift","{t} grind down the boards and won't give it up","{t} work it low-to-high and get it to the point","{t} win another battle along the wall and keep it in"]
 };
 function pickOf(a,u){return a[u%a.length]}
-function hkEventText(g,e,swapped){
+function hkEventText(g,e,swapped,used){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
   if(e.k==="goal"){
     const n=hkSkater(tm,u), a1=hkSkater(tm,(u*7+3)%100), gk=hkGoalie(opp,swapped&&swapped[e.side==="home"?"away":"home"]);
     if(e.en)return {team:tm,tag:"EMPTY NET",text:`${n} into the empty net`};
     if(e.extra)return {team:tm,tag:"GOAL",text:`${n} scores with the extra attacker`};
-    const how=pickOf(HK_FINISH,u>>2), ast=a1&&a1!==n?` (from ${surname(a1)})`:"";
-    const soft=e.soft?` ${pickOf(["A soft one: "+surname(gk)+" should have had it.","That one squeezed through "+surname(gk)+".","Soft goal. "+surname(gk)+" looked lost."],u)}`
-                     :` ${pickOf(["No chance for "+surname(gk)+".","Nothing "+surname(gk)+" could do.",""],u)}`;
-    return {team:tm,tag:e.pp?"PP GOAL":"GOAL",text:`${n} ${how}${ast}.${soft}`};
+    const how=pickFresh(HK_FINISH,u>>2,"fin",used), ast=a1&&a1!==n?` (from ${surname(a1)})`:"";
+    const after=(e.soft?pickFresh(HK_SOFT,u,"soft",used):pickFresh(HK_AFTER,u,"after",used)).replace("{g}",surname(gk));
+    return {team:tm,tag:e.pp?"PP GOAL":"GOAL",text:`${n} ${how}${ast}.${after?" "+after:""}`};
   }
   if(e.k==="pen"){ const n=hkSkater(tm,u); return {team:tm,tag:"PENALTY",text:`${n} two minutes for ${pickOf(HK_PENS,u>>2)}`} }
-  if(e.k==="save"){ const gk=hkGoalie(tm,swapped&&swapped[e.side]); return {team:tm,tag:"",text:`Big save by ${surname(gk)} on ${surname(hkSkater(opp,u))}`} }
+  if(e.k==="save"){ const gk=hkGoalie(tm,swapped&&swapped[e.side]); return {team:tm,tag:"",text:pickFresh(HK_SAVE,u,"save",used).replace("{g}",surname(gk)).replace("{s}",surname(hkSkater(opp,u)))} }
   if(e.k==="pull")return {team:tm,tag:"",text:`pull the goalie for an extra attacker`};
-  if(e.k==="cue")return {team:tm,tag:"",text:pickOf(HK_CUE[e.cue],u).replace("{t}",tm),cue:true};
+  if(e.k==="cue")return {team:tm,tag:"",text:pickFresh(HK_CUE[e.cue],u,"cue"+e.cue,used).replace("{t}",tm),cue:true};
   if(e.k==="swap"){ return {team:tm,tag:"",text:`${hkGoalie(tm,true)} comes in for ${surname(hkGoalie(tm,false))}`} }
   return {team:tm,tag:"",text:""};
 }
 const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function rowsOf(g,drives){
-  const rows=[], sw={home:false,away:false}; let last=null; const said=new Set();
+  const rows=[], sw={home:false,away:false}, used={}; let last=null; const said=new Set();
   drives.forEach(d=>{
     let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
-    if(d.seg>=SEGS){ (d.ev||[]).forEach(e=>{ const t=hkEventText(g,e,sw); rows.push({m:d.so?"SO":"OT",team:t.team,tag:"OT GOAL",text:t.text,h:d.sh,a:d.sa,goal:true}) });
+    if(d.seg>=SEGS){ (d.ev||[]).forEach(e=>{ const t=hkEventText(g,e,sw,used); rows.push({m:d.so?"SO":"OT",team:t.team,tag:"OT GOAL",text:t.text,h:d.sh,a:d.sa,goal:true}) });
       if(d.so)rows.push({m:"SO",team:d.sh>d.sa?g.home:g.away,tag:"SHOOTOUT",text:"win it in the shootout",h:d.sh,a:d.sa,goal:true});
       return }
     (d.ev||[]).filter(shown).forEach(e=>{
       if(e.k==="goal"){ if(e.side==="home")sh++; else sa++ }
       if(e.k==="swap"){ const t=hkEventText(g,e,sw); sw[e.side]=true; rows.push({m:e.m+"'",team:t.team,tag:"",text:t.text,h:sh,a:sa}); return }
-      let t=hkEventText(g,e,sw);
+      let t=hkEventText(g,e,sw,used);
       // two goals by one side in the same minute read as one goal twice (Grokbot: the same scorer at
       // 42', near-identical text): the second gets another scorer and finish (names are words only)
       // ...and no goal reads word for word like an earlier one in the game (Grokbot saw it again, at
@@ -5075,7 +5092,7 @@ function nflPower(){
     return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${nflClinchTag(t)}${TL(t)}</span>
-      <span class="sconf">${esc(LEAGUE.conf.names[CONF[t]])}</span>
+      <span class="sconf divn">${esc(LEAGUE.conf.names[CONF[t]])}</span>
       <span class="sall">${recStr(t)}</span>
       <span class="sconf ${d>0?'up':d<0?'dn':''}">${d>0?"&#9650;"+d:d<0?"&#9660;"+(-d):""}</span></div>`;
   }).join("")+NFL_LEGEND;
@@ -5228,16 +5245,24 @@ function nflBoardHTML(P){
   const C=nflDraftClass(U,S.myTeam), byId={}; C.list.forEach(p=>byId[p.pid]=p);
   const board=(P.board||[]).filter(id=>byId[id]);
   const val=p=>p.sr+(p.spot-p.sr)*0.45;
+  // a mock draft from your scouts' numbers: who's likely gone before your first pick (Grokbot: make the
+  // draft a decision, not a list). Your scouts' estimates only, so it gives nothing hidden away
+  const ahead=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam), gone={};
+  if(ahead>0){ const M=120, r=new RNG((((U.seed||0)*2246822519)^(SEA.year*31337))>>>0);
+    for(let m=0;m<M;m++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
+        C.list.forEach(p=>{ if(taken.has(p.pid))return; const v=val(p)+r.gauss(0,3); if(v>bs){bs=v;bi=p.pid} }); taken.add(bi) }
+      taken.forEach(id=>gone[id]=(gone[id]||0)+1/M) } }
+  const avail=p=>{ const g=gone[p.pid]||0; return ahead<=0?"":g>0.75?`<span class="dgone">likely gone</span>`:g>0.25?`<span class="dmaybe">might be there</span>`:`<span class="dthere">likely there</span>` };
   const row=(p,i,on)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
-      <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
+      <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${avail(p)}</div>
         <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${p.sr}, ceiling ~${p.spot}</div></div>
       <button class="skip small" ${on?`data-bdrm="${p.pid}"`:`data-bdadd="${p.pid}"`}>${on?"Remove":"Add"}</button></div>`;
   let h=`<div class="grouphead">Your draft board</div>`;
   h+=board.length?board.map((id,i)=>row(byId[id],i,true)).join("")
      :`<div class="note">Empty: your draft style will choose. Add players below and you'll take the highest one still there at each of your picks.</div>`;
   const pool=C.list.filter(p=>board.indexOf(p.pid)<0).sort((a,b)=>val(b)-val(a)).slice(0,30);
-  h+=`<div class="grouphead">The class &mdash; best 30 by your scouts</div>`+pool.map(p=>row(p,0,false)).join("");
+  h+=`<div class="grouphead">The class &mdash; best 30 by your scouts</div>`+(ahead>0?`<div class="note">${nOf(ahead,"pick")} before yours. "Likely there" is a mock draft from your scouts' numbers; other teams see the class differently, and the lottery can move you.</div>`:"")+pool.map(p=>row(p,0,false)).join("");
   return h;
 }
 /* Free agents you want, in order. They get your first look when free agency
@@ -8135,10 +8160,18 @@ function render(){
     const bk=el("cback"); if(bk)bk.onclick=()=>{cardFor=null;cardMsg="";render()};
     return;
   }
+  { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
     el("app").innerHTML=live.ask?liveCallView():liveView();
     if(live.ask){
       document.querySelectorAll("[data-call]").forEach(b=>b.onclick=()=>answerLive(b.dataset.call));
+      // on a phone the answers can sit below the evidence: a pinned button says how many and jumps to them,
+      // and goes once they're on screen (Grokbot: decision buttons below the fold at 390px)
+      const co=document.querySelector(".callopts");
+      if(co&&typeof IntersectionObserver!=="undefined"){ const n=co.querySelectorAll("[data-call]").length;
+        const j=document.createElement("button"); j.id="tocall"; j.className="tocall"; j.textContent=`Your ${n} options \u2193`;
+        j.onclick=()=>co.scrollIntoView({behavior:"smooth",block:"center"}); document.body.appendChild(j);
+        const io=new IntersectionObserver(es=>{ es.forEach(e=>{ j.style.display=e.isIntersecting?"none":"" }) },{threshold:0.2}); io.observe(co); }
     }else{
       const pz=el("wpause"); if(pz)pz.onclick=()=>{live.paused=!live.paused;S.watchStep=live.paused;save();liveTick()};
       const st2=el("wstep"); if(st2)st2.onclick=()=>{live.paused=true;S.watchStep=true;liveTick()};
@@ -8162,7 +8195,7 @@ function render(){
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
-        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br>
+        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark${SPORT.word.length>8?" wm-long":""}"><span class="wm-a">${esc(SPORT.word)}</span><br>
         <span class="wm-b">Coach</span></h1></div>`;return}
     renderTitle();return}
   if(!S.myTeam&&S.setup&&!S.setup.ready){renderSetup();return}
@@ -8170,7 +8203,7 @@ function render(){
   if(S.help){
     el("app").innerHTML=`<div class="stick"><div class="topbar">
       <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-      <span class="tb-team" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
+      <span class="tb-team${S.myTeam.length>13?" tb-long tb-xl":S.myTeam.length>9?" tb-long":""}" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
       </div></div>${helpPanel()}`;
     const c=el("hclose"); if(c)c.onclick=()=>{S.help=false;render()};
     document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{
@@ -8216,7 +8249,7 @@ function render(){
     <div class="stick">
       <div class="topbar">
         <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-          <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
+          <span class="tb-team${my.length>13?" tb-long tb-xl":my.length>9?" tb-long":""}" style="color:${teamInk(my)}">${esc(my)}</span></div>
         <div class="tb-right">${recFmt(my,liveRec(my))}
           ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
           <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button><button class="reset ${musicOn()?'':'off'}" id="mus" title="Music ${musicOn()?'on':'off'}">&#9835;</button>
@@ -8499,7 +8532,7 @@ function renderTitle(){
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
     </div>
-    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
+    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark${SPORT.word.length>8?" wm-long":""}"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">${esc(LEAGUE.text.tagline||"Build a program. Win it all.")}</div>
     ${(()=>{ const free=slots.find(x=>x.empty); if(!free||slots.some(x=>!x.empty))return "";
       firstJobPicks=firstJobPicks||firstJobs(); const J=firstJobPicks[1];
@@ -8704,6 +8737,7 @@ function renderStart(){
         (${taken.length+1} of ${n})</div>`+
         (taken.length?`<div class="note">Already taken: ${taken.map(esc).join(", ")}</div>`:"");
     })()}
+    <button class="backbtn" id="pback2">&larr; Back</button>
     ${(S.picking&&S.picking.length)?"":(()=>{ firstJobPicks=firstJobPicks||firstJobs();
       return `<div class="grouphead">Good first jobs</div><div class="firstjobs">${firstJobPicks.map(J=>`<button class="pick firstjob" data-t="${esc(J.t)}">
         <span class="dot" style="background:${teamColor(J.t)}"></span><span class="fjl">${esc(J.l)}</span>
@@ -8719,6 +8753,7 @@ function renderStart(){
   bindPicks();
   // back a step: to the setup, nothing started (testers: no way out of a new career once begun)
   el("pback").onclick=()=>{ if(S.setup){S.setup.ready=false} S.picking=null; render() };
+  { const b2=el("pback2"); if(b2)b2.onclick=el("pback").onclick }   // at the top too: the bottom one sat under 132 teams (Grokbot)
   const f=el("find");
   if(f)f.oninput=()=>{el("picks").innerHTML=pickList(f.value);bindPicks()};
 }

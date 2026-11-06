@@ -11,7 +11,9 @@ const quick=process.argv.includes('--quick');
 const G={cfb:'football-coach.html', nfl:'football-coach-pro.html', ncaab:'basketball-coach.html',
          nba:'basketball-coach-pro.html', nhl:'hockey-coach-pro.html', epl:'soccer-coach.html'};
 const T=[];
-const add=(name,args,opt={})=>T.push(Object.assign({name,args,timeout:600000},opt));   // one CPU, four at a time
+// --resume LOG: skip the tests a previous run of the same build logged as ok (a restarted machine lost the rest)
+const resumeLog=(i=>i>=0&&process.argv[i+1])(process.argv.indexOf('--resume')), done0=new Set(resumeLog?require('fs').readFileSync(resumeLog,'utf8').split('\n').map(l=>(l.match(/^  ok   (.*) \(\d+s\)$/)||[])[1]).filter(Boolean):[]);
+const add=(name,args,opt={})=>{ if(!done0.has(name))T.push(Object.assign({name,args,timeout:600000},opt)) };   // one CPU, four at a time
 // in every game
 for(const [lg,f] of Object.entries(G)){
   add(`golden ${lg}`,['golden.js',D(f)]);

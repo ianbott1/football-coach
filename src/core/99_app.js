@@ -2652,10 +2652,18 @@ function render(){
     const bk=el("cback"); if(bk)bk.onclick=()=>{cardFor=null;cardMsg="";render()};
     return;
   }
+  { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
     el("app").innerHTML=live.ask?liveCallView():liveView();
     if(live.ask){
       document.querySelectorAll("[data-call]").forEach(b=>b.onclick=()=>answerLive(b.dataset.call));
+      // on a phone the answers can sit below the evidence: a pinned button says how many and jumps to them,
+      // and goes once they're on screen (Grokbot: decision buttons below the fold at 390px)
+      const co=document.querySelector(".callopts");
+      if(co&&typeof IntersectionObserver!=="undefined"){ const n=co.querySelectorAll("[data-call]").length;
+        const j=document.createElement("button"); j.id="tocall"; j.className="tocall"; j.textContent=`Your ${n} options \u2193`;
+        j.onclick=()=>co.scrollIntoView({behavior:"smooth",block:"center"}); document.body.appendChild(j);
+        const io=new IntersectionObserver(es=>{ es.forEach(e=>{ j.style.display=e.isIntersecting?"none":"" }) },{threshold:0.2}); io.observe(co); }
     }else{
       const pz=el("wpause"); if(pz)pz.onclick=()=>{live.paused=!live.paused;S.watchStep=live.paused;save();liveTick()};
       const st2=el("wstep"); if(st2)st2.onclick=()=>{live.paused=true;S.watchStep=true;liveTick()};
@@ -2679,7 +2687,7 @@ function render(){
   if(S.title){
     if(!S._slots){allSlots().then(v=>{S._slots=v;render()});
       el("app").innerHTML=`<div class="titlewrap">${LOGO}
-        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br>
+        <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark${SPORT.word.length>8?" wm-long":""}"><span class="wm-a">${esc(SPORT.word)}</span><br>
         <span class="wm-b">Coach</span></h1></div>`;return}
     renderTitle();return}
   if(!S.myTeam&&S.setup&&!S.setup.ready){renderSetup();return}
@@ -2687,7 +2695,7 @@ function render(){
   if(S.help){
     el("app").innerHTML=`<div class="stick"><div class="topbar">
       <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-      <span class="tb-team" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
+      <span class="tb-team${S.myTeam.length>13?" tb-long tb-xl":S.myTeam.length>9?" tb-long":""}" style="color:${teamInk(S.myTeam)}">${esc(S.myTeam)}</span></div>
       </div></div>${helpPanel()}`;
     const c=el("hclose"); if(c)c.onclick=()=>{S.help=false;render()};
     document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{
@@ -2733,7 +2741,7 @@ function render(){
     <div class="stick">
       <div class="topbar">
         <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-          <span class="tb-team" style="color:${teamInk(my)}">${esc(my)}</span></div>
+          <span class="tb-team${my.length>13?" tb-long tb-xl":my.length>9?" tb-long":""}" style="color:${teamInk(my)}">${esc(my)}</span></div>
         <div class="tb-right">${recFmt(my,liveRec(my))}
           ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
           <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button><button class="reset ${musicOn()?'':'off'}" id="mus" title="Music ${musicOn()?'on':'off'}">&#9835;</button>
@@ -3016,7 +3024,7 @@ function renderTitle(){
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
     </div>
-    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
+    <div class="kicker wm-league">${esc(LEAGUE.text.eyebrow||"")}</div><h1 class="wordmark${SPORT.word.length>8?" wm-long":""}"><span class="wm-a">${esc(SPORT.word)}</span><br><span class="wm-b">Coach</span></h1>
     <div class="tagline">${esc(LEAGUE.text.tagline||"Build a program. Win it all.")}</div>
     ${(()=>{ const free=slots.find(x=>x.empty); if(!free||slots.some(x=>!x.empty))return "";
       firstJobPicks=firstJobPicks||firstJobs(); const J=firstJobPicks[1];
@@ -3221,6 +3229,7 @@ function renderStart(){
         (${taken.length+1} of ${n})</div>`+
         (taken.length?`<div class="note">Already taken: ${taken.map(esc).join(", ")}</div>`:"");
     })()}
+    <button class="backbtn" id="pback2">&larr; Back</button>
     ${(S.picking&&S.picking.length)?"":(()=>{ firstJobPicks=firstJobPicks||firstJobs();
       return `<div class="grouphead">Good first jobs</div><div class="firstjobs">${firstJobPicks.map(J=>`<button class="pick firstjob" data-t="${esc(J.t)}">
         <span class="dot" style="background:${teamColor(J.t)}"></span><span class="fjl">${esc(J.l)}</span>
@@ -3236,6 +3245,7 @@ function renderStart(){
   bindPicks();
   // back a step: to the setup, nothing started (testers: no way out of a new career once begun)
   el("pback").onclick=()=>{ if(S.setup){S.setup.ready=false} S.picking=null; render() };
+  { const b2=el("pback2"); if(b2)b2.onclick=el("pback").onclick }   // at the top too: the bottom one sat under 132 teams (Grokbot)
   const f=el("find");
   if(f)f.oninput=()=>{el("picks").innerHTML=pickList(f.value);bindPicks()};
 }

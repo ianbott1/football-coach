@@ -1,5 +1,5 @@
 {
- "fp": "8f177eea04563f39",
+ "fp": "3bef9c2a4d73213b",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -260,6 +260,11 @@
    "fp": "8f177eea04563f39",
    "from": "e925b9126d050e8e",
    "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "3bef9c2a4d73213b",
+   "from": "8f177eea04563f39",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
   }
  ],
  "result": {
@@ -300,7 +305,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "1da019f57745029a",
     "universe": "8d48a97d91873151",
-    "screens": "241b441eb392a794"
+    "screens": "fe4cabe312b7ae59"
    },
    {
     "year": 2027,
@@ -312,7 +317,7 @@
     "heis": "8120dbad929bbaa3",
     "history": "a09136552097899c",
     "universe": "76e76c740640a8f8",
-    "screens": "503862c1389c06d5"
+    "screens": "df5f12234ba96543"
    }
   ],
   "Gonzaga#777": [

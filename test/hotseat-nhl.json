@@ -150,6 +150,16 @@
    "fp": "ccf1c89fd43f025e",
    "from": "3d9d27c1437c98d9",
    "note": "Round 23: hockey goalie call only within two goals; staff never repeat a sentence in a game; featuring scaled by the player. Controls: hockey without the goalie gate matches the last commit; college football differs only in screens."
+  },
+  {
+   "fp": "ccf1c89fd43f025e",
+   "from": "ccf1c89fd43f025e",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "ccf1c89fd43f025e",
+   "from": "ccf1c89fd43f025e",
+   "note": "Round 25: hockey finish reworded (\"rebound\" is a basketball word to the screens test)."
   }
  ],
  "out": [

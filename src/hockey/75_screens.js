@@ -18,46 +18,57 @@ function hkSkater(team,u){
 }
 function hkGoalie(team,backup){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "the goalie";
   const p=backup?R[BK(5)]:R[5]; return p?p.n:"the goalie" }
-const HK_FINISH=["snaps one in off the post","jams a loose puck home at the crease","tips in a point shot","wires one over the glove","walks in alone and finishes","one-times it from the circle"];
+const HK_FINISH=["snaps one in off the post","jams a loose puck home at the crease","tips in a point shot","wires one over the glove","walks in alone and finishes","one-times it from the circle",
+  "pounces on the loose puck","goes five-hole","finishes a two-on-one","bats it in out of mid-air","picks the top corner","banks it in off a skate"];
+/* the words around a goal or save: no template twice in a game until the pool runs out (Grokbot: the
+   same phrases over and over; 5.4 repeats a game, measured Nov 2026) */
+const HK_AFTER=["No chance for {g}.","Nothing {g} could do.","{g} never saw it.","{g} was screened on it.","",""];
+const HK_SOFT=["A soft one: {g} should have had it.","That one squeezed through {g}.","Soft goal. {g} looked lost.","{g} will want that one back."];
+const HK_SAVE=["Big save by {g} on {s}","{g} robs {s}","{s} denied by {g}'s pad","{g} gloves down a {s} shot","{g} stretches across to stop {s}"];
+function pickFresh(a,u,key,used){
+  if(!used)return a[u%a.length];
+  const S=used[key]=used[key]||new Set(); if(S.size>=a.length)S.clear();
+  for(let k=0;k<a.length;k++){ const i=(u+k)%a.length; if(!S.has(i)){ S.add(i); return a[i] } }
+  return a[u%a.length];
+}
 const HK_PENS=["hooking","tripping","holding","high-sticking","slashing","interference","roughing"];
 const HK_CUE={
-  forecheck:["{t} two men in deep on the forecheck again; we can't get it out","{t} hem us in our own end: another giveaway","{t} pressure the puck carrier behind our net"],
-  trap:["{t} sit back in a 1-3-1; we can't get through the middle","Another failed zone entry against {t}'s trap","{t} clog up the neutral zone and wait"],
-  cycle:["{t} cycle it low below our goal line for a whole shift","{t} grind down the boards and won't give it up","{t} work it low-to-high and get it to the point"]
+  forecheck:["{t} two men in deep on the forecheck again; we can't get it out","{t} hem us in our own end: another giveaway","{t} pressure the puck carrier behind our net","{t} on our D before he can turn: iced it again"],
+  trap:["{t} sit back in a 1-3-1; we can't get through the middle","Another failed zone entry against {t}'s trap","{t} clog up the neutral zone and wait","We dump it in again; {t} won't let us carry it"],
+  cycle:["{t} cycle it low below our goal line for a whole shift","{t} grind down the boards and won't give it up","{t} work it low-to-high and get it to the point","{t} win another battle along the wall and keep it in"]
 };
 function pickOf(a,u){return a[u%a.length]}
-function hkEventText(g,e,swapped){
+function hkEventText(g,e,swapped,used){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
   if(e.k==="goal"){
     const n=hkSkater(tm,u), a1=hkSkater(tm,(u*7+3)%100), gk=hkGoalie(opp,swapped&&swapped[e.side==="home"?"away":"home"]);
     if(e.en)return {team:tm,tag:"EMPTY NET",text:`${n} into the empty net`};
     if(e.extra)return {team:tm,tag:"GOAL",text:`${n} scores with the extra attacker`};
-    const how=pickOf(HK_FINISH,u>>2), ast=a1&&a1!==n?` (from ${surname(a1)})`:"";
-    const soft=e.soft?` ${pickOf(["A soft one: "+surname(gk)+" should have had it.","That one squeezed through "+surname(gk)+".","Soft goal. "+surname(gk)+" looked lost."],u)}`
-                     :` ${pickOf(["No chance for "+surname(gk)+".","Nothing "+surname(gk)+" could do.",""],u)}`;
-    return {team:tm,tag:e.pp?"PP GOAL":"GOAL",text:`${n} ${how}${ast}.${soft}`};
+    const how=pickFresh(HK_FINISH,u>>2,"fin",used), ast=a1&&a1!==n?` (from ${surname(a1)})`:"";
+    const after=(e.soft?pickFresh(HK_SOFT,u,"soft",used):pickFresh(HK_AFTER,u,"after",used)).replace("{g}",surname(gk));
+    return {team:tm,tag:e.pp?"PP GOAL":"GOAL",text:`${n} ${how}${ast}.${after?" "+after:""}`};
   }
   if(e.k==="pen"){ const n=hkSkater(tm,u); return {team:tm,tag:"PENALTY",text:`${n} two minutes for ${pickOf(HK_PENS,u>>2)}`} }
-  if(e.k==="save"){ const gk=hkGoalie(tm,swapped&&swapped[e.side]); return {team:tm,tag:"",text:`Big save by ${surname(gk)} on ${surname(hkSkater(opp,u))}`} }
+  if(e.k==="save"){ const gk=hkGoalie(tm,swapped&&swapped[e.side]); return {team:tm,tag:"",text:pickFresh(HK_SAVE,u,"save",used).replace("{g}",surname(gk)).replace("{s}",surname(hkSkater(opp,u)))} }
   if(e.k==="pull")return {team:tm,tag:"",text:`pull the goalie for an extra attacker`};
-  if(e.k==="cue")return {team:tm,tag:"",text:pickOf(HK_CUE[e.cue],u).replace("{t}",tm),cue:true};
+  if(e.k==="cue")return {team:tm,tag:"",text:pickFresh(HK_CUE[e.cue],u,"cue"+e.cue,used).replace("{t}",tm),cue:true};
   if(e.k==="swap"){ return {team:tm,tag:"",text:`${hkGoalie(tm,true)} comes in for ${surname(hkGoalie(tm,false))}`} }
   return {team:tm,tag:"",text:""};
 }
 const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function rowsOf(g,drives){
-  const rows=[], sw={home:false,away:false}; let last=null; const said=new Set();
+  const rows=[], sw={home:false,away:false}, used={}; let last=null; const said=new Set();
   drives.forEach(d=>{
     let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
-    if(d.seg>=SEGS){ (d.ev||[]).forEach(e=>{ const t=hkEventText(g,e,sw); rows.push({m:d.so?"SO":"OT",team:t.team,tag:"OT GOAL",text:t.text,h:d.sh,a:d.sa,goal:true}) });
+    if(d.seg>=SEGS){ (d.ev||[]).forEach(e=>{ const t=hkEventText(g,e,sw,used); rows.push({m:d.so?"SO":"OT",team:t.team,tag:"OT GOAL",text:t.text,h:d.sh,a:d.sa,goal:true}) });
       if(d.so)rows.push({m:"SO",team:d.sh>d.sa?g.home:g.away,tag:"SHOOTOUT",text:"win it in the shootout",h:d.sh,a:d.sa,goal:true});
       return }
     (d.ev||[]).filter(shown).forEach(e=>{
       if(e.k==="goal"){ if(e.side==="home")sh++; else sa++ }
       if(e.k==="swap"){ const t=hkEventText(g,e,sw); sw[e.side]=true; rows.push({m:e.m+"'",team:t.team,tag:"",text:t.text,h:sh,a:sa}); return }
-      let t=hkEventText(g,e,sw);
+      let t=hkEventText(g,e,sw,used);
       // two goals by one side in the same minute read as one goal twice (Grokbot: the same scorer at
       // 42', near-identical text): the second gets another scorer and finish (names are words only)
       // ...and no goal reads word for word like an earlier one in the game (Grokbot saw it again, at

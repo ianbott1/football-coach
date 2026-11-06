@@ -17,7 +17,7 @@ function nflPower(){
     return `<div class="srow ${t===my?'mine':''}"><span class="spos">${i+1}</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
       <span class="steam">${nflClinchTag(t)}${TL(t)}</span>
-      <span class="sconf">${esc(LEAGUE.conf.names[CONF[t]])}</span>
+      <span class="sconf divn">${esc(LEAGUE.conf.names[CONF[t]])}</span>
       <span class="sall">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
       <span class="sconf ${d>0?'up':d<0?'dn':''}">${d>0?"&#9650;"+d:d<0?"&#9660;"+(-d):""}</span></div>`;
   }).join("")+NFL_LEGEND;

@@ -1,5 +1,5 @@
 {
- "fp": "5ca020fafa9845b8",
+ "fp": "5b0a9c05675802d3",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -215,6 +215,16 @@
    "fp": "5ca020fafa9845b8",
    "from": "0ed4f5dad2e47957",
    "note": "Round 23: hockey goalie call only within two goals; staff never repeat a sentence in a game; featuring scaled by the player. Controls: hockey without the goalie gate matches the last commit; college football differs only in screens."
+  },
+  {
+   "fp": "5b0a9c05675802d3",
+   "from": "5ca020fafa9845b8",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
+  },
+  {
+   "fp": "5b0a9c05675802d3",
+   "from": "5b0a9c05675802d3",
+   "note": "Round 25: hockey finish reworded (\"rebound\" is a basketball word to the screens test)."
   }
  ],
  "result": {
@@ -229,7 +239,7 @@
     "heis": "1884646e04c965cf",
     "history": "4e5c07a34986c477",
     "universe": "89973d8cfacd3ffe",
-    "screens": "bef3e08ac3675cc9"
+    "screens": "b1ca59a50efde6b6"
    },
    {
     "year": 2027,
@@ -241,7 +251,7 @@
     "heis": "ac6801fa4e52a9cb",
     "history": "2c631d59553e4dfa",
     "universe": "5fdf6a8e849d0fa1",
-    "screens": "96cf781c4689a4fa"
+    "screens": "9d3610e65c6ee8d0"
    }
   ],
   "Edmonton#777": [
@@ -255,7 +265,7 @@
     "heis": "ade43a62bf6e0213",
     "history": "8f99473c90180cf8",
     "universe": "ebbc7e179f6cdd16",
-    "screens": "8af5b163aacf092f"
+    "screens": "3c433418fed4a1d2"
    },
    {
     "year": 2027,
@@ -267,7 +277,7 @@
     "heis": "5c182bc261349631",
     "history": "26db365e5de348bc",
     "universe": "0bc3604885579c57",
-    "screens": "5ffbc6710d519c14"
+    "screens": "010ffa585a56b24d"
    }
   ],
   "schedules#60": [

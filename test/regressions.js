@@ -415,6 +415,16 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   for(let k=0;k<30&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='goalie'){ asked++; if(Math.abs(q.mine-q.theirs)>2)wide++ } A.answerLive(q.dp.opts[1][0]) } else A.liveTick() } } }
   ok(asked>0&&!wide,`hockey: goalie asked ${asked} times, ${wide} with the game out of reach`) }
 
+/* 62. hockey play-by-play: no template phrase twice in a game until its pool runs out (Grokbot) */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP.concat(['gameScript'])}); A.newDynasty('Toronto',4,'T'); let g=0; while(A.SEA.step<20&&g++<200)A.SEA.advance();
+  const tpl=t=>t.replace(/[A-Z][a-z'.-]+( [A-Z][a-z'.-]+)*/g,'X'); let games=0,rep=0;
+  A.SEA.weeks.slice(0,20).forEach(W=>W.games.slice(0,6).forEach(G=>{ const gs=A.gameScript(G,A.SEA.roster[G.home],A.SEA.roster[G.away],7); const rows=gs&&(gs.rows||gs); if(!Array.isArray(rows))return; games++;
+    const seen={}; rows.forEach(x=>(x.text||'').split(/(?<=\.)\s+/).forEach(s=>{ const k=tpl(s); if(k.length<8)return; if(seen[k])rep++; seen[k]=1 })) }));
+  console.log(`  hockey: ${(rep/games).toFixed(2)} repeated phrases a game in ${games}`); ok(games>50&&rep/games<1,`hockey: ${(rep/games).toFixed(2)} repeated play-by-play phrases a game`) }
+/* 63. the draft board marks who's likely there at your pick */
+{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP}); A.newDynasty('Detroit',4,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance(); A.openOffseason();
+  const t=strip(A.LEAGUE.ui.offseasonScreen()); ok(/likely gone/.test(t)&&/likely there/.test(t)&&/picks? before yours/.test(t),'NBA: the draft board has no availability marks') }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

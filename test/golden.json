@@ -1,5 +1,5 @@
 {
- "fp": "b6d5b3c50f4d86a3",
+ "fp": "d348f6b97ba2b779",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -284,6 +284,11 @@
    "fp": "b6d5b3c50f4d86a3",
    "from": "6859a9134209cb62",
    "note": "Round 24: punts land from where they're kicked (they started the opponent at ~24 from anywhere); fourth downs asked only with the game in reach (rough win chance 10-90%). Calibration unchanged (college 54.8 pts/game, favourites 0.699; pro 46.1, 0.694). Results change from season 1 (fewer asks shift the replies)."
+  },
+  {
+   "fp": "d348f6b97ba2b779",
+   "from": "b6d5b3c50f4d86a3",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
   }
  ],
  "result": {
@@ -436,7 +441,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "e9e60865ee171b84",
     "universe": "b752a7958db91f79",
-    "screens": "d1061f61e0bfbc87"
+    "screens": "b1ca4f8873000c78"
    },
    {
     "year": 2027,
@@ -448,7 +453,7 @@
     "heis": "c407e7790dc93d7a",
     "history": "94efe6e8c2fe5a1f",
     "universe": "6d50dce4233481d5",
-    "screens": "724e5f8d7c34738d"
+    "screens": "af08da709f747ea0"
    },
    {
     "year": 2028,
@@ -460,7 +465,7 @@
     "heis": "8afb54588e2a90ba",
     "history": "4c868b5f0965ef30",
     "universe": "7dcbd7a281b1965f",
-    "screens": "3e609c3cc9c0beff"
+    "screens": "4f549a2dfdf494ca"
    }
   ],
   "schedules#60": [

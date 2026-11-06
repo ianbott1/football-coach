@@ -1,5 +1,5 @@
 {
- "fp": "56bfeec7eb1b3a87",
+ "fp": "f92766f4f24dcc71",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -280,6 +280,11 @@
    "fp": "56bfeec7eb1b3a87",
    "from": "7123e7deaec6a90a",
    "note": "Round 24: punts land from where they're kicked (they started the opponent at ~24 from anywhere); fourth downs asked only with the game in reach (rough win chance 10-90%). Calibration unchanged (college 54.8 pts/game, favourites 0.699; pro 46.1, 0.694). Results change from season 1 (fewer asks shift the replies)."
+  },
+  {
+   "fp": "f92766f4f24dcc71",
+   "from": "56bfeec7eb1b3a87",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
   }
  ],
  "result": {
@@ -294,7 +299,7 @@
     "heis": "00f60c3ed9f6cf1a",
     "history": "84bce0791e0cc654",
     "universe": "7b98f074e7943309",
-    "screens": "f8f961482390e748"
+    "screens": "05c3040a26cf286e"
    },
    {
     "year": 2027,
@@ -306,7 +311,7 @@
     "heis": "c3ac654dbbad431b",
     "history": "122da971b185edd4",
     "universe": "a14051fbef4001fa",
-    "screens": "0721263e303c4fd2"
+    "screens": "68f8045a0a3173fe"
    },
    {
     "year": 2028,
@@ -318,7 +323,7 @@
     "heis": "557f8d2455b5f300",
     "history": "9ee92b184bb22318",
     "universe": "bc9587793e8a25f1",
-    "screens": "e5b1f9c0c8ac2785"
+    "screens": "0cb9203e8a6da61d"
    },
    {
     "year": 2029,
@@ -330,7 +335,7 @@
     "heis": "0c18e2d98b589321",
     "history": "d58722b0a5a19e57",
     "universe": "1d90811e5c967247",
-    "screens": "3f05a22e56525a30"
+    "screens": "f79a1fc13148ba68"
    }
   ],
   "Tennessee#2024": [
@@ -344,7 +349,7 @@
     "heis": "edef69b72a0a3b1c",
     "history": "9d6705e15c950eb7",
     "universe": "d5210ff1c835bfaa",
-    "screens": "da405e9e4187e70a"
+    "screens": "c8213cd1c87699bf"
    },
    {
     "year": 2027,
@@ -356,7 +361,7 @@
     "heis": "afe5a586024e510d",
     "history": "864e5f8653759063",
     "universe": "6d12d69bf5b9f34a",
-    "screens": "ed5616128f076b45"
+    "screens": "19b0edc063f1a599"
    },
    {
     "year": 2028,
@@ -368,7 +373,7 @@
     "heis": "e5b5e8239bc9d287",
     "history": "a203cd8d1daeab23",
     "universe": "6378cfa02a3367d3",
-    "screens": "98813573f451abe9"
+    "screens": "843752bc4a0ba68f"
    },
    {
     "year": 2029,
@@ -380,7 +385,7 @@
     "heis": "acaab3d27769660c",
     "history": "a324cd67c02544e2",
     "universe": "113dc52b7901e83b",
-    "screens": "561b52cc0e93fdbf"
+    "screens": "f230fdc46073fe63"
    }
   ],
   "Detroit#777": [
@@ -394,7 +399,7 @@
     "heis": "a7f5ca1e537918e9",
     "history": "f2f3f93cfbe58d98",
     "universe": "bcd7947516863fe7",
-    "screens": "be267c05a37feb07"
+    "screens": "9a30ee7432a6ee72"
    },
    {
     "year": 2027,
@@ -406,7 +411,7 @@
     "heis": "9818d5c8e7d3321e",
     "history": "1f4774db17e20178",
     "universe": "6c295310f78f699d",
-    "screens": "3064b47a864cf9ae"
+    "screens": "25f751da155c8538"
    },
    {
     "year": 2028,
@@ -418,7 +423,7 @@
     "heis": "eed4ff8658851763",
     "history": "f52c55acec44b5ec",
     "universe": "98be5092045a7c05",
-    "screens": "676892c4df1ad0b9"
+    "screens": "b55c377541934324"
    }
   ],
   "NY Giants#31337": [
@@ -432,7 +437,7 @@
     "heis": "bd927245b5eea595",
     "history": "13bdbffd96d7f4d5",
     "universe": "2ddc496b665c3e98",
-    "screens": "62f0a3d8fb333c9c"
+    "screens": "ec17e7392246d789"
    },
    {
     "year": 2027,
@@ -444,7 +449,7 @@
     "heis": "1abd79befad82495",
     "history": "be9e5beace9cde5c",
     "universe": "23b4b47aaf623a8d",
-    "screens": "f35de5f7d9b85726"
+    "screens": "4e53777c2cf10eac"
    },
    {
     "year": 2028,
@@ -456,7 +461,7 @@
     "heis": "bc98f13bb54f4521",
     "history": "b0f8bb6b7d7cb4fb",
     "universe": "4e00d64a0a27ac4a",
-    "screens": "6faf2cf08636ad4a"
+    "screens": "3f39c5cf67f4fd80"
    }
   ],
   "schedules#60": [

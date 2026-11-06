@@ -185,6 +185,11 @@
    "fp": "f16e81309c43de39",
    "from": "d57657fbe9530816",
    "note": "Round 24: punts land from where they're kicked (they started the opponent at ~24 from anywhere); fourth downs asked only with the game in reach (rough win chance 10-90%). Calibration unchanged (college 54.8 pts/game, favourites 0.699; pro 46.1, 0.694). Results change from season 1 (fewer asks shift the replies)."
+  },
+  {
+   "fp": "f16e81309c43de39",
+   "from": "f16e81309c43de39",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
   }
  ],
  "out": [

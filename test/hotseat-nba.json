@@ -120,6 +120,11 @@
    "fp": "9bb81c62244379ad",
    "from": "47637b59c80e5d5f",
    "note": "Round 22: early reads when two down (hockey timeout at 10-15 minutes, soccer at 15-20), the season's calls on the offseason screen, first-season wins milestone scaled to the schedule. Control without the early reads differs from the last commit only in screens and first-season history (the milestone)."
+  },
+  {
+   "fp": "9bb81c62244379ad",
+   "from": "9bb81c62244379ad",
+   "note": "Round 25: phone layout (top bar, division column, wordmark, rivalry line, top Back on the picker), hockey phrases without repeats, mock-draft availability on the draft board. Control: the last commit differs in screens only."
   }
  ],
  "out": [

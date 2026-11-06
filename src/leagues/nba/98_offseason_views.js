@@ -49,16 +49,24 @@ function nflBoardHTML(P){
   const C=nflDraftClass(U,S.myTeam), byId={}; C.list.forEach(p=>byId[p.pid]=p);
   const board=(P.board||[]).filter(id=>byId[id]);
   const val=p=>p.sr+(p.spot-p.sr)*0.45;
+  // a mock draft from your scouts' numbers: who's likely gone before your first pick (Grokbot: make the
+  // draft a decision, not a list). Your scouts' estimates only, so it gives nothing hidden away
+  const ahead=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam), gone={};
+  if(ahead>0){ const M=120, r=new RNG((((U.seed||0)*2246822519)^(SEA.year*31337))>>>0);
+    for(let m=0;m<M;m++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
+        C.list.forEach(p=>{ if(taken.has(p.pid))return; const v=val(p)+r.gauss(0,3); if(v>bs){bs=v;bi=p.pid} }); taken.add(bi) }
+      taken.forEach(id=>gone[id]=(gone[id]||0)+1/M) } }
+  const avail=p=>{ const g=gone[p.pid]||0; return ahead<=0?"":g>0.75?`<span class="dgone">likely gone</span>`:g>0.25?`<span class="dmaybe">might be there</span>`:`<span class="dthere">likely there</span>` };
   const row=(p,i,on)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
-      <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
+      <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${avail(p)}</div>
         <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${p.sr}, ceiling ~${p.spot}</div></div>
       <button class="skip small" ${on?`data-bdrm="${p.pid}"`:`data-bdadd="${p.pid}"`}>${on?"Remove":"Add"}</button></div>`;
   let h=`<div class="grouphead">Your draft board</div>`;
   h+=board.length?board.map((id,i)=>row(byId[id],i,true)).join("")
      :`<div class="note">Empty: your draft style will choose. Add players below and you'll take the highest one still there at each of your picks.</div>`;
   const pool=C.list.filter(p=>board.indexOf(p.pid)<0).sort((a,b)=>val(b)-val(a)).slice(0,30);
-  h+=`<div class="grouphead">The class &mdash; best 30 by your scouts</div>`+pool.map(p=>row(p,0,false)).join("");
+  h+=`<div class="grouphead">The class &mdash; best 30 by your scouts</div>`+(ahead>0?`<div class="note">${nOf(ahead,"pick")} before yours. "Likely there" is a mock draft from your scouts' numbers; other teams see the class differently, and the lottery can move you.</div>`:"")+pool.map(p=>row(p,0,false)).join("");
   return h;
 }
 /* Free agents you want, in order. They get your first look when free agency
