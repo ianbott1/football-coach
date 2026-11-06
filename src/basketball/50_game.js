@@ -150,7 +150,8 @@ function readCall(stage,T,hint,cur){
   // "keep your setup" first when you have one, as in soccer (Instinct): "leave it to your assistant" hands the read back
   return {k:"read",stage:stage,h:stage===1?(BB.quarters?"End of the first quarter":"Ten minutes in"):"Half-time: their offense",
     b:stage===1?"How are they scoring? Pick the defense.":"Anything changed? Adjust the defense, or leave it.",
-    opts:(stage===2&&cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
+    // your current defense once, as "keep" (it was listed twice, the plain one identical to keeping: Instinct)
+    opts:(stage===2&&cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).filter(d=>!(stage===2&&d===cur)).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
     tell:{tpa:T.tpa,fga:T.fga,paint:T.paint,pnr:T.pnr,n:T.n}, best:bbRead(T), pearl:hint||bbRead(T)};
 }
 function foulCall(half,X,T,seg){

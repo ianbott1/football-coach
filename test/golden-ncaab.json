@@ -1,5 +1,5 @@
 {
- "fp": "3bef9c2a4d73213b",
+ "fp": "7310f677c97be951",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -270,85 +270,110 @@
    "fp": "3bef9c2a4d73213b",
    "from": "3bef9c2a4d73213b",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "be7e04047dbaa0f8",
+   "from": "3bef9c2a4d73213b",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "b0875cd467169359",
+   "from": "be7e04047dbaa0f8",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "ba93a735b9a33913",
+   "from": "b0875cd467169359",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "ba93a735b9a33913",
+   "from": "ba93a735b9a33913",
+   "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "7310f677c97be951",
+   "from": "ba93a735b9a33913",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "4146526464baa0b8",
-    "post": "0335172c579fe936",
-    "champion": "Maryland",
-    "rec": "2de5774655a633b1",
-    "poll": "a741eaf77c0c1a5f",
-    "heis": "f0ca3896b10da2b9",
-    "history": "b404448de933d00c",
-    "universe": "4d85a2415a1e71f3",
-    "screens": "588e316ee3d09fc4"
+    "games": "faf02fe4c1546486",
+    "post": "8b852c813a39cd36",
+    "champion": "Kentucky",
+    "rec": "ff371ca2d740364f",
+    "poll": "198bf4b21c595050",
+    "heis": "507b02601047ebc0",
+    "history": "580f9ea9298345d2",
+    "universe": "15668034bee30dd0",
+    "screens": "6947df0d7789abec"
    },
    {
     "year": 2027,
-    "games": "5f6786dce300955e",
-    "post": "92977d07dee46f91",
-    "champion": "BYU",
-    "rec": "53c60be97eec79f0",
-    "poll": "f64b8cc31041e4e3",
-    "heis": "837e82652981ea58",
-    "history": "228db1f60dbdf687",
-    "universe": "288b44306a5a8f58",
-    "screens": "7aa0133737141c5c"
+    "games": "ed93e148305e5014",
+    "post": "082c4450c5a96717",
+    "champion": "Purdue",
+    "rec": "0299e4d5493cabb1",
+    "poll": "02e6b21c6f31bf45",
+    "heis": "5acbf636441cddd8",
+    "history": "b824a5cbba3471be",
+    "universe": "44da1ed94501e3fa",
+    "screens": "06e41479de52406f"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "9b9f10d0af16f254",
-    "post": "fc334b5963f6ab27",
-    "champion": "Kansas",
-    "rec": "433758fa94842a93",
-    "poll": "80c10fa49cc0c2e7",
+    "games": "e539be3c52c0f177",
+    "post": "7c3e36e14c699899",
+    "champion": "Kansas State",
+    "rec": "50efcd032bfc8d52",
+    "poll": "e0dff377ecb8032e",
     "heis": "13bfe33d01f2b2a1",
-    "history": "1da019f57745029a",
-    "universe": "8d48a97d91873151",
-    "screens": "fe4cabe312b7ae59"
+    "history": "6a68217a22c71b36",
+    "universe": "96581c1b068ab70d",
+    "screens": "fb0708d0a4900999"
    },
    {
     "year": 2027,
-    "games": "2b5bf94211983664",
-    "post": "03a5f95031f6c5c4",
-    "champion": "UCLA",
-    "rec": "5d0fdeac18b85c5a",
-    "poll": "563b4d023f24bbfc",
-    "heis": "8120dbad929bbaa3",
-    "history": "a09136552097899c",
-    "universe": "76e76c740640a8f8",
-    "screens": "df5f12234ba96543"
+    "games": "08fb57e43e0b7996",
+    "post": "d51813302435221f",
+    "champion": "Kentucky",
+    "rec": "9d2d4f294802d44a",
+    "poll": "f7e697f02af28e3b",
+    "heis": "b27bdde561ad5dfb",
+    "history": "642e64ca465bd618",
+    "universe": "68f96ab6377e4f5e",
+    "screens": "c25430dfbee42128"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "8472432267b5c905",
-    "post": "1285a7a2cde9c4f6",
-    "champion": "UCLA",
-    "rec": "ae0f02bf8058b23f",
-    "poll": "df2b0e5f2ce4e60e",
+    "games": "00d14917652a380b",
+    "post": "a7bd9aab91b20a51",
+    "champion": "Texas",
+    "rec": "7f8527221d29d474",
+    "poll": "2dfe6635647bd609",
     "heis": "c94713712b4e6c61",
-    "history": "f4bc55a3ccd34a53",
-    "universe": "be8791e4f8589775",
-    "screens": "ca3ddc270542656c"
+    "history": "f1681237b458e683",
+    "universe": "7e0dd9bfd94a78d3",
+    "screens": "67d0b14047751edb"
    },
    {
     "year": 2027,
-    "games": "23d133d8062786f2",
-    "post": "8d6b4469ad42b373",
-    "champion": "North Carolina",
-    "rec": "6eabdab6b758f403",
-    "poll": "14ed68296116577d",
-    "heis": "97bdbce0e295541c",
-    "history": "836c5e2056f43b41",
-    "universe": "78e8feb4032cc688",
-    "screens": "d6c860b1fcd65e71"
+    "games": "fa1b84ef0d20674c",
+    "post": "d08d56ad18ca9837",
+    "champion": "BYU",
+    "rec": "b55ef058d9264535",
+    "poll": "6cbb8b6b41ee827b",
+    "heis": "65deb6ef1f3be212",
+    "history": "5f7f458fc08c6d05",
+    "universe": "5c1877dc8315f4c7",
+    "screens": "e608c7a980c6ddbf"
    }
   ],
   "schedules#60": [

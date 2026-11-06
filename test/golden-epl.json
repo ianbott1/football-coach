@@ -1,5 +1,5 @@
 {
- "fp": "5d3e0fc89dcbd753",
+ "fp": "63a17dde44b07f4f",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -230,59 +230,84 @@
    "fp": "5d3e0fc89dcbd753",
    "from": "999795f83e18e683",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "f45d5bd66bac1137",
+   "from": "5d3e0fc89dcbd753",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "b1d1834bd7126b6c",
+   "from": "f45d5bd66bac1137",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "90c82f306211716b",
+   "from": "b1d1834bd7126b6c",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "90c82f306211716b",
+   "from": "90c82f306211716b",
+   "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "63a17dde44b07f4f",
+   "from": "90c82f306211716b",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "adfe5db7eeac71df",
-    "post": "b00f97b826b26ce2",
+    "games": "a7250ef88171ca1b",
+    "post": "f025327c0d7f8b1d",
     "champion": "Manchester City",
-    "rec": "fc503783b678b6d5",
-    "poll": "cdea666e832ff310",
-    "heis": "470a825398f7baf1",
-    "history": "ac3d3b90d41d1680",
-    "universe": "a41cc729b1f0edee",
-    "screens": "6d162046eced2987"
+    "rec": "d4e8c95133d94730",
+    "poll": "966f88435f753e67",
+    "heis": "c2e2e7ee00062fc9",
+    "history": "17d4c32f4dd78a6d",
+    "universe": "b981f92c61f4710b",
+    "screens": "416b0c35f6d0ac34"
    },
    {
     "year": 2027,
-    "games": "ee0f73d2041b94f6",
-    "post": "ea1dbf60620496c0",
+    "games": "05b435d01796d13d",
+    "post": "dc09fd504b44394f",
     "champion": "Arsenal",
-    "rec": "261246d30d5ef952",
-    "poll": "af28cae4cdb6012f",
-    "heis": "41d16c5283a889a9",
-    "history": "3562b4332c831153",
-    "universe": "b2cfd1bd8ae9ec5c",
-    "screens": "42b8d1778c96be09"
+    "rec": "acac4e09c4325681",
+    "poll": "001b82b75fc2c804",
+    "heis": "f6d8bae41ea01921",
+    "history": "f70f34aa11d25341",
+    "universe": "85c5c2e52c83c1bc",
+    "screens": "0ae4a278ccfc1604"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "4587ab13832fe157",
-    "post": "1a55f6e4f9bdd2fe",
-    "champion": "Arsenal",
-    "rec": "eef8b14a26b992d9",
-    "poll": "1367f5eb4cd5d470",
-    "heis": "3f9bdf37e7cbe703",
-    "history": "f32339a8302a6217",
-    "universe": "eca5d3a71311a986",
-    "screens": "f1b041883303bc5f"
+    "games": "d4836732f602f7a9",
+    "post": "f556de35a5f77d8c",
+    "champion": "Manchester City",
+    "rec": "3d6ecab210f5a022",
+    "poll": "3ad2239f6c9be160",
+    "heis": "8e3670250269e87c",
+    "history": "d3858b4222ddfc08",
+    "universe": "8a0a73e24c3621c6",
+    "screens": "1638f0df9ae340bd"
    },
    {
     "year": 2027,
-    "games": "ffad39e15b34ac4b",
-    "post": "a7c469b9f19da131",
+    "games": "f20a4ea93c74a9d1",
+    "post": "156d05c48a1bb4c1",
     "champion": "Manchester City",
-    "rec": "22fe0c1f3840a4eb",
-    "poll": "10a8f717932cdfea",
-    "heis": "6fc7bce51fae9b7e",
-    "history": "6793486507996a23",
-    "universe": "4e74e148592b6b24",
-    "screens": "3e3acf7dd876bbc8"
+    "rec": "753c6592704945ba",
+    "poll": "0e562e99454d50ea",
+    "heis": "d7aa153f710514bd",
+    "history": "4dba379e58cb953f",
+    "universe": "e195cc0384e4d46b",
+    "screens": "b8e2d819537ab87b"
    }
   ],
   "schedules#60": [

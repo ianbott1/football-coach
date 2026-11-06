@@ -114,7 +114,7 @@ function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s
 function readCall(stage,T,hint,cur,early){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
   // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
-  const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup: "+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
+  const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup: "+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).filter(c=>c!==cur).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
   return {k:"read",stage:stage,h:early?early:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},

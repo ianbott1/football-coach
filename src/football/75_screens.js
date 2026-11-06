@@ -235,9 +235,12 @@ function callVerdicts(args,seed,answers,meHome){
     const pick=answers[j], best=opts.reduce((a,o)=>rate[o]>rate[a]?o:a,opts[0]);
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0];
     const spread=rate[best]-Math.min(...opts.map(o=>rate[o]));
-    if(spread<0.02){                       // it made no real difference: not graded, but kept for the debrief
-      if(!out.close||spread>out.close.spread)out.close={h:A.dp.h,spread:spread,pick:lab(pick),
-        opts:opts.map(o=>[lab(o),Math.round(rate[o]*100)])};
+    // within 3 points the replays can't separate the options: listed, not graded, so a coin flip is never a
+    // tick (Grokbot: "6 of 7 right" with coin flips counted; it was 2 points)
+    if(Math.round(spread*100)<=Math.round(VERDICT_SLACK*100)){   // on the rounded rates the card shows
+      const cl={h:A.dp.h,spread:spread,pick:lab(pick),opts:opts.map(o=>[lab(o),Math.round(rate[o]*100)])};
+      (out.closes=out.closes||[]).push(Object.assign({},cl)); delete out.closes[out.closes.length-1].spread;
+      if(!out.close||spread>out.close.spread)out.close=cl;
       return }
     // the runner-up, so a right call still shows what it beat
     const alt=opts.filter(o=>o!==pick).reduce((a,o)=>a===null||rate[o]>rate[a]?o:a,null);
@@ -245,7 +248,8 @@ function callVerdicts(args,seed,answers,meHome){
       other:alt!==null?lab(alt):undefined, or:alt!==null?Math.round(rate[alt]*100):undefined,
       h:A.dp.h, mine:lab(pick), best:lab(best), pr:Math.round(rate[pick]*100), br:Math.round(rate[best]*100),
       rk:Object.fromEntries(opts.map(o=>[o,Math.round(rate[o]*100)])),     // every option's rate, for the post-game line
-      pk:pick, keys:Object.fromEntries(opts.map(o=>[o,lab(o)]))});
+      pk:pick, keys:Object.fromEntries(opts.map(o=>[o,lab(o)])),
+      odds:Object.fromEntries(opts.map(o=>[o,((A.dp.opts.find(x=>x[0]===o)||[o,""])[1].split(" · ").slice(1).join(", "))]))});
   });
   out.judged=judged;
   if(out.close)delete out.close.spread;                       // calls you made that could be graded, whether or not any were
@@ -260,8 +264,10 @@ function readText(e){
   // every option's share of replays, so what was compared is on the screen
   if(e.rk&&e.keys){
     const ks=Object.keys(e.rk), lab=k=>e.keys[k]||k, mine=e.rk[e.pk], top=Math.max(...ks.map(k=>e.rk[k]));
-    const list=ks.slice().sort((a,b)=>e.rk[b]-e.rk[a]).map(k=>`"${lab(k)}" ${e.rk[k]}%`).join(", ");
-    const gone=top<35, safe=Math.min(...ks.map(k=>e.rk[k]))>65;
+    // the play's own odds beside the game's: "53% to convert" live and "won 71%" after are different numbers
+    // (Grokbot read them as the live odds changing)
+    const list=ks.slice().sort((a,b)=>e.rk[b]-e.rk[a]).map(k=>`"${lab(k)}"${e.odds&&e.odds[k]?` (${e.odds[k]})`:""} ${e.rk[k]}%`).join(", ");
+    const gone=top<15, safe=Math.min(...ks.map(k=>e.rk[k]))>85;   // "mostly gone" at 30% and 26% in a 0-0 first quarter told the player nothing (Instinct)
     const d=mine-top, w=gapWord(d), best=ks.filter(k=>e.rk[k]===top&&k!==e.pk).map(lab)[0];
     // "mostly gone/won either way" only when the options were within the margin: with a real gap it said
     // that above a footer saying one "wins a little more often"
@@ -269,7 +275,7 @@ function readText(e){
       :gone?" Neither saved it: the game was mostly gone whichever you chose."
       :safe?" The game was mostly won whichever you chose."
       :ks.every(k=>gapWord(e.rk[k]-top)==="same")?" Any of them was a good call.":" As good as any.";
-    return `${e.h}: replays from that moment won ${list}. You chose "${lab(e.pk)}".${say}`;
+    return `${e.h}: the game was won in ${list} of replays from that moment. You chose "${lab(e.pk)}".${say}`;
   }
   // inside the margin the replays can't separate, both ways read the same:
   // a point either side isn't "the better call"

@@ -145,6 +145,8 @@ function nflDraftClass(u,team){
   if(!u.draftClass||u.draftClass.year!==u.year){
     const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
     const list=nflProspects(rng,2*32); list.forEach((p,i)=>p.pid=i);
+    // no two prospects in one class share a name (two "Tanner Mbeki"s: Grokbot); renamed by hash, so no draw moves
+    { const seen=new Set(); list.forEach(p=>{ let n=p.n, k=0; while(seen.has(n)&&k<LAST.length){ n=n.split(" ")[0]+" "+LAST[(strHash(p.n+"|"+p.pid)+k)%LAST.length]; k++ } p.n=n; seen.add(n) }) }
     u.draftClass={year:u.year,list:list};
   }
   const C=u.draftClass;

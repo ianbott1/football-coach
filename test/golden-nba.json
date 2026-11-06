@@ -1,5 +1,5 @@
 {
- "fp": "f3c316b80c6df5f5",
+ "fp": "fa423937a1e936c3",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -215,59 +215,89 @@
    "fp": "f3c316b80c6df5f5",
    "from": "f3c316b80c6df5f5",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "1b1e4e215af2e1fe",
+   "from": "f3c316b80c6df5f5",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "b79aca433b8fa77f",
+   "from": "1b1e4e215af2e1fe",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "4c7cd007765755f6",
+   "from": "b79aca433b8fa77f",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "4c7cd007765755f6",
+   "from": "4c7cd007765755f6",
+   "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "81e6d9aec03d64d6",
+   "from": "4c7cd007765755f6",
+   "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
+  },
+  {
+   "fp": "fa423937a1e936c3",
+   "from": "81e6d9aec03d64d6",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "a1a61fe92b27e713",
-    "post": "ee86b087488c8916",
+    "games": "442e09dec03e1830",
+    "post": "493aeacafecea6e3",
     "champion": "Minnesota",
-    "rec": "51324d99653791d7",
-    "poll": "997f72e9f908016b",
-    "heis": "92af6728a86e8a51",
-    "history": "6c1479a3fb85e58b",
-    "universe": "6752e6df34bbb45a",
-    "screens": "06ef770d2a82bcf7"
+    "rec": "d84520261319679a",
+    "poll": "80a5246492d869ce",
+    "heis": "c38d29addfc16e0e",
+    "history": "3da533279fa960a0",
+    "universe": "1f1cf5415368fae1",
+    "screens": "c3b05c78f395afa4"
    },
    {
     "year": 2027,
-    "games": "62d3dd1d6fa6284a",
-    "post": "7583de08494c4eda",
-    "champion": "LA Clippers",
-    "rec": "649a3ec6d243fe2d",
-    "poll": "bd77bf2815e3d5d9",
-    "heis": "f05067ed4a16dbc5",
-    "history": "33fea9a4f477b4c2",
-    "universe": "f0a1b3ff65fd76cd",
-    "screens": "b38f4349dfd81fdb"
+    "games": "91efb197cdcf190f",
+    "post": "ef39dd2530f3ced3",
+    "champion": "San Antonio",
+    "rec": "a65d3f3aeaf8a42e",
+    "poll": "6b2f9b52853f0640",
+    "heis": "260456000ed947dd",
+    "history": "0a9a85c6270e32eb",
+    "universe": "ffba4b76758471cd",
+    "screens": "cfdde8c637b83530"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "4cae1a2953ce241d",
-    "post": "0011c598e79e89b4",
+    "games": "d305f05688d938b4",
+    "post": "698894bc44fccef1",
     "champion": "San Antonio",
-    "rec": "ce16209c7ce67a88",
-    "poll": "d955e18e73ba585e",
+    "rec": "b3e59bdb6df02848",
+    "poll": "75918a16147f7149",
     "heis": "bd7234824f88d455",
-    "history": "84e6b4bf52d45bd3",
-    "universe": "d17e4fe44c0ece14",
-    "screens": "60ed0bdc1f76e8d4"
+    "history": "6ab65bb9cba3be6f",
+    "universe": "b62c9d03236a2082",
+    "screens": "e5faec541b5406ba"
    },
    {
     "year": 2027,
-    "games": "bd2a4681926f60d9",
-    "post": "a571feff1a8c331c",
-    "champion": "New York",
-    "rec": "d5e56ef2b0b5f2b3",
-    "poll": "40822dbe9d867baa",
-    "heis": "07c01106df0c9f70",
-    "history": "fe4c87aa9446e46e",
-    "universe": "9d2b2cac708c3f67",
-    "screens": "19583a37454523be"
+    "games": "38c963fbcc0f56cf",
+    "post": "cf1db8722651bb07",
+    "champion": "Miami",
+    "rec": "668302576478346c",
+    "poll": "633f058040eb97bc",
+    "heis": "b44854aa8e531d80",
+    "history": "532b8e6e16201893",
+    "universe": "77060088d01a685b",
+    "screens": "8c7581c282cacf13"
    }
   ],
   "schedules#60": [

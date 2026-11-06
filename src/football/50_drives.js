@@ -207,6 +207,9 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
 
 /* A decision offered when a drive dies in makeable territory. */
 function fourthDownCall(stall, togo, offElo, defElo){
+  // fourth and 10 or more: left to the assistant. It moved 4.7 points a call, 60% under 3 (test/call-weight.js,
+  // 276 calls); Grokbot was asked about a fourth and 12 on the opening drive
+  if (togo >= 10) return null;
   const dist = fgDistance(stall);
   const yard = Math.max(1, 100 - stall);
   const gp = Math.round(goOdds(togo, offElo, defElo)*100);
@@ -401,6 +404,8 @@ function decisionPoint(state, isUser){
   const late = idx >= Math.floor(total * 0.78);
   const veryLate = idx >= total - 7;
   const diff = mine - theirs;
+  // roughly how long is left: drives come about evenly through the game (Grokbot: a late call showed the quarter, not the clock)
+  const left = Math.max(1, Math.round(60*(total-idx)/total)), clock = ` About ${left} minute${left===1?"":"s"} left.`;
 
   // asked on your last possession, when what you need is known: a field
   // goal to win or tie, or nothing less than a touchdown
@@ -409,8 +414,8 @@ function decisionPoint(state, isUser){
     return {
       k:"chase",
       h:`Down ${-diff}, last possession`,
-      b: -diff<=3 ? `A field goal ${-diff===3?"ties it":"wins it"}. Take what they give you, or go for the touchdown?`
-                  : `Only a touchdown will do. Force it downfield, or work it and trust the clock?`,
+      b:(-diff<=3 ? `A field goal ${-diff===3?"ties it":"wins it"}. Take what they give you, or go for the touchdown?`
+                  : `Only a touchdown will do. Force it downfield, or work it and trust the clock?`)+clock,
       opts:[["push","Open it up"],["normal","Stay patient"]]
     };
   }
@@ -418,7 +423,7 @@ function decisionPoint(state, isUser){
     return {
       k:"protect",
       h: q>=4?`Up ${diff} late`:`Up ${diff}, end of the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)
-      b:`Sit on it and shorten the game, or keep the throttle down.`,
+      b:`Sit on it and shorten the game, or keep the throttle down.`+clock,
       opts:[["sit","Bleed the clock"],["keep","Keep attacking"]]
     };
   }

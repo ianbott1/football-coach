@@ -48,10 +48,10 @@ function nflTradeHTML(P){
 function nflBoardHTML(P){
   const C=nflDraftClass(U,S.myTeam), byId={}; C.list.forEach(p=>byId[p.pid]=p);
   const board=(P.board||[]).filter(id=>byId[id]);
-  const val=p=>p.sr+(p.spot-p.sr)*0.45;
+  const val=p=>dnVal(dnRead(p.pid));       // your scouts' read, sharpened where you've held a workout
   // a mock draft from your scouts' numbers: who's likely gone before your first pick (Grokbot: make the
   // draft a decision, not a list). Your scouts' estimates only, so it gives nothing hidden away
-  const ahead=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam), gone={};
+  const ahead=dnOrder().indexOf(dnTeam()), gone={};            // the real order, lottery included
   if(ahead>0){ const M=120, r=new RNG((((U.seed||0)*2246822519)^(SEA.year*31337))>>>0);
     for(let m=0;m<M;m++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
         C.list.forEach(p=>{ if(taken.has(p.pid))return; const v=val(p)+r.gauss(0,3); if(v>bs){bs=v;bi=p.pid} }); taken.add(bi) }
@@ -60,7 +60,8 @@ function nflBoardHTML(P){
   const row=(p,i,on)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${avail(p)}</div>
-        <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${p.sr}, ceiling ~${p.spot}</div></div>
+        <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${dnRead(p.pid).sr}, ceiling ~${dnRead(p.pid).spot}${dnRead(p.pid).wk?" &middot; worked out":dnRead(p.pid).unsure?" &middot; scouts unsure":""}</div></div>
+      ${dnOn()&&!dnRead(p.pid).wk&&(S.off.picks.workouts||[]).length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
       <button class="skip small" ${on?`data-bdrm="${p.pid}"`:`data-bdadd="${p.pid}"`}>${on?"Remove":"Add"}</button></div>`;
   let h=`<div class="grouphead">Your draft board</div>`;
   h+=board.length?board.map((id,i)=>row(byId[id],i,true)).join("")
@@ -83,12 +84,15 @@ function nflTargetsHTML(P,room){
       // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
       // with the gap in money, so "won't fit" says why (Grokbot: it read "won't fit" with $10.4M of room)
       if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=`after ~$${ROOKIE_ROOM}M kept for the draft class`;
-        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`won't fit as things stand: ${gap} short ${kept}`;
-        if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
+        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`probably won't fit: ${gap} short ${kept} (about half like this still sign: the class and the fill-ins vary)`;
+        if(seenPos[x.p])fit="you already want a "+x.p+": the second signs only if there is still room at "+x.p+" after the first"; seenPos[x.p]=1}
+      // the list you choose from says it too, against what's left after the players you've already added
+      // (Grokbot: "fits" only showed after adding)
+      else { const l2=left-x.ask; fit=l2>=2?"would fit":l2>=-3?"close":"probably wouldn't fit"; }
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
-        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${on?" &middot; "+fit:""}</div></div>
+        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${fit?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free agents you want</div>`;
   if(mine.length)h+=`<div class="note">Prices are this summer's asks plus about 10%; a player who improves over the summer can ask more by the time free agency opens.</div>`;
@@ -100,7 +104,7 @@ function nflTargetsHTML(P,room){
   return h;
 }
 function nflPickSlot(){
-  const o=nflDraftOrder(SEA.rec,SEA.elo).indexOf(S.myTeam)+1;
+  const o=dnOrder().indexOf(dnTeam())+1;
   return ordinal(o);                  // 21st, not 21th
 }
 
@@ -114,8 +118,8 @@ function offseasonBanner(){
   if(myPoach)news=`<div class="bnews flag"><b>${esc(myPoach.name)} left for
     ${esc(myPoach.to)}.</b> ${myHire?esc(myHire.name)+" takes over.":""}</div>`;
   else if(last.coaching.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
-    ${esc(myHire.name)} is your new head coach.</div>`;
-  else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
+    ${myHire.name===(S.career&&S.career.name)?"You take over as head coach.":esc(myHire.name)+" is your new head coach."}</div>`;
+  else if(myHire)news=myHire.name===(S.career&&S.career.name)?`<div class="bnews"><b>You</b> take over as head coach.</div>`:`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
   const X=last.league||{};
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
@@ -139,9 +143,9 @@ function offseasonBanner(){
     mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-Pro team.</div>`:"";
   const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
-    cm.map(m=>esc(m.name)+" ("+m.side.toUpperCase()+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
+    cm.map(m=>esc(m.name)+" ("+((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
   const cmo=(last.coaching.coordMoves||[]).filter(m=>m.from!==my).slice(0,2).map(m=>
-    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${m.side.toUpperCase()},
+    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())},
       hired as head coach at ${esc(m.to)}.</div>`).join("");
   const bigMoves=(last.coaching.poached||[]).slice(0,3).map(p=>
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
@@ -153,7 +157,8 @@ function offseasonBanner(){
     ${(function(){
       const mine=(X.draft||[]).filter(d=>d.team===my), gone=X.boardGone||[];
       if(!mine.length&&!gone.length)return "";
-      const goneH=gone.length?`<div class="note">Gone before your pick: ${gone.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to)} at #${x.overall}`).join(", ")}. Your board takes the highest player on it who's still there.</div>`:"";
+      // each with the pick of yours he went before (Grokbot: one listed "before your pick" went after your first, before your second)
+      const goneH=gone.length?`<div class="note">Taken before you could get them: ${gone.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to)} at #${x.overall}${x.yours?`, before your #${x.yours}`:""}`).join(", ")}. Your board takes the highest player on it who's still there.</div>`:"";
       return `<div class="grouphead">Draft &mdash; rookies for the ${last.year+1} season</div>`+goneH+
         mine.map(d=>`<div class="drow">
           <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
@@ -167,6 +172,7 @@ function offseasonBanner(){
 }
 
 function offseasonScreen(){
+  if(S.off.dn&&dnOn())return draftNightHTML();
   const A=S.off.act, P=S.off.picks, my=S.myTeam;
   const last=SEA;
   let h=`<div class="dateline"><h2>Offseason</h2><span>${last.year} &rarr; ${last.year+1}</span></div>`;
@@ -178,7 +184,7 @@ function offseasonScreen(){
     <div class="gradebox"><span class="grade">${gr.g}</span>
       <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
-    ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
+    ${(S.off&&S.off.act&&S.off.act.userOpen?[]:miles).map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the Stanley Cup.
     ${nOf(A.hires.length,"team")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
@@ -265,7 +271,7 @@ function offseasonScreen(){
   h+=nflTargetsHTML(P,room);
   h+=nflTradeHTML(P);
   h+=`<div class="grouphead">${n(3)}. The draft</div>`;
-  h+=`<div class="note">You pick ${nflPickSlot()} in each round.</div>`;
+  h+=dnSectionHTML();
   const DR=LEAGUE.offseason.draftStyles;
   h+=Object.keys(DR).map(k=>`<div class="opt ${P.draft===k?'on':''}" data-draft="${k}">
     <div class="fname">${esc(DR[k].l)}</div><div class="cdesc">${esc(DR[k].d)}</div></div>`).join("");
@@ -288,6 +294,8 @@ Object.assign(LEAGUE.ui,{
     return over>0?"Over the tax line by $"+over.toFixed(1)+"M":null;
   },
   bindOffseason(){
+    if(S.off&&S.off.dn&&dnOn()){ bindDraftNight(); return }
+    bindDraftSection();
     document.querySelectorAll("[data-resign]").forEach(b=>b.onclick=()=>{
       const i=+b.dataset.resign; S.off.picks.resign[i]=!S.off.picks.resign[i]; save(); render();});
     document.querySelectorAll("[data-fa]").forEach(b=>b.onclick=()=>{

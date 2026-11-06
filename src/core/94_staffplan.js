@@ -158,41 +158,43 @@ function callImpact(args,seed,answers,meHome,runs){
   return out;
 }
 /* the post-game line: the call that mattered most, in words */
+/* How clear a call's verdict is, in points: graded calls (football) against the best option, the rest
+   against the assistant's call. Only a clear one (beyond 7) earns the headline: a 68-67 edge read "A GOOD
+   CALL, AND IT WON YOU THIS GAME" and 4-point gaps were headlined beside "close either way" (Muse, Grokbot) */
+function callClarity(c){ const w=Math.round(c.worth*1000)/10;   // in tenths of a point: 0.07*100 is 7.000000000000001, which headlined a 7-point call
+  if(c.q!==undefined){ if(c.sp<=3)return 0; if(c.q<-3)return c.q; return Math.max(0,w) } return w }
 function impactHTML(P){
   const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c))));
   if(!C.length)return "";
-  const c=C.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,C[0]), p=c.res;
+  // the clearest call leads, the wrong ones first when as clear (a field goal praised above two crossed punts: Grokbot)
+  const c=C.reduce((a,x)=>Math.abs(callClarity(x))>Math.abs(callClarity(a))||(Math.abs(callClarity(x))===Math.abs(callClarity(a))&&callClarity(x)<callClarity(a))?x:a,C[0]), p=c.res;
   const out=(m,t)=>m>t?"win":m<t?(LEAGUE.draws?"defeat":"loss"):"draw";
   const res=out(p.mine,p.theirs), alt=out(c.cf.mine,c.cf.theirs);
   const altLine=`a ${c.cf.mine}-${c.cf.theirs} ${alt}`;
-  // one margin with the graded calls: within 3 points is "about as often" there and "little difference"
-  // here (they disagreed: "won about as often (100% and 97%)" beside "wins clearly more often": Grokbot)
   // the same scale as the graded call: within 3 points the same, 4 to 7 a little, beyond 7 clearly
   const avgOf=w=>w>0.07?"wins clearly more often than his":w>0.03?"wins a little more often than his"
     :w>=-0.03?"made little difference either way":w>=-0.07?"wins a little less often than his":"loses clearly more often than his";
-  const avg=avgOf(c.worth);
-  // every other call you made against his, weighed the same way: the ones left out (a slow-down, the
-  // press) read as if they were never weighed (Instinct)
-  // one replay is one roll of the dice: the headline credits the call only when
-  // the average over many replays agrees (measured: on its own, the same-luck
-  // replay disagreed with the average about as often as not)
-  const rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
-  // the decision first, tonight's dice second (Muse, six testers: "Same defeat either way tonight, but..."
-  // led half the cards and taught players that nothing they did mattered). A call within 3 points of his
-  // isn't headlined at all: one quiet line says tonight's calls were close
-  const small=Math.abs(c.worth)<=0.03;
-  if(small){ const n=C.length;
-    return `<div class="impact quiet"><div class="impbody">${n===1?`Your call tonight (${esc(c.h)}: "${esc(c.pick)}") was close either way: over many replays it makes little difference against the assistant's.`
-      :`Your ${n} calls against the assistant's tonight were all close either way: over many replays none of them made much difference.`}</div></div>`; }
-  const good=c.worth>0, strong=Math.abs(c.worth)>0.07;
-  const verdict=good?(strong?"A strong call":"A good call"):(strong?"The wrong call":"Not quite the right call");
+  const word=x=>{ const k=callClarity(x); return k>7?"clearly better than his":k>3?"a little better than his":k<-7?"clearly worse":k<-3?"a little worse":"close either way" };
+  const pickWord=x=>/assistant/i.test(x.pick)?"you left it to your assistant":`you chose "${esc(x.pick)}"`;
+  const k=callClarity(c), rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
+  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} (${pickWord(x)}): ${word(x)}`);
+  const restHTML=rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} tonight: ${rest.join("; ")}.</div>`:"";
+  // a read graded wrong is never headlined as a good call: "A STRONG CALL" sat above a cross for the same game plan
+  // (Grokbot, pro basketball); the two judge different things (against the assistant; against the truth), so then
+  // the card says the plain line instead
+  const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear));
+  if(Math.abs(k)<=7||(k>0&&crossed)){   // no headline: one plain line, sized to the gap
+    const lead=Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way.`
+      :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.`;
+    return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
+  const good=k>0;
+  const verdict=good?"A strong call":"The wrong call";
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
-                    :(better?"though it worked tonight: his wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
-  const head=`${verdict}, ${tonight}`;
-  const rest=C.filter(x=>x!==c&&Math.abs(x.worth)>0.03).map(x=>`${esc(x.h)} ("${esc(x.pick)}"): ${avgOf(x.worth).replace(/ than his$/,"")}`);
-  const close=C.filter(x=>x!==c&&Math.abs(x.worth)<=0.03).length;
-  return `<div class="impact"><div class="imphead">${head}</div>
-    <div class="impbody">${esc(c.h)}: you chose "${esc(c.pick)}". Over many replays from that moment, your call ${avg}. With tonight's luck and the assistant's call ("${esc(c.def)}"), the game ends ${altLine}.</div>${rest.length||close?`<div class="impbody imprest">${rest.length?`Your other ${rest.length===1?"call that mattered":rest.length+" calls that mattered"}: ${rest.join("; ")}.`:""}${close?` ${nOf(close,"other call")} ${close===1?"was":"were"} close either way.`:""}</div>`:""}</div>`;
+                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
+  return `<div class="impact"><div class="imphead">${verdict}, ${tonight}</div>
+    <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.</div>${restHTML}</div>`;
+    // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
+    // often", and players stopped trusting the replays (Grokbot). Whether tonight turned on it stays in the headline.
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){
@@ -212,8 +214,8 @@ function seasonCallsHTML(){
   P.sort((a,b)=>b.c.worth-a.c.worth);
   const one=(x,lab)=>`<div class="cand"><div class="candtop"><div><div class="fname">${lab}</div>
     <div class="fnote">${esc(x.c.h)}, against ${esc(x.p.other)} (${x.p.mine}&ndash;${x.p.theirs})</div></div></div>
-    <div class="cdesc">You: ${esc(x.c.pick)}.${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
+    <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
-  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"The one that paid"):"")+(worst&&worst!==best?one(worst,"The one that cost you"):""):"");
+  return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");
 }

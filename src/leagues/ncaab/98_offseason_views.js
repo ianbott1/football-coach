@@ -20,8 +20,8 @@ function offseasonBanner(){
   if(myPoach)news=`<div class="bnews flag"><b>${esc(myPoach.name)} left for
     ${esc(myPoach.to)}.</b> ${myHire?esc(myHire.name)+" takes over.":""}</div>`;
   else if(last.coaching.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
-    ${esc(myHire.name)} is your new head coach.</div>`;
-  else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
+    ${myHire.name===(S.career&&S.career.name)?"You take over as head coach.":esc(myHire.name)+" is your new head coach."}</div>`;
+  else if(myHire)news=myHire.name===(S.career&&S.career.name)?`<div class="bnews"><b>You</b> take over as head coach.</div>`:`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
   const cls=last.league.classes?last.league.classes[my]:null;
   const early=last.league.early?last.league.early[my]:null;
   const pt=last.league.portal||null, pin=pt&&pt.in?pt.in[my]:null, pout=pt&&pt.out?pt.out[my]:null, ptg=pt&&pt.targets?pt.targets[my]:null;
@@ -51,9 +51,9 @@ function offseasonBanner(){
     All-${esc(LEAGUE.conf.names[last.awards.team.group]||"")} team.</div>`:"";
   const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
-    cm.map(m=>esc(m.name)+" ("+m.side.toUpperCase()+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
+    cm.map(m=>esc(m.name)+" ("+((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
   const cmo=(last.coaching.coordMoves||[]).filter(m=>m.from!==my).slice(0,2).map(m=>
-    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${m.side.toUpperCase()},
+    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())},
       hired as head coach at ${esc(m.to)}.</div>`).join("");
   const bigMoves=(last.coaching.poached||[]).slice(0,3).map(p=>
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
@@ -88,7 +88,7 @@ function portalHTML(num){
   const row=(e,on,i)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(e.n)} <span class="dpos">${esc(e.p)}</span></div>
-        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)} &middot; <b>${portalChanceWord(portalChance(U,my,e))}</b>${on?" &middot; "+bumpWord(e):""}</div></div>
+        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)} &middot; <b>${portalChanceWord(portalChance(U,my,e))}</b>${e.from!==my?" &middot; "+bumpWord(e):""}</div></div>
       <button class="skip small" ${on?`data-ptrm="${esc(e.key)}"`:`data-ptadd="${esc(e.key)}"`}>${on?"Remove":"Add"}</button></div>`;
   // who he'd push down, on today's roster: a transfer who starts sends your backup there away, and that can
   // be the recruit you've just signed (Muse: a recruit lost his spot to the coach's own portal signing, unwarned)
@@ -126,7 +126,7 @@ function offseasonScreen(){
     <div class="gradebox"><span class="grade">${gr.g}</span>
       <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
-    ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
+    ${(S.off&&S.off.act&&S.off.act.userOpen?[]:miles).map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the national title.
     ${nOf(A.hires.length,"program")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
@@ -189,6 +189,7 @@ function offseasonScreen(){
   });
   const step=(A.userOpen||S.off.poach.length)?1:0;
   const B=P.budget, used=LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
+  if(A.userOpen)h+=`<div class="note">Pick your next job first: the plan, budget and board below are for wherever you go.</div>`;   // it read as the old program's (Grokbot)
   h+=collegePlanHTML(P);
   h+=`<div class="grouphead">${step?"2":"1"}. Budget &mdash; ${S.off.pool} to spend</div>`;
   h+=coachMark("budget","You must spend every point. Facilities compound for years but only if you keep the job; retention and development pay off right away.");

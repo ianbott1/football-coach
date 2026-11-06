@@ -94,7 +94,11 @@ function career(file, team, seed, seasons) {
     api.commitOffseason();
     season.history = h(S.history[S.history.length-1]);
     season.universe = h(api.S.uStart);
-    grab(); season.screens = h(screens.splice(0));
+    grab();
+    // SCREENS=dir writes each season's screen text, so a screens-only change can be read, not just hashed
+    if (process.env.SCREENS) require('fs').writeFileSync(require('path').join(process.env.SCREENS, `${team}#${seed}-${SEA.year}.txt`),
+      screens.map(x => x.replace(/<[^>]+>/g,' ').replace(/[ \t]+/g,' ').replace(/\s*\n\s*/g,'\n')).join('\n=====\n'));
+    season.screens = h(screens.splice(0));
     out.push(season);
   }
   return out;

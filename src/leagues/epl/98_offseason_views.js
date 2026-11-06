@@ -82,7 +82,7 @@ function nflTargetsHTML(P,room){
       // with the gap in money, so "won't fit" says why (Grokbot)
       if(on){left-=x.ask; const gap=`about £${Math.abs(left).toFixed(1)}M`;
         fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"}`:`won't fit as things stand: ${gap} short`;
-        if(seenPos[x.p])fit="you already want a "+x.p+": only one can be signed"; seenPos[x.p]=1}
+        if(seenPos[x.p])fit="you already want a "+x.p+": the second signs only if there is still room at "+x.p+" after the first"; seenPos[x.p]=1}
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span> <span class="ptag">${place(x)}</span></div>
@@ -154,15 +154,17 @@ function offseasonBanner(){
   if(myPoach)news=`<div class="bnews flag"><b>${esc(myPoach.name)} left for
     ${esc(myPoach.to)}.</b> ${myHire?esc(myHire.name)+" takes over.":""}</div>`;
   else if(last.coaching.fired&&myHire)news=`<div class="bnews flag"><b>Coaching change.</b>
-    ${esc(myHire.name)} is your new head coach.</div>`;
-  else if(myHire)news=`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
+    ${myHire.name===(S.career&&S.career.name)?"You take over as head coach.":esc(myHire.name)+" is your new head coach."}</div>`;
+  else if(myHire)news=myHire.name===(S.career&&S.career.name)?`<div class="bnews"><b>You</b> take over as head coach.</div>`:`<div class="bnews"><b>${esc(myHire.name)}</b> hired as head coach.</div>`;
   const X=last.league||{};
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
   // ...and how it got there from last season's (Muse: £3.3M to £9.4M with no reconciliation)
   const sum=a=>(a||[]).reduce((t,x)=>t+(x.sal||0),0), why=X.payBefore!=null&&X.payroll!=null?(()=>{ const re=sum(X.resigned), si=sum(X.signed), nl=(X.released||[]).length+(X.retired||[]).length;
-    const parts=[re?`${money2(re)} on ${nOf(X.resigned.length,"new deal")} for your own players`:"",si?`${money2(si)} on ${nOf(X.signed.length,"signing")}`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
+    // what changed, without arithmetic that can't close: the old wages of re-signed and departed players
+    // aren't kept, so the parts never summed (Grokbot: £10.9M against an actual £10.5M)
+    const parts=[re?`${nOf(X.resigned.length,"new deal")} for your own players (${money2(re)} a year now, replacing their old ones)`:"",si?`${nOf(X.signed.length,"signing")} (${money2(si)})`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
     return ` Last season's was ${money2(X.payBefore)}${parts.length?`; since then, ${parts.join(", ")}`:""}.` })():"";
   if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.${why}</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
@@ -188,9 +190,9 @@ function offseasonBanner(){
     mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made it.</div>`:"";
   const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
-    cm.map(m=>esc(m.name)+" ("+m.side.toUpperCase()+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
+    cm.map(m=>esc(m.name)+" ("+((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
   const cmo=(last.coaching.coordMoves||[]).filter(m=>m.from!==my).slice(0,2).map(m=>
-    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${m.side.toUpperCase()},
+    `<div class="bnews small">${esc(m.name)}, ${esc(m.from)} ${((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())},
       hired as head coach at ${esc(m.to)}.</div>`).join("");
   const bigMoves=(last.coaching.poached||[]).slice(0,3).map(p=>
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
@@ -224,7 +226,7 @@ function offseasonScreen(){
     <div class="gradebox"><span class="grade">${gr.g}</span>
       <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
-    ${miles.map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
+    ${(S.off&&S.off.act&&S.off.act.userOpen?[]:miles).map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
     <div class="bsub">${esc(last.champion)} won the Premier League.
     ${nOf(A.hires.length,"club")} changed managers.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves

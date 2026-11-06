@@ -12,7 +12,7 @@ class PowerRank{
     return NAMES.slice().sort((a,b)=>{
       const ga=this.w[a]+this.l[a], gb=this.w[b]+this.l[b];
       // early on, how good a team is outweighs a 1-0 start
-      const k=Math.min(1,Math.max(ga,gb)/6);
+      const k=Math.min(1,Math.max(ga,gb)/10);
       const sa=k*this.pct(a)*400+this.elo[a], sb=k*this.pct(b)*400+this.elo[b];
       return sb-sa;
     });
@@ -20,7 +20,9 @@ class PowerRank{
   rankMap(){const o=this.order(),m={};o.forEach((t,i)=>m[t]=i+1);return m}
   update(res,elo){
     res.forEach(r=>{this.w[r.winner]++; this.l[r.loser]++});
-    NAMES.forEach(t=>{this.elo[t]=elo[t]});
+    // how good a team looks moves a third of the way each week: #8 to #23 after one one-score loss, then #13,
+    // read as noise (Instinct). Week-to-week moves, weeks 1-6: 6.5 5.3 4.8 3.2 2.9 2.7 places a team, now 4.7 3.5 3.4 2.5 2.0 1.9
+    NAMES.forEach(t=>{this.elo[t]+=0.35*(elo[t]-this.elo[t])});
     return this.rankMap();
   }
 }

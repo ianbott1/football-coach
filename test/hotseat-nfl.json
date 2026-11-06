@@ -1,5 +1,5 @@
 {
- "fp": "f5ac6d16ff3d3e74",
+ "fp": "8a5be8bf3a5307f8",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -190,6 +190,36 @@
    "fp": "f5ac6d16ff3d3e74",
    "from": "f5ac6d16ff3d3e74",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "bb5c0d8143659374",
+   "from": "f5ac6d16ff3d3e74",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "bb5c0d8143659374",
+   "from": "bb5c0d8143659374",
+   "note": "Round 27: graded on the rounded rates the card shows."
+  },
+  {
+   "fp": "38e9d19fda0f66d4",
+   "from": "bb5c0d8143659374",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "c3ccb30add1b5890",
+   "from": "38e9d19fda0f66d4",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "c3ccb30add1b5890",
+   "from": "c3ccb30add1b5890",
+   "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "8a5be8bf3a5307f8",
+   "from": "c3ccb30add1b5890",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "out": [
@@ -203,16 +233,16 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "14537660d22c1cc4"
+     "book": "3520aa790c1432c0"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "6-11",
+      "rec": "8-9",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B"
      },
-     "book": "41c2a3ea87ddbbdd"
+     "book": "d0a183258d0eb51d"
     }
    ]
   },
@@ -222,20 +252,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "Lost in the wild card round",
-      "grade": "A-"
+      "rec": "14-3",
+      "result": "Lost the conference championship",
+      "grade": "A"
      },
-     "book": "e214b9e756633b7d"
+     "book": "89bf3269610132da"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
+      "rec": "10-7",
+      "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "6918826bf0647485"
+     "book": "b2f13bab75dab665"
     }
    ]
   },
@@ -245,20 +275,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "14-3",
+      "rec": "13-4",
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "e2cb50eaea321187"
+     "book": "b9ad4a62b1cb0102"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "14-3",
+      "rec": "12-5",
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "cdc7fe1132fcdcb3"
+     "book": "b042a46ee437ef93"
     }
    ]
   }

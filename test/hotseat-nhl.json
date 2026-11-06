@@ -1,5 +1,5 @@
 {
- "fp": "289d2a3412d76a18",
+ "fp": "48f304ba99faae13",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -165,6 +165,31 @@
    "fp": "289d2a3412d76a18",
    "from": "ccf1c89fd43f025e",
    "note": "Round 26 (Muse): post-game card leads with the decision, quiet when close; series state on playoff results; hockey board-gone note; soccer payroll arithmetic; portal targets say who they'd push down; a fouled-out star collects no more fouls (dice unchanged). Control: results identical to the last commit; history and screens differ."
+  },
+  {
+   "fp": "289d2a3412d76a18",
+   "from": "289d2a3412d76a18",
+   "note": "Round 27 (Grokbot, college football): fourth and 10+ left to the assistant; football calls graded only beyond 3 points, close ones listed; headline judged like the bullets; fired-screen and new-job wording; standings use today's poll. Control: without the long-fourth gate, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "289d2a3412d76a18",
+   "from": "289d2a3412d76a18",
+   "note": "Round 28: hockey overtime kept in played games; knockout defeats end the season on the card; clear-only headlines above the bullets; honest labels; calmer pro football power ranking; second reads list your setup once. Controls: without the ranking and duplicate-option changes, results match the last commit (screens differ)."
+  },
+  {
+   "fp": "c706ee73ece8aaa9",
+   "from": "289d2a3412d76a18",
+   "note": "Round 28 (Instinct round 9, Muse, Grokbot pro football, college and pro basketball): see ARCHITECTURE. Control without the pro football ranking smoothing, the second-read duplicate option and the draft-class renames matches the last commit's results (screens differ)."
+  },
+  {
+   "fp": "c706ee73ece8aaa9",
+   "from": "c706ee73ece8aaa9",
+   "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "48f304ba99faae13",
+   "from": "c706ee73ece8aaa9",
+   "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
   }
  ],
  "out": [
@@ -178,7 +203,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "37ac395741f06434"
+     "book": "595a61a6baf0062e"
     },
     {
      "team": "Montreal",
@@ -187,7 +212,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "9cf411402bcc4dcb"
+     "book": "48d3b327e1616831"
     }
    ]
   },
@@ -197,20 +222,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-33-13",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "42-31-11",
+      "result": "Lost in the second round",
+      "grade": "B+"
      },
-     "book": "bb48b83c6766a5ed"
+     "book": "d589af401462dbec"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "34-39-11",
+      "rec": "38-32-14",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "ed37c46996bdb4b2"
+     "book": "5914ebbf272d1326"
     }
    ]
   },
@@ -220,20 +245,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "55-22-7",
+      "rec": "45-28-11",
       "result": "Lost in the first round",
-      "grade": "B+"
+      "grade": "B-"
      },
-     "book": "87cc54a578a1bbb5"
+     "book": "86649f3f09ab1569"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "36-36-12",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "43-29-12",
+      "result": "Lost in the second round",
+      "grade": "B+"
      },
-     "book": "6414e3cde70bae6e"
+     "book": "6e2789d6e9f036d6"
     }
    ]
   }

@@ -280,7 +280,7 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
 /* 35. every call against the assistant is weighed on the result card, not just the biggest */
 { const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP});
   const P=[{mine:110,theirs:104,impact:[{h:'Up 11 at the half',pick:'Slow it down',def:'Keep going',worth:-0.01,cf:{mine:108,theirs:104}},{h:'Down 6, late',pick:'Full-court press',def:'Stay in the half court',worth:0.06,cf:{mine:104,theirs:106}}]}];
-  ok(/1 other call was close either way/.test(A.impactHTML(P)),'pro basketball: a second call against the assistant gets no verdict'); }   // a close one is counted, not headlined (Muse)
+  ok(/Up 11 at the half[^;<]*: close either way/.test(strip(A.impactHTML(P))),'pro basketball: a second call against the assistant gets no verdict'); }   // every other call is named, with a sized word (round 28)   // a close one is counted, not headlined (Muse)
 /* 36. the Bears don't repeat a line in one game */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T');
   A.live={g:{}}; A.live.ask={dp:{h:'Half-time'},q:9}; const a=A.bearYell('push',15); A.live.ask={dp:{h:'Late'},q:15}; const b=A.bearYell('push',21);
@@ -312,7 +312,7 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
 /* 41. a result card's headline never contradicts its replay */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:71,theirs:67,impact:[{h:'Half-time',pick:'Trap the ball handler',def:'Pack the paint',worth:-0.07,cf:{mine:61,theirs:70}}]}];
-  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/Not quite the right call, though it worked tonight: his wins more often/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
+  const h=strip(A.impactHTML(P)); ok(!/not because of the call/.test(h)&&/a little worse than the assistant's/.test(h)&&!/won this one tonight/.test(h),`college basketball: headline "${h.slice(0,90)}"`); }
 /* ---- Muse round 9 / Ian (Nov 2026) ---- */
 /* 42. a game's drives are its own: Rewatch showed another game (a 12-31 loss replayed as a 27-20 win) */
 for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,7,'T'); let bad=0,n=0;
@@ -362,7 +362,10 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 /* 52. a same-result headline carries the replay verdict when it's big */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP});
   const P=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.07,cf:{mine:50,theirs:68}}]}];
-  ok(/A good call, though tonight's dice gave the same result either way/.test(strip(A.impactHTML(P))),'college basketball: same-result headline ignores the replays');
+  // round 28: 7 points is "a little", a plain line with the gap named, no headline (Muse: headlines for marginal calls)
+  { const h=strip(A.impactHTML(P)); ok(!/imphead/.test(A.impactHTML(P))&&/a little better than the assistant's/.test(h),'college basketball: same-result headline ignores the replays') }
+  const P2=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.12,cf:{mine:50,theirs:68}}]}];
+  ok(/A strong call, though tonight's dice gave the same result either way/.test(strip(A.impactHTML(P2))),'college basketball: a clear call gets no headline');
   // and a call within 3 points of the assistant's gets no headline at all, one quiet line (Muse: "little difference" taught that nothing matters)
   const Q=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.01,cf:{mine:53,theirs:66}}]}], q=A.impactHTML(Q);
   ok(!/imphead/.test(q)&&/close either way/.test(strip(q)),'college basketball: a close call still headlined'); }
@@ -433,6 +436,57 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   for(let k=0;k<25&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; const L0=A.live; while(A.live&&!A.live.done&&m++<6000){ if(A.live.ask)A.answerLive(A.live.ask.dp.opts[0][0]); else A.liveTick() }
     if(L0)(L0.drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==='foul'&&e.f>((A.LEAGUE.tuning&&A.LEAGUE.tuning.bb&&A.LEAGUE.tuning.bb.foulOut)||5))over++; if(e.k==='out')outs++ })) } }
   ok(!over,`basketball: ${over} fouls past the limit (${outs} foul-outs seen)`) }
+
+/* 65. football: every call made is on the card, a coin flip is never a tick, and the headline agrees with the bullets (Grokbot) */
+{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP.concat(['impactHTML','callKey','callClarity'])}); A.newDynasty('Arkansas',5,'T'); let i=0, bad=0, made=0, shown=0, flip=0;
+  for(let k=0;k<12&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; const L0=A.live; let n=0; while(A.live&&!A.live.done&&m++<6000){ const q=A.live.ask; if(q){ n++; const o=q.dp.opts; A.answerLive(o[(i++)%o.length][0]) } else A.liveTick() }
+    if(!L0)continue; const P=(A.S.played[A.callKey(L0.step)]||[]).filter(p=>p.team===A.S.myTeam); const p=P[P.length-1]; if(!p)continue;
+    const graded=(p.reads||[]).filter(r=>r.k==='call'), close=(p.closes||[]);
+    made+=p.judged||0; shown+=graded.length+close.length;
+    graded.forEach(r=>{ const v=Object.values(r.rk), sp=Math.max(...v)-Math.min(...v); if(sp<=3)flip++ });
+    const h=A.impactHTML(P), head=(h.match(/imphead">([^<]*)/)||[])[1]||'';
+    // round 28: a headline only for a clear call (callClarity beyond 7), good or wrong as its sign says
+    const ks=(p.impact||[]).map(c=>A.callClarity(c)), best=ks.reduce((a,k)=>Math.abs(k)>Math.abs(a)?k:a,0);
+    if(head){ if(Math.abs(best)<=7)bad++; else if(/^A strong/.test(head)!==(best>0))bad++ } }
+  ok(made>0&&made===shown,`college football: ${made} calls made, ${shown} on the cards`); ok(!flip,`college football: ${flip} coin-flip calls graded`); ok(!bad,`college football: ${bad} headlines that disagree with the bullets`) }
+/* 66. fired: no milestone under "has fired you", and a move reads as yours */
+{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8'); const m={exports:{}}; new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
+  const api=m.exports.load(D('football-coach.html')); api.newDynasty('Arkansas',5,'T',null);
+  for(let y=0;y<2;y++){ let g=0; while(api.SEA.phase!=='done'&&g++<900)api.SEA.advance(); api.openOffseason();
+    if(y===1){ api.S.off.act.userOpen=true; api.S.off.move=null; api.view('team'); const t=strip(global.__nodes.app.innerHTML);
+      ok(/fired you/.test(t)&&!/Best season of your tenure/.test(t),'college football: a milestone under "has fired you"'); api.S.off.move=api.S.off.jobs[0] }
+    for(let c=0;c<4&&api.S.off;c++){ if(api.S.off.act.userOpen&&api.S.off.move===null)api.S.off.move=api.S.myTeam; api.commitOffseason() } }
+  api.view('team'); const t2=strip(global.__nodes.app.innerHTML); ok(!new RegExp(api.S.career.name+' is your new head coach').test(t2),'college football: your own move reads as someone else taking the job') }
+
+/* 69. soccer: the board warns before it fires you, and a hot seat names the target you missed (Grokbot: Secure to fired) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['seatBadge'])}); A.newDynasty('Queens Park Rangers',3,'T'); let fired=0, lastEnd='', named=0, hot=0;
+  for(let y=0;y<3;y++){ let g=0; while(A.SEA.phase!=='done'&&g++<2000)A.SEA.advance(); lastEnd=strip(A.seatBadge());
+    if(/HOT SEAT/.test(lastEnd)){ hot++; if(/target \(/.test(lastEnd))named++ }
+    A.openOffseason(); if(A.S.off.act.userOpen){ fired++; break } for(let c=0;c<6&&A.S.off;c++)A.commitOffseason() }
+  ok(fired&&!/Secure/.test(lastEnd),`soccer: fired ${fired} times, badge before it read "${lastEnd}"`); ok(hot&&named===hot,`soccer: ${named} of ${hot} hot-seat badges name the target`) }
+/* 70. soccer: the summer payroll line names what changed and never shows sums that can't close (Grokbot: £10.9M against £10.5M) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['offseasonBanner'])}); A.newDynasty('Burnley',9,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<2000)A.SEA.advance();
+  A.openOffseason(); for(let c=0;c<6&&A.S.off;c++)A.commitOffseason(); const t=strip(A.offseasonBanner());
+  ok(/Payroll after the summer:.*Last season's was/.test(t)&&!/other changes|£0\.0M/.test(t),'soccer: the payroll line is missing or shows sums that do not close') }
+
+/* 71. draft night: the draft shown pick by pick is the draft that happens, your picks are the players drafted, and a skipped night is the staff's */
+for(const [f,team,R] of [['football-coach-pro.html','Chicago',7],['basketball-coach-pro.html','Detroit',2],['hockey-coach-pro.html','Toronto',2]]){
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['draftNight','dnState','dnOn','draftNightHTML','dnSectionHTML'])}); A.newDynasty(team,5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<5000)A.SEA.advance(); A.openOffseason();
+  const my=A.S.myTeam, P=A.S.off.picks, yr=A.SEA.year; P.hand=[]; const stops=[];
+  ok(A.dnOn()&&/Go to draft night/.test(strip(A.dnSectionHTML())),`${f}: no way into draft night`);
+  for(let k=0;k<R+2;k++){ const D0=A.dnState(); if(!D0.stop)break; stops.push(D0.stop.overall); const av=D0.prospects.filter(p=>!p.taken); P.hand.push(av[Math.min(3,av.length-1)].pid) }
+  ok(stops.length===R,`${f}: stopped for ${stops.length} picks of ${R}`);
+  A.S.off.dn=true; ok(/Your class is in/.test(strip(A.draftNightHTML())),`${f}: draft night not finished after every pick`); A.S.off.dn=false;
+  const shown=A.draftNight(A.U,A.SEA.rec,A.SEA.elo,{[my]:{draft:P.draft,board:P.board,hand:P.hand}},R,null).picks.map(d=>d.team+':'+d.pid).join(',');
+  const R0=A.LEAGUE.offseason.run; let B=null; A.LEAGUE.offseason.run=function(){ B=R0.apply(this,arguments); return B };
+  for(let c=0;c<4&&A.S.off;c++)A.commitOffseason();
+  const real=B.draft.picks.map(d=>d.team+':'+d.pid).join(','), mine=B.draft.picks.filter(d=>d.team===my).map(d=>d.pid);
+  ok(shown===real,`${f}: the draft shown on draft night is not the draft that happened`);
+  ok(mine.join()===P.hand.join(),`${f}: your picks ${P.hand} but drafted ${mine}`) }
+/* 72. draft night: a change of job clears picks made for the other team; a hot seat keeps the board */
+{ const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP.concat(['dnOn','dnReset'])}); A.newDynasty('Chicago',5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<5000)A.SEA.advance(); A.openOffseason();
+  A.S.off.picks.hand=[3]; A.S.off.picks.workouts=[4]; A.dnReset(); ok(!A.S.off.picks.hand&&!A.S.off.picks.workouts,'draft night: picks survive a change of job');
+  A.S.coaches=[{},{}]; ok(!A.dnOn(),'draft night: offered in a hot seat (it keeps the board)'); A.S.coaches=null; }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

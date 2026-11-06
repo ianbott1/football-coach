@@ -121,6 +121,121 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 30: draft night (pro football, pro basketball, hockey; core/91_draftnight.js):
+- The draft is drawn on its own dice (draftRng) from the rosters as the season
+  ended, so it can be shown pick by pick before the summer runs; the drafted
+  players join rosters at the same step as before (placeDraftNight). Each
+  team's later picks see its earlier rookies (a scratch roster per team).
+  Control: the same code on the old dice and timing reproduced the old
+  fingerprints exactly. Every pick draws the same dice whoever is taken, so
+  your choice changes later picks only through who is left. The NBA and NHL
+  lottery is the first draw, so it is known when the offseason opens.
+- Draft night: the lottery, the picks before yours revealed, on the clock
+  with your scouts' board, "likely there at #N" (a mock of the picks before
+  your next), where he'd fit ("may not make the roster": the summer keeps a
+  rookie only if he helps), your staff's pick, pick / let the staff pick /
+  staff make the rest. Picks are kept as made (S.off.picks.hand); a reload
+  resumes at the same pick; a pick you leave goes to your board, then your
+  staff. A change of job clears them (dnReset). A hot seat keeps the board.
+- Measured first (test/draft-night.js, test/draft-years.js): the old draft
+  was weightless. After four drafts, perfect knowledge of every class moved
+  starters by under 0.3 and wins within noise: prospects near your pick were
+  a point or two apart, most rookies never make a roster, and the staff's
+  pick used near-true ratings.
+- Reshaped (DRAFT_DEF, overridable per league and from the environment):
+  class spread 1.6x, hidden stars (8%: +6 now, +6 ceiling) and busts (10%),
+  reads 1.8x foggier, 30% of prospects hard to read (everyone misjudges them
+  2.2x; your scouts say "scouts unsure"), classes 1.4x deeper, the class 2.5
+  lower to keep each league's talent (starters within 0.5). Your staff pick
+  from your scouts' reads. Private workouts (3 a year) give a 0.3x read on
+  chosen players. Effect, smart drafting (workouts on unsure players near
+  each pick) against the staff after five drafts: pro basketball starters
+  +1.2, +4.6 wins a season; history checks pass (194 seasons).
+- Pro football: the full shape made its league top-heavy (favourites .665,
+  13+ win teams 4.4 a season, unbeaten 9 per 100 seasons, against .633 /
+  3.6 / 4). With every new setting neutral the league matched the release,
+  so the misjudgment itself loosens the league: a draft that rewards finding
+  the misjudged player also lets bad teams miss. Settled with Ian on a middle
+  ground (spread 1.0, fog 1.4, shift 1.5): favourites .656, 13+ win teams
+  4.2 (just over the band), a well-run draft +0.5 on starters.
+- Hockey: draftees are 18 and a pick who doesn't make the roster is gone (no
+  junior system), so no draft shape gave picks weight (7 drafts: starters
+  +0.0). Draft night stays as presence; no workouts. A prospect pipeline is
+  the fix, a separate job.
+- Settings read from the environment only for a set string: in a browser
+  the lookup gave false, read as 0, and every class was empty (the Node
+  suite passed). test/confirm-taps.js now runs draft night in Chromium.
+- Names: the college games have their own runDraft; draft night's are
+  draftNight / placeDraftNight (a collision would have broken college).
+
+Round 29 (Grokbot's remaining reports: pro basketball, hockey, soccer):
+- Soccer's job security is graded by table position, not a win pace that
+  ignores draws: Queens Park Rangers (seed 3) read Secure all season and
+  were then fired; now "Under pressure" through the year before and "HOT
+  SEAT" in the season that ends in the sack.
+- A hot-seat badge names the target missed ("HOT SEAT · missed last year's
+  target (mid-table)"), in all six games.
+- Rank moves say where to ("Down 5 to #11 in the poll", "in the rankings" in the pro games).
+- Soccer's summer payroll line no longer adds parts that can't close (the
+  old wages of re-signed and departed players aren't kept): last season's
+  figure, then the new deals, signings and players gone, named.
+- test/golden.js SCREENS=dir writes each season's screen text, so a
+  screens-only fingerprint change can be read line by line against HEAD.
+- The Championship play-offs (3rd-8th) are right: the EFL expanded them
+  from 2026-27.
+
+Round 28 (Instinct round 9; Muse; Grokbot on pro football, college and pro
+basketball):
+- Hockey: a played overtime game lost its overtime (the engine scores it
+  inside its finish; the live loop never got that stretch: 7 of 7 OT games
+  recorded 3-3 style). syncTail copies the engine's last stretch across.
+- A knockout defeat ends the season on the card, with the round
+  ("Season over: beaten in the AFC Wild Card").
+- Post-game card: the headline comes first and only for a clear call
+  (beyond 7 points: callClarity, graded calls against the best option);
+  a read crossed on the same call is never headlined as good; the single
+  same-luck replay score is gone (a 117-85 win "became a 103-116 loss");
+  every other call is listed with a sized word.
+- Labels that overstate: same-position targets ("the second signs only if
+  there is still room"), "probably won't fit" (about half still sign),
+  draft "taken before you could get them ... before your #N", "would fit"
+  on every free-agent row, portal push-out on every row, the assistant's
+  hand-off worded as such, "mostly gone" only under 15%, a missed target
+  after the season as a result, "level with them" at level records.
+- Second reads list your current setup once ("keep"), basketball and soccer.
+- Pro football power ranking: strength moves 35% of the way each week, the
+  record weighs in over 10 games (moves weeks 1-6 were 6.5..2.7 places a
+  team, now 4.7..1.9).
+- Football late calls say roughly how long is left; pre-game odds say
+  "to win, before the game"; a "Since last season" line before week one
+  (who left, who arrived); the result card lands on the team page.
+- Phone: bar buttons ignore taps for 0.7 s after a game ends; How to play
+  and Help open at the top.
+- Basketball commentary never names an injured player; prospects in one
+  class never share a name; coaching-move lines use each sport's staff
+  label (no "OC" in basketball); Dynasty stop rows run to this season.
+- Not reproduced, measured: NBA live scoring 117.8/114.7 through the real
+  buttons in a browser (Muse saw 145/140 on a save carried across builds:
+  asked for the backup file); animation speed after a call (kept); the
+  coach name losing letters (typed at 0.9 s a key: intact).
+
+Round 27 (Grokbot, college football on 42f0682):
+- One grading rule in football: a call is graded only when its options'
+  replay win rates spread more than 3 points; closer ones are listed as
+  "Close either way" (every call made is on the card) and never count in
+  the tally. The headline is judged like the bullets, against the best
+  option (q, sp on the impact entry), not against the assistant alone.
+- The post-game line names both numbers: the play's odds ("53% to
+  convert") and the share of replays won ("won the game in 71%"); they
+  were read as the live odds changing.
+- Fourth and 10 or more is left to the assistant (4.7 points a call, 60%
+  under 3).
+- Fired screen: no "best season of your tenure"; a note that the plan is
+  for wherever you go; a move reads "You take over as head coach".
+- Standings show today's poll rank (the weekly snapshot lagged a week).
+- Not reproduced: the coach-name field dropping letters (typed slowly in
+  a browser on a fresh setup: intact).
+
 Round 26 (Muse's deep-play pass, on an older build; each point checked on
 this one):
 - Post-game card: the decision leads, the dice follow ("A good call, though
@@ -531,7 +646,8 @@ audits (bb-screens, nba-screens, nhl-screens, epl-screens), the reads
 call's worth), offseason systems (draftboard, fatargets, trades, bb-portal),
 and long-run history checks against the real leagues (bb-march,
 nba-history, nhl-history).
-Reports (run by hand): calibrate, advisors, calls, the engine harnesses
+Reports (run by hand): draft-night and draft-years (what a hand pick is
+worth), calibrate, advisors, calls, the engine harnesses
 (bb-engine, hk-engine, hk-decisions), the long-run recorders.
 
 ## Soccer: the pyramid and the cup
