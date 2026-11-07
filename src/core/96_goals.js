@@ -109,7 +109,7 @@ function objectivesMet(my){ return seasonObjectives(my).filter(o=>objStatus(o,my
 const ACH=[
   {id:"firstwin", l:"Off the mark",         d:"Win your first game"},
   {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours"},
-  {id:"perfect",  l:"Saw it all",            d:"Get every read right in a game with three or more", reads:true},
+  {id:"perfect",  l:"Every read right",      d:"Get every read right in a game with three or more (reads, not calls)", reads:true},
   {id:"reader",   l:"Reads the game",        d:"Get 70% of your reads right over a season (12 or more)", reads:true},
   {id:"board",    l:"The board's favourite", d:"Meet all three objectives in a season"},
   {id:"unbeaten", l:"Unbeaten",              d:"Go a whole regular season without losing"},

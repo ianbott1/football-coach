@@ -1,5 +1,5 @@
 {
- "fp": "72840dd74ad66f9f",
+ "fp": "f97cf2457cc7416d",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -235,6 +235,11 @@
    "fp": "72840dd74ad66f9f",
    "from": "d9707befe21c1fa0",
    "note": "Round 35: football reads the opponent's defense (scouting report, reads in the second quarter and after half-time) and adds the onside kick and late-defense calls. Control with them off matches the previous fingerprints exactly."
+  },
+  {
+   "fp": "f97cf2457cc7416d",
+   "from": "72840dd74ad66f9f",
+   "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
   }
  ],
  "out": [
@@ -248,7 +253,7 @@
       "result": "Eliminated in the first round",
       "grade": "B+"
      },
-     "book": "cc0acec0a9c1a6b2"
+     "book": "2ac89df3d60a34d1"
     },
     {
      "team": "Rice",
@@ -257,7 +262,7 @@
       "result": "Lost the Boca Raton Bowl",
       "grade": "A"
      },
-     "book": "e64a0d8b1c5c8da8"
+     "book": "d5de9158ea3669fa"
     }
    ]
   },
@@ -267,20 +272,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Won the Citrus Bowl",
-      "grade": "C+"
+      "rec": "15-1",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "a8cfb206036495af"
+     "book": "e047a25f8ad827a2"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "5-7",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "fdf4326f3c3b1d71"
+     "book": "36c8566e0a9a692f"
     }
    ]
   },
@@ -290,20 +295,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "16-0",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "11-4",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A-"
      },
-     "book": "381af6cc7d1e965f"
+     "book": "3cdf3d96b1999b49"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the New Orleans Bowl",
-      "grade": "B"
+      "rec": "8-5",
+      "result": "Won the Camellia Bowl",
+      "grade": "A+"
      },
-     "book": "138911cf362ffda0"
+     "book": "b455e98c3a73dc8b"
     }
    ]
   }

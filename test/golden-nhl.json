@@ -1,5 +1,5 @@
 {
- "fp": "a5c16b1e58aa9a9f",
+ "fp": "7bf4b76e17579092",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -295,6 +295,11 @@
    "fp": "a5c16b1e58aa9a9f",
    "from": "2e223092634c1372",
    "note": "Round 37: NBA Cup games are league games (with the Cup off, results match round 35); hockey's box score credits the men its game log names (awards and history move, games don't); text and screens elsewhere."
+  },
+  {
+   "fp": "7bf4b76e17579092",
+   "from": "a5c16b1e58aa9a9f",
+   "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
   }
  ],
  "result": {
@@ -309,7 +314,7 @@
     "heis": "beb1b81b18d165c4",
     "history": "de354b61f310ab25",
     "universe": "5ffcef32928be602",
-    "screens": "57bbcb6f244f6ed3"
+    "screens": "db7ebfff984af75a"
    },
    {
     "year": 2027,
@@ -321,7 +326,7 @@
     "heis": "b355cc7720969f2d",
     "history": "d250b627c68c243c",
     "universe": "c1d804049c8c8386",
-    "screens": "e962fa232bc90232"
+    "screens": "d6631cf54fb34b2a"
    }
   ],
   "Edmonton#777": [
@@ -335,7 +340,7 @@
     "heis": "78bc070c6bfc0a9f",
     "history": "52cc80f40d350356",
     "universe": "7396abba2ff06728",
-    "screens": "6a090aa64b1740b9"
+    "screens": "1a9ba1181b7a6f36"
    },
    {
     "year": 2027,
@@ -347,7 +352,7 @@
     "heis": "b8e9f2899bbecbcb",
     "history": "b9f8e079a0ed5335",
     "universe": "d4698f8973fa4fa5",
-    "screens": "900de73464c737fa"
+    "screens": "6f650ffc65199a2f"
    }
   ],
   "schedules#60": [

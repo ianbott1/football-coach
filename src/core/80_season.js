@@ -126,6 +126,7 @@ class Season{
       const F=list[fi];
       list.splice(fi,1);
       this.forcedList=list; this.forced=null;
+      if(F.rested){ this.restAt=this.restAt||{}; this.restAt[F.team]=this.step }   // a game whose starters you rested
       const userScore = F.mine, oppScore = F.theirs;
       let fh = (a===F.team)?userScore:oppScore;
       let fa = (a===F.team)?oppScore:userScore;

@@ -177,6 +177,15 @@ function lateCall(lead){
    (the report of their last close finishes); some stay with what they've run tonight. Measured as a call
    (test/call-weight.js), not a clock choice: milking it or attacking moved about 3 points and was cut (round 33).
    Grokbot: elimination games and a tied finish into overtime came and went with no call. */
+/* a lead of 10 to 12 with a call's worth left: rest the starters now, or keep them in until it's safe (the bench
+   comes in by itself at 13). The bench makes fewer shots; the starters can't get hurt from the bench. Muse and
+   Grokbot: a decided game had nothing in its second half to decide, while real coaches make exactly this call
+   (and Muse's college point guard was hurt in one). */
+function restCall(lead){
+  return {k:"rest",h:`Up ${lead}, ${BB.lateLeft||"five"} minutes left`,
+    b:"Rest your starters? The bench finishes it: a lead this size usually holds, though not always, and nobody gets hurt sitting down. Keep them in and they close it out, at the usual risk.",
+    opts:[["rest","Rest the starters"],["keep","Keep them in until it's safe"],["normal","Leave it to your assistant"]]};
+}
 function closeCall(lead,rep,n,cur){
   const top=STYLE_KEYS.reduce((a,k)=>rep[k]>rep[a]?k:a,STYLE_KEYS[0]);
   return {k:"close",h:`${lead>0?"Up "+lead:"Tied"}, ${BB.lateLeft||"five"} minutes left`,
@@ -245,6 +254,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       // only when behind: protecting a lead (milk the clock or keep attacking) measured about 3 points a call and
       // 0.1 a game, close either way two times in three (round 33): cut, as Ian's rule asks
       else if(when==="late"&&L<0&&L>=-9)dp=lateCall(L);
+      else if(when==="late"&&L>=10&&L<BB.garbage)dp=restCall(L);
       else if(when==="late"&&L>=0&&L<=9){
         if(L>0)st.late[side]="auto";   // the clock: your assistant closes it out, as he would have (round 33)
         const o=other(side), O=st.S[o];
@@ -271,7 +281,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // stars off the floor: in foul trouble, or fouled out
     const onH=starOn(H,s), onA=starOn(A,s);
     const cl=s>=SEGS-2?BB.starClutch:1, so=BB.starOwn*cl, sd=BB.starDef*cl;
-    const ehH=g.eH-(onH?0:so)+(onA?0:sd), ehA=-g.eH-(onA?0:so)+(onH?0:sd);
+    const rH=st.rest&&st.rest.home?BB.benchPull*0.5:0, rA=st.rest&&st.rest.away?BB.benchPull*0.5:0;   // a rested side's bench, for the last few minutes
+    const ehH=g.eH-(onH?0:so)+(onA?0:sd)-rH+rA, ehA=-g.eH-(onA?0:so)+(onH?0:sd)-rA+rH;
     const modH=styleMod(H.off,A.def,A.prepd), modA=styleMod(A.off,H.def,H.prepd);
     let dh=0,da=0, nA=n;
     const pressH=st.late.home==="press", pressA=st.late.away==="press";
@@ -354,6 +365,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }
     if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; return }
     if(dp.k==="protect"){ st.late[side]=v==="sit"?"sit":v==="keep"?"keep":"auto"; return }
+    if(dp.k==="rest"){ st.late[side]="auto"; if(v==="rest"){ st.rest=st.rest||{}; st.rest[side]=true }
+      st.log.push({side:side,k:"rest",pick:v==="rest"?"rest":"keep",unclear:true}); return }   // not right or wrong: priced in knocks, not wins
     if(dp.k==="close"){ const O=st.S[other(side)]; if(O.closeTo)O.off=O.closeTo; const t=O.off;
       const pick=v==="keep"?X.def:DEFENSES[v]?v:null;
       if(pick&&DEFENSES[pick]){ st.log.push({side:side,k:"close",pick:pick,truth:t,right:DEFENSES[pick].beats===t}); if(pick!==X.def)X.prepd=false; X.def=pick }

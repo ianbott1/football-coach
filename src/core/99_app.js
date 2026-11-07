@@ -182,6 +182,7 @@ function finishLive(){ liveEndedAt=Date.now();
               theirs:(meHome?live.eng.a:live.eng.h),
               drives:live.drives};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
+  if(live.eng.rest&&live.eng.rest[meHome?"home":"away"])played.rested=true;   // starters rested: fewer knocks this week (Season._resolve)
   if(g.cup)played.cup=true;
   // was each call the better percentage play? (sports that judge their calls:
   // the same game replayed from that moment with each answer, many times)
@@ -1167,7 +1168,7 @@ function heroResult(){
     const X=SEA.series&&g.series&&(SEA.series[g.series]||[]).find(x=>x.games&&x.games.indexOf(g)>=0);
     if(X){ const a=X.w[my]||0, b=X.w[opp]||0;
       move=X.winner===my?(SEA.champion===my?`<div class="hmove up">Champions: won the series ${a}&ndash;${b}</div>`:`<div class="hmove up">Series won ${a}&ndash;${b}: through to the next round</div>`)
-        :X.winner?`<div class="hmove dn">Season over: out of the playoffs, ${a}&ndash;${b} in the series</div>`
+        :X.winner?`<div class="hmove dn">Season over: ${SEA.champion&&SEA.champion===opp?"beaten in the final":"out of the playoffs"}, ${a}&ndash;${b} in the series</div>`   // a Finals defeat isn't "out of the playoffs" (Grokbot)
         :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
@@ -1240,7 +1241,7 @@ function readsHTML(step){
   // each line says which call it was (a right game plan beside a wrong read looked like a contradiction,
   // and two identical lines couldn't be told apart: Grokbot)
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
-    return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":"" };
+    return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
   const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
@@ -2156,14 +2157,14 @@ function standingsView(){
     const head=`<div class="srow shead"><span class="spos">#</span>
       <span class="dot" style="opacity:0"></span>
       <span class="steam">Team</span><span class="sconf">${LEAGUE.standingsCol?LEAGUE.standingsCol.label:(LEAGUE.text.groupShort||"Conf")}</span>
-      <span class="sall">Overall</span>${XC.map(x=>`<span class="sx">${x.label}</span>`).join("")}</div>`;
+      <span class="sall">Overall</span>${XC.map(x=>`<span class="sx${x.opt?" sxo":""}">${x.label}</span>`).join("")}</div>`;
     // a league's own columns (soccer's goal difference; basketball's streak and last ten) and zones (soccer)
     const zone=i=>LEAGUE.ui.standingsZone?LEAGUE.ui.standingsZone(c,i+1):"";
     const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}${zone(i)?" zone-"+zone(i):""}">
       <span class="spos ${mark?'qual':''}">${i+1}</span>
       <span class="dot" style="background:${teamColor(r.team)}"></span>
       <span class="steam">${LEAGUE.ui.clinchTag?LEAGUE.ui.clinchTag(r.team):""}${rkTag(nowRk?nowRk[r.team]:r.rank)}${TL(r.team)}</span>
-      <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span>${XC.map(x=>`<span class="sx">${x.val(r.team)}</span>`).join("")}</div>`;
+      <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span>${XC.map(x=>`<span class="sx${x.opt?" sxo":""}">${x.val(r.team)}</span>`).join("")}</div>`;
     h+=`<div class="cbox"><div class="chead">${esc(LEAGUE.conf.names[c])}</div>`;
     if(hasDivisions(c)){
       const div={};

@@ -54,6 +54,7 @@ const AGGR = {
 /* your defense on their late drive (the "defend" call): prevent gives up field goals and the clock to stop the
    touchdown; pressure takes the ball away more often and gives up more big plays. Which is right depends on the
    score: up 4 to 8 only a touchdown beats you; up 1 to 3 or level, a field goal does too. */
+const FB_REST_DEF={td:+0.070, fg:+0.030, to:-0.025};   // your backups on defense
 const DEF_MODE = {
   prevent: {td:-0.090, fg:+0.090, to:-0.035},
   pressure:{td:+0.035, fg:-0.070, to:+0.075}
@@ -412,6 +413,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
           st.log.push(e); st.ans[side]=pick }
         else if(dp.k==="read"&&rng.r()<0.45)st.ans[side]=SCHEMES[D.sch].counter;   // your assistant reads it, about as often as anyone
         // fall through and play the drive
+      } else if(stage==="rest"){
+        st.stage=null;
+        if(choice==="rest"){ st.rest=st.rest||{}; st.rest[side]=true; if(home)st.aggrH="sit"; else st.aggrA="sit" }
+        st.log.push({side:side,k:"rest",pick:choice==="rest"?"rest":"keep",unclear:true});
+        // fall through and play the drive
       } else if(stage==="onside"){
         // asked of the side that just scored, before the other side's possession
         st.stage=null;
@@ -469,6 +475,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side]) }
       if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
+    // ---- a decided game, your ball: rest the starters? (Muse: a 24-point fourth-quarter lead asked nothing) ----
+    if(isUser&&!st.stage&&q>=4&&mine-theirs>=14&&mine-theirs<=24&&!(home?st.usedH:st.usedA).rest){
+      (home?st.usedH:st.usedA).rest=true; st.stage="rest"; st.pend={q:q}; st.startHold=start;
+      return {ask:{k:"rest",h:`Up ${mine-theirs} in the fourth quarter`,
+        b:`Rest your starters? The backups run the clock out: a lead this size usually holds, though not always, and nobody gets hurt on the sideline. ${possLeft(st.total-i,true)}`,
+        opts:[["rest","Rest the starters"],["keep","Keep them in until it's safe"],["normal","Leave it to your assistant"]]},mine:mine,theirs:theirs,q:q,side:side} }
+
     // ---- strategic call before the snap ----
     if(isUser&&calls()<MAX_CALLS&&!st.stage){
       const ctx={q:q,idx:i,total:st.total,startYd:start,used:used,rng:rng,
@@ -483,7 +496,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
 
     const aggr=isUser?(home?st.aggrH:st.aggrA)
                      :situational(home?st.aggrH:st.aggrA,i,st.total,mine,theirs);
-    const dm=!isUser?st.dmode:readMod(side); if(!isUser)st.dmode=null;   // your defense, this drive only; your offense's answer, until you change it
+    let dm=!isUser?st.dmode:readMod(side); if(!isUser)st.dmode=null;
+    // their drive against your rested starters: the backups give up more (the price of resting them)
+    if(!isUser&&st.rest&&st.rest[home?"away":"home"]){ const D0=typeof dm==="string"?DEF_MODE[dm]:dm, R0=FB_REST_DEF;
+      dm={td:(D0?D0.td:0)+R0.td, fg:(D0?D0.fg:0)+R0.fg, to:(D0?D0.to:0)+R0.to} }   // your defense, this drive only; your offense's answer, until you change it
     const res=rollDrive(rng,offE,defE,start,aggr,dm);
     if(isUser)tellDrive(side);
     if(dm&&!isUser)res.note=(res.note?res.note+"; ":"")+(dm==="prevent"?"against your prevent defense":"against your pressure");

@@ -206,6 +206,11 @@ function staffTake(dp, ctx){
       : [`Whatever we did to get here \u2014 more of that, please.`,`Don't change a thing. It's working!`,`We're winning! Keep doing the winning thing.`][seed%3],seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
+  else if(dp.k==="rest"){
+    R.push({who:"bears", pick:"keep", line:`Rest? We'll rest in the off-season.`});
+    R.push({who:"pearl", pick:"rest", line:pearlSay(`It's won! Get the starters off before somebody gets hurt.`,seed)});
+    R.push({who:"capy", pick:"rest", line:`A lead like this usually holds, it seems to me. Usually.`});
+  }
   else if(dp.k==="prep"){
     const top=dp.pearl;
     R.push({who:"bears", pick:"deep", line:bearYell("chase",seed)});

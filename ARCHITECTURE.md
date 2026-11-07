@@ -329,6 +329,35 @@ Round 37: the same number twice (Muse, Instinct, Grokbot, round 12 of testing):
   replay figures come from separate replays and can disagree in the margin;
   soccer's payroll page; hockey's free-agent floor; phrase pools.
 
+Round 38: decided games, and the basketball list (Grokbot):
+- Rest your starters, in decided games: basketball at the late mark up 10-12
+  (13+ the bench comes in by itself), football in the fourth quarter up 14-24
+  with the ball. Resting costs on the floor (basketball: the bench's make-rate
+  cost, half of benchPull, for the last stretch; football: you sit on it and
+  your backups' defense gives up more, FB_REST_DEF) and halves the week's
+  injury chance (REST_HZ 0.5: Season._resolve keeps a rested game in
+  sea.restAt, talent.advance reads it; the same dice, so a rest only ever
+  removes a knock). Measured on common dice when asked: pro basketball 96.8%
+  kept, 94.3% rested; college 97.7 / 97.1; football 99.5-99.9 both ways.
+  Asked in 9% of basketball games and 27-30% of football ones; not right or
+  wrong (unclear), so not in the tally. With it off, every fingerprint
+  matches round 37 exactly (golden and hot seat).
+- Grokbot's card naming a choice he didn't make: not reproduced (107 card
+  lines in Node, 67 in a browser at Very fast). test/card-honest.js keeps
+  watching in the suite. "Saw it all" is now "Every read right".
+- Points for and against in the standings (teamScoring: PPG, OPP, streak in
+  basketball; PF/PA, GF/GA elsewhere), on screens 600px and wider: on a phone
+  they squeezed team names to two letters.
+- Pro basketball: a Finals defeat says "beaten in the final"; "win a series"
+  and the conference-final target say where they stand (clauseLine).
+- Measured, not changed: pro basketball scoring, live games 230.4 a game
+  (league 229.1), playoffs 218.9; the scouting report differs every game of a
+  series (each game has its own seed), the club's tendency doesn't.
+- Still to do: the last-minute choices Grokbot keeps asking for (foul up three,
+  hold for the last shot) need a clock inside the last segment; football's
+  headline and replay figures from one set of replays; a team stats line on
+  phones; a season story page with kept box scores.
+
 Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
 - A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
   soccer's 25' call came up under a tap meant for the game and was graded as

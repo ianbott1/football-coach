@@ -114,7 +114,7 @@ function eloUpdate(eW,eL,mAbs,winHome,neutral){
 }
 
 /* ============ talent ============ */
-const INJ_HAZARD=0.085,QB_SHARE=0.18,DEV_SD=4.2,AR_SD=5,AR_DECAY=0.8,
+const REST_HZ=0.5, INJ_HAZARD=0.085,QB_SHARE=0.18,DEV_SD=4.2,AR_SD=5,AR_DECAY=0.8,
       COLLAPSE_P=0.018,BREAKOUT_P=0.018;
 const BODY=["OL","WR1","RB1","EDGE","CB1","LB","TE","S"];
 function iscale(r){return 0.70+0.45*Math.max(0,Math.min(1,(r-1150)/900))}
@@ -147,7 +147,10 @@ class Talent{
         this.log[t].push({wk:w,kind:"back",what:e.k,mag:0}));
       this.inj[t]=this.inj[t].filter(e=>e.w>0);
       const sc=iscale(this.base[t]);
-      if(r.r()<INJ_HAZARD*K*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
+      // starters rested in a decided game: the minutes they sat can't hurt them (REST_HZ; the same dice, so a rest
+      // only ever removes an injury, never adds one elsewhere)
+      const rest=(typeof SEA!=="undefined"&&SEA&&SEA.talent===this&&SEA.restAt&&SEA.restAt[t]===w-1)?REST_HZ:1;
+      if(r.r()<INJ_HAZARD*K*rest*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
         if(this.roster){
           // pick a starter, weighted toward the positions that take hits
           const idx=pickInjuredPos(r);

@@ -1,5 +1,5 @@
 {
- "fp": "924cbea634aaae1d",
+ "fp": "6cd8c2237ae2116a",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -280,33 +280,38 @@
    "fp": "924cbea634aaae1d",
    "from": "4d885cbb86eb1e23",
    "note": "Round 37: NBA Cup games are league games (with the Cup off, results match round 35); hockey's box score credits the men its game log names (awards and history move, games don't); text and screens elsewhere."
+  },
+  {
+   "fp": "6cd8c2237ae2116a",
+   "from": "924cbea634aaae1d",
+   "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "0be8dd7f6dac330e",
+    "games": "e0d1e11dca51b4e2",
     "post": "2fd7b248bc1d6035",
     "champion": "Denver",
     "rec": "eb41555b003610ac",
     "poll": "2e2faa8af90db19d",
     "heis": "a889fa8b5e8d4ab4",
     "history": "f4cd9b92c9e7fbd0",
-    "universe": "43d54a14341a0bb8",
-    "screens": "c70d230509ccf3f2"
+    "universe": "242c474b0f7ff24d",
+    "screens": "001b6f08836a27ae"
    },
    {
     "year": 2027,
-    "games": "85e3c45d0047e112",
-    "post": "2eeed4c22754c6f4",
+    "games": "914cabd3f9d18a8c",
+    "post": "8642567b2b7a2975",
     "champion": "Oklahoma City",
     "rec": "5e1b27ab158224e5",
     "poll": "13210d608a582ada",
     "heis": "a6b6370be9f3c174",
-    "history": "92a9cb0fa3a95bf0",
-    "universe": "172b8dce3b47ed38",
-    "screens": "c7982b29796f124b"
+    "history": "78b448954ba426be",
+    "universe": "86eeddc385e77630",
+    "screens": "e8074f3c1a5edc44"
    }
   ],
   "Detroit#777": [
@@ -320,19 +325,19 @@
     "heis": "a93a44dfcf6920ba",
     "history": "1cc29eafa6d053b4",
     "universe": "e91c1230060ee542",
-    "screens": "c3ec104505583473"
+    "screens": "480ad35de1255803"
    },
    {
     "year": 2027,
-    "games": "7c466d38bad22008",
+    "games": "7b7cf39246b56b5a",
     "post": "038f4e2400fec847",
     "champion": "Miami",
     "rec": "44f9d5eb8f0a097f",
     "poll": "a5373578f9d3faf0",
     "heis": "215a15facb9a21f0",
     "history": "6763f84ba52fc9a0",
-    "universe": "6129d685ea8eb972",
-    "screens": "c7bc70c6932b4e9b"
+    "universe": "786df9cb8ebba6d8",
+    "screens": "60286165caba1871"
    }
   ],
   "schedules#60": [

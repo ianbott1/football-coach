@@ -790,6 +790,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .frow.zone-ucl,.srow.zone-ucl{box-shadow:inset 3px 0 0 #2F6FB5}.frow.zone-up,.srow.zone-up{box-shadow:inset 3px 0 0 var(--turf)}
 .frow.zone-po,.srow.zone-po{box-shadow:inset 3px 0 0 var(--sodium)}.frow.zone-down,.srow.zone-down{box-shadow:inset 3px 0 0 var(--flag)}
 .sx{font-family:var(--mono);font-size:12px;color:#B4BCCB;width:34px;flex:0 0 34px;text-align:right;white-space:nowrap}
+.sxo{display:none}@media (min-width:600px){.sxo{display:inline-block}}   /* the scoring columns: wide screens, where team names still fit */
 .shead .sx{font-size:9px;letter-spacing:.08em;color:var(--muted)}
 .zkey{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
 /* the momentum bar (soccer) */
@@ -915,7 +916,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="57dfca7";
+<script>const BUILD_ID="7d97fe1";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1466,7 +1467,7 @@ function eloUpdate(eW,eL,mAbs,winHome,neutral){
 }
 
 /* ============ talent ============ */
-const INJ_HAZARD=0.085,QB_SHARE=0.18,DEV_SD=4.2,AR_SD=5,AR_DECAY=0.8,
+const REST_HZ=0.5, INJ_HAZARD=0.085,QB_SHARE=0.18,DEV_SD=4.2,AR_SD=5,AR_DECAY=0.8,
       COLLAPSE_P=0.018,BREAKOUT_P=0.018;
 const BODY=["OL","WR1","RB1","EDGE","CB1","LB","TE","S"];
 function iscale(r){return 0.70+0.45*Math.max(0,Math.min(1,(r-1150)/900))}
@@ -1499,7 +1500,10 @@ class Talent{
         this.log[t].push({wk:w,kind:"back",what:e.k,mag:0}));
       this.inj[t]=this.inj[t].filter(e=>e.w>0);
       const sc=iscale(this.base[t]);
-      if(r.r()<INJ_HAZARD*K*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
+      // starters rested in a decided game: the minutes they sat can't hurt them (REST_HZ; the same dice, so a rest
+      // only ever removes an injury, never adds one elsewhere)
+      const rest=(typeof SEA!=="undefined"&&SEA&&SEA.talent===this&&SEA.restAt&&SEA.restAt[t]===w-1)?REST_HZ:1;
+      if(r.r()<INJ_HAZARD*K*rest*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
         if(this.roster){
           // pick a starter, weighted toward the positions that take hits
           const idx=pickInjuredPos(r);
@@ -3629,6 +3633,7 @@ class Season{
       const F=list[fi];
       list.splice(fi,1);
       this.forcedList=list; this.forced=null;
+      if(F.rested){ this.restAt=this.restAt||{}; this.restAt[F.team]=this.step }   // a game whose starters you rested
       const userScore = F.mine, oppScore = F.theirs;
       let fh = (a===F.team)?userScore:oppScore;
       let fa = (a===F.team)?oppScore:userScore;
@@ -4186,6 +4191,19 @@ function backfillDraws(h){
   Object.keys(h.teams).forEach(t=>{ const r=h.teams[t];
     if(r&&r.length===3&&res[t])r.push(Math.max(0,LEAGUE.seasonGames(res[t])-r[0]-r[1])) });
 }
+
+/* a team's scoring this season, from its league games (Grokbot: no team points per game anywhere) */
+function teamScoring(t){
+  if(!SEA||!SEA.weeks)return {g:0,pf:0,pa:0,res:[]};
+  const o={g:0,pf:0,pa:0,res:[]};
+  SEA.weeks.forEach(W=>(W.games||[]).forEach(x=>{ if(x.cup||(x.home!==t&&x.away!==t)||x.hp===undefined)return;
+    const me=x.home===t; o.g++; o.pf+=me?x.hp:x.ap; o.pa+=me?x.ap:x.hp; o.res.push(x.winner===t?"W":x.winner?"L":"D") }));
+  return o;
+}
+const STAND_PER_GAME=[{label:"PPG",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pf/o.g).toFixed(1):"-" }},
+  {label:"OPP",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pa/o.g).toFixed(1):"-" }},
+  {label:"STRK",opt:1,val:t=>{ const r=teamScoring(t).res; if(!r.length)return "-"; let k=1; while(k<r.length&&r[r.length-1-k]===r[r.length-1])k++; return r[r.length-1]+k }}];
+const STAND_TOTALS=(f,a)=>[{label:f,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pf:"-" }},{label:a,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pa:"-" }}];
 /* ============ the franchise record book: pro hockey ============ */
 /* Everyone who leaves a franchise, by retirement, release or free agency,
    is written into its book. Greats are ranked by peak rating; the leaders
@@ -5201,7 +5219,7 @@ function objectivesMet(my){ return seasonObjectives(my).filter(o=>objStatus(o,my
 const ACH=[
   {id:"firstwin", l:"Off the mark",         d:"Win your first game"},
   {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours"},
-  {id:"perfect",  l:"Saw it all",            d:"Get every read right in a game with three or more", reads:true},
+  {id:"perfect",  l:"Every read right",      d:"Get every read right in a game with three or more (reads, not calls)", reads:true},
   {id:"reader",   l:"Reads the game",        d:"Get 70% of your reads right over a season (12 or more)", reads:true},
   {id:"board",    l:"The board's favourite", d:"Meet all three objectives in a season"},
   {id:"unbeaten", l:"Unbeaten",              d:"Go a whole regular season without losing"},
@@ -5581,6 +5599,7 @@ function simSeries(){
   }
 }
 LEAGUE.ui={
+  standingsCols:STAND_TOTALS("GF","GA"),   // points for and against (Grokbot: a team stats page)
   rankingTab:"Rankings",
   rankingView:nflRankingView,
   projectedField(){const f=SEA.seedsNow(); return f.East.slice(0,8).concat(f.West.slice(0,8))},
@@ -6102,6 +6121,7 @@ function finishLive(){ liveEndedAt=Date.now();
               theirs:(meHome?live.eng.a:live.eng.h),
               drives:live.drives};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
+  if(live.eng.rest&&live.eng.rest[meHome?"home":"away"])played.rested=true;   // starters rested: fewer knocks this week (Season._resolve)
   if(g.cup)played.cup=true;
   // was each call the better percentage play? (sports that judge their calls:
   // the same game replayed from that moment with each answer, many times)
@@ -7087,7 +7107,7 @@ function heroResult(){
     const X=SEA.series&&g.series&&(SEA.series[g.series]||[]).find(x=>x.games&&x.games.indexOf(g)>=0);
     if(X){ const a=X.w[my]||0, b=X.w[opp]||0;
       move=X.winner===my?(SEA.champion===my?`<div class="hmove up">Champions: won the series ${a}&ndash;${b}</div>`:`<div class="hmove up">Series won ${a}&ndash;${b}: through to the next round</div>`)
-        :X.winner?`<div class="hmove dn">Season over: out of the playoffs, ${a}&ndash;${b} in the series</div>`
+        :X.winner?`<div class="hmove dn">Season over: ${SEA.champion&&SEA.champion===opp?"beaten in the final":"out of the playoffs"}, ${a}&ndash;${b} in the series</div>`   // a Finals defeat isn't "out of the playoffs" (Grokbot)
         :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
@@ -7160,7 +7180,7 @@ function readsHTML(step){
   // each line says which call it was (a right game plan beside a wrong read looked like a contradiction,
   // and two identical lines couldn't be told apart: Grokbot)
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
-    return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":"" };
+    return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
   const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
@@ -8076,14 +8096,14 @@ function standingsView(){
     const head=`<div class="srow shead"><span class="spos">#</span>
       <span class="dot" style="opacity:0"></span>
       <span class="steam">Team</span><span class="sconf">${LEAGUE.standingsCol?LEAGUE.standingsCol.label:(LEAGUE.text.groupShort||"Conf")}</span>
-      <span class="sall">Overall</span>${XC.map(x=>`<span class="sx">${x.label}</span>`).join("")}</div>`;
+      <span class="sall">Overall</span>${XC.map(x=>`<span class="sx${x.opt?" sxo":""}">${x.label}</span>`).join("")}</div>`;
     // a league's own columns (soccer's goal difference; basketball's streak and last ten) and zones (soccer)
     const zone=i=>LEAGUE.ui.standingsZone?LEAGUE.ui.standingsZone(c,i+1):"";
     const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}${zone(i)?" zone-"+zone(i):""}">
       <span class="spos ${mark?'qual':''}">${i+1}</span>
       <span class="dot" style="background:${teamColor(r.team)}"></span>
       <span class="steam">${LEAGUE.ui.clinchTag?LEAGUE.ui.clinchTag(r.team):""}${rkTag(nowRk?nowRk[r.team]:r.rank)}${TL(r.team)}</span>
-      <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span>${XC.map(x=>`<span class="sx">${x.val(r.team)}</span>`).join("")}</div>`;
+      <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span>${XC.map(x=>`<span class="sx${x.opt?" sxo":""}">${x.val(r.team)}</span>`).join("")}</div>`;
     h+=`<div class="cbox"><div class="chead">${esc(LEAGUE.conf.names[c])}</div>`;
     if(hasDivisions(c)){
       const div={};

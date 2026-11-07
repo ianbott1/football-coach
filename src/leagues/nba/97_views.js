@@ -110,6 +110,7 @@ function simSeries(){
   }
 }
 LEAGUE.ui={
+  standingsCols:STAND_PER_GAME,   // points for and against (Grokbot: a team stats page)
   rankingTab:"Rankings",
   rankingView:nflRankingView,
   projectedField(){const f=SEA.seedsNow(); return f.East.slice(0,10).concat(f.West.slice(0,10))},

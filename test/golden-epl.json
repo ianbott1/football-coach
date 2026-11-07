@@ -1,5 +1,5 @@
 {
- "fp": "ca60b5008e79ea7f",
+ "fp": "a2b008f76578bdf7",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -295,6 +295,11 @@
    "fp": "ca60b5008e79ea7f",
    "from": "15e85b97667bf5bd",
    "note": "Round 37: NBA Cup games are league games (with the Cup off, results match round 35); hockey's box score credits the men its game log names (awards and history move, games don't); text and screens elsewhere."
+  },
+  {
+   "fp": "a2b008f76578bdf7",
+   "from": "ca60b5008e79ea7f",
+   "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
   }
  ],
  "result": {
@@ -309,7 +314,7 @@
     "heis": "af7f37f2652278c3",
     "history": "479026eb52783960",
     "universe": "2cf5ba0b924125ac",
-    "screens": "7b43a3f84a54c86f"
+    "screens": "18727b3c8cafd4c2"
    },
    {
     "year": 2027,
@@ -321,7 +326,7 @@
     "heis": "1e17969eea1d9118",
     "history": "38911ac8b3e53807",
     "universe": "b4c08153165c19ba",
-    "screens": "1721448697a9e626"
+    "screens": "850fc3ee56c7e7cd"
    }
   ],
   "Wrexham#777": [
@@ -335,7 +340,7 @@
     "heis": "400991731e24be6e",
     "history": "aaf4a14aa2b0c3ea",
     "universe": "7e82d8cb5d52b19f",
-    "screens": "d09871ea94c5ad4e"
+    "screens": "3ffbdb9e601c6699"
    },
    {
     "year": 2027,
@@ -347,7 +352,7 @@
     "heis": "7e62ca4a6bd95c73",
     "history": "aebd5702d8539966",
     "universe": "e38a812681de34a1",
-    "screens": "9fab3a9fdfd754cc"
+    "screens": "809e5ed2e760903d"
    }
   ],
   "schedules#60": [

@@ -192,6 +192,11 @@ function staffTake(dp, ctx){
       : `Whatever we did to get here: more of that, please.`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
+  else if(dp.k==="rest"){
+    R.push({who:"bears", pick:"keep", line:`Rest? REST? We rest when we're DEAD.`});
+    R.push({who:"pearl", pick:"rest", line:pearlSay(`We've done the work! Let's not get anyone hurt now.`,seed)});
+    R.push({who:"capy", pick:"rest", line:`It seems to me a lead like this usually holds. Usually.`});
+  }
   else if(dp.k==="close"){
     const top=dp.pearl, ans=STYLE[top]?STYLE[top].answer:"normal";
     R.push({who:"bears", pick:"trap", line:bearYell("read",seed)});

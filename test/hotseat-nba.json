@@ -1,5 +1,5 @@
 {
- "fp": "2551d5fa5d969fc8",
+ "fp": "03426ac40c65b986",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -180,6 +180,11 @@
    "fp": "2551d5fa5d969fc8",
    "from": "a291b6f1b32a9de8",
    "note": "Round 37: NBA Cup games are league games (Cup off: matches round 35 exactly, 19a3071c); hockey's box score credits the men its log names."
+  },
+  {
+   "fp": "03426ac40c65b986",
+   "from": "2551d5fa5d969fc8",
+   "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
   }
  ],
  "out": [
@@ -193,7 +198,7 @@
       "result": "Lost in the conference semifinals",
       "grade": "A-"
      },
-     "book": "2ccf4729fa267c1b"
+     "book": "03964ae06d75da60"
     },
     {
      "team": "New York",
@@ -202,7 +207,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "f5bd540f9511afdd"
+     "book": "5c5c4d9ef8c9cfdb"
     }
    ]
   },
@@ -216,7 +221,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "d0152b499c9b1672"
+     "book": "95330764d6b822c3"
     },
     {
      "team": "New York",
@@ -225,7 +230,7 @@
       "result": "Lost in the play-in",
       "grade": "D"
      },
-     "book": "97d5954d0e16f126"
+     "book": "b8971936fbdd9719"
     }
    ]
   },
@@ -235,11 +240,11 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-52",
+      "rec": "29-53",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "fbd0aeb8a4d203fc"
+     "book": "dac9683762cb1e53"
     },
     {
      "team": "New York",
@@ -248,7 +253,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "a6e78bd75adf4826"
+     "book": "502f0389a5eb377a"
     }
    ]
   }
