@@ -1,5 +1,5 @@
 {
- "fp": "9036bc1970c446ef",
+ "fp": "a362b7a545e9526d",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -300,6 +300,11 @@
    "fp": "9036bc1970c446ef",
    "from": "7310f677c97be951",
    "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
+  },
+  {
+   "fp": "a362b7a545e9526d",
+   "from": "9036bc1970c446ef",
+   "note": "Round 32: screens (read lines, coin-flip notes, standings words, result header, odds capped at 99%, draft labels, payroll arithmetic), soccer history gains departing and old wages (checked field by field against HEAD); basketball pace held to 8% (golden plans are balanced, so results unchanged)"
   }
  ],
  "result": {
@@ -314,7 +319,7 @@
     "heis": "507b02601047ebc0",
     "history": "580f9ea9298345d2",
     "universe": "15668034bee30dd0",
-    "screens": "2541528c1e0dba41"
+    "screens": "dcb7cf40cdff39a6"
    },
    {
     "year": 2027,
@@ -326,7 +331,7 @@
     "heis": "5acbf636441cddd8",
     "history": "b824a5cbba3471be",
     "universe": "44da1ed94501e3fa",
-    "screens": "44911ba0721da98e"
+    "screens": "35512f79edf67e54"
    }
   ],
   "Coppin State#2024": [
@@ -340,7 +345,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "6a68217a22c71b36",
     "universe": "96581c1b068ab70d",
-    "screens": "a3105c22ee8fec0f"
+    "screens": "877b83d55de516bf"
    },
    {
     "year": 2027,
@@ -352,7 +357,7 @@
     "heis": "b27bdde561ad5dfb",
     "history": "a22a71423b3bdcaa",
     "universe": "68f96ab6377e4f5e",
-    "screens": "bae86323ed735a8e"
+    "screens": "ea8b76916032bafa"
    }
   ],
   "Gonzaga#777": [
@@ -366,7 +371,7 @@
     "heis": "c94713712b4e6c61",
     "history": "f1681237b458e683",
     "universe": "7e0dd9bfd94a78d3",
-    "screens": "aa19ca6616de8f59"
+    "screens": "b6f832661051c2ee"
    },
    {
     "year": 2027,
@@ -378,7 +383,7 @@
     "heis": "65deb6ef1f3be212",
     "history": "0ac08e16dcd5aa59",
     "universe": "5c1877dc8315f4c7",
-    "screens": "7094157fc7a80a23"
+    "screens": "3a90ed6f3286611b"
    }
   ],
   "schedules#60": [

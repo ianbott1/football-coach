@@ -87,7 +87,7 @@ function nflBracket(){
   let h=`<div class="subtabs">${tabs.map(k=>`<button class="subtab" data-np="${k}" aria-pressed="${nbaPostTab===k}">${k}</button>`).join("")}</div>`;
   if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> are NBA champions.</div>`;
   if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${(o=>`${esc(my)} ${mine.w[my]||0}, ${esc(o)} ${mine.w[o]||0}`)(mine.hi===my?mine.lo:mine.hi)}.
-    <button class="subtab" data-simseries="1">Sim the series</button></div>`;
+    <button class="subtab" data-simseries="1">Sim the series</button> <span class="fnote">It stops before a game that could end your season.</span></div>`;
   if(nbaPostTab==="Play-in"){
     const gs=SEA.rounds.pi;
     h+=gs.length?gs.map(g=>`<div class="brow ${g.home===my||g.away===my?'mine':''}">${esc(g.title)}: <b>${esc(g.winner)}</b> ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)} ${esc(g.loser)}</div>`).join("")
@@ -102,6 +102,9 @@ function simSeries(){
   let guard=0; const my=S.myTeam;
   while(guard++<10&&SEA.phase!=="done"){
     const x=SEA.mySeries(my); if(!x||x.winner)break;
+    // stop before a game that could end your season: it simmed straight through game 6 of a 2-4 exit (Grokbot,
+    // both seasons). Pressed when already facing elimination, it plays that one game.
+    const opp=x.hi===my?x.lo:x.hi; if(guard>1&&(x.w[opp]||0)>=(x.need||4)-1)break;
     const r=SEA.phase.slice(0,2); simAdvance(); if(live)break;
     if(!SEA.phase.startsWith(r))break;
   }

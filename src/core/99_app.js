@@ -127,7 +127,7 @@ function liveTick(){
         continue;
       }
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
-                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam};
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now()};
       render();
       return;
     }
@@ -758,7 +758,9 @@ function doAdvance(){
   if(g&&!prefersReduced()&&(S.watchMode||"all")==="never"){
     reveal="half";
     if(revealTimer)clearTimeout(revealTimer);
-    revealTimer=setTimeout(()=>{reveal="final";render()},1500);
+    // the reveal re-renders only the screen it was for: fired on draft night it rebuilt the page between the two taps
+    // of a pick and the pick was lost (found by the browser test, round 32)
+    revealTimer=setTimeout(()=>{ if(reveal!=="half")return; reveal="final"; if(S.off||live)return; render() },1500);
   }else reveal=null;
   save(); render();
 }
@@ -1151,7 +1153,7 @@ function heroResult(){
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>
     <div class="hfoot">Second half under way&hellip;</div></div>`;
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
-    <div class="hlabel">FINAL &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
+    <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
       return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}
@@ -1202,7 +1204,10 @@ function readsHTML(step){
   // and two identical lines couldn't be told apart: Grokbot)
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
     return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
-  const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
+  // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
+  // was graded and made the tally jump by more than the lines shown (Grokbot)
+  const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
+    lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded calls only)</div>`:""}</div>`;
 }
@@ -1218,12 +1223,18 @@ function cupLineHTML(g,my){
 
 /* ============ what's at stake ============ */
 /* the odds line: one number, or (a league with draws) win, draw and loss */
+/* what the "conference" count is: in the pro games and soccer it's division titles (Grokbot: "CONF 1" with no
+   conference title, after a division win) */
+function confWord(){ return LEAGUE.text.champsWord||(LEAGUE.id==="cfb"||LEAGUE.id==="ncaab"?"Conf":"Division") }
+/* a win chance as shown: never 100% or 0% (Ian: "a 100% win chance vs Phoenix"; nothing in sport is certain, and
+   the engine's own tails reach 99.6%) */
+function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
 function oddsHTML(me,opp,atHome,neutral,wp){
-  if(LEAGUE.wdl){ const [w,d,l]=LEAGUE.wdl(me,opp,atHome,neutral), P=x=>Math.round(x*100);
+  if(LEAGUE.wdl){ const [w,d,l]=LEAGUE.wdl(me,opp,atHome,neutral), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
       <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span><span class="olab">before the game</span>${ownMark(me)}</div>` }
   return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
-        <span class="opct">${Math.round(wp*100)}%</span>
+        <span class="opct">${pctShown(wp)}%</span>
         <span class="olab">to win, before the game</span>${ownMark(me)}</div>`;   // which number this is: the replays after a call are another (Instinct: "label every number's method")
 }
 /* the odds include your own choices: say so, since a point or two can hide
@@ -1378,7 +1389,12 @@ function seatBadge(){
     const d=CONF[my], tb=SEA.table(d), pos=tb.indexOf(my)+1, R=DIVS[d]||{};
     const res=R.down&&pos>tb.length-R.down?`Relegated (${pos}th)`:`Finished ${pos}th`;
     g=seasonGrade(w,l,res,exp) }
-  else g=seasonGrade(paceW,games-paceW,"",exp);
+  else{
+    // a postseason target counts too: outside the projected field you're on course to miss it (Grokbot: HOT SEAT in
+    // college basketball's second year, with no warning all season that missing the tournament would cost the job)
+    let res="";
+    if(LEAGUE.ui.projectedField&&SEA.phase==="week"&&w+l>=6){ try{ const f=LEAGUE.ui.projectedField(); if(f&&f.length&&f.indexOf(my)<0)res="Projected outside the field" }catch(e){} }
+    g=seasonGrade(paceW,games-paceW,res,exp) }
   if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
   return `<span class="seat cool">Secure</span>`;
 }
@@ -1536,7 +1552,7 @@ function teamCardHTML(my,rk,co){
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
-          :need===0?`Target of ${e.w} wins already met.`
+          :need===0?(SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}`)   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
           // plainly: the target, then what's left of it ("46 more wins from the 47 expected" read oddly: Grokbot, Ian)
           :need>left?`Target: ${e.w} wins. ${need} to go: it will take a postseason run.`
@@ -1642,7 +1658,7 @@ function nextUpHTML(my,rk){
           +" &middot; "+esc(LEAGUE.conf.names[CONF[pn.opp]])
           :"Matchup set when the round is played"}</div>
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
-          <span class="opct">${Math.round(wp*100)}%</span>
+          <span class="opct">${pctShown(wp)}%</span>
           <span class="olab">win probability</span></div>`:""}
         ${planPickerHTML(wp)}</div>`;
     }
@@ -2114,7 +2130,7 @@ function coachCard(c){
       <div><b>${LEAGUE.draws?`${c.w}-${dd}-${c.l}`:`${c.w}-${c.l}`}</b><span>Career</span></div>
       <div><b>${pct}</b><span>Win %</span></div>
       <div><b>${c.titles}</b><span>Titles</span></div>
-      <div><b>${c.confs}</b><span>Conf</span></div>
+      <div><b>${c.confs}</b><span>${confWord()}</span></div>
     </div></div>`;
   if(c.stops&&c.stops.length){
     h+=`<div class="grouphead">Coaching stops</div>`;
@@ -2233,6 +2249,8 @@ function allTime(t){
   // the season under way counts too, until it's archived (Grokbot: all-time 0-0 forty games into a first season)
   let cur=false;
   if(SEA&&SEA.rec&&SEA.rec[t]&&!S.history.some(h=>h.year===SEA.year)){ const r=(SEA.regRec||SEA.rec)[t]; cur=r[0]+r[1]>0;
+    // and its finish, once it's done: "BEST FINISH #9" after a #5 season not yet archived (Grokbot)
+    if(cur&&SEA.phase==="done"){ const k=SEA.poll.rankMap()[t]; if(k&&k<best)best=k }
     w+=r[0]; l+=r[1]; d+=(SEA.drw&&SEA.drw[t])||0; o+=(SEA.otl&&SEA.otl[t])||0 }
   const rk=SEA?SEA.poll.rankMap()[t]:999;
   return {w:w,l:l,best:best===999?null:best,titles:titles,confs:confs,cfp:cfp,
@@ -2291,7 +2309,7 @@ function teamCard(t){
     </div>
     <div class="stats">
       <div><b>${A.titles}</b><span>Titles</span></div>
-      <div><b>${A.confs}</b><span>Conf</span></div>
+      <div><b>${A.confs}</b><span>${confWord()}</span></div>
       <div><b>${A.cfp}</b><span>Playoffs</span></div>
       <div><b>${A.post}</b><span>Postseason</span></div>
     </div>
@@ -2395,7 +2413,7 @@ function dynastyView(){
       <div class="stats">
         <div><b>${careerRec(careerNow(C))}</b><span>Career</span></div>
         <div><b>${C.titles}</b><span>Titles</span></div>
-        <div><b>${C.confs}</b><span>Conf</span></div>
+        <div><b>${C.confs}</b><span>${confWord()}</span></div>
         <div><b>${C.fired}</b><span>Fired</span></div>
       </div>
       <div class="grouphead" style="padding:14px 0 6px;border:none">Coaching stops</div>
@@ -2454,7 +2472,7 @@ function dynastyView(){
   if(SEA&&SEA.step>=6&&SEA.roster){
     const hz=SEA.mvpRace(5);
     if(hz.length){
-      h+=`<div class="grouphead">${LEAGUE.awards.mvp} race &mdash; ${SEA.year}, week ${Math.min(SEA.step,LEAGUE.weeks)}</div>`;
+      h+=`<div class="grouphead">${LEAGUE.awards.mvp} race &mdash; ${SEA.year}, ${LEAGUE.daily?(SEA.step>=LEAGUE.weeks?"the regular season's end":esc(LEAGUE.dates[Math.max(0,SEA.step-1)]||"")):"week "+Math.min(SEA.step,LEAGUE.weeks)}</div>`;   // a game day isn't a week: "WEEK 194" (Grokbot)
       h+=hz.map((x,i)=>`<div class="frow ${x.t===my?'mine':''}">
         <span class="sd">${i+1}</span>
         <span class="dot" style="background:${teamColor(x.t)}"></span>
@@ -2754,7 +2772,9 @@ function render(){
   if(live&&S.myTeam&&!live.done){
     el("app").innerHTML=live.ask?liveCallView():liveView();
     if(live.ask){
-      document.querySelectorAll("[data-call]").forEach(b=>b.onclick=()=>answerLive(b.dataset.call));
+      // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the
+      // game, took it as an answer, and graded a call the player never made (Grokbot, soccer: five matches)
+      document.querySelectorAll("[data-call]").forEach(b=>b.onclick=()=>{ if(live&&live.ask&&Date.now()-(live.ask.at||0)<700)return; answerLive(b.dataset.call) });
       // on a phone the answers can sit below the evidence: a pinned button says how many and jumps to them,
       // and goes once they're on screen (Grokbot: decision buttons below the fold at 390px)
       const co=document.querySelector(".callopts");

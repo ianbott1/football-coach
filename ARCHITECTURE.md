@@ -121,6 +121,47 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
+- A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
+  soccer's 25' call came up under a tap meant for the game and was graded as
+  the player's choice. Skipping a game never logs a read (measured).
+- The card: each read its own line, "You chose X." first (readPickLabel per
+  sport); a split scouting report and a near-even flank count (gap of 1 or
+  12% or less) are coin flips, shown with a dash and not counted.
+- "Sim the series" stops before a game that could end your season (pro
+  basketball, hockey); pressed when already facing elimination it plays it.
+- Basketball pace: "Work it inside" was tempo 1.36 (played NBA games 136-142
+  a team; the plans moved wins 1-5 points). Now 1.08 / 0.92: scoring 110-126
+  a team; win chance by plan refitted relative to balanced (wpK). The plans
+  barely move the result in basketball, as in hockey: round 33's question.
+- Hockey goals: not reproduced. Played games on "Skate with them" 6.6-6.7 a
+  game over 252 (the league 6.1-6.2), playoffs 6.0-7.4; balanced 6.0-6.1.
+- Win chances shown 1-99% (pctShown).
+- Draft labels (test/draft-labels.js, long-run): a mock on your reads at face
+  value ran out of band (football "likely gone" 50%, "likely there" gone 39%).
+  The reason is selection: real teams often reach for a hard-to-read
+  prospect (picks 91st, 103rd, 159th on their own true score), and your top
+  names are partly your luckiest reads. dnMock now shrinks each read by its
+  reliability, adds the team's own error (wider when unsure), and scores with
+  each picking team's needs. In band in all three (16-28 drafts); football's
+  "likely gone" holds ~70%, at the edge of its band. Board marks players
+  drafted on draft night.
+- Soccer payroll adds up: departing players keep their wage (sal), re-signed
+  their old one (was); the line names every part and the rest (academy and
+  fill-ins). Regression 70 checks the sum.
+- In-season job security sees postseason targets: outside the projected
+  field you're under pressure (college basketball warned all season).
+- Division titles are called that in the pro games and soccer (was "Conf");
+  best finish counts a finished season not yet archived; the awards race is
+  dated in daily leagues ("week 194"); the result header says OT, shootout or
+  penalties; tabs fit at 390px; "Still to do:" when the wins target is met.
+- Each gag once a season (gagSeason): a line a voice used in an earlier game
+  loses Pearl's flourish or becomes a plain Bears shout of the pick.
+- The 1.5 s reveal after a simmed game re-rendered whatever screen was up;
+  on draft night it rebuilt the page between a pick's two taps and the pick
+  was lost (likely round 31's flaky browser runs too). It now renders only
+  the screen it was for.
+
 Round 31 (Ian; Instinct round 10; Muse round 15; Grokbot):
 - HOT SEAT is just that on the badge (the reason ran it over the coach's
   name at 390px); the reason, target named, is on hover and heads the

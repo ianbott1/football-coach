@@ -26,8 +26,8 @@ const denv=(k,d)=>{ const v=typeof process!=="undefined"&&process.env?process.en
 // the leagues' talent is unchanged (starters within 0.5 of before, measured). A league can override any of
 // these (LEAGUE.offseason.draftShape: pro football keeps the old spread, which held its league's shape);
 // the environment overrides both, for the tuning runs.
-const DRAFT_DEF={sd:1.6, tp:0.08, tr:6, tpp:6, bp:0.1, fog:1.8, deep:1.4, shift:2.5, unsure:0.3, um:2.2};
-const DRAFT_ENV={sd:"DRAFT_SD",tp:"DRAFT_TP",tr:"DRAFT_TR",tpp:"DRAFT_TPP",bp:"DRAFT_BP",fog:"DRAFT_FOG",deep:"DRAFT_DEEP",shift:"DRAFT_SHIFT",unsure:"DRAFT_UNSURE",um:"DRAFT_UM"};
+const DRAFT_DEF={sd:1.6, tp:0.08, tr:6, tpp:6, bp:0.1, fog:1.8, deep:1.4, shift:2.5, unsure:0.3, um:2.2, mock:2.5};
+const DRAFT_ENV={sd:"DRAFT_SD",tp:"DRAFT_TP",tr:"DRAFT_TR",tpp:"DRAFT_TPP",bp:"DRAFT_BP",fog:"DRAFT_FOG",deep:"DRAFT_DEEP",shift:"DRAFT_SHIFT",unsure:"DRAFT_UNSURE",um:"DRAFT_UM",mock:"DRAFT_MOCK"};
 const DRAFT_K=new Proxy({},{get:(o,k)=>{ const L=(typeof LEAGUE!=="undefined"&&LEAGUE.offseason&&LEAGUE.offseason.draftShape)||{};
   return denv(DRAFT_ENV[k],L[k]!==undefined?L[k]:DRAFT_DEF[k]) }});
 /* some prospects are hard to read (a small school, an injury year): everyone misjudges them more, and your
@@ -145,13 +145,28 @@ function dnFit(p,t){ const R=U.roster[t]||[], i=p.i, x=dnRead(p.pid,t);
   const q=Object.assign({},p,{r:x.sr,pot:x.spot});
   return b&&!(nflGain(R,q)>0.6)?`<span class="dmaybe">may not make the roster</span> behind ${esc(s.n)} (${s.r}) and ${esc(b.n)} (${b.r})`:`backup to ${esc(s.n)} (${s.r})` }
 /* a mock of the picks between now and your next, from your scouts' numbers: who's likely still there */
-function dnMock(avail,ahead,key){
-  const gone={}; if(ahead<=0)return gone; const M=80, r=new RNG(key>>>0);
-  for(let m=0;m<M;m++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
-      avail.forEach(p=>{ if(taken.has(p.pid))return; const v=p.v+r.gauss(0,3); if(v>bs){bs=v;bi=p.pid} }); if(bi<0)break; taken.add(bi) }
+function dnMock(avail,ahead,key,teams,t){
+  // What another team sees is the truth, not your read, plus its own scouting error. So: your read discounted by how
+  // reliable it is (a "scouts unsure" read is mostly noise: your top names are partly the luckiest reads), then
+  // that team's error, which lets it reach for a hard-to-read prospect as real teams do (test/draft-labels.js: a
+  // mock on your reads at face value called players safe who went and gone who stayed). Each team ahead scores
+  // with its own roster's needs on the staff's scale.
+  const gone={}; if(ahead<=0)return gone; t=t||dnTeam(); const M=60, r=new RNG(key>>>0);
+  const vs=avail.map(p=>p.v), m=vs.reduce((x,y)=>x+y,0)/Math.max(1,vs.length);
+  const st2=Math.max(1,vs.reduce((x,y)=>x+(y-m)*(y-m),0)/Math.max(1,vs.length));
+  const q=avail.map(p=>{ const sr=scoutNoise(U,t)*draftFogOf(U,p), k=st2/(st2+sr*sr), sh=x=>m+(x-m)*k;
+    const rr=p.sr!==undefined?p.sr:p.r, pp=p.spot!==undefined?p.spot:p.pot;
+    return Object.assign({},p,{r:sh(rr),pot:sh(pp),sdx:Math.sqrt(sr*sr*k+Math.pow(DRAFT_K.mock*draftFogOf(U,p),2))}) });
+  const base=teams?teams.slice(0,ahead).map(tm=>{ const R=U.roster[tm]||[]; return q.map(p=>draftScore("bpa",R,p)) }):null;
+  for(let n=0;n<M;n++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
+      q.forEach((p,i)=>{ if(taken.has(p.pid))return; const v=(base?base[k][i]:dnVal({sr:p.r,spot:p.pot}))+r.gauss(0,p.sdx); if(v>bs){bs=v;bi=p.pid} }); if(bi<0)break; taken.add(bi) }
     taken.forEach(id=>gone[id]=(gone[id]||0)+1/M) }
   return gone;
 }
+/* the teams picking between two overall picks (exclusive), from the order */
+function dnTeamsBetween(order,a,b){ const out=[], N=order.length; for(let o=a+1;o<b;o++)out.push(order[(o-1)%N]); return out }
+/* the labels, one rule everywhere */
+function dnLabel(g,at){ return g>0.75?`<span class="dgone">likely gone${at?" by #"+at:""}</span>`:g>0.25?`<span class="dmaybe">might ${at?"last to #"+at:"be there"}</span>`:`<span class="dthere">likely there${at?" at #"+at:""}</span>` }
 /* the lottery, in words (basketball, hockey) */
 function dnLotteryLine(){
   const before=nflDraftOrder(SEA.rec,SEA.elo), after=dnOrder(), t=dnTeam();
@@ -196,9 +211,9 @@ function draftNightHTML(){
       +(old.length?`<details class="dnfold"><summary>${nOf(old.length,"earlier pick")}</summary>${old.map(d=>tick(d,0,null)).join("")}</details>`:"")
       +now.map((d,i)=>tick(d,i,step)).join("")+`<div class="note">Beside each name: your scouts' read of him now, then his ceiling.</div>` }
   if(D.stop){
-    const s=D.stop, avail=D.prospects.filter(p=>!p.taken).map(p=>Object.assign({},p,{v:dnVal(dnRead(p.pid,t))})).sort((a,b)=>b.v-a.v);
-    const ahead=s.next?s.next-s.overall-1:0, gone=dnMock(avail,ahead,(U.seed||0)*2246822519^SEA.year*31337^s.overall);
-    const lab=p=>!s.next?"":gone[p.pid]>0.75?`<span class="dgone">likely gone by #${s.next}</span>`:gone[p.pid]>0.25?`<span class="dmaybe">might last to #${s.next}</span>`:`<span class="dthere">likely there at #${s.next}</span>`;
+    const s=D.stop, avail=D.prospects.filter(p=>!p.taken).map(p=>{ const x=dnRead(p.pid,t); return Object.assign({},p,{v:dnVal(x),sr:x.sr,spot:x.spot}) }).sort((a,b)=>b.v-a.v);
+    const ahead=s.next?s.next-s.overall-1:0, gone=dnMock(avail,ahead,(U.seed||0)*2246822519^SEA.year*31337^s.overall,dnTeamsBetween(D.order,s.overall,s.next||s.overall));
+    const lab=p=>!s.next?"":dnLabel(gone[p.pid]||0,s.next);
     const sug=D.prospects.find(p=>p.pid===s.suggest), fromBoard=board.has(s.suggest);
     h+=`<div class="banner"><div class="bkick">Round ${s.round}, pick ${s.pick} &middot; #${s.overall} overall</div>
       <div class="btitle">You're on the clock.</div>

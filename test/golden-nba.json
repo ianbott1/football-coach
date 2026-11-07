@@ -1,5 +1,5 @@
 {
- "fp": "92ecbe29e52b177e",
+ "fp": "e5f247f914156f5e",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -250,6 +250,11 @@
    "fp": "92ecbe29e52b177e",
    "from": "fa423937a1e936c3",
    "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
+  },
+  {
+   "fp": "e5f247f914156f5e",
+   "from": "92ecbe29e52b177e",
+   "note": "Round 32: screens (read lines, coin-flip notes, standings words, result header, odds capped at 99%, draft labels, payroll arithmetic), soccer history gains departing and old wages (checked field by field against HEAD); basketball pace held to 8% (golden plans are balanced, so results unchanged)"
   }
  ],
  "result": {
@@ -264,7 +269,7 @@
     "heis": "c38d29addfc16e0e",
     "history": "3da533279fa960a0",
     "universe": "1f1cf5415368fae1",
-    "screens": "fc52f27793e6c4a9"
+    "screens": "414e5442e118bf7a"
    },
    {
     "year": 2027,
@@ -276,7 +281,7 @@
     "heis": "260456000ed947dd",
     "history": "0a9a85c6270e32eb",
     "universe": "ffba4b76758471cd",
-    "screens": "cb7985d1200571e7"
+    "screens": "914adae74a571ca8"
    }
   ],
   "Detroit#777": [
@@ -290,7 +295,7 @@
     "heis": "bd7234824f88d455",
     "history": "6ab65bb9cba3be6f",
     "universe": "b62c9d03236a2082",
-    "screens": "57ebeba28cf001b1"
+    "screens": "20619779c4ad20b6"
    },
    {
     "year": 2027,
@@ -302,7 +307,7 @@
     "heis": "b44854aa8e531d80",
     "history": "532b8e6e16201893",
     "universe": "77060088d01a685b",
-    "screens": "ca453a1f5c27b45f"
+    "screens": "874736eb75130566"
    }
   ],
   "schedules#60": [

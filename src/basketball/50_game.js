@@ -56,9 +56,9 @@ const BB = Object.assign({}, BB_COLLEGE,
    in real coaching); halftime and milking-the-clock calls are close; down 2
    on the last possession, the three is usually the better shot. */
 const AGGR = {
-  safe:      {tempo:1.36, three:0.18},        // work it inside: ~81 possessions against a balanced side
+  safe:      {tempo:1.08, three:0.18},        // work it inside: a little quicker. It was 1.36, which put a played NBA game at 136-142 a team (Ian, Muse, Grokbot); real paces differ by a few percent
   balanced:  {tempo:1.00, three:0.38},
-  aggressive:{tempo:0.66, three:0.64},        // shorten the game: ~57, and lots of threes
+  aggressive:{tempo:0.92, three:0.64},        // shorten the game: a little slower (was 0.66), and lots of threes
   // not gameplans: the engine's own late-game modes
   urgent:    {tempo:1.10, three:0.55},        // behind late: quick shots, threes
   sit:       {tempo:0.80, three:0.25},        // ahead late: bleed the clock
@@ -326,7 +326,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(DEFENSES[v]){ const t=st.S[other(side)].off; X.def=v; X.prepd=true;
-      st.log.push({side:side,k:"prep",pick:v,truth:t,right:DEFENSES[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:DEFENSES[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true }   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
+      } return }
     if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}); return }
     if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,k:"read",pick:v,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }

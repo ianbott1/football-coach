@@ -261,10 +261,10 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
       if(q&&q.dp.k==='goalie'){ asked++; if(!(q.dp.soft>0||q.dp.ga>=q.dp.xga+1.5))plain++ } q?A.answerLive(q.dp.opts[q.dp.opts.length-1][0]):A.liveTick() } n++ }
   console.log(`  hockey: ${asked} goalie questions in ${n} games, ${plain} with the answer plain`);
   ok(plain===0,`hockey: ${plain} goalie questions asked with no soft goal and goals near expected`); }
-/* 32. the same verdict twice reads once */
+/* 32. each read its own line, labelled, with what you chose (round 32: merged lines hid which choice was graded: Grokbot) */
 { const A=load({settable:SET,file:D('basketball-coach.html'),expose:EXP}); A.newDynasty('Duke',5,'T');
   const r={k:'read',pick:'pack',truth:'paint',right:true}; A.S.played={[A.callKey(0)]:[{team:A.S.myTeam,reads:[r,Object.assign({},r)]}]};
-  const h=A.readsHTML(0); ok((h.match(/class="read ok"/g)||[]).length===1&&/First read and Second read/.test(h),'college basketball: an identical verdict printed twice, or unlabelled'); }
+  const h=A.readsHTML(0); ok((h.match(/class="read ok"/g)||[]).length===2&&/First read:/.test(h)&&/Second read:/.test(h)&&(strip(h).match(/You chose "/g)||[]).length===2,'college basketball: reads not one line each, labelled, with the choice'); }
 /* 33. soccer's second read: "keep your setup", and the numbers since half-time */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',5,'T'); let keep=0,half=0,seen=0;
   for(let k=0;k<4;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){ const q=A.live.ask;
@@ -293,8 +293,9 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
     for(let i=0;i<N;i++){ const g=A.playGame(r,A.SEA.elo[my],A.SEA.elo[opp],pl,'balanced',{neutral:true}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
     ok(Math.abs(shown-w/N)<0.04,`${f}: ${pl} shows ${(100*shown).toFixed(0)}% where the engine wins ${(100*w/N).toFixed(0)}% (gap ${Math.round(A.SEA.elo[my]-A.SEA.elo[opp])})`) }
   A.plan='safe'; const a=A.winProb(my,opp,false,true); A.plan='aggressive'; const b=A.winProb(my,opp,false,true); A.plan='balanced';
-  // (hockey's plans barely move the engine's win chance, measured: they shape the scoring more than the result)
-  ok(/hockey/.test(f)?(a-0.5)*(a-b)>=0:Math.abs(a-b)>0.01,`${f}: the gameplan doesn't move the win chance shown (${(100*a).toFixed(1)} vs ${(100*b).toFixed(1)})`) }
+  // (hockey's and, since round 32, basketball's plans barely move the engine's win chance, measured: the shown figure
+  // follows the engine, so only its direction is checked; football's still move it)
+  ok(/hockey|basketball/.test(f)?(a-0.5)*(a-b)>=0:Math.abs(a-b)>0.01,`${f}: the gameplan doesn't move the win chance shown (${(100*a).toFixed(1)} vs ${(100*b).toFixed(1)})`) }
 /* 38. the offseason plan card shows your changes */
 { const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Seattle',5,'T'); play(A,999); A.openOffseason();
   const P=A.S.off.picks, ex=Object.keys(P.asks||{}); if(ex.length){ const i=ex[0], was=!!P.resign[i]; P.resign[i]=!was;
@@ -467,7 +468,11 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
 /* 70. soccer: the summer payroll line names what changed and never shows sums that can't close (Grokbot: £10.9M against £10.5M) */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['offseasonBanner'])}); A.newDynasty('Burnley',9,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<2000)A.SEA.advance();
   A.openOffseason(); for(let c=0;c<6&&A.S.off;c++)A.commitOffseason(); const t=strip(A.offseasonBanner());
-  ok(/Payroll after the summer:.*Last season's was/.test(t)&&!/other changes|£0\.0M/.test(t),'soccer: the payroll line is missing or shows sums that do not close') }
+  // the line adds up: last season's bill plus every part named is this summer's (Grokbot: "show the amount that left")
+  const tt=t.replace(/&minus;/g,'−'), pay=(tt.match(/Payroll after the summer: £([\d.]+)M/)||[])[1], lw=tt.match(/Last season's was £([\d.]+)M: /);
+  const seg=lw?tt.slice(lw.index+lw[0].length).split(/\.\s+[A-Z]/)[0]:'', parts=[...seg.matchAll(/([+−-])£([\d.]+)M/g)].map(x=>(x[1]==='+'?1:-1)*+x[2]);
+  const m=pay&&lw?[null,pay,lw[1]]:null, tot=m?Math.round((+m[2]+parts.reduce((a,b)=>a+b,0))*10)/10:null;
+  ok(m&&Math.abs(tot-(+m[1]))<=0.15,`soccer: the payroll line doesn't add up (${m?m[2]+' + '+parts.join(' ')+' = '+tot+' vs '+m[1]:'no line: '+t.slice(t.indexOf('Payroll'),t.indexOf('Payroll')+200)})`) }
 
 /* 71. draft night: the draft shown pick by pick is the draft that happens, your picks are the players drafted, and a skipped night is the staff's */
 for(const [f,team,R] of [['football-coach-pro.html','Chicago',7],['basketball-coach-pro.html','Detroit',2],['hockey-coach-pro.html','Toronto',2]]){
@@ -487,6 +492,34 @@ for(const [f,team,R] of [['football-coach-pro.html','Chicago',7],['basketball-co
 { const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP.concat(['dnOn','dnReset'])}); A.newDynasty('Chicago',5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<5000)A.SEA.advance(); A.openOffseason();
   A.S.off.picks.hand=[3]; A.S.off.picks.workouts=[4]; A.dnReset(); ok(!A.S.off.picks.hand&&!A.S.off.picks.workouts,'draft night: picks survive a change of job');
   A.S.coaches=[{},{}]; ok(!A.dnOn(),'draft night: offered in a hot seat (it keeps the board)'); A.S.coaches=null; }
+
+/* 73. pro basketball and hockey: "Sim the series" stops before a game that could end your season (Grokbot: it simmed
+   through game 6 of a 2-4 exit, both seasons); pressed when already facing elimination, it plays that one game */
+for(const [f,team] of [['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Florida']]){
+  let seen=0, stopped=0, through=0;
+  for(const seed of [4,9,13]){ const A=load({settable:SET,file:D(f),expose:EXP.concat(['simSeries','simAdvance'])}); A.newDynasty(team,seed,'T'); A.S.watchMode="never";
+    let g=0; while(A.SEA.phase==='week'&&g++<400)A.simAdvance();
+    for(let k=0;k<40&&A.SEA.phase!=='done';k++){ const x=A.SEA.mySeries(A.S.myTeam); if(!x||x.winner){ A.simAdvance(); continue }
+      const my=A.S.myTeam, opp=x.hi===my?x.lo:x.hi, before=x.w[opp]||0; A.simSeries(); const y=A.SEA.mySeries(my); seen++;
+      if(y&&!y.winner&&(y.w[opp]||0)>=3)stopped++;
+      // a series lost in this one press must have started it already facing elimination
+      if(y&&y.winner&&y.winner!==my&&before<3)through++ } }
+  ok(seen>0&&through===0,`${f}: "Sim the series" played through ${through} elimination games (${seen} presses, ${stopped} stops)`) }
+/* 74. basketball: the gameplan doesn't inflate scoring (Ian, Muse, Grokbot: 137-150 a team on "Work it inside") */
+for(const f of ['basketball-coach-pro.html','basketball-coach.html']){ const A=load({file:D(f),expose:['playGame','RNG','LEAGUE']}); const rng=new A.RNG(5), N=600;
+  const pts=pl=>{ let t=0; for(let i=0;i<N;i++){ const r=A.playGame(rng,1600,1500,pl,'balanced',{}); t+=r.h } return t/N };
+  const s0=pts('safe'), b0=pts('balanced'), a0=pts('aggressive');
+  ok(Math.abs(s0-b0)<=0.1*b0&&Math.abs(a0-b0)<=0.1*b0,`${f}: plans move scoring too far (inside ${s0.toFixed(1)}, balanced ${b0.toFixed(1)}, shorten ${a0.toFixed(1)})`) }
+/* 75. a win chance is never shown as 100% or 0% (Ian: "100% vs Phoenix") */
+{ const A=load({file:D('basketball-coach-pro.html'),expose:['pctShown']}); ok(A.pctShown(0.998)===99&&A.pctShown(0.002)===1&&A.pctShown(0.5)===50,'win chance shown as 100% or 0%') }
+/* 76. the card: each read its own line, starting with what you chose; a split report is a coin flip, not graded (Grokbot) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['readsHTML','callKey'])}); A.newDynasty('Southampton',3,'T'); let lines=0, chose=0, splitGraded=0;
+  for(let k=0;k<14;k++){ A.doAdvance(); if(!A.live)continue; const st=A.live.step; let m=0; while(A.live&&!A.live.done&&m++<3000){ A.live.ask?A.answerLive(A.live.ask.dp.opts[0][0]):A.liveTick() }
+    const P=(A.S.played[A.callKey(st)]||[]).filter(p=>p.team===A.S.myTeam), R=[].concat(...P.map(p=>p.reads||[]));
+    R.forEach(r=>{ if(r.split&&!r.unclear)splitGraded++ });
+    const t=A.readsHTML(st); lines+=(t.match(/class="read (ok|no|na)"/g)||[]).length; chose+=(strip(t).match(/You chose "/g)||[]).length;
+    ok((t.match(/class="read (ok|no|na)"/g)||[]).length===R.length,`soccer: ${R.length} reads but ${(t.match(/class="read (ok|no|na)"/g)||[]).length} lines on the card`) }
+  ok(lines>0&&chose===lines,`soccer: ${chose} of ${lines} read lines say what you chose`); ok(splitGraded===0,`soccer: ${splitGraded} split reports graded`) }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

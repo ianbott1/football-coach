@@ -51,12 +51,11 @@ function nflBoardHTML(P){
   const val=p=>dnVal(dnRead(p.pid));       // your scouts' read, sharpened where you've held a workout
   // a mock draft from your scouts' numbers: who's likely gone before your first pick (Grokbot: make the
   // draft a decision, not a list). Your scouts' estimates only, so it gives nothing hidden away
-  const ahead=dnOrder().indexOf(dnTeam()), gone={};            // the real order, lottery included
-  if(ahead>0){ const M=120, r=new RNG((((U.seed||0)*2246822519)^(SEA.year*31337))>>>0);
-    for(let m=0;m<M;m++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
-        C.list.forEach(p=>{ if(taken.has(p.pid))return; const v=val(p)+r.gauss(0,3); if(v>bs){bs=v;bi=p.pid} }); taken.add(bi) }
-      taken.forEach(id=>gone[id]=(gone[id]||0)+1/M) } }
-  const avail=p=>{ const g=gone[p.pid]||0; return ahead<=0?"":g>0.75?`<span class="dgone">likely gone</span>`:g>0.25?`<span class="dmaybe">might be there</span>`:`<span class="dthere">likely there</span>` };
+  const ahead=dnOrder().indexOf(dnTeam());            // the real order, lottery included
+  const gone=dnMock(C.list.map(p=>{ const x=dnRead(p.pid); return Object.assign({},p,{v:dnVal(x),sr:x.sr,spot:x.spot}) }),ahead,(((U.seed||0)*2246822519)^(SEA.year*31337))>>>0,dnOrder());   // core/91_draftnight
+  // once draft night has picks, the board says who went where (Grokbot: the board kept listing drafted players)
+  const took=(()=>{ const H=S.off.picks.hand; if(!dnOn()||!H||!H.length)return null; const o={}; dnState().picks.forEach(d=>o[d.pid]=d); return o })();
+  const avail=p=>took&&took[p.pid]?`<span class="dgone">${took[p.pid].team===dnTeam()?"yours":"taken"} at #${took[p.pid].overall}${took[p.pid].team===dnTeam()?"":" by "+esc(took[p.pid].team)}</span>`:ahead<=0?"":dnLabel(gone[p.pid]||0,0);
   const row=(p,i,on)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${avail(p)}</div>

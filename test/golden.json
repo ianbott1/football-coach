@@ -1,5 +1,5 @@
 {
- "fp": "5a57481e58a5003c",
+ "fp": "531ecd406b3230ae",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -329,6 +329,11 @@
    "fp": "5a57481e58a5003c",
    "from": "def0ccefc1bb331a",
    "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
+  },
+  {
+   "fp": "531ecd406b3230ae",
+   "from": "5a57481e58a5003c",
+   "note": "Round 32: screens (read lines, coin-flip notes, standings words, result header, odds capped at 99%, draft labels, payroll arithmetic), soccer history gains departing and old wages (checked field by field against HEAD); basketball pace held to 8% (golden plans are balanced, so results unchanged)"
   }
  ],
  "result": {
@@ -343,7 +348,7 @@
     "heis": "b16fc23e36f51661",
     "history": "1459d4a8cb778661",
     "universe": "0ec4ea15858bab2c",
-    "screens": "8d8b5b9d9e7c52dc"
+    "screens": "bbac386f046541d7"
    },
    {
     "year": 2027,
@@ -355,7 +360,7 @@
     "heis": "ea2576ca68b5bb59",
     "history": "f77daaadc37b2b54",
     "universe": "99077913a3e8927b",
-    "screens": "eca6128952cce88e"
+    "screens": "b2139d2118e24212"
    },
    {
     "year": 2028,
@@ -367,7 +372,7 @@
     "heis": "75ac82ec63ebc2c9",
     "history": "aeffdf8e7f58342b",
     "universe": "285fd2092d05d639",
-    "screens": "2902d733ca0b4c83"
+    "screens": "171af22c21340edb"
    },
    {
     "year": 2029,
@@ -379,7 +384,7 @@
     "heis": "40d8a8b83f6227de",
     "history": "5057c2b25254beae",
     "universe": "9e85fa9c19540e9e",
-    "screens": "47c42dcf56475e14"
+    "screens": "5d7ab4cdfc993197"
    }
   ],
   "Rice#2024": [
@@ -393,7 +398,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "fda2310ee12ebd95",
     "universe": "dc01e05deac1336b",
-    "screens": "89fd3f73135ac4bd"
+    "screens": "707ce795ed9485bf"
    },
    {
     "year": 2027,
@@ -405,7 +410,7 @@
     "heis": "00c30658a131e69b",
     "history": "1366becdf24a1373",
     "universe": "e5ad96887551b511",
-    "screens": "e144bebd0ff7211b"
+    "screens": "f3bf97168c4d1037"
    },
    {
     "year": 2028,
@@ -417,7 +422,7 @@
     "heis": "199badc9945a6fb1",
     "history": "e2ec1240de3bf2a6",
     "universe": "69cfcb2cac6f6097",
-    "screens": "7c393a3e2be72803"
+    "screens": "27a41b26f0a5bb3d"
    },
    {
     "year": 2029,
@@ -429,7 +434,7 @@
     "heis": "7bdcb6abc58aeffc",
     "history": "d943ce3dfa7a6dd7",
     "universe": "44689dc558826c0d",
-    "screens": "05141b6eeaa200b2"
+    "screens": "bc4c55a3a1f8fa80"
    }
   ],
   "Oregon#777": [
@@ -443,7 +448,7 @@
     "heis": "8262a1c51666f45f",
     "history": "f0156481cf34731a",
     "universe": "90a5328a03bb2a2e",
-    "screens": "0949e1d54915d249"
+    "screens": "926db04f7ccf8e68"
    },
    {
     "year": 2027,
@@ -455,7 +460,7 @@
     "heis": "6e07ec24e943201a",
     "history": "eba5d05126b1da37",
     "universe": "1db894b0870a76bb",
-    "screens": "14dc5f116621ce2a"
+    "screens": "df9f35002c474fba"
    },
    {
     "year": 2028,
@@ -467,7 +472,7 @@
     "heis": "7edb9087b97ad609",
     "history": "c7459853b530b5c6",
     "universe": "37128ca4534c000a",
-    "screens": "6eb56b9f0791457a"
+    "screens": "1488dc2bd5083a0b"
    }
   ],
   "Kent State#31337": [
@@ -481,7 +486,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "339ec898a5a5b972",
     "universe": "ffb4b7f7593759fa",
-    "screens": "7712eba6dde5fbe0"
+    "screens": "52dc53d7f211aa12"
    },
    {
     "year": 2027,
@@ -493,7 +498,7 @@
     "heis": "c407e7790dc93d7a",
     "history": "94efe6e8c2fe5a1f",
     "universe": "9129bf8e73367f37",
-    "screens": "3ac12f83e4998711"
+    "screens": "ab6ce56abdfe3695"
    },
    {
     "year": 2028,
@@ -505,7 +510,7 @@
     "heis": "8afb54588e2a90ba",
     "history": "4c868b5f0965ef30",
     "universe": "674a60bfff0bfc8c",
-    "screens": "1396c852428c19b9"
+    "screens": "a91534b0514f26c6"
    }
   ],
   "schedules#60": [

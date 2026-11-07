@@ -36,6 +36,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--muted);font-family:var(--cond);font-weight:600;font-size:13.5px;
  letter-spacing:.045em;text-transform:uppercase;padding:11px 9px;cursor:pointer;white-space:nowrap}
 .tab[aria-selected="true"]{color:var(--bone);border-bottom-color:var(--sodium)}
+/* five tabs on a phone: "RANKINGS" pushed "DYNASTY" off the edge (Grokbot, hockey) */
+@media (max-width:420px){.tab{padding:11px 6px;letter-spacing:.02em;font-size:13px}}
 .tab:focus-visible,.pick:focus-visible,.advance:focus-visible{outline:2px solid var(--sodium);
  outline-offset:2px}
 .actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;

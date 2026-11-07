@@ -1,5 +1,5 @@
 {
- "fp": "9392be5be01bf8f2",
+ "fp": "8c0a4b6d59f6f6b1",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -190,6 +190,11 @@
    "fp": "9392be5be01bf8f2",
    "from": "9392be5be01bf8f2",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "8c0a4b6d59f6f6b1",
+   "from": "9392be5be01bf8f2",
+   "note": "Round 32: the summer report in each coach's history keeps departing players' wages and re-signed players' old wages (the golden history diff shows only those fields)"
   }
  ],
  "out": [
@@ -203,7 +208,7 @@
       "result": "Finished 4th in the Premier League",
       "grade": "B-"
      },
-     "book": "57a97bc8d95cd44e"
+     "book": "1034d284414715dd"
     },
     {
      "team": "Tottenham Hotspur",
@@ -212,7 +217,7 @@
       "result": "Finished 10th in the Premier League",
       "grade": "B-"
      },
-     "book": "dda2b9205a225502"
+     "book": "75ec6a1c39cc8ab4"
     }
    ]
   },
@@ -226,7 +231,7 @@
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "845c2e3119a4bdc5"
+     "book": "f303416df7bdd2e4"
     },
     {
      "team": "Tottenham Hotspur",
@@ -235,7 +240,7 @@
       "result": "Finished 16th in the Premier League",
       "grade": "C"
      },
-     "book": "7ae03a7f36bc4a3b"
+     "book": "632da559ecebe948"
     }
    ]
   },
@@ -249,7 +254,7 @@
       "result": "PREMIER LEAGUE CHAMPIONS",
       "grade": "A+"
      },
-     "book": "b10054a4816a8b6c"
+     "book": "f7b7ef9c960e5570"
     },
     {
      "team": "Tottenham Hotspur",
@@ -258,7 +263,7 @@
       "result": "Finished 17th in the Premier League",
       "grade": "C-"
      },
-     "book": "6cfaaa064ca84534"
+     "book": "f1cea379cda9f342"
     }
    ]
   }

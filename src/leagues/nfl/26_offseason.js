@@ -415,7 +415,7 @@ LEAGUE.offseason={
   // draft night's shape here (core/91_draftnight): the old spread, fog 1.4. The full shape made the league
   // top-heavy (favourites .665, 13+ win teams 4.4 a season); this keeps favourites in the NFL band (.656)
   // with about half the draft's weight (a well-run draft: starters +0.5 after five drafts). Measured Nov 2026.
-  draftShape:{sd:1.0, fog:1.4, shift:1.5},
+  draftShape:{sd:1.0, fog:1.4, shift:1.5, mock:2.0},   // mock: the draft labels' spread, set by test/draft-labels.js (28 drafts in band)
   draftRounds:7,
   draftStyles:{bpa:{l:"Best available",d:"Take the best player on the board, whatever the position."},
                need:{l:"Draft for need",d:"Fill the weakest spots on the roster, even if it means reaching."},

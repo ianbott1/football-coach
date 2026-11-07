@@ -1,5 +1,5 @@
 {
- "fp": "42bb3fba1d42e330",
+ "fp": "003fff10b6409f5c",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -330,6 +330,11 @@
    "fp": "42bb3fba1d42e330",
    "from": "9b274303af894403",
    "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
+  },
+  {
+   "fp": "003fff10b6409f5c",
+   "from": "42bb3fba1d42e330",
+   "note": "Round 32: screens (read lines, coin-flip notes, standings words, result header, odds capped at 99%, draft labels, payroll arithmetic), soccer history gains departing and old wages (checked field by field against HEAD); basketball pace held to 8% (golden plans are balanced, so results unchanged)"
   }
  ],
  "result": {
@@ -344,7 +349,7 @@
     "heis": "00f60c3ed9f6cf1a",
     "history": "252241805aa8232c",
     "universe": "af0964d72cb8fcf1",
-    "screens": "d3e20c5ecf86c614"
+    "screens": "88e071e08430a7f1"
    },
    {
     "year": 2027,
@@ -356,7 +361,7 @@
     "heis": "004da40012e485d5",
     "history": "330557202598ab1e",
     "universe": "cc69150b01c7decd",
-    "screens": "d361351823799b1f"
+    "screens": "06594b2c53e552fd"
    },
    {
     "year": 2028,
@@ -368,7 +373,7 @@
     "heis": "b974e881a854251a",
     "history": "f95d06cfe48635ee",
     "universe": "19e5e3e9bd3042f0",
-    "screens": "c02b80da2ea71484"
+    "screens": "0a46ad37a4fa6b7a"
    },
    {
     "year": 2029,
@@ -380,7 +385,7 @@
     "heis": "d582b4887f672926",
     "history": "a48053b63ea4cb35",
     "universe": "ddb03be465f784b4",
-    "screens": "e90de84828871e4a"
+    "screens": "e4993662edc9be53"
    }
   ],
   "Tennessee#2024": [
@@ -394,7 +399,7 @@
     "heis": "edef69b72a0a3b1c",
     "history": "944a41469c56a390",
     "universe": "59e2298e975db926",
-    "screens": "f1558a543dc75612"
+    "screens": "67c8dc1a1a94b2d9"
    },
    {
     "year": 2027,
@@ -406,7 +411,7 @@
     "heis": "9b93898f73235be8",
     "history": "5c8a26a92e29734f",
     "universe": "01144969de7a261c",
-    "screens": "688e2be2c36551c8"
+    "screens": "f8441fa88a889455"
    },
    {
     "year": 2028,
@@ -418,7 +423,7 @@
     "heis": "e74bdc2fe20fef5a",
     "history": "d909bbc3d110cd73",
     "universe": "fa1618efca3f9608",
-    "screens": "60797a657b606c7f"
+    "screens": "94e43097e335a42e"
    },
    {
     "year": 2029,
@@ -430,7 +435,7 @@
     "heis": "221f580671148a2b",
     "history": "a1b04b8323a6513a",
     "universe": "4a3c531719e0abc9",
-    "screens": "b39d0fa26c901c0c"
+    "screens": "b9c828d3873846f3"
    }
   ],
   "Detroit#777": [
@@ -444,7 +449,7 @@
     "heis": "a7f5ca1e537918e9",
     "history": "447b6012ece21a81",
     "universe": "5a568e0d49d3ad5e",
-    "screens": "1d136c2e169d7080"
+    "screens": "3618ab6f32afee30"
    },
    {
     "year": 2027,
@@ -456,7 +461,7 @@
     "heis": "4bf950e4884362d7",
     "history": "ec017c71f78c068b",
     "universe": "4b3bfae2dc133596",
-    "screens": "52e028bb883469fa"
+    "screens": "b2498e1f5edf700b"
    },
    {
     "year": 2028,
@@ -468,7 +473,7 @@
     "heis": "3954c2a2ef4b3c54",
     "history": "b5fa0725d00323a8",
     "universe": "b82666f4972db0ce",
-    "screens": "bf9824fe3132d19e"
+    "screens": "558cfd81d0cbf009"
    }
   ],
   "NY Giants#31337": [
@@ -482,7 +487,7 @@
     "heis": "bd927245b5eea595",
     "history": "242770620111b17e",
     "universe": "5705c5d4bb284270",
-    "screens": "c48b1aad1d629347"
+    "screens": "95f4111b5a53e667"
    },
    {
     "year": 2027,
@@ -494,7 +499,7 @@
     "heis": "9f0a8afcc06fd5f6",
     "history": "997efec6cffc99fc",
     "universe": "99b32d02d9e1ca87",
-    "screens": "ff5e66d072d15802"
+    "screens": "7265fce99208e043"
    },
    {
     "year": 2028,
@@ -506,7 +511,7 @@
     "heis": "3efeb83406626830",
     "history": "30f80f2b0f2ec9b8",
     "universe": "578c61503d85788b",
-    "screens": "8e4b2289aba646cc"
+    "screens": "da2d5316dccc4e08"
    }
   ],
   "schedules#60": [

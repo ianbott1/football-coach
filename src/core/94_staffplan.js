@@ -90,8 +90,22 @@ function staffAdvice(dp,ctx){
 }
 /* a voice doesn't say the same sentence twice in a game (Instinct: the Capybara's "simply too far" on
    three straight prompts; the Bears' "SEND EVERYONE" at 45' and 75'): the second time it points back */
+/* each gag once a season: "Trap the mascot", "COOKIES AND CREAM!" and "Go fast. Go FAST." came back word for word
+   nearly every game (Grokbot). A line a voice used in an earlier game this season loses its flourish (Pearl) or
+   becomes a plain shout of the pick (the Bears); the advice itself is unchanged. */
+function gagSeason(x,lab){
+  const G=S.gags=(S.gags&&S.gags.y===SEA.year)?S.gags:{y:SEA.year,said:{}}, key=x.who+"|"+x.line, g=live&&live.step!==undefined?live.step+":"+(live.slot||0):"";
+  const prev=G.said[key]; if(!prev){ G.said[key]=g; return x }
+  if(prev===g)return x;                       // said earlier in this game: staffFresh handles that
+  if(x.who==="pearl"&&typeof PEARL_AFTER!=="undefined"){ let l=x.line;
+    (PEARL_BEFORE||[]).concat(PEARL_AFTER||[]).forEach(f=>{ if(f&&l.indexOf(f)>=0)l=l.replace(f,"") }); return Object.assign({},x,{line:l.trim()}) }
+  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER."], i=Object.keys(G.said).length%sh.length;
+    return Object.assign({},x,{line:`${lab.toUpperCase()}! ${sh[i]}`}) }
+  return x;
+}
 function staffFresh(R,dp,L){
   if(!L)return R; const said=L.said=L.said||{}, gave=L.gave=L.gave||{};
+  R=R.map(x=>{ const o=x.pick&&dp.opts.find(q=>q[0]===x.pick); return gagSeason(x,o?o[1].replace(/\s*\(.*\)$/,""):"") });
   return R.map(x=>{ const S0=said[x.who]=said[x.who]||[], G=gave[x.who]=gave[x.who]||[];
     const o=x.pick&&dp.opts.find(q=>q[0]===x.pick), lab=o?o[1].replace(/\s*\(.*\)$/,""):"";
     if(S0.indexOf(x.line)<0||!x.pick){ S0.push(x.line); if(lab)G.push(lab.toLowerCase()); return x }

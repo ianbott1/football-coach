@@ -1,5 +1,5 @@
 {
- "fp": "022fef7ab5da05f0",
+ "fp": "5d314561047d31c0",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -260,6 +260,11 @@
    "fp": "022fef7ab5da05f0",
    "from": "63a17dde44b07f4f",
    "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
+  },
+  {
+   "fp": "5d314561047d31c0",
+   "from": "022fef7ab5da05f0",
+   "note": "Round 32: screens (read lines, coin-flip notes, standings words, result header, odds capped at 99%, draft labels, payroll arithmetic), soccer history gains departing and old wages (checked field by field against HEAD); basketball pace held to 8% (golden plans are balanced, so results unchanged)"
   }
  ],
  "result": {
@@ -272,9 +277,9 @@
     "rec": "d4e8c95133d94730",
     "poll": "966f88435f753e67",
     "heis": "c2e2e7ee00062fc9",
-    "history": "17d4c32f4dd78a6d",
+    "history": "f5fde96e4d8738ed",
     "universe": "b981f92c61f4710b",
-    "screens": "aceb490a9f5cf5f8"
+    "screens": "ed0c53f6a5eeeac9"
    },
    {
     "year": 2027,
@@ -284,9 +289,9 @@
     "rec": "acac4e09c4325681",
     "poll": "001b82b75fc2c804",
     "heis": "f6d8bae41ea01921",
-    "history": "2827983e0afea91d",
+    "history": "5f8047446cc31107",
     "universe": "85c5c2e52c83c1bc",
-    "screens": "132be920e727637d"
+    "screens": "716bd545c549f5c3"
    }
   ],
   "Wrexham#777": [
@@ -298,9 +303,9 @@
     "rec": "3d6ecab210f5a022",
     "poll": "3ad2239f6c9be160",
     "heis": "8e3670250269e87c",
-    "history": "d3858b4222ddfc08",
+    "history": "eed0205da18f2e74",
     "universe": "8a0a73e24c3621c6",
-    "screens": "76fb71fd87e5f132"
+    "screens": "87dac42083057d42"
    },
    {
     "year": 2027,
@@ -310,9 +315,9 @@
     "rec": "753c6592704945ba",
     "poll": "0e562e99454d50ea",
     "heis": "d7aa153f710514bd",
-    "history": "4dba379e58cb953f",
+    "history": "b9110ab1598d0764",
     "universe": "e195cc0384e4d46b",
-    "screens": "49c2d261c5b1dbbb"
+    "screens": "565063fd05281555"
    }
   ],
   "schedules#60": [

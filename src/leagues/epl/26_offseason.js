@@ -230,7 +230,7 @@ function nflApplyTrade(u,myTeam,T,rep,leave,pool){
     p.yrsHere=0; p.joined=u.year+1; p.keep=true;
     const i=POS.findIndex(P=>P.p===p.p);
     if(!R[i]){R[i]=p} else if(!R[BK(i)]){ if(p.r>R[i].r){R[BK(i)]=R[i];R[i]=p}else R[BK(i)]=p }
-    else { const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")} }
+    else { const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,sal:(out.k&&out.k.sal)||0}); if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")} }
   });
   rep.trade[myTeam]={done:true,gave:give.n,gp:give.p,got:get.n,qp:get.p,r:get.r,with:tt};
 }
@@ -324,8 +324,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       if(p.k.yrs>1){p.k.yrs--;continue}
       const ask={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)};
       const keep=!!plan[i];
-      if(keep){p.k=ask;rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:ask.sal,yrs:ask.yrs})}
-      else{R[i]=null;rep.released[t].push({n:p.n,p:p.p,r:p.r,why:"expired"});
+      if(keep){const was=(p.k&&p.k.sal)||0; p.k=ask;rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:ask.sal,yrs:ask.yrs,was:was})}   // was: the old wage, so the summer's payroll line can add up (Grokbot)
+      else{R[i]=null;rep.released[t].push({n:p.n,p:p.p,r:p.r,why:"expired",sal:(p.k&&p.k.sal)||0});
         if(p.r>=58&&p.age<=33){p.from=t;pool.push(p)} else leave(t,p,"released")}
     }
     // 2. aging
@@ -354,7 +354,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       if(!p)return;
       const a=p.age-(AGE_SHIFT[p.p]||0);
       const odds=a>=36?0.9:a>=35?0.6:a>=34?0.35:a>=33?0.18:a>=32?0.08:0;
-      if(rng.r()<odds+(p.r<55&&a>=29?0.3:0)){R[i]=null;rep.retired[t].push({n:p.n,p:p.p,age:p.age,r:p.r});leave(t,p,"retired")}
+      if(rng.r()<odds+(p.r<55&&a>=29?0.3:0)){R[i]=null;rep.retired[t].push({n:p.n,p:p.p,age:p.age,r:p.r,sal:(p.k&&p.k.sal)||0});leave(t,p,"retired")}
     });
     // a starter's empty spot goes to his backup first
     POS.forEach((_,i)=>{if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}});
@@ -382,7 +382,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const i=rng.int(POS.length), p=nflPlayer(rng,base-rng.range(6,12),17+rng.int(3),i);
       p.pot=Math.min(99,Math.round(p.r+rng.range(8,20))); p.k={sal:0.5,yrs:3}; p.joined=u.year+1; p.academy=true;
       const made=nflGain(R,p)>0.6||!R[p.i]||!R[BK(p.i)];
-      if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"academy"});
+      if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"academy",sal:(out.k&&out.k.sal)||0});
         if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")}}
       rep.drafted[t].push({n:p.n,p:p.p,r:p.r,pot:p.pot,from:"the academy",made:made});
       picks.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:"the academy",made:made});
@@ -397,7 +397,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       R.forEach((p,i)=>{if(!p||i<POS.length||p.keep)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});   // not one you just signed
       if(wi<0){ // only starters left over: the most overpaid starter goes
         R.forEach((p,i)=>{if(!p)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}})}
-      const out=R[wi]; R[wi]=null; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true});
+      const out=R[wi]; R[wi]=null; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true,sal:(out.k&&out.k.sal)||0});
       if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released");
     }
   });
@@ -423,7 +423,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from,target:true});
       rep.targets[t].push({n:n,p:pos,from:team,got:true,sal:cost});
-      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
+      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,sal:(out.k&&out.k.sal)||0}); if(out.r>=58){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
     });
   });
   const styleOf=t=>{const ch=chFor(t); if(ch&&ch.fa)return ch.fa;
@@ -452,7 +452,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from});
-      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"fa"}); if(out.r>=58&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
+      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"fa",sal:(out.k&&out.k.sal)||0}); if(out.r>=58&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
     });
   }
   pool.filter(p=>!p.signed).forEach(p=>leave(p.from,p,"unsigned"));

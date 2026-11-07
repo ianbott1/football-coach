@@ -271,13 +271,17 @@ function watchView(){
 /* what the evidence said, when it pointed the other way: a read the numbers
    got wrong is a noisy sample, not a coin flip, and the verdict says so */
 function readNote(e){
+  if(e.k==="flank"&&e.unclear)return " The count was nearly level, a coin flip, so it isn't graded either way.";
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&APPROACH[e.evid])
     return e.right?` The numbers pointed to ${APPROACH[e.evid].l}; your read was better than they were.`
       :` The numbers at the time pointed to ${APPROACH[e.evid].l}: a short stretch can mislead.`;
   if(e.k==="prep"&&e.split){ const by=typeof e.split==="string"?" "+e.split:"";   // "3-3": their last games, by system
-    return e.right?` The report was split${by}, so that was a good guess.`:` The report was split${by}, so this was close to a coin flip.` }
+    return ` The report was split${by}, a coin flip, so it isn't graded either way.` }
   return "";
 }
+/* what you chose, for the start of the card's line: one line said "First read and second read: ... the answer was
+   'Go long'" when that was the pre-match pick and the cross was for a later one (Grokbot) */
+function readPickLabel(e){ const o=COUNTERS[e.pick]; return o?o.l:e.k==="flank"?`Overload the ${e.pick}`:"" }
 function readText(e){ return readTextBase(e)+readNote(e) }
 function readTextBase(e){
   if(e.k==="read")return e.right?`Your read was right: they were ${APPROACH[e.truth].l}.`
