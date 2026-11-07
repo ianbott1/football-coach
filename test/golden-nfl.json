@@ -1,5 +1,5 @@
 {
- "fp": "7d6299551b620b8e",
+ "fp": "a5775ea14d935e41",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -350,6 +350,11 @@
    "fp": "7d6299551b620b8e",
    "from": "da2af94fa696d844",
    "note": "Round 35: football reads the opponent's defense (scouting report, reads in the second quarter and after half-time) and adds the onside kick and late-defense calls. Control with them off matches the previous fingerprints exactly."
+  },
+  {
+   "fp": "a5775ea14d935e41",
+   "from": "7d6299551b620b8e",
+   "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
   }
  ],
  "result": {
@@ -364,7 +369,7 @@
     "heis": "4ebb12d6a2317992",
     "history": "767618c3a41d894b",
     "universe": "bf978704a41770cc",
-    "screens": "90b2d0b5417b72b0"
+    "screens": "e7d9884d1645df45"
    },
    {
     "year": 2027,
@@ -376,7 +381,7 @@
     "heis": "5618b429eaa9a3f7",
     "history": "07c552a6183542db",
     "universe": "45d374afb0772c5c",
-    "screens": "16d3d7980e5385c6"
+    "screens": "6d1dec072c1c4d18"
    },
    {
     "year": 2028,
@@ -388,7 +393,7 @@
     "heis": "c3b66b64934339a5",
     "history": "5b4a9a213a5ddd93",
     "universe": "66e59a058b552676",
-    "screens": "e819653774bfeb28"
+    "screens": "3fe7ba2c4b8c3915"
    },
    {
     "year": 2029,
@@ -400,7 +405,7 @@
     "heis": "57852479c805f3c9",
     "history": "e0514038a1d5663f",
     "universe": "16fcef4ed134982a",
-    "screens": "bf04c1c577266dbf"
+    "screens": "b474c35574b32384"
    }
   ],
   "Tennessee#2024": [
@@ -414,7 +419,7 @@
     "heis": "024366829d184ad5",
     "history": "99c5b02107da76b1",
     "universe": "1147e404631ae415",
-    "screens": "280f829bb8183dfb"
+    "screens": "4bfd4fc28a9d2bd8"
    },
    {
     "year": 2027,
@@ -426,7 +431,7 @@
     "heis": "8a21657fed919d7a",
     "history": "7ffcc3324ae09673",
     "universe": "734e701e176fadc0",
-    "screens": "c841f21aa43e5081"
+    "screens": "bdd2feab44e2b432"
    },
    {
     "year": 2028,
@@ -438,7 +443,7 @@
     "heis": "d3118cd243f40662",
     "history": "4fe787df73c66a6a",
     "universe": "383209f2598438ad",
-    "screens": "84b8f8197f5f723d"
+    "screens": "29c65ee0dd8391aa"
    },
    {
     "year": 2029,
@@ -450,7 +455,7 @@
     "heis": "a8419840a37a948b",
     "history": "21e7ae54cf2ac002",
     "universe": "00d297b8a0262e0e",
-    "screens": "75d7ecadf890a853"
+    "screens": "fa7dfd75d884e275"
    }
   ],
   "Detroit#777": [
@@ -464,7 +469,7 @@
     "heis": "b3130bde21b1ce86",
     "history": "633b50e33d482606",
     "universe": "b6a22050e5fda9d2",
-    "screens": "f83e3103a4e7dad3"
+    "screens": "105ec3bad7e20480"
    },
    {
     "year": 2027,
@@ -476,7 +481,7 @@
     "heis": "f94bb1daf1d5dcac",
     "history": "b323080cc222407a",
     "universe": "67e24d548b9d3bc1",
-    "screens": "3f3b8a84de8be11f"
+    "screens": "db5e4d1cff1f7c88"
    },
    {
     "year": 2028,
@@ -488,7 +493,7 @@
     "heis": "cef1aff8b71fd157",
     "history": "1d074884a8866939",
     "universe": "bc09b4c423392be6",
-    "screens": "5f4bb437e1ef81c1"
+    "screens": "80d70b8a40cb5640"
    }
   ],
   "NY Giants#31337": [
@@ -502,7 +507,7 @@
     "heis": "65539366ab15080f",
     "history": "271dc7507a55f42e",
     "universe": "a1d8e2309e30d81e",
-    "screens": "62d2f5ecb96858d3"
+    "screens": "65e434da527b88b8"
    },
    {
     "year": 2027,
@@ -514,7 +519,7 @@
     "heis": "e6b85b9cec87f2f8",
     "history": "2f996fcd58210848",
     "universe": "2134eafff566b632",
-    "screens": "c654643a24f039fe"
+    "screens": "36bf57daa7b5e49d"
    },
    {
     "year": 2028,
@@ -526,7 +531,7 @@
     "heis": "7e741e9a009b333a",
     "history": "cd4d698574c317e0",
     "universe": "4905c29423f902fc",
-    "screens": "1f6025041614e2ac"
+    "screens": "62bb106f410aa187"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "ef849fa07a2b2190",
+ "fp": "2e223092634c1372",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -285,6 +285,11 @@
    "fp": "ef849fa07a2b2190",
    "from": "d3d22f1334fa243a",
    "note": "Round 34: the third-period system change only in games within a goal; split-stat headers shortened. Results otherwise as the round's earlier record (control with the new calls off matched the previous fingerprints)."
+  },
+  {
+   "fp": "2e223092634c1372",
+   "from": "ef849fa07a2b2190",
+   "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
   }
  ],
  "result": {
@@ -299,7 +304,7 @@
     "heis": "e25ff4d68f95adcf",
     "history": "a1f2215774dc6489",
     "universe": "43f89e6bf4fb8606",
-    "screens": "611de821cda5cbfc"
+    "screens": "83ba5d8e7d7af775"
    },
    {
     "year": 2027,
@@ -311,7 +316,7 @@
     "heis": "e75b547947affda4",
     "history": "2298da40840e60d9",
     "universe": "a8dfb1d408fa37c9",
-    "screens": "eaeba406ed8a119e"
+    "screens": "09eae6317416546b"
    }
   ],
   "Edmonton#777": [
@@ -325,7 +330,7 @@
     "heis": "b96abd476b0836c9",
     "history": "22a30198d5ebe058",
     "universe": "688ff128432ed40f",
-    "screens": "658eec82f00bac38"
+    "screens": "e46be5800e9d9ac6"
    },
    {
     "year": 2027,
@@ -337,7 +342,7 @@
     "heis": "d9d13aa5d3635b7c",
     "history": "fa1fac2134c06c75",
     "universe": "9d2c6ecb43acb7a9",
-    "screens": "e8a140fde80066b0"
+    "screens": "4d631553cb644be6"
    }
   ],
   "schedules#60": [

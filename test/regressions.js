@@ -606,6 +606,27 @@ for(const [f,team] of [['football-coach-pro.html','Green Bay'],['football-coach.
   ok(late===clock,`${f}: ${late-clock} of ${late} late calls without the possessions left`);
   ok(graded>0,`${f}: reads never graded`) }
 
+/* 85. the NBA Cup (Ian): six groups of five, four group games each on the Cup nights, eight through (six winners and a
+   runner-up a conference), a champion; every team still plays 82 league games, and Cup games touch no record */
+{ const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP.concat(['nbaCupTables','nbaCupFate'])}); A.newDynasty('Orlando',3,'T');
+  const C=A.SEA.cup; ok(C&&Object.keys(C.groups).length===6&&Object.values(C.groups).every(g=>g.length===5),'the Cup has six groups of five');
+  let g=0; while(A.SEA.phase==='week'&&g++<400)A.SEA.advance();
+  const T=A.nbaCupTables(A.SEA); ok(Object.values(T).every(L=>L.every(x=>x.pl===4)),'not every team played four group games');
+  ok(C.seeds&&C.seeds.East.length===4&&C.seeds.West.length===4,'the knockout field isn\'t eight');
+  ok(!!C.winner&&!!C.finalist,'no NBA Cup champion');
+  const rec=Object.values(A.SEA.rec).map(r=>r[0]+r[1]); ok(Math.min(...rec)===82&&Math.max(...rec)===82,`league games ${Math.min(...rec)}-${Math.max(...rec)}, not 82`);
+  ok(A.nbaCupFate(A.SEA,C.winner)==='Winners','the champion\'s fate isn\'t "Winners"') }
+
+/* 86. the coach's notes: a new career gets a note at its first call, "Skip the guide" turns them all off, and a career
+   saved before them has none (Ian: an optional tutorial) */
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['guideForCall','guideNote'])}); A.newDynasty('Arsenal',3,'T');
+  ok(A.S.guide===true,'a new career starts without the guide');
+  ok(/Coach's note/.test(A.guideForCall({k:'read'})),'no coach\'s note at the first read');
+  A.S.seen={g_call_read:1}; ok(!/Coach's note/.test(A.guideForCall({k:'read'})),'a read note shown again after Got it');
+  ok(/Coach's note/.test(A.guideForCall({k:'late'})),'no note for the first situation call');
+  A.S.guide=false; ok(!A.guideForCall({k:'prep'})&&!A.guideNote('hub','x'),'notes shown after Skip the guide');
+  delete A.S.guide; ok(!A.guideForCall({k:'prep'}),'a career from before the guide shows notes') }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

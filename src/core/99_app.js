@@ -611,7 +611,7 @@ function newDynasty(team,seed,coachName,roster){
     plans:{}, calls:{}, promos:{}, fires:{}, featured:null, history:[], expNow:null
   });
   S={seed:seed,uStart:null,seasonSeed:0,steps:0,origProgram:null,
-     coaches:people.map(mk), turn:0};
+     coaches:people.map(mk), turn:0, guide:!(roster&&roster.length>1)};   // the coach's notes, for a new career (not a hot seat)
   COACH_FIELDS.forEach(k=>{S[k]=S.coaches[0][k]});
   const u=newUniverse(seed); syncConf(u);
   S.coaches.forEach(c=>{
@@ -1169,10 +1169,12 @@ function heroResult(){
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
-  if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
+  const cupRes=g.cup&&LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(g,my):null;   // a league's own line (the NBA Cup's group games)
+  if(cupRes)move=cupRes;
+  else if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
     // a level tie says how it was settled: a 0-0 "into the second round" read as a mystery (Ian)
     const how=g.pens?(won?"Won on penalties: ":"Lost on penalties: "):g.ot?(won?"Won in extra time: ":"Lost in extra time: "):"";
-    move=`<div class="hmove ${won?'up':'dn'}">${how}${won?(nx?(how?"into the ":"Into the ")+esc(nx.name):(how?"FA Cup winners":"FA CUP WINNERS")):(how?"out of the FA Cup":"Out of the FA Cup")}</div><button class="rewatch seedraw" data-cupview="1">See the draw</button>` }
+    move=`<div class="hmove ${won?'up':'dn'}">${how}${won?(nx?(how?"into the ":"Into the ")+esc(nx.name):(how?LEAGUE.cup.name+" winners":LEAGUE.cup.name.toUpperCase()+" WINNERS")):(how?"out of the "+LEAGUE.cup.name:"Out of the "+LEAGUE.cup.name)}</div><button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>` }
   if(half)return `<div class="hero half">
     <div class="hlabel"><span class="live"></span>HALFTIME${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
@@ -1182,12 +1184,13 @@ function heroResult(){
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
-      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}
+      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
 function firstReadTip(){
   if(S.readTally&&S.readTally.n>=3)return "";
+  if(S.guide===true&&!(S.seen&&S.seen.g_call_read))return "";   // the coach's note says it, once
   return `<div class="evtip">First reads: look for the number marked &#9650; or &#9660;, well away from the league average. That's how they're playing. Pick the answer that beats it, then see if you were right after the game.</div>`;
 }
 /* the season's tally of your reads and calls, kept on the team page all year */
@@ -1245,6 +1248,7 @@ function readsHTML(step){
 function cupLineHTML(g,my){
   const won=g.winner===my, opp=g.home===my?g.away:g.home, ms=g.home===my?g.hp:g.ap, os=g.home===my?g.ap:g.hp;
   const pens=g.pens?" on penalties":"";
+  if(LEAGUE.cup&&LEAGUE.cup.result&&g.round===-1)return LEAGUE.cup.result(g,my).replace(/<button[\s\S]*$/,"");
   const nextR=LEAGUE.cup&&LEAGUE.cup.rounds[g.round+1];
   return `<div class="hmove ${won?'up':'dn'}">${esc(g.title)}: ${won?"beat":"lost to"} ${esc(opp)} ${ms}-${os}${pens}${
     won?(nextR?" &middot; into the "+esc(nextR.name):" &middot; CUP WINNERS"):" &middot; out"}</div>`;
@@ -1630,6 +1634,31 @@ function coachMark(key,text){
     <span class="markx">Got it</span></div>`;
 }
 
+/* The coach's notes: a guide through your first games, one note per kind of moment, each gone once read, all gone
+   at "Skip the guide" (Ian: an optional tutorial). On for a new career (S.guide); a career from before has none.
+   Help turns them back on. */
+function guideNote(key,text){
+  if(S.guide!==true)return "";
+  S.seen=S.seen||{}; if(S.seen["g_"+key])return "";
+  return `<div class="mark guide" data-mark="g_${key}"><b>Coach's note:</b> ${text}
+    <span class="markx">Got it</span> <span class="markx guideoff" data-guideoff="1">Skip the guide</span></div>`;
+}
+const GUIDE_CALL={
+  prep:"Before the game: their last few games, by how they played. Pick the answer to what they did most, or wait and see. After the game you'll see whether you were right.",
+  read:"The panel is how they're playing tonight. A number marked &#9650; or &#9660; is well away from the league average: that's the tell. Your staff disagree on purpose: Pearl says what she just saw, the Bears always want the bold thing, the capybara the safe one. The numbers are your best guide.",
+  third:"Ten minutes left: some teams change their system for the third. The right-hand column counts only what's happened since the second intermission.",
+  close:"Crunch time: they'll go to their closing play or stay with what's worked tonight. The report of their close finishes is beside what they've run tonight.",
+  flank:"Where your attacks got through in the first half. A full-back having a hard day shows up here, but a small gap can be luck.",
+  goalie:"Is your goalie having a bad night, or just unlucky? Soft goals tell you he's off; goals over the expected number can be bad luck on their own.",
+  fourth:"The percentages are the play's own odds. Afterwards the call is graded on what wins the game, by replaying the rest of it many times with each option: a likely conversion can still be the wrong choice."
+};
+const GUIDE_SITUATION="A situation call: only asked while the game is still in the balance. After the game it's graded by replaying the rest of the game many times with each option, against leaving it to your assistant.";
+function bindGuide(){
+  document.querySelectorAll(".guide[data-mark]").forEach(b=>b.onclick=e=>{ if(e&&e.target&&e.target.dataset&&e.target.dataset.guideoff)S.guide=false;
+    else { S.seen=S.seen||{}; S.seen[b.dataset.mark]=1 } save(); render() });
+}
+function guideForCall(dp){ return guideNote("call_"+(GUIDE_CALL[dp.k]?dp.k:"situation"),GUIDE_CALL[dp.k]||GUIDE_SITUATION) }
+
 function planPickerHTML(wp){
   return `
   <div class="planbox"><div class="planlab">Your gameplan</div>
@@ -1738,10 +1767,11 @@ function nextUpHTML(my,rk){
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
       </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
-      ${cupNight?`<div class="stake"><span class="stag">FA CUP</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} Level after ninety: extra time, then penalties.</span></div>
-        <button class="rewatch seedraw" data-cupview="1">See the draw</button>`
+      ${cupNight?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} ${esc(LEAGUE.cup.rule||"")}</span></div>
+        <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>`
         :st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
         <span class="sline">${x.l}</span></div>`).join("")}
+      ${guideNote("hub","The percentage is the game's own chance of winning, worked out from the lineup you've picked: start a backup and it moves. Your gameplan below doesn't move it on purpose: plans trade safety for variance, and each is judged on the result card.")}
       ${planPickerHTML(wp)}</div>`;
   }
   // a cup tie this week too (soccer's FA Cup): its own card, midweek
@@ -1755,8 +1785,8 @@ function nextUpHTML(my,rk){
         <div class="nopp">${TL(opp)}</div>
         <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
         ${oddsHTML(my,opp,cg.home===my,cg.neutral,wp)}
-        <div class="stake"><span class="stag">FA CUP</span><span class="sline">${line} Level after ninety: extra time, then penalties.</span></div>
-        <button class="rewatch seedraw" data-cupview="1">See the draw</button></div>`;
+        <div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${line} ${esc(LEAGUE.cup.rule||"")}</span></div>
+        <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button></div>`;
     });
   }
   return h;
@@ -1785,12 +1815,12 @@ function scheduleHTML(team,compact){
       const otl=!won&&g.ot, drew=!!g.draw;             // hockey: a point for losing in overtime; soccer: a draw
       rows.push(`<div class="srow"><span class="spos ${won?'wl-w':drew||otl?'wl-o':'wl-l'}">${won?"W":drew?"D":otl?"OTL":"L"}</span>
         <span class="steam">${haWord(g,team)} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
-          g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
+          g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^(FA|NBA) Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
         <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${
-          g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^FA Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
+          g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^(FA|NBA) Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sall">${esc(g.cup&&LEAGUE.cup?LEAGUE.cup.date(w):LEAGUE.dates[w]||"")}</span></div>`);
     }
     });
@@ -2016,7 +2046,7 @@ function grpNow(){ return grpTab||CONF[S.myTeam] }
 function grpTabsHTML(cupToo){
   const g=grpNow(), nm=c=>LEAGUE.groupShort?LEAGUE.groupShort(c):LEAGUE.conf.names[c];
   return `<div class="subtabs">${LEAGUE.conf.order.map(c=>`<button class="subtab" data-grp="${c}" aria-pressed="${g===c}">${esc(nm(c))}</button>`).join("")}${
-    cupToo?`<button class="subtab" data-grp="CUP" aria-pressed="${g==="CUP"}">FA Cup</button>`:""}<button class="subtab" data-grp="ALL" aria-pressed="${g==="ALL"}">All</button></div>`;
+    cupToo?`<button class="subtab" data-grp="CUP" aria-pressed="${g==="CUP"}">${esc(LEAGUE.cup?LEAGUE.cup.name:"Cup")}</button>`:""}<button class="subtab" data-grp="ALL" aria-pressed="${g==="ALL"}">All</button></div>`;
 }
 /* Scores can step back through the weeks played and on to the fixtures to
    come (scoreWk: which week; null follows the latest) */
@@ -2822,7 +2852,8 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
-    el("app").innerHTML=live.ask?liveCallView():liveView();
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+'<div class="callbox">'):liveView();
+    bindGuide();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the
       // game, took it as an answer, and graded a call the player never made (Grokbot, soccer: five matches)
@@ -2881,6 +2912,7 @@ function render(){
       await restoreBackup(f,slot) };
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
+    document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide)Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); save(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
       S.sound=b.dataset.sound==="true"; save(); if(soundOn())sfx("tap"); render();});
     return;
@@ -3032,6 +3064,7 @@ function render(){
   if(typeof bindLines==="function")bindLines();
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
+  bindGuide();
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>
     tapTwice(b,"Tap again to confirm",()=>fireCoord(b.dataset.fire)));
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
@@ -3370,6 +3403,9 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">Your games play out score by score without
       revealing the final. You can skip to the result at any point, or rewatch afterwards
       from the result card.</div></div>
+    <div class="grouphead">Coach's notes</div>
+    <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-guide="${v}" aria-pressed="${(S.guide===true)===v}">${l}</button>`).join("")}</div>
+    <div class="fnote" style="padding:0 16px 8px">A short note the first time you meet each kind of call and screen.</div>
     <div class="grouphead">Sound</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-sound="${v}"
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>

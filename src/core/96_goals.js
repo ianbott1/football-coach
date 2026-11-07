@@ -24,9 +24,7 @@ function seasonObjectives(my){
   if(rg){ const o=rg.home===my?rg.away:rg.home, n=games.filter(g=>g.home===o||g.away===o).length, need=Math.floor(n/2)+1;
     out.push(n>=3?{k:"rival",opp:o,n:n,need:need,l:`Win the season series against ${o} (${need} of ${n})`}:{k:"rival",opp:o,l:`Beat ${o}`}) }
   // a cup run, where there is a cup
-  if(LEAGUE.cup&&SEA.cup){ const tier=DIVS[CONF[my]].tier, R=LEAGUE.cup.rounds;
-    const want=tier<=2?7:tier<=4?4:2;    // the quarter-finals; the third round; the first round proper
-    out.push({k:"cup",round:want,l:`Reach the FA Cup ${R[want].name}`}) }
+  if(LEAGUE.cup&&SEA.cup&&LEAGUE.cup.objective)out.push(LEAGUE.cup.objective(my));   // soccer: the quarter-finals; the third round; the first round proper
   // finish above the side rated just above you in your group
   const grp=NAMES.filter(t=>CONF[t]===CONF[my]&&t!==my&&preElo(t)>preElo(my)).sort((a,b)=>preElo(a)-preElo(b));
   if(grp.length)out.push({k:"above",opp:grp[0],l:`Finish above ${grp[0]}`});
@@ -125,7 +123,7 @@ const ACH=[
   {id:"furniture",l:"Part of the furniture", d:"Ten seasons at one club"}
 ];
 let newAch=[];                     // unlocked since the last screen: shown once
-function achList(){ return ACH.filter(a=>(!a.soccer||!!LEAGUE.cup)&&(!a.reads||typeof readText==="function")) }
+function achList(){ return ACH.filter(a=>(!a.soccer||!!LEAGUE.draws)&&(!a.reads||typeof readText==="function")) }
 function unlock(id){ const C=S.career; C.ach=C.ach||{}; if(C.ach[id])return; C.ach[id]=SEA.year; newAch.push(id); if(typeof sfx==="function")sfx("ach") }
 function checkAchievements(){
   if(!SEA||!S.myTeam||!S.career)return;
@@ -137,13 +135,13 @@ function checkAchievements(){
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   if(!have.reader&&Y&&Y.n>=12&&Y.right/Y.n>=0.7)unlock("reader");
   if(careerNow(C).w>=100)unlock("century");     // the career once: in the offseason the season is already banked (it unlocked at 62 wins: Muse)
-  if(LEAGUE.cup&&SEA.cup&&SEA.cup.winner===my)unlock("cup");
+  if(LEAGUE.draws&&LEAGUE.cup&&SEA.cup&&SEA.cup.winner===my)unlock("cup");
   if(SEA.phase==="done"){
     const rec=(SEA.regRec||SEA.rec)[my];
     if(rec&&rec[1]===0)unlock("unbeaten");
     if(objectivesMet(my)>=3)unlock("board");
     const res=SEA.seasonResult(my)||"";
-    if(LEAGUE.cup&&/[Pp]romoted/.test(res))unlock("promoted");
+    if(LEAGUE.draws&&/[Pp]romoted/.test(res))unlock("promoted");
     if(SEA.champion===my){ unlock("champ");
       const H=S.history||[], last=H[H.length-1];
       if(last&&last.year===SEA.year-1&&last.champion===last.team&&last.team===my)unlock("b2b");

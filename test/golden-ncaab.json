@@ -1,5 +1,5 @@
 {
- "fp": "850eb50111af74ce",
+ "fp": "d09035484e65ea40",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -320,6 +320,11 @@
    "fp": "850eb50111af74ce",
    "from": "9b69b3121faa271f",
    "note": "Round 34: the chance shown is the engine's (screens); crunch-time read (basketball) and third-period read (hockey) in close games; unsure scout reads said as what they're likely to be (your staff's draft picks); Pearl reads change from the numbers. Control with the new calls off: games, post and records identical, only screens and your draft class differ."
+  },
+  {
+   "fp": "d09035484e65ea40",
+   "from": "850eb50111af74ce",
+   "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
   }
  ],
  "result": {
@@ -334,7 +339,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "da8c41f5f57a0560",
     "universe": "8396e3d3e5e674fc",
-    "screens": "db276e3dff3e5b99"
+    "screens": "846a814179b38a71"
    },
    {
     "year": 2027,
@@ -346,7 +351,7 @@
     "heis": "bdc76644c22f567f",
     "history": "78ff0e134f339e3e",
     "universe": "5e2d4d3a332201ca",
-    "screens": "bfffcd3b8d1850cd"
+    "screens": "a2e9d5ee1a350d10"
    }
   ],
   "Coppin State#2024": [
@@ -360,7 +365,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "635d759c27825217",
     "universe": "590ac26570db1ec4",
-    "screens": "1bcc23a7ab453912"
+    "screens": "06b951b1330e647f"
    },
    {
     "year": 2027,
@@ -372,7 +377,7 @@
     "heis": "dc41c7de51860732",
     "history": "2b93cd387064afd4",
     "universe": "c19ffe75f931ec9f",
-    "screens": "4490a60584504139"
+    "screens": "89e7650dd8be0654"
    }
   ],
   "Gonzaga#777": [
@@ -386,7 +391,7 @@
     "heis": "c94713712b4e6c61",
     "history": "141a7c477b70847f",
     "universe": "612d12e45f22d0d8",
-    "screens": "baf05caeaa9d8926"
+    "screens": "45605dcdcb4f1d75"
    },
    {
     "year": 2027,
@@ -398,7 +403,7 @@
     "heis": "475c4e565eee54ab",
     "history": "10bb25fd46558ea0",
     "universe": "0d321e2a85dc34e7",
-    "screens": "84686de9db29a1f4"
+    "screens": "47e174f2f670a281"
    }
   ],
   "schedules#60": [

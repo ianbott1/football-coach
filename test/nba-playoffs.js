@@ -15,7 +15,8 @@ for(let s=0;s<N;s++){
   api.newDynasty(api.NAMES[(s*7)%30],300+s,'T'); const E=api.SEA; let g=0;
   while(E.phase!=='done'&&g++<600)E.advance();
   const y=E.year, per={};
-  E.weeks.slice(0,90).forEach(w=>w.games.forEach(x=>[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1)));
+  // league games only: the NBA Cup's games are extra and touch no record (round 36)
+  E.weeks.slice(0,90).forEach(w=>w.games.filter(x=>!x.cup).forEach(x=>[x.home,x.away].forEach(t=>per[t]=(per[t]||0)+1)));
   ok(api.NAMES.every(t=>per[t]===82), `${y}: not everyone played 82 (${Math.min(...Object.values(per))}-${Math.max(...Object.values(per))})`);
   ['East','West'].forEach(sd=>{
     const pi=E.rounds.pi.filter(x=>x.title.indexOf(sd)===0);

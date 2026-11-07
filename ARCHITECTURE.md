@@ -262,6 +262,30 @@ Round 35: football reads the game (Grokbot: pro football decision weight 4 of 10
   drives; a firing that moves you skips the new team's free agency; the
   free-agent market in hockey and pro basketball is depth only.
 
+Round 36: the NBA Cup and the coach's notes (Ian):
+- The NBA Cup (leagues/nba/87_nbacup.js): six groups of five, three a
+  conference, drawn each season on the Cup's own dice; a five-night round robin
+  on the Cup nights (steps 10, 12, 14, 17, 19: Nov 11-28), four games each;
+  group tables by wins, head to head, then point difference; the six winners
+  and the best runner-up in each conference to quarter-finals at the better
+  seed (step 23, Dec 9), semi-finals (25) and the championship (26) in Las
+  Vegas. Played as cup games on split days (LEAGUE.splitCup), on their own
+  dice (Season._week swaps in sea.cup.gr), so no other game's result moves;
+  they touch no record. Every team still plays 82: unlike the real NBA, where
+  all but the championship count, because the schedule has no room to make
+  the group games league games. Said on the Cup page. A Cup page on Rankings
+  (your group, the bracket, the other groups), Cup lines on the next-up and
+  result cards (LEAGUE.cup.stake, result), trophy and card lines, the history
+  entry (league.cup). Core cup text is generic now (LEAGUE.cup.name, tag,
+  rule, objective); soccer's achievements need LEAGUE.draws, not a cup.
+  NBA_CUP=0 in Node turns it off: then every fingerprint matches round 35.
+- The coach's notes (guideNote): a short note the first time a new career
+  meets each kind of call (read, scouting report, fourth down, situation
+  call, goalie, flank, crunch time, third period), the next-up card and the
+  result card; "Got it" clears one, "Skip the guide" all. On for a new
+  career (S.guide), off in a hot seat and for older careers; Help turns them
+  back on. Screens only.
+
 Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
 - A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
   soccer's 25' call came up under a tap meant for the game and was graded as

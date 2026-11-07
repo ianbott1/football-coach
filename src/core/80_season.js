@@ -235,12 +235,16 @@ class Season{
   _week(part){
     const w=this.step, prev=this.rankMap(), out=[];
     if(part==="cup"){                      // the midweek ties: added to the week, nothing else moves on
+      // a cup with dice of its own for its games (the NBA Cup): the league's results don't move because it's played
+      const keepRng=this.rng; if(this.cup&&this.cup.gr)this.rng=this.cup.gr;
+      try{
       this.sched.filter(g=>g.week===w&&g.cup).forEach(g=>{
         const r=this._resolve(g.home,g.away,g.neutral,{conf:false,cup:true,title:g.title,site:g.site,round:g.round});
         r.hrank=prev[g.home];r.arank=prev[g.away];
         r.hrec=this._rs(g.home); r.arec=this._rs(g.away);
         if((this.userTeam===g.home||this.userTeam===g.away)&&!r.drives)r.drives=this._userDrives;   // a played game keeps its own drives (an earlier game's replaced them, and Rewatch showed a different game: Muse)
         out.push(r) });
+      } finally { this.rng=keepRng }
       this.poll.update(out,this.elo);
       const W=this.weeks[w]; W.games=W.games.concat(out); W.cupPlayed=true;
       if(LEAGUE.afterWeek)LEAGUE.afterWeek(this,w);

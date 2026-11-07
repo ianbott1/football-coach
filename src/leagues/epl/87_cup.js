@@ -96,7 +96,8 @@ function cupStake(my,opp,g){
   if(d===1)return `${esc(opp)} are a division below you. A banana skin.`;
   return `A tie between equals.`;
 }
-LEAGUE.cup={rounds:CUP_ROUNDS, fate:cupFate, date:cupDate, weeks:CUP_WEEKS, stake:cupStake};
+LEAGUE.cup={name:"FA Cup", tag:"FA CUP", rule:"Level after ninety: extra time, then penalties.", rounds:CUP_ROUNDS, fate:cupFate, date:cupDate, weeks:CUP_WEEKS, stake:cupStake,
+  objective:my=>{ const tier=DIVS[CONF[my]].tier, want=tier<=2?7:tier<=4?4:2; return {k:"cup",round:want,l:`Reach the FA Cup ${CUP_ROUNDS[want].name}`} }};
 /* a trophy to celebrate the moment it's won, not at the end of the season */
 LEAGUE.trophyNow=(sea,t)=>sea&&sea.cup&&sea.cup.winner===t?{key:"facup",line:"FA Cup winners"}:null;
 /* the season card: a cup win, or a final */

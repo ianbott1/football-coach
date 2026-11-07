@@ -1,5 +1,5 @@
 {
- "fp": "bfca71e53d763e17",
+ "fp": "1a24c80a378d7e22",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -349,6 +349,11 @@
    "fp": "bfca71e53d763e17",
    "from": "6d2446abab864d22",
    "note": "Round 35: football reads the opponent's defense (scouting report, reads in the second quarter and after half-time) and adds the onside kick and late-defense calls. Control with them off matches the previous fingerprints exactly."
+  },
+  {
+   "fp": "1a24c80a378d7e22",
+   "from": "bfca71e53d763e17",
+   "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
   }
  ],
  "result": {
@@ -363,7 +368,7 @@
     "heis": "d2693b3b1de347ff",
     "history": "21349e3e6e7146d2",
     "universe": "e2398dbd37132b7b",
-    "screens": "61e66eeec7a79e09"
+    "screens": "10a5aea229a25ed1"
    },
    {
     "year": 2027,
@@ -375,7 +380,7 @@
     "heis": "16faa80038530bdc",
     "history": "a9a1dcfec44cd28a",
     "universe": "83d940488d87df83",
-    "screens": "abb3490d14f11daa"
+    "screens": "06d947bcd90be606"
    },
    {
     "year": 2028,
@@ -387,7 +392,7 @@
     "heis": "ce8b6fe8994ff251",
     "history": "fba0c166f054ebf4",
     "universe": "9adf0e2bafb17506",
-    "screens": "4c2b99bb3f323a60"
+    "screens": "54b5b49fd4bd6bb5"
    },
    {
     "year": 2029,
@@ -399,7 +404,7 @@
     "heis": "603f7eedc72902bd",
     "history": "32d3056b78538f91",
     "universe": "0b73e5a1bf518064",
-    "screens": "ca80553806a273db"
+    "screens": "bb70e05887c0863e"
    }
   ],
   "Rice#2024": [
@@ -413,7 +418,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "bdbdffecf61ec670",
     "universe": "f39be11c9884e279",
-    "screens": "d4eceef4667b6f20"
+    "screens": "b55f0992f52bab4a"
    },
    {
     "year": 2027,
@@ -425,7 +430,7 @@
     "heis": "44ad371c7cb0c78a",
     "history": "b0fc0cfbe8294ba9",
     "universe": "0df6dbdff4721f60",
-    "screens": "44e57b613f85c018"
+    "screens": "1907c80666ec778f"
    },
    {
     "year": 2028,
@@ -437,7 +442,7 @@
     "heis": "0608f46ad75b10b0",
     "history": "8260c95117ebde41",
     "universe": "aacffdb607bc93c1",
-    "screens": "278e1043aaed2f49"
+    "screens": "589a60a93ead271a"
    },
    {
     "year": 2029,
@@ -449,7 +454,7 @@
     "heis": "7729d87412c59cd5",
     "history": "05aae19a1f06238c",
     "universe": "47724fd3b9bfd9c8",
-    "screens": "409f1139889fd0ff"
+    "screens": "30b4297a60954be2"
    }
   ],
   "Oregon#777": [
@@ -463,7 +468,7 @@
     "heis": "f9fee25957dc5caa",
     "history": "4dc92f0c50fbc70e",
     "universe": "449bbdc2b017f851",
-    "screens": "baef8d648fa9ef7d"
+    "screens": "77a99f260a3677b7"
    },
    {
     "year": 2027,
@@ -475,7 +480,7 @@
     "heis": "03304715b8bdaf94",
     "history": "ae4f0f58ff0c91cf",
     "universe": "73347beae475a5ab",
-    "screens": "94da1ed8dc486eaf"
+    "screens": "6a29ca39699314f1"
    },
    {
     "year": 2028,
@@ -487,7 +492,7 @@
     "heis": "952aeb23578fc3d2",
     "history": "de39dd7c19e6171f",
     "universe": "632672cbdc2132d2",
-    "screens": "ed42c9640a9e3eaf"
+    "screens": "e16e0ddb202d7f16"
    }
   ],
   "Kent State#31337": [
@@ -501,7 +506,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "f7e30e053f0fe6fb",
     "universe": "1decd17d5900300b",
-    "screens": "c09a3d716406c94f"
+    "screens": "190dc04fe7448cd8"
    },
    {
     "year": 2027,
@@ -513,7 +518,7 @@
     "heis": "a6b737bd74916ea8",
     "history": "4c0c4d8aa25c9ef3",
     "universe": "87fd19e60d9be698",
-    "screens": "19e79d05f617ee0f"
+    "screens": "2fb4dd301ca70ee7"
    },
    {
     "year": 2028,
@@ -525,7 +530,7 @@
     "heis": "fe1141158ab89d79",
     "history": "0dcd04a7d180fb77",
     "universe": "f5a64b153cf42d75",
-    "screens": "15458970006b6a18"
+    "screens": "a5904149dfd64aa5"
    }
   ],
   "schedules#60": [
