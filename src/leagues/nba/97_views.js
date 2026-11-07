@@ -38,9 +38,9 @@ function nflPicture(){
 }
 function nflRankingView(){
   const bar=`<div class="dateline"><h2>Rankings</h2><span>${SEA.year}</span></div>
-    <div class="subtabs">${[["power","Power ranking"],["picture","Playoff picture"]].map(([k,l])=>
+    <div class="subtabs">${[["power","Power ranking"],["picture","Playoff picture"]].concat(LEAGUE.cup?[["cup","NBA Cup"]]:[]).map(([k,l])=>
     `<button class="subtab" data-k="${k}" aria-pressed="${nflRankTab===k}">${l}</button>`).join("")}</div>`;
-  return bar+(nflRankTab==="picture"?nflPicture():nflPower());
+  return bar+(nflRankTab==="picture"?nflPicture():nflRankTab==="cup"&&LEAGUE.cup?nbaCupView():nflPower());
 }
 function nflStakes(x){
   const {my,opp,wk,left,w,l}=x, out=[];
@@ -117,6 +117,7 @@ LEAGUE.ui={
   afterAdvance(ph){ if(ph==="pi2")nbaPostTab=null },
   subtab(b){
     if(b.dataset.k){nflRankTab=b.dataset.k;return true}
+    if(b.dataset.et==="CUP"){nflRankTab="cup";return true}   // "See the Cup", from wherever it's offered
     if(b.dataset.np){nbaPostTab=b.dataset.np;return true}
     if(b.dataset.simseries){simSeries();return true}
     return false},

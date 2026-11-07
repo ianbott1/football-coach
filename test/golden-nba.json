@@ -1,5 +1,5 @@
 {
- "fp": "34a192e7f079dddb",
+ "fp": "4d885cbb86eb1e23",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -265,64 +265,74 @@
    "fp": "34a192e7f079dddb",
    "from": "0de35b047abe88fb",
    "note": "Round 33 (as noted): recorded again from a fresh build; the earlier record missed the cut protect call's assistant close-out, which the control covered"
+  },
+  {
+   "fp": "87c277abb68c30e0",
+   "from": "34a192e7f079dddb",
+   "note": "Round 34: the chance shown is the engine's (screens); crunch-time read (basketball) and third-period read (hockey) in close games; unsure scout reads said as what they're likely to be (your staff's draft picks); Pearl reads change from the numbers. Control with the new calls off: games, post and records identical, only screens and your draft class differ."
+  },
+  {
+   "fp": "4d885cbb86eb1e23",
+   "from": "87c277abb68c30e0",
+   "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "29a71be05a94261f",
-    "post": "4a73c72d8593b4d2",
+    "games": "bbd9da2772536309",
+    "post": "2cd12bcbff70dfee",
     "champion": "Minnesota",
-    "rec": "7b6ec9fce3a91ebb",
-    "poll": "52d7525fcb0b259e",
-    "heis": "da3f724d75ab289f",
-    "history": "af8e7103755cfc39",
-    "universe": "638b7cf49cda370b",
-    "screens": "5788a4b3d0411394"
+    "rec": "097b2a6e0b41a7c6",
+    "poll": "e272a1a150a3e0b1",
+    "heis": "4028bebfe8eacedd",
+    "history": "3b3332473cf68704",
+    "universe": "6dbc1a2ca1664074",
+    "screens": "51ca3ffb3c7fc49e"
    },
    {
     "year": 2027,
-    "games": "63b2238248186fdc",
-    "post": "59bf187ddcaa6ae0",
-    "champion": "LA Lakers",
-    "rec": "523bbc199753590f",
-    "poll": "a9e9e4b9e78b747b",
-    "heis": "64aaa958561c14b7",
-    "history": "4a6ff3216b445004",
-    "universe": "f7156fdb31a773cd",
-    "screens": "5989b918329391f8"
+    "games": "2720cca70ddf2c0b",
+    "post": "6a17c3b253081f2f",
+    "champion": "Oklahoma City",
+    "rec": "33a3b98f8ccc6aec",
+    "poll": "c35c863f3e854238",
+    "heis": "df721f99daf05e9c",
+    "history": "a0e95e1afaf73a95",
+    "universe": "ac2c9c852638188a",
+    "screens": "3e00906e2823edb4"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "b6dd7ffc909ac2c2",
-    "post": "8e6e2e4fea3e9d9f",
+    "games": "1f74efc0624638a9",
+    "post": "0a45cd16249c6d37",
     "champion": "San Antonio",
-    "rec": "90b87d40dbf352ac",
-    "poll": "13e1efc837537ec0",
-    "heis": "bd7234824f88d455",
-    "history": "2cc80fefd90eb127",
-    "universe": "346f7d547130c513",
-    "screens": "22452b07aae6dede"
+    "rec": "4cc89e5cce2170cb",
+    "poll": "642c2bf3e6264455",
+    "heis": "af3e91d6cb89d7c3",
+    "history": "c448df62d87c9e7c",
+    "universe": "a613f418d966d02c",
+    "screens": "214e31b66cfeb89f"
    },
    {
     "year": 2027,
-    "games": "d83b807d05eabcdd",
-    "post": "a202f65ee5362045",
+    "games": "78cea7173ec35aa4",
+    "post": "b77e4017a1b2c36a",
     "champion": "Miami",
-    "rec": "9b5fa8f45337f75b",
-    "poll": "5503bd82fefb7eee",
-    "heis": "ccc12382f14db0bc",
-    "history": "c9b12c766207dbce",
-    "universe": "30f99c73b9716eef",
-    "screens": "66dc30a02f0148d7"
+    "rec": "04b514950116a3c6",
+    "poll": "51c9787569390cf0",
+    "heis": "6147ab7b96be8aa9",
+    "history": "76fe741fcd524383",
+    "universe": "8f00ecec330b88e6",
+    "screens": "bd8235efdde0718a"
    }
   ],
   "schedules#60": [
    {
-    "all": "ffc197f3ea3de0ee"
+    "all": "9038b1820eb74fa9"
    }
   ]
  }

@@ -173,6 +173,17 @@ function lateCall(lead){
     : {k:"protect",h:`Up ${lead}, ${BB.lateLeft||"five"} minutes left`,b:"Milk the clock, or keep attacking?",
        opts:[["sit","Milk the clock"],["keep","Keep attacking"],ASSIST]};
 }
+/* crunch time, level or ahead: a timeout, and what they go to now. Close teams lean on a closing play of their own
+   (the report of their last close finishes); some stay with what they've run tonight. Measured as a call
+   (test/call-weight.js), not a clock choice: milking it or attacking moved about 3 points and was cut (round 33).
+   Grokbot: elimination games and a tied finish into overtime came and went with no call. */
+function closeCall(lead,rep,n,cur){
+  const top=STYLE_KEYS.reduce((a,k)=>rep[k]>rep[a]?k:a,STYLE_KEYS[0]);
+  return {k:"close",h:`${lead>0?"Up "+lead:"Tied"}, ${BB.lateLeft||"five"} minutes left`,
+    b:"Timeout. They'll go to their closing play, or stay with what's worked tonight. What do you take away?",
+    opts:(cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).filter(d=>d!==cur).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
+    report:Object.assign({},rep), n:n, pearl:top};
+}
 function lastCall(){
   return {k:"last",h:"Down 2, last possession",b:"A three wins it. A two sends it to overtime.",
     opts:[["three","Go for the win: three"],["two","Tie it: two, and overtime"],ASSIST]};
@@ -234,7 +245,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       // only when behind: protecting a lead (milk the clock or keep attacking) measured about 3 points a call and
       // 0.1 a game, close either way two times in three (round 33): cut, as Ian's rule asks
       else if(when==="late"&&L<0&&L>=-9)dp=lateCall(L);
-      else if(when==="late"&&L>0&&L<=9)st.late[side]="auto";   // the cut call's answer: your assistant closes it out, as he would have
+      else if(when==="late"&&L>=0&&L<=9){
+        if(L>0)st.late[side]="auto";   // the clock: your assistant closes it out, as he would have (round 33)
+        const o=other(side), O=st.S[o];
+        if(!humans[o]){ const cp=(ctx.close&&ctx.close[o])||fav[o]||O.off;
+          O.closeTo=rng.r()<(BB.closePref||0.6)?cp:O.off;
+          dp=closeCall(L,scoutReport(cp,(ctx.seed||0)+(o==="home"?11:12)),BB.scouted,st.S[side].def) } }
       else if(when==="last"&&L===-2)dp=lastCall();
       if(dp)queueCall(side,dp);
     });
@@ -338,6 +354,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }
     if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; return }
     if(dp.k==="protect"){ st.late[side]=v==="sit"?"sit":v==="keep"?"keep":"auto"; return }
+    if(dp.k==="close"){ const O=st.S[other(side)]; if(O.closeTo)O.off=O.closeTo; const t=O.off;
+      const pick=v==="keep"?X.def:DEFENSES[v]?v:null;
+      if(pick&&DEFENSES[pick]){ st.log.push({side:side,k:"close",pick:pick,truth:t,right:DEFENSES[pick].beats===t}); if(pick!==X.def)X.prepd=false; X.def=pick }
+      else readIt(side,0.45);
+      return }
     if(dp.k==="last"){ lastShot(side,v==="three"?"three":"two"); st.lastDone=true }
   };
   st.next=function(){
@@ -361,10 +382,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(st.queue.length)return st.next() }
     // the reads: end of the first quarter (two segments), and the half
     if(s===2&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
-        if(humans[sd]){ const d=readCall(1,O.tell,O.lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) } else readIt(sd,0.45) });
+        if(humans[sd]){ const d=readCall(1,O.tell,O.lastCue); (st.p1=st.p1||{})[sd]=d.pearl; (st.b1=st.b1||{})[sd]=d.best; queueCall(sd,d) } else readIt(sd,0.45) });
       if(st.queue.length)return st.next()}
     if(s===4&&!st.halfDone){st.halfDone=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
-        if(humans[sd]){ const d=readCall(2,O.tell,O.lastCue,st.S[sd].def); d.pearl1=(st.p1||{})[sd]; queueCall(sd,d) } else if(rng.r()<0.3)readIt(sd,1) });   // what Pearl read the first time
+        if(humans[sd]){ const d=readCall(2,O.tell,O.lastCue,st.S[sd].def); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) } else if(rng.r()<0.3)readIt(sd,1) });   // what Pearl read the first time
       queueCalls("half"); if(st.queue.length)return st.next()}
     if(s===SEGS-1&&!st.lateDone){st.lateDone=true; queueCalls("late"); if(st.queue.length)return st.next()}
     if(s===SEGS&&!st.lastDone){
@@ -389,7 +410,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
    with the computer's calls, or opts.decide for a person who isn't watching. */
 /* each team's usual offense this season, and the seed for its scouting report */
 function clubStyle(t,year){ return STYLE_KEYS[strHash(t+"|"+year)%STYLE_KEYS.length] }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function clubClose(t,year){ return STYLE_KEYS[strHash(t+"|close|"+year)%STYLE_KEYS.length] }   // what they go to in a close finish
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, close:{home:clubClose(h,year),away:clubClose(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

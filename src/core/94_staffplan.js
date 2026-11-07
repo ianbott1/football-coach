@@ -154,7 +154,7 @@ function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDef
    either way" came mostly from calls in decided games (round 33: up 10 late in football, 100% either way;
    down 16 at half-time in basketball, 0-2%). Reads, scouting, flanks and the goalie are always asked: their
    answer is in the evidence, not the score. Football's fourth downs keep their own gate (inReach). */
-const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
+const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1,close:1,third:1,onside:1,defend:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
 function callInReach(args,seed,answers,meHome,j){
   let s=0;
   for(let m=0;m<GATE_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
@@ -219,7 +219,7 @@ function impactHTML(P){
   // the card says the plain line instead
   const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear));
   if(Math.abs(k)<=7||(k>0&&crossed)){   // no headline: one plain line, sized to the gap
-    const lead=Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way.`
+    const lead=Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
       :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.`;
     return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
   const good=k>0;

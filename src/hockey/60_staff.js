@@ -138,9 +138,20 @@ function staffTake(dp, ctx){
   }
   else if(dp.k==="read"){
     R.push({who:"bears", pick:"stretch", line:bearYell("read",seed)});
+    // her eyes are the commentary (a third of it names the wrong system); when they disagree with the numbers
+    // she says so, and which to trust (Instinct: she pointed at the trap column in a game the numbers called a cycle)
+    const eyes=dp.pearl&&PEARL_SYS[dp.pearl], off=eyes&&dp.best&&SYSTEM[dp.best]&&dp.best!==dp.pearl;
     R.push({who:"pearl", pick:dp.pearl&&SYSTEM[dp.pearl]?SYSTEM[dp.pearl].counter:"normal",
-      line:pearlSay(dp.pearl&&PEARL_SYS[dp.pearl]?"I just saw it! "+PEARL_SYS[dp.pearl]:"I haven't seen enough to say!",seed)});
+      line:pearlSay(!eyes?"I haven't seen enough to say!"
+        :off?`I think I saw it: ${PEARL_SYS[dp.pearl]} But the numbers look more like ${SYSTEM[dp.best].l}, and they've watched every shift. I might be wrong.`
+        :"I just saw it, and the numbers agree! "+PEARL_SYS[dp.pearl],seed)});
     R.push({who:"capy", pick:"collapse", line:`It seems to me protecting the slot rarely hurts. I have not, I admit, studied their system.`});
+  }
+  else if(dp.k==="third"){
+    R.push({who:"bears", pick:"stretch", line:bearYell("read",seed)});
+    R.push({who:"pearl", pick:SYSTEM[dp.pearl]?SYSTEM[dp.pearl].counter:"normal",
+      line:pearlSay(`All game it's looked like ${SYSTEM[dp.pearl].l}. I haven't looked at the third on its own, though!`,seed)});
+    R.push({who:"capy", pick:dp.opts[0]&&dp.opts[0][0]==="keep"?"keep":"normal", line:`I would change nothing that has got us this far. Though I confess I haven't studied the last ten minutes.`});
   }
   else if(dp.k==="goalie"){
     R.push({who:"bears", pick:"keep", line:bearYell("goalie",seed)});

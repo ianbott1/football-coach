@@ -206,6 +206,37 @@ function staffTake(dp, ctx){
       : [`Whatever we did to get here \u2014 more of that, please.`,`Don't change a thing. It's working!`,`We're winning! Keep doing the winning thing.`][seed%3],seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
+  else if(dp.k==="prep"){
+    const top=dp.pearl;
+    R.push({who:"bears", pick:"deep", line:bearYell("chase",seed)});
+    R.push({who:"pearl", pick:SCHEMES[top]?SCHEMES[top].counter:"normal", line:pearlSay(`They were ${SCHEMES[top].l} in ${dp.report[top]} of their last ${dp.n}! Let's practise for that!`,seed)});
+    R.push({who:"capy", pick:"normal", line:`I'd want to see a few of our drives first. Teams aren't always who the tape says.`});
+  }
+  else if(dp.k==="read"){
+    // her eyes are the last drive; the numbers are the whole game (or since half-time). She says when they differ.
+    const eyes=dp.pearl, off=eyes&&dp.best&&eyes!==dp.best;
+    R.push({who:"bears", pick:"deep", line:bearYell("chase",seed)});
+    R.push({who:"pearl", pick:SCHEMES[eyes]?SCHEMES[eyes].counter:"normal", line:pearlSay(off
+      ? `That last drive looked like they were ${SCHEMES[eyes].l}! The numbers say ${SCHEMES[dp.best].l}, though, and one drive is one drive.`
+      : `They're ${SCHEMES[eyes].l}, and the numbers agree! ${FB_ANSWERS[SCHEMES[eyes].counter].l}!`,seed)});
+    R.push({who:"capy", pick:"run", line:`It seems to me running the ball rarely hurts. I haven't, I confess, looked at the numbers.`});
+  }
+  else if(dp.k==="onside"){
+    const d=dp.diff||diff;
+    R.push({who:"bears", pick:"onside", line:bearYell("chase",seed)});
+    R.push({who:"pearl", pick:d<=-9?"onside":"normal", line:pearlSay(d<=-9
+      ? `We need two scores and there isn't time for them to have the ball. Onside!`
+      : `One more stop and we get it back! Kick it deep and trust the defense.`,seed)});
+    R.push({who:"capy", pick:"normal", line:`One in eight, I believe. And a short field for them the other seven times. I'd kick it deep.`});
+  }
+  else if(dp.k==="defend"){
+    const d=dp.diff;
+    R.push({who:"bears", pick:"pressure", line:bearYell("protect",seed)});
+    R.push({who:"pearl", pick:d>=4?"prevent":"pressure", line:pearlSay(d>=4
+      ? `Only a touchdown beats us! Keep everything in front and let them kick.`
+      : d===0?`Any score beats us, so a field goal's as bad as a touchdown. Go and get the ball!`:`A field goal ${d===3?"ties it":"beats us"}, so letting them kick doesn't help. Go after them!`,seed)});
+    R.push({who:"capy", pick:"prevent", line:`It seems to me the big play is what loses these. I'd keep everyone deep, whatever the score.`});
+  }
   else if(dp.k==="half"){
     const down = diff<0;
     R.push({who:"bears", pick: down?"push":"normal", line:bearYell("half",seed)});

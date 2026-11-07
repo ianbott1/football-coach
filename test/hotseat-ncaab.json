@@ -1,5 +1,5 @@
 {
- "fp": "4f770ba7ee847612",
+ "fp": "1f1615f6fba3c36a",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -205,6 +205,11 @@
    "fp": "4f770ba7ee847612",
    "from": "6163258b99ee7bea",
    "note": "Round 33 (as noted): recorded again from a fresh build; the earlier record missed the cut protect call's assistant close-out, which the control covered"
+  },
+  {
+   "fp": "1f1615f6fba3c36a",
+   "from": "4f770ba7ee847612",
+   "note": "Round 34: crunch-time and third-period reads in close games, and unsure scout reads said as what they're likely to be. Control with both off matches the previous fingerprints exactly."
   }
  ],
  "out": [
@@ -215,19 +220,19 @@
      "team": "Duke",
      "last": {
       "rec": "38-1",
-      "result": "Lost the national championship",
+      "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "d969dede168520d8"
+     "book": "c721b94e6ccce4f1"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "31-4",
-      "result": "Lost in the First Round",
-      "grade": "B+"
+      "rec": "32-5",
+      "result": "Lost in the Sweet 16",
+      "grade": "A"
      },
-     "book": "30196acea239be22"
+     "book": "9a611695e0423946"
     }
    ]
   },
@@ -237,20 +242,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "29-6",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "33-4",
+      "result": "Lost in the Final Four",
+      "grade": "A+"
      },
-     "book": "0b28793657d6345e"
+     "book": "7d51aaf089bcab1f"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "31-5",
-      "result": "Lost in the Elite Eight",
-      "grade": "A"
+      "rec": "29-6",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "9c01ca94b4dd309f"
+     "book": "86f607e22eb9295e"
     }
    ]
   },
@@ -260,20 +265,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-7",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "30-6",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "ff927c632deab67a"
+     "book": "df043780804ed6eb"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "35-3",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "30-7",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "ca95e0f94b2a253e"
+     "book": "589175f130be71db"
     }
    ]
   }

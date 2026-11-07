@@ -2,7 +2,7 @@
    - "Sim game" is there beside the main button in both layouts (the bottom
      bar, and the desktop side panel a laptop shows) and resolves your game
      without opening it;
-   - Skip in a live game continues from the current score (each side ends
+   - Skip in a live game continues from the current score (stopping at each call) (each side ends
      with at least what it had), it doesn't start again;
    - reloading in the middle of a game never asks a call you already made.
      node test/sim-and-skip.js     last line: MATCH or MISMATCH */
@@ -24,8 +24,10 @@ for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro
   { const api=mk()(D(file)); global.window.scrollTo=()=>{}; global.window.innerWidth=390; api.newDynasty(team,9,'T');
     api.doAdvance(); let n=0; while(api.live&&!api.live.done&&n++<6){api.live.ask?api.answerLive(api.live.ask.dp.opts[0][0]):api.liveTick()}
     if(api.live&&!api.live.done){ const h0=api.live.eng.h, a0=api.live.eng.a, g=api.live.g;
-      api.view('team'); const sk=global.__nodes.wskip; if(sk&&sk.onclick)sk.onclick();
-      const x=api.SEA.weeks[0].games.find(x=>x.home===g.home&&x.away===g.away);
+      // Skip runs on to your next call (round 34): answer each and skip again until the final whistle
+      let k=0; while(api.live&&!api.live.done&&k++<60){ if(api.live.ask){ api.answerLive(api.live.ask.dp.opts[0][0]); continue }
+        api.view('team'); const sk=global.__nodes.wskip; if(sk&&sk.onclick)sk.onclick(); else break }
+      const x=(api.SEA.weeks[0]||{games:[]}).games.find(x=>x.home===g.home&&x.away===g.away);
       ok(!!x&&x.hp>=h0&&x.ap>=a0, `${name}: skipped at ${a0}-${h0}, finished ${x?x.ap+'-'+x.hp:'?'}: not from the current score`) } }
   // reload mid-game: a call already made isn't asked again
   { const A=mk()(D(file)); global.window.scrollTo=()=>{}; A.newDynasty(team,5,'T');

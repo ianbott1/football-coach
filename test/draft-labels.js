@@ -24,12 +24,17 @@ for(const [f,teams] of games){
     const ahead=A.dnOrder().indexOf(t), first=ahead+1;
     if(ahead>0){ const gone=A.dnMock(C.list.map(p=>{ const x=A.dnRead(p.pid,t); return Object.assign({},p,{v:val(p),sr:x.sr,spot:x.spot}) }),ahead,((A.U.seed||0)*2246822519)^(A.SEA.year*31337),A.dnOrder());
       C.list.slice().sort((a,b)=>val(b)-val(a)).slice(0,30).forEach(p=>{ const k=kind(gone[p.pid]||0), o=overallOf[p.pid]; T.board[k][1]++; if(o&&o<first)T.board[k][0]++ }) }
-    // draft night, at your first pick: who's gone by your next
-    const st=A.draftNight(A.U,A.SEA.rec,A.SEA.elo,{[t]:{draft:A.S.off.picks.draft,board:[],hand:[]}},R,t).stop;
-    if(st&&st.next){ const D0=A.draftNight(A.U,A.SEA.rec,A.SEA.elo,{[t]:{draft:A.S.off.picks.draft,board:[],hand:[]}},R,t);
-      const av=D0.prospects.filter(p=>!p.taken).map(p=>{ const x=A.dnRead(p.pid,t); return Object.assign({},p,{v:val(p),sr:x.sr,spot:x.spot}) }).sort((a,b)=>b.v-a.v);
-      const gone=A.dnMock(av,st.next-st.overall-1,((A.U.seed||0)*2246822519)^(A.SEA.year*31337)^st.overall,A.dnTeamsBetween(D0.order,st.overall,st.next));
-      av.filter(p=>p.pid!==st.suggest).slice(0,24).forEach(p=>{ const k=kind(gone[p.pid]||0), o=overallOf[p.pid]; T.night[k][1]++; if(o&&o>st.overall&&o<st.next)T.night[k][0]++ }) }
+    // draft night, at every one of your picks (Muse: the same names stamped "likely gone" round after round, and
+    // only 2 of 16 gone; this checked the first pick only): who's gone by your next. The real draft each time is
+    // the one with your picks as made so far (the staff's suggestion).
+    const hand=[];
+    for(let k=0;k<R+1;k++){ const D0=A.draftNight(A.U,A.SEA.rec,A.SEA.elo,{[t]:{draft:A.S.off.picks.draft,board:[],hand:hand.slice()}},R,t), st=D0.stop;
+      if(!st)break;
+      if(st.next){ const real=A.draftNight(A.U,A.SEA.rec,A.SEA.elo,{[t]:{draft:A.S.off.picks.draft,board:[],hand:hand.concat([st.suggest])}},R,null), ov={}; real.picks.forEach(d=>ov[d.pid]=d.overall);
+        const av=D0.prospects.filter(p=>!p.taken).map(p=>{ const x=A.dnRead(p.pid,t); return Object.assign({},p,{v:val(p),sr:x.sr,spot:x.spot}) }).sort((a,b)=>b.v-a.v);
+        const gone=A.dnMock(av,st.next-st.overall-1,((A.U.seed||0)*2246822519)^(A.SEA.year*31337)^st.overall,A.dnTeamsBetween(D0.order,st.overall,st.next));
+        av.filter(p=>p.pid!==st.suggest).slice(0,24).forEach(p=>{ const kk=kind(gone[p.pid]||0), o=ov[p.pid]; T.night[kk][1]++; if(o&&o>st.overall&&o<st.next)T.night[kk][0]++ }) }
+      hand.push(st.suggest) }
   }
   console.log(f.replace('.html',''),`(${N} drafts)`);
   for(const w of ['board','night']){ const row=[];

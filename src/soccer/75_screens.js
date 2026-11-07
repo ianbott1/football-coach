@@ -154,9 +154,12 @@ function evidenceHTML(g,my,d,kind){
   }
   const T2=d.T2&&d.T2[opp], rows2=T2&&T2.n>0?tellRows(T2):null, rows=tellRows(rows2&&d.TA&&d.TA[opp]?d.TA[opp]:d.T[opp]);
   // in the second half: since half-time beside the whole match, so a change shows (a small sample, said so)
-  return `<div class="evid"><div class="evh">How ${esc(oppName)} are playing it <span>per 45 minutes${rows2?" &middot; whole match | since half-time":""}</span></div>
-    ${rows.map((r,i)=>`<div class="evr ${r[3]}"><span class="evk">${r[0]}</span><span class="evv">${r[1]}${rows2?` | ${rows2[i][1]}`:""}</span></div>`).join("")}
-    ${rows2?`<div class="evn">Since half-time is only ${T2.n*5} minutes: a hint, not proof.</div>`:""}
+  // since half-time as plain counts: ten minutes scaled to 45 printed "36.0 turnovers", and its few possible
+  // values made two matches' panels look identical (Grokbot)
+  const cnt2=rows2?[rows2[0][1],T2.to,T2.cr,T2.lb]:null;
+  return `<div class="evid"><div class="evh">How ${esc(oppName)} are playing it <span>${rows2?`per 45 | last ${T2.n*5} min`:"per 45 minutes"}</span></div>
+    ${rows.map((r,i)=>`<div class="evr ${r[3]}"><span class="evk">${r[0]}</span><span class="evv">${r[1]}${rows2?` | ${cnt2[i]}`:""}</span></div>`).join("")}
+    ${rows2?`<div class="evn">Left: the whole match, per 45 minutes. Right: counts since half-time, only ${T2.n*5} minutes: a hint, not proof.</div>`:""}
     ${firstReadTip()}<div class="evn">League average: possession 50%, turnovers 6.3, crosses 5.4, long balls 6.3.</div></div>`;
 }
 function statStrip(g,d){
@@ -193,7 +196,7 @@ function liveView(){
       <div class="wctl">
         <button class="wbtn" id="wpause">${live.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
         <button class="wbtn ${live.paused?'hot':''}" id="wstep">Next five minutes &rarr;</button>
-        <button class="wbtn" id="wskip">Skip</button>
+        <button class="wbtn" id="wskip" title="Plays on at once and stops at your next call">Skip to next call</button>
       </div>
       <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>
     </div></div>`;

@@ -51,9 +51,17 @@ const AGGR = {
   force:     {td:+0.080, fg:-0.120, to:+0.090, gap:1.00}
 };
 
+/* your defense on their late drive (the "defend" call): prevent gives up field goals and the clock to stop the
+   touchdown; pressure takes the ball away more often and gives up more big plays. Which is right depends on the
+   score: up 4 to 8 only a touchdown beats you; up 1 to 3 or level, a field goal does too. */
+const DEF_MODE = {
+  prevent: {td:-0.090, fg:+0.090, to:-0.035},
+  pressure:{td:+0.035, fg:-0.070, to:+0.075}
+};
 /* Chance of each outcome on one drive, given the gap between the two teams. */
-function driveOdds(offElo, defElo, startYd, aggr){
-  const A = AGGR[aggr] || AGGR.balanced;
+function driveOdds(offElo, defElo, startYd, aggr, dmode){
+  const A0 = AGGR[aggr] || AGGR.balanced, D = typeof dmode==="string" ? DEF_MODE[dmode] : dmode;
+  const A = D ? {td:A0.td+D.td, fg:A0.fg+D.fg, to:A0.to+D.to, gap:A0.gap} : A0;
   // risk makes a drive less about who is better; safe makes it more so
   const x = (offElo - defElo) * GAP_SCALE / 470 * (A.gap || 1);
   const field = (startYd - 27) / 100;              // better starting spot helps
@@ -66,8 +74,8 @@ function driveOdds(offElo, defElo, startYd, aggr){
   return {td:td, fg:fg, to:to};
 }
 
-function rollDrive(rng, offElo, defElo, startYd, aggr){
-  const o = driveOdds(offElo, defElo, startYd, aggr);
+function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
+  const o = driveOdds(offElo, defElo, startYd, aggr, dmode);
   const r = rng.r();
   if (r < o.td) return {pts:7, kind:"TD", stall:100};
   if (r < o.td + o.fg) return {pts:3, kind:"FG", stall:Math.min(92,startYd+Math.round(rng.range(12,40)))};
@@ -122,6 +130,8 @@ function nextStart(rng, prevKind, at){
     // midfield gained nothing, and going for it won most fourth downs (Instinct)
     if (prevKind === "PUNT"){ const land=100-at-rng.gauss(PUNT_GROSS,7); return land<=0?20:cl(land+Math.max(0,rng.gauss(6,5)),2,70) }
   }
+  if (prevKind === "ONSIDE") return cl(rng.gauss(52,4), 40, 65);          // you recovered your own onside kick
+  if (prevKind === "ONSIDEX") return cl(rng.gauss(58,5), 45, 75);         // they recovered it: a short field
   if (prevKind === "TD" || prevKind === "FG") return Math.round(rng.gauss(26, 6));
   if (prevKind === "PUNT") return Math.round(Math.max(4, Math.min(60, rng.gauss(24, 10))));
   if (prevKind === "INT" || prevKind === "FUM") return Math.round(Math.max(4, Math.min(75, rng.gauss(42, 16))));
@@ -202,6 +212,50 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   return st;
 }
 
+/* ---- their defense, and your answer (round 35) ----
+   Every other game reads the opponent; football only had the scoreboard (Grokbot: decision weight 4 of 10, pro
+   football under one call a game). Each club has a usual defense; a scouting report before kickoff, the drive
+   chart's numbers in the second quarter and after half-time, and an answer for your offense that holds until
+   you change it. Only in a game a person coaches against the computer: no other game moves. */
+const SCHEMES={
+  blitz:{l:"sending extra rushers",   counter:"quick"},
+  shell:{l:"sitting back, two deep",  counter:"run"},
+  box:  {l:"loading the box",         counter:"deep"}
+};
+const SCHEME_KEYS=["blitz","shell","box"];
+const FB_ANSWERS={
+  quick:{beats:"blitz", l:"Quick passes and screens", d:"Get it out before the rush gets there"},
+  run:  {beats:"shell", l:"Run the ball",             d:"Lean on them while they sit back"},
+  deep: {beats:"box",   l:"Take shots downfield",     d:"Throw over a defense crowding the line"}
+};
+const FB_READ=Object.assign({right:{td:+0.070,fg:0,to:-0.025}, wrong:{td:-0.020,fg:0,to:+0.015},
+  favW:3, scouted:6, sw:0.30, swBehind:0.50, tell:2.1, base:0.8}, (LEAGUE.tuning&&LEAGUE.tuning.fbRead)||{});
+// per drive of yours, what their defense leaves in the numbers: blitzes, deep safeties, men in the box
+const FB_TELL={blitz:[FB_READ.tell,FB_READ.base,FB_READ.base],shell:[FB_READ.base,FB_READ.tell,FB_READ.base],box:[FB_READ.base,FB_READ.base,FB_READ.tell]};
+function fbRead(T){ const n=Math.max(1,T.n), v=[T.bl/n,T.sh/n,T.bx/n]; return SCHEME_KEYS[v.indexOf(Math.max(...v))] }
+function clubScheme(t,year){ return SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
+function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function fbReport(fav,seed){
+  const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?FB_READ.favW:1), tot=w.reduce((a,b)=>a+b), n={};
+  SCHEME_KEYS.forEach(k=>n[k]=0);
+  for(let g=0;g<FB_READ.scouted;g++){ let x=r.r()*tot, i=0; while(x>w[i]){x-=w[i];i++} n[SCHEME_KEYS[i]]++ }
+  return n;
+}
+const FB_ASSIST=["normal","Leave it to your assistant"];
+function fbPrepCall(rep){
+  const top=SCHEME_KEYS.reduce((a,k)=>rep[k]>rep[a]?k:a,SCHEME_KEYS[0]);
+  return {k:"prep",h:"Before kickoff: the scouting report",b:"Game-plan your offense for how they usually defend, or wait and see?",
+    opts:Object.keys(FB_ANSWERS).map(a=>[a,FB_ANSWERS[a].l]).concat([["normal","Wait and see: leave it to your assistant"]]),
+    report:Object.assign({},rep), n:FB_READ.scouted, pearl:top};
+}
+function fbReadCall(stage,T,T2,last,cur){
+  const D=T2&&T2.n?T2:null;
+  return {k:"read",stage:stage,h:stage===1?"Second quarter: their defense":"After half-time: their defense",
+    b:stage===1?"How are they defending you? Pick your answer.":"Anything changed since the break? Adjust, or leave it.",
+    opts:(cur&&FB_ANSWERS[cur]?[["keep","Keep it: "+FB_ANSWERS[cur].l]]:[]).concat(Object.keys(FB_ANSWERS).filter(a=>a!==cur).map(a=>[a,FB_ANSWERS[a].l])).concat([FB_ASSIST]),
+    tell:Object.assign({},T), tell2:D?Object.assign({},D):null, best:fbRead(D||T), pearl:last?fbRead(last):fbRead(T)};
+}
+
 /* A game you step through one drive at a time. next() returns either a drive,
    a decision that needs an answer, or done. */
 
@@ -255,14 +309,25 @@ function twoPointCall(mine, theirs, q, late){
 /* humans: which sides a person is calling, {home, away}. A bare boolean is
    the one-coach form: true means the user is the home side. Each side has
    its own calls, asked only on its own drives, and an ask says whose it is. */
-function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
+function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
+  ctx=ctx||{};
   const st={h:0,a:0,drives:[],prev:"TD",i:0,total:DRIVES_PER_TEAM*2,
             aggrH:planH||"balanced",aggrA:planA||"balanced",
             baseH:planH||"balanced",baseA:planA||"balanced",
             usedH:{},usedA:{},callsH:0,callsA:0,humans:humans,
             rng:rng,endAfter:undefined,
             ask:null,stage:null,pend:null,answer:null};
+  // their defense against each person's offense (a person facing the computer)
+  st.D={}; st.ans={home:null,away:null}; st.log=[];
+  ["home","away"].forEach(sd=>{ const o=sd==="home"?"away":"home"; if(!humans[sd]||humans[o])return;
+    const fav=ctx.fav&&ctx.fav[o]; let sch;
+    if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?FB_READ.favW:1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
+    else sch=SCHEME_KEYS[rng.int(3)];
+    st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
+  const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; return FB_ANSWERS[a].beats===D.sch?FB_READ.right:FB_READ.wrong };
+  const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
+    const x={bl:pz(t[0]),sh:pz(t[1]),bx:pz(t[2]),n:1}; ["bl","sh","bx","n"].forEach(k=>{ D.T[k]+=x[k]; if(D.half)D.T2[k]+=x[k] }); D.last=x };
 
   function push(home,q,start,res,aggr){
     if(home)st.h+=res.pts; else st.a+=res.pts;
@@ -338,6 +403,27 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
             : {pts:0,kind:"MISS",stall:P.res.stall,note:"missed a "+fgDistance(P.res.stall)+"-yard field goal"};
         } else res={pts:0,kind:"PUNT",stall:P.res.stall,note:"punted it away"};
         return {drive:push(home,P.q,P.start,res,P.aggr),h:st.h,a:st.a};
+      } else if(stage==="fbread"){
+        st.stage=null; const D=st.D[side], dp=P.dp;
+        const pick=choice==="keep"?st.ans[side]:FB_ANSWERS[choice]?choice:null;
+        if(pick&&FB_ANSWERS[pick]){
+          const e={side:side,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
+          if(dp.k==="read")e.evid=dp.best; if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true }
+          st.log.push(e); st.ans[side]=pick }
+        else if(dp.k==="read"&&rng.r()<0.45)st.ans[side]=SCHEMES[D.sch].counter;   // your assistant reads it, about as often as anyone
+        // fall through and play the drive
+      } else if(stage==="onside"){
+        // asked of the side that just scored, before the other side's possession
+        st.stage=null;
+        if(choice==="onside"){ const ok=rng.r()<ONSIDE_P;
+          if(ok){ st.drives.push({home:home,q:q,start:null,pts:0,kind:"ONSIDE",h:st.h,a:st.a,n:st.i+1,aggr:"balanced",
+              note:"never had it: the onside kick was recovered",converted:null,togo:null});
+            st.prev="ONSIDE"; st.at=null; st.i++; return {drive:st.drives[st.drives.length-1],h:st.h,a:st.a} }
+          st.prev="ONSIDEX"; st.at=null; st.onsideMiss=true }
+        // fall through: their possession, from wherever the kick left it
+      } else if(stage==="defend"){
+        st.stage=null; st.dmode=(choice==="prevent"||choice==="pressure")?choice:null;
+        // fall through and play their drive against it
       } else if(stage==="two"){
         let res;
         if(choice==="two"){
@@ -352,7 +438,36 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
       }
     }
 
-    const start=nextStart(rng,st.prev,st.at);
+    // ---- before their possession: your onside kick, or your defense on a late drive ----
+    // (asked of the side without the ball: the other one, a person facing the computer)
+    const oth=home?"away":"home", othUser=home?humans.away:humans.home, othCalls=home?st.callsA:st.callsH;
+    if(othUser&&!isUser&&!st.stage&&!st.lateAsked&&othCalls<MAX_CALLS){
+      const oMine=home?st.a:st.h, oTheirs=home?st.h:st.a, d=oMine-oTheirs, left=st.total-i;   // left: possessions to go, this one included
+      const oUsed=home?st.usedA:st.usedH;
+      // you just scored and still trail, with too few possessions to win it the slow way
+      if(!oUsed.onside&&(st.prev==="TD"||st.prev==="FG")&&d<0&&d>=-16&&left<=4){
+        oUsed.onside=true; if(home)st.callsA++; else st.callsH++; st.lateAsked=true;
+        st.stage="onside"; st.pend={q:q};
+        return {ask:onsideCall(d,left),mine:oMine,theirs:oTheirs,q:q,side:oth} }
+      // their late drive, you ahead by a score or level
+      if(!oUsed.defend&&d>=0&&d<=8&&left<=3){
+        oUsed.defend=true; if(home)st.callsA++; else st.callsH++; st.lateAsked=true;
+        st.stage="defend"; st.pend={q:q};
+        return {ask:defendCall(d,left),mine:oMine,theirs:oTheirs,q:q,side:oth} }
+    }
+    if(!st.stage)st.lateAsked=false;
+
+    const start=st.startHold!==undefined?st.startHold:nextStart(rng,st.prev,st.at); st.startHold=undefined;
+
+    // ---- their defense: the half-time change, and your reads (before your drive) ----
+    if(!st.stage&&i>=st.total/2){ ["home","away"].forEach(sd=>{ const D=st.D[sd]; if(!D||D.half)return; D.half=true;
+        const behind=(sd==="home"?st.a-st.h:st.h-st.a)<0;   // their side behind
+        if(rng.r()<(behind?FB_READ.swBehind:FB_READ.sw)){ const ks=SCHEME_KEYS.filter(k=>k!==D.sch); D.sch=ks[rng.int(ks.length)] } }) }
+    if(isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
+      if(!D.asked.prep&&D.fav){ D.asked.prep=true; dp=fbPrepCall(fbReport(D.fav,(ctx.seed||0)+(side==="home"?2:1))) }
+      else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side]) }
+      else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side]) }
+      if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
     // ---- strategic call before the snap ----
     if(isUser&&calls()<MAX_CALLS&&!st.stage){
@@ -368,7 +483,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
 
     const aggr=isUser?(home?st.aggrH:st.aggrA)
                      :situational(home?st.aggrH:st.aggrA,i,st.total,mine,theirs);
-    const res=rollDrive(rng,offE,defE,start,aggr);
+    const dm=!isUser?st.dmode:readMod(side); if(!isUser)st.dmode=null;   // your defense, this drive only; your offense's answer, until you change it
+    const res=rollDrive(rng,offE,defE,start,aggr,dm);
+    if(isUser)tellDrive(side);
+    if(dm&&!isUser)res.note=(res.note?res.note+"; ":"")+(dm==="prevent"?"against your prevent defense":"against your pressure");
+    if(st.onsideMiss){ st.onsideMiss=false; res.note=(res.note?res.note+"; ":"")+"after recovering the onside kick" }
 
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
@@ -396,6 +515,27 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans){
   return st;
 }
 
+/* how much game is left, in the engine's own clock: possessions. "About 6 minutes" was a guess on top of it
+   (Grokbot: late calls without the exact time); the drives left are exact. left counts this one. */
+function possLeft(left,mineNext){
+  const you=mineNext?Math.ceil(left/2):Math.floor(left/2), them=left-you;
+  return `Possessions left: ${you} for you, ${them} for them.`;
+}
+const ONSIDE_P=(LEAGUE.tuning&&LEAGUE.tuning.onside)||0.12;   // about one in eight recovered, under today's kickoff rules
+function onsideCall(diff,left){
+  // left: possessions to go, theirs next. Kick deep and they get theirs; recover it and theirs is gone.
+  const need=-diff<=3?"a field goal":-diff<=8?"a touchdown":"two scores";
+  return {k:"onside",h:`Down ${-diff} after your score`,
+    b:`You need ${need}. Kick it deep and make a stop, or try the onside kick? About one in eight is recovered; a miss hands them a short field. ${possLeft(left,false)}`,
+    opts:[["onside","Onside kick"],["normal","Kick it deep, as your assistant would"]],left:left,diff:diff};
+}
+function defendCall(diff,left){
+  const what=diff===0?"Any score beats you.":diff<=3?"A field goal "+(diff===3?"ties it":"beats you")+".":"Only a touchdown beats you.";
+  return {k:"defend",h:diff===0?"Tied, and they have the ball":`Up ${diff}, and they have the ball`,
+    b:`${what} Prevent defense gives up yards and field goals to stop the big play; pressure takes the ball away more often and gives up more touchdowns. ${possLeft(left,false)}`,
+    opts:[["prevent","Prevent: nothing deep"],["pressure","Bring pressure"],["normal","Play it straight, as your assistant would"]],left:left,diff:diff};
+}
+
 /* Is this a moment worth stopping the game for? */
 function decisionPoint(state, isUser){
   if (!isUser) return null;
@@ -408,7 +548,7 @@ function decisionPoint(state, isUser){
   // before the fourth it's the quarter's clock: "About 18 minutes left" at "end of the third" read as wrong (Grokbot;
   // it was 3 in the quarter plus the fourth)
   const left = Math.max(1, Math.round(60*(total-idx)/total)), inQ = Math.min(15, Math.max(1, left-(4-Math.min(4,q))*15)),
-        clock = q>=4 ? ` About ${left} minute${left===1?"":"s"} left.` : ` About ${inQ} minute${inQ===1?"":"s"} left in the ${["first","second","third"][q-1]||"third"} quarter.`;
+        clock = q>=4 ? " "+possLeft(total-idx,true) : ` About ${inQ} minute${inQ===1?"":"s"} left in the ${["first","second","third"][q-1]||"third"} quarter.`;
 
   // asked on your last possession, when what you need is known: a field
   // goal to win or tie, or nothing less than a touchdown

@@ -149,6 +149,7 @@ function offseasonScreen(){
       <div class="btitle">${esc(my)} has fired you.</div>
       <div class="bsub">Career ${C.w}-${C.l} &middot; you are ${esc(repGrade(C.rep))}.
       ${S.off.jobs.length?"These programs will take you.":"Nobody is calling."}</div></div>`;
+    h+=firedHistoryHTML();   // your seasons stay in reach after a firing (Grokbot: the history tab was gone)
     h+=`<div class="grouphead">1. Where do you go next?</div>`;
     h+=S.off.jobs.map(t=>jobRow(t,U.program[t]>U.program[my]?"step up":"opening")).join("");
     h+=`<div class="cand ${S.off.move==="retire"?'on':''}" data-job="retire">

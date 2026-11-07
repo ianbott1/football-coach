@@ -162,6 +162,130 @@ Round 33: calls that matter (Ian: make the options genuinely different; no numbe
   timeouts, two-point in more spots); college basketball's half-time call and
   hockey's pull timing stay small (honest, but close half the time).
 
+Round 34: the number you can trust (Muse, Grokbot and Instinct, round 11 of testing):
+- The chance before a game is the engine's own (core gameEdge/winProb): the
+  strengths the game is played with (SEA.matchupElo at the balanced plan:
+  lineup, injuries, featuring, ice time, staff), not the league's running
+  ratings (SEA.elo). A backup started moved nothing on screen while the game
+  charged it in full (pro basketball, PG 24 worse: shown 65% -> 65%, engine
+  57% -> 35%). Measured over four seasons a league: the old number was badly
+  calibrated (pro basketball's 96% won 87%, 5% won 24%; pro football's 95%
+  won 83%); the engine's holds (95% wins 92-96%, 5% wins 2-6%). Soccer's W/D/L
+  the same (gameEdge). One number on every screen, whichever plan is picked.
+- Skip (and Enter) plays on at once to your next call and stops there
+  (skipLive); a game finished by endLive marks its answers as the
+  assistant's (S.callAuto), never graded. Live controls act on the press:
+  at Very fast the screen redraws faster than a tap.
+- Basketball's crunch time, level or ahead with a call's worth of game left
+  (the late segment, within 9): "close", a read of their closing play (each
+  club's clubClose, the report of its last close finishes) against what
+  they've run tonight; 60% go to the closing play (BB.closePref). 8.8-13.7
+  points a call, rarely a coin flip; chase stays for behind. Hockey's third
+  period, within a goal at ten minutes left: "third", a read with since-the-
+  second-intermission counts beside the whole game; the other bench changes
+  system for the third 25% of the time (50% when behind), only in a game
+  within a goal after two and only against a person, so no other game moves
+  (in every game it halved the first read's worth where no third read was
+  asked). 12.3 points, 4% coin flips, 0.4 a game. Both gated like other situation calls (GATE_KINDS).
+- Pearl reads change from the numbers, not her eyes: "has anything moved?"
+  compares the numbers' best read at each stage (basketball, soccer), and
+  when her eyes (the commentary cue, often wrong by design) disagree with the
+  numbers she says so (basketball, hockey). Soccer's half-time lines answer
+  her 25-minute read with the first half's numbers (pearlRecall), once.
+- Scouts: an unsure read is said as what he's likely to be (scoutRead pulls
+  it toward the class by its reliability, draftPrior). Fair on average before,
+  but a high unsure read of 72 averaged 62 (Muse's three 73-82 reads arrived
+  50-59); after, every read level holds within 1-3. The mock (dnMock) no
+  longer pulls those a second time, treats a worked-out player as a sharp
+  read, and gives each team ahead 70% of its own org's scouting error
+  (DRAFT_K.mockOrg). test/draft-labels.js now checks draft night at every one
+  of your picks (it checked the first only; the old build failed there at
+  70% of "likely gone"): football 76/53/22, basketball 95/51/32 (small),
+  hockey 94/60/26, all in band. Worked-out players stay listed wherever their
+  read puts them; the tapped-once pick lives in dnArmed, not on the button.
+- Promotions and firings belong to their season: S.promos and S.fires were
+  never cleared, so a reload in season 2 replayed season 1's (a coordinator
+  fired again: a season of "Interim staff", Muse). Reset each season;
+  S.choiceYear marks them, and an old save past its first season drops its
+  untagged ones.
+- Text: Dynasty counts the season the moment it's over and lists it in Your
+  seasons (now above the trophy cabinet); your seasons stay in reach on the
+  fired screen; the playoff screen names the conference champions below the
+  first team out; "close either way" says it isn't graded; a game you watched
+  with no call says so; soccer's play-off places by number; soccer's since-
+  half-time column is counts, not ten minutes scaled to 45 ("36.0
+  turnovers").
+- The reads tests (hk-reads, bb-reads) play each game on its own dice, the same
+  for every strategy: one stream for all games let any changed draw reshuffle
+  every later game. On common dice, hockey's "pull him on soft goals" is no
+  better than "pull him at two" (0.0-0.1 apart, round 33's engine too: it
+  passed on luck); the test now checks that knowing a real bad night is
+  worth something.
+- Measured, not changed: hockey live games 6.18 goals (target 6.1), pro
+  basketball live 116.5 a team (league 115, target 114.6). Soccer's identical
+  stats panels didn't reproduce: 400 simulated and 6 live panels, no repeats;
+  the coarse since-half-time column made repeats likely, now counts.
+- Still to do: football's late calls (clock, timeouts, two-minute drill) and
+  pro football's call count; a firing that moves you skips the new team's
+  free agency; hockey and pro basketball's free-agent market is depth only
+  (teams re-sign their best; the pool floor is 58).
+
+Round 35: football reads the game (Grokbot: pro football decision weight 4 of 10, under one call a game):
+- Their defense and your answer, as every other sport reads its opponent:
+  each club's usual defense (clubScheme: blitz, two-deep shell, loaded box),
+  a scouting report before kickoff (prep), a read in the second quarter and
+  one after half-time (with since-half-time counts beside the whole game);
+  your answer (quick passes / run / deep shots) holds until you change it:
+  right +0.070 touchdown and -0.025 turnover a drive, wrong -0.020 / +0.015
+  (FB_READ). They change defense at half-time 30% of the time, 50% behind.
+  Only against the computer in a game a person coaches; no other game moves.
+  Pearl's read is the last drive (her eyes), the numbers the whole game; she
+  says when they differ. test/fb-reads.js on common dice (8000 games): the
+  report +2.8-2.9 win points, the numbers +3.6-3.9, Pearl +1.6-2.2, a guess
+  -1.9 to -3.0, the right answer +7.9-8.1.
+- Late calls a coach makes: the onside kick (after you score and still trail
+  by up to 16 with 4 or fewer possessions left; 12% recovered, LEAGUE.tuning.
+  onside; a miss gives them a short field) and your defense on their late
+  drive (up 0-8 with 3 or fewer left: prevent, pressure or straight;
+  DEF_MODE). Late calls give the clock in the engine's own unit, possessions
+  left for each side (possLeft), not "about 6 minutes". No timeouts: the
+  engine has no clock inside a drive, and an invented one would be a number
+  you can't trust.
+- Measured (test/call-weight.js, 12-17 games, two teams each): reads 8.5-9.3
+  points a call (a dominant pro team 3.1), the report 6.8-10.0, fourth downs
+  8.6-10.4, defend 7.5-8.1, onside 2.5-7.5 (rare). Pro football now asks
+  about four calls a game (was under one). Scoring unchanged: your games
+  48.1 points (48.8 before), the league 46.0.
+- Control: with the reads and late calls off, every fingerprint matches round
+  34 exactly (golden and hot seat).
+- Still to do: the two-minute drill and timeouts would need a clock inside
+  drives; a firing that moves you skips the new team's free agency; the
+  free-agent market in hockey and pro basketball is depth only.
+
+Round 36: the NBA Cup and the coach's notes (Ian):
+- The NBA Cup (leagues/nba/87_nbacup.js): six groups of five, three a
+  conference, drawn each season on the Cup's own dice; a five-night round robin
+  on the Cup nights (steps 10, 12, 14, 17, 19: Nov 11-28), four games each;
+  group tables by wins, head to head, then point difference; the six winners
+  and the best runner-up in each conference to quarter-finals at the better
+  seed (step 23, Dec 9), semi-finals (25) and the championship (26) in Las
+  Vegas. Played as cup games on split days (LEAGUE.splitCup), on their own
+  dice (Season._week swaps in sea.cup.gr), so no other game's result moves;
+  they touch no record. Every team still plays 82: unlike the real NBA, where
+  all but the championship count, because the schedule has no room to make
+  the group games league games. Said on the Cup page. A Cup page on Rankings
+  (your group, the bracket, the other groups), Cup lines on the next-up and
+  result cards (LEAGUE.cup.stake, result), trophy and card lines, the history
+  entry (league.cup). Core cup text is generic now (LEAGUE.cup.name, tag,
+  rule, objective); soccer's achievements need LEAGUE.draws, not a cup.
+  NBA_CUP=0 in Node turns it off: then every fingerprint matches round 35.
+- The coach's notes (guideNote): a short note the first time a new career
+  meets each kind of call (read, scouting report, fourth down, situation
+  call, goalie, flank, crunch time, third period), the next-up card and the
+  result card; "Got it" clears one, "Skip the guide" all. On for a new
+  career (S.guide), off in a hot seat and for older careers; Help turns them
+  back on. Screens only.
+
 Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
 - A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
   soccer's 25' call came up under a tap meant for the game and was graded as

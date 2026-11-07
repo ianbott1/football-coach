@@ -99,6 +99,12 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
       ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Most teams have a way they like to score, but not every night. Get it right and the work you did in practice shows; get it wrong and you're out of position until you change it.</div>${splitNote(R)}</div>`; }
+  // crunch time: their close finishes beside what they've run tonight
+  if(dp.k==="close"){ const opp=g.home===my?"away":"home", R=dp.report, n=dp.n||6;
+    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} close finishes</div>
+      ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
+      <div class="evn">Close teams often go to a closing play of their own. Some stay with whatever's working.</div>${splitNote(R)}</div>`
+      +(d&&d.T?evidenceHTML(g,my,d,{k:"read"}).replace("How "+esc(g[opp])+" are scoring","What they've run tonight"):""); }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
@@ -136,7 +142,7 @@ function liveView(){
       <div class="wctl">
         <button class="wbtn" id="wpause">${live.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
         <button class="wbtn ${live.paused?'hot':''}" id="wstep">Next stretch &rarr;</button>
-        <button class="wbtn" id="wskip">Skip</button>
+        <button class="wbtn" id="wskip" title="Plays on at once and stops at your next call">Skip to next call</button>
       </div>
       <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>
     </div></div>`;
@@ -146,7 +152,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>(dp.k==="read"||dp.k==="prep")&&DEFENSES[o]?DEFENSES[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep"||dp.k==="close")&&DEFENSES[o]?DEFENSES[o].d:"";
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -228,5 +234,7 @@ function readTextBase(e){
     :`They were ${STYLE[e.truth].l}: the answer was "${DEFENSES[STYLE[e.truth].answer].l}".`;
   if(e.k==="prep")return e.right?`Your game plan was right: they came out ${STYLE[e.truth].l}.`
     :`You game-planned for the wrong thing: they came out ${STYLE[e.truth].l}.`;
+  if(e.k==="close")return e.right?`Right at crunch time: they closed ${STYLE[e.truth].l}.`
+    :`They closed ${STYLE[e.truth].l}: the answer was "${DEFENSES[STYLE[e.truth].answer].l}".`;
   return "";
 }

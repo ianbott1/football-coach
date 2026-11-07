@@ -65,7 +65,9 @@ function nflBoardHTML(P){
   let h=`<div class="grouphead">Your draft board</div>`;
   h+=board.length?board.map((id,i)=>row(byId[id],i,true)).join("")
      :`<div class="note">Empty: your draft style will choose. Add players below and you'll take the highest one still there at each of your picks.</div>`;
-  const pool=C.list.filter(p=>board.indexOf(p.pid)<0).sort((a,b)=>val(b)-val(a)).slice(0,30);
+  // worked-out players stay listed wherever their sharper read puts them (Instinct: one vanished from the 30)
+  const wkd=(S.off.picks.workouts||[]), ranked=C.list.filter(p=>board.indexOf(p.pid)<0).sort((a,b)=>val(b)-val(a));
+  const pool=ranked.slice(0,30).concat(ranked.slice(30).filter(p=>wkd.indexOf(p.pid)>=0));
   h+=`<div class="grouphead">The class &mdash; best 30 by your scouts</div>`+(ahead>0?`<div class="note">${nOf(ahead,"pick")} before yours. "Likely there" is a mock draft from your scouts' numbers; other teams see the class differently, and the lottery can move you.</div>`:"")+pool.map(p=>row(p,0,false)).join("");
   return h;
 }
@@ -206,6 +208,7 @@ function offseasonScreen(){
       <div class="btitle">${esc(my)} has fired you.</div>
       <div class="bsub">Career ${careerRec(C)} &middot; you are ${esc(repGrade(C.rep))}.
       ${S.off.jobs.length?"These teams will take you.":"Nobody is calling."}</div></div>`;
+    h+=firedHistoryHTML();   // your seasons stay in reach after a firing (Grokbot: the history tab was gone)
     h+=`<div class="grouphead">1. Where do you go next?</div>`;
     h+=S.off.jobs.map(t=>jobRow(t,U.program[t]>U.program[my]?"step up":"opening")).join("");
     h+=`<div class="cand ${S.off.move==="retire"?'on':''}" data-job="retire">

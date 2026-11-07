@@ -50,8 +50,22 @@ function scoutNoise(u,team){ return Math.max(0.8,2.6-orgEdge(u,team)*1.2)*DRAFT_
 function scoutRead(u,team,p,wk){
   const noise=scoutNoise(u,team)*(wk?WK_SHARP:draftFogOf(u,p));
   const r=new RNG(((u.seed||0)*69069^((u.year|0)*7919)^Math.imul(p.pid+1,2654435761)^strHash(team)^(wk?0x5f3759df:0))>>>0);
-  const sr=Math.round(p.r+r.gauss(0,noise));
-  return {sr:sr,spot:Math.round(Math.max(sr,p.pot+r.gauss(0,noise*1.6))),wk:!!wk,unsure:!wk&&draftUnsure(u,p)};
+  const raw=p.r+r.gauss(0,noise), rawPot=p.pot+r.gauss(0,noise*1.6), uns=!wk&&draftUnsure(u,p);
+  // an unsure read is said as what he's likely to be, not the raw guess: the reads were fair on average, but the
+  // high ones you'd pick are mostly the ones that guessed high (a read of 72 averaged 62; Muse: three "unsure"
+  // rookies read 73-82 arrived 50-59). Pulled toward the class by how much a read that noisy can be trusted.
+  const P=uns?draftPrior(u):null;
+  const sr=Math.round(P?P.r+(raw-P.r)*P.vr/(P.vr+noise*noise):raw);
+  const sp=P?P.pot+(rawPot-P.pot)*P.vp/(P.vp+noise*noise*2.56):rawPot;
+  return {sr:sr,spot:Math.round(Math.max(sr,sp)),wk:!!wk,unsure:uns};
+}
+function draftPrior(u){
+  const C=u.draftClass; if(!C||!C.list||!C.list.length)return null;
+  if(C._prior)return C._prior;
+  const L=C.list, n=L.length, mr=L.reduce((a,p)=>a+p.r,0)/n, mp=L.reduce((a,p)=>a+p.pot,0)/n;
+  const vr=L.reduce((a,p)=>a+(p.r-mr)*(p.r-mr),0)/n, vp=L.reduce((a,p)=>a+(p.pot-mp)*(p.pot-mp),0)/n;
+  Object.defineProperty(C,"_prior",{value:{r:mr,pot:mp,vr:vr,vp:vp},enumerable:false,configurable:true});   // not saved
+  return C._prior;
 }
 function draftRng(u){ return new RNG((((u.seed||0)*2246822519)^((u.year|0)*48271)^DRAFT_NIGHT)>>>0) }
 function draftScore(style,R,p){
@@ -154,12 +168,20 @@ function dnMock(avail,ahead,key,teams,t){
   const gone={}; if(ahead<=0)return gone; t=t||dnTeam(); const M=60, r=new RNG(key>>>0);
   const vs=avail.map(p=>p.v), m=vs.reduce((x,y)=>x+y,0)/Math.max(1,vs.length);
   const st2=Math.max(1,vs.reduce((x,y)=>x+(y-m)*(y-m),0)/Math.max(1,vs.length));
-  const q=avail.map(p=>{ const sr=scoutNoise(U,t)*draftFogOf(U,p), k=st2/(st2+sr*sr), sh=x=>m+(x-m)*k;
+  // an unsure read is already said as what he's likely to be (scoutRead), so it isn't pulled in a second time;
+  // a worked-out one is a sharp read, not a foggy one
+  const wks=(S.off&&S.off.picks&&S.off.picks.workouts)||[];
+  const q=avail.map(p=>{ const wk=wks.indexOf(p.pid)>=0, sr=scoutNoise(U,t)*(wk?WK_SHARP:draftFogOf(U,p)), k=st2/(st2+sr*sr), pre=!wk&&draftUnsure(U,p), sh=x=>pre?x:m+(x-m)*k;
     const rr=p.sr!==undefined?p.sr:p.r, pp=p.spot!==undefined?p.spot:p.pot;
-    return Object.assign({},p,{r:sh(rr),pot:sh(pp),sdx:Math.sqrt(sr*sr*k+Math.pow(DRAFT_K.mock*draftFogOf(U,p),2))}) });
+    const PR=pre?draftPrior(U):null, pv=PR?sr*sr*PR.vr/(PR.vr+sr*sr):sr*sr*k;   // what's still unknown about him
+    return Object.assign({},p,{r:sh(rr),pot:sh(pp),pv:pv,fg:draftFogOf(U,p),sdx:Math.sqrt(pv+Math.pow(DRAFT_K.mock*draftFogOf(U,p),2))}) });
   const base=teams?teams.slice(0,ahead).map(tm=>{ const R=U.roster[tm]||[]; return q.map(p=>draftScore("bpa",R,p)) }):null;
+  // each team ahead misjudges prospects as its own scouts do (draftNight: its org's scouting, foggier on the hard
+  // reads), on top of what you don't know: one spread for every team mocked the board's top names gone too often
+  // (test/draft-labels.js at every pick, Nov 2026)
+  const sdk=teams?teams.slice(0,ahead).map(tm=>{ const sc=(2.5-orgEdge(U,tm)*1.4)*DRAFT_K.fog*(DRAFT_K.mockOrg||0.7); return q.map(p=>Math.sqrt(p.pv+Math.pow(sc*p.fg,2))) }):null;
   for(let n=0;n<M;n++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
-      q.forEach((p,i)=>{ if(taken.has(p.pid))return; const v=(base?base[k][i]:dnVal({sr:p.r,spot:p.pot}))+r.gauss(0,p.sdx); if(v>bs){bs=v;bi=p.pid} }); if(bi<0)break; taken.add(bi) }
+      q.forEach((p,i)=>{ if(taken.has(p.pid))return; const v=(base?base[k][i]:dnVal({sr:p.r,spot:p.pot}))+r.gauss(0,sdk?sdk[k][i]:p.sdx); if(v>bs){bs=v;bi=p.pid} }); if(bi<0)break; taken.add(bi) }
     taken.forEach(id=>gone[id]=(gone[id]||0)+1/M) }
   return gone;
 }
@@ -220,7 +242,11 @@ function draftNightHTML(){
       <div class="bsub">${s.next?`Your next pick is #${s.next}.`:"Your last pick of the draft."} ${wk.length<dnWorkouts()?`${nOf(dnWorkouts()-wk.length,"private workout")} left. A workout brings one player in for a closer look: your read on him gets much sharper, and the row shows what changed. Worth most on players marked "scouts unsure".`:dnWorkouts()?"Workouts used.":""}</div></div>`+tk;
     h+=`<div class="grouphead">${fromBoard?"Top of your board":"Your staff's pick"}</div>`+dnRowHTML(sug,t,lab(sug),true)
       +`<button class="skip" data-dnstaff="1">${fromBoard?"Take the top of my board":"Let my staff make this pick"}</button>`;
-    h+=`<div class="grouphead">Best available, by your scouts</div>`+avail.filter(p=>p.pid!==s.suggest).slice(0,24).map(p=>dnRowHTML(p,t,lab(p),true)).join("");
+    // the players you worked out stay on the list wherever their sharper read puts them: a workout that showed a
+    // "scouts unsure" 80 to be a 60 dropped him off the top 25 with no word (Instinct)
+    { const top=avail.filter(p=>p.pid!==s.suggest).slice(0,24), ids=new Set(top.map(p=>p.pid)), pin=avail.filter(p=>p.pid!==s.suggest&&!ids.has(p.pid)&&wk.indexOf(p.pid)>=0);
+      h+=`<div class="grouphead">Best available, by your scouts</div>`+top.map(p=>dnRowHTML(p,t,lab(p),true)).join("")
+        +(pin.length?`<div class="grouphead">Worked out, further down your list</div>`+pin.map(p=>dnRowHTML(p,t,lab(p),true)).join(""):""); }
     if(s.next)h+=`<div class="note">"Likely there" is a mock of the picks before your next one, from your scouts' numbers; other teams see the class their own way.</div>`;
     h+=`<button class="skip" data-dnrest="1">Let my staff make the rest of my picks</button>`;
   }else{
@@ -233,9 +259,15 @@ function draftNightHTML(){
   h+=`<button class="skip" data-dnback="1">Back to the offseason</button>`;
   return h;
 }
+let dnArmed=null;
 function bindDraftNight(){
   const P=S.off.picks, go=()=>{ save(); render(); window.scrollTo({top:0,behavior:"auto"}) };
-  document.querySelectorAll("[data-dnpick]").forEach(b=>b.onclick=()=>tapTwice(b,"Tap again",()=>{ P.hand=(P.hand||[]).concat([+b.dataset.dnpick]); go() }));
+  // the pick you've tapped once lives in the game, not on the button: the board redraws as picks land, and a redraw
+  // between the two taps quietly reset it (Instinct). Tapped again within five seconds, it's yours.
+  document.querySelectorAll("[data-dnpick]").forEach(b=>{ const id=+b.dataset.dnpick;
+    if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<5000){ b.innerHTML="Tap again"; b.classList.add("armed") }
+    b.onclick=()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<5000){ dnArmed=null; P.hand=(P.hand||[]).concat([id]); go(); return }
+      dnArmed={id:id,at:Date.now()}; render(); setTimeout(()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at>=5000){ dnArmed=null; render() } },5050) } });
   document.querySelectorAll("[data-dnstaff]").forEach(b=>b.onclick=()=>{ const D=dnState(); if(D.stop){ P.hand=(P.hand||[]).concat([D.stop.suggest]); if(!(P.board||[]).length||(P.board||[]).indexOf(D.stop.suggest)<0)P.staffPicked=(P.staffPicked||[]).concat([D.stop.suggest]); go() } });
   document.querySelectorAll("[data-dnrest]").forEach(b=>b.onclick=()=>tapTwice(b,"Tap again: your staff picks the rest",()=>{ P.handDone=true; go() }));
   document.querySelectorAll("[data-dnwork]").forEach(b=>b.onclick=()=>{ P.workouts=P.workouts||[]; if(P.workouts.length<dnWorkouts())P.workouts.push(+b.dataset.dnwork); save(); render() });

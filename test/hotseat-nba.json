@@ -1,5 +1,5 @@
 {
- "fp": "17898da5a31bc588",
+ "fp": "a291b6f1b32a9de8",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -165,6 +165,16 @@
    "fp": "17898da5a31bc588",
    "from": "652dd0c06f988787",
    "note": "Round 33 (as noted): recorded again from a fresh build; the earlier record missed the cut protect call's assistant close-out, which the control covered"
+  },
+  {
+   "fp": "19a3071cb204dbac",
+   "from": "17898da5a31bc588",
+   "note": "Round 34: crunch-time and third-period reads in close games, and unsure scout reads said as what they're likely to be. Control with both off matches the previous fingerprints exactly."
+  },
+  {
+   "fp": "a291b6f1b32a9de8",
+   "from": "19a3071cb204dbac",
+   "note": "Round 36: the NBA Cup. With it off (NBA_CUP=0) every fingerprint matches round 35."
   }
  ],
  "out": [
@@ -174,20 +184,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "48-34",
+      "rec": "50-32",
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "4df0026a886eff73"
+     "book": "7094705caedcd13d"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "41-41",
-      "result": "Lost in the first round",
-      "grade": "C+"
+      "rec": "43-39",
+      "result": "Lost in the conference finals",
+      "grade": "B"
      },
-     "book": "7f8c12ffbc2f45a8"
+     "book": "2c437b76e47823e6"
     }
    ]
   },
@@ -197,20 +207,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-48",
+      "rec": "30-52",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "c4c73a21cbe3cffe"
+     "book": "cc9346094243821b"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "48-34",
-      "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "rec": "44-38",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "f02b57d9cd4fe89e"
+     "book": "7716215c27e8a4b7"
     }
    ]
   },
@@ -220,20 +230,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-44",
-      "result": "Lost in the play-in",
-      "grade": "C-"
+      "rec": "29-53",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "0a5f609286757a99"
+     "book": "dd604760d13fca2d"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "47-35",
-      "result": "Lost in the first round",
-      "grade": "B-"
+      "rec": "63-19",
+      "result": "Lost in the conference finals",
+      "grade": "A"
      },
-     "book": "caa90ec3fab1d122"
+     "book": "565ef34d7117b11e"
     }
    ]
   }
