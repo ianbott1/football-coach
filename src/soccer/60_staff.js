@@ -120,6 +120,16 @@ const PEARL_READ={
   wing:"Everything's coming down the wings. Let's double up out there!",
   direct:"They just keep kicking it long! Drop off and win the second balls!"
 };
+/* half-time: Pearl answers her own 25-minute read with the first half's numbers (Muse: her half-time line was a
+   score script, made up fresh each time and repeated word for word across matches) */
+function pearlRecall(dp,seed){
+  const a=dp.pearl1&&APPROACH[dp.pearl1], b=dp.ht1&&APPROACH[dp.ht1]; if(!a||!b)return "";
+  const n=Math.abs(seed|0)%3;
+  if(dp.pearl1===dp.ht1)return [`At 25 minutes I said they were ${a.l}, and the first half bore it out. `,
+    `The first half was what I saw at 25 minutes: ${a.l}. `,`I called them ${a.l} early on, and the numbers stayed with me all half. `][n];
+  return [`At 25 minutes I thought they were ${a.l}. The first half's numbers look more like ${b.l}. `,
+    `I said ${a.l} at 25 minutes. Looking at the whole half, it's more ${b.l}. `,`My early read was ${a.l}; the first half says ${b.l}, and the numbers watched it all. `][n];
+}
 function staffTake(dp, ctx){
   const diff=(ctx.mine||0)-(ctx.theirs||0), seed=(ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0), R=[];
   const behind=diff<0, ahead=diff>0, o=dp.opts.map(x=>x[0]);
@@ -127,11 +137,12 @@ function staffTake(dp, ctx){
     const p=dp.pearl&&APPROACH[dp.pearl]?APPROACH[dp.pearl].counter:"normal";
     R.push({who:"bears", pick:"long", line:bearYell("read",seed)});
     // the second read against her first, as in basketball (Muse: at 55' she didn't refer to it at all)
-    const again=dp.stage===2&&dp.pearl1!==undefined;
-    R.push({who:"pearl", pick:p, line:pearlSay(!(dp.pearl&&PEARL_READ[dp.pearl])?"I haven't seen enough yet. Let the assistant decide!"
-      :again&&dp.pearl1===dp.pearl?`Same as I saw at 25 minutes: ${APPROACH[dp.pearl].l||"the same thing"}. If we're set up for it, stay with it!`
-      :again?"It's changed since the first read! "+PEARL_READ[dp.pearl]
-      :"I just saw it! "+PEARL_READ[dp.pearl],seed)});
+    // whether anything has moved is the numbers' question (as in basketball and hockey: Instinct); her eyes can differ
+    const again=dp.stage===2&&dp.best1&&dp.best&&APPROACH[dp.best];
+    const moved=again?(dp.best1===dp.best?`The numbers haven't moved since half-time's: still ${APPROACH[dp.best].l}. `:`Has anything moved? The numbers say yes: they look ${APPROACH[dp.best].l} now. `):"";
+    const off=dp.pearl&&dp.best&&APPROACH[dp.best]&&dp.pearl!==dp.best;
+    R.push({who:"pearl", pick:p, line:pearlSay(!(dp.pearl&&PEARL_READ[dp.pearl])?moved+"I haven't seen enough yet. Let the assistant decide!"
+      :moved+(off?`My eyes say otherwise, and I might be wrong: ${PEARL_READ[dp.pearl]}`:(again?"My eyes agree. ":"I just saw it! ")+PEARL_READ[dp.pearl]),seed)});
     R.push({who:"capy", pick:"second", line:"It seems to me dropping off a little rarely hurts anyone. Though I confess I haven't looked at the numbers."});
     return R;
   }
@@ -145,7 +156,7 @@ function staffTake(dp, ctx){
   if(dp.k==="flank"){
     const p=dp.pearl==="left"||dp.pearl==="right"?dp.pearl:"normal";
     R.push({who:"bears", pick:"left", line:bearYell("flank",seed)});
-    R.push({who:"pearl", pick:p, line:pearlSay(p==="normal"?"I couldn't tell, honestly. Both sides look the same to me!":`We just got through on the ${p} again! Go ${p}!`,seed)});
+    R.push({who:"pearl", pick:p, line:pearlSay(pearlRecall(dp,seed)+(p==="normal"?"The flanks, though, I couldn't tell. Both sides look the same to me!":`And we just got through on the ${p} again! Go ${p}!`),seed)});
     R.push({who:"capy", pick:"normal", line:"I would leave the shape alone. A count of attacks is, I believe, a small and noisy thing."});
     return R;
   }
@@ -153,7 +164,7 @@ function staffTake(dp, ctx){
   const safe=o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":o.indexOf("keep")>=0?"keep":"normal";
   R.push({who:"bears", pick:bold, line:bearYell(behind?"push":ahead?"lock":"level",seed)});
   R.push({who:"pearl", pick: behind?(diff<=-2||dp.k==="late"?"push":"normal"):ahead?(diff>=2?"sit":"normal"):(o.indexOf("win")>=0?"win":"normal"),
-    line:pearlSay(behind?"We need a goal! Let's go and get it.":ahead?"Let's be sensible and see this out!":"A draw's a point, but a win's three! Let's be brave.",seed)});
+    line:pearlSay((dp.k==="half"?pearlRecall(dp,seed):"")+(behind?"We need a goal! Let's go and get it.":ahead?"Let's be sensible and see this out!":"A draw's a point, but a win's three! Let's be brave."),seed)});
   R.push({who:"capy", pick:safe, line:behind?"Chasing a game, one finds, mostly concedes on the break.":
     ahead?"I would suggest keeping what we have.":"A point, I do believe, is a point."});
   return R;

@@ -334,19 +334,22 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(st.queue.length)return st.next()}
     // two down before the first read: it comes now, not at 25' (Instinct: 0-3 and nothing to decide)
     if(s>=3&&s<5&&!st.r1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
-      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, ${["","one","two","three","four","five"][-lead(sd)]||-lead(sd)} down`); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }); if(st.queue.length)return st.next()}
+      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, ${["","one","two","three","four","five"][-lead(sd)]||-lead(sd)} down`); (st.p1=st.p1||{})[sd]=d.pearl; (st.b1=st.b1||{})[sd]=d.best; queueCall(sd,d) }); if(st.queue.length)return st.next()}
     if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45); if((st.r1e||{})[sd])return;
-      { const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }}); if(st.queue.length)return st.next()}
+      { const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue); (st.p1=st.p1||{})[sd]=d.pearl; (st.b1=st.b1||{})[sd]=d.best; queueCall(sd,d) }}); if(st.queue.length)return st.next()}
     if(s===9&&!st.ht){st.ht=true;
+      // what the first half's numbers said, before anyone changes: Pearl answers her 25-minute read with it
+      st.ht1={home:bestRead(st.S.away.tell),away:bestRead(st.S.home.tell)};
       // half-time: the computer changes its approach now and then, more often when behind
       ["home","away"].forEach(sd=>{ if(humans[sd])return; const X=st.S[sd];
         if(rng.r()<(lead(sd)<0?0.5:0.25)){ X.app=rng.pick(APPROACH_KEYS.filter(k=>k!==X.app));
           X.tell={to:0,cr:0,lb:0,pos:0,n:0}; X.tellLast={to:0,cr:0,lb:0,pos:0,n:0}; X.lastCue=null } });
-      ["home","away"].forEach(sd=>{ const L=lead(sd); if(L!==0&&Math.abs(L)<=2)queueCall(sd,halfCall(L));   // three up at half, it's gone
-        if(humans[sd])queueCall(sd,flankCall(st.S[sd].fl,st.S[sd].flLast)); else aimIt(sd) });
+      const mem=(sd,d)=>Object.assign(d,{pearl1:(st.p1||{})[sd],ht1:st.ht1[sd]});
+      ["home","away"].forEach(sd=>{ const L=lead(sd), hc=L!==0&&Math.abs(L)<=2; if(hc)queueCall(sd,mem(sd,halfCall(L)));   // three up at half, it's gone
+        if(humans[sd]){ const f=flankCall(st.S[sd].fl,st.S[sd].flLast); queueCall(sd,hc&&humans[sd]?f:mem(sd,f)) } else aimIt(sd) });   // she says it once
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
-      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
+      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===LATE_SEG&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd))) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way

@@ -19,10 +19,9 @@ const LEAGUE={
   homeFirst:true,                             // results read home first, as in Britain
   /* win, draw and loss, from the engine's own scoring model (Poisson) */
   wdl(me,opp,atHome,neutral){
-    const hfa=neutral?0:(atHome?1:-1)*LEAGUE.tuning.hfa, own=(me===S.myTeam&&typeof ownEdge==="function")?ownEdge():0,   // featuring moves the odds too (Muse)
-      // the engine's own odds by your gameplan: goals and edge fitted to thousands of games (Nov 2026)
-      F=({safe:[0.94,1.04],balanced:[0.86,1.07],aggressive:[0.65,1.04]})[me===S.myTeam&&typeof plan!=="undefined"?plan:"balanced"]||[0.86,1.07],
-      e=(SEA.elo[me]+hfa+own-SEA.elo[opp])*SC.edge*F[1];
+    // the engine's own strengths for this game, your lineup and featuring included (core: gameEdge), at the
+    // balanced plan: the number doesn't move with the plan (Ian, round 33)
+    const F=[0.86,1.07], e=gameEdge(me,opp,atHome,neutral)*SC.edge*F[1];
     const lm=SC.goals*F[0]*Math.exp(e/2), lo=SC.goals*F[0]*Math.exp(-e/2), P=(l,k)=>{let p=Math.exp(-l);for(let i=1;i<=k;i++)p*=l/i;return p};
     let w=0,d=0; for(let i=0;i<10;i++)for(let j=0;j<10;j++){const p=P(lm,i)*P(lo,j); if(i>j)w+=p; else if(i===j)d+=p}
     return [w,d,1-w-d];

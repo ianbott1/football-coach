@@ -111,8 +111,9 @@ function eplStakes(x){
     if(pos>=15)out.push({p:92,tag:pos>=18?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>=18?`${P(T[16])-P(my)} points from safety with ${left} to play.`:`${gap} point${gap===1?"":"s"} above the drop.`});
   } else {
     const pe=R.po[1], six=R.po[1]-R.po[0]===5;
-    if(pos<=R.up)out.push({p:90,tag:"PROMOTION",l:`In the automatic places with ${left} to play.`});
-    else if(pos<=pe)out.push({p:86,tag:"PLAY-OFFS",l:`In the play-off places. ${six&&pos<R.po[0]+2?"Straight to the semi-finals if it stays that way.":six?"An eliminator first.":"A semi-final if it stays that way."}`});
+    const ord=n=>n+(n%10===1&&n%100!==11?"st":n%10===2&&n%100!==12?"nd":n%10===3&&n%100!==13?"rd":"th");   // the places by number (Grokbot)
+    if(pos<=R.up)out.push({p:90,tag:"PROMOTION",l:`${ord(pos)}: in the automatic places (top ${R.up}) with ${left} to play.`});
+    else if(pos<=pe)out.push({p:86,tag:"PLAY-OFFS",l:`${ord(pos)}: in the play-off places (${ord(R.po[0])} to ${ord(pe)}). ${six&&pos<R.po[0]+2?"Straight to the semi-finals if it stays that way.":six?"An eliminator first.":"A semi-final if it stays that way."}`});
     else if(pos<=pe+4)out.push({p:80,tag:"PLAY-OFF RACE",l:`${P(T[pe-1])-P(my)} points off the play-offs.`});
     if(R.down&&pos>=24-R.down-2)out.push({p:92,tag:pos>24-R.down?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>24-R.down?`${P(T[23-R.down])-P(my)} points from safety.`:`${P(my)-P(T[24-R.down])} points above the drop.`});
   }

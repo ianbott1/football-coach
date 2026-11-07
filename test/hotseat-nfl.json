@@ -1,5 +1,5 @@
 {
- "fp": "d9a2fb25a3f9d0d1",
+ "fp": "6d4baf4750deaeae",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -230,6 +230,11 @@
    "fp": "d9a2fb25a3f9d0d1",
    "from": "f2f95699ebab33ab",
    "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
+  },
+  {
+   "fp": "6d4baf4750deaeae",
+   "from": "d9a2fb25a3f9d0d1",
+   "note": "Round 34: crunch-time and third-period reads in close games, and unsure scout reads said as what they're likely to be. Control with both off matches the previous fingerprints exactly."
   }
  ],
  "out": [
@@ -243,7 +248,7 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "42f9da3a5817472a"
+     "book": "c1d30589d1ea787e"
     },
     {
      "team": "Tennessee",
@@ -252,7 +257,7 @@
       "result": "Losing season",
       "grade": "B"
      },
-     "book": "65ab4b331163c5fb"
+     "book": "5ce089a691e7b435"
     }
    ]
   },
@@ -262,20 +267,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "14-3",
+      "rec": "13-4",
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "120720a70df08f4e"
+     "book": "4b5c308cf79a6b48"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost the Super Bowl",
+      "rec": "11-6",
+      "result": "Lost in the wild card round",
       "grade": "A"
      },
-     "book": "4e57cd5833afbbf8"
+     "book": "491838f9356dae71"
     }
    ]
   },
@@ -285,20 +290,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "Lost in the divisional round",
-      "grade": "A"
+      "rec": "15-2",
+      "result": "Lost the Super Bowl",
+      "grade": "A+"
      },
-     "book": "b5fc0ebce71fac8a"
+     "book": "f540140dce66304a"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "SUPER BOWL CHAMPIONS",
+      "rec": "13-4",
+      "result": "Lost the conference championship",
       "grade": "A+"
      },
-     "book": "c749898df0d9277c"
+     "book": "f38c4c054912abcd"
     }
    ]
   }

@@ -55,7 +55,7 @@ function playoffPicture(){
     <span class="fcfp">${SEA.rec[t][0]}-${SEA.rec[t][1]}</span>
     ${i<4?'<span class="byebadge">Bye</span>':''}</div>`).join("");
   // why a better record can be out (Grokbot: 12-1 Liberty and 11-2 Navy out while 9-3 teams got in)
-  h+=`<div class="grouphead">First four out</div><div class="note">The ranking weighs who you beat, not only your record: a two-loss team from a strong conference can sit above a one-loss team from a weak one, and the at-large places go by the ranking.</div>`;
+  h+=`<div class="grouphead">First four out</div><div class="note">The ranking weighs who you beat, not only your record: a two-loss team from a strong conference can sit above a one-loss team from a weak one, and the at-large places go by the ranking.</div>`+snubNote(field,out,t=>rk[t],t=>note[t]);
   h+=out.map(t=>`<div class="frow ${t===my?'mine':''}"><span class="sd">&mdash;</span>
     <span class="dot" style="background:${teamColor(t)}"></span>
     <div class="fmain"><div class="fname">${esc(t)}</div><div class="fnote">No. ${rk[t]} in the ranking</div></div>
@@ -117,7 +117,7 @@ function bracketView(){
       <div class="fnote">${esc(SEA.notes[t]||"")}</div></div>
       <span class="fcfp">${esc(SEA.selRec[t]||"")}</span>
       ${SEA.seeds[t]<=4?'<span class="byebadge">Bye</span>':''}</div>`).join("");
-    h+=`<div class="grouphead">First four out</div><div class="note">The ranking weighs who you beat, not only your record: a two-loss team from a strong conference can sit above a one-loss team from a weak one, and the at-large places go by the ranking.</div>`;
+    h+=`<div class="grouphead">First four out</div><div class="note">The ranking weighs who you beat, not only your record: a two-loss team from a strong conference can sit above a one-loss team from a weak one, and the at-large places go by the ranking.</div>`+snubNote(SEA.field,SEA.firstOut,t=>SEA.cfpRank&&SEA.cfpRank[t],t=>SEA.notes[t]);
     h+=SEA.firstOut.map(t=>`<div class="frow"><span class="sd">&mdash;</span>
       <span class="dot" style="background:${teamColor(t)}"></span>
       <div class="fmain"><div class="fname">${esc(t)}</div>${SEA.cfpRank&&SEA.cfpRank[t]?`<div class="fnote">No. ${SEA.cfpRank[t]} in the ranking on selection day</div>`:""}</div>
@@ -289,4 +289,14 @@ function bowlPathNote(my){
   const lastBit=last?` The last at-large team in was ${esc(last)} at No. ${rk[last]} (${esc(SEA.selRec[last]||"")}).`:"";
   return `<div class="note">You finished No. ${rk[my]} in the final ranking. The playoff takes ${auto} conference champions and the next ${at.length} teams in the ranking.${lastBit} ${
     w>=6?"Bowls pair every other team with six wins, best-ranked first.":"Bowls take teams with six wins or more: you had "+w+"."}</div>`;
+}
+
+/* who took the place: the best-ranked team out against the conference champions in below it (Muse: Penn State,
+   No. 10, out; Memphis, the American champion, in; the screen printed both and explained a general rule) */
+function snubNote(field,out,rankOf,noteOf){
+  const top=out&&out[0], r=top?rankOf(top):null; if(!top||!r)return "";
+  const auto=field.filter(t=>{ const n=noteOf(t)||""; return /champion|leader|Independent/i.test(n)&&!/At-large/i.test(n)&&(rankOf(t)||99)>r });
+  if(!auto.length)return `<div class="note">${esc(top)}, No. ${r}, is the first team out: every at-large place went to a team ranked higher.</div>`;
+  const nm=auto.map(t=>`${esc(t)} (${rankOf(t)?"No. "+rankOf(t)+", ":""}${esc(noteOf(t))})`);
+  return `<div class="note">${esc(top)}, No. ${r}, is out while ${nm.length>1?nm.slice(0,-1).join(", ")+" and "+nm[nm.length-1]+" are":nm[0]+" is"} in below them: the power-conference champions and the best-ranked of the rest get guaranteed places, wherever they're ranked, and that pushed ${esc(top)} out of the at-large ones.</div>`;
 }

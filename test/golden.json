@@ -1,5 +1,5 @@
 {
- "fp": "42d7a96f4a4ba2bc",
+ "fp": "6d2446abab864d22",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -339,6 +339,11 @@
    "fp": "42d7a96f4a4ba2bc",
    "from": "531ecd406b3230ae",
    "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
+  },
+  {
+   "fp": "6d2446abab864d22",
+   "from": "42d7a96f4a4ba2bc",
+   "note": "Round 34: the chance shown is the engine's (screens); crunch-time read (basketball) and third-period read (hockey) in close games; unsure scout reads said as what they're likely to be (your staff's draft picks); Pearl reads change from the numbers. Control with the new calls off: games, post and records identical, only screens and your draft class differ."
   }
  ],
  "result": {
@@ -353,7 +358,7 @@
     "heis": "b16fc23e36f51661",
     "history": "f7485d7035b290cc",
     "universe": "c0293de625c2245d",
-    "screens": "b03368c564f577d0"
+    "screens": "5cd0f6f82b5ccf53"
    },
    {
     "year": 2027,
@@ -365,7 +370,7 @@
     "heis": "4fd751b69b7c4128",
     "history": "ea2d238cb842329b",
     "universe": "bfe4c7ba056671f3",
-    "screens": "d783730c60304e76"
+    "screens": "2ad027dabf8b2d6c"
    },
    {
     "year": 2028,
@@ -377,7 +382,7 @@
     "heis": "41d07acdb0b6cd04",
     "history": "8045adf6fc44f977",
     "universe": "52ed4462a64bdcaf",
-    "screens": "153992883c499067"
+    "screens": "a0899334ac7bc22a"
    },
    {
     "year": 2029,
@@ -389,7 +394,7 @@
     "heis": "864b4b37ef10f1f6",
     "history": "f96a1cc927774888",
     "universe": "83cb6ff6a5591ad5",
-    "screens": "795d4b8a333a6950"
+    "screens": "9d021e8e28e14909"
    }
   ],
   "Rice#2024": [
@@ -403,7 +408,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "80b3a9f4600d705d",
     "universe": "ea4c9b4369c925e5",
-    "screens": "409e04ccc1aa8b9d"
+    "screens": "38e46ab5eee6ec20"
    },
    {
     "year": 2027,
@@ -415,7 +420,7 @@
     "heis": "00c30658a131e69b",
     "history": "0731db4549880457",
     "universe": "a80871c6d17bedfb",
-    "screens": "d01fef732f12e524"
+    "screens": "3c7c5c5dde69cac6"
    },
    {
     "year": 2028,
@@ -427,7 +432,7 @@
     "heis": "e7f552feb31d68b4",
     "history": "4cb5f8f93baf11e3",
     "universe": "fd678ae4f1fc8017",
-    "screens": "841a768f04779dd8"
+    "screens": "1829b22305a42c3f"
    },
    {
     "year": 2029,
@@ -439,7 +444,7 @@
     "heis": "243900762e9d2121",
     "history": "faf3af12b13a7c69",
     "universe": "23c618b566be04e6",
-    "screens": "7b95127c6dd0e9f5"
+    "screens": "5d8bb791b36e7636"
    }
   ],
   "Oregon#777": [
@@ -453,7 +458,7 @@
     "heis": "8262a1c51666f45f",
     "history": "82a4c765578e7109",
     "universe": "ba2131078dc395db",
-    "screens": "32a20eb3239b1090"
+    "screens": "66c7b31eb97978eb"
    },
    {
     "year": 2027,
@@ -465,7 +470,7 @@
     "heis": "848f5f2dd4e0c565",
     "history": "0a36612f3c5ba43f",
     "universe": "2ccb5eb296c40d56",
-    "screens": "3b4718fe16912ab5"
+    "screens": "701fdcff1ddd64eb"
    },
    {
     "year": 2028,
@@ -477,7 +482,7 @@
     "heis": "b7430bf86915e729",
     "history": "2f25cb15e97a6f7b",
     "universe": "1b6dc76aebcfa1ab",
-    "screens": "ae37e9dfd7432aca"
+    "screens": "e33044b855d6f443"
    }
   ],
   "Kent State#31337": [
@@ -491,7 +496,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "e5341a48b6e7b553",
     "universe": "c38f2d57e6484e78",
-    "screens": "e9de7e28f313ed0e"
+    "screens": "c40a74d0531d7316"
    },
    {
     "year": 2027,
@@ -503,7 +508,7 @@
     "heis": "d293e32c2a0e1ef6",
     "history": "17ccdb71f9286083",
     "universe": "aa85a998daeea52a",
-    "screens": "addb91e7b4c47fa0"
+    "screens": "05d3b7746042f256"
    },
    {
     "year": 2028,
@@ -515,7 +520,7 @@
     "heis": "14040425d360b673",
     "history": "0e3137d4209cc9e1",
     "universe": "0c9c4ed79306d7cc",
-    "screens": "dfd7b66b58285331"
+    "screens": "bf9358ba856ffa10"
    }
   ],
   "schedules#60": [

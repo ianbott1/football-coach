@@ -39,8 +39,10 @@ const L=league(G,'new');
 // pro 114.6, 13.2, 61%, 71%), within tolerance
 const TG=PRO?{p:114.6,m:13.2,h:61.4,f:71.1}:{p:72.6,m:12.2,h:62.4,f:68.2};
 ok(Math.abs(L.p-TG.p)<1.0,'points off '+TG.p); ok(Math.abs(L.h-TG.h)<1.8,'home wins off '+TG.h); ok(Math.abs(L.f-TG.f)<1.8,'favourites off '+TG.f); ok(Math.abs(L.m-TG.m)<0.7,'margins off '+TG.m);
-function run(choose,scouted){ const rng=new G.RNG(17); let w=0;
-  for(let i=0;i<N;i++){ const e=G.makeLiveGame(rng,1500,1500,'balanced','balanced',{home:true,away:false},false,
+// each game on its own dice, the same for every strategy (as test/hk-reads.js: a shared stream let any changed draw
+// reshuffle every later game, and a guess before tip-off "paid" 0.6 on luck)
+function run(choose,scouted){ let w=0;
+  for(let i=0;i<N;i++){ const rng=new G.RNG((17+i*7919)>>>0), e=G.makeLiveGame(rng,1500,1500,'balanced','balanced',{home:true,away:false},false,
       scouted?{fav:{away:G.KEYS[i%3]},seed:i*7919}:undefined);
     let r,g=0; while(g++<300){ r=e.next(); if(r.done)break; if(r.ask)e.reply(choose(r.ask,e)) }
     if(r.h>r.a)w++ }

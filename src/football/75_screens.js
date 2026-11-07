@@ -143,7 +143,7 @@ function liveView(){
       <div class="wctl">
         <button class="wbtn" id="wpause">${live.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
         <button class="wbtn ${live.paused?'hot':''}" id="wstep">Next drive &rarr;</button>
-        <button class="wbtn" id="wskip">Skip</button>
+        <button class="wbtn" id="wskip" title="Plays on at once and stops at your next call">Skip to next call</button>
       </div>
       <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>
     </div></div>`;

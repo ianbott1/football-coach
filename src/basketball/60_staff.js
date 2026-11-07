@@ -155,12 +155,15 @@ function staffTake(dp, ctx){
     // minutes and at half-time read as if she wasn't watching (Instinct). Her pick is the same as ever.
     const cur=(dp.stage===2&&dp.opts[0]&&dp.opts[0][0]==="keep")?(dp.opts[0][1]||"").replace(/^Keep your setup: /,""):null;
     const her=dp.pearl&&STYLE[dp.pearl]?STYLE[dp.pearl].answer:"normal", herD=DEFENSES[her]?DEFENSES[her].l:null;
+    // her eyes are the commentary, which names the wrong offense two times in five; whether anything has moved is
+    // the numbers' question, not hers, and when her eyes and the numbers disagree she says so (Instinct: she said
+    // "something's moved" when the threes and paint figures hadn't, because two noisy cues differed)
+    const eyes=dp.pearl&&PEARL_STYLE[dp.pearl], off=eyes&&dp.best&&STYLE[dp.best]&&dp.best!==dp.pearl;
+    const moved=dp.stage===2&&dp.best1&&dp.best&&STYLE[dp.best]?(dp.best1===dp.best?`The numbers haven't moved since the first read: they still look like ${STYLE[dp.best].l}. `:`Has anything moved? The numbers say yes: they look like ${STYLE[dp.best].l} now. `):"";
     R.push({who:"pearl", pick:her,
-      line:pearlSay(!(dp.pearl&&PEARL_STYLE[dp.pearl])?"I haven't seen enough to say!"
-        // against her own first read, not your setup (she'd have said "it's changed" to anyone who ignored her)
-        :dp.stage===2&&dp.pearl1&&dp.pearl1===dp.pearl?`Same story as the first half: they're still ${STYLE[dp.pearl].l}. ${cur&&herD===cur?"We're set up right, so let's keep at it!":`We should be in the ${herD}!`}`
-        :dp.stage===2&&dp.pearl1?`It's changed since the first half! ${PEARL_STYLE[dp.pearl]}`
-        :"I just saw it! "+PEARL_STYLE[dp.pearl],seed)});
+      line:pearlSay(!eyes?moved+"I haven't seen enough to say!"
+        :moved+(off?`My eyes say ${STYLE[dp.pearl].l}, though, and I might be wrong. ${cur&&herD===cur?"We're set up for that already.":`I'd go ${herD}.`}`
+          :`My eyes agree. ${PEARL_STYLE[dp.pearl]}`),seed)});
     R.push({who:"capy", pick:"pack", line:dp.stage===2&&cur
       ? `I'd still rather protect the rim, whatever they did in the first half. I haven't looked at the shot chart since, either.`
       : `It seems to me protecting the rim rarely hurts. I haven't, I confess, looked at the shot chart.`});
@@ -188,6 +191,12 @@ function staffTake(dp, ctx){
       ? `We're way ahead! Let's just use up the clock and go home happy.`
       : `Whatever we did to get here: more of that, please.`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
+  }
+  else if(dp.k==="close"){
+    const top=dp.pearl, ans=STYLE[top]?STYLE[top].answer:"normal";
+    R.push({who:"bears", pick:"trap", line:bearYell("read",seed)});
+    R.push({who:"pearl", pick:ans, line:pearlSay(`In their last ${dp.n} close finishes they went ${STYLE[top].l} ${dp.report[top]} times! Take that away!`,seed)});
+    R.push({who:"capy", pick:dp.opts[0]&&dp.opts[0][0]==="keep"?"keep":"normal", line:`Whatever got us here seems to me worth keeping. Though I couldn't tell you what they do late; I haven't watched them close.`});
   }
   else if(dp.k==="last"){
     R.push({who:"bears", pick:"three", line:bearYell("last",seed)});

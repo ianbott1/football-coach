@@ -94,6 +94,16 @@ function readCall(T,hint,early){
     opts:Object.keys(ANSWERS).map(a=>[a,ANSWERS[a].l]).concat([ASSIST]),
     tell:{to:T.to,fe:T.fe,cy:T.cy,n:T.n}, best:hkRead(T), pearl:hint||hkRead(T)};
 }
+/* ten minutes left in a one-goal (or tied) game: some clubs change system for the third, more often when behind.
+   Since the second intermission beside the whole game, as soccer's half-time read (Instinct: the split column is
+   what makes a change readable). Pearl reads the whole game: she's slow to see a change. Grokbot: a 5-4 playoff
+   game with five minutes left asked nothing. */
+function thirdCall(lead,T,T3,cur){
+  const D={to:T.to-T3.to,fe:T.fe-T3.fe,cy:T.cy-T3.cy,n:T.n-T3.n};
+  return {k:"third",h:`${lead>0?"Up one":lead<0?"Down one":"Tied"}, ten minutes left`,q:"Timeout. Have they changed anything since the second intermission?",
+    opts:(cur&&ANSWERS[cur]?[["keep","Keep it: "+ANSWERS[cur].l]]:[]).concat(Object.keys(ANSWERS).filter(a=>a!==cur).map(a=>[a,ANSWERS[a].l])).concat([ASSIST]),
+    tell:{to:T.to,fe:T.fe,cy:T.cy,n:T.n}, tell3:D, best:hkRead(D), pearl:hkRead(T)};
+}
 function goalieCall(per,G){
   return {k:"goalie",h:per===1?"Your goalie, after one":"Your goalie, after two",
     q:"He's let in "+G.ga+". Bad night, or bad luck?",
@@ -253,6 +263,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else readIt(side,0.45); return }
+    if(dp.k==="third"){ const t=st.S[other(side)].sys, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;
+      if(pick&&ANSWERS[pick]){ st.log.push({side:side,k:"third",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
+      else readIt(side,0.3);
+      return }
     if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal")cpuGoalie(side); return }
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; return }
     if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
@@ -292,8 +306,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // second intermission: the score, and your goalie
     if(s===8&&!st.i2){st.i2=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], L=lead(sd);
         if(!humans[sd]){ cpuGoalie(sd); return }
+        // the other bench may change its system for the third (only against a person: no other game moves)
+        // only in a game within a goal: elsewhere no third-period read is asked, and a change nobody asks about only
+        // erodes the first read (it halved its worth: test/hk-reads.js)
+        { const O=st.S[other(sd)]; if(!humans[other(sd)]&&Math.abs(L)<=1){ O.t3=Object.assign({},O.tell);
+            if(rng.r()<(L>0?(HK.thirdSwitchBehind||0.5):(HK.thirdSwitch||0.25))){ const ks=SYSTEM_KEYS.filter(k=>k!==O.sys); O.sys=ks[rng.int(ks.length)] } } }
         askGoalie(sd,X,2);
         if(L!==0&&Math.abs(L)<=3)queueCall(sd,intCall(L)) });      // up four after two, it's gone
+      if(st.queue.length)return st.next()}
+    if(s===10&&!st.t3q){st.t3q=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
+        if(humans[sd]&&O.t3&&Math.abs(lead(sd))<=1)queueCall(sd,thirdCall(lead(sd),O.tell,O.t3,st.S[sd].ans)) });
       if(st.queue.length)return st.next()}
     if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
       if(st.queue.length)return st.next()}

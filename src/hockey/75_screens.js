@@ -158,6 +158,11 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are playing us <span>per period</span></div>
       ${rows.map(r=>`<div class="evr ${r[2]?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${r[1]}</span></div>`).join("")}
       ${firstReadTip()}<div class="evn">League average: 2.8 of each a period. The system they play leaves one of these well above it.</div></div>`; }
+  if(dp.k==="third"&&dp.tell3){ const T=dp.tell, D=dp.tell3, n=Math.max(1,T.n), per=x=>(x/n*4).toFixed(1);
+    const rows=[["Giveaways they force in our zone","to"],["Our zone entries they kill","fe"],["Shifts they cycle below our goal line","cy"]];
+    return `<div class="evid"><div class="evh">How ${esc(g[opp])} are playing us <span>per period | last ${D.n*5} min</span></div>
+      ${rows.map(r=>`<div class="evr ${D.n&&D[r[1]]/D.n>=1.4?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${per(T[r[1]])} | ${D[r[1]]}</span></div>`).join("")}
+      <div class="evn">Left: the whole game, per period. Right: counts since the second intermission. League average: 2.8 of each a period, about 1.4 in ten minutes. Some clubs change system for the third, more often when they're behind. Ten minutes is a small sample: a hint, not proof.</div></div>`; }
   if(dp.k==="goalie"){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>
@@ -189,7 +194,7 @@ function liveView(){
       <div class="wctl">
         <button class="wbtn" id="wpause">${live.paused?"&#9654; Play":"&#10073;&#10073; Pause"}</button>
         <button class="wbtn ${live.paused?'hot':''}" id="wstep">Next five minutes &rarr;</button>
-        <button class="wbtn" id="wskip">Skip</button>
+        <button class="wbtn" id="wskip" title="Plays on at once and stops at your next call">Skip to next call</button>
       </div>
       <div class="whint">Space to pause &middot; arrows to step &middot; 1&ndash;4 sets speed</div>
     </div></div>`;
@@ -199,7 +204,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>(dp.k==="read"||dp.k==="prep")&&ANSWERS[o]?ANSWERS[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep"||dp.k==="third")&&ANSWERS[o]?ANSWERS[o].d:"";
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -281,6 +286,8 @@ function readTextBase(e){
     :`They were playing ${SYSTEM[e.truth].l}: the answer was "${ANSWERS[SYSTEM[e.truth].counter].l}".`;
   if(e.k==="prep")return e.right?`Your preparation was right: they came out playing ${SYSTEM[e.truth].l}.`
     :`You prepared for the wrong system: they came out playing ${SYSTEM[e.truth].l}.`;
+  if(e.k==="third")return e.right?`Right in the third: they were playing ${SYSTEM[e.truth].l}.`
+    :`In the third they were playing ${SYSTEM[e.truth].l}: the answer was "${ANSWERS[SYSTEM[e.truth].counter].l}".`;
   if(e.k==="goalie")return e.truth==="off"?(e.right?"Right call: your goalie really was having a bad night.":"Your goalie really was off tonight: pulling him was right.")
     :(e.right?"Right call: he'd been unlucky, not bad.":"He'd just been unlucky: the backup was a step down.");
   return "";

@@ -286,16 +286,14 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
   A.live={g:{}}; A.live.ask={dp:{h:'Half-time'},q:9}; const a=A.bearYell('push',15); A.live.ask={dp:{h:'Late'},q:15}; const b=A.bearYell('push',21);
   A.live.ask={dp:{h:'Half-time'},q:9}; ok(a!==b&&A.bearYell('push',15)===a,`soccer: the Bears said "${a}" twice in one game`); A.live=null; }
 /* ---- Grokbot, first pass (Nov 2026) ---- */
-/* 37. the win chance shown is the engine's own, and the gameplan moves it */
+/* 37. the win chance shown is the engine's own: the game played from the same strengths wins as often as it says.
+   (It moved with the gameplan until round 33, when Ian ruled the number shouldn't; since round 34 it's worked out from
+   the strengths the game is played with, lineup included, not the league's running ratings: test 79.) */
 for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T');
   const my=A.S.myTeam, opp=A.NAMES.filter(t=>t!==my).sort((a,b)=>Math.abs(A.SEA.elo[b]-A.SEA.elo[my]-150)-Math.abs(A.SEA.elo[a]-A.SEA.elo[my]-150)).pop();
-  for(const pl of ['safe','balanced','aggressive']){ A.plan=pl; const shown=A.winProb(my,opp,false,true), r=new A.RNG(3); let w=0,N=4000;
-    for(let i=0;i<N;i++){ const g=A.playGame(r,A.SEA.elo[my],A.SEA.elo[opp],pl,'balanced',{neutral:true}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
-    ok(Math.abs(shown-w/N)<0.04,`${f}: ${pl} shows ${(100*shown).toFixed(0)}% where the engine wins ${(100*w/N).toFixed(0)}% (gap ${Math.round(A.SEA.elo[my]-A.SEA.elo[opp])})`) }
-  A.plan='safe'; const a=A.winProb(my,opp,false,true); A.plan='aggressive'; const b=A.winProb(my,opp,false,true); A.plan='balanced';
-  // (hockey's and, since round 32, basketball's plans barely move the engine's win chance, measured: the shown figure
-  // follows the engine, so only its direction is checked; football's still move it)
-  ok(/hockey|basketball/.test(f)?(a-0.5)*(a-b)>=0:Math.abs(a-b)>0.01,`${f}: the gameplan doesn't move the win chance shown (${(100*a).toFixed(1)} vs ${(100*b).toFixed(1)})`) }
+  const shown=A.winProb(my,opp,false,true); A.SEA.userTeam=my; const e=A.SEA.matchupElo({home:my,away:opp,neutral:true},'balanced'), r=new A.RNG(3); let w=0,N=4000;
+  for(let i=0;i<N;i++){ const g=A.playGame(r,e.h,e.a,'balanced','balanced',{neutral:true}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
+  ok(Math.abs(shown-w/N)<0.04,`${f}: shows ${(100*shown).toFixed(0)}% where the engine wins ${(100*w/N).toFixed(0)}% (gap ${Math.round(e.h-e.a)})`) }
 /* 38. the offseason plan card shows your changes */
 { const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Seattle',5,'T'); play(A,999); A.openOffseason();
   const P=A.S.off.picks, ex=Object.keys(P.asks||{}); if(ex.length){ const i=ex[0], was=!!P.resign[i]; P.resign[i]=!was;
@@ -542,6 +540,54 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
     ['safe','balanced','aggressive'].forEach(pl=>{ api.setPlan(pl); h=api.view('team'); seen.add((h.match(/class="opct">([^<]*)</)||[])[1]) });
     ok(seen.size===1&&[...seen][0],`${f}: the chance before the game moves with the plan (${[...seen].join(' / ')})`);
     ok(!/would help you|try (Play it safe|Take risks|Shorten|Work it|Clog|Skate|Sit deep|Take the game)/i.test(strip(h)),`${f}: a line tells you which plan to pick`) } }
+
+/* 79. the chance before a game is the engine's, from the lineup you picked: a backup started moves it as much as it
+   moves the game (Muse: 12% -> 12% with a point guard 26 worse; the game charged it in full), on every screen */
+for(const [f,team] of [['basketball-coach-pro.html','Detroit'],['basketball-coach.html','Duke'],['football-coach.html','Alabama'],['soccer-coach.html','Arsenal'],['hockey-coach-pro.html','Toronto']]){
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['winProb','swapDepth','BK','wpScale'])}); A.newDynasty(team,11,'T');
+  for(let i=0;i<3;i++)A.SEA.advance();
+  const my=A.S.myTeam, g=A.SEA.sched.find(x=>x.week>=A.SEA.step&&(x.home===my||x.away===my)); if(!g)continue;
+  const opp=g.home===my?g.away:g.home, home=g.home===my;
+  const eng=()=>{ A.SEA.userTeam=my; const e=A.SEA.matchupElo(g,'balanced'), d=home?e.h-e.a:e.a-e.h; return 1/(1+Math.pow(10,-d/A.wpScale('balanced'))) };
+  const R=A.SEA.roster[my]; let bi=-1,gap=0; for(let i=0;i<A.POS.length;i++){ const a=R[i],b=R[A.BK(i)]; if(a&&b&&a.r-b.r>gap){gap=a.r-b.r;bi=i} }
+  const w0=A.winProb(my,opp,home,g.neutral); ok(Math.abs(w0-eng())<1e-9,`${f}: the chance shown (${w0.toFixed(3)}) isn't the engine's (${eng().toFixed(3)})`);
+  A.swapDepth(A.SEA,bi); const w1=A.winProb(my,opp,home,g.neutral);
+  ok(Math.abs(w1-eng())<1e-9&&w1<w0,`${f}: a backup ${gap} worse moved the chance shown ${w0.toFixed(3)} -> ${w1.toFixed(3)}, the engine's to ${eng().toFixed(3)}`) }
+
+/* 80. promotions and firings belong to their season: last season's are never replayed into this one (Muse: a whole
+   season with "Interim staff" after a coordinator was fired the year before) */
+{ const A=load({settable:SET,file:D('football-coach.html'),expose:EXP.concat(['rebuild'])}); A.newDynasty('Rice',3,'T');
+  for(let k=0;k<5;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<900){ A.live.ask?A.answerLive(A.live.ask.dp.opts[0][0]):A.liveTick() } }
+  A.SEA.fireCoordinator(A.S.myTeam,'oc'); A.S.fires={[A.SEA.step]:['oc']};
+  let g=0; while(A.SEA.phase!=='done'&&g++<900){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<900){ A.live.ask?A.answerLive(A.live.ask.dp.opts[0][0]):A.liveTick() } }
+  A.openOffseason(); A.commitOffseason();
+  for(let k=0;k<8;k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<900){ A.live.ask?A.answerLive(A.live.ask.dp.opts[0][0]):A.liveTick() } }
+  const n0=A.SEA.oc[A.S.myTeam].n; A.rebuild(); const n1=A.SEA.oc[A.S.myTeam].n;
+  ok(n0!=='Interim staff'&&n1===n0,`a reload in season 2 replayed season 1's firing: "${n0}" became "${n1}"`) }
+
+/* 81. a close finish asks a call: basketball's crunch time level or ahead, hockey's third period within a goal
+   (Grokbot: a 93-92 elimination game, a tied finish and a 5-4 playoff game asked nothing), with the right answer graded */
+for(const [f,team,k] of [['basketball-coach-pro.html','Orlando','close'],['basketball-coach.html','Minnesota','close'],['hockey-coach-pro.html','Florida','third']]){
+  const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,8,'T'); let n=0, graded=0;
+  for(let w=0;w<40&&A.SEA.phase==='week';w++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<4000){ const q=A.live.ask; if(q){ if(q.dp.k===k)n++; A.answerLive(q.dp.opts[0][0]) } else A.liveTick() }
+    if(A.live&&A.live.eng&&A.live.eng.log)graded+=A.live.eng.log.filter(x=>x.k===k).length }
+  ok(n>=2,`${f}: ${n} ${k} calls in 40 games`); ok(graded>0,`${f}: ${k} calls never graded`) }
+
+/* 82. Skip plays on to your next call and stops there: it never makes your calls for you (Grokbot: one tap jumped to
+   the final score and a read you never made was graded) */
+{ const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP.concat(['skipLive'])}); A.newDynasty('Seattle',5,'T'); let stops=0, auto=0;
+  for(let w=0;w<6;w++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<400){ if(A.live.ask){ stops++; A.answerLive(A.live.ask.dp.opts[0][0]) } else A.skipLive() }
+    auto+=Object.values(A.S.callAuto||{}).reduce((a,x)=>a+x.length,0) }
+  ok(stops>0,`pro football: Skip never stopped at a call in 6 games`) }
+
+/* 83. a "scouts unsure" read says what he's likely to be: high unsure reads were 10 points over the players
+   (Muse: three read 73-82 arrived 50-59). By read level, the players average within 3 of the read. */
+{ let worst=0;
+  for(let s=0;s<6;s++){ const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP.concat(['nflDraftClass','scoutRead'])}); A.newDynasty('Seattle',700+s,'T');
+    let g=0; while(A.SEA.phase!=='done'&&g++<6000)A.SEA.advance(); A.openOffseason();
+    const B={}; A.nflDraftClass(A.U,A.S.myTeam).list.forEach(p=>{ const x=A.scoutRead(A.U,A.S.myTeam,p,false); if(!x.unsure)return; const b=x.sr>=58?'hi':'lo'; (B[b]=B[b]||[0,0,0]); B[b][0]+=x.sr; B[b][1]+=p.r; B[b][2]++ });
+    Object.values(B).forEach(q=>{ if(q[2]>=8)worst=Math.max(worst,Math.abs(q[0]-q[1])/q[2]) }) }
+  ok(worst<3,`unsure reads miss the players by ${worst.toFixed(1)} on average at one end`) }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
