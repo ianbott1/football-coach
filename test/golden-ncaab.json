@@ -1,5 +1,5 @@
 {
- "fp": "d09035484e65ea40",
+ "fp": "75bebcf409a58cef",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -325,6 +325,11 @@
    "fp": "d09035484e65ea40",
    "from": "850eb50111af74ce",
    "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
+  },
+  {
+   "fp": "75bebcf409a58cef",
+   "from": "d09035484e65ea40",
+   "note": "Round 37: NBA Cup games are league games (with the Cup off, results match round 35); hockey's box score credits the men its game log names (awards and history move, games don't); text and screens elsewhere."
   }
  ],
  "result": {
@@ -339,7 +344,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "da8c41f5f57a0560",
     "universe": "8396e3d3e5e674fc",
-    "screens": "846a814179b38a71"
+    "screens": "d6e67bf51f68bc08"
    },
    {
     "year": 2027,
@@ -351,7 +356,7 @@
     "heis": "bdc76644c22f567f",
     "history": "78ff0e134f339e3e",
     "universe": "5e2d4d3a332201ca",
-    "screens": "a2e9d5ee1a350d10"
+    "screens": "e428b9c525cd4dcc"
    }
   ],
   "Coppin State#2024": [
@@ -365,7 +370,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "635d759c27825217",
     "universe": "590ac26570db1ec4",
-    "screens": "06b951b1330e647f"
+    "screens": "7079114e1c8cb48f"
    },
    {
     "year": 2027,
@@ -377,7 +382,7 @@
     "heis": "dc41c7de51860732",
     "history": "2b93cd387064afd4",
     "universe": "c19ffe75f931ec9f",
-    "screens": "89e7650dd8be0654"
+    "screens": "0508ad2e210eb1e1"
    }
   ],
   "Gonzaga#777": [
@@ -391,7 +396,7 @@
     "heis": "c94713712b4e6c61",
     "history": "141a7c477b70847f",
     "universe": "612d12e45f22d0d8",
-    "screens": "45605dcdcb4f1d75"
+    "screens": "1e739d039d8aea10"
    },
    {
     "year": 2027,
@@ -403,7 +408,7 @@
     "heis": "475c4e565eee54ab",
     "history": "10bb25fd46558ea0",
     "universe": "0d321e2a85dc34e7",
-    "screens": "47e174f2f670a281"
+    "screens": "490a4e34a0735036"
    }
   ],
   "schedules#60": [

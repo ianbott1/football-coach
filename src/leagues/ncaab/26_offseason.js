@@ -437,6 +437,19 @@ LEAGUE.goals={
     if(p>=1480)return {w:15,par:0,l:"A winning season and a real run at the conference title.",t:"CONTEND"};
     return {w:11,par:0,l:"Show progress. A winning conference record would be real movement.",t:"BUILD SOMETHING"};
   },
+  /* where the March part stands, clause by clause, as it happens (Instinct: "Get into the field" still read "still
+     to do" on Selection Sunday, after an Opening Round win and in the Sweet 16) */
+  clauseLine(e,my){
+    if(!e.par)return null;
+    const sea=SEA, inF=sea.field&&sea.field.indexOf(my)>=0, picked=sea.field&&sea.field.length>0;
+    const wins=NCAA_ROUNDS.filter(r=>r!=="open").reduce((n,r)=>n+((sea.rounds&&sea.rounds[r])||[]).filter(g=>g.winner===my).length,0);
+    const want=e.par>=1.2?2:e.par>=0.6?1:0, what=want===2?"reach the Sweet 16":want===1?"win a game in the tournament":"";
+    if(!picked)return `Still to do: get into the field. Selection Sunday decides.`;
+    if(!inF)return `Missed the field.`;
+    if(wins>=want)return want?`In the field, and ${want===2?"into the Sweet 16":"a tournament win"}: done.`:`In the field: done.`;
+    const alive=!((sea.rounds&&NCAA_ROUNDS.some(r=>(sea.rounds[r]||[]).some(g=>g.loser===my))));
+    return alive?`In the field: done. Still to do: ${what}.`:`In the field, but out before you could ${what}.`;
+  },
   isTitle(result){ return /NATIONAL/i.test(result) },
   firstTitle:"First national title of your tenure.",
   grade(wins,losses,result,exp){

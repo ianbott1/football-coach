@@ -21,8 +21,8 @@ for(const [f,team] of [['football-coach.html','Michigan State'],['football-coach
     const keys=mine.map(p=>p.other+'|'+!!p.cup); games++;
     ok(new Set(keys).size===keys.length,`${f} step ${step}: the same game recorded ${keys.length} times`);
   }
-  // the tally counts each read or call once: equal to the reads stored (a split report isn't counted, by design)
-  const T=A.S.readTally||{n:0}, stored=Object.values(A.S.played||{}).reduce((a,L)=>a+L.filter(p=>p.team===A.S.myTeam).reduce((b,p)=>b+((p.reads||[]).filter(r=>!r.unclear).length),0),0);
+  // the tally counts each read or call once: equal to the reads stored (a split report and a call, priced in wins instead, aren't counted, by design)
+  const T=A.S.readTally||{n:0}, stored=Object.values(A.S.played||{}).reduce((a,L)=>a+L.filter(p=>p.team===A.S.myTeam).reduce((b,p)=>b+((p.reads||[]).filter(r=>!r.unclear&&r.k!=="call").length),0),0);
   ok(T.n===stored,`${f}: the tally counts ${T.n} calls, the games hold ${stored}`);
   console.log(`  ${f.padEnd(26)} ${games} live games, tally ${T.right||0} of ${T.n}`);
 }

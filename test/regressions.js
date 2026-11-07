@@ -607,7 +607,7 @@ for(const [f,team] of [['football-coach-pro.html','Green Bay'],['football-coach.
   ok(graded>0,`${f}: reads never graded`) }
 
 /* 85. the NBA Cup (Ian): six groups of five, four group games each on the Cup nights, eight through (six winners and a
-   runner-up a conference), a champion; every team still plays 82 league games, and Cup games touch no record */
+   runner-up a conference), a champion; every Cup game is a league game, every team plays 82, one game a day */
 { const A=load({settable:SET,file:D('basketball-coach-pro.html'),expose:EXP.concat(['nbaCupTables','nbaCupFate'])}); A.newDynasty('Orlando',3,'T');
   const C=A.SEA.cup; ok(C&&Object.keys(C.groups).length===6&&Object.values(C.groups).every(g=>g.length===5),'the Cup has six groups of five');
   let g=0; while(A.SEA.phase==='week'&&g++<400)A.SEA.advance();
@@ -615,6 +615,9 @@ for(const [f,team] of [['football-coach-pro.html','Green Bay'],['football-coach.
   ok(C.seeds&&C.seeds.East.length===4&&C.seeds.West.length===4,'the knockout field isn\'t eight');
   ok(!!C.winner&&!!C.finalist,'no NBA Cup champion');
   const rec=Object.values(A.SEA.rec).map(r=>r[0]+r[1]); ok(Math.min(...rec)===82&&Math.max(...rec)===82,`league games ${Math.min(...rec)}-${Math.max(...rec)}, not 82`);
+  // every Cup game is a league game, and nobody plays twice in a day (Instinct: Cup nights were a second game)
+  const dbl=A.SEA.weeks.filter(w=>{const c={}; return w.games.some(x=>[x.home,x.away].some(t=>(c[t]=(c[t]||0)+1)>1))}).length;
+  ok(dbl===0,`${dbl} days with a team playing twice`); ok(!C.unplaced&&!C.extra,'a Cup game had no night');
   ok(A.nbaCupFate(A.SEA,C.winner)==='Winners','the champion\'s fate isn\'t "Winners"') }
 
 /* 86. the coach's notes: a new career gets a note at its first call, "Skip the guide" turns them all off, and a career
@@ -626,6 +629,28 @@ for(const [f,team] of [['football-coach-pro.html','Green Bay'],['football-coach.
   ok(/Coach's note/.test(A.guideForCall({k:'late'})),'no note for the first situation call');
   A.S.guide=false; ok(!A.guideForCall({k:'prep'})&&!A.guideNote('hub','x'),'notes shown after Skip the guide');
   delete A.S.guide; ok(!A.guideForCall({k:'prep'}),'a career from before the guide shows notes') }
+
+/* 87. the number is the same number twice: a backup in and out returns the chance to exactly where it was, and a
+   reload gives the same (Muse: a restored lineup read 83% then 66%; college football 33% then 28%, for good) */
+for(const [f,team] of [['football-coach.html','Missouri'],['football-coach-pro.html','Green Bay'],['basketball-coach.html','Wake Forest'],['basketball-coach-pro.html','Detroit'],['hockey-coach-pro.html','Washington'],['soccer-coach.html','Derby County']]){
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['winProb','swapDepth','BK','rebuild'])}); A.newDynasty(team,5,'T');
+  for(let i=0;i<3;i++){ A.S.watchMode='never'; A.doAdvance() }
+  const my=A.S.myTeam, g=A.SEA.sched.find(x=>x.week>=A.SEA.step&&(x.home===my||x.away===my)); if(!g)continue;
+  const opp=g.home===my?g.away:g.home, home=g.home===my, wp=()=>A.winProb(my,opp,home,g.neutral);
+  const R=A.SEA.roster[my]; let bi=-1,gap=0; for(let i=0;i<A.POS.length;i++){ const a=R[i],b=R[A.BK(i)]; if(a&&b&&a.r-b.r>gap){gap=a.r-b.r;bi=i} }
+  const w0=wp(); A.swapDepth(A.SEA,bi); const w1=wp(); A.swapDepth(A.SEA,bi); const w2=wp(); A.rebuild(); const w3=wp();
+  ok(w1<w0,`${f}: a backup ${gap} worse didn't lower the chance (${w0.toFixed(4)} to ${w1.toFixed(4)})`);
+  ok(Math.abs(w2-w0)<1e-9&&Math.abs(w3-w0)<1e-9,`${f}: in and out read ${(100*w0).toFixed(2)} / ${(100*w2).toFixed(2)}, reload ${(100*w3).toFixed(2)}`) }
+
+/* 88. hockey's scorebook is its game log: every goal and assist the log names is credited to that man, backups too
+   (Muse, three games goal by goal: a two-goal scorer at 0-0-0, a man who never scored with two) */
+{ const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP.concat(['rowsOf'])}); A.newDynasty('Washington',4,'T'); let bad=0, goals=0;
+  for(let w=0;w<8;w++){ const my=A.S.myTeam, snap=()=>A.SEA.roster[my].map(p=>p?{n:p.n,g:(p.st2&&p.st2.goals)||0}:null);
+    const before=snap(); A.doAdvance(); let k=0,L=null; while(A.live&&!A.live.done&&k++<900){ L=A.live; A.live.ask?A.answerLive(A.live.ask.dp.opts[0][0]):A.liveTick() }
+    if(!L)continue; const after=snap(), lg={}, names=A.SEA.roster[my].map(p=>p&&p.n).filter(Boolean);
+    A.rowsOf(L.g,L.drives).filter(r=>r.goal&&r.team===my).forEach(r=>{ const nm=names.find(n=>r.text.indexOf(n)===0); if(nm){lg[nm]=(lg[nm]||0)+1; goals++} });
+    after.forEach((p,i)=>{ if(p&&p.g-before[i].g!==(lg[p.n]||0))bad++ }) }
+  ok(goals>5&&bad===0,`hockey: ${bad} players whose goals don't match the log (${goals} goals)`) }
 
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);

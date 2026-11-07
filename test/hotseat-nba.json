@@ -1,5 +1,5 @@
 {
- "fp": "a291b6f1b32a9de8",
+ "fp": "2551d5fa5d969fc8",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -175,6 +175,11 @@
    "fp": "a291b6f1b32a9de8",
    "from": "19a3071cb204dbac",
    "note": "Round 36: the NBA Cup. With it off (NBA_CUP=0) every fingerprint matches round 35."
+  },
+  {
+   "fp": "2551d5fa5d969fc8",
+   "from": "a291b6f1b32a9de8",
+   "note": "Round 37: NBA Cup games are league games (Cup off: matches round 35 exactly, 19a3071c); hockey's box score credits the men its log names."
   }
  ],
  "out": [
@@ -184,20 +189,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "50-32",
-      "result": "Lost in the first round",
-      "grade": "B-"
+      "rec": "61-21",
+      "result": "Lost in the conference semifinals",
+      "grade": "A-"
      },
-     "book": "7094705caedcd13d"
+     "book": "2ccf4729fa267c1b"
     },
     {
      "team": "New York",
      "last": {
       "rec": "43-39",
-      "result": "Lost in the conference finals",
-      "grade": "B"
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "2c437b76e47823e6"
+     "book": "f5bd540f9511afdd"
     }
    ]
   },
@@ -207,20 +212,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-52",
+      "rec": "32-50",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "cc9346094243821b"
+     "book": "d0152b499c9b1672"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "44-38",
-      "result": "Lost in the first round",
-      "grade": "C+"
+      "rec": "35-47",
+      "result": "Lost in the play-in",
+      "grade": "D"
      },
-     "book": "7716215c27e8a4b7"
+     "book": "97d5954d0e16f126"
     }
    ]
   },
@@ -230,20 +235,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "29-53",
+      "rec": "30-52",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "dd604760d13fca2d"
+     "book": "fbd0aeb8a4d203fc"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "63-19",
-      "result": "Lost in the conference finals",
-      "grade": "A"
+      "rec": "41-41",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "565ef34d7117b11e"
+     "book": "a6e78bd75adf4826"
     }
    ]
   }

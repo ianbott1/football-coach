@@ -211,7 +211,9 @@ function finishLive(){ liveEndedAt=Date.now();
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
-      R.forEach(x=>{ if(x.unclear)return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // a read the screen couldn't show isn't counted
+      // reads only: a call is priced in wins against your assistant (the ledger), not right or wrong (Instinct: "11 of 11
+      // right (100%)" above a call that cost 6 games in 100). A read the screen couldn't show isn't counted.
+      R.forEach(x=>{ if(x.unclear||x.k==="call")return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -314,8 +316,10 @@ function swapDepth(sea,i){
   const moveInj=typeof i==="object"; if(moveInj)i=i.i;
   const R=sea.roster&&sea.roster[S.myTeam];
   if(!R||!R[i]||!R[BK(i)])return;
-  const t=R[i]; R[i]=R[BK(i)]; R[BK(i)]=t;
-  sea.talent.base[S.myTeam]=rosterElo(R);
+  // by the change, not recomputed: the season's strength isn't rosterElo alone, so a swap and a swap back left it
+  // somewhere else (Muse: a restored lineup read 83% then 66%; college football 33% then 28%, and stayed there)
+  const before=rosterElo(R), t=R[i]; R[i]=R[BK(i)]; R[BK(i)]=t;
+  sea.talent.base[S.myTeam]+=rosterElo(R)-before;
   if(moveInj)(sea.talent.inj[S.myTeam]||[]).forEach(e=>{
     if(e.idx===i){ e.idx=BK(i); e.m0=e.m; e.m=0 }
     else if(e.idx===BK(i)){ e.idx=i; if(e.m0!=null){ e.m=e.m0; delete e.m0 } } });
@@ -1169,8 +1173,8 @@ function heroResult(){
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
-  const cupRes=g.cup&&LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(g,my):null;   // a league's own line (the NBA Cup's group games)
-  if(cupRes)move=cupRes;
+  const cupRes=LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(Object.assign({week:flash&&flash.step},g),my):null;   // a league's own line (the NBA Cup's group games, league games too)
+  if(cupRes)move=g.cup?cupRes:(move||"")+cupRes;
   else if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
     // a level tie says how it was settled: a 0-0 "into the second round" read as a mystery (Ian)
     const how=g.pens?(won?"Won on penalties: ":"Lost on penalties: "):g.ot?(won?"Won in extra time: ":"Lost in extra time: "):"";
@@ -1202,7 +1206,7 @@ function tallyHTML(){
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
-    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded calls only</div>
+    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded reads only</div>
     ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
@@ -1242,7 +1246,7 @@ function readsHTML(step){
   const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
-    ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded calls only)</div>`:""}</div>`;
+    ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -1270,7 +1274,7 @@ function oddsHTML(me,opp,atHome,neutral,wp){
       <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span><span class="olab">before the game</span>${ownMark(me)}</div>` }
   return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
         <span class="opct">${pctShown(wp)}%</span>
-        <span class="olab">to win, before the game</span>${ownMark(me)}</div>`;   // which number this is: the replays after a call are another (Instinct: "label every number's method")
+        <span class="olab">to win, before the game</span>${ownMark(me)}</div>${me===S.myTeam?injuredLine(opp,atHome,neutral):""}`;   // which number this is: the replays after a call are another (Instinct: "label every number's method")
 }
 /* the odds include your own choices: say so, since a point or two can hide
    in the rounding (Muse saw soccer's odds not move) */
@@ -1300,6 +1304,18 @@ function gameEdge(me,opp,atHome,neutral){
   if(S.myTeam){ SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null }
   try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return hm?d:-d }
   finally{ SEA.userTeam=ku; SEA.featured=kf; SEA.deploy=kd }
+}
+/* when an injury drags the chance down, say whose and by how much (Instinct: 13% in a playoff game with the starting
+   quarterback out, and nothing on screen said why). With his injury taken away, the same engine. */
+function injuredLine(opp,atHome,neutral){
+  const my=S.myTeam; if(!opp||!SEA||!SEA.talent||!SEA.talent.inj)return "";
+  const hurt=(SEA.talent.inj[my]||[]).filter(e=>e.w>0&&e.who); if(!hurt.length)return "";
+  const g=SEA.nextGame?SEA.nextGame(my):null; if(atHome===null){ atHome=g?g.home===my:true; neutral=g?!!g.neutral:false }
+  const now=winProb(my,opp,atHome,neutral), keep=SEA.talent.inj[my];
+  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=winProb(my,opp,atHome,neutral) }finally{ SEA.talent.inj[my]=keep }
+  if(fit-now<0.03)return "";
+  const names=hurt.slice().sort((a,b)=>a.m-b.m).slice(0,2).map(e=>esc(e.who)).join(" and ");
+  return `<div class="oinj">${pctShown(now)}% without ${names} (injured); about ${pctShown(fit)}% with ${hurt.length>1?"them":"him"}.</div>`;
 }
 function winProb(me,opp,atHome,neutral){
   return 1/(1+Math.pow(10,-gameEdge(me,opp,atHome,neutral)/wpScale("balanced")));
@@ -1424,7 +1440,7 @@ function seatBadge(){
   // just "HOT SEAT": the reason ran the badge onto three lines and over the coach's name at 390px (Ian,
   // Instinct); it's on hover and at the top of the board's objectives (seatWhy)
   const hot=`<span class="seat hot" title="${esc(seatWhy(prev)||"You missed last season's target. Miss this one too and the job goes.")}">HOT SEAT</span>`;
-  if(w+l<4)return prev&&seasonMissed(prev)?hot:`<span class="seat cool">Settled</span>`;
+  if(w+l<4)return prev&&seasonMissed(prev)?hot:`<span class="seat cool">Secure</span>`;   // one calm word, not two (Instinct: "Settled" and "Secure" read as different)
   const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
   const paceW=Math.round(w/(w+l)*games);
   // a league table grades by position, and a season without a result graded "on course" every week:
@@ -1597,7 +1613,8 @@ function teamCardHTML(my,rk,co){
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
-          :need===0?(SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}`)   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
+          :need===0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;   // each clause as it stands (Instinct)
+              return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
           // plainly: the target, then what's left of it ("46 more wins from the 47 expected" read oddly: Grokbot, Ian)
           :need>left?`Target: ${e.w} wins. ${need} to go: it will take a postseason run.`
@@ -1726,7 +1743,7 @@ function nextUpHTML(my,rk){
           :"Matchup set when the round is played"}</div>
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
           <span class="opct">${pctShown(wp)}%</span>
-          <span class="olab">win probability</span></div>`:""}
+          <span class="olab">to win, before the game</span></div>${injuredLine(pn.opp,null,null)}`:""}
         ${planPickerHTML(wp)}</div>`;
     }
     return h;
@@ -1769,7 +1786,8 @@ function nextUpHTML(my,rk){
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
       ${cupNight?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} ${esc(LEAGUE.cup.rule||"")}</span></div>
         <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>`
-        :st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
+        :((LEAGUE.cup&&LEAGUE.cup.groupLine&&LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng)))?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag)}</span><span class="sline">${LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng))}</span></div><button class="rewatch seedraw" data-cupview="1">See the Cup</button>`:"")
+        +st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
         <span class="sline">${x.l}</span></div>`).join("")}
       ${guideNote("hub","The percentage is the game's own chance of winning, worked out from the lineup you've picked: start a backup and it moves. Your gameplan below doesn't move it on purpose: plans trade safety for variance, and each is judged on the result card.")}
       ${planPickerHTML(wp)}</div>`;
@@ -3536,7 +3554,10 @@ function watchOtherTabs(){
       if(!e.key||e.key.indexOf(KEYBASE)!==0)return;
       if(S&&S.title){ S._slots=await allSlots(); render(); return }
       if(S&&S.myTeam&&saveRev!==null&&e.key===REVKEY(slot)&&(+e.newValue||0)!==saveRev&&!staleTab){ staleTab=true; render() } });
-    window.addEventListener("pageshow",async e=>{ if(e.persisted&&S&&S.title){ S._slots=await allSlots(); render() } });
+    // a page brought back from the browser's cache shows its old title screen until the saves are read again:
+    // blank the list first (Muse: "Winnipeg, 3 seasons" painted, then corrected to Edmonton, 5)
+    window.addEventListener("pageshow",async e=>{ if(e.persisted&&S&&S.title){ S._slots=[]; S._slotsWait=true; render(); S._slots=await allSlots(); S._slotsWait=false; render() } });
+    document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState==="visible"&&S&&S.title&&S._slots&&!S._slotsWait){ S._slots=await allSlots(); render() } });
   }catch(e){}
 }
 (async function(){

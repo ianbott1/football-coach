@@ -431,6 +431,18 @@ LEAGUE.goals={
     if(p>=1580)return {w:7,l:"Be competitive in December and show the rebuild is working.",t:"PUSH FORWARD"};
     return {w:5,l:"Show progress. Five wins would be real movement here.",t:"BUILD SOMETHING"};
   },
+  /* the bundled objectives, clause by clause, as they happen (Instinct: "Win the division and a playoff game" still
+     read "still to do" after the division was clinched) */
+  clauseLine(e,my){
+    const sea=SEA, div=sea.champs&&Object.keys(sea.champs).some(d=>sea.champs[d]===my);
+    const pw=["wc","div","conf","sb"].reduce((n,r)=>n+((sea.rounds&&sea.rounds[r])||[]).filter(g=>g.winner===my).length,0);
+    const inP=!!(sea.seeds&&sea.seeds[my]), out=["wc","div","conf","sb"].some(r=>((sea.rounds&&sea.rounds[r])||[]).some(g=>g.loser===my));
+    if(e.t==="CONTEND"){ const a=div?"Division won: done.":(sea.phase==="week"?"Still to do: win the division.":"Didn't win the division.");
+      const b=pw>=1?"A playoff win: done.":out||(sea.phase!=="week"&&!inP)?"No playoff win.":"Still to do: a playoff win.";
+      return a+" "+b }
+    if(e.t==="PLAYOFFS"&&sea.phase!=="week")return inP?"Into the playoffs: done.":"Missed the playoffs.";
+    return null;
+  },
   isTitle(result){return /SUPER BOWL CHAMPIONS/i.test(result)},
   firstTitle:"First Super Bowl of your tenure.",
   /* A 17-game season is noisy and 14 teams make the playoffs, so each win

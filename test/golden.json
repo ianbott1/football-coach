@@ -1,5 +1,5 @@
 {
- "fp": "1a24c80a378d7e22",
+ "fp": "2b7dd10748b80124",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -354,6 +354,11 @@
    "fp": "1a24c80a378d7e22",
    "from": "bfca71e53d763e17",
    "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
+  },
+  {
+   "fp": "2b7dd10748b80124",
+   "from": "1a24c80a378d7e22",
+   "note": "Round 37: NBA Cup games are league games (with the Cup off, results match round 35); hockey's box score credits the men its game log names (awards and history move, games don't); text and screens elsewhere."
   }
  ],
  "result": {
@@ -368,7 +373,7 @@
     "heis": "d2693b3b1de347ff",
     "history": "21349e3e6e7146d2",
     "universe": "e2398dbd37132b7b",
-    "screens": "10a5aea229a25ed1"
+    "screens": "1a1556c8b4c245ca"
    },
    {
     "year": 2027,
@@ -380,7 +385,7 @@
     "heis": "16faa80038530bdc",
     "history": "a9a1dcfec44cd28a",
     "universe": "83d940488d87df83",
-    "screens": "06d947bcd90be606"
+    "screens": "4f4e005111eb9183"
    },
    {
     "year": 2028,
@@ -392,7 +397,7 @@
     "heis": "ce8b6fe8994ff251",
     "history": "fba0c166f054ebf4",
     "universe": "9adf0e2bafb17506",
-    "screens": "54b5b49fd4bd6bb5"
+    "screens": "4a5e87b5b9a5e150"
    },
    {
     "year": 2029,
@@ -404,7 +409,7 @@
     "heis": "603f7eedc72902bd",
     "history": "32d3056b78538f91",
     "universe": "0b73e5a1bf518064",
-    "screens": "bb70e05887c0863e"
+    "screens": "620aa2316df46840"
    }
   ],
   "Rice#2024": [
@@ -418,7 +423,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "bdbdffecf61ec670",
     "universe": "f39be11c9884e279",
-    "screens": "b55f0992f52bab4a"
+    "screens": "e1c1a49eab3b493f"
    },
    {
     "year": 2027,
@@ -430,7 +435,7 @@
     "heis": "44ad371c7cb0c78a",
     "history": "b0fc0cfbe8294ba9",
     "universe": "0df6dbdff4721f60",
-    "screens": "1907c80666ec778f"
+    "screens": "ae0c9e72bcd15c87"
    },
    {
     "year": 2028,
@@ -442,7 +447,7 @@
     "heis": "0608f46ad75b10b0",
     "history": "8260c95117ebde41",
     "universe": "aacffdb607bc93c1",
-    "screens": "589a60a93ead271a"
+    "screens": "1385e55eb78e6774"
    },
    {
     "year": 2029,
@@ -454,7 +459,7 @@
     "heis": "7729d87412c59cd5",
     "history": "05aae19a1f06238c",
     "universe": "47724fd3b9bfd9c8",
-    "screens": "30b4297a60954be2"
+    "screens": "427c15cd186bcbf4"
    }
   ],
   "Oregon#777": [
@@ -468,7 +473,7 @@
     "heis": "f9fee25957dc5caa",
     "history": "4dc92f0c50fbc70e",
     "universe": "449bbdc2b017f851",
-    "screens": "77a99f260a3677b7"
+    "screens": "6dc3f0781287d3e6"
    },
    {
     "year": 2027,
@@ -480,7 +485,7 @@
     "heis": "03304715b8bdaf94",
     "history": "ae4f0f58ff0c91cf",
     "universe": "73347beae475a5ab",
-    "screens": "6a29ca39699314f1"
+    "screens": "7e452cbfdf598dda"
    },
    {
     "year": 2028,
@@ -492,7 +497,7 @@
     "heis": "952aeb23578fc3d2",
     "history": "de39dd7c19e6171f",
     "universe": "632672cbdc2132d2",
-    "screens": "e16e0ddb202d7f16"
+    "screens": "e7c06c2a3a27a613"
    }
   ],
   "Kent State#31337": [
@@ -506,7 +511,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "f7e30e053f0fe6fb",
     "universe": "1decd17d5900300b",
-    "screens": "190dc04fe7448cd8"
+    "screens": "0a6f243f31a07e14"
    },
    {
     "year": 2027,
@@ -518,7 +523,7 @@
     "heis": "a6b737bd74916ea8",
     "history": "4c0c4d8aa25c9ef3",
     "universe": "87fd19e60d9be698",
-    "screens": "2fb4dd301ca70ee7"
+    "screens": "09dd15d71b8f026b"
    },
    {
     "year": 2028,
@@ -530,7 +535,7 @@
     "heis": "fe1141158ab89d79",
     "history": "0dcd04a7d180fb77",
     "universe": "f5a64b153cf42d75",
-    "screens": "a5904149dfd64aa5"
+    "screens": "5bc75f443a2e8faf"
    }
   ],
   "schedules#60": [

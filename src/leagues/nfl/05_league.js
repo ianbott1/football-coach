@@ -134,8 +134,7 @@ const LEAGUE={
        "Quarterbacks last longer."],
       ["Salary cap","A hard limit on what you pay the players who matter. Stars are expensive; "+
        "rookie contracts are the cheapest good players in the league."],
-      ["Win probability","Derived from the rating gap plus home field. Your gameplan shifts the "+
-       "spread of outcomes around it, not the average."],
+      ["Chance to win","The game's own chance, before it starts, from the strengths it will be played with: your lineup and injuries, featuring, staff and home field. Your gameplan doesn't move it: plans change how swingy a game is, and are judged on the result card."],
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."],
       ["Reputation","What other front offices think of you. It decides which jobs open up when "+
        "you're fired."]
