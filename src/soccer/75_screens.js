@@ -25,8 +25,10 @@ const FINISH={
   FB:["overlaps and finds the far corner","steers in a deflected effort"]
 };
 const CUE={
-  press:["{t} press high again; we can't play out from the back","Turnover high up the pitch for {t}","{t} hunt in packs: the ball's won back in our half again"],
-  block:["{t} have ten men behind the ball","Another spell of sideways passing in front of {t}'s block","{t} happy to let us have it and sit in two banks of four"],
+  // third person, naming the other side: "we can't play out from the back" was said of Stoke when Stoke were the
+  // ones pressing (Instinct): the cue's side can be yours
+  press:["{t} press high again; {o} can't play out from the back","Turnover high up the pitch for {t}","{t} hunt in packs: the ball's won back in {o}'s half again"],
+  block:["{t} have ten men behind the ball","Another spell of sideways passing in front of {t}'s block","{t} happy to let {o} have it and sit in two banks of four"],
   wing:["Another cross from the {s} for {t}","{t} doubling up out wide on the {s}","{t} get in behind on the {s} again"],
   direct:["Long ball forward from {t}'s keeper, flicked on","{t} going route one, straight to the big man","{t} skip midfield entirely: ball over the top"]
 };
@@ -44,7 +46,7 @@ function scEventText(g,e){
   if(e.k==="yellow"){ const n=e.def?scPlayer(tm,"CB",u):scPlayer(tm,pickOf(["CM","FB","W","ST"],u),u);
     return {team:tm,tag:"YELLOW",text:`${n||"a defender"} booked${e.def?" (centre-back)":""}`} }
   if(e.k==="red"){ const n=scPlayer(tm,"CB",1); return {team:tm,tag:"RED",text:`${n||"The centre-back"} sees a second yellow. Down to ten.`} }
-  if(e.k==="cue"){ const line=pickOf(CUE[e.cue],u).replace("{t}",tm).replace("{s}",u%2?"left":"right");
+  if(e.k==="cue"){ const line=pickOf(CUE[e.cue],u).replace("{t}",tm).replace("{o}",opp).replace("{s}",u%2?"left":"right");
     return {team:tm,tag:"",text:line,cue:true} }
   return {team:tm,tag:"",text:""};
 }
@@ -269,13 +271,17 @@ function watchView(){
 /* what the evidence said, when it pointed the other way: a read the numbers
    got wrong is a noisy sample, not a coin flip, and the verdict says so */
 function readNote(e){
+  if(e.k==="flank"&&e.unclear)return " The count was nearly level, a coin flip, so it isn't graded either way.";
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&APPROACH[e.evid])
     return e.right?` The numbers pointed to ${APPROACH[e.evid].l}; your read was better than they were.`
       :` The numbers at the time pointed to ${APPROACH[e.evid].l}: a short stretch can mislead.`;
   if(e.k==="prep"&&e.split){ const by=typeof e.split==="string"?" "+e.split:"";   // "3-3": their last games, by system
-    return e.right?` The report was split${by}, so that was a good guess.`:` The report was split${by}, so this was close to a coin flip.` }
+    return ` The report was split${by}, a coin flip, so it isn't graded either way.` }
   return "";
 }
+/* what you chose, for the start of the card's line: one line said "First read and second read: ... the answer was
+   'Go long'" when that was the pre-match pick and the cross was for a later one (Grokbot) */
+function readPickLabel(e){ const o=COUNTERS[e.pick]; return o?o.l:e.k==="flank"?`Overload the ${e.pick}`:"" }
 function readText(e){ return readTextBase(e)+readNote(e) }
 function readTextBase(e){
   if(e.k==="read")return e.right?`Your read was right: they were ${APPROACH[e.truth].l}.`

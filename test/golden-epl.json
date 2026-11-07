@@ -1,5 +1,5 @@
 {
- "fp": "63a17dde44b07f4f",
+ "fp": "2b1c1464b7711039",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -255,59 +255,79 @@
    "fp": "63a17dde44b07f4f",
    "from": "90c82f306211716b",
    "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
+  },
+  {
+   "fp": "022fef7ab5da05f0",
+   "from": "63a17dde44b07f4f",
+   "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
+  },
+  {
+   "fp": "5d314561047d31c0",
+   "from": "022fef7ab5da05f0",
+   "note": "Round 32: screens (read lines, coin-flip notes, standings words, result header, odds capped at 99%, draft labels, payroll arithmetic), soccer history gains departing and old wages (checked field by field against HEAD); basketball pace held to 8% (golden plans are balanced, so results unchanged)"
+  },
+  {
+   "fp": "92bcb9b0b9ca69c2",
+   "from": "5d314561047d31c0",
+   "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
+  },
+  {
+   "fp": "2b1c1464b7711039",
+   "from": "92bcb9b0b9ca69c2",
+   "note": "Round 33: soccer's late call at 65' (the reading edge over Pearl held: 1.0 at 60,000 games; main 1.2)"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "a7250ef88171ca1b",
-    "post": "f025327c0d7f8b1d",
+    "games": "e99b13df5fc8b493",
+    "post": "64790ac81d06581a",
     "champion": "Manchester City",
-    "rec": "d4e8c95133d94730",
-    "poll": "966f88435f753e67",
-    "heis": "c2e2e7ee00062fc9",
-    "history": "17d4c32f4dd78a6d",
-    "universe": "b981f92c61f4710b",
-    "screens": "416b0c35f6d0ac34"
+    "rec": "c8087331bccabf11",
+    "poll": "2a903f993fc478b7",
+    "heis": "af7f37f2652278c3",
+    "history": "479026eb52783960",
+    "universe": "2cf5ba0b924125ac",
+    "screens": "8447ed50503d9e9e"
    },
    {
     "year": 2027,
-    "games": "05b435d01796d13d",
-    "post": "dc09fd504b44394f",
+    "games": "45cd3ea105254e7f",
+    "post": "81d2d2135e7fac8b",
     "champion": "Arsenal",
-    "rec": "acac4e09c4325681",
-    "poll": "001b82b75fc2c804",
-    "heis": "f6d8bae41ea01921",
-    "history": "f70f34aa11d25341",
-    "universe": "85c5c2e52c83c1bc",
-    "screens": "0ae4a278ccfc1604"
+    "rec": "f15d3d4b48e90314",
+    "poll": "fc65b44d88da816b",
+    "heis": "1e17969eea1d9118",
+    "history": "38911ac8b3e53807",
+    "universe": "b4c08153165c19ba",
+    "screens": "b5ad8cff7f113f01"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "d4836732f602f7a9",
-    "post": "f556de35a5f77d8c",
-    "champion": "Manchester City",
-    "rec": "3d6ecab210f5a022",
-    "poll": "3ad2239f6c9be160",
-    "heis": "8e3670250269e87c",
-    "history": "d3858b4222ddfc08",
-    "universe": "8a0a73e24c3621c6",
-    "screens": "1638f0df9ae340bd"
+    "games": "6ceb6b96859e48d3",
+    "post": "03f67d6bb49a4121",
+    "champion": "Manchester United",
+    "rec": "ef1cf897409a01e2",
+    "poll": "737fcb24092335a7",
+    "heis": "400991731e24be6e",
+    "history": "aaf4a14aa2b0c3ea",
+    "universe": "7e82d8cb5d52b19f",
+    "screens": "3d6c22772e951b22"
    },
    {
     "year": 2027,
-    "games": "f20a4ea93c74a9d1",
-    "post": "156d05c48a1bb4c1",
-    "champion": "Manchester City",
-    "rec": "753c6592704945ba",
-    "poll": "0e562e99454d50ea",
-    "heis": "d7aa153f710514bd",
-    "history": "4dba379e58cb953f",
-    "universe": "e195cc0384e4d46b",
-    "screens": "b8e2d819537ab87b"
+    "games": "ddb3ce42ddd11a8d",
+    "post": "706dc71d359dae9f",
+    "champion": "Arsenal",
+    "rec": "ed3b327c1297446d",
+    "poll": "ca70cfcf19903672",
+    "heis": "7e62ca4a6bd95c73",
+    "history": "aebd5702d8539966",
+    "universe": "e38a812681de34a1",
+    "screens": "c2d67471989176cb"
    }
   ],
   "schedules#60": [

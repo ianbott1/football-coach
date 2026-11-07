@@ -31,7 +31,9 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
       const cg=await p.$('#cgo'); if(cg){ await cg.click(); await p.waitForTimeout(400) }
       const pk=(await p.$$('.pick'))[4]; if(pk){ await pk.click(); await p.waitForTimeout(200);
         ok(!(await p.$('#rst')),`${f}: one tap on a team started the career (no second tap to confirm)`);
-        if(!(await p.$('#rst'))){ await pk.click({timeout:2000}).catch(()=>{}) } await p.waitForTimeout(900) }
+        if(process.env.DBG)console.log(await p.evaluate(()=>({sel:document.querySelectorAll('.pick.sel').length,bar:!!document.getElementById('pickbar'),armed:document.querySelectorAll('.armed').length,rst:!!document.getElementById('rst')})));
+        ok(/Start with/i.test((await p.$("#pickgo"))?await (await p.$('#pickgo')).innerText():""),`${f}: a tap on a team shows no "Start with" bar`);
+        const go=await p.$('#pickgo'); if(!(await p.$('#rst'))){ if(go)await go.click({timeout:2000}).catch(()=>{}); else await pk.click({timeout:2000}).catch(()=>{}) } await p.waitForTimeout(900) }
       ok(!!(await p.$('#rst')),`${f}: after Start over, a new career didn't begin (${errs[0]||'no error'})`);
       ok(!errs.length,`${f}: page errors after Start over: ${errs[0]}`);
       await p.evaluate(()=>localStorage.clear()); }
@@ -216,11 +218,17 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     const url='file://'+path.join(DIST,f); await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
     const n=await p.evaluate(async()=>{ S.watchMode="never"; let g=0; while(SEA.phase!=="done"&&g++<5000)simAdvance(); await new Promise(r=>setTimeout(r,300)); openOffseason(); render(); return nflDraftClass(U,dnTeam()).list.length });
     ok(n>R*30,`${f}: draft class of ${n} in a browser`);
+    // selectors, not element handles: each tap re-renders the page, and a held handle can point at the old one
     const open=await p.$('[data-dnopen]'); ok(!!open,`${f}: no way into draft night`); if(!open){ await ctx.close(); continue }
-    await open.click(); await p.waitForTimeout(400);
-    const w=await p.$('[data-dnwork]'); ok(!!w===wk,`${f}: workouts ${w?"offered":"missing"}`); if(w){ await w.click(); await p.waitForTimeout(300) }
+    await p.click('[data-dnopen]'); await p.waitForSelector('[data-dnpick]',{timeout:5000}).catch(()=>{}); await p.waitForTimeout(300);
+    const wid=await p.$eval('[data-dnwork]',b=>b.dataset.dnwork).catch(()=>null); ok(!!wid===wk,`${f}: workouts ${wid?"offered":"missing"}`);
+    if(wid){ await p.click(`[data-dnwork="${wid}"]`); await p.waitForTimeout(400) }
     const d=await p.$('[data-dnpick]'); ok(!!d,`${f}: nothing to draft`);
-    if(d){ await d.click(); await p.waitForTimeout(150); await d.click(); await p.waitForTimeout(600) }
+    if(d){ const id=await d.getAttribute("data-dnpick"); await p.click(`[data-dnpick="${id}"]`); await p.waitForTimeout(400);   // a person's second tap, not 150 ms
+      if(process.env.DBG)console.log(f, await p.evaluate(id=>{ const bs=document.querySelectorAll(`[data-dnpick="${id}"]`); return {n:bs.length,armed:[...bs].map(b=>b.dataset.armed||'-').join(','),hand:(S.off.picks.hand||[]).length} },id));
+      await p.click(`[data-dnpick="${id}"]`,{timeout:5000}).catch(e=>ok(false,`${f}: second tap on Draft: ${e.message.split('\n')[0]}`));
+      const t0=Date.now(); await p.waitForFunction(()=>(S.off.picks.hand||[]).length>0,{timeout:2000}).catch(()=>{}); if(process.env.DBG)console.log(f,'pick recorded after',Date.now()-t0,'ms')
+      if(process.env.DBG)console.log(f,'after 2nd', await p.evaluate(id=>{ const bs=document.querySelectorAll(`[data-dnpick="${id}"]`); return {n:bs.length,armed:[...bs].map(b=>b.dataset.armed||'-').join(','),txt:[...bs].map(b=>b.innerText).join('|'),hand:(S.off.picks.hand||[]).length,dn:S.off.dn,h2:(document.querySelector('h2')||{}).innerText} },id)) }
     const st=await p.evaluate(async()=>{ await save(); return {hand:(S.off.picks.hand||[]).length,clock:(document.body.innerText.match(/PICK \d+ · #\d+/i)||[""])[0]} });
     ok(st.hand===1,`${f}: ${st.hand} picks recorded after one`);
     await p.waitForTimeout(400); await p.goto(url); await p.waitForTimeout(700); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);
@@ -229,6 +237,22 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     ok(!errs.length,`${f}: page errors on draft night: ${errs[0]}`);
     await ctx.close();
   }
+  // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the game
+  // and was answered without the player choosing (Grokbot, soccer)
+  { const ctx=await b.newContext({viewport:{width:390,height:844}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.dismiss());
+    const url='file://'+path.join(DIST,'soccer-coach.html'); await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
+    // force the next game live, then run it at Very fast until a call shows
+    await p.evaluate(()=>{ S.watchMode="always"; S.watchSpeed="rapid"; doAdvance() }); let asked=false;
+    for(let i=0;i<120&&!asked;i++){ await p.waitForTimeout(100); asked=await p.evaluate(()=>!!(live&&live.ask)) }
+    ok(asked,'soccer: no call came up in a live game');
+    if(asked){ const n0=await p.evaluate(()=>(live.replay||[]).length);
+      await p.evaluate(()=>{ const b=document.querySelector('[data-call]'); if(b)b.click() });            // at once: ignored
+      const n1=await p.evaluate(()=>live&&live.ask?(live.replay||[]).length:-1);
+      ok(n1===n0,`soccer: a tap the instant a call appeared answered it`);
+      await p.waitForTimeout(800); await p.evaluate(()=>{ const b=document.querySelector('[data-call]'); if(b)b.click() });
+      const n2=await p.evaluate(()=>live?(live.replay||[]).length:-1);
+      ok(n2===n0+1,`soccer: a tap after the pause didn't answer the call (${n0} -> ${n2})`) }
+    ok(!errs.length,`soccer: page errors around the call guard: ${errs[0]}`); await ctx.close() }
   await b.close();
   console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: two-tap confirms work in a browser`);
   process.exit(bad?1:0);

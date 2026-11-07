@@ -33,7 +33,7 @@ const LEAGUE={
     "New Orleans","New York","Oklahoma City","Orlando","Philadelphia","Phoenix","Portland","Sacramento",
     "San Antonio","Toronto","Utah","Washington"],
   awards:{mvp:"Player of the Year", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},   // awards compare each player with his position (86_awards)
-  tuning:{wpK:{safe:380,balanced:420,aggressive:470},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+  tuning:{wpK:{safe:406,balanced:420,aggressive:434},   /* round 32: pace held to ±8%; safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
     hfa:105, pFloor:950, pCeil:2500},   // program strength spans more than in football
   /* arenas that are genuinely hard to visit (added to a prestige-based base) */
   venues:{"Kansas":30,"Duke":30,"Kentucky":24,"Gonzaga":22,"Purdue":22,"Michigan State":20,"Syracuse":16,
@@ -46,6 +46,7 @@ const LEAGUE={
        doesn't: the ACC and Big Ten take 15 of 18, the Ivy League its top 4 */
     ctCap:{"ACC":15,"Big Ten":15,"Ivy League":4}},
   text:{
+    standingsNote:`<div class="note">Conference record, then overall. Amber marks the top four, who skip the first rounds of the conference tournament; below the line, a team misses it (twelve play).</div>`,
     rankedWin:["A ranked win. The committee will notice.","That one goes on the résumé.","A Quad 1 win, and they count."],
     badLoss:["That is the kind of loss that follows you to Selection Sunday.","An unranked team did that. The committee will remember.","One of those losses you have to explain in March."],
     champions:"National champions",

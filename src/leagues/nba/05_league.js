@@ -51,7 +51,7 @@ const LEAGUE={
     "Michigan State","Baylor","Texas","UCLA","Villanova","Purdue","Tennessee","Arkansas","Florida","Illinois",
     "Real Madrid","Partizan","ASVEL","Mega Basket","Joventut","Ratiopharm Ulm","Overtime Elite","G League Ignite"],
   awards:{mvp:"MVP", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},
-  tuning:{wpK:{safe:230,balanced:250,aggressive:275},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+  tuning:{wpK:{safe:245,balanced:250,aggressive:259},   /* round 32: pace held to ±8% (the plans moved scoring 20 points and wins little); safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
     hfa:60, gapScale:1, pFloor:1200, pCeil:1850, talentSteps:+((typeof process!=="undefined"&&process.env&&process.env.NBA_TS)||12),
     /* the pro game (docs/NBA.md): 48 minutes in quarters, ~99 possessions */
     bb:{pace:99,paceSd:2.5,two:0.557,three:0.370,foul2:0.13,foul3:0.02,ft:0.785,and1:0.09,oreb:0.24,foulOut:6,starFouls:3.0,teamFouls:20,

@@ -39,6 +39,7 @@ add('March vs history (ncaab)',['bb-march.js','2','100'],{long:true});
 // pro basketball
 add('playoffs (nba)',['nba-playoffs.js','4']); add('screens (nba)',['nba-screens.js']);
 add('NBA history (nba)',['nba-history.js','2','100'],{long:true});
+add('draft labels hold their bands (pro)',['draft-labels.js','16'],{long:true});
 // pro hockey
 add('playoffs (nhl)',['nhl-playoffs.js','3']); add('clinch marks (nhl)',['nhl-clinch.js','4']);
 add('screens (nhl)',['nhl-screens.js']); add('NHL history (nhl)',['nhl-history.js','2','60'],{long:true});

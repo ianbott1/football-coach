@@ -97,7 +97,11 @@ const LEAGUE={
     org:"Club", orgs:"clubs", group:"Division", rank:"Position",
     groupShort:"Div",
     standingsNote:`<div class="note">Record W-D-L: three points a win, one a draw; then goal difference, then
-      goals scored. Each division's promotion, play-off and relegation places are marked on its table.</div>`,
+      goals scored (GD: goal difference). The edge marks each division's places:
+      <span class="zkey" style="background:var(--turf)"></span>promotion
+      <span class="zkey" style="background:var(--sodium)"></span>play-offs
+      <span class="zkey" style="background:#2F6FB5"></span>Champions League
+      <span class="zkey" style="background:var(--flag)"></span>relegation.</div>`,
     ranking:"the table", top:"the table", entered:"Up to ",
     orgNote:base=>`Club stature is the slow-moving baseline &mdash; support, revenue, history. Measured
       against where each club stood in ${base}.`,

@@ -45,6 +45,9 @@ const SC_BASE = {
 const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.sc)||{}, (typeof SC_TRY!=="undefined"?SC_TRY:{}));
 
 /* gameplans and in-game modes: how many chances a side creates, and allows */
+const LATE_SEG=(typeof process!=="undefined"&&process.env&&+process.env.SC_LSEG)||13;   // the late call at 65' (round 33: 8.7 points a call, 4% close either way; at 70' 5.9, 29%; at 60' 7.2, but it halved the reading edge over Pearl, 1.2 -> 0.5)
+const LATE_K=(()=>{ const e=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?v.split(",").map(Number):null };
+  return {push:e("SC_LPUSH")||[1.9,1.6], sit:e("SC_LSIT")||[0.38,0.62], win:e("SC_LWIN")||[1.55,1.35], point:e("SC_LPOINT")||[0.6,0.58]} })();
 const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
@@ -53,7 +56,14 @@ const AGGR = {
   sit:       {own:0.50, opp:0.80},   // park the bus
   win:       {own:1.35, opp:1.25},   // level late: go for the win
   point:     {own:0.75, opp:0.78},   // level late: take the point
-  urgent:    {own:1.00, opp:1.00}
+  urgent:    {own:1.00, opp:1.00},
+  // your late call (20 minutes left): sharper than the computer's own late modes, so the choice is a real one
+  // against your assistant, who plays as the computer does. The computer's games never use these, so the league's
+  // scoring and draws don't move (round 33: the late call was close either way in 35% of competitive games)
+  upush:     {own:LATE_K.push[0], opp:LATE_K.push[1]},
+  usit:      {own:LATE_K.sit[0],  opp:LATE_K.sit[1]},
+  uwin:      {own:LATE_K.win[0],  opp:LATE_K.win[1]},
+  upoint:    {own:LATE_K.point[0],opp:LATE_K.point[1]}
 };
 /* approaches: what a side does with and without the ball. own and opp scale
    its chances and the chances it allows; legs is how hard it runs each unit
@@ -90,13 +100,14 @@ function halfCall(lead){
     : {k:"half",h:`Up ${lead} at half-time`,q:"Forty-five minutes. Sit on it?",
        opts:[["sit","Sit on it"],["normal","Keep playing our game"]]};
 }
+function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five","thirty","twenty-five","twenty","fifteen"][LATE_SEG]||String(90-LATE_SEG*5) }
 function lateCall(lead){
   const A=["normal","Leave it to your assistant"];
-  if(lead<0)return {k:"late",h:`Down ${-lead}, twenty minutes left`,q:"Throw everything at it?",
+  if(lead<0)return {k:"late",h:`Down ${-lead}, ${lateLeft()} minutes left`,q:"Throw everything at it?",
     opts:[["push","All-out attack"],["keep","Keep our shape"],A]};
-  if(lead>0)return {k:"late",h:`Up ${lead}, twenty minutes left`,q:"See it out?",
+  if(lead>0)return {k:"late",h:`Up ${lead}, ${lateLeft()} minutes left`,q:"See it out?",
     opts:[["sit","Park the bus"],["keep","Keep going"],A]};
-  return {k:"late",h:"Level, twenty minutes left",q:"Go for the win, or take the point?",
+  return {k:"late",h:`Level, ${lateLeft()} minutes left`,q:"Go for the win, or take the point?",
     opts:[["win","Go for the win"],["point","Take the point"],A]};
 }
 /* the evidence on one side's approach so far: each tell against its baseline */
@@ -291,10 +302,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true;
-      st.log.push({side:side,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true }   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
+      } return }
     if(dp.k==="read"&&v==="keep"&&COUNTERS[X.ctr]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:X.ctr,truth:t,right:COUNTERS[X.ctr].beats===t,evid:dp.best}); return }
     if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t,evid:dp.best}) }
-    if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak; st.log.push({side:side,k:"flank",pick:v,truth:t,right:v===t}) }
+    // a near-even count is a coin flip: not graded (Grokbot: Left 10, Right 9, graded on the truth behind it)
+    if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak, F=dp.flank||[0,0], near=Math.abs(F[0]-F[1])<=Math.max(1,0.12*(F[0]+F[1]));
+      st.log.push({side:side,k:"flank",pick:v,truth:t,right:v===t,unclear:near}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
     if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v } else assistantRead(side,dp.stage); return }
     if(dp.k==="subs"){
@@ -304,7 +318,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(dp.stage===2)assistantSub(side);
       return }
     // late: "keep" holds your plan; "normal" hands it to your assistant (the computer's rule)
-    if(dp.k==="late"){ st.late[side]=v==="keep"?st.mode[side]:v==="normal"?"auto":v; return }
+    if(dp.k==="late"){ st.late[side]=v==="keep"?st.mode[side]:v==="normal"?"auto":(AGGR["u"+v]?"u"+v:v); return }
     st.late[side]=v==="normal"?null:v;
   };
   st.next=function(){
@@ -320,7 +334,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(st.queue.length)return st.next()}
     // two down before the first read: it comes now, not at 25' (Instinct: 0-3 and nothing to decide)
     if(s>=3&&s<5&&!st.r1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
-      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, two down`); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }); if(st.queue.length)return st.next()}
+      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, ${["","one","two","three","four","five"][-lead(sd)]||-lead(sd)} down`); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }); if(st.queue.length)return st.next()}
     if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45); if((st.r1e||{})[sd])return;
       { const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }}); if(st.queue.length)return st.next()}
     if(s===9&&!st.ht){st.ht=true;
@@ -335,7 +349,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(s===14&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd))) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
+    if(s===LATE_SEG&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd))) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
     if(s>=SEGS){ if(st.h===st.a){ if(st.playoff)extraTime(); else st.draw=true } st.done=true; return fin() }
     const d=segment(s); st.seg++;
     return {drive:d,h:st.h,a:st.a};

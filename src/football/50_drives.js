@@ -405,7 +405,10 @@ function decisionPoint(state, isUser){
   const veryLate = idx >= total - 7;
   const diff = mine - theirs;
   // roughly how long is left: drives come about evenly through the game (Grokbot: a late call showed the quarter, not the clock)
-  const left = Math.max(1, Math.round(60*(total-idx)/total)), clock = ` About ${left} minute${left===1?"":"s"} left.`;
+  // before the fourth it's the quarter's clock: "About 18 minutes left" at "end of the third" read as wrong (Grokbot;
+  // it was 3 in the quarter plus the fourth)
+  const left = Math.max(1, Math.round(60*(total-idx)/total)), inQ = Math.min(15, Math.max(1, left-(4-Math.min(4,q))*15)),
+        clock = q>=4 ? ` About ${left} minute${left===1?"":"s"} left.` : ` About ${inQ} minute${inQ===1?"":"s"} left in the ${["first","second","third"][q-1]||"third"} quarter.`;
 
   // asked on your last possession, when what you need is known: a field
   // goal to win or tie, or nothing less than a touchdown
@@ -422,14 +425,16 @@ function decisionPoint(state, isUser){
   if (veryLate && diff > 0 && diff <= 10 && !used.protect) {   // up 12 to 14 the choice moved nothing (test/call-weight.js, Nov 2026)
     return {
       k:"protect",
-      h: q>=4?`Up ${diff} late`:`Up ${diff}, end of the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)
+      h: q>=4?`Up ${diff} late`:`Up ${diff} in the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)
       b:`Sit on it and shorten the game, or keep the throttle down.`+clock,
       opts:[["sit","Bleed the clock"],["keep","Keep attacking"]]
     };
   }
   // two scores either way at the break, but not three: up 24 at half, "manage it" was asked and
   // changed nothing (Grokbot; Instinct: "comfortable-lead busywork")
-  if (q === 3 && idx === Math.floor(total/2) && Math.abs(diff) >= 14 && callMatters(q,diff) && !used.half) {
+  // cut (round 33): asked only at two scores or more, where it never moved anything (0 to 1.3 points a call, 100%
+  // either way in every measured case); the close games' half-time is the fourth downs' and the late calls' job
+  if (false && q === 3 && idx === Math.floor(total/2) && Math.abs(diff) >= 14 && callMatters(q,diff) && !used.half) {
     return {
       k:"half",
       h: diff < 0 ? `Down ${-diff} at the break` : `Up ${diff} at the break`,

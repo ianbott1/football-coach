@@ -36,6 +36,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--muted);font-family:var(--cond);font-weight:600;font-size:13.5px;
  letter-spacing:.045em;text-transform:uppercase;padding:11px 9px;cursor:pointer;white-space:nowrap}
 .tab[aria-selected="true"]{color:var(--bone);border-bottom-color:var(--sodium)}
+/* five tabs on a phone: "RANKINGS" pushed "DYNASTY" off the edge (Grokbot, hockey) */
+@media (max-width:420px){.tab{padding:11px 6px;letter-spacing:.02em;font-size:13px}}
 .tab:focus-visible,.pick:focus-visible,.advance:focus-visible{outline:2px solid var(--sodium);
  outline-offset:2px}
 .actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;
@@ -402,6 +404,9 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  font-family:var(--cond);font-size:16px;font-weight:500;padding:10px 8px;cursor:pointer;
  text-align:left}
 .pick:hover{border-color:var(--sodium);color:var(--sodium)}
+.pick.sel{border-color:var(--sodium);background:rgba(244,166,58,.14)}
+#pickbar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}
+#pickbar .advance{margin:0;width:100%}
 .reset{background:none;border:1px solid var(--line);color:var(--muted);font-size:14px;
  line-height:1;padding:3px 7px;margin-left:9px;cursor:pointer;border-radius:2px}
 .reset:hover{color:var(--sodium);border-color:var(--sodium)}
@@ -780,8 +785,11 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .wl-o{color:var(--sodium)!important;font-weight:600}
 .dres.o{color:var(--sodium)}
 /* table zones (English football) */
-.frow.zone-ucl{box-shadow:inset 3px 0 0 #2F6FB5}.frow.zone-up{box-shadow:inset 3px 0 0 var(--turf)}
-.frow.zone-po{box-shadow:inset 3px 0 0 var(--sodium)}.frow.zone-down{box-shadow:inset 3px 0 0 var(--flag)}
+.frow.zone-ucl,.srow.zone-ucl{box-shadow:inset 3px 0 0 #2F6FB5}.frow.zone-up,.srow.zone-up{box-shadow:inset 3px 0 0 var(--turf)}
+.frow.zone-po,.srow.zone-po{box-shadow:inset 3px 0 0 var(--sodium)}.frow.zone-down,.srow.zone-down{box-shadow:inset 3px 0 0 var(--flag)}
+.sx{font-family:var(--mono);font-size:12px;color:#B4BCCB;width:34px;flex:0 0 34px;text-align:right;white-space:nowrap}
+.shead .sx{font-size:9px;letter-spacing:.08em;color:var(--muted)}
+.zkey{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
 /* the momentum bar (soccer) */
 .evid{margin:12px 16px 0;padding:12px 14px;border:1px solid var(--line);background:var(--panel2)}
 .evh{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);margin-bottom:8px}

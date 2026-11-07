@@ -1,5 +1,5 @@
 {
- "fp": "6af328dff9819eea",
+ "fp": "4f770ba7ee847612",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -195,6 +195,16 @@
    "fp": "6af328dff9819eea",
    "from": "6af328dff9819eea",
    "note": "Round 28: a stop's years extend only once the season has a game."
+  },
+  {
+   "fp": "6163258b99ee7bea",
+   "from": "6af328dff9819eea",
+   "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
+  },
+  {
+   "fp": "4f770ba7ee847612",
+   "from": "6163258b99ee7bea",
+   "note": "Round 33 (as noted): recorded again from a fresh build; the earlier record missed the cut protect call's assistant close-out, which the control covered"
   }
  ],
  "out": [
@@ -204,20 +214,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "33-1",
-      "result": "Lost in the First Round",
-      "grade": "A-"
+      "rec": "38-1",
+      "result": "Lost the national championship",
+      "grade": "A+"
      },
-     "book": "a32ff7e11bb119b9"
+     "book": "d969dede168520d8"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "30-5",
+      "rec": "31-4",
       "result": "Lost in the First Round",
       "grade": "B+"
      },
-     "book": "5c92b27fa9fbf643"
+     "book": "30196acea239be22"
     }
    ]
   },
@@ -227,20 +237,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "30-5",
+      "rec": "29-6",
       "result": "Lost in the Second Round",
-      "grade": "A-"
+      "grade": "B+"
      },
-     "book": "613c92953610d4f7"
+     "book": "0b28793657d6345e"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "27-5",
-      "result": "Lost in the Second Round",
-      "grade": "B"
+      "rec": "31-5",
+      "result": "Lost in the Elite Eight",
+      "grade": "A"
      },
-     "book": "1be716105eb62f50"
+     "book": "9c01ca94b4dd309f"
     }
    ]
   },
@@ -250,20 +260,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "26-8",
+      "rec": "28-7",
       "result": "Lost in the Second Round",
-      "grade": "B"
+      "grade": "B+"
      },
-     "book": "f25d64dfef31350f"
+     "book": "ff927c632deab67a"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "32-5",
-      "result": "Lost in the Sweet 16",
-      "grade": "A"
+      "rec": "35-3",
+      "result": "Lost in the Final Four",
+      "grade": "A+"
      },
-     "book": "e205b98474716da6"
+     "book": "ca95e0f94b2a253e"
     }
    ]
   }

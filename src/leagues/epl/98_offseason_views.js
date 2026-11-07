@@ -161,9 +161,16 @@ function offseasonBanner(){
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
   // ...and how it got there from last season's (Muse: £3.3M to £9.4M with no reconciliation)
-  const sum=a=>(a||[]).reduce((t,x)=>t+(x.sal||0),0), why=X.payBefore!=null&&X.payroll!=null?(()=>{ const re=sum(X.resigned), si=sum(X.signed), nl=(X.released||[]).length+(X.retired||[]).length;
-    // what changed, without arithmetic that can't close: the old wages of re-signed and departed players
-    // aren't kept, so the parts never summed (Grokbot: £10.9M against an actual £10.5M)
+  const sum=a=>(a||[]).reduce((t,x)=>t+(x.sal||0),0), why=X.payBefore!=null&&X.payroll!=null?(()=>{ const re=sum(X.resigned), si=sum(X.signed), gone=(X.released||[]).concat(X.retired||[]), nl=gone.length;
+    // the full sum when the summer kept the old wages (Nov 2026 on): new deals net of the old ones, signings, the
+    // wages that left, and the rest named (Grokbot: "show the amount that left"); a summer from before says what changed
+    const full=gone.every(x=>x.sal!==undefined)&&(X.resigned||[]).every(x=>x.was!==undefined);
+    if(full){ const was=(X.resigned||[]).reduce((t,x)=>t+(x.was||0),0), out=sum(gone), net=re-was, r1=x=>Math.round(x*10)/10;
+      const rest=r1(X.payroll-(X.payBefore+net+si-out)), sg=x=>(x>=0?"+":"&minus;")+money2(Math.abs(x));
+      const parts=[(X.resigned||[]).length?(Math.abs(net)<0.05?`${nOf(X.resigned.length,"new deal")} at the same wage (${money2(re)} a year)`:`${sg(net)} on ${nOf(X.resigned.length,"new deal")} (${money2(re)} a year, was ${money2(was)})`):"",
+        si?`+${money2(si)} on ${nOf(X.signed.length,"signing")}`:"", nl?`&minus;${money2(out)} for ${nOf(nl,"player")} gone`:"",
+        Math.abs(rest)>=0.1?`${sg(rest)} for academy graduates and fill-ins`:""].filter(Boolean);
+      return ` Last season's was ${money2(X.payBefore)}${parts.length?`: ${parts.join(", ")}`:""}.` }
     const parts=[re?`${nOf(X.resigned.length,"new deal")} for your own players (${money2(re)} a year now, replacing their old ones)`:"",si?`${nOf(X.signed.length,"signing")} (${money2(si)})`:"",nl?`${nOf(nl,"player")} gone`:""].filter(Boolean);
     return ` Last season's was ${money2(X.payBefore)}${parts.length?`; since then, ${parts.join(", ")}`:""}.` })():"";
   if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.${why}</div>`;
@@ -234,10 +241,12 @@ function offseasonScreen(){
   h+=seasonCallsHTML();
 
   const C=S.career;
+  // next season's division: promotion and relegation are settled before the job list (Cambridge United listed as
+  // League One while their page said Championship: Muse)
   const jobRow=(t,tag)=>`<div class="cand ${S.off.move===t?'on':''}" data-job="${esc(t)}">
     <div class="candtop"><div>
       <div class="fname" style="color:${teamInk(t)}">${esc(t)}</div>
-      <div class="fnote">${esc(LEAGUE.conf.names[CONF[t]])} &middot; ${
+      <div class="fnote">${(nd=>esc(LEAGUE.conf.names[nd])+(nd!==CONF[t]?(DIV_ORDER.indexOf(nd)<DIV_ORDER.indexOf(CONF[t])?" (promoted)":" (relegated)"):""))(eplNextDiv(t))} &middot; ${
         U.program[t]>=1780?"contender":U.program[t]>=1680?"solid job":
         U.program[t]>=1600?"middling job":"rebuild"}</div></div>
       <span class="cgrade">${esc(tag)}</span></div>
@@ -370,3 +379,12 @@ Object.assign(LEAGUE.ui,{
       const P=S.off.picks, id=+b.dataset.bdrm; P.board=(P.board||[]).filter(x=>x!==id); save(); render();});
   }
 });
+
+/* a club's division next season, from the season just finished (the move itself happens when the summer runs) */
+function eplNextDiv(t){
+  const d=CONF[t], P=SEA&&SEA.po; if(!P||!P[d])return d;
+  const down={PL:"CH",CH:"L1",L1:"L2",L2:"NL"}, up={CH:"PL",L1:"CH",L2:"L1",NL:"L2",NN:"NL",NS:"NL"};
+  if((P[d].up||[]).indexOf(t)>=0&&up[d])return up[d];
+  if((P[d].down||[]).indexOf(t)>=0)return d==="NL"?(LEAGUE.region[t]==="S"?"NS":"NN"):(down[d]||d);
+  return d;
+}

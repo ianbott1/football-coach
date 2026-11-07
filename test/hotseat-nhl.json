@@ -1,5 +1,5 @@
 {
- "fp": "48f304ba99faae13",
+ "fp": "78bb9c15f63e20a4",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -190,6 +190,11 @@
    "fp": "48f304ba99faae13",
    "from": "c706ee73ece8aaa9",
    "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
+  },
+  {
+   "fp": "78bb9c15f63e20a4",
+   "from": "48f304ba99faae13",
+   "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
   }
  ],
  "out": [
@@ -199,20 +204,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "47-27-10",
+      "rec": "44-28-12",
       "result": "Lost in the first round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "595a61a6baf0062e"
+     "book": "8fcf1668c69bd189"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "40-35-9",
+      "rec": "38-38-8",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C-"
      },
-     "book": "48d3b327e1616831"
+     "book": "da1db534b0432c58"
     }
    ]
   },
@@ -222,20 +227,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "42-31-11",
-      "result": "Lost in the second round",
-      "grade": "B+"
+      "rec": "34-33-17",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "d589af401462dbec"
+     "book": "f6cb7d1d3c4ba6ad"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "38-32-14",
+      "rec": "41-32-11",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "5914ebbf272d1326"
+     "book": "183260cc34b463cb"
     }
    ]
   },
@@ -245,20 +250,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "45-28-11",
+      "rec": "48-24-12",
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "86649f3f09ab1569"
+     "book": "a058641f486b45e3"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "43-29-12",
-      "result": "Lost in the second round",
+      "rec": "47-29-8",
+      "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "6e2789d6e9f036d6"
+     "book": "e7a0ea918aeb2201"
     }
    ]
   }

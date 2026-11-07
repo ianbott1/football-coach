@@ -121,6 +121,123 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 33: calls that matter (Ian: make the options genuinely different; no numbers on them):
+- Measured first (test/call-weight.js, 30 games each): reads and scouting
+  9-14 points a call everywhere; the situation calls (push, sit, protect,
+  chase, half-time, late) mostly coin flips, largely because they were asked
+  in decided games (football up 10 late: 100% either way; basketball down 16
+  at half-time: 0-2%).
+- Situation calls are asked only in a game in reach (core 94 callInReach:
+  40 replays of the rest with the assistant's call; asked when 10-90%).
+  Outside it the assistant answers (S.callAuto), as for a skipped game, so
+  results are those of his choice; those answers are never graded or weighed
+  (yourAnswers). A check costs 4-15 ms. Reads, scouting, flanks, the goalie
+  and football's fourth downs (inReach) are always asked.
+- Soccer's late call at 65' (was 70') with sharper modes for your choice only
+  (upush/usit/uwin/upoint; the computer keeps its own): 5.3 -> 8.7 points a
+  call, close either way 35% -> 4%. Your games' goals unchanged (2.73 when
+  always taking the sharpest option; league 2.76). At 60' it was 7.2, but it
+  halved the reading edge over Pearl (numbers vs latest clue, 60,000 games:
+  main 1.2 win points, 60' 0.5, 65' 1.0): a wrong read had longer to recover.
+- Cut, by Ian's rule: basketball's protect (about 3 points, 0.1 a game; your
+  side now closes out as the assistant would) and football's half-time call
+  (asked only at two scores or more: 0-1.3 points, 100% either way).
+- The chance before a game is the same whichever plan you pick (withPlan
+  "balanced"); the line telling you which plan to pick is gone. Plans are
+  described in words and judged on the card.
+- Control: the build with these call changes off matches the previous
+  fingerprints except screens (golden) and exactly (hot seat).
+- After (best vs worst option, average points a call / share under 3):
+    pro basketball  game plan 10.9 / 13%, reads 10.1 / 22%, chase 10.0 / 25%,
+                    half 6.7 / 39%
+    college b-ball  game plan 12.9 / 10%, reads 10.7 / 16%, chase 7.9 / 17%,
+                    half 4.3 / 53%
+    hockey          game plan 13.7 / 0%, reads 13.5 / 10%, goalie 11.3 / 0%,
+                    lock 10.9 / 0%, push 5.6 / 25%, pull 3.8 / 50%
+    soccer          game plan 11.7, reads 9.6, late 8.7 / 4%, flank 7.1 /
+                    23%, half 4.1-5.2
+    football        college fourth 10.9 / 6%, two-point 18 (rare), protect
+                    4.4 / 50%; pro fourth 5.3 / 38% and under one call a game
+- Still to do: pro football needs more call types with stakes (onside kicks,
+  timeouts, two-point in more spots); college basketball's half-time call and
+  hockey's pull timing stay small (honest, but close half the time).
+
+Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
+- A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
+  soccer's 25' call came up under a tap meant for the game and was graded as
+  the player's choice. Skipping a game never logs a read (measured).
+- The card: each read its own line, "You chose X." first (readPickLabel per
+  sport); a split scouting report and a near-even flank count (gap of 1 or
+  12% or less) are coin flips, shown with a dash and not counted.
+- "Sim the series" stops before a game that could end your season (pro
+  basketball, hockey); pressed when already facing elimination it plays it.
+- Basketball pace: "Work it inside" was tempo 1.36 (played NBA games 136-142
+  a team; the plans moved wins 1-5 points). Now 1.08 / 0.92: scoring 110-126
+  a team; win chance by plan refitted relative to balanced (wpK). The plans
+  barely move the result in basketball, as in hockey: round 33's question.
+- Hockey goals: not reproduced. Played games on "Skate with them" 6.6-6.7 a
+  game over 252 (the league 6.1-6.2), playoffs 6.0-7.4; balanced 6.0-6.1.
+- Win chances shown 1-99% (pctShown).
+- Draft labels (test/draft-labels.js, long-run): a mock on your reads at face
+  value ran out of band (football "likely gone" 50%, "likely there" gone 39%).
+  The reason is selection: real teams often reach for a hard-to-read
+  prospect (picks 91st, 103rd, 159th on their own true score), and your top
+  names are partly your luckiest reads. dnMock now shrinks each read by its
+  reliability, adds the team's own error (wider when unsure), and scores with
+  each picking team's needs. In band in all three (16-28 drafts); football's
+  "likely gone" holds ~70%, at the edge of its band. Board marks players
+  drafted on draft night.
+- Soccer payroll adds up: departing players keep their wage (sal), re-signed
+  their old one (was); the line names every part and the rest (academy and
+  fill-ins). Regression 70 checks the sum.
+- In-season job security sees postseason targets: outside the projected
+  field you're under pressure (college basketball warned all season).
+- Division titles are called that in the pro games and soccer (was "Conf");
+  best finish counts a finished season not yet archived; the awards race is
+  dated in daily leagues ("week 194"); the result header says OT, shootout or
+  penalties; tabs fit at 390px; "Still to do:" when the wins target is met.
+- Each gag once a season (gagSeason): a line a voice used in an earlier game
+  loses Pearl's flourish or becomes a plain Bears shout of the pick.
+- The 1.5 s reveal after a simmed game re-rendered whatever screen was up;
+  on draft night it rebuilt the page between a pick's two taps and the pick
+  was lost (likely round 31's flaky browser runs too). It now renders only
+  the screen it was for.
+
+Round 31 (Ian; Instinct round 10; Muse round 15; Grokbot):
+- HOT SEAT is just that on the badge (the reason ran it over the coach's
+  name at 390px); the reason, target named, is on hover and heads the
+  board's objectives (seatWhy). The coach line says "coaching solid" so it
+  isn't read with "Secure" as one verdict.
+- Standings take a league's own columns and zones (LEAGUE.ui.standingsCols,
+  standingsZone, standingsCut): soccer shows goal difference and the zone
+  edges with a key; college basketball marks the top four (byes) and draws
+  the line after twelve (the conference tournament), not after two.
+- Playoff brackets show the first round at 0-0 (hockey, pro basketball:
+  seeded at the regular season's end, as the clinch marks already did).
+- Injuries on badges in games where a step is a game day; a level cup tie
+  says "Won on penalties"; soccer's job list shows next season's division.
+- Post-game card: no "though tonight's dice gave the same result either way"
+  (on a win it read as "your win didn't count"); the season recap names only
+  graded calls as best or costliest, with a why line; the season tally says
+  what it counts.
+- Head to head: your record against any opponent you've coached against
+  (S.h2h, banked when a season is written; this season counted live), on
+  the next-game card when there's no rivalry series. Starts from now.
+- "Your seasons" lists every finished season from the first (one row each);
+  coaching stops stay one row per job.
+- Staff text: the real gap ("three down", "three up"), Pearl's "same as I
+  said before" only when she gave that advice before, soccer cues in the
+  third person ("{t} press high; {o} can't play out").
+- Football late calls before the fourth give the quarter's clock.
+- Team picker: tap a team, then "Start with X" in a bar (or tap it again):
+  "Tap again to start" wrapped a word to a line and looked dead.
+- Draft night: the legend reads as a legend; a worked-out prospect shows his
+  read before and after.
+- The year-two "best season of your tenure" milestone is gone (only beats
+  year one); it was the only change to history (control build matched).
+- test/golden.js HISTORY_OUT=file writes each season's history entry;
+  confirm-taps clicks by selector on draft night (held handles went stale).
+
 Round 30: draft night (pro football, pro basketball, hockey; core/91_draftnight.js):
 - The draft is drawn on its own dice (draftRng) from the rosters as the season
   ended, so it can be shown pick by pick before the summer runs; the drafted

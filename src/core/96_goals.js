@@ -97,7 +97,8 @@ function standRank(t){
 function objectivesHTML(my){
   if(SEA.phase==="done"&&!S.obj)return "";
   const L=seasonObjectives(my); if(!L.length)return "";
-  return `<div class="grouphead">The board's objectives</div><div class="objs">${L.map(o=>{const st=objStatus(o,my);
+  const why=typeof seatWhyNow==="function"&&SEA.phase!=="done"?seatWhyNow():"";
+  return `<div class="grouphead">The board's objectives</div><div class="objs">${why?`<div class="objnote hotwhy">${esc(why)}</div>`:""}${L.map(o=>{const st=objStatus(o,my);
     return `<div class="obj ${st.s}"><span class="objmark">${st.s==="met"?"&#10003;":st.s==="miss"?"&#10007;":"&#9675;"}</span>
       <span class="objl">${esc(o.l)}</span><span class="objt">${esc(st.t)}</span></div>`}).join("")}
     <div class="objnote">Each one met is worth reputation: the next job, and the board's patience.</div></div>`;

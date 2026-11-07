@@ -1,3 +1,5 @@
+/* the gap in words */
+function downWord(n){ return ["","one","two","three","four","five"][n]||String(n) }
 /* ============ the game engine: hockey ============ */
 /* Three 20-minute periods, played as twelve five-minute spells. Each side
    takes shots at a rate shaped by its edge, and each shot scores at a rate
@@ -246,7 +248,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(ANSWERS[v]){ const t=st.S[other(side)].sys; X.ans=v; X.prepd=true;
-      st.log.push({side:side,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) } return }
+      st.log.push({side:side,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true }   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
+      } return }
     if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else readIt(side,0.45); return }
@@ -279,7 +282,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // first intermission: the read, and your goalie if he's let in two or more
     // two down early: call your timeout and make the read now, not at the intermission (Instinct)
     if(s>=2&&s<4&&!st.i1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
-        const O=st.S[other(sd)]; queueCall(sd,readCall(O.tell,O.lastCue,`Timeout: two down, ${s*5} minutes in`)) });
+        const O=st.S[other(sd)]; queueCall(sd,readCall(O.tell,O.lastCue,`Timeout: ${downWord(-lead(sd))} down, ${s*5} minutes in`)) });   // the real gap: "two down" at 0-3 (Muse)
       if(st.queue.length)return st.next()}
     if(s===4&&!st.i1){st.i1=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], O=st.S[other(sd)];
         if(!humans[sd]){ readIt(sd,0.45); cpuGoalie(sd); return }
