@@ -162,6 +162,20 @@ function driveWord(d){
   return "forced to punt";
 }
 
+/* their defense, in numbers: the scouting report before kickoff; per drive of yours after (round 35) */
+function fbEvidenceHTML(g,my,dp){
+  const opp=g.home===my?g.away:g.home;
+  if(dp.k==="prep"){ const R=dp.report, n=dp.n||6;
+    return `<div class="evid"><div class="evh">${esc(opp)}: their last ${n} games on defense</div>
+      ${SCHEME_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(SCHEMES[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
+      <div class="evn">Most defenses have a way they like to play, but not every week. Get it right and the week's work shows; get it wrong and your offense plays into their hands until you change it.</div>${splitNote(R)}</div>` }
+  if(dp.k!=="read"||!dp.tell)return "";
+  const T=dp.tell, D=dp.tell2, n=Math.max(1,T.n), per=x=>(x/n).toFixed(1);
+  const rows=[["Blitzes","bl"],["Safeties sitting deep","sh"],["Extra men in the box","bx"]];
+  return `<div class="evid"><div class="evh">How ${esc(opp)} are defending you <span>${D?`per drive | last ${D.n} drives`:"per drive of yours"}</span></div>
+    ${rows.map(r=>`<div class="evr ${T[r[1]]/n>=1.5?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${per(T[r[1]])}${D?` | ${D[r[1]]}`:""}</span></div>`).join("")}
+    <div class="evn">${D?"Left: the whole game, per drive. Right: counts since half-time. ":""}Against a defense not built around it, about ${FB_READ.base.toFixed(1)} of each a drive; the one they're built around runs well above. A few drives is a small sample.</div></div>`;
+}
 function liveCallView(){
   const dp=live.ask.dp, g=live.g, my=live.ask.team||S.myTeam;
   const mine=live.ask.mine, theirs=live.ask.theirs;
@@ -175,13 +189,14 @@ function liveCallView(){
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.b)}</div>
     </div>
+    ${fbEvidenceHTML(g,my,dp)}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
         <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
-      `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}</button>`).join("")}</div>
+      `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${(dp.k==="prep"||dp.k==="read")&&FB_ANSWERS[o[0]]?`<small>${esc(FB_ANSWERS[o[0]].d)}</small>`:""}</button>`).join("")}</div>
     ${dp.k==="fourth"?`<div class="callnote">The percentages are the chance this play works. After the game, the call is graded on what wins the game: a likely conversion can still be the wrong choice, and a long kick the right one.</div>`:""}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${dp.k==="two"?(()=>{ const H=live.eng.h, A=live.eng.a;   // the touchdown is on the board: on the chart too (it read 6-12 under 12-12)
@@ -204,14 +219,14 @@ function liveCallView(){
    The verdict: whether your answer won as often as the best one. */
 let VERDICT_RUNS=1200;          // replays per answer
 const VERDICT_SLACK=0.03;        // within this of the best answer: a good call (it's close)
-const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick"};
+const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick",onside:"normal",defend:"normal"};
 const TALLY_LABEL="The better call this season";
 const TALLY_NOTE="Only calls where the choice really mattered are graded; the rest made no real difference.";
 function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
   if(dp.k==="fourth")return o.indexOf("punt")>=0?"punt":"kick";
   return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }
 function callVerdicts(args,seed,answers,meHome){
-  const KINDS={fourth:1,two:1,chase:1,protect:1,half:1};
+  const KINDS={fourth:1,two:1,chase:1,protect:1,half:1,onside:1,defend:1};
   // the game as played: which asks were which
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<2000){ const r=e.next(); if(r.done)break;
@@ -259,7 +274,12 @@ function callVerdicts(args,seed,answers,meHome){
    often" above "wins clearly more often", 3 points "better call" and 7 "a little": Grokbot, Muse) */
 const GAP_SAME=3, GAP_CLEAR=7;
 function gapWord(d){ const a=Math.abs(d); return a<=GAP_SAME?"same":a<=GAP_CLEAR?"little":"clear" }
+function readPickLabel(e){ return e.k==="call"?"":(FB_ANSWERS[e.pick]?FB_ANSWERS[e.pick].l:"") }
 function readText(e){
+  if(e.k==="read"||e.k==="prep"){ const t=SCHEMES[e.truth], a=FB_ANSWERS[t.counter].l;
+    if(e.k==="prep"&&e.unclear)return `The report was split, a coin flip, so it isn't graded either way. They were ${t.l}.`;
+    return e.right?(e.k==="prep"?`Your game plan was right: they were ${t.l}.`:`Your read was right: they were ${t.l}.`)
+      :`They were ${t.l}: the answer was "${a}".`+(e.k==="read"&&e.evid&&e.evid!==e.truth&&SCHEMES[e.evid]?` The numbers at the time pointed to ${SCHEMES[e.evid].l}: a few drives can mislead.`:"") }
   if(e.k!=="call")return "";
   // every option's share of replays, so what was compared is on the screen
   if(e.rk&&e.keys){

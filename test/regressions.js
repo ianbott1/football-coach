@@ -589,6 +589,23 @@ for(const [f,team,k] of [['basketball-coach-pro.html','Orlando','close'],['baske
     Object.values(B).forEach(q=>{ if(q[2]>=8)worst=Math.max(worst,Math.abs(q[0]-q[1])/q[2]) }) }
   ok(worst<3,`unsure reads miss the players by ${worst.toFixed(1)} on average at one end`) }
 
+/* 84. football reads their defense (a scouting report, then the numbers) and asks the late calls a real coach makes:
+   the onside kick and the defense on their last drives, with the clock in possessions, not "about 6 minutes"
+   (Grokbot: pro football decision weight 4 of 10, under one call a game; late calls without the time) */
+for(const [f,team] of [['football-coach-pro.html','Green Bay'],['football-coach.html','TCU']]){
+  const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,12,'T'); const K={}; let games=0, clock=0, late=0, graded=0;
+  for(let w=0;w<40&&A.SEA.phase!=='done';w++){ A.doAdvance(); if(!A.live)continue; games++; let m=0;
+    while(A.live&&!A.live.done&&m++<900){ const q=A.live.ask; if(q){ K[q.dp.k]=(K[q.dp.k]||0)+1;
+        if(/^(onside|defend|chase)$/.test(q.dp.k)||(q.dp.k==='protect'&&/late$/.test(q.dp.h))){ late++; if(/Possessions left: \d+ for you, \d+ for them\./.test(q.dp.b))clock++ }
+        A.answerLive(q.dp.opts[0][0]) } else A.liveTick() }
+    if(A.live&&A.live.eng&&A.live.eng.log)graded+=A.live.eng.log.filter(x=>x.k==='read'||x.k==='prep').length }
+  console.log(`  ${f}: ${games} games, calls ${JSON.stringify(K)}`);
+  ok((K.prep||0)>=games*0.8,`${f}: a scouting report in ${K.prep||0} of ${games} games`);
+  ok((K.read||0)>=games*0.8,`${f}: ${K.read||0} reads in ${games} games`);
+  ok((K.onside||0)+(K.defend||0)>=2,`${f}: ${(K.onside||0)+(K.defend||0)} onside or late-defense calls in ${games} games`);
+  ok(late===clock,`${f}: ${late-clock} of ${late} late calls without the possessions left`);
+  ok(graded>0,`${f}: reads never graded`) }
+
 (async()=>{ await tabsCheck(); await slotCheck();
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: the reported cases hold`);
 process.exit(bad?1:0); })();

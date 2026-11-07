@@ -230,6 +230,38 @@ Round 34: the number you can trust (Muse, Grokbot and Instinct, round 11 of test
   free agency; hockey and pro basketball's free-agent market is depth only
   (teams re-sign their best; the pool floor is 58).
 
+Round 35: football reads the game (Grokbot: pro football decision weight 4 of 10, under one call a game):
+- Their defense and your answer, as every other sport reads its opponent:
+  each club's usual defense (clubScheme: blitz, two-deep shell, loaded box),
+  a scouting report before kickoff (prep), a read in the second quarter and
+  one after half-time (with since-half-time counts beside the whole game);
+  your answer (quick passes / run / deep shots) holds until you change it:
+  right +0.070 touchdown and -0.025 turnover a drive, wrong -0.020 / +0.015
+  (FB_READ). They change defense at half-time 30% of the time, 50% behind.
+  Only against the computer in a game a person coaches; no other game moves.
+  Pearl's read is the last drive (her eyes), the numbers the whole game; she
+  says when they differ. test/fb-reads.js on common dice (8000 games): the
+  report +2.8-2.9 win points, the numbers +3.6-3.9, Pearl +1.6-2.2, a guess
+  -1.9 to -3.0, the right answer +7.9-8.1.
+- Late calls a coach makes: the onside kick (after you score and still trail
+  by up to 16 with 4 or fewer possessions left; 12% recovered, LEAGUE.tuning.
+  onside; a miss gives them a short field) and your defense on their late
+  drive (up 0-8 with 3 or fewer left: prevent, pressure or straight;
+  DEF_MODE). Late calls give the clock in the engine's own unit, possessions
+  left for each side (possLeft), not "about 6 minutes". No timeouts: the
+  engine has no clock inside a drive, and an invented one would be a number
+  you can't trust.
+- Measured (test/call-weight.js, 12-17 games, two teams each): reads 8.5-9.3
+  points a call (a dominant pro team 3.1), the report 6.8-10.0, fourth downs
+  8.6-10.4, defend 7.5-8.1, onside 2.5-7.5 (rare). Pro football now asks
+  about four calls a game (was under one). Scoring unchanged: your games
+  48.1 points (48.8 before), the league 46.0.
+- Control: with the reads and late calls off, every fingerprint matches round
+  34 exactly (golden and hot seat).
+- Still to do: the two-minute drill and timeouts would need a clock inside
+  drives; a firing that moves you skips the new team's free agency; the
+  free-agent market in hockey and pro basketball is depth only.
+
 Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
 - A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
   soccer's 25' call came up under a tap meant for the game and was graded as

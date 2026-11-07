@@ -154,7 +154,7 @@ function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDef
    either way" came mostly from calls in decided games (round 33: up 10 late in football, 100% either way;
    down 16 at half-time in basketball, 0-2%). Reads, scouting, flanks and the goalie are always asked: their
    answer is in the evidence, not the score. Football's fourth downs keep their own gate (inReach). */
-const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1,close:1,third:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
+const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1,close:1,third:1,onside:1,defend:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
 function callInReach(args,seed,answers,meHome,j){
   let s=0;
   for(let m=0;m<GATE_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;

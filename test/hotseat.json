@@ -1,5 +1,5 @@
 {
- "fp": "d9707befe21c1fa0",
+ "fp": "72840dd74ad66f9f",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -230,6 +230,11 @@
    "fp": "d9707befe21c1fa0",
    "from": "b63b79161cf52660",
    "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
+  },
+  {
+   "fp": "72840dd74ad66f9f",
+   "from": "d9707befe21c1fa0",
+   "note": "Round 35: football reads the opponent's defense (scouting report, reads in the second quarter and after half-time) and adds the onside kick and late-defense calls. Control with them off matches the previous fingerprints exactly."
   }
  ],
  "out": [
@@ -239,20 +244,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-4",
+      "rec": "11-3",
       "result": "Eliminated in the first round",
-      "grade": "B"
+      "grade": "B+"
      },
-     "book": "07aeebe844130464"
+     "book": "cc0acec0a9c1a6b2"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "7-6",
-      "result": "Won the New Orleans Bowl",
+      "result": "Lost the Boca Raton Bowl",
       "grade": "A"
      },
-     "book": "6f08f62d3165981c"
+     "book": "e64a0d8b1c5c8da8"
     }
    ]
   },
@@ -262,20 +267,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-2",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A"
+      "rec": "9-4",
+      "result": "Won the Citrus Bowl",
+      "grade": "C+"
      },
-     "book": "ac639a97d52f4402"
+     "book": "a8cfb206036495af"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "4-8",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "11c20ec07f4c1e09"
+     "book": "fdf4326f3c3b1d71"
     }
    ]
   },
@@ -285,20 +290,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "14-1",
-      "result": "Eliminated in the semifinals",
+      "rec": "16-0",
+      "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "205c73d8ddf14e22"
+     "book": "381af6cc7d1e965f"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "6-7",
-      "result": "Lost the Hawaii Bowl",
-      "grade": "A-"
+      "result": "Lost the New Orleans Bowl",
+      "grade": "B"
      },
-     "book": "d7b1ca124df2630e"
+     "book": "138911cf362ffda0"
     }
    ]
   }
