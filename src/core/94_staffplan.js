@@ -148,6 +148,24 @@ function splitNote(R){
    "nothing shows a good call mattering"). */
 const IMPACT_RUNS=400;
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
+/* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
+   chance, with your assistant's choice from here, between GATE_LO and GATE_HI over GATE_RUNS replays of the rest.
+   Outside it your assistant makes the call, as for a skipped game, so nothing about the result changes; "close
+   either way" came mostly from calls in decided games (round 33: up 10 late in football, 100% either way;
+   down 16 at half-time in basketball, 0-2%). Reads, scouting, flanks and the goalie are always asked: their
+   answer is in the evidence, not the score. Football's fourth downs keep their own gate (inReach). */
+const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
+function callInReach(args,seed,answers,meHome,j){
+  let s=0;
+  for(let m=0;m<GATE_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+    while(g++<3000){ r=e.next(); if(r.done)break;
+      if(r.ask){ let a; if(i<j)a=answers[i]; else { if(i===j){ rng.f=mulberry32((seed^Math.imul(m+101,0x9E3779B1))>>>0); rng.sp=null } a=impactDefault(r.ask) }
+        e.reply(a); i++ } }
+    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+  return s/GATE_RUNS;
+}
+/* the answers as yours: a call your assistant made because the game wasn't in reach is a blank (not graded, not weighed) */
+function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; return answers.map((a,i)=>auto.indexOf(i)>=0?undefined:a) }
 function callImpact(args,seed,answers,meHome,runs){
   runs=runs||IMPACT_RUNS;
   const play=(j,v,reseed)=>{                 // replay with answers before j, v at j; later asks: yours where they match, else his

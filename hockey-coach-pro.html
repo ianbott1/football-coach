@@ -913,7 +913,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="00dbe10";
+<script>const BUILD_ID="8768912";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -4744,6 +4744,24 @@ function splitNote(R){
    "nothing shows a good call mattering"). */
 const IMPACT_RUNS=400;
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
+/* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
+   chance, with your assistant's choice from here, between GATE_LO and GATE_HI over GATE_RUNS replays of the rest.
+   Outside it your assistant makes the call, as for a skipped game, so nothing about the result changes; "close
+   either way" came mostly from calls in decided games (round 33: up 10 late in football, 100% either way;
+   down 16 at half-time in basketball, 0-2%). Reads, scouting, flanks and the goalie are always asked: their
+   answer is in the evidence, not the score. Football's fourth downs keep their own gate (inReach). */
+const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
+function callInReach(args,seed,answers,meHome,j){
+  let s=0;
+  for(let m=0;m<GATE_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+    while(g++<3000){ r=e.next(); if(r.done)break;
+      if(r.ask){ let a; if(i<j)a=answers[i]; else { if(i===j){ rng.f=mulberry32((seed^Math.imul(m+101,0x9E3779B1))>>>0); rng.sp=null } a=impactDefault(r.ask) }
+        e.reply(a); i++ } }
+    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+  return s/GATE_RUNS;
+}
+/* the answers as yours: a call your assistant made because the game wasn't in reach is a blank (not graded, not weighed) */
+function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; return answers.map((a,i)=>auto.indexOf(i)>=0?undefined:a) }
 function callImpact(args,seed,answers,meHome,runs){
   runs=runs||IMPACT_RUNS;
   const play=(j,v,reseed)=>{                 // replay with answers before j, v at j; later asks: yours where they match, else his
@@ -5927,6 +5945,14 @@ function liveTick(){
         live.eng.reply(live.replay[live.ri++]);
         continue;
       }
+      // a situation call in a decided game goes to your assistant (core 94: callInReach)
+      if(typeof GATE_KINDS!=="undefined"&&GATE_KINDS[r.ask.k]&&live.args&&!live.h2h){
+        const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
+        const p=callInReach(live.args,liveSeed(live.step),live.replay,meH,j);
+        if(p<GATE_LO||p>GATE_HI){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+          S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
+          S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
+          live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now()};
       render();
@@ -5977,14 +6003,15 @@ function finishLive(){ liveEndedAt=Date.now();
   // was each call the better percentage play? (sports that judge their calls:
   // the same game replayed from that moment with each answer, many times)
   if(typeof callVerdicts==="function"&&!live.h2h&&live.args){
-    const V=callVerdicts(live.args,liveSeed(live.step),live.replay,meHome);
+    const AU=(S.callAuto||{})[live.ckey||callKey(live.step)]||[];
+    const V=callVerdicts(live.args,liveSeed(live.step),yourAnswers(live.replay,AU),meHome);
     if(V.judged)played.judged=V.judged;
     if(V.close)played.close=V.close;               // the nearest thing to a graded call, for a quiet game's debrief
     if(V.closes&&V.closes.length)played.closes=V.closes;   // every call made that the replays couldn't separate: listed, not graded (Grokbot: 5 calls, 3 lines)
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
   // what your calls did: the same game with the assistant's call, and its worth over many replays
   if(!live.h2h&&live.args&&(live.replay||[]).length&&typeof callImpact==="function"){
-    const I=callImpact(live.args,liveSeed(live.step),live.replay,meHome);
+    const I=callImpact(live.args,liveSeed(live.step),yourAnswers(live.replay,(S.callAuto||{})[live.ckey||callKey(live.step)]),meHome);
     // where a graded call is the same call, its replays decide both lines: two samples of the same
     // question disagreed in words (Grokbot, three reports)
     I.forEach(c=>{ const v=(live.eng.log||[]).find(x=>x.k==="call"&&x.h===c.h&&x.rk&&x.rk[c.pk]!==undefined&&x.rk[c.dk]!==undefined);
@@ -6728,7 +6755,8 @@ function endSeason(rng,choices,act,seasonTeam){
   SEA.bankCareers(U);
   if(S.calls){ const keep={}, pre=SEA.year+":";
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
-    S.calls=keep; }
+    S.calls=keep;
+    if(S.callAuto){ const ka={}; Object.keys(S.callAuto).forEach(k=>{if(k.indexOf(pre)===0)ka[k]=S.callAuto[k]}); S.callAuto=ka } }
   if(U.coach[S.myTeam])U.coach[S.myTeam].q=Math.round(Math.max(-40,Math.min(60,S.career.rep*0.62)));
   // the entry is written before the offseason runs: promotion, relegation
   // and realignment move teams, and the season belongs to the group it was played in
@@ -7030,8 +7058,9 @@ function confWord(){ return LEAGUE.text.champsWord||(LEAGUE.id==="cfb"||LEAGUE.i
 /* a win chance as shown: never 100% or 0% (Ian: "a 100% win chance vs Phoenix"; nothing in sport is certain, and
    the engine's own tails reach 99.6%) */
 function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
+function withPlan(pl,fn){ const was=plan; plan=pl; try{ return fn() }finally{ plan=was } }
 function oddsHTML(me,opp,atHome,neutral,wp){
-  if(LEAGUE.wdl){ const [w,d,l]=LEAGUE.wdl(me,opp,atHome,neutral), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
+  if(LEAGUE.wdl){ const [w,d,l]=withPlan("balanced",()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
       <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span><span class="olab">before the game</span>${ownMark(me)}</div>` }
   return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
@@ -7396,10 +7425,7 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    <div class="pland">${esc(PLANS[plan].d)}${
-      // a nudge about the plan you haven't picked, said as one (it read as advice for the highlighted plan: Grokbot)
-      wp!==null&&wp<0.35&&plan!=="aggressive"?` <span class="planwhy">As a big underdog, though, more chaos would help you: try ${esc(PLANS.aggressive.l)}.</span>`:
-      wp!==null&&wp>0.75&&plan!=="safe"?` <span class="planwhy">You're the favourite, though: less chaos would help you. Try ${esc(PLANS.safe.l)}.</span>`:""}</div>
+    <div class="pland">${esc(PLANS[plan].d)}</div>
   </div>`;
 }
 
@@ -7480,7 +7506,9 @@ function nextUpHTML(my,rk){
   }
   if(ng){
     const opp=ng.home===my?ng.away:ng.home;
-    const wp=winProb(my,opp,ng.home===my,ng.neutral);
+    // the chance before the game is the same whichever plan you pick: clicking the plans and watching it move gave the
+    // answer away (Ian). The plans are judged on the result card.
+    const wp=withPlan("balanced",()=>winProb(my,opp,ng.home===my,ng.neutral));
     const st=stakesFor(ng);
     const riv=LEAGUE.rivals.name(my,opp);
     const ser=riv?LEAGUE.rivals.series(U,my,opp):null;

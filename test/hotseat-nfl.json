@@ -1,5 +1,5 @@
 {
- "fp": "f2f95699ebab33ab",
+ "fp": "d9a2fb25a3f9d0d1",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -225,6 +225,11 @@
    "fp": "f2f95699ebab33ab",
    "from": "8a5be8bf3a5307f8",
    "note": "Round 31: the year-two 'best season of your tenure' milestone dropped (control build with only that line restored matches the old fingerprint)"
+  },
+  {
+   "fp": "d9a2fb25a3f9d0d1",
+   "from": "f2f95699ebab33ab",
+   "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
   }
  ],
  "out": [
@@ -238,7 +243,7 @@
       "result": "Lost the conference championship",
       "grade": "A-"
      },
-     "book": "3520aa790c1432c0"
+     "book": "42f9da3a5817472a"
     },
     {
      "team": "Tennessee",
@@ -247,7 +252,7 @@
       "result": "Losing season",
       "grade": "B"
      },
-     "book": "d0a183258d0eb51d"
+     "book": "65ab4b331163c5fb"
     }
    ]
   },
@@ -261,7 +266,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "c6d0e098b57bc176"
+     "book": "120720a70df08f4e"
     },
     {
      "team": "Tennessee",
@@ -270,7 +275,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "7e6b55518d970ec4"
+     "book": "4e57cd5833afbbf8"
     }
    ]
   },
@@ -284,7 +289,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "43314a5850e39fd5"
+     "book": "b5fc0ebce71fac8a"
     },
     {
      "team": "Tennessee",
@@ -293,7 +298,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "48c26e4a39aac458"
+     "book": "c749898df0d9277c"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "b63b79161cf52660",
+ "fp": "d9707befe21c1fa0",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -225,6 +225,11 @@
    "fp": "b63b79161cf52660",
    "from": "c325966d883e440c",
    "note": "Round 31: the year-two 'best season of your tenure' milestone dropped (control build with only that line restored matches the old fingerprint)"
+  },
+  {
+   "fp": "d9707befe21c1fa0",
+   "from": "b63b79161cf52660",
+   "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
   }
  ],
  "out": [
@@ -234,20 +239,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-3",
-      "result": "Won the Citrus Bowl",
+      "rec": "10-4",
+      "result": "Eliminated in the first round",
       "grade": "B"
      },
-     "book": "6fd6cf4fe994e0aa"
+     "book": "07aeebe844130464"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "7-6",
-      "result": "Lost the Boca Raton Bowl",
+      "result": "Won the New Orleans Bowl",
       "grade": "A"
      },
-     "book": "d8a244708473ad9b"
+     "book": "6f08f62d3165981c"
     }
    ]
   },
@@ -261,16 +266,16 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A"
      },
-     "book": "d4999b34ab10ff35"
+     "book": "ac639a97d52f4402"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Myrtle Beach Bowl",
-      "grade": "A-"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
      },
-     "book": "ca81ac2c8c2b0361"
+     "book": "11c20ec07f4c1e09"
     }
    ]
   },
@@ -280,20 +285,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-3",
-      "result": "Won the ReliaQuest Bowl",
-      "grade": "B-"
+      "rec": "14-1",
+      "result": "Eliminated in the semifinals",
+      "grade": "A+"
      },
-     "book": "7c3fb67497b8e783"
+     "book": "205c73d8ddf14e22"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
-      "result": "No bowl game",
-      "grade": "C"
+      "rec": "6-7",
+      "result": "Lost the Hawaii Bowl",
+      "grade": "A-"
      },
-     "book": "6c8d3181ee6a334d"
+     "book": "d7b1ca124df2630e"
     }
    ]
   }

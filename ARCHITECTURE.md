@@ -121,6 +121,47 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 33: calls that matter (Ian: make the options genuinely different; no numbers on them):
+- Measured first (test/call-weight.js, 30 games each): reads and scouting
+  9-14 points a call everywhere; the situation calls (push, sit, protect,
+  chase, half-time, late) mostly coin flips, largely because they were asked
+  in decided games (football up 10 late: 100% either way; basketball down 16
+  at half-time: 0-2%).
+- Situation calls are asked only in a game in reach (core 94 callInReach:
+  40 replays of the rest with the assistant's call; asked when 10-90%).
+  Outside it the assistant answers (S.callAuto), as for a skipped game, so
+  results are those of his choice; those answers are never graded or weighed
+  (yourAnswers). A check costs 4-15 ms. Reads, scouting, flanks, the goalie
+  and football's fourth downs (inReach) are always asked.
+- Soccer's late call at 65' (was 70') with sharper modes for your choice only
+  (upush/usit/uwin/upoint; the computer keeps its own): 5.3 -> 8.7 points a
+  call, close either way 35% -> 4%. Your games' goals unchanged (2.73 when
+  always taking the sharpest option; league 2.76). At 60' it was 7.2, but it
+  halved the reading edge over Pearl (numbers vs latest clue, 60,000 games:
+  main 1.2 win points, 60' 0.5, 65' 1.0): a wrong read had longer to recover.
+- Cut, by Ian's rule: basketball's protect (about 3 points, 0.1 a game; your
+  side now closes out as the assistant would) and football's half-time call
+  (asked only at two scores or more: 0-1.3 points, 100% either way).
+- The chance before a game is the same whichever plan you pick (withPlan
+  "balanced"); the line telling you which plan to pick is gone. Plans are
+  described in words and judged on the card.
+- Control: the build with these call changes off matches the previous
+  fingerprints except screens (golden) and exactly (hot seat).
+- After (best vs worst option, average points a call / share under 3):
+    pro basketball  game plan 10.9 / 13%, reads 10.1 / 22%, chase 10.0 / 25%,
+                    half 6.7 / 39%
+    college b-ball  game plan 12.9 / 10%, reads 10.7 / 16%, chase 7.9 / 17%,
+                    half 4.3 / 53%
+    hockey          game plan 13.7 / 0%, reads 13.5 / 10%, goalie 11.3 / 0%,
+                    lock 10.9 / 0%, push 5.6 / 25%, pull 3.8 / 50%
+    soccer          game plan 11.7, reads 9.6, late 8.7 / 4%, flank 7.1 /
+                    23%, half 4.1-5.2
+    football        college fourth 10.9 / 6%, two-point 18 (rare), protect
+                    4.4 / 50%; pro fourth 5.3 / 38% and under one call a game
+- Still to do: pro football needs more call types with stakes (onside kicks,
+  timeouts, two-point in more spots); college basketball's half-time call and
+  hockey's pull timing stay small (honest, but close half the time).
+
 Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
 - A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
   soccer's 25' call came up under a tap meant for the game and was graded as

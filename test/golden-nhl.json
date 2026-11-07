@@ -1,5 +1,5 @@
 {
- "fp": "ecaede09b34da072",
+ "fp": "d05f6480b89445dd",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -270,59 +270,64 @@
    "fp": "ecaede09b34da072",
    "from": "283d8f12d1c2e171",
    "note": "Round 32: screens (read lines, coin-flip notes, standings words, result header, odds capped at 99%, draft labels, payroll arithmetic), soccer history gains departing and old wages (checked field by field against HEAD); basketball pace held to 8% (golden plans are balanced, so results unchanged)"
+  },
+  {
+   "fp": "d05f6480b89445dd",
+   "from": "ecaede09b34da072",
+   "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4b9acb13b7936243",
+    "games": "2d4bf8ae55d3dd5f",
     "post": "a2d79b7061373bbb",
     "champion": "Florida",
     "rec": "2770016e5cbd2399",
     "poll": "bc8fe85dc7243c48",
     "heis": "1884646e04c965cf",
-    "history": "dc00afae2614d19e",
-    "universe": "4bc4292195091ab1",
-    "screens": "01776abfbecb500c"
+    "history": "d2d8b80cc72a582d",
+    "universe": "117e5e555e4e88ff",
+    "screens": "0cec57757b8fca9e"
    },
    {
     "year": 2027,
-    "games": "5a46bba6d692c66d",
-    "post": "bff7acaf3e10c736",
-    "champion": "Carolina",
-    "rec": "fd0315ec8f0c5f25",
-    "poll": "1c40930099d92e49",
-    "heis": "91711ffd13fdd053",
-    "history": "8c34204a782f55dc",
-    "universe": "3e9ea1a52e030882",
-    "screens": "66a3fd982fd07bd6"
+    "games": "6133c1944642090c",
+    "post": "428ad4dc578b68da",
+    "champion": "Dallas",
+    "rec": "9d9268e9370d9521",
+    "poll": "3582f1b9e741210a",
+    "heis": "ab92141bfddfe771",
+    "history": "1c340c0188c0925f",
+    "universe": "a747ff61b8df6415",
+    "screens": "e359e9f692253187"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "b17e27f2c677f05a",
-    "post": "17713e04bdfae27e",
-    "champion": "Vegas",
-    "rec": "f8b507393ab8b036",
-    "poll": "6f621d6cf426f6ec",
-    "heis": "ade43a62bf6e0213",
-    "history": "5ec7095ce3f37332",
-    "universe": "58f7db0c34f4e2a3",
-    "screens": "4955c709028fa45e"
+    "games": "d070a3838c8aba91",
+    "post": "abe73abb1dbc09be",
+    "champion": "Edmonton",
+    "rec": "b7df4879858ed4e4",
+    "poll": "9139dedd6e66ebb3",
+    "heis": "7b7a3457d66769eb",
+    "history": "8c4b4d0a9bb7f6f8",
+    "universe": "050f77d34361a8e2",
+    "screens": "133f5f6b15b11b8f"
    },
    {
     "year": 2027,
-    "games": "4b4b32f9409be5f8",
-    "post": "f7338585110b6308",
-    "champion": "Minnesota",
-    "rec": "3370c5c96d269e5a",
-    "poll": "b0c88ffada2dab8c",
-    "heis": "76e4f5d582d7a7fe",
-    "history": "5ab38f6d9c6c1717",
-    "universe": "edcdb36be22f2fe6",
-    "screens": "bb85d59779e64aaf"
+    "games": "f0bdb77df103a614",
+    "post": "7e97175a75060d13",
+    "champion": "Colorado",
+    "rec": "07e65673b4f1c009",
+    "poll": "6184d167e0b1cd75",
+    "heis": "2e9f16043b63bd97",
+    "history": "8a637ff0494346f5",
+    "universe": "9d71dd49e5a879ad",
+    "screens": "d36a9402fd5550ee"
    }
   ],
   "schedules#60": [

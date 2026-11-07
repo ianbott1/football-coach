@@ -432,7 +432,9 @@ function decisionPoint(state, isUser){
   }
   // two scores either way at the break, but not three: up 24 at half, "manage it" was asked and
   // changed nothing (Grokbot; Instinct: "comfortable-lead busywork")
-  if (q === 3 && idx === Math.floor(total/2) && Math.abs(diff) >= 14 && callMatters(q,diff) && !used.half) {
+  // cut (round 33): asked only at two scores or more, where it never moved anything (0 to 1.3 points a call, 100%
+  // either way in every measured case); the close games' half-time is the fourth downs' and the late calls' job
+  if (false && q === 3 && idx === Math.floor(total/2) && Math.abs(diff) >= 14 && callMatters(q,diff) && !used.half) {
     return {
       k:"half",
       h: diff < 0 ? `Down ${-diff} at the break` : `Up ${diff} at the break`,

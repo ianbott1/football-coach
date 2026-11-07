@@ -231,7 +231,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       const L=lead(side); let dp=null;
       // not at 20 either way: neither answer moves a game that's gone (Instinct: comfortable-lead busywork)
       if(when==="half"){ if(Math.abs(L)<20)dp=halfCall(L) }
-      else if(when==="late"&&L!==0&&Math.abs(L)<=9)dp=lateCall(L);
+      // only when behind: protecting a lead (milk the clock or keep attacking) measured about 3 points a call and
+      // 0.1 a game, close either way two times in three (round 33): cut, as Ian's rule asks
+      else if(when==="late"&&L<0&&L>=-9)dp=lateCall(L);
+      else if(when==="late"&&L>0&&L<=9)st.late[side]="auto";   // the cut call's answer: your assistant closes it out, as he would have
       else if(when==="last"&&L===-2)dp=lastCall();
       if(dp)queueCall(side,dp);
     });

@@ -126,6 +126,14 @@ function liveTick(){
         live.eng.reply(live.replay[live.ri++]);
         continue;
       }
+      // a situation call in a decided game goes to your assistant (core 94: callInReach)
+      if(typeof GATE_KINDS!=="undefined"&&GATE_KINDS[r.ask.k]&&live.args&&!live.h2h){
+        const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
+        const p=callInReach(live.args,liveSeed(live.step),live.replay,meH,j);
+        if(p<GATE_LO||p>GATE_HI){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+          S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
+          S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
+          live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now()};
       render();
@@ -176,14 +184,15 @@ function finishLive(){ liveEndedAt=Date.now();
   // was each call the better percentage play? (sports that judge their calls:
   // the same game replayed from that moment with each answer, many times)
   if(typeof callVerdicts==="function"&&!live.h2h&&live.args){
-    const V=callVerdicts(live.args,liveSeed(live.step),live.replay,meHome);
+    const AU=(S.callAuto||{})[live.ckey||callKey(live.step)]||[];
+    const V=callVerdicts(live.args,liveSeed(live.step),yourAnswers(live.replay,AU),meHome);
     if(V.judged)played.judged=V.judged;
     if(V.close)played.close=V.close;               // the nearest thing to a graded call, for a quiet game's debrief
     if(V.closes&&V.closes.length)played.closes=V.closes;   // every call made that the replays couldn't separate: listed, not graded (Grokbot: 5 calls, 3 lines)
     if(V.length)live.eng.log=(live.eng.log||[]).concat(V.map(v=>Object.assign({side:meHome?"home":"away"},v))) }
   // what your calls did: the same game with the assistant's call, and its worth over many replays
   if(!live.h2h&&live.args&&(live.replay||[]).length&&typeof callImpact==="function"){
-    const I=callImpact(live.args,liveSeed(live.step),live.replay,meHome);
+    const I=callImpact(live.args,liveSeed(live.step),yourAnswers(live.replay,(S.callAuto||{})[live.ckey||callKey(live.step)]),meHome);
     // where a graded call is the same call, its replays decide both lines: two samples of the same
     // question disagreed in words (Grokbot, three reports)
     I.forEach(c=>{ const v=(live.eng.log||[]).find(x=>x.k==="call"&&x.h===c.h&&x.rk&&x.rk[c.pk]!==undefined&&x.rk[c.dk]!==undefined);
@@ -927,7 +936,8 @@ function endSeason(rng,choices,act,seasonTeam){
   SEA.bankCareers(U);
   if(S.calls){ const keep={}, pre=SEA.year+":";
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
-    S.calls=keep; }
+    S.calls=keep;
+    if(S.callAuto){ const ka={}; Object.keys(S.callAuto).forEach(k=>{if(k.indexOf(pre)===0)ka[k]=S.callAuto[k]}); S.callAuto=ka } }
   if(U.coach[S.myTeam])U.coach[S.myTeam].q=Math.round(Math.max(-40,Math.min(60,S.career.rep*0.62)));
   // the entry is written before the offseason runs: promotion, relegation
   // and realignment move teams, and the season belongs to the group it was played in
@@ -1229,8 +1239,9 @@ function confWord(){ return LEAGUE.text.champsWord||(LEAGUE.id==="cfb"||LEAGUE.i
 /* a win chance as shown: never 100% or 0% (Ian: "a 100% win chance vs Phoenix"; nothing in sport is certain, and
    the engine's own tails reach 99.6%) */
 function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
+function withPlan(pl,fn){ const was=plan; plan=pl; try{ return fn() }finally{ plan=was } }
 function oddsHTML(me,opp,atHome,neutral,wp){
-  if(LEAGUE.wdl){ const [w,d,l]=LEAGUE.wdl(me,opp,atHome,neutral), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
+  if(LEAGUE.wdl){ const [w,d,l]=withPlan("balanced",()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
       <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span><span class="olab">before the game</span>${ownMark(me)}</div>` }
   return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
@@ -1595,10 +1606,7 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    <div class="pland">${esc(PLANS[plan].d)}${
-      // a nudge about the plan you haven't picked, said as one (it read as advice for the highlighted plan: Grokbot)
-      wp!==null&&wp<0.35&&plan!=="aggressive"?` <span class="planwhy">As a big underdog, though, more chaos would help you: try ${esc(PLANS.aggressive.l)}.</span>`:
-      wp!==null&&wp>0.75&&plan!=="safe"?` <span class="planwhy">You're the favourite, though: less chaos would help you. Try ${esc(PLANS.safe.l)}.</span>`:""}</div>
+    <div class="pland">${esc(PLANS[plan].d)}</div>
   </div>`;
 }
 
@@ -1679,7 +1687,9 @@ function nextUpHTML(my,rk){
   }
   if(ng){
     const opp=ng.home===my?ng.away:ng.home;
-    const wp=winProb(my,opp,ng.home===my,ng.neutral);
+    // the chance before the game is the same whichever plan you pick: clicking the plans and watching it move gave the
+    // answer away (Ian). The plans are judged on the result card.
+    const wp=withPlan("balanced",()=>winProb(my,opp,ng.home===my,ng.neutral));
     const st=stakesFor(ng);
     const riv=LEAGUE.rivals.name(my,opp);
     const ser=riv?LEAGUE.rivals.series(U,my,opp):null;

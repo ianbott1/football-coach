@@ -1,5 +1,5 @@
 {
- "fp": "1dd9d611afa754f2",
+ "fp": "17898da5a31bc588",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -155,6 +155,16 @@
    "fp": "1dd9d611afa754f2",
    "from": "2517ce5881796dc1",
    "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
+  },
+  {
+   "fp": "652dd0c06f988787",
+   "from": "1dd9d611afa754f2",
+   "note": "Round 33: situation calls asked only in a game in reach (the assistant answers the rest), soccer's late call at 60' with sharper user-only modes, basketball protect and football half-time cut, the pre-game chance independent of the plan. Control: the same build with those call changes off matches the previous fingerprints in every field but screens (golden) and exactly (hot seat)."
+  },
+  {
+   "fp": "17898da5a31bc588",
+   "from": "652dd0c06f988787",
+   "note": "Round 33 (as noted): recorded again from a fresh build; the earlier record missed the cut protect call's assistant close-out, which the control covered"
   }
  ],
  "out": [
@@ -164,20 +174,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "46-36",
+      "rec": "48-34",
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "0df4d23cb971c5f1"
+     "book": "4df0026a886eff73"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "43-39",
+      "rec": "41-41",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "27207f093c4c264a"
+     "book": "7f8c12ffbc2f45a8"
     }
    ]
   },
@@ -187,20 +197,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "25-57",
+      "rec": "34-48",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "182984df31c4e609"
+     "book": "c4c73a21cbe3cffe"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "32-50",
-      "result": "Lost in the play-in",
-      "grade": "D"
+      "rec": "48-34",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "e54890e46c8870d0"
+     "book": "f02b57d9cd4fe89e"
     }
    ]
   },
@@ -210,20 +220,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "18-64",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "38-44",
+      "result": "Lost in the play-in",
+      "grade": "C-"
      },
-     "book": "4358327cc44d0b60"
+     "book": "0a5f609286757a99"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "42-40",
-      "result": "Lost in the play-in",
-      "grade": "C"
+      "rec": "47-35",
+      "result": "Lost in the first round",
+      "grade": "B-"
      },
-     "book": "75b54023f4de96e0"
+     "book": "caa90ec3fab1d122"
     }
    ]
   }
