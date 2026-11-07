@@ -128,5 +128,8 @@ LEAGUE.ui={
   subtab(b){ if(b.dataset.et){eplTab=b.dataset.et;return true} return false },
   stakes:eplStakes,
   clinchTag:t=>"",
-  standingsQualify:0
+  standingsQualify:0,
+  // the zones on the standings too (Ian: "not clear who is in the relegation zone"), and goal difference
+  standingsZone:(d,pos)=>zoneOf(d,pos),
+  standingsCols:[{label:"GD",val:t=>{ const G=SEA.gfga(t), x=G[0]-G[1]; return (x>0?"+":x<0?"&minus;":"")+Math.abs(x) }}]
 };

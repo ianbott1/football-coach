@@ -1,3 +1,5 @@
+/* the gap in words */
+function downWord(n){ return ["","one","two","three","four","five"][n]||String(n) }
 /* ============ the game engine: hockey ============ */
 /* Three 20-minute periods, played as twelve five-minute spells. Each side
    takes shots at a rate shaped by its edge, and each shot scores at a rate
@@ -279,7 +281,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // first intermission: the read, and your goalie if he's let in two or more
     // two down early: call your timeout and make the read now, not at the intermission (Instinct)
     if(s>=2&&s<4&&!st.i1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
-        const O=st.S[other(sd)]; queueCall(sd,readCall(O.tell,O.lastCue,`Timeout: two down, ${s*5} minutes in`)) });
+        const O=st.S[other(sd)]; queueCall(sd,readCall(O.tell,O.lastCue,`Timeout: ${downWord(-lead(sd))} down, ${s*5} minutes in`)) });   // the real gap: "two down" at 0-3 (Muse)
       if(st.queue.length)return st.next()}
     if(s===4&&!st.i1){st.i1=true; ["home","away"].forEach(sd=>{ const X=st.S[sd], O=st.S[other(sd)];
         if(!humans[sd]){ readIt(sd,0.45); cpuGoalie(sd); return }

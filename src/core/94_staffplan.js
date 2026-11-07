@@ -91,14 +91,17 @@ function staffAdvice(dp,ctx){
 /* a voice doesn't say the same sentence twice in a game (Instinct: the Capybara's "simply too far" on
    three straight prompts; the Bears' "SEND EVERYONE" at 45' and 75'): the second time it points back */
 function staffFresh(R,dp,L){
-  if(!L)return R; const said=L.said=L.said||{};
-  return R.map(x=>{ const S0=said[x.who]=said[x.who]||[];
-    if(S0.indexOf(x.line)<0||!x.pick){ S0.push(x.line); return x }
-    const o=dp.opts.find(q=>q[0]===x.pick), lab=o?o[1].replace(/\s*\(.*\)$/,""):"the same as before";
-    const line=x.who==="bears"?`${lab.toUpperCase()}! We said it before. We'll say it louder.`
-      :x.who==="pearl"?pearlSay(`Same as I said before: ${lab.toLowerCase()}!`,dp.opts.length+S0.length)
-      :`As I said earlier, I'm afraid: ${lab.toLowerCase()}.`;
-    S0.push(line); return Object.assign({},x,{line:line}) });
+  if(!L)return R; const said=L.said=L.said||{}, gave=L.gave=L.gave||{};
+  return R.map(x=>{ const S0=said[x.who]=said[x.who]||[], G=gave[x.who]=gave[x.who]||[];
+    const o=x.pick&&dp.opts.find(q=>q[0]===x.pick), lab=o?o[1].replace(/\s*\(.*\)$/,""):"";
+    if(S0.indexOf(x.line)<0||!x.pick){ S0.push(x.line); if(lab)G.push(lab.toLowerCase()); return x }
+    // "as I said before" only when this voice really gave this advice before: Pearl said "Same as I said before:
+    // leave it to your assistant!" having said "see this out" and "go right" (Instinct)
+    const again=lab&&G.indexOf(lab.toLowerCase())>=0, l=lab||"the same";
+    const line=x.who==="bears"?(again?`${l.toUpperCase()}! We said it before. We'll say it louder.`:`${l.toUpperCase()}! LOUDER THIS TIME.`)
+      :x.who==="pearl"?pearlSay(again?`Same as I said before: ${l.toLowerCase()}!`:`I'll keep it simple: ${l.toLowerCase()}!`,dp.opts.length+S0.length)
+      :again?`As I said earlier, I'm afraid: ${l.toLowerCase()}.`:`Briefly, then: ${l.toLowerCase()}.`;
+    S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });
 }
 function staffAdvice0(dp,ctx){
   const R=staffTake(dp,ctx);
@@ -189,9 +192,11 @@ function impactHTML(P){
     return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
   const good=k>0;
   const verdict=good?"A strong call":"The wrong call";
-  const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
-                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
-  return `<div class="impact"><div class="imphead">${verdict}, ${tonight}</div>
+  // nothing more when one replay gave the same result: "though tonight's dice gave the same result either way" read as
+  // "your win didn't count", and on a one-point loss as if no call mattered (Instinct, Grokbot)
+  const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"")
+                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"");
+  return `<div class="impact"><div class="imphead">${verdict}${tonight?", "+tonight:"."}</div>
     <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.</div>${restHTML}</div>`;
     // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
     // often", and players stopped trusting the replays (Grokbot). Whether tonight turned on it stays in the headline.
@@ -211,10 +216,13 @@ function seasonCallsHTML(){
   Object.keys(S.played||{}).forEach(k=>{ if(k.split(":")[0]!==String(yr))return;
     (S.played[k]||[]).forEach(p=>{ if(p.team!==me)return; (p.impact||[]).forEach(c=>{ if(typeof c.worth==="number")P.push({c:c,p:p}) }) }) });
   const t=tallyHTML();
+  // only calls the card graded: a "close either way" call named "your costliest" contradicted its own card (Grokbot)
+  for(let i=P.length-1;i>=0;i--){ const c=P[i].c; if(c.q!==undefined&&!(c.sp>3))P.splice(i,1) }
   P.sort((a,b)=>b.c.worth-a.c.worth);
   const one=(x,lab)=>`<div class="cand"><div class="candtop"><div><div class="fname">${lab}</div>
     <div class="fnote">${esc(x.c.h)}, against ${esc(x.p.other)} (${x.p.mine}&ndash;${x.p.theirs})</div></div></div>
-    <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
+    <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}
+    ${(w=>w>=1?` Why: from that moment, your choice won about ${w} more games in 100 than his${x.p.mine>x.p.theirs?"":", though the game went the other way"}.`:w<=-1?` Why: from that moment, your choice won about ${-w} fewer games in 100 than his${x.p.mine>x.p.theirs?", though you won anyway":""}.`:"")(Math.round(x.c.worth*100))}</div></div>`;
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
   return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");

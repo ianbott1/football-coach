@@ -159,7 +159,7 @@ function staffTake(dp, ctx){
   else if(dp.k==="lock"){
     R.push({who:"bears", pick:"keep", line:bearYell("lock",seed)});
     R.push({who:"pearl", pick: diff>=2?"sit":"keep", line:pearlSay(diff>=2
-      ? `We're two up! Let's make it boring and go home happy.`
+      ? (diff===2?`We're two up! Let's make it boring and go home happy.`:`We're ${["","","two","three","four","five"][diff]||diff} up! Let's make it boring and go home happy.`)   // the real lead: "two up" at 4-1 (Instinct)
       : `One goal isn't enough to sit on. Keep going!`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would suggest fewer chances, both ways. Fewer chances, fewer disasters.`});
   }

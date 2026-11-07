@@ -1,5 +1,5 @@
 {
- "fp": "1f190e31db9e379b",
+ "fp": "283d8f12d1c2e171",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -260,6 +260,11 @@
    "fp": "1f190e31db9e379b",
    "from": "82a4131d754c9b52",
    "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
+  },
+  {
+   "fp": "283d8f12d1c2e171",
+   "from": "1f190e31db9e379b",
+   "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
   }
  ],
  "result": {
@@ -274,7 +279,7 @@
     "heis": "1884646e04c965cf",
     "history": "dc00afae2614d19e",
     "universe": "4bc4292195091ab1",
-    "screens": "a6ed368bae9ca58e"
+    "screens": "f3b94ebacfe289e2"
    },
    {
     "year": 2027,
@@ -286,7 +291,7 @@
     "heis": "91711ffd13fdd053",
     "history": "8c34204a782f55dc",
     "universe": "3e9ea1a52e030882",
-    "screens": "2a0d36b3ed16b845"
+    "screens": "44356f2d75822ae9"
    }
   ],
   "Edmonton#777": [
@@ -300,7 +305,7 @@
     "heis": "ade43a62bf6e0213",
     "history": "5ec7095ce3f37332",
     "universe": "58f7db0c34f4e2a3",
-    "screens": "84f0245058a9858d"
+    "screens": "52c33978e90394eb"
    },
    {
     "year": 2027,
@@ -310,9 +315,9 @@
     "rec": "3370c5c96d269e5a",
     "poll": "b0c88ffada2dab8c",
     "heis": "76e4f5d582d7a7fe",
-    "history": "7051b0b703ea5df5",
+    "history": "5ab38f6d9c6c1717",
     "universe": "edcdb36be22f2fe6",
-    "screens": "ccf044dd75a84b3e"
+    "screens": "9b31703203b00d68"
    }
   ],
   "schedules#60": [

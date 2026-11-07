@@ -92,6 +92,7 @@ function career(file, team, seed, seasons) {
     if (S.off && S.off.act.userOpen && S.off.move === null)
       S.off.move = (S.off.jobs[0] && S.off.jobs[0].team) || S.myTeam;
     api.commitOffseason();
+    if (process.env.HISTORY_OUT) require('fs').appendFileSync(process.env.HISTORY_OUT, JSON.stringify(S.history[S.history.length-1])+'\n');
     season.history = h(S.history[S.history.length-1]);
     season.universe = h(api.S.uStart);
     grab();

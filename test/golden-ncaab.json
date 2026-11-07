@@ -1,5 +1,5 @@
 {
- "fp": "7310f677c97be951",
+ "fp": "9036bc1970c446ef",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -295,6 +295,11 @@
    "fp": "7310f677c97be951",
    "from": "ba93a735b9a33913",
    "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
+  },
+  {
+   "fp": "9036bc1970c446ef",
+   "from": "7310f677c97be951",
+   "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
   }
  ],
  "result": {
@@ -309,7 +314,7 @@
     "heis": "507b02601047ebc0",
     "history": "580f9ea9298345d2",
     "universe": "15668034bee30dd0",
-    "screens": "6947df0d7789abec"
+    "screens": "2541528c1e0dba41"
    },
    {
     "year": 2027,
@@ -321,7 +326,7 @@
     "heis": "5acbf636441cddd8",
     "history": "b824a5cbba3471be",
     "universe": "44da1ed94501e3fa",
-    "screens": "06e41479de52406f"
+    "screens": "44911ba0721da98e"
    }
   ],
   "Coppin State#2024": [
@@ -335,7 +340,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "6a68217a22c71b36",
     "universe": "96581c1b068ab70d",
-    "screens": "fb0708d0a4900999"
+    "screens": "a3105c22ee8fec0f"
    },
    {
     "year": 2027,
@@ -345,9 +350,9 @@
     "rec": "9d2d4f294802d44a",
     "poll": "f7e697f02af28e3b",
     "heis": "b27bdde561ad5dfb",
-    "history": "642e64ca465bd618",
+    "history": "a22a71423b3bdcaa",
     "universe": "68f96ab6377e4f5e",
-    "screens": "c25430dfbee42128"
+    "screens": "bae86323ed735a8e"
    }
   ],
   "Gonzaga#777": [
@@ -361,7 +366,7 @@
     "heis": "c94713712b4e6c61",
     "history": "f1681237b458e683",
     "universe": "7e0dd9bfd94a78d3",
-    "screens": "67d0b14047751edb"
+    "screens": "aa19ca6616de8f59"
    },
    {
     "year": 2027,
@@ -371,9 +376,9 @@
     "rec": "b55ef058d9264535",
     "poll": "6cbb8b6b41ee827b",
     "heis": "65deb6ef1f3be212",
-    "history": "5f7f458fc08c6d05",
+    "history": "0ac08e16dcd5aa59",
     "universe": "5c1877dc8315f4c7",
-    "screens": "e608c7a980c6ddbf"
+    "screens": "7094157fc7a80a23"
    }
   ],
   "schedules#60": [

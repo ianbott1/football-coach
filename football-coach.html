@@ -402,6 +402,9 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  font-family:var(--cond);font-size:16px;font-weight:500;padding:10px 8px;cursor:pointer;
  text-align:left}
 .pick:hover{border-color:var(--sodium);color:var(--sodium)}
+.pick.sel{border-color:var(--sodium);background:rgba(244,166,58,.14)}
+#pickbar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}
+#pickbar .advance{margin:0;width:100%}
 .reset{background:none;border:1px solid var(--line);color:var(--muted);font-size:14px;
  line-height:1;padding:3px 7px;margin-left:9px;cursor:pointer;border-radius:2px}
 .reset:hover{color:var(--sodium);border-color:var(--sodium)}
@@ -780,8 +783,11 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .wl-o{color:var(--sodium)!important;font-weight:600}
 .dres.o{color:var(--sodium)}
 /* table zones (English football) */
-.frow.zone-ucl{box-shadow:inset 3px 0 0 #2F6FB5}.frow.zone-up{box-shadow:inset 3px 0 0 var(--turf)}
-.frow.zone-po{box-shadow:inset 3px 0 0 var(--sodium)}.frow.zone-down{box-shadow:inset 3px 0 0 var(--flag)}
+.frow.zone-ucl,.srow.zone-ucl{box-shadow:inset 3px 0 0 #2F6FB5}.frow.zone-up,.srow.zone-up{box-shadow:inset 3px 0 0 var(--turf)}
+.frow.zone-po,.srow.zone-po{box-shadow:inset 3px 0 0 var(--sodium)}.frow.zone-down,.srow.zone-down{box-shadow:inset 3px 0 0 var(--flag)}
+.sx{font-family:var(--mono);font-size:12px;color:#B4BCCB;width:34px;flex:0 0 34px;text-align:right;white-space:nowrap}
+.shead .sx{font-size:9px;letter-spacing:.08em;color:var(--muted)}
+.zkey{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
 /* the momentum bar (soccer) */
 .evid{margin:12px 16px 0;padding:12px 14px;border:1px solid var(--line);background:var(--panel2)}
 .evh{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);margin-bottom:8px}
@@ -905,7 +911,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="5458e77";
+<script>const BUILD_ID="aa11986";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -4381,7 +4387,10 @@ function decisionPoint(state, isUser){
   const veryLate = idx >= total - 7;
   const diff = mine - theirs;
   // roughly how long is left: drives come about evenly through the game (Grokbot: a late call showed the quarter, not the clock)
-  const left = Math.max(1, Math.round(60*(total-idx)/total)), clock = ` About ${left} minute${left===1?"":"s"} left.`;
+  // before the fourth it's the quarter's clock: "About 18 minutes left" at "end of the third" read as wrong (Grokbot;
+  // it was 3 in the quarter plus the fourth)
+  const left = Math.max(1, Math.round(60*(total-idx)/total)), inQ = Math.min(15, Math.max(1, left-(4-Math.min(4,q))*15)),
+        clock = q>=4 ? ` About ${left} minute${left===1?"":"s"} left.` : ` About ${inQ} minute${inQ===1?"":"s"} left in the ${["first","second","third"][q-1]||"third"} quarter.`;
 
   // asked on your last possession, when what you need is known: a field
   // goal to win or tie, or nothing less than a touchdown
@@ -4398,7 +4407,7 @@ function decisionPoint(state, isUser){
   if (veryLate && diff > 0 && diff <= 10 && !used.protect) {   // up 12 to 14 the choice moved nothing (test/call-weight.js, Nov 2026)
     return {
       k:"protect",
-      h: q>=4?`Up ${diff} late`:`Up ${diff}, end of the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)
+      h: q>=4?`Up ${diff} late`:`Up ${diff} in the third`,   // it can come in the third (Grokbot: "up 4 late" in Q3)
       b:`Sit on it and shorten the game, or keep the throttle down.`+clock,
       opts:[["sit","Bleed the clock"],["keep","Keep attacking"]]
     };
@@ -6298,7 +6307,7 @@ function dnRowHTML(p,t,label,canPick){
   const x=dnRead(p.pid,t), wk=S.off.picks.workouts||[];
   return `<div class="drow dnrow">
     <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${label||""}${x.wk?` <span class="dthere">worked out</span>`:x.unsure?` <span class="dmaybe">scouts unsure</span>`:""}</div>
-      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${x.sr}, ceiling ~${x.spot} &middot; ${dnFit(p,t)}</div></div>
+      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`} &middot; ${dnFit(p,t)}</div></div>
     ${!x.wk&&wk.length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
     ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}">Draft</button>`:""}</div>`;
 }
@@ -6317,7 +6326,7 @@ function draftNightHTML(){
   if(since.length){ const SHOW=6, old=since.slice(0,-SHOW), now=since.slice(-SHOW), step=Math.min(220,1800/now.length);
     tk=`<div class="grouphead">${last?"Since your last pick":"The picks before yours"}</div>`
       +(old.length?`<details class="dnfold"><summary>${nOf(old.length,"earlier pick")}</summary>${old.map(d=>tick(d,0,null)).join("")}</details>`:"")
-      +now.map((d,i)=>tick(d,i,step)).join("")+`<div class="note">Your scouts' read: now ~ / ceiling ~.</div>` }
+      +now.map((d,i)=>tick(d,i,step)).join("")+`<div class="note">Beside each name: your scouts' read of him now, then his ceiling.</div>` }
   if(D.stop){
     const s=D.stop, avail=D.prospects.filter(p=>!p.taken).map(p=>Object.assign({},p,{v:dnVal(dnRead(p.pid,t))})).sort((a,b)=>b.v-a.v);
     const ahead=s.next?s.next-s.overall-1:0, gone=dnMock(avail,ahead,(U.seed||0)*2246822519^SEA.year*31337^s.overall);
@@ -6325,7 +6334,7 @@ function draftNightHTML(){
     const sug=D.prospects.find(p=>p.pid===s.suggest), fromBoard=board.has(s.suggest);
     h+=`<div class="banner"><div class="bkick">Round ${s.round}, pick ${s.pick} &middot; #${s.overall} overall</div>
       <div class="btitle">You're on the clock.</div>
-      <div class="bsub">${s.next?`Your next pick is #${s.next}.`:"Your last pick of the draft."} ${wk.length<dnWorkouts()?`${nOf(dnWorkouts()-wk.length,"private workout")} left: each gives you a much sharper read on one player, worth most where your scouts are unsure.`:dnWorkouts()?"Workouts used.":""}</div></div>`+tk;
+      <div class="bsub">${s.next?`Your next pick is #${s.next}.`:"Your last pick of the draft."} ${wk.length<dnWorkouts()?`${nOf(dnWorkouts()-wk.length,"private workout")} left. A workout brings one player in for a closer look: your read on him gets much sharper, and the row shows what changed. Worth most on players marked "scouts unsure".`:dnWorkouts()?"Workouts used.":""}</div></div>`+tk;
     h+=`<div class="grouphead">${fromBoard?"Top of your board":"Your staff's pick"}</div>`+dnRowHTML(sug,t,lab(sug),true)
       +`<button class="skip" data-dnstaff="1">${fromBoard?"Take the top of my board":"Let my staff make this pick"}</button>`;
     h+=`<div class="grouphead">Best available, by your scouts</div>`+avail.filter(p=>p.pid!==s.suggest).slice(0,24).map(p=>dnRowHTML(p,t,lab(p),true)).join("");
@@ -6642,14 +6651,17 @@ function staffAdvice(dp,ctx){
 /* a voice doesn't say the same sentence twice in a game (Instinct: the Capybara's "simply too far" on
    three straight prompts; the Bears' "SEND EVERYONE" at 45' and 75'): the second time it points back */
 function staffFresh(R,dp,L){
-  if(!L)return R; const said=L.said=L.said||{};
-  return R.map(x=>{ const S0=said[x.who]=said[x.who]||[];
-    if(S0.indexOf(x.line)<0||!x.pick){ S0.push(x.line); return x }
-    const o=dp.opts.find(q=>q[0]===x.pick), lab=o?o[1].replace(/\s*\(.*\)$/,""):"the same as before";
-    const line=x.who==="bears"?`${lab.toUpperCase()}! We said it before. We'll say it louder.`
-      :x.who==="pearl"?pearlSay(`Same as I said before: ${lab.toLowerCase()}!`,dp.opts.length+S0.length)
-      :`As I said earlier, I'm afraid: ${lab.toLowerCase()}.`;
-    S0.push(line); return Object.assign({},x,{line:line}) });
+  if(!L)return R; const said=L.said=L.said||{}, gave=L.gave=L.gave||{};
+  return R.map(x=>{ const S0=said[x.who]=said[x.who]||[], G=gave[x.who]=gave[x.who]||[];
+    const o=x.pick&&dp.opts.find(q=>q[0]===x.pick), lab=o?o[1].replace(/\s*\(.*\)$/,""):"";
+    if(S0.indexOf(x.line)<0||!x.pick){ S0.push(x.line); if(lab)G.push(lab.toLowerCase()); return x }
+    // "as I said before" only when this voice really gave this advice before: Pearl said "Same as I said before:
+    // leave it to your assistant!" having said "see this out" and "go right" (Instinct)
+    const again=lab&&G.indexOf(lab.toLowerCase())>=0, l=lab||"the same";
+    const line=x.who==="bears"?(again?`${l.toUpperCase()}! We said it before. We'll say it louder.`:`${l.toUpperCase()}! LOUDER THIS TIME.`)
+      :x.who==="pearl"?pearlSay(again?`Same as I said before: ${l.toLowerCase()}!`:`I'll keep it simple: ${l.toLowerCase()}!`,dp.opts.length+S0.length)
+      :again?`As I said earlier, I'm afraid: ${l.toLowerCase()}.`:`Briefly, then: ${l.toLowerCase()}.`;
+    S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });
 }
 function staffAdvice0(dp,ctx){
   const R=staffTake(dp,ctx);
@@ -6740,9 +6752,11 @@ function impactHTML(P){
     return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
   const good=k>0;
   const verdict=good?"A strong call":"The wrong call";
-  const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"though tonight's dice gave the same result either way.")
-                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"though it changed nothing tonight.");
-  return `<div class="impact"><div class="imphead">${verdict}, ${tonight}</div>
+  // nothing more when one replay gave the same result: "though tonight's dice gave the same result either way" read as
+  // "your win didn't count", and on a one-point loss as if no call mattered (Instinct, Grokbot)
+  const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"")
+                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"");
+  return `<div class="impact"><div class="imphead">${verdict}${tonight?", "+tonight:"."}</div>
     <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.</div>${restHTML}</div>`;
     // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
     // often", and players stopped trusting the replays (Grokbot). Whether tonight turned on it stays in the headline.
@@ -6762,10 +6776,13 @@ function seasonCallsHTML(){
   Object.keys(S.played||{}).forEach(k=>{ if(k.split(":")[0]!==String(yr))return;
     (S.played[k]||[]).forEach(p=>{ if(p.team!==me)return; (p.impact||[]).forEach(c=>{ if(typeof c.worth==="number")P.push({c:c,p:p}) }) }) });
   const t=tallyHTML();
+  // only calls the card graded: a "close either way" call named "your costliest" contradicted its own card (Grokbot)
+  for(let i=P.length-1;i>=0;i--){ const c=P[i].c; if(c.q!==undefined&&!(c.sp>3))P.splice(i,1) }
   P.sort((a,b)=>b.c.worth-a.c.worth);
   const one=(x,lab)=>`<div class="cand"><div class="candtop"><div><div class="fname">${lab}</div>
     <div class="fnote">${esc(x.c.h)}, against ${esc(x.p.other)} (${x.p.mine}&ndash;${x.p.theirs})</div></div></div>
-    <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}</div></div>`;
+    <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}
+    ${(w=>w>=1?` Why: from that moment, your choice won about ${w} more games in 100 than his${x.p.mine>x.p.theirs?"":", though the game went the other way"}.`:w<=-1?` Why: from that moment, your choice won about ${-w} fewer games in 100 than his${x.p.mine>x.p.theirs?", though you won anyway":""}.`:"")(Math.round(x.c.worth*100))}</div></div>`;
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
   return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");
@@ -7004,7 +7021,8 @@ function standRank(t){
 function objectivesHTML(my){
   if(SEA.phase==="done"&&!S.obj)return "";
   const L=seasonObjectives(my); if(!L.length)return "";
-  return `<div class="grouphead">The board's objectives</div><div class="objs">${L.map(o=>{const st=objStatus(o,my);
+  const why=typeof seatWhyNow==="function"&&SEA.phase!=="done"?seatWhyNow():"";
+  return `<div class="grouphead">The board's objectives</div><div class="objs">${why?`<div class="objnote hotwhy">${esc(why)}</div>`:""}${L.map(o=>{const st=objStatus(o,my);
     return `<div class="obj ${st.s}"><span class="objmark">${st.s==="met"?"&#10003;":st.s==="miss"?"&#10007;":"&#9675;"}</span>
       <span class="objl">${esc(o.l)}</span><span class="objt">${esc(st.t)}</span></div>`}).join("")}
     <div class="objnote">Each one met is worth reputation: the next job, and the board's patience.</div></div>`;
@@ -8385,6 +8403,8 @@ function newDynasty(team,seed,coachName,roster){
 /* the season's unit in words: a week in college and pro football; a night (and
    game days) in the long pro seasons */
 function WK(){ return LEAGUE.text.week||"week" }
+/* an injury's length on a badge: games where a step is a game day (Ian: "Out 10w" in basketball) */
+function outFor(n){ return LEAGUE.daily?`${n} ${n===1?"game":"games"}`:`${n}w` }
 function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
 /* a career's record: W-D-L where games can be drawn */
 function careerRec(C,team,from,to){ const o=yourOTL(team,from,to); return o!==null?`${C.w}-${C.l-o}-${o}`:LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:`${C.w}-${C.l}` }
@@ -8658,6 +8678,33 @@ function commitOffseason(){
 function writeSeasonHistory(team){
   S.history=S.history||[];
   S.history.push(seasonEntry(team||S.myTeam));
+  h2hBank(team||S.myTeam);
+}
+/* Head to head, every opponent (Ian: the rivalry record before a game, for any team you've played): your games,
+   whichever team you coached, banked when a season is written; the season under way is counted live. Starts
+   from Nov 2026: earlier seasons kept no game-by-game results except the rivalries' series. */
+function h2hGames(team){
+  const out=[];
+  (SEA.weeks||[]).forEach(W=>(W.games||[]).forEach(g=>{ if((g.home===team||g.away===team)&&g.winner!==undefined)out.push(g) }));
+  if(typeof SEA.postGamesFor==="function")SEA.postGamesFor(team).forEach(x=>{ const g=x[0]||x; if(g&&out.indexOf(g)<0)out.push(g) });
+  return out;
+}
+function h2hAdd(H,team,g){
+  const opp=g.home===team?g.away:g.home, r=H[opp]=H[opp]||{w:0,l:0,d:0};
+  const ms=g.home===team?g.hp:g.ap, os=g.home===team?g.ap:g.hp;
+  if(g.winner===team)r.w++; else if(g.winner&&g.winner!=="draw"&&!g.draw)r.l++; else r.d++;
+  r.y=SEA.year; r.s=`${ms}-${os}`; r.won=g.winner===team?1:g.winner&&!g.draw&&g.winner!=="draw"?0:0.5;
+}
+function h2hBank(team){
+  if(S.h2hY===SEA.year)return; S.h2hY=SEA.year;
+  const H=S.h2h=S.h2h||{}; h2hGames(team).forEach(g=>h2hAdd(H,team,g));
+}
+/* your record against opp, banked plus this season so far */
+function h2hWith(opp){
+  const B=(S.h2h||{})[opp], r=B?Object.assign({},B):{w:0,l:0,d:0};
+  if(S.h2hY!==SEA.year){ const H={}; h2hGames(S.myTeam).forEach(g=>{ if(g.home===opp||g.away===opp)h2hAdd(H,S.myTeam,g) });
+    const c=H[opp]; if(c){ r.w+=c.w; r.l+=c.l; r.d+=c.d; r.y=c.y; r.s=c.s; r.won=c.won } }
+  return r.w+r.l+r.d?r:null;
 }
 
 /* seasonTeam: the team coached this season. If the coach has just changed
@@ -8891,7 +8938,9 @@ function heroResult(){
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   if(g.cup&&LEAGUE.cup){ const nx=LEAGUE.cup.rounds[g.round+1];
-    move=`<div class="hmove ${won?'up':'dn'}">${won?(nx?"Into the "+esc(nx.name):"FA CUP WINNERS"):"Out of the FA Cup"}</div><button class="rewatch seedraw" data-cupview="1">See the draw</button>` }
+    // a level tie says how it was settled: a 0-0 "into the second round" read as a mystery (Ian)
+    const how=g.pens?(won?"Won on penalties: ":"Lost on penalties: "):g.ot?(won?"Won in extra time: ":"Lost in extra time: "):"";
+    move=`<div class="hmove ${won?'up':'dn'}">${how}${won?(nx?(how?"into the ":"Into the ")+esc(nx.name):(how?"FA Cup winners":"FA CUP WINNERS")):(how?"out of the FA Cup":"Out of the FA Cup")}</div><button class="rewatch seedraw" data-cupview="1">See the draw</button>` }
   if(half)return `<div class="hero half">
     <div class="hlabel"><span class="live"></span>HALFTIME${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
@@ -8951,7 +9000,7 @@ function readsHTML(step){
     return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":"" };
   const lines=[]; R.forEach(x=>{ const t=readText(x), lb=label(x), L=lines.find(l=>l.t===t&&l.right===x.right); if(L){L.n++; if(lb)L.lb.push(lb)} else lines.push({t:t,right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
-    ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right</div>`:""}</div>`;
+    ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded calls only)</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -9093,6 +9142,13 @@ function missedTwiceFor(team,history,exp){
   return !!(now.miss&&prev&&seasonMissed(prev));
 }
 function missedTwice(my,exp){return missedTwiceFor(my,S.history,exp)}
+/* why the seat is hot, in a sentence: last year's target and what this year means */
+function seatWhy(prev){
+  if(!prev||!seasonMissed(prev))return "";
+  const t=prev.exp?String(prev.exp).replace(/^Target:\s*/i,"").toLowerCase():"";
+  return `You missed last year's target${t?` (${t})`:""}. Miss this year's too and the job goes.`;
+}
+function seatWhyNow(){ return seatWhy((S.history||[]).find(h=>h.year===SEA.year-1&&h.team===S.myTeam)) }
 /* where you stand against that rule: missed last year here, you're on the
    hot seat all season; on pace to miss this year, you're under pressure */
 function seatBadge(){
@@ -9105,7 +9161,9 @@ function seatBadge(){
   // the reason is on the badge itself, not only on hover: a touch screen never showed it (Grokbot:
   // "hot seat at 0-0 with no reason")
   // and names the target missed, so a second-round exit isn't read as failure out of nowhere (Grokbot, hockey)
-  const hot=`<span class="seat hot"${why}>HOT SEAT &middot; missed last year${prev&&prev.exp?`'s target (${esc(String(prev.exp).replace(/^Target:\s*/i,"").toLowerCase())})`:""}</span>`;
+  // just "HOT SEAT": the reason ran the badge onto three lines and over the coach's name at 390px (Ian,
+  // Instinct); it's on hover and at the top of the board's objectives (seatWhy)
+  const hot=`<span class="seat hot" title="${esc(seatWhy(prev)||"You missed last season's target. Miss this one too and the job goes.")}">HOT SEAT</span>`;
   if(w+l<4)return prev&&seasonMissed(prev)?hot:`<span class="seat cool">Settled</span>`;
   const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
   const paceW=Math.round(w/(w+l)*games);
@@ -9189,14 +9247,14 @@ function rosterView(){
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
           <div class="pmain"><div class="pname">${esc(s.n)}
-            ${inj?`<span class="outtag">OUT ${inj.w}w</span>`:`<span class="startag">STARTER</span>`}
+            ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
               (college&&s.c>=2&&s.r>=76?" &middot; <span class='draftag'>draft risk</span>":"")}</div></div>
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm">${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${hurt[BK(i)].w}w</span>`:""}</div>
+          <div class="pmain"><div class="pname sm">${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -9250,7 +9308,7 @@ function teamCardHTML(my,rk,co){
     </div>${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${coachYear(co)<=1?"first season":"year "+coachYear(co)}
-        &middot; ${coachGrade(co.q)}</div></div>
+        &middot; coaching ${coachGrade(co.q)}</div></div>
       ${seatBadge()}</div>`:""}
     ${(()=>{const O=(SEA.oc&&SEA.oc[my])||(U.oc&&U.oc[my]);
       const D=(SEA.dc&&SEA.dc[my])||(U.dc&&U.dc[my]);
@@ -9418,7 +9476,7 @@ function nextUpHTML(my,rk){
           ? "you've won "+ser.streak.n+" straight"
           : esc(ser.streak.team)+" has won "+ser.streak.n+" straight"}`:""}
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
-      </div>`:""}
+      </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
       ${cupNight?`<div class="stake"><span class="stag">FA CUP</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} Level after ninety: extra time, then penalties.</span></div>
         <button class="rewatch seedraw" data-cupview="1">See the draw</button>`
@@ -9512,7 +9570,8 @@ function milestones(wins,losses,result,rank,team,history){
   }
   const bestW=Math.max(...mine.map(r=>r[0]));
   const bestR=Math.min(...mine.map(r=>r[2]));
-  if(wins>bestW)out.push(`Best season of your tenure &mdash; ${wins} wins, past the old high of ${bestW}.`);
+  // from your third season: in year two it only ever beats year one, an odd thing to celebrate (Grokbot)
+  if(wins>bestW&&mine.length>=2)out.push(`Best season of your tenure &mdash; ${wins} wins, past the old high of ${bestW}.`);
   if(rank<bestR&&rank<=RANK_TOP)out.push(`Highest finish yet at No. ${rank}.`);
   if(LEAGUE.goals.isTitle(result)&&!H.some(h=>h.champion===my&&(h.team||my)===my))
     out.push(LEAGUE.goals.firstTitle);
@@ -9784,16 +9843,19 @@ function standingsView(){
       <option value="">All conferences</option>${order.map(c=>`<option value="${esc(c)}"${stConf===c?" selected":""}>${esc(LEAGUE.conf.names[c])}${c===mine?" (yours)":""}</option>`).join("")}</select></div>`;
     if(stConf)order=[stConf] }
   if(wide)h+=`<div class="standgrid">`;
+  const XC=LEAGUE.ui.standingsCols||[];
   order.forEach(c=>{
     const head=`<div class="srow shead"><span class="spos">#</span>
       <span class="dot" style="opacity:0"></span>
       <span class="steam">Team</span><span class="sconf">${LEAGUE.standingsCol?LEAGUE.standingsCol.label:(LEAGUE.text.groupShort||"Conf")}</span>
-      <span class="sall">Overall</span></div>`;
-    const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}">
+      <span class="sall">Overall</span>${XC.map(x=>`<span class="sx">${x.label}</span>`).join("")}</div>`;
+    // a league's own columns (soccer's goal difference; basketball's streak and last ten) and zones (soccer)
+    const zone=i=>LEAGUE.ui.standingsZone?LEAGUE.ui.standingsZone(c,i+1):"";
+    const row=(r,i,mark)=>`<div class="srow ${r.team===S.myTeam?'mine':''}${zone(i)?" zone-"+zone(i):""}">
       <span class="spos ${mark?'qual':''}">${i+1}</span>
       <span class="dot" style="background:${teamColor(r.team)}"></span>
       <span class="steam">${LEAGUE.ui.clinchTag?LEAGUE.ui.clinchTag(r.team):""}${rkTag(nowRk?nowRk[r.team]:r.rank)}${TL(r.team)}</span>
-      <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span></div>`;
+      <span class="sconf">${r.cr}</span><span class="sall">${r.rec}</span>${XC.map(x=>`<span class="sx">${x.val(r.team)}</span>`).join("")}</div>`;
     h+=`<div class="cbox"><div class="chead">${esc(LEAGUE.conf.names[c])}</div>`;
     if(hasDivisions(c)){
       const div={};
@@ -9803,8 +9865,11 @@ function standingsView(){
         h+=div[dn].map((r,i)=>row(r,i,i===0)).join("");
       });
     }else{
-      const q=LEAGUE.ui.standingsQualify||2;
-      h+=head+st[c].map((r,i)=>row(r,i,i<q)+(i===q-1?`<div class="divider"></div>`:"")).join("");
+      const q=LEAGUE.ui.standingsQualify!==undefined?LEAGUE.ui.standingsQualify:2;
+      // the line falls where a season ends: after the top two in college football; after twelve in college
+      // basketball, where twelve play the conference tournament (a line after two made no sense there: Ian)
+      const cut=LEAGUE.ui.standingsCut!==undefined?LEAGUE.ui.standingsCut:q;
+      h+=head+st[c].map((r,i)=>row(r,i,i<q)+(cut&&i===cut-1&&i<st[c].length-1?`<div class="divider"></div>`:"")).join("");
     }
     h+=`</div>`;
   });
@@ -10101,8 +10166,9 @@ function teamCard(t){
    conference: it read "undefined champion", Muse) */
 function groupChampName(k){ return LEAGUE.conf.names[k]?LEAGUE.conf.names[k]+" champion":String(k).replace(/s$/,"") }
 function yourSeasonsHTML(){
-  // as soon as you've moved, even before a season at the new club is done (Muse saw no list)
-  const H=S.history||[]; if(!H.length||new Set(H.map(h=>h.team||S.myTeam).concat([S.myTeam])).size<2)return "";
+  // every finished season, one row each, from the first (it showed only after a move, and "TCU 2026-2027 13-12" as
+  // one stop read as seasons merged: Grokbot, college football and basketball)
+  const H=S.history||[]; if(!H.length)return "";
   return `<div class="grouphead">Your seasons</div>`+H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<div class="yrow ${h.honours&&h.honours.title?'gold':''}">
     <span class="yr">${h.year}</span>${h.grade?`<span class="ygrade">${esc(h.grade)}</span>`:""}
     <div class="ymain"><div class="yrec">${esc(h.team||"")} &middot; ${esc(h.rec||"")}</div>
@@ -10789,7 +10855,9 @@ function pickList(q){
 }
 
 function bindPicks(){
-  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>tapTwice(b,`<span class="pname">Tap again to start</span>`,()=>{   // short: the long question wrapped a word to a line on a small card (Grokbot)
+  // tap a team to choose it, then the bar's one button starts (or tap it again): "Tap again to start" wrapped a word to
+  // a line on a phone card, and a single tap seemed to do nothing (Grokbot)
+  const start=b=>{
     const want=(S.setup&&S.setup.coaches)||1;
     if(want>1){
       S.picking=S.picking||[];
@@ -10802,7 +10870,16 @@ function bindPicks(){
     }else{
       newDynasty(b.dataset.t,(S.setup.seed)>>>0,S.setup.name);
     }
-  }));
+  };
+  document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>{
+    if(b.classList.contains("sel")){ start(b); return }
+    document.querySelectorAll(".pick.sel").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+    const app=el("app")||document.body; let bar=document.getElementById("pickbar");
+    if(!bar){ bar=document.createElement("div"); bar.id="pickbar"; app.appendChild(bar) }
+    const want=(S.setup&&S.setup.coaches)||1, who=want>1?`Coach ${((S.picking||[]).length+1)}: `:"";
+    bar.innerHTML=`<button class="advance gold" id="pickgo">${who}Start with ${esc(b.dataset.t)}</button>`;
+    el("pickgo").onclick=()=>start(b);
+  });
 }
 /* the last result card, when a career is opened: it lived only in memory, so a reload lost it
    (Grokbot: the FINAL card disappears after any reload) */

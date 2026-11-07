@@ -302,6 +302,7 @@ function pastBracketsHTML(){
 }
 LEAGUE.ui={
   stakes:bbStakes,
+  standingsQualify:4, standingsCut:12,     // byes to the quarterfinals; the conference tournament's twelve
   rankingTab:"Poll",
   rankingView:pollView,
   projectedField:()=>projectedField().field,

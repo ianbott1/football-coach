@@ -234,10 +234,12 @@ function offseasonScreen(){
   h+=seasonCallsHTML();
 
   const C=S.career;
+  // next season's division: promotion and relegation are settled before the job list (Cambridge United listed as
+  // League One while their page said Championship: Muse)
   const jobRow=(t,tag)=>`<div class="cand ${S.off.move===t?'on':''}" data-job="${esc(t)}">
     <div class="candtop"><div>
       <div class="fname" style="color:${teamInk(t)}">${esc(t)}</div>
-      <div class="fnote">${esc(LEAGUE.conf.names[CONF[t]])} &middot; ${
+      <div class="fnote">${(nd=>esc(LEAGUE.conf.names[nd])+(nd!==CONF[t]?(DIV_ORDER.indexOf(nd)<DIV_ORDER.indexOf(CONF[t])?" (promoted)":" (relegated)"):""))(eplNextDiv(t))} &middot; ${
         U.program[t]>=1780?"contender":U.program[t]>=1680?"solid job":
         U.program[t]>=1600?"middling job":"rebuild"}</div></div>
       <span class="cgrade">${esc(tag)}</span></div>
@@ -370,3 +372,12 @@ Object.assign(LEAGUE.ui,{
       const P=S.off.picks, id=+b.dataset.bdrm; P.board=(P.board||[]).filter(x=>x!==id); save(); render();});
   }
 });
+
+/* a club's division next season, from the season just finished (the move itself happens when the summer runs) */
+function eplNextDiv(t){
+  const d=CONF[t], P=SEA&&SEA.po; if(!P||!P[d])return d;
+  const down={PL:"CH",CH:"L1",L1:"L2",L2:"NL"}, up={CH:"PL",L1:"CH",L2:"L1",NL:"L2",NN:"NL",NS:"NL"};
+  if((P[d].up||[]).indexOf(t)>=0&&up[d])return up[d];
+  if((P[d].down||[]).indexOf(t)>=0)return d==="NL"?(LEAGUE.region[t]==="S"?"NS":"NN"):(down[d]||d);
+  return d;
+}

@@ -320,7 +320,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(st.queue.length)return st.next()}
     // two down before the first read: it comes now, not at 25' (Instinct: 0-3 and nothing to decide)
     if(s>=3&&s<5&&!st.r1){ ["home","away"].forEach(sd=>{ if(!humans[sd]||lead(sd)>-2||(st.r1e||{})[sd])return; (st.r1e=st.r1e||{})[sd]=true;
-      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, two down`); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }); if(st.queue.length)return st.next()}
+      const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue,null,`${s*5} minutes, ${["","one","two","three","four","five"][-lead(sd)]||-lead(sd)} down`); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }); if(st.queue.length)return st.next()}
     if(s===5&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{cpuRead(sd,0.45); if((st.r1e||{})[sd])return;
       { const d=readCall(1,st.S[other(sd)].tell,st.S[other(sd)].lastCue); (st.p1=st.p1||{})[sd]=d.pearl; queueCall(sd,d) }}); if(st.queue.length)return st.next()}
     if(s===9&&!st.ht){st.ht=true;

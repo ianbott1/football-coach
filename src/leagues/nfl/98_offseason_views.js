@@ -60,7 +60,7 @@ function nflBoardHTML(P){
   const row=(p,i,on)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${avail(p)}</div>
-        <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${dnRead(p.pid).sr}, ceiling ~${dnRead(p.pid).spot}${dnRead(p.pid).wk?" &middot; worked out":dnRead(p.pid).unsure?" &middot; scouts unsure":""}</div></div>
+        <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${dnRead(p.pid).sr}, ceiling ~${dnRead(p.pid).spot}${dnRead(p.pid).wk?" &middot; worked out (a sharper read)":dnRead(p.pid).unsure?" &middot; scouts unsure":""}</div></div>
       ${dnOn()&&!dnRead(p.pid).wk&&(S.off.picks.workouts||[]).length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
       <button class="skip small" ${on?`data-bdrm="${p.pid}"`:`data-bdadd="${p.pid}"`}>${on?"Remove":"Add"}</button></div>`;
   let h=`<div class="grouphead">Your draft board</div>`;

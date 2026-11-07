@@ -1,5 +1,5 @@
 {
- "fp": "def0ccefc1bb331a",
+ "fp": "5a57481e58a5003c",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -324,6 +324,11 @@
    "fp": "def0ccefc1bb331a",
    "from": "9a73d610361ca384",
    "note": "Round 29: hot-seat badge names last year's target; soccer seat graded by table position; payroll line describes changes without sums that can't close"
+  },
+  {
+   "fp": "5a57481e58a5003c",
+   "from": "def0ccefc1bb331a",
+   "note": "Round 31 (Ian, Instinct, Muse, Grokbot): screens only, plus the year-two 'best season of your tenure' milestone dropped (checked field by field against HEAD): HOT SEAT badge short, standings columns and zones, bracket at 0-0, cup penalties line, headlines without the same-result clause, season list, head-to-head line, start bar."
   }
  ],
  "result": {
@@ -338,7 +343,7 @@
     "heis": "b16fc23e36f51661",
     "history": "1459d4a8cb778661",
     "universe": "0ec4ea15858bab2c",
-    "screens": "14546a4cbb20051e"
+    "screens": "8d8b5b9d9e7c52dc"
    },
    {
     "year": 2027,
@@ -348,9 +353,9 @@
     "rec": "ec5c5eefee5cfab1",
     "poll": "5d502e6cb859a7cc",
     "heis": "ea2576ca68b5bb59",
-    "history": "f5b6a18613a4db55",
+    "history": "f77daaadc37b2b54",
     "universe": "99077913a3e8927b",
-    "screens": "5f531a366a793e51"
+    "screens": "eca6128952cce88e"
    },
    {
     "year": 2028,
@@ -362,7 +367,7 @@
     "heis": "75ac82ec63ebc2c9",
     "history": "aeffdf8e7f58342b",
     "universe": "285fd2092d05d639",
-    "screens": "1bd82b4720955843"
+    "screens": "2902d733ca0b4c83"
    },
    {
     "year": 2029,
@@ -374,7 +379,7 @@
     "heis": "40d8a8b83f6227de",
     "history": "5057c2b25254beae",
     "universe": "9e85fa9c19540e9e",
-    "screens": "fd6654657cef8e00"
+    "screens": "47c42dcf56475e14"
    }
   ],
   "Rice#2024": [
@@ -388,7 +393,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "fda2310ee12ebd95",
     "universe": "dc01e05deac1336b",
-    "screens": "66ade6a1fd85beb2"
+    "screens": "89fd3f73135ac4bd"
    },
    {
     "year": 2027,
@@ -400,7 +405,7 @@
     "heis": "00c30658a131e69b",
     "history": "1366becdf24a1373",
     "universe": "e5ad96887551b511",
-    "screens": "0cb4c04e1dc70208"
+    "screens": "e144bebd0ff7211b"
    },
    {
     "year": 2028,
@@ -412,7 +417,7 @@
     "heis": "199badc9945a6fb1",
     "history": "e2ec1240de3bf2a6",
     "universe": "69cfcb2cac6f6097",
-    "screens": "3d99973062148547"
+    "screens": "7c393a3e2be72803"
    },
    {
     "year": 2029,
@@ -424,7 +429,7 @@
     "heis": "7bdcb6abc58aeffc",
     "history": "d943ce3dfa7a6dd7",
     "universe": "44689dc558826c0d",
-    "screens": "297effccf726efe8"
+    "screens": "05141b6eeaa200b2"
    }
   ],
   "Oregon#777": [
@@ -438,7 +443,7 @@
     "heis": "8262a1c51666f45f",
     "history": "f0156481cf34731a",
     "universe": "90a5328a03bb2a2e",
-    "screens": "11b2aa8ccecd15ad"
+    "screens": "0949e1d54915d249"
    },
    {
     "year": 2027,
@@ -450,7 +455,7 @@
     "heis": "6e07ec24e943201a",
     "history": "eba5d05126b1da37",
     "universe": "1db894b0870a76bb",
-    "screens": "cff536fc0ee242ef"
+    "screens": "14dc5f116621ce2a"
    },
    {
     "year": 2028,
@@ -462,7 +467,7 @@
     "heis": "7edb9087b97ad609",
     "history": "c7459853b530b5c6",
     "universe": "37128ca4534c000a",
-    "screens": "baa8dc9689fbcb44"
+    "screens": "6eb56b9f0791457a"
    }
   ],
   "Kent State#31337": [
@@ -476,7 +481,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "339ec898a5a5b972",
     "universe": "ffb4b7f7593759fa",
-    "screens": "98e5db3a94bba493"
+    "screens": "7712eba6dde5fbe0"
    },
    {
     "year": 2027,
@@ -488,7 +493,7 @@
     "heis": "c407e7790dc93d7a",
     "history": "94efe6e8c2fe5a1f",
     "universe": "9129bf8e73367f37",
-    "screens": "f28ff2048144faa4"
+    "screens": "3ac12f83e4998711"
    },
    {
     "year": 2028,
@@ -500,7 +505,7 @@
     "heis": "8afb54588e2a90ba",
     "history": "4c868b5f0965ef30",
     "universe": "674a60bfff0bfc8c",
-    "screens": "c1d2b9dec49f3f91"
+    "screens": "1396c852428c19b9"
    }
   ],
   "schedules#60": [

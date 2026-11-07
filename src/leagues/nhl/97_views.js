@@ -82,7 +82,10 @@ function confBracket(sd){
   const col=(title,items)=>`<div class="bcol"><div class="bhead">${title}</div><div class="bgames">${items.join("")}</div></div>`;
   const ser=r=>(SEA.series[r]||[]).filter(x=>x.side===sd);
   const pad=(a,n)=>{const o=a.slice(); while(o.length<n)o.push(null); return o};
-  return `<div class="bracket">${col("First round",pad(ser("r1"),4).map(seriesBox))}${col("Second round",pad(ser("r2"),2).map(seriesBox))}${col("Conference final",pad(ser("r3"),1).map(seriesBox))}</div>`;
+  // at 0-0 the first round is known: drawn from the seeding (it filled in only after a game: Ian)
+  let r1=ser("r1");
+  if(!r1.length&&SEA.step>=LEAGUE.weeks){ SEA._seed(); r1=(SEA.bracket[sd]||[]).map(p=>({hi:p[0],lo:p[1],w:{}})) }
+  return `<div class="bracket">${col("First round",pad(r1,4).map(seriesBox))}${col("Second round",pad(ser("r2"),2).map(seriesBox))}${col("Conference final",pad(ser("r3"),1).map(seriesBox))}</div>`;
 }
 function nflBracket(){
   const my=S.myTeam, mine=SEA.mySeries(my), live=mine&&!mine.winner&&SEA.phase!=="done";

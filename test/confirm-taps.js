@@ -31,7 +31,9 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
       const cg=await p.$('#cgo'); if(cg){ await cg.click(); await p.waitForTimeout(400) }
       const pk=(await p.$$('.pick'))[4]; if(pk){ await pk.click(); await p.waitForTimeout(200);
         ok(!(await p.$('#rst')),`${f}: one tap on a team started the career (no second tap to confirm)`);
-        if(!(await p.$('#rst'))){ await pk.click({timeout:2000}).catch(()=>{}) } await p.waitForTimeout(900) }
+        if(process.env.DBG)console.log(await p.evaluate(()=>({sel:document.querySelectorAll('.pick.sel').length,bar:!!document.getElementById('pickbar'),armed:document.querySelectorAll('.armed').length,rst:!!document.getElementById('rst')})));
+        ok(/Start with/i.test((await p.$("#pickgo"))?await (await p.$('#pickgo')).innerText():""),`${f}: a tap on a team shows no "Start with" bar`);
+        const go=await p.$('#pickgo'); if(!(await p.$('#rst'))){ if(go)await go.click({timeout:2000}).catch(()=>{}); else await pk.click({timeout:2000}).catch(()=>{}) } await p.waitForTimeout(900) }
       ok(!!(await p.$('#rst')),`${f}: after Start over, a new career didn't begin (${errs[0]||'no error'})`);
       ok(!errs.length,`${f}: page errors after Start over: ${errs[0]}`);
       await p.evaluate(()=>localStorage.clear()); }
@@ -216,11 +218,14 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     const url='file://'+path.join(DIST,f); await p.goto(url); await p.waitForTimeout(500); await p.click('#qstart'); await p.waitForTimeout(900);
     const n=await p.evaluate(async()=>{ S.watchMode="never"; let g=0; while(SEA.phase!=="done"&&g++<5000)simAdvance(); await new Promise(r=>setTimeout(r,300)); openOffseason(); render(); return nflDraftClass(U,dnTeam()).list.length });
     ok(n>R*30,`${f}: draft class of ${n} in a browser`);
+    // selectors, not element handles: each tap re-renders the page, and a held handle can point at the old one
     const open=await p.$('[data-dnopen]'); ok(!!open,`${f}: no way into draft night`); if(!open){ await ctx.close(); continue }
-    await open.click(); await p.waitForTimeout(400);
-    const w=await p.$('[data-dnwork]'); ok(!!w===wk,`${f}: workouts ${w?"offered":"missing"}`); if(w){ await w.click(); await p.waitForTimeout(300) }
+    await p.click('[data-dnopen]'); await p.waitForSelector('[data-dnpick]',{timeout:5000}).catch(()=>{}); await p.waitForTimeout(300);
+    const wid=await p.$eval('[data-dnwork]',b=>b.dataset.dnwork).catch(()=>null); ok(!!wid===wk,`${f}: workouts ${wid?"offered":"missing"}`);
+    if(wid){ await p.click(`[data-dnwork="${wid}"]`); await p.waitForTimeout(400) }
     const d=await p.$('[data-dnpick]'); ok(!!d,`${f}: nothing to draft`);
-    if(d){ await d.click(); await p.waitForTimeout(150); await d.click(); await p.waitForTimeout(600) }
+    if(d){ const id=await d.getAttribute('data-dnpick'); await p.click(`[data-dnpick="${id}"]`); await p.waitForTimeout(150);
+      await p.click(`[data-dnpick="${id}"]`,{timeout:5000}).catch(e=>ok(false,`${f}: second tap on Draft: ${e.message.split('\n')[0]}`)); await p.waitForTimeout(600) }
     const st=await p.evaluate(async()=>{ await save(); return {hand:(S.off.picks.hand||[]).length,clock:(document.body.innerText.match(/PICK \d+ · #\d+/i)||[""])[0]} });
     ok(st.hand===1,`${f}: ${st.hand} picks recorded after one`);
     await p.waitForTimeout(400); await p.goto(url); await p.waitForTimeout(700); await p.click('[data-slot="1"]'); await p.waitForTimeout(1500);

@@ -46,6 +46,7 @@ const LEAGUE={
        doesn't: the ACC and Big Ten take 15 of 18, the Ivy League its top 4 */
     ctCap:{"ACC":15,"Big Ten":15,"Ivy League":4}},
   text:{
+    standingsNote:`<div class="note">Conference record, then overall. Amber marks the top four, who skip the first rounds of the conference tournament; below the line, a team misses it (twelve play).</div>`,
     rankedWin:["A ranked win. The committee will notice.","That one goes on the résumé.","A Quad 1 win, and they count."],
     badLoss:["That is the kind of loss that follows you to Selection Sunday.","An unranked team did that. The committee will remember.","One of those losses you have to explain in March."],
     champions:"National champions",

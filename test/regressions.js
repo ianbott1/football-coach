@@ -365,7 +365,7 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
   // round 28: 7 points is "a little", a plain line with the gap named, no headline (Muse: headlines for marginal calls)
   { const h=strip(A.impactHTML(P)); ok(!/imphead/.test(A.impactHTML(P))&&/a little better than the assistant's/.test(h),'college basketball: same-result headline ignores the replays') }
   const P2=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.12,cf:{mine:50,theirs:68}}]}];
-  ok(/A strong call, though tonight's dice gave the same result either way/.test(strip(A.impactHTML(P2))),'college basketball: a clear call gets no headline');
+  ok(/A strong call\./.test(strip(A.impactHTML(P2))),'college basketball: a clear call gets no headline');
   // and a call within 3 points of the assistant's gets no headline at all, one quiet line (Muse: "little difference" taught that nothing matters)
   const Q=[{mine:53,theirs:66,impact:[{h:'Half-time',pick:'Pack the paint',def:'Trap',worth:0.01,cf:{mine:53,theirs:66}}]}], q=A.impactHTML(Q);
   ok(!/imphead/.test(q)&&/close either way/.test(strip(q)),'college basketball: a close call still headlined'); }
@@ -459,9 +459,9 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   api.view('team'); const t2=strip(global.__nodes.app.innerHTML); ok(!new RegExp(api.S.career.name+' is your new head coach').test(t2),'college football: your own move reads as someone else taking the job') }
 
 /* 69. soccer: the board warns before it fires you, and a hot seat names the target you missed (Grokbot: Secure to fired) */
-{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['seatBadge'])}); A.newDynasty('Queens Park Rangers',3,'T'); let fired=0, lastEnd='', named=0, hot=0;
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['seatBadge','objectivesHTML'])}); A.newDynasty('Queens Park Rangers',3,'T'); let fired=0, lastEnd='', named=0, hot=0;
   for(let y=0;y<3;y++){ let g=0; while(A.SEA.phase!=='done'&&g++<2000)A.SEA.advance(); lastEnd=strip(A.seatBadge());
-    if(/HOT SEAT/.test(lastEnd)){ hot++; if(/target \(/.test(lastEnd))named++ }
+    if(/HOT SEAT/.test(lastEnd)){ hot++; if(/target \(/.test(A.seatBadge())&&lastEnd.trim()==="HOT SEAT")named++ }   // round 31: just HOT SEAT on the badge (Ian); the reason, target named, on hover and in the objectives
     A.openOffseason(); if(A.S.off.act.userOpen){ fired++; break } for(let c=0;c<6&&A.S.off;c++)A.commitOffseason() }
   ok(fired&&!/Secure/.test(lastEnd),`soccer: fired ${fired} times, badge before it read "${lastEnd}"`); ok(hot&&named===hot,`soccer: ${named} of ${hot} hot-seat badges name the target`) }
 /* 70. soccer: the summer payroll line names what changed and never shows sums that can't close (Grokbot: £10.9M against £10.5M) */

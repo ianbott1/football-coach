@@ -121,6 +121,41 @@ minutes (about 1 game in 10; worth 12-17 points, as much as the
 intermission read, 13); soccer at 15 or 20 minutes (rare). The 25'/first
 intermission read is then skipped for that side.
 
+Round 31 (Ian; Instinct round 10; Muse round 15; Grokbot):
+- HOT SEAT is just that on the badge (the reason ran it over the coach's
+  name at 390px); the reason, target named, is on hover and heads the
+  board's objectives (seatWhy). The coach line says "coaching solid" so it
+  isn't read with "Secure" as one verdict.
+- Standings take a league's own columns and zones (LEAGUE.ui.standingsCols,
+  standingsZone, standingsCut): soccer shows goal difference and the zone
+  edges with a key; college basketball marks the top four (byes) and draws
+  the line after twelve (the conference tournament), not after two.
+- Playoff brackets show the first round at 0-0 (hockey, pro basketball:
+  seeded at the regular season's end, as the clinch marks already did).
+- Injuries on badges in games where a step is a game day; a level cup tie
+  says "Won on penalties"; soccer's job list shows next season's division.
+- Post-game card: no "though tonight's dice gave the same result either way"
+  (on a win it read as "your win didn't count"); the season recap names only
+  graded calls as best or costliest, with a why line; the season tally says
+  what it counts.
+- Head to head: your record against any opponent you've coached against
+  (S.h2h, banked when a season is written; this season counted live), on
+  the next-game card when there's no rivalry series. Starts from now.
+- "Your seasons" lists every finished season from the first (one row each);
+  coaching stops stay one row per job.
+- Staff text: the real gap ("three down", "three up"), Pearl's "same as I
+  said before" only when she gave that advice before, soccer cues in the
+  third person ("{t} press high; {o} can't play out").
+- Football late calls before the fourth give the quarter's clock.
+- Team picker: tap a team, then "Start with X" in a bar (or tap it again):
+  "Tap again to start" wrapped a word to a line and looked dead.
+- Draft night: the legend reads as a legend; a worked-out prospect shows his
+  read before and after.
+- The year-two "best season of your tenure" milestone is gone (only beats
+  year one); it was the only change to history (control build matched).
+- test/golden.js HISTORY_OUT=file writes each season's history entry;
+  confirm-taps clicks by selector on draft night (held handles went stale).
+
 Round 30: draft night (pro football, pro basketball, hockey; core/91_draftnight.js):
 - The draft is drawn on its own dice (draftRng) from the rosters as the season
   ended, so it can be shown pick by pick before the summer runs; the drafted

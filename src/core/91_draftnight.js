@@ -175,7 +175,7 @@ function dnRowHTML(p,t,label,canPick){
   const x=dnRead(p.pid,t), wk=S.off.picks.workouts||[];
   return `<div class="drow dnrow">
     <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${label||""}${x.wk?` <span class="dthere">worked out</span>`:x.unsure?` <span class="dmaybe">scouts unsure</span>`:""}</div>
-      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${x.sr}, ceiling ~${x.spot} &middot; ${dnFit(p,t)}</div></div>
+      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`} &middot; ${dnFit(p,t)}</div></div>
     ${!x.wk&&wk.length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
     ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}">Draft</button>`:""}</div>`;
 }
@@ -194,7 +194,7 @@ function draftNightHTML(){
   if(since.length){ const SHOW=6, old=since.slice(0,-SHOW), now=since.slice(-SHOW), step=Math.min(220,1800/now.length);
     tk=`<div class="grouphead">${last?"Since your last pick":"The picks before yours"}</div>`
       +(old.length?`<details class="dnfold"><summary>${nOf(old.length,"earlier pick")}</summary>${old.map(d=>tick(d,0,null)).join("")}</details>`:"")
-      +now.map((d,i)=>tick(d,i,step)).join("")+`<div class="note">Your scouts' read: now ~ / ceiling ~.</div>` }
+      +now.map((d,i)=>tick(d,i,step)).join("")+`<div class="note">Beside each name: your scouts' read of him now, then his ceiling.</div>` }
   if(D.stop){
     const s=D.stop, avail=D.prospects.filter(p=>!p.taken).map(p=>Object.assign({},p,{v:dnVal(dnRead(p.pid,t))})).sort((a,b)=>b.v-a.v);
     const ahead=s.next?s.next-s.overall-1:0, gone=dnMock(avail,ahead,(U.seed||0)*2246822519^SEA.year*31337^s.overall);
@@ -202,7 +202,7 @@ function draftNightHTML(){
     const sug=D.prospects.find(p=>p.pid===s.suggest), fromBoard=board.has(s.suggest);
     h+=`<div class="banner"><div class="bkick">Round ${s.round}, pick ${s.pick} &middot; #${s.overall} overall</div>
       <div class="btitle">You're on the clock.</div>
-      <div class="bsub">${s.next?`Your next pick is #${s.next}.`:"Your last pick of the draft."} ${wk.length<dnWorkouts()?`${nOf(dnWorkouts()-wk.length,"private workout")} left: each gives you a much sharper read on one player, worth most where your scouts are unsure.`:dnWorkouts()?"Workouts used.":""}</div></div>`+tk;
+      <div class="bsub">${s.next?`Your next pick is #${s.next}.`:"Your last pick of the draft."} ${wk.length<dnWorkouts()?`${nOf(dnWorkouts()-wk.length,"private workout")} left. A workout brings one player in for a closer look: your read on him gets much sharper, and the row shows what changed. Worth most on players marked "scouts unsure".`:dnWorkouts()?"Workouts used.":""}</div></div>`+tk;
     h+=`<div class="grouphead">${fromBoard?"Top of your board":"Your staff's pick"}</div>`+dnRowHTML(sug,t,lab(sug),true)
       +`<button class="skip" data-dnstaff="1">${fromBoard?"Take the top of my board":"Let my staff make this pick"}</button>`;
     h+=`<div class="grouphead">Best available, by your scouts</div>`+avail.filter(p=>p.pid!==s.suggest).slice(0,24).map(p=>dnRowHTML(p,t,lab(p),true)).join("");

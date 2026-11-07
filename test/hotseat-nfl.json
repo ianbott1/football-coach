@@ -1,5 +1,5 @@
 {
- "fp": "8a5be8bf3a5307f8",
+ "fp": "f2f95699ebab33ab",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -220,6 +220,11 @@
    "fp": "8a5be8bf3a5307f8",
    "from": "c3ccb30add1b5890",
    "note": "Round 30, draft night: the draft is drawn on its own dice from end-of-season rosters (control: the same code on the old dice and timing reproduced the old fingerprints exactly), with a reshaped class (stars, busts, hard-to-read prospects; football milder) and staff picks from your scouts' reads. History checks pass (NBA 194 seasons, NHL 154); NFL favourites .656."
+  },
+  {
+   "fp": "f2f95699ebab33ab",
+   "from": "8a5be8bf3a5307f8",
+   "note": "Round 31: the year-two 'best season of your tenure' milestone dropped (control build with only that line restored matches the old fingerprint)"
   }
  ],
  "out": [
@@ -256,7 +261,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "89bf3269610132da"
+     "book": "c6d0e098b57bc176"
     },
     {
      "team": "Tennessee",
@@ -265,7 +270,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "b2f13bab75dab665"
+     "book": "7e6b55518d970ec4"
     }
    ]
   },
@@ -279,7 +284,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "b9ad4a62b1cb0102"
+     "book": "43314a5850e39fd5"
     },
     {
      "team": "Tennessee",
@@ -288,7 +293,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "b042a46ee437ef93"
+     "book": "48c26e4a39aac458"
     }
    ]
   }
