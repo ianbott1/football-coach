@@ -11,7 +11,8 @@ function hkPlayer(team,unit,u){
   const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // an injured player is not on the ice (Grokbot: "out 91+ game days" took a penalty)
   const pick=(b&&(u%10)<3)||!p?b:p; return pick?pick.n:null;
 }
-const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+// a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
+const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 function hkSkater(team,u){
   const x=u%100, unit=x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2";
   return hkPlayer(team,unit,u)||"a forward";

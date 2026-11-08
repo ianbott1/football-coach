@@ -1,5 +1,5 @@
 {
- "fp": "7e3ef5d4de21147d",
+ "fp": "4001e9029615a10e",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -315,6 +315,11 @@
    "fp": "7e3ef5d4de21147d",
    "from": "097659601dd12a12",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "4001e9029615a10e",
+   "from": "7e3ef5d4de21147d",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
   }
  ],
  "result": {
@@ -341,7 +346,7 @@
     "heis": "b830afaf2198eb7c",
     "history": "3946d21483ab45a7",
     "universe": "cbeef80ac54627a8",
-    "screens": "60277ff53a11604c"
+    "screens": "405d29040a1bb12f"
    }
   ],
   "Edmonton#777": [
@@ -367,7 +372,7 @@
     "heis": "66c1bed55d00c7f8",
     "history": "415f550a601de074",
     "universe": "b580599d755c6712",
-    "screens": "0637b000fbf2bdf8"
+    "screens": "b0ca68988d115b22"
    }
   ],
   "schedules#60": [

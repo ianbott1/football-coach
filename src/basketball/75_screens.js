@@ -13,7 +13,8 @@ function bbPlayer(team,i,u){
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
   let best=-1; for(let i=0;i<5;i++)if(R[i]&&!hurt.has(i)&&(best<0||R[i].r>R[best].r))best=i; return best>=0?R[best].n:"his star" }
-const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+// a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
+const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 const ordw=n=>["","first","second","third","fourth","fifth","sixth"][n]||n+"th";
 const BB_CUE={
   threes:["{t} letting it fly from deep again","Another kick-out three for {t}","{t} spacing the floor and hunting threes"],

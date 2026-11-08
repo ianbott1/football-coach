@@ -358,6 +358,37 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 42: the save loss, and the joins (Muse, Instinct):
+- The save loss (Muse: six careers gone after "changed in another tab", Reload,
+  three empty slots). Reproduced: every career in all six games shares one
+  site's storage (~5.2M characters in Chromium). store.local() tested
+  storage with a write before every read; with storage full the write failed,
+  so every read came back empty. The save check read the revision as 0 (a
+  false "another tab" banner), and after Reload every slot read empty over
+  careers still stored, where a new career could overwrite one. Now reads
+  never write (store.writable() for the rare check), a revision read that
+  fails is not "another tab", a failed save shows a banner at once with a
+  backup button (saveFail), and the offseason asks once a season to download
+  a backup (backupNagHTML, S.backedUp). test/storage-full.js (browser): with
+  storage full a save that fits lands with no banner, one that can't is
+  said at once, and after a reload slot 1 still holds the career.
+- Phone endings: a game finished on a narrow screen lands on the Team view,
+  where its result card is (finishLive, doAdvance); narrowing the window with
+  a result showing does the same (Instinct: a playoff win showed only the
+  bracket).
+- State text at the transitions: pro playoff clauses read the standings
+  before the seeding (a 71-11 first seed read "Missed the playoffs" for a
+  screen); college basketball's conference-tournament loss before Selection
+  Sunday reads "Out of the SEC Tournament. Selection Sunday decides the rest"
+  (not "Season over"); the seat badge in a postseason grades the wins you have
+  and the run so far, not a regular-season pace (a Final Four team read
+  "Under pressure").
+- Football's "wait and see" is graded as in the other four games; football
+  call verdicts no longer repeat their headline; shared surnames get initials
+  (hockey lines, play-by-play in hockey, soccer, basketball); "an 18-point".
+- Results unchanged: every golden result field and the hot seat match round
+  41; screens only.
+
 Round 41: the season story (core/95_story.js; Muse's ideas, Instinct's "make the peak a peak"):
 - Kept per coach (COACH_FIELDS film, lifeCalls, storyYr, rivals), written only
   from games already played; none of it moves a game. recordStory after each

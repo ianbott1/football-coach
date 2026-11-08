@@ -1,5 +1,5 @@
 {
- "fp": "d35f45492c825c0e",
+ "fp": "5a733fa5c22ed926",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -380,6 +380,11 @@
    "fp": "d35f45492c825c0e",
    "from": "fdf5061f10aff9d6",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "5a733fa5c22ed926",
+   "from": "d35f45492c825c0e",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
   }
  ],
  "result": {
@@ -394,7 +399,7 @@
     "heis": "670a76a021cec655",
     "history": "3062cb7dfdfb043d",
     "universe": "95bda48214ee22f0",
-    "screens": "9315002898d150ae"
+    "screens": "c9bbdba81b99e279"
    },
    {
     "year": 2027,
@@ -406,7 +411,7 @@
     "heis": "253aadbe8f72a789",
     "history": "3bd1c8a8aace3e0e",
     "universe": "31fcc7610889cea2",
-    "screens": "4981283879dbfab9"
+    "screens": "39bec809c544d417"
    },
    {
     "year": 2028,
@@ -418,7 +423,7 @@
     "heis": "ac097ca4a4e99fc7",
     "history": "d8a63f7a7e0200f9",
     "universe": "09daf2cc24d7e86a",
-    "screens": "bb9f1b4c09defdc1"
+    "screens": "24a15ecc413304e8"
    },
    {
     "year": 2029,
@@ -430,7 +435,7 @@
     "heis": "0c0a3176e1909d12",
     "history": "21919d4c9c8cb923",
     "universe": "4bd83ead04b32e13",
-    "screens": "5128d63ae078e130"
+    "screens": "164f6bdcbbd582c2"
    }
   ],
   "Tennessee#2024": [
@@ -444,7 +449,7 @@
     "heis": "67e2ce854ab18892",
     "history": "04d3701ba497b1a9",
     "universe": "3c5575ae250a8c0c",
-    "screens": "0c2ae46014d4d446"
+    "screens": "668fb55172868c4b"
    },
    {
     "year": 2027,
@@ -456,7 +461,7 @@
     "heis": "1a633218667af09d",
     "history": "0ae73a065ac44cf9",
     "universe": "0621d254a6dcbe86",
-    "screens": "048fd332b9a15ac2"
+    "screens": "885d71a5776af08e"
    },
    {
     "year": 2028,
@@ -468,7 +473,7 @@
     "heis": "1f92c21e4dbf838c",
     "history": "54648c04a799d9a0",
     "universe": "4a230f0078b24554",
-    "screens": "1fdbfec2194e577e"
+    "screens": "f17ac0b70f66d9ba"
    },
    {
     "year": 2029,
@@ -480,7 +485,7 @@
     "heis": "ecb7260203e1c48f",
     "history": "8a9266dcce59b6c3",
     "universe": "7aef8a94906b33c3",
-    "screens": "d86692b940ba9984"
+    "screens": "c81a3062299fa92d"
    }
   ],
   "Detroit#777": [
@@ -494,7 +499,7 @@
     "heis": "0770ae2b3bc19efd",
     "history": "27216ca3ca336ca4",
     "universe": "0b2e1d50c346ba57",
-    "screens": "0b167e745fae44dc"
+    "screens": "40ec230fa9f686c8"
    },
    {
     "year": 2027,
@@ -506,7 +511,7 @@
     "heis": "ebd2f4950860ced3",
     "history": "f847fc13c1a4bf5c",
     "universe": "a1aeee7794052be1",
-    "screens": "911f05cdd74d865b"
+    "screens": "e3a417ae6c803399"
    },
    {
     "year": 2028,
@@ -518,7 +523,7 @@
     "heis": "f79e945504a4c29d",
     "history": "b7ce3f28834fb46d",
     "universe": "897454a4f4515a9f",
-    "screens": "f9f14536c55c187b"
+    "screens": "bf6d06f5440e329d"
    }
   ],
   "NY Giants#31337": [
@@ -532,7 +537,7 @@
     "heis": "4f09ca965ac0efc5",
     "history": "be38c2bd286b5404",
     "universe": "001ddeccf38d48ef",
-    "screens": "ffb8b7ae79cc9328"
+    "screens": "155dff38cd1a37e6"
    },
    {
     "year": 2027,
@@ -544,7 +549,7 @@
     "heis": "a5b9878ee2e3e524",
     "history": "4acdb15c08faa338",
     "universe": "b0ee6f47700a40e4",
-    "screens": "6c9a47b38ab4eb40"
+    "screens": "279b022cf5688bc5"
    },
    {
     "year": 2028,
@@ -556,7 +561,7 @@
     "heis": "e5ec84b71af28cca",
     "history": "2ca3eacf79e295e5",
     "universe": "a8346c8f5360dbdc",
-    "screens": "1e7ec9c6a0b864ff"
+    "screens": "9c0ef00bc544a47a"
    }
   ],
   "schedules#60": [

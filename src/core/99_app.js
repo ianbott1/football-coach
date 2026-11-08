@@ -266,6 +266,9 @@ function resolveWeek(step){
   skipCupNight();
   if(isHotSeat())plan="balanced";               // one coach: your gameplan stays as you set it
   flash={type:wasPost?"post":"week",step:step,cup:wasCup};     // a live playoff game gets its result card too
+  // on a phone the result card is on the Team view: a game finished from Scores showed only the bracket (Instinct,
+  // round 42: "a playoff win without an ending")
+  if(!isWide())view="team";
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   save(); render();
 }
@@ -453,13 +456,22 @@ let savePending=null;
    six games gone), which testers saw as careers "coming back" after an
    erase, title summaries a season behind, and a playoff series that changed
    on reload. Now the older tab stops saving and says so. */
-let saveRev=null, staleTab=false;
+let saveRev=null, staleTab=false, saveFail=false;
 const REVKEY=n=>KEYFOR(n)+"-rev";
-async function readRev(n){ try{ const r=await store.get(REVKEY(n)); return r?(+r.value||0):0 }catch(e){ return 0 } }
+async function readRev(n){ try{ const r=await store.get(REVKEY(n)); return r?(+r.value||0):0 }catch(e){ return null } }
 async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
-function staleTabHTML(){ return staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
-  <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"" }
+/* a save that didn't land is said at once, not only on the way out: the browser's storage for these six games is
+   full (every career, every game, one allowance) or blocked */
+function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does).":"This browser's storage for these games is full: every career in all six games shares one allowance."} Download a backup now so nothing is lost, then erase a career you don't need from the title screen.
+  <button class="skip small" id="savefailbk">Download a backup</button></div>`:"" }
+/* once a season, as it's banked: a career lives only in this browser; a file keeps it safe (Muse: "nothing ever
+   points at" the backup) */
+function backupNagHTML(){ if(!S||!S.myTeam||S.h2h||S.backedUp===SEA.year||(S.history||[]).length<1)return "";
+  return `<div class="bknag"><b>Season banked.</b> Your career lives in this browser's storage, which can be cleared or fill up. A backup file keeps it safe.
+    <span class="bkbtns"><button class="skip small" id="offbk">Download a backup</button><button class="skip small" id="offbkno">Not now</button></span></div>` }
+function staleTabHTML(){ return saveFailHTML()+(staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
+  <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"") }
 function save(){
   if(savePending)return savePending;
   savePending=(async()=>{
@@ -473,12 +485,13 @@ function save(){
     if(!S||!S.myTeam)return false;
     if(staleTab)return false;
     if(saveRev!==null&&S.myTeam){ const cur=await readRev(slot);
-      if(cur!==saveRev){ staleTab=true; render(); return false } }
+      if(cur!==null&&cur!==saveRev){ staleTab=true; render(); return false } }
     S.league=LEAGUE.id;                                   // every save says which game it's from
     if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0),done:SEA.phase==="done",
       w:SEA.rec[S.myTeam][0],l:SEA.rec[S.myTeam][1],d:(SEA.drw&&SEA.drw[S.myTeam])||0,banked:!!(S.off&&S.off.year===SEA.year)};
   try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
     if(saveOK&&S.myTeam)saveRev=await bumpRev(slot);
+    if(saveFail!==!saveOK){ saveFail=!saveOK; render() }
     return saveOK;
   })();
   return savePending;
@@ -782,6 +795,7 @@ function doAdvance(){
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   LEAGUE.ui.afterAdvance(ph);
   flash={type:SEA.phase==="week"||before<LEAGUE.weeks?"week":"post",step:before,cup:wasCup};
+  if(!isWide()&&heroGame())view="team";              // your result first, on a phone too (round 42)
   const g=heroGame();
   const rk=SEA.poll.rankMap();
   if(g&&!prefersReduced()&&(S.watchMode||"all")==="never"){
@@ -1174,6 +1188,9 @@ function heroResult(){
         :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
+    // a conference tournament loss before Selection Sunday isn't the end of the season (Instinct, round 42)
+    else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&!(SEA.field&&SEA.field.length)&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)))
+      move=`<div class="hmove dn">Out of the ${esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/Tournament Tournament/,"Tournament"))}. Selection Sunday decides the rest.</div>`;
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   const cupRes=LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(Object.assign({week:flash&&flash.step},g),my):null;   // a league's own line (the NBA Cup's group games, league games too)
@@ -1251,7 +1268,7 @@ function readsHTML(step){
   // a read goes by its own headline, the name it had on screen and in the line above ("First intermission" up top
   // and "First read" below read as two calls: round 39); the scouting report by that name
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
-    if(k!=="prep"&&k!=="rest"&&x.h)return String(x.h).replace(/<[^>]+>/g,"");
+    if(k!=="prep"&&k!=="rest"&&k!=="call"&&x.h)return String(x.h).replace(/<[^>]+>/g,"");
     return k==="prep"?"Scouting report":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
@@ -1470,7 +1487,11 @@ function seatBadge(){
     // college basketball's second year, with no warning all season that missing the tournament would cost the job)
     let res="";
     if(LEAGUE.ui.projectedField&&SEA.phase==="week"&&w+l>=6){ try{ const f=LEAGUE.ui.projectedField(); if(f&&f.length&&f.indexOf(my)<0)res="Projected outside the field" }catch(e){} }
-    g=seasonGrade(paceW,games-paceW,res,exp) }
+    // in the postseason: the wins you have and the run so far, not a pace scaled to the regular season (a Final Four
+    // team read "Under pressure: behind target" beside "24 wins reached ... Sweet 16: done": Instinct, round 42)
+    if(SEA.phase!=="week"&&typeof SEA.seasonResult==="function"){ let r2=""; try{ r2=SEA.seasonResult(my)||"" }catch(e){}
+      g=seasonGrade(w,l,r2,exp) }
+    else g=seasonGrade(paceW,games-paceW,res,exp) }
   if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
   return `<span class="seat cool">Secure</span>`;
 }
@@ -3020,7 +3041,7 @@ function render(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?LEAGUE.ui.offseasonScreen():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
       (view==="team"?myTeamView():view==="scores"?scoresView():
@@ -3056,6 +3077,9 @@ function render(){
   const cb=el("cback"); if(cb)cb.onclick=()=>{dynCoach=null;render()};
   const scf=el("stconf"); if(scf)scf.onchange=()=>{stConf=scf.value||null; render()};
   const sg=el("stalego"); if(sg)sg.onclick=()=>{ try{location.reload()}catch(e){} };
+  const sfb=el("savefailbk"); if(sfb)sfb.onclick=()=>downloadBackup();
+  const obk=el("offbk"); if(obk)obk.onclick=()=>{ save(); downloadBackup(); S.backedUp=SEA.year; save(); render() };
+  const obn=el("offbkno"); if(obn)obn.onclick=()=>{ S.backedUp=SEA.year; save(); render() };
   const cf=el("cfind"); if(cf)cf.oninput=()=>{coachQ=cf.value;
     const p=cf.selectionStart; render();
     const n=el("cfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
@@ -3534,6 +3558,8 @@ function renderStart(){
 
 window.addEventListener("resize",()=>{
   const w=isWide();
+  // narrowing with a result showing: the card goes where a phone shows it, not away with the side column
+  if(w!==wide&&!w&&S.myTeam&&flash&&(flash.type==="week"||flash.type==="post"))view="team";
   if(w!==wide&&S.myTeam)render();
 });
 window.addEventListener("keydown",e=>{

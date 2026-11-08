@@ -1,5 +1,5 @@
 {
- "fp": "db8479a1f8998aa8",
+ "fp": "cc428039ceeee80d",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -350,6 +350,11 @@
    "fp": "db8479a1f8998aa8",
    "from": "69787889adb19f84",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "cc428039ceeee80d",
+   "from": "db8479a1f8998aa8",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
   }
  ],
  "result": {
@@ -364,7 +369,7 @@
     "heis": "f0ca3896b10da2b9",
     "history": "32a7832ebb18996e",
     "universe": "31d6d45e447330c2",
-    "screens": "a14d0af5a9e66f7e"
+    "screens": "25be89cc7da53439"
    },
    {
     "year": 2027,
@@ -376,7 +381,7 @@
     "heis": "bdc76644c22f567f",
     "history": "246464a1010cde3f",
     "universe": "0a12db6e408b32c3",
-    "screens": "4962732bb488face"
+    "screens": "520edb439e14c2f7"
    }
   ],
   "Coppin State#2024": [
@@ -402,7 +407,7 @@
     "heis": "dc41c7de51860732",
     "history": "25de26b8b49c7474",
     "universe": "c19ffe75f931ec9f",
-    "screens": "522e144e327bc4b1"
+    "screens": "d478c423b5b1914f"
    }
   ],
   "Gonzaga#777": [
@@ -428,7 +433,7 @@
     "heis": "fdd43efdedcfd2df",
     "history": "8f23d8c8613f6d54",
     "universe": "a20ae7d0ba92beaf",
-    "screens": "f3c9a3ae0a50fb9c"
+    "screens": "33e8a77f3c5399d0"
    }
   ],
   "schedules#60": [

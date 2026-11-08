@@ -11,7 +11,8 @@ function scPlayer(team,unit,u){
   // the bench gets a game now and then (rotation, a knock)
   const pick=(b&&(u%10)<2)?b:p; return pick?pick.n:null;
 }
-const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+// a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
+const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 function scScorer(team,u){
   // who scores: strikers most, then wingers, midfield, defenders off set pieces
   const x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";

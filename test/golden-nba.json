@@ -1,5 +1,5 @@
 {
- "fp": "108475f22c508ec3",
+ "fp": "93e53770c1bc28a8",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -300,6 +300,11 @@
    "fp": "108475f22c508ec3",
    "from": "4fb5f7d1df7f9ab8",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "93e53770c1bc28a8",
+   "from": "108475f22c508ec3",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
   }
  ],
  "result": {
@@ -314,7 +319,7 @@
     "heis": "697586c737d37fb5",
     "history": "25202b98f0010d42",
     "universe": "6611130f4fa6d5f2",
-    "screens": "e43aeda4152fee4c"
+    "screens": "0c68093556fffdb9"
    },
    {
     "year": 2027,
@@ -326,7 +331,7 @@
     "heis": "94fe75332c789ee2",
     "history": "39c1302454d5f99a",
     "universe": "1b14001d5ad2dca4",
-    "screens": "5fe0c979b05ffcce"
+    "screens": "0a96cc8538de228f"
    }
   ],
   "Detroit#777": [
@@ -352,7 +357,7 @@
     "heis": "c575db3df784470e",
     "history": "da150eb671a5c81e",
     "universe": "116ba6e8be23c28f",
-    "screens": "157a7eaf5ebf96e3"
+    "screens": "09d55df573db2714"
    }
   ],
   "schedules#60": [

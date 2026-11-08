@@ -116,7 +116,7 @@ function filmRoomHTML(){
 function storyRowLine(st){
   if(!st)return ""; const out=[];
   if(st.cb)out.push(`came back from ${st.cb.by} down ${st.cb.ha} ${esc(st.cb.opp)}${st.cb.wk?" ("+esc(st.cb.wk)+")":""}`);
-  if(st.cl)out.push(`let a ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
+  if(st.cl)out.push(`let ${/^(8|11|18)$|^8\d$/.test(String(st.cl.by))?"an":"a"} ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
   return out.length?`<div class="ystory">${out.join(" &middot; ")}</div>`:"";
 }
 

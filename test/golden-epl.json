@@ -1,5 +1,5 @@
 {
- "fp": "1bb1f46e223b6064",
+ "fp": "08885e675d1f4efb",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -315,6 +315,11 @@
    "fp": "1bb1f46e223b6064",
    "from": "2009aa4a67d49fd2",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "08885e675d1f4efb",
+   "from": "1bb1f46e223b6064",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
   }
  ],
  "result": {
@@ -341,7 +346,7 @@
     "heis": "da43777df1878195",
     "history": "ff3d108c5857fe44",
     "universe": "e7c5a46daa7493c2",
-    "screens": "e4853b6eadaa3b7b"
+    "screens": "7a052dd546e7fedf"
    }
   ],
   "Wrexham#777": [
@@ -367,7 +372,7 @@
     "heis": "479842095efd22f5",
     "history": "45138f63f8182552",
     "universe": "60b1fa1330c45ffb",
-    "screens": "52ee8368975887fb"
+    "screens": "e8f417c5fd44db7b"
    }
   ],
   "schedules#60": [

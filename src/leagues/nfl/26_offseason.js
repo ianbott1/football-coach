@@ -436,7 +436,8 @@ LEAGUE.goals={
   clauseLine(e,my){
     const sea=SEA, div=sea.champs&&Object.keys(sea.champs).some(d=>sea.champs[d]===my);
     const pw=["wc","div","conf","sb"].reduce((n,r)=>n+((sea.rounds&&sea.rounds[r])||[]).filter(g=>g.winner===my).length,0);
-    const inP=!!(sea.seeds&&sea.seeds[my]), out=["wc","div","conf","sb"].some(r=>((sea.rounds&&sea.rounds[r])||[]).some(g=>g.loser===my));
+    const sn=sea.phase!=="week"&&!(sea.field&&sea.field.length)&&typeof sea.seedsNow==="function"?sea.seedsNow():null;   // not seeded yet (round 42)
+    const inP=!!(sea.seeds&&sea.seeds[my])||!!(sn&&Object.values(sn).some(a=>a.indexOf(my)>=0)), out=["wc","div","conf","sb"].some(r=>((sea.rounds&&sea.rounds[r])||[]).some(g=>g.loser===my));
     if(e.t==="CONTEND"){ const a=div?"Division won: done.":(sea.phase==="week"?"Still to do: win the division.":"Didn't win the division.");
       const b=pw>=1?"A playoff win: done.":out||(sea.phase!=="week"&&!inP)?"No playoff win.":"Still to do: a playoff win.";
       return a+" "+b }

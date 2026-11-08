@@ -273,9 +273,12 @@ function callVerdicts(args,seed,answers,meHome){
    often" above "wins clearly more often", 3 points "better call" and 7 "a little": Grokbot, Muse) */
 const GAP_SAME=3, GAP_CLEAR=7;
 function gapWord(d){ const a=Math.abs(d); return a<=GAP_SAME?"same":a<=GAP_CLEAR?"little":"clear" }
-function readPickLabel(e){ return e.k==="call"||e.k==="rest"?"":(FB_ANSWERS[e.pick]?FB_ANSWERS[e.pick].l:"") }
+function readPickLabel(e){ if(e.waited)return "Wait and see"; return e.k==="call"||e.k==="rest"?"":(FB_ANSWERS[e.pick]?FB_ANSWERS[e.pick].l:"") }
 function readText(e){
   if(e.k==="rest")return e.pick==="rest"?"You rested your starters: the backups ran the clock out, and the snaps they sat can't hurt them (half the chance of a knock this week).":"You kept your starters in until it was safe.";
+  if(e.waited){ const t=SCHEMES[e.truth];
+    return e.unclear?`You waited and saw: the report was split, so there was nothing to set up for. They were ${t.l}.`
+      :e.right?`You waited, and it paid: the report pointed to ${SCHEMES[e.fav].l}, and they were ${t.l}.`:`You waited, and it cost you: the report was right, they were ${t.l}.` }
   if(e.k==="read"||e.k==="prep"){ const t=SCHEMES[e.truth], a=FB_ANSWERS[t.counter].l;
     if(e.k==="prep"&&e.unclear)return `The report was split, a coin flip, so it isn't graded either way. They were ${t.l}.`;
     return e.right?(e.k==="prep"?`Your game plan was right: they were ${t.l}.`:`Your read was right: they were ${t.l}.`)

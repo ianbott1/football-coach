@@ -1,5 +1,5 @@
 {
- "fp": "87ba16d64aac85f3",
+ "fp": "39b3677e4c28da46",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -379,6 +379,11 @@
    "fp": "87ba16d64aac85f3",
    "from": "1ebe94e34861fb45",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "39b3677e4c28da46",
+   "from": "87ba16d64aac85f3",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
   }
  ],
  "result": {
@@ -393,7 +398,7 @@
     "heis": "b16fc23e36f51661",
     "history": "dd39dc7133ff2d7b",
     "universe": "bad6549d217939a7",
-    "screens": "7cbb28797bb18e38"
+    "screens": "8ab7e8ba7a4cd6fd"
    },
    {
     "year": 2027,
@@ -405,7 +410,7 @@
     "heis": "7c682b43740bf367",
     "history": "022b91f5f6f65df9",
     "universe": "29ff5a95e08c6dc8",
-    "screens": "8115aeb2dc043382"
+    "screens": "db85a72141c76f8c"
    },
    {
     "year": 2028,
@@ -417,7 +422,7 @@
     "heis": "d993d3107c72aa37",
     "history": "0a23d1c21151305c",
     "universe": "3e7abfd0187136f1",
-    "screens": "4cba204e91d80d02"
+    "screens": "7f548af220880bc4"
    },
    {
     "year": 2029,
@@ -429,7 +434,7 @@
     "heis": "22a19290e1c550b4",
     "history": "a1ed9022003e8c2c",
     "universe": "9e87d4afb9ad6274",
-    "screens": "abd4b82f647ffaf3"
+    "screens": "8c9d87304ade1eec"
    }
   ],
   "Rice#2024": [
@@ -443,7 +448,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "47449ecc2236ea2a",
     "universe": "90860ce45842517f",
-    "screens": "075355d9d87a28ef"
+    "screens": "8ee8ae5351a981c2"
    },
    {
     "year": 2027,
@@ -455,7 +460,7 @@
     "heis": "9aef0f7aeef0a8e2",
     "history": "e3cff4187846d8b8",
     "universe": "170146b38d78def9",
-    "screens": "19e60011cab07dfb"
+    "screens": "4a809ca17c37b0df"
    },
    {
     "year": 2028,
@@ -467,7 +472,7 @@
     "heis": "f7744c7b90c7b0fc",
     "history": "44f59d20987fd42b",
     "universe": "df7e8f9822c76339",
-    "screens": "2b118aefc048e35e"
+    "screens": "04ba67f9b6c2ce38"
    },
    {
     "year": 2029,
@@ -479,7 +484,7 @@
     "heis": "9f7547f52822d604",
     "history": "48f4bdae106ddeac",
     "universe": "280ed9b3ff5be98a",
-    "screens": "58ad112e83a8c5a2"
+    "screens": "c0f9076e8c0a0da9"
    }
   ],
   "Oregon#777": [
@@ -493,7 +498,7 @@
     "heis": "c55016c266a204af",
     "history": "6e721c230642c1bc",
     "universe": "5538c75f704e4bab",
-    "screens": "77ccb670606f56c1"
+    "screens": "cdecf59c6b01f20b"
    },
    {
     "year": 2027,
@@ -505,7 +510,7 @@
     "heis": "703858a74b4cabd1",
     "history": "ffc824b216a2795a",
     "universe": "1e993bd35e9baa64",
-    "screens": "c3f9dcbceaed1c4c"
+    "screens": "922bf3986912f60e"
    },
    {
     "year": 2028,
@@ -517,7 +522,7 @@
     "heis": "383a83c85fb7e856",
     "history": "b8f8e9f479e6ff5d",
     "universe": "4bdc3712829b3f0d",
-    "screens": "f2673a92f172792b"
+    "screens": "b6268bff3aac5bda"
    }
   ],
   "Kent State#31337": [
@@ -531,7 +536,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "0ead723057dcb2ce",
     "universe": "1abe416ad575399c",
-    "screens": "d1c38e0f962bead5"
+    "screens": "ff47f8eaa73353cd"
    },
    {
     "year": 2027,
@@ -543,7 +548,7 @@
     "heis": "1a3655c3d01669ac",
     "history": "95b6afe3095866bd",
     "universe": "6306b38848b225be",
-    "screens": "165fb1f96c128d22"
+    "screens": "17ef518e339d70c4"
    },
    {
     "year": 2028,
@@ -555,7 +560,7 @@
     "heis": "d0776d1f7c6a7b7d",
     "history": "0f388a54e817169b",
     "universe": "686f12de90dd713e",
-    "screens": "bb2dbac2bc11b1e9"
+    "screens": "808ddc2bd6f2c2b8"
    }
   ],
   "schedules#60": [
