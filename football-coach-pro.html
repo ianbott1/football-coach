@@ -916,7 +916,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="e2ccad7";
+<script>const BUILD_ID="53c9e0e";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -980,8 +980,8 @@ const LEAGUE={
     /* the MVP race compares each player with his position; this is the voters' premium on top */
     premium:{QB:+((typeof process!=="undefined"&&process.env&&process.env.QBP)||1.12),RB:1,WR:0.97,EDGE:0.95,WR2:0.8,CB:0.85,S:0.8,LB:0.8,DT:0.8,OT:0.6}},
 
-  tuning:{wpK:{safe:180,balanced:210,aggressive:275},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
-    hfa:20, drives:10, gapScale:2.2, gameState:true},                  // less home field than on campus; fewer, longer drives
+  tuning:{wpK:{safe:257,balanced:300,aggressive:393}, softDrive:[100,0.5], softWp:[100,0.5],   /* round 39: gapScale 2.2 -> 1.6 and a big mismatch softened past 100: favourites 73.5% -> 66% (NFL ~66%), margin 14.0 -> 11.9, best records 13-16 over 16 seasons (17-0 before), top chance shown ~94%; refit 210 -> 300, the plans in proportion */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+    hfa:20, drives:10, gapScale:1.6, gameState:true},                  // less home field than on campus; fewer, longer drives
   venues:{"Seattle":10,"Kansas City":9,"Green Bay":9,"Buffalo":8,"Denver":8,"Philadelphia":7,
     "New Orleans":7,"Baltimore":6,"Pittsburgh":6,"Minnesota":5,"LA Chargers":-6,"LA Rams":-4,
     "Las Vegas":-3,"Jacksonville":-2,"Tampa Bay":-2,"Arizona":-2},
@@ -1054,6 +1054,7 @@ const LEAGUE={
       ["Salary cap","A hard limit on what you pay the players who matter. Stars are expensive; "+
        "rookie contracts are the cheapest good players in the league."],
       ["Chance to win","The game's own chance, before it starts, from the strengths it will be played with: your lineup and injuries, featuring, staff and home field. Your gameplan doesn't move it: plans change how swingy a game is, and are judged on the result card."],
+      ["Replays (on the result card)","After a call, the rest of the game is replayed many times with each option. Each option's percentage is its own win rate from that moment, so the figures don't add up to 100: 62% and 55% means going for it won 62% of its replays and the kick won 55% of its own."],   // Muse: a card's pair summed to 162%
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."],
       ["Reputation","What other front offices think of you. It decides which jobs open up when "+
        "you're fired."]
@@ -1249,8 +1250,8 @@ function statLine(pos,s){
   if(pos==="QB")return `${n(s.pyd)} yds, ${s.ptd} TD, ${s.int} INT (${s.cmp}/${s.att})`;
   if(pos==="RB")return `${n(s.ryd)} yds, ${s.rtd} TD (${s.car} car)`;
   if(pos==="WR"||pos==="WR2")return `${s.rec} rec, ${n(s.cyd)} yds, ${s.ctd} TD`;
-  if(pos==="OT")return `${s.pan} pancakes, ${s.ska} sacks allowed`;
-  if(pos==="EDGE"||pos==="DT")return `${s.tkl} tkl, ${s.sck} sacks, ${s.tfl} TFL`;
+  if(pos==="OT")return `${s.pan} pancake${s.pan===1?"":"s"}, ${s.ska} sack${s.ska===1?"":"s"} allowed`;   // "1 SACKS ALLOWED" (Instinct)
+  if(pos==="EDGE"||pos==="DT")return `${s.tkl} tkl, ${s.sck} sack${s.sck===1?"":"s"}, ${s.tfl} TFL`;
   if(pos==="LB")return `${s.tkl} tkl, ${s.tfl} TFL, ${s.pd} PD`;
   return `${s.tkl} tkl, ${s.ints} INT, ${s.pd} PD`;
 }
@@ -2642,7 +2643,10 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode){
   const A0 = AGGR[aggr] || AGGR.balanced, D = typeof dmode==="string" ? DEF_MODE[dmode] : dmode;
   const A = D ? {td:A0.td+D.td, fg:A0.fg+D.fg, to:A0.to+D.to, gap:A0.gap} : A0;
   // risk makes a drive less about who is better; safe makes it more so
-  const x = (offElo - defElo) * GAP_SCALE / 470 * (A.gap || 1);
+  // pro football softens a big mismatch (past 100 a gap counts half): a stacked roster went 17-0, 98%+ was shown in
+  // 1.7% of games (Ian, round 39: "you never see 99% in pro football"); college, with its real mismatches, doesn't
+  const SD=LEAGUE.tuning.softDrive, gq=offElo-defElo, ga=Math.abs(gq), gs=!SD||ga<=SD[0]?gq:Math.sign(gq)*(SD[0]+(ga-SD[0])*SD[1]);
+  const x = gs * GAP_SCALE / 470 * (A.gap || 1);
   const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;
@@ -2693,6 +2697,33 @@ function goOdds(togo, offElo, defElo){
   return Math.max(0.12, Math.min(0.82, base + adj));
 }
 
+/* The end of a game nobody is asked about: the computer's drives, and your assistant's when no call comes up.
+   A drive's outcome was rolled without the score, so a team down 7 on its last possession kicked a field goal 18-19%
+   of the time and punted more often still, and nobody went for two (Ian, round 39: 0 of ~220,000 touchdowns).
+   d: the offense's margin before the drive; left: possessions to go, this one included (1: the last). */
+const FB_END=true;
+function endgameDrive(rng,res,d,left,offE,defE){
+  if(!FB_END||left>2||d>=0)return res;
+  const goFor=tg=>{                                     // fourth down, and it has to be a touchdown or at least points that matter
+    if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,
+      note:`needed ${d<=-4?"a touchdown":"points"}: went for it on fourth and ${tg} and came up short`};
+    const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent");
+    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on fourth and ${tg}, then scored`}
+      :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,note:"needed a touchdown: turned it over on downs in the red zone"};
+    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on fourth and ${tg}, then turned it over on downs`};
+    return Object.assign(r,{converted:true,note:r.pts>0?`went for it on fourth and ${tg}, then scored`:`converted on fourth and ${tg}, drive stalled later`}) };
+  if(res.kind==="FG"&&d<=-4){                            // three points don't help: from the red zone, go for the end zone
+    if(rng.r()<0.40)return {pts:7,kind:"TD",stall:100,note:"passed up the field goal and scored"};
+    return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,note:"needed a touchdown: passed up the field goal and came up short"} }
+  if(res.kind==="PUNT"||(res.kind==="MISS"&&(res.stall||0)<72&&d<=-4))return goFor(res.togo||4);   // nobody punts it away behind with the game ending
+  return res;
+}
+/* two points or one, by the chart every coach carries late in a game: the margin after the touchdown. */
+function twoChart(diff6,late){
+  if(!FB_END)return false;
+  if(diff6===-2)return true;                            // to tie, any time in the second half
+  return late&&[-10,-5,1,5].indexOf(diff6)>=0;
+}
 /* Where a drive starts, given how the previous one ended, and where: a turnover or a miss gives the
    other side the ball at the spot (it was a random ~42 whatever the spot, so a fumble at their 10 handed
    them the ball near midfield: "a kickoff after a Denver fumble", "started own 72": Grokbot) */
@@ -2986,7 +3017,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         st.stage=null; const D=st.D[side], dp=P.dp;
         const pick=choice==="keep"?st.ans[side]:FB_ANSWERS[choice]?choice:null;
         if(pick&&FB_ANSWERS[pick]){
-          const e={side:side,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
+          const e={side:side,h:dp.h,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
           if(dp.k==="read")e.evid=dp.best; if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true }
           st.log.push(e); st.ans[side]=pick }
         else if(dp.k==="read"&&rng.r()<0.45)st.ans[side]=SCHEMES[D.sch].counter;   // your assistant reads it, about as often as anyone
@@ -3054,9 +3085,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
     // ---- a decided game, your ball: rest the starters? (Muse: a 24-point fourth-quarter lead asked nothing) ----
-    if(isUser&&!st.stage&&q>=4&&mine-theirs>=14&&mine-theirs<=24&&!(home?st.usedH:st.usedA).rest){
+    // ...and from the third quarter in a rout (Muse, round 39: a 61-17 win asked nothing after the second quarter)
+    const RL=mine-theirs, restNow=(q>=4&&RL>=14&&RL<=24)||(q>=3&&RL>=21&&RL<=40);
+    if(isUser&&!st.stage&&restNow&&!(home?st.usedH:st.usedA).rest){
       (home?st.usedH:st.usedA).rest=true; st.stage="rest"; st.pend={q:q}; st.startHold=start;
-      return {ask:{k:"rest",h:`Up ${mine-theirs} in the fourth quarter`,
+      return {ask:{k:"rest",h:`Up ${mine-theirs} in the ${q>=4?"fourth":"third"} quarter`,
         b:`Rest your starters? The backups run the clock out: a lead this size usually holds, though not always, and nobody gets hurt on the sideline. ${possLeft(st.total-i,true)}`,
         opts:[["rest","Rest the starters"],["keep","Keep them in until it's safe"],["normal","Leave it to your assistant"]]},mine:mine,theirs:theirs,q:q,side:side} }
 
@@ -3103,7 +3136,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         }
       }
     }
-    return {drive:push(home,q,start,res,aggr),h:st.h,a:st.a};
+    { const effT=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
+      const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE);
+      if(r2.kind==="TD"&&r2.pts===7&&twoChart(mine+6-theirs,q>=4||effT-i<=8)){
+        const ok=rng.r()<0.47; r2.pts=ok?8:6; r2.note=(r2.note?r2.note+"; ":"")+(ok?"went for two and got it":"went for two and was stopped") }
+      return {drive:push(home,q,start,r2,aggr),h:st.h,a:st.a}; }
   };
   st.reply=function(v){ st.answer=v; };
   return st;
@@ -3344,7 +3381,7 @@ function staffTake(dp, ctx){
     const m=o[1].match(/(\d+)%/); return m?+m[1]:null;
   };
   const diff = (ctx.mine||0)-(ctx.theirs||0);
-  const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
+  const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0)+((typeof live!=="undefined"&&live&&typeof liveSeed==="function")?(liveSeed(live.step)%9973):0);   // and the match: at 0-0 at the half every game said the same words (Muse, round 39)
   const R=[];
 
   if(dp.k==="fourth"){
@@ -4680,7 +4717,7 @@ function teamScoring(t){
 const STAND_PER_GAME=[{label:"PPG",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pf/o.g).toFixed(1):"-" }},
   {label:"OPP",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pa/o.g).toFixed(1):"-" }},
   {label:"STRK",opt:1,val:t=>{ const r=teamScoring(t).res; if(!r.length)return "-"; let k=1; while(k<r.length&&r[r.length-1-k]===r[r.length-1])k++; return r[r.length-1]+k }}];
-const STAND_TOTALS=(f,a)=>[{label:f,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pf:"-" }},{label:a,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pa:"-" }}];
+const STAND_TOTALS=(f,a)=>[{label:f,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pf:"-" }},{label:a,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pa:"-" }},STAND_PER_GAME[2]];   // the streak in every table (Instinct: the NBA's had one, football's didn't)
 /* ============ the franchise record book: pro football ============ */
 /* Everyone who leaves a franchise, by retirement, release or free agency,
    is written into its book. Greats are ranked by peak rating. */
@@ -4694,7 +4731,7 @@ function nflCareerLine(a){
   if(P==="EDGE"||P==="DT") return `${c.sck||0} sacks, ${c.tkl||0} tackles`;
   if(P==="LB")   return `${c.tkl||0} tackles, ${c.tfl||0} for loss`;
   if(P==="CB"||P==="S") return `${c.ints||0} INT, ${c.pd||0} passes defended`;
-  if(P==="OT")   return `${c.ska||0} sacks allowed in ${a.yrs} season${a.yrs===1?"":"s"}`;
+  if(P==="OT")   return `${c.ska||0} sack${(c.ska||0)===1?"":"s"} allowed in ${a.yrs} season${a.yrs===1?"":"s"}`;
   return `${a.yrs} season${a.yrs===1?"":"s"}`;
 }
 const NFL_LEADERS=[
@@ -5389,7 +5426,7 @@ function callImpact(args,seed,answers,meHome,runs){
     const cf=play(j,def);                    // the same dice, his call
     let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
-    out.push({h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
+    out.push({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
   });
   return out;
 }
@@ -5400,7 +5437,10 @@ function callImpact(args,seed,answers,meHome,runs){
 function callClarity(c){ const w=Math.round(c.worth*1000)/10;   // in tenths of a point: 0.07*100 is 7.000000000000001, which headlined a 7-point call
   if(c.q!==undefined){ if(c.sp<=3)return 0; if(c.q<-3)return c.q; return Math.max(0,w) } return w }
 function impactHTML(P){
-  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c))));
+  // one verdict per call: a read is judged in the reads below, right or wrong; judged here too, against the assistant,
+  // the two could disagree on one call ("a little worse" above a tick: round 39), so here it's situation calls only
+  const RK={}; P.forEach(q=>(q.reads||[]).forEach(r=>{ RK[r.k]=1 }));
+  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c)))).filter(c=>!(c.k&&RK[c.k]));
   if(!C.length)return "";
   // the clearest call leads, the wrong ones first when as clear (a field goal praised above two crossed punts: Grokbot)
   const c=C.reduce((a,x)=>Math.abs(callClarity(x))>Math.abs(callClarity(a))||(Math.abs(callClarity(x))===Math.abs(callClarity(a))&&callClarity(x)<callClarity(a))?x:a,C[0]), p=c.res;
@@ -5413,6 +5453,8 @@ function impactHTML(P){
   const word=x=>{ const k=callClarity(x); return k>7?"clearly better than his":k>3?"a little better than his":k<-7?"clearly worse":k<-3?"a little worse":"close either way" };
   const pickWord=x=>/assistant/i.test(x.pick)?"you left it to your assistant":`you chose "${esc(x.pick)}"`;
   const k=callClarity(c), rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
+  // a read is listed once, in the reads below with its right-or-wrong; listed here too under its own headline, the
+  // same call read as a second call and its answer as one never offered (Grokbot, round 38: "graded on a call I never saw")
   const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} (${pickWord(x)}): ${word(x)}`);
   const restHTML=rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} tonight: ${rest.join("; ")}.</div>`:"";
   // a read graded wrong is never headlined as a good call: "A STRONG CALL" sat above a cross for the same game plan
@@ -7003,7 +7045,7 @@ function newDynasty(team,seed,coachName,roster){
     plans:{}, calls:{}, promos:{}, fires:{}, featured:null, history:[], expNow:null
   });
   S={seed:seed,uStart:null,seasonSeed:0,steps:0,origProgram:null,
-     coaches:people.map(mk), turn:0, guide:!(roster&&roster.length>1)};   // the coach's notes, for a new career (not a hot seat)
+     coaches:people.map(mk), turn:0, guide:!(roster&&roster.length>1)&&!GUIDE_SEEN.__off};   // the coach's notes, for a new career (not a hot seat)
   COACH_FIELDS.forEach(k=>{S[k]=S.coaches[0][k]});
   const u=newUniverse(seed); syncConf(u);
   S.coaches.forEach(c=>{
@@ -7582,7 +7624,7 @@ function heroResult(){
 /* the first few reads: how to read the panel */
 function firstReadTip(){
   if(S.readTally&&S.readTally.n>=3)return "";
-  if(S.guide===true&&!(S.seen&&S.seen.g_call_read))return "";   // the coach's note says it, once
+  if(S.guide===true&&!(S.seen&&S.seen.g_call_read)&&!GUIDE_SEEN.g_call_read)return "";   // the coach's note says it, once
   return `<div class="evtip">First reads: look for the number marked &#9650; or &#9660;, well away from the league average. That's how they're playing. Pick the answer that beats it, then see if you were right after the game.</div>`;
 }
 /* the season's tally of your reads and calls, kept on the team page all year */
@@ -7614,7 +7656,13 @@ function readsHTML(step){
   const P0=(S.played[callKey(step)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)));
   const P=P0.filter(p=>p.reads||p.judged);
   // a game you watched with no call in it gets a line, not silence (Instinct: a 34-23 win moved on without a word)
-  if(P0.length&&!P.length){ const au=((S.callAuto||{})[callKey(step)]||[]).length;
+  const au=((S.callAuto||{})[callKey(step)]||[]).length, asked=Math.max(0,((S.calls||{})[callKey(step)]||[]).length-au);
+  // the calls your assistant took while the game wasn't in the balance: said, not graded (Grokbot: "graded separately")
+  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} while the game wasn't in the balance; ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
+  if(P0.length&&!P.length){
+    // every call shown and left to the assistant: "none of the moments came up" was false (round 39)
+    if(asked&&P0.some(p=>(p.impact||[]).length))return auLine?`<div class="reads">${auLine}</div>`:"";   // yours are judged above, against the assistant
+    if(asked)return `<div class="reads"><div class="readnone">You left ${asked===1?"tonight's call":"all "+asked+" of tonight's calls"} to your assistant, so there's nothing of yours to grade.</div>${auLine}</div>`;
     return `<div class="reads"><div class="readnone">No calls for you tonight: ${au?`the game was never in the balance at the moments that would have asked one, so your assistant took ${au===1?"it":"all "+au}`:"none of the moments that ask one came up"}. Nothing to grade.</div></div>` }
   const R=[].concat(...P.map(p=>p.reads||[])), CL=[].concat(...P.map(p=>p.closes||[]));
   const closeLines=CL.map(c=>`<div class="read na"><span>&ndash;</span><div><b class="readlab">Close either way:</b> ${esc(c.h)}: you chose "${esc(c.pick)}". ${c.opts.map(o=>`"${esc(o[0])}" won ${o[1]}%`).join(", ")} of replays, too close to call right or wrong.</div></div>`).join("");
@@ -7622,19 +7670,22 @@ function readsHTML(step){
   if(!R.length){ const n=P.reduce((a,p)=>a+(p.judged||0),0);
     const c=P.map(p=>p.close).filter(Boolean)[0];
     const deb=c?`<div class="readnone"><b>${esc(c.h)}</b>: you chose "${esc(c.pick)}". ${c.opts.map(o=>`"${esc(o[0])}" won ${o[1]}%`).join(", ")} of replays: the options were that close, so the game turned on the plays, not the call.</div>`:"";
-    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${CL.length?closeLines:deb}</div>`:"" }
+    return n?`<div class="reads"><div class="readnone">${n===1?"Your call this game":"None of your "+n+" calls this game"} ${n===1?"didn't make":"made"} a real difference to your chances, so ${n===1?"it isn't":"none is"} graded.</div>${CL.length?closeLines:deb}${auLine}</div>`:auLine?`<div class="reads">${auLine}</div>`:"" }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   // the same verdict twice (a read confirmed at half-time, a goalie kept twice) reads once, counted (Instinct)
   // each line says which call it was (a right game plan beside a wrong read looked like a contradiction,
   // and two identical lines couldn't be told apart: Grokbot)
+  // a read goes by its own headline, the name it had on screen and in the line above ("First intermission" up top
+  // and "First read" below read as two calls: round 39); the scouting report by that name
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
-    return k==="prep"?"Game plan":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
+    if(k!=="prep"&&k!=="rest"&&x.h)return String(x.h).replace(/<[^>]+>/g,"");
+    return k==="prep"?"Scouting report":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
   const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
-  return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.right?'ok':x.un?'na':'no'}"><span>${x.right?"&#10003;":x.un?"&ndash;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
-    ${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
+  return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
+    ${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -7705,8 +7756,11 @@ function injuredLine(opp,atHome,neutral){
   const names=hurt.slice().sort((a,b)=>a.m-b.m).slice(0,2).map(e=>esc(e.who)).join(" and ");
   return `<div class="oinj">${pctShown(now)}% without ${names} (injured); about ${pctShown(fit)}% with ${hurt.length>1?"them":"him"}.</div>`;
 }
+/* a league whose engine softens big mismatches (pro basketball: past 200 a gap counts half) shows the same softening,
+   or its top chances overstate: shown 98%+ won 94.7% (round 39) */
+function wpSoft(g){ const s=LEAGUE.tuning.softWp; if(!s)return g; const a=Math.abs(g); return a<=s[0]?g:Math.sign(g)*(s[0]+(a-s[0])*s[1]) }
 function winProb(me,opp,atHome,neutral){
-  return 1/(1+Math.pow(10,-gameEdge(me,opp,atHome,neutral)/wpScale("balanced")));
+  return 1/(1+Math.pow(10,-wpSoft(gameEdge(me,opp,atHome,neutral))/wpScale("balanced")));
 }
 /* what your own choices add in your games, the same edge the games use: a
    featured starter who's healthy, and hockey's ice time (Muse: featuring
@@ -7927,7 +7981,8 @@ function rosterView(){
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
-      </div></div>`;
+        ${b.st2&&b.st2.g?`<div class="sline2 bk">${esc(statLine(P.p,b.st2))}</div>`:""}
+      </div></div>`;   // the backup's season too, where you decide whether to start him (Muse: 3 goals the roster wouldn't show)
   }).join("");
   const hz=SEA.mvpRace(30).filter(x=>x.t===my);
   if(hz.length){
@@ -8042,9 +8097,14 @@ function coachMark(key,text){
 /* The coach's notes: a guide through your first games, one note per kind of moment, each gone once read, all gone
    at "Skip the guide" (Ian: an optional tutorial). On for a new career (S.guide); a career from before has none.
    Help turns them back on. */
+/* read once in this browser is read for good: every career, all six games (Ian, round 39: "I skip it every time").
+   "Skip the guide" turns it off for new careers too; Help turns it back on. Kept beside the saves, never in them. */
+const GUIDE_KEY="coach-guide-seen"; let GUIDE_SEEN={};
+(async()=>{ try{ const r=await store.get(GUIDE_KEY); if(r&&r.value){ GUIDE_SEEN=JSON.parse(r.value)||{}; if(typeof render==="function"&&S&&S.myTeam)render() } }catch(e){} })();
+function guideMark(k,off){ if(off)GUIDE_SEEN.__off=1; else if(k)GUIDE_SEEN[k]=1; try{ store.set(GUIDE_KEY,JSON.stringify(GUIDE_SEEN)) }catch(e){} }
 function guideNote(key,text){
   if(S.guide!==true)return "";
-  S.seen=S.seen||{}; if(S.seen["g_"+key])return "";
+  S.seen=S.seen||{}; if(S.seen["g_"+key]||GUIDE_SEEN["g_"+key])return "";
   return `<div class="mark guide" data-mark="g_${key}"><b>Coach's note:</b> ${text}
     <span class="markx">Got it</span> <span class="markx guideoff" data-guideoff="1">Skip the guide</span></div>`;
 }
@@ -8059,8 +8119,8 @@ const GUIDE_CALL={
 };
 const GUIDE_SITUATION="A situation call: only asked while the game is still in the balance. After the game it's graded by replaying the rest of the game many times with each option, against leaving it to your assistant.";
 function bindGuide(){
-  document.querySelectorAll(".guide[data-mark]").forEach(b=>b.onclick=e=>{ if(e&&e.target&&e.target.dataset&&e.target.dataset.guideoff)S.guide=false;
-    else { S.seen=S.seen||{}; S.seen[b.dataset.mark]=1 } save(); render() });
+  document.querySelectorAll(".guide[data-mark]").forEach(b=>b.onclick=e=>{ if(e&&e.target&&e.target.dataset&&e.target.dataset.guideoff){ S.guide=false; guideMark(null,true) }
+    else { S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; guideMark(b.dataset.mark) } save(); render() });
 }
 function guideForCall(dp){ return guideNote("call_"+(GUIDE_CALL[dp.k]?dp.k:"situation"),GUIDE_CALL[dp.k]||GUIDE_SITUATION) }
 
@@ -8458,10 +8518,14 @@ function grpTabsHTML(cupToo){
    come (scoreWk: which week; null follows the latest) */
 let scoreWk=null;
 function wkLabel(w){ return SEA.weeks[w]?SEA.weeks[w].label:(LEAGUE.stepLabel?LEAGUE.stepLabel(w):`Week ${w+1}`) }
+/* a day with nobody playing is stepped over (Ian, round 39: basketball's Scores showed "No games" on an empty day) */
+function wkHasGames(w){ return !!((SEA.weeks[w]&&SEA.weeks[w].games.length)||SEA.sched.some(x=>x.week===w)) }
+function wkStep(w,d,maxW){ let v=w+d; while(v>=0&&v<=maxW&&!wkHasGames(v))v+=d; return v<0||v>maxW?null:v }
 function wkNav(w,last,maxW){
-  return `<div class="wknav"><button class="wkbtn" data-wk="${w-1}" ${w<=0?"disabled":""} aria-label="Earlier">&larr;</button>
+  const pw=wkStep(w,-1,maxW), nw=wkStep(w,1,maxW);
+  return `<div class="wknav"><button class="wkbtn" data-wk="${pw===null?w-1:pw}" ${pw===null?"disabled":""} aria-label="Earlier">&larr;</button>
     <div class="wkmid"><h2>${esc(LEAGUE.daily?(LEAGUE.dates[w]||wkLabel(w)):wkLabel(w))}</h2><span>${LEAGUE.daily?"":esc(LEAGUE.dates[w]||"")}${w>last?(LEAGUE.daily?"to come":" &middot; to come"):w<last?(LEAGUE.daily?"played":" &middot; played"):""}</span></div>
-    <button class="wkbtn" data-wk="${w+1}" ${w>=maxW?"disabled":""} aria-label="Later">&rarr;</button></div>`;
+    <button class="wkbtn" data-wk="${nw===null?w+1:nw}" ${nw===null?"disabled":""} aria-label="Later">&rarr;</button></div>`;
 }
 /* home, away or neither: a neutral site (a bowl, a Super Bowl, a tournament) is "vs" for both
    sides, never "at" (Grokbot: "AT CHARLOTTE" for a conference tournament game; no marker on the
@@ -8490,12 +8554,16 @@ function fixturesView(w,last,maxW){
   return h+`<div class="grouphead">Everyone &mdash; ${nOf(gs.length,"game")}</div><div class="${wide?'gamegrid':''}">`+gs.map(line).join("")+`</div>`;
 }
 function scoresView(){
-  if(!SEA.weeks.length&&scoreWk===null)
-    return `<div class="note">The season hasn't started. Hit the button below to play ${LEAGUE.stepLabel?LEAGUE.stepLabel(0):"Week 1"}.</div>`+
-      (SEA.sched&&SEA.sched.length?`<button class="rewatch seedraw" data-wk="0">See the fixtures</button>`:"");
+  // before the season: the first week's fixtures, not a button to them (Ian, round 39)
+  if(!SEA.weeks.length&&scoreWk===null){
+    const n0=`<div class="note">The season hasn't started. Hit the button below to play ${LEAGUE.stepLabel?LEAGUE.stepLabel(0):"Week 1"}.</div>`;
+    if(!(SEA.sched&&SEA.sched.length))return n0;
+    const mx=Math.max(...SEA.sched.map(x=>x.week)); let w0=0; while(w0<mx&&!wkHasGames(w0))w0++;
+    return n0+fixturesView(w0,-1,mx) }
   const pv=LEAGUE.ui.postseasonView(); if(pv)return pv;
   const last=SEA.weeks.length-1, maxW=Math.max(last,...SEA.sched.map(x=>x.week));
-  const w=scoreWk===null?last:Math.max(0,Math.min(scoreWk,maxW));
+  let w=scoreWk===null?last:Math.max(0,Math.min(scoreWk,maxW));
+  if(!wkHasGames(w)){ const f=wkStep(w,1,maxW), b=wkStep(w,-1,maxW); w=f!==null?f:b!==null?b:w }
   if(w>last)return fixturesView(w,last,maxW);
   const W=SEA.weeks[w];
   if(!W)return `<div class="note">No games yet.</div>`;
@@ -8594,6 +8662,14 @@ function coachRows(){
    hired this summer read "year 2" in his first season (Muse: the YEAR label lagged after a move). The
    count drives the computer's patience, so it stays; hires since Nov 2026 say when they started. */
 function coachYear(c){ const y=c&&c.since!==undefined&&SEA?SEA.year-c.since+1:(c?c.t+1:1); return Math.max(1,y) }
+/* hockey, your banked seasons: W-L-OTL from the seasons' own records (the coach page read W-L with the overtime
+   losses inside the losses, a third version of one record: Muse, round 39) */
+function bankedRec(w,l,team,from,to){
+  if(!LEAGUE.tracksOT||LEAGUE.draws||!LEAGUE.recText)return null; let o=0;
+  (S.history||[]).forEach(h=>{ if(!h||(team&&h.team!==team)||(from!==undefined&&h.year<from)||(to!==undefined&&h.year>to))return;
+    const m=/^\d+-\d+-(\d+)$/.exec(h.rec||""); if(m)o+=+m[1] });
+  return `${w}-${l-o}-${o}`;
+}
 function coachCard(c){
   const grade=coachGrade(c.q);
   // soccer: draws count as games (it showed 22-16-8 as "22-8, .733")
@@ -8603,7 +8679,7 @@ function coachCard(c){
     <div class="imeta">${c.you?"You &middot; ":""}head coach, ${esc(c.team)} &middot; year ${coachYear(c)}
       &middot; ${esc(grade)}</div>
     <div class="stats">
-      <div><b>${LEAGUE.draws?`${c.w}-${dd}-${c.l}`:`${c.w}-${c.l}`}</b><span>Career</span></div>
+      <div><b>${LEAGUE.draws?`${c.w}-${dd}-${c.l}`:(c.you&&bankedRec(c.w,c.l))||`${c.w}-${c.l}`}</b><span>Career</span></div>
       <div><b>${pct}</b><span>Win %</span></div>
       <div><b>${c.titles}</b><span>Titles</span></div>
       <div><b>${c.confs}</b><span>${confWord()}</span></div>
@@ -8614,7 +8690,7 @@ function coachCard(c){
       <span class="dot" style="background:${teamColor(s.team)}"></span>
       <span class="stopteam">${TL(s.team)}</span>
       <span class="stopyr">${s.from}${s.to>s.from?"\u2013"+s.to:""}</span>
-      <span class="stoprec">${wdl(s.w,s.l,s.d)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span></div>`).join("");
+      <span class="stoprec">${(c.you&&bankedRec(s.w,s.l,s.team,s.from,s.to))||wdl(s.w,s.l,s.d)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span></div>`).join("");
   }else{
     h+=`<div class="note">No completed seasons at this job yet.</div>`;
   }
@@ -9318,7 +9394,7 @@ function render(){
       await restoreBackup(f,slot) };
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
-    document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide)Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); save(); render() });
+    document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide){ Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); GUIDE_SEEN={}; guideMark(null,false) } save(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
       S.sound=b.dataset.sound==="true"; save(); if(soundOn())sfx("tap"); render();});
     return;
