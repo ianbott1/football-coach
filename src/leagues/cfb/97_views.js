@@ -259,6 +259,7 @@ function cfbStakes(x){
 }
 
 LEAGUE.ui={
+  standingsCols:STAND_TOTALS("PF","PA"),   // points for and against (Grokbot: a team stats page)
   stakes:cfbStakes,
   rankingTab:"Poll",                    // label of the ranking tab
   rankingView:pollView,

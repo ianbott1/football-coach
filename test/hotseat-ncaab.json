@@ -1,5 +1,5 @@
 {
- "fp": "1f1615f6fba3c36a",
+ "fp": "60da6c4aed887d98",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -210,6 +210,11 @@
    "fp": "1f1615f6fba3c36a",
    "from": "4f770ba7ee847612",
    "note": "Round 34: crunch-time and third-period reads in close games, and unsure scout reads said as what they're likely to be. Control with both off matches the previous fingerprints exactly."
+  },
+  {
+   "fp": "60da6c4aed887d98",
+   "from": "1f1615f6fba3c36a",
+   "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
   }
  ],
  "out": [
@@ -223,7 +228,7 @@
       "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "c721b94e6ccce4f1"
+     "book": "24b322656d266f0b"
     },
     {
      "team": "North Carolina",
@@ -232,7 +237,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "A"
      },
-     "book": "9a611695e0423946"
+     "book": "d0d15cb0b1c52fe4"
     }
    ]
   },
@@ -242,20 +247,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "33-4",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "32-3",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
      },
-     "book": "7d51aaf089bcab1f"
+     "book": "1302e5b67c481923"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "29-6",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "28-7",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "86f607e22eb9295e"
+     "book": "86b16b5cf5e256fa"
     }
    ]
   },
@@ -265,20 +270,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "30-6",
-      "result": "Lost in the Sweet 16",
-      "grade": "A-"
+      "rec": "29-6",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "df043780804ed6eb"
+     "book": "a1c025941fbed27c"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "30-7",
+      "rec": "31-5",
       "result": "Lost in the Sweet 16",
-      "grade": "A-"
+      "grade": "A"
      },
-     "book": "589175f130be71db"
+     "book": "f6b254e37de91e20"
     }
    ]
   }

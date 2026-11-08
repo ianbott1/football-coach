@@ -126,6 +126,7 @@ class Season{
       const F=list[fi];
       list.splice(fi,1);
       this.forcedList=list; this.forced=null;
+      if(F.rested){ this.restAt=this.restAt||{}; this.restAt[F.team]=this.step }   // a game whose starters you rested
       const userScore = F.mine, oppScore = F.theirs;
       let fh = (a===F.team)?userScore:oppScore;
       let fa = (a===F.team)?oppScore:userScore;
@@ -148,15 +149,21 @@ class Season{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
           if(typeof statDeploy=="function")statDeploy(this,tm);   // hockey: the box score follows the ice time
+          // a game you watched: goals and assists go to the men the log named, backups too (hockey)
+          const LC=F.drives&&typeof hkLogCredit==="function"?hkLogCredit(tm,tm===a?"home":"away",F.drives):null, done=new Set();
           POS.forEach((P,i)=>{
             const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
             if(!pl)return;
             if(!pl.st2)pl.st2=blankStats(P.p);
             const line=gameStats(this.rng,pl,i,pf,pa2,pf>pa2);
+            if(LC&&P.p!=="G"){ const c=LC[pl.n]||{goals:0,ast:0}; line.goals=c.goals; line.ast=c.ast; line.pts=c.goals+c.ast; line.sog=Math.max(line.sog,c.goals); done.add(pl.n) }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
             pl.last={line:line,pos:P.p,week:this.step,team:tm};
           });
+          if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
+            const pl=this.roster[tm][i], P=POS[i]||POS[0], c=LC[nm], line={goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals};
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
         });
       }
       const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+fh+fa)%11)/34))));

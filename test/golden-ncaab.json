@@ -1,5 +1,5 @@
 {
- "fp": "d09035484e65ea40",
+ "fp": "f2ac997c9721aeb7",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -325,6 +325,16 @@
    "fp": "d09035484e65ea40",
    "from": "850eb50111af74ce",
    "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
+  },
+  {
+   "fp": "75bebcf409a58cef",
+   "from": "d09035484e65ea40",
+   "note": "Round 37: NBA Cup games are league games (with the Cup off, results match round 35); hockey's box score credits the men its game log names (awards and history move, games don't); text and screens elsewhere."
+  },
+  {
+   "fp": "f2ac997c9721aeb7",
+   "from": "75bebcf409a58cef",
+   "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
   }
  ],
  "result": {
@@ -332,26 +342,26 @@
    {
     "year": 2026,
     "games": "49064efb3c49c91a",
-    "post": "0154ffbb09a85403",
+    "post": "938a2f5c104b0d77",
     "champion": "North Carolina",
     "rec": "09dac16ba571d00c",
     "poll": "647b28cc9958dc07",
     "heis": "f0ca3896b10da2b9",
-    "history": "da8c41f5f57a0560",
-    "universe": "8396e3d3e5e674fc",
-    "screens": "846a814179b38a71"
+    "history": "daf8d1357dfefddb",
+    "universe": "31d6d45e447330c2",
+    "screens": "07df88bf5293e6b4"
    },
    {
     "year": 2027,
-    "games": "abd3dc649c88bb24",
+    "games": "b1b92c3165b467f8",
     "post": "1059f7af67083ad2",
     "champion": "NC State",
     "rec": "40af74094b43fd21",
     "poll": "b598b19e38b8b1c5",
     "heis": "bdc76644c22f567f",
     "history": "78ff0e134f339e3e",
-    "universe": "5e2d4d3a332201ca",
-    "screens": "a2e9d5ee1a350d10"
+    "universe": "0a12db6e408b32c3",
+    "screens": "a988e59dc5503eed"
    }
   ],
   "Coppin State#2024": [
@@ -365,7 +375,7 @@
     "heis": "13bfe33d01f2b2a1",
     "history": "635d759c27825217",
     "universe": "590ac26570db1ec4",
-    "screens": "06b951b1330e647f"
+    "screens": "1addae7a237af4ca"
    },
    {
     "year": 2027,
@@ -377,33 +387,33 @@
     "heis": "dc41c7de51860732",
     "history": "2b93cd387064afd4",
     "universe": "c19ffe75f931ec9f",
-    "screens": "89e7650dd8be0654"
+    "screens": "cb5a559a5557905e"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "4110edb48768bc86",
+    "games": "48511f63568657cc",
     "post": "e3a3ff808fce7aa7",
     "champion": "Texas",
     "rec": "6ed5231c300ce042",
-    "poll": "a03715cce49f351f",
+    "poll": "aa6f6e93d70439ed",
     "heis": "c94713712b4e6c61",
-    "history": "141a7c477b70847f",
-    "universe": "612d12e45f22d0d8",
-    "screens": "45605dcdcb4f1d75"
+    "history": "cd4d92f6f3f61aa8",
+    "universe": "384c52ebeaa8d02f",
+    "screens": "3deeee486cd81a78"
    },
    {
     "year": 2027,
-    "games": "57ae72548d858386",
-    "post": "ff42d73e60c26d51",
+    "games": "a7d2f77eef5ddebe",
+    "post": "de7b57f4e9675c7f",
     "champion": "Illinois",
-    "rec": "3289b54076086302",
-    "poll": "9fea4fd74aaed47c",
-    "heis": "475c4e565eee54ab",
-    "history": "10bb25fd46558ea0",
-    "universe": "0d321e2a85dc34e7",
-    "screens": "47e174f2f670a281"
+    "rec": "9a4b49f57af492b2",
+    "poll": "327accd82368a4ba",
+    "heis": "fdd43efdedcfd2df",
+    "history": "a62790c821d6c4cb",
+    "universe": "a20ae7d0ba92beaf",
+    "screens": "acbb2767690cb7c8"
    }
   ],
   "schedules#60": [

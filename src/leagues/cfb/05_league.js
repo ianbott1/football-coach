@@ -277,8 +277,7 @@ const LEAGUE={
  ["Rating (player)","0\u201399 scale. A starter's rating drives how much he's worth to the team. "+
   "Quarterbacks matter far more than safeties."],
  ["Ceiling","How good a player can still become. Freshmen have room; seniors usually don't."],
- ["Win probability","Derived from the rating gap plus home field. Your gameplan shifts the "+
-  "spread of outcomes around it, not the average."],
+ ["Chance to win","The game's own chance, before it starts, from the strengths it will be played with: your lineup and injuries, featuring, staff and home field. Your gameplan doesn't move it: plans change how swingy a game is, and are judged on the result card."],
  ["Hot seat","Measured against your program's own expectations, not raw wins. A bad year at a "+
   "blue blood burns hotter than a bad year at a rebuild."],
  ["Poll vs. reality","Voters are sticky and punish losses out of proportion. The poll can be "+

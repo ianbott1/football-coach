@@ -301,6 +301,7 @@ function pastBracketsHTML(){
     ${pastRegion==="Final Four"?finalFourHTML(B):regionHTML(pastRegion,B)}`;
 }
 LEAGUE.ui={
+  standingsCols:STAND_PER_GAME,   // points for and against (Grokbot: a team stats page)
   stakes:bbStakes,
   standingsQualify:4, standingsCut:12,     // byes to the quarterfinals; the conference tournament's twelve
   rankingTab:"Poll",

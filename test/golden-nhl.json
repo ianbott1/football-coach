@@ -1,5 +1,5 @@
 {
- "fp": "2e223092634c1372",
+ "fp": "7bf4b76e17579092",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -290,6 +290,16 @@
    "fp": "2e223092634c1372",
    "from": "ef849fa07a2b2190",
    "note": "Round 36: the NBA Cup (pro basketball only; with it off every result matches round 35) and the coach's notes for a new career (screens only)."
+  },
+  {
+   "fp": "a5c16b1e58aa9a9f",
+   "from": "2e223092634c1372",
+   "note": "Round 37: NBA Cup games are league games (with the Cup off, results match round 35); hockey's box score credits the men its game log names (awards and history move, games don't); text and screens elsewhere."
+  },
+  {
+   "fp": "7bf4b76e17579092",
+   "from": "a5c16b1e58aa9a9f",
+   "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
   }
  ],
  "result": {
@@ -301,10 +311,10 @@
     "champion": "Toronto",
     "rec": "a158887fc41b0c47",
     "poll": "2c3e806fec64bf3e",
-    "heis": "e25ff4d68f95adcf",
-    "history": "a1f2215774dc6489",
-    "universe": "43f89e6bf4fb8606",
-    "screens": "83ba5d8e7d7af775"
+    "heis": "beb1b81b18d165c4",
+    "history": "de354b61f310ab25",
+    "universe": "5ffcef32928be602",
+    "screens": "db7ebfff984af75a"
    },
    {
     "year": 2027,
@@ -313,10 +323,10 @@
     "champion": "Vegas",
     "rec": "64d3ded08231f780",
     "poll": "68dd3ff4ddf4ad31",
-    "heis": "e75b547947affda4",
-    "history": "2298da40840e60d9",
-    "universe": "a8dfb1d408fa37c9",
-    "screens": "09eae6317416546b"
+    "heis": "b355cc7720969f2d",
+    "history": "d250b627c68c243c",
+    "universe": "c1d804049c8c8386",
+    "screens": "d6631cf54fb34b2a"
    }
   ],
   "Edmonton#777": [
@@ -327,10 +337,10 @@
     "champion": "Vegas",
     "rec": "d21f9ec1d364f80b",
     "poll": "0024ffbefad27717",
-    "heis": "b96abd476b0836c9",
-    "history": "22a30198d5ebe058",
-    "universe": "688ff128432ed40f",
-    "screens": "e46be5800e9d9ac6"
+    "heis": "78bc070c6bfc0a9f",
+    "history": "52cc80f40d350356",
+    "universe": "7396abba2ff06728",
+    "screens": "1a9ba1181b7a6f36"
    },
    {
     "year": 2027,
@@ -339,10 +349,10 @@
     "champion": "Winnipeg",
     "rec": "bac1e647d512b63d",
     "poll": "591d9f36ced05caa",
-    "heis": "d9d13aa5d3635b7c",
-    "history": "fa1fac2134c06c75",
-    "universe": "9d2c6ecb43acb7a9",
-    "screens": "4d631553cb644be6"
+    "heis": "b8e9f2899bbecbcb",
+    "history": "b9f8e079a0ed5335",
+    "universe": "d4698f8973fa4fa5",
+    "screens": "6f650ffc65199a2f"
    }
   ],
   "schedules#60": [

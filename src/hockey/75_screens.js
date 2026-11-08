@@ -16,6 +16,15 @@ function hkSkater(team,u){
   const x=u%100, unit=x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2";
   return hkPlayer(team,unit,u)||"a forward";
 }
+/* who scored a goal and who set it up, from the event: the log says it and the box score credits it */
+function hkGoalNames(tm,e){ const u=e.u||0, n=hkSkater(tm,u), a=hkSkater(tm,(u*7+3)%100);
+  return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
+/* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
+function hkLogCredit(tm,side,drives){
+  const C={}, add=(nm,k)=>{ if(!nm||nm==="a forward")return; (C[nm]=C[nm]||{goals:0,ast:0})[k]++ };
+  (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const N=hkGoalNames(tm,e); add(N.n,"goals"); add(N.a,"ast") }));
+  return C;
+}
 function hkGoalie(team,backup){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "the goalie";
   const p=backup?R[BK(5)]:R[5]; return p?p.n:"the goalie" }
 const HK_FINISH=["snaps one in off the post","jams a loose puck home at the crease","tips in a point shot","wires one over the glove","walks in alone and finishes","one-times it from the circle",
@@ -40,13 +49,15 @@ const HK_CUE={
 function pickOf(a,u){return a[u%a.length]}
 function hkEventText(g,e,swapped,used){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
-  const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
+  const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0, w=e.w!==undefined?e.w:u;
   if(e.k==="goal"){
-    const n=hkSkater(tm,u), a1=hkSkater(tm,(u*7+3)%100), gk=hkGoalie(opp,swapped&&swapped[e.side==="home"?"away":"home"]);
+    // the scorer and assist come from the event alone (hkGoalNames), so the box score can credit the same men;
+    // a re-worded goal changes the words (w), never the scorer (Muse: a two-goal scorer at 0-0-0)
+    const N=hkGoalNames(tm,e), n=N.n, a1=N.a, gk=hkGoalie(opp,swapped&&swapped[e.side==="home"?"away":"home"]);
     if(e.en)return {team:tm,tag:"EMPTY NET",text:`${n} into the empty net`};
     if(e.extra)return {team:tm,tag:"GOAL",text:`${n} scores with the extra attacker`};
-    const how=pickFresh(HK_FINISH,u>>2,"fin",used), ast=a1&&a1!==n?` (from ${surname(a1)})`:"";
-    const after=(e.soft?pickFresh(HK_SOFT,u,"soft",used):pickFresh(HK_AFTER,u,"after",used)).replace("{g}",surname(gk));
+    const how=pickFresh(HK_FINISH,w>>2,"fin",used), ast=a1?` (from ${surname(a1)})`:"";
+    const after=(e.soft?pickFresh(HK_SOFT,w,"soft",used):pickFresh(HK_AFTER,w,"after",used)).replace("{g}",surname(gk));
     return {team:tm,tag:e.pp?"PP GOAL":"GOAL",text:`${n} ${how}${ast}.${after?" "+after:""}`};
   }
   if(e.k==="pen"){ const n=hkSkater(tm,u); return {team:tm,tag:"PENALTY",text:`${n} two minutes for ${pickOf(HK_PENS,u>>2)}`} }
@@ -76,7 +87,7 @@ function rowsOf(g,drives){
       const sameAs=x=>(last&&last.m===e.m&&last.side===e.side&&x.text.slice(0,12)===last.text.slice(0,12))||said.has(x.text);
       if(e.k==="goal"&&sameAs(t))
         for(let k=1;k<8;k++){
-          const t2=hkEventText(g,Object.assign({},e,{u:((e.u||0)+37*k)%100}),sw);
+          const t2=hkEventText(g,Object.assign({},e,{w:((e.u||0)+37*k)%100}),sw);
           if(!sameAs(t2)){ t=t2; break } }
       if(e.k==="goal"){ last={m:e.m,side:e.side,text:t.text}; said.add(t.text) }
       rows.push({m:e.m+"'",team:t.team,tag:t.tag,text:t.text,h:sh,a:sa,cue:t.cue,goal:e.k==="goal"}) });

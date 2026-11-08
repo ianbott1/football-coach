@@ -234,6 +234,7 @@ function readTextBase(e){
     :`They were ${STYLE[e.truth].l}: the answer was "${DEFENSES[STYLE[e.truth].answer].l}".`;
   if(e.k==="prep")return e.right?`Your game plan was right: they came out ${STYLE[e.truth].l}.`
     :`You game-planned for the wrong thing: they came out ${STYLE[e.truth].l}.`;
+  if(e.k==="rest")return e.pick==="rest"?"You rested your starters: the bench finished it, and the minutes they sat can't hurt them (half the chance of a knock this week).":"You kept your starters in until it was safe.";
   if(e.k==="close")return e.right?`Right at crunch time: they closed ${STYLE[e.truth].l}.`
     :`They closed ${STYLE[e.truth].l}: the answer was "${DEFENSES[STYLE[e.truth].answer].l}".`;
   return "";

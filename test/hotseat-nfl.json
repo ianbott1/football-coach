@@ -1,5 +1,5 @@
 {
- "fp": "75cbb020c399287c",
+ "fp": "31479aefe0153a59",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -240,6 +240,11 @@
    "fp": "75cbb020c399287c",
    "from": "6d4baf4750deaeae",
    "note": "Round 35: football reads the opponent's defense (scouting report, reads in the second quarter and after half-time) and adds the onside kick and late-defense calls. Control with them off matches the previous fingerprints exactly."
+  },
+  {
+   "fp": "31479aefe0153a59",
+   "from": "75cbb020c399287c",
+   "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
   }
  ],
  "out": [
@@ -262,7 +267,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "e08f825a30c3f35f"
+     "book": "f1cc0464c47c68bd"
     }
    ]
   },
@@ -272,20 +277,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "Lost in the divisional round",
+      "rec": "14-3",
+      "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "0e86c28dc2fe7bc7"
+     "book": "c31b9c250d27b0fd"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "15-2",
+      "rec": "10-7",
       "result": "Lost the Super Bowl",
-      "grade": "A+"
+      "grade": "A"
      },
-     "book": "04e8982def050d75"
+     "book": "6d7be975b758b049"
     }
    ]
   },
@@ -295,20 +300,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the divisional round",
+      "rec": "13-4",
+      "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "7c7577284a9a30a9"
+     "book": "af8b19d2aea2c78f"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "16-1",
+      "rec": "17-0",
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "3524fd9ecb9f52db"
+     "book": "117d225dc08584b6"
     }
    ]
   }

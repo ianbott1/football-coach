@@ -286,6 +286,78 @@ Round 36: the NBA Cup and the coach's notes (Ian):
   career (S.guide), off in a hot seat and for older careers; Help turns them
   back on. Screens only.
 
+Round 37: the same number twice (Muse, Instinct, Grokbot, round 12 of testing):
+- swapDepth moves the season's strength by the change (rosterElo after minus
+  before), not to rosterElo: the season's base isn't rosterElo alone, so a
+  swap and a swap back left the number elsewhere (Muse: 83% then 66% for the
+  same five; college football 33% then 28%). Measured in all six: load,
+  render, swap back and reload now read the same to the decimal (regression
+  87). Draft labels: no change between renders in three games (labels.js in
+  the round notes); they move with a workout or the board, as they should.
+- The title screen blanks its save list when the browser brings the page back
+  from its cache, then reads the saves (Muse: Winnipeg, 3 seasons, painted
+  before Edmonton, 5).
+- Hockey's box score credits the men its game log names, backups too
+  (hkGoalNames, hkLogCredit; Season._resolve on a played game). The log picks
+  scorer and assist from the goal alone; a re-worded goal changes words (w),
+  never the scorer. Old build: 17 of 19 goals in 5 games mismatched; now 0
+  (regression 88). Games don't move (the same dice); awards and history do.
+- The NBA Cup's games are league games: on a Cup night the pair's own games
+  that night are swapped (their opponents meet instead), or the pair's next
+  meeting moves up when both are free; knockout nights the same, on the
+  first night all eight (four, two) teams have a game. Everyone plays exactly
+  82, one game a day (Instinct: a second game on a day you played; 86).
+  The championship counts too (in the real NBA it doesn't): said on the Cup
+  page. NBA_CUP=0: every fingerprint matches round 35 exactly (hot seat
+  19a3071c).
+- The season tally counts reads only ("graded reads only"); calls are priced
+  in wins in the ledger line (Instinct: 11 of 11 right above a call that cost
+  6 games in 100). Football's tally is now reads, like the others.
+- Bundled objectives say each clause as it stands (LEAGUE.goals.clauseLine:
+  college basketball's March, pro football's division and playoff win).
+  Draft-night fit notes use your roster after your re-sign plan
+  (dnRosterAfterPlan). An injured player's cost is said under the chance
+  (injuredLine: "13% without X; about 41% with him"). One label ("to win,
+  before the game", "Chance to win" in the glossary, which no longer says the
+  plan moves it), one calm seat badge ("Secure"), and football's replay
+  figures say each is that option's own rate.
+- Pushed back, measured: hockey's 12-point winger swap moves about a point
+  (a winger is 13% of the team and a starter plays 70% of the minutes); the
+  late call in decided games stays gated (round 33); Very Fast stays a setting.
+- Still to do: a rest-your-starters call for decided games (injury risk is
+  real); retained box scores and a season story page; football's headline and
+  replay figures come from separate replays and can disagree in the margin;
+  soccer's payroll page; hockey's free-agent floor; phrase pools.
+
+Round 38: decided games, and the basketball list (Grokbot):
+- Rest your starters, in decided games: basketball at the late mark up 10-12
+  (13+ the bench comes in by itself), football in the fourth quarter up 14-24
+  with the ball. Resting costs on the floor (basketball: the bench's make-rate
+  cost, half of benchPull, for the last stretch; football: you sit on it and
+  your backups' defense gives up more, FB_REST_DEF) and halves the week's
+  injury chance (REST_HZ 0.5: Season._resolve keeps a rested game in
+  sea.restAt, talent.advance reads it; the same dice, so a rest only ever
+  removes a knock). Measured on common dice when asked: pro basketball 96.8%
+  kept, 94.3% rested; college 97.7 / 97.1; football 99.5-99.9 both ways.
+  Asked in 9% of basketball games and 27-30% of football ones; not right or
+  wrong (unclear), so not in the tally. With it off, every fingerprint
+  matches round 37 exactly (golden and hot seat).
+- Grokbot's card naming a choice he didn't make: not reproduced (107 card
+  lines in Node, 67 in a browser at Very fast). test/card-honest.js keeps
+  watching in the suite. "Saw it all" is now "Every read right".
+- Points for and against in the standings (teamScoring: PPG, OPP, streak in
+  basketball; PF/PA, GF/GA elsewhere), on screens 600px and wider: on a phone
+  they squeezed team names to two letters.
+- Pro basketball: a Finals defeat says "beaten in the final"; "win a series"
+  and the conference-final target say where they stand (clauseLine).
+- Measured, not changed: pro basketball scoring, live games 230.4 a game
+  (league 229.1), playoffs 218.9; the scouting report differs every game of a
+  series (each game has its own seed), the club's tendency doesn't.
+- Still to do: the last-minute choices Grokbot keeps asking for (foul up three,
+  hold for the last shot) need a clock inside the last segment; football's
+  headline and replay figures from one set of replays; a team stats line on
+  phones; a season story page with kept box scores.
+
 Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
 - A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
   soccer's 25' call came up under a tap meant for the game and was graded as

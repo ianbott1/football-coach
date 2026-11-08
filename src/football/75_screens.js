@@ -220,8 +220,7 @@ function liveCallView(){
 let VERDICT_RUNS=1200;          // replays per answer
 const VERDICT_SLACK=0.03;        // within this of the best answer: a good call (it's close)
 const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick",onside:"normal",defend:"normal"};
-const TALLY_LABEL="The better call this season";
-const TALLY_NOTE="Only calls where the choice really mattered are graded; the rest made no real difference.";
+// the tally is reads, as in every game; calls are priced in wins in the ledger line (round 37)
 function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
   if(dp.k==="fourth")return o.indexOf("punt")>=0?"punt":"kick";
   return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }
@@ -274,8 +273,9 @@ function callVerdicts(args,seed,answers,meHome){
    often" above "wins clearly more often", 3 points "better call" and 7 "a little": Grokbot, Muse) */
 const GAP_SAME=3, GAP_CLEAR=7;
 function gapWord(d){ const a=Math.abs(d); return a<=GAP_SAME?"same":a<=GAP_CLEAR?"little":"clear" }
-function readPickLabel(e){ return e.k==="call"?"":(FB_ANSWERS[e.pick]?FB_ANSWERS[e.pick].l:"") }
+function readPickLabel(e){ return e.k==="call"||e.k==="rest"?"":(FB_ANSWERS[e.pick]?FB_ANSWERS[e.pick].l:"") }
 function readText(e){
+  if(e.k==="rest")return e.pick==="rest"?"You rested your starters: the backups ran the clock out, and the snaps they sat can't hurt them (half the chance of a knock this week).":"You kept your starters in until it was safe.";
   if(e.k==="read"||e.k==="prep"){ const t=SCHEMES[e.truth], a=FB_ANSWERS[t.counter].l;
     if(e.k==="prep"&&e.unclear)return `The report was split, a coin flip, so it isn't graded either way. They were ${t.l}.`;
     return e.right?(e.k==="prep"?`Your game plan was right: they were ${t.l}.`:`Your read was right: they were ${t.l}.`)
@@ -295,7 +295,9 @@ function readText(e){
       :gone?" Neither saved it: the game was mostly gone whichever you chose."
       :safe?" The game was mostly won whichever you chose."
       :ks.every(k=>gapWord(e.rk[k]-top)==="same")?" Any of them was a good call.":" As good as any.";
-    return `${e.h}: the game was won in ${list} of replays from that moment. You chose "${lab(e.pk)}".${say}`;
+    // each figure is that option's own win rate, replayed on its own: they don't add up to 100 (Muse: pairs summing
+    // to 159% and 252% read as a mistake)
+    return `${e.h}: replaying the rest of the game from that moment with each option, ${list} of the replays were won (each option's own rate). You chose "${lab(e.pk)}".${say}`;
   }
   // inside the margin the replays can't separate, both ways read the same:
   // a point either side isn't "the better call"

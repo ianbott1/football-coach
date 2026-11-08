@@ -81,6 +81,7 @@ function nflStakes(x){
   return out;
 }
 LEAGUE.ui={
+  standingsCols:STAND_TOTALS("PF","PA"),   // points for and against (Grokbot: a team stats page)
   rankingTab:"Rankings",
   rankingView:nflRankingView,
   projectedField(){const f=SEA.seedsNow(); return f.AFC.concat(f.NFC)},

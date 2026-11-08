@@ -118,3 +118,16 @@ function backfillDraws(h){
   Object.keys(h.teams).forEach(t=>{ const r=h.teams[t];
     if(r&&r.length===3&&res[t])r.push(Math.max(0,LEAGUE.seasonGames(res[t])-r[0]-r[1])) });
 }
+
+/* a team's scoring this season, from its league games (Grokbot: no team points per game anywhere) */
+function teamScoring(t){
+  if(!SEA||!SEA.weeks)return {g:0,pf:0,pa:0,res:[]};
+  const o={g:0,pf:0,pa:0,res:[]};
+  SEA.weeks.forEach(W=>(W.games||[]).forEach(x=>{ if(x.cup||(x.home!==t&&x.away!==t)||x.hp===undefined)return;
+    const me=x.home===t; o.g++; o.pf+=me?x.hp:x.ap; o.pa+=me?x.ap:x.hp; o.res.push(x.winner===t?"W":x.winner?"L":"D") }));
+  return o;
+}
+const STAND_PER_GAME=[{label:"PPG",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pf/o.g).toFixed(1):"-" }},
+  {label:"OPP",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pa/o.g).toFixed(1):"-" }},
+  {label:"STRK",opt:1,val:t=>{ const r=teamScoring(t).res; if(!r.length)return "-"; let k=1; while(k<r.length&&r[r.length-1-k]===r[r.length-1])k++; return r[r.length-1]+k }}];
+const STAND_TOTALS=(f,a)=>[{label:f,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pf:"-" }},{label:a,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pa:"-" }}];

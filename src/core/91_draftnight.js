@@ -151,7 +151,12 @@ function dnRead(pid,t){
 }
 const dnVal=x=>x.sr+(x.spot-x.sr)*0.45;
 /* where he'd fit on your roster as it stands */
-function dnFit(p,t){ const R=U.roster[t]||[], i=p.i, x=dnRead(p.pid,t);
+/* your roster as it will be by the draft: the players you let go are gone (Instinct: a fit note warned a prospect
+   "may not make the roster behind" two men the staff plan had just let go) */
+function dnRosterAfterPlan(t){ const R=U.roster[t]||[], P=S.off&&S.off.picks&&S.off.picks.resign;
+  if(!P||t!==S.myTeam)return R;
+  return R.map((p,i)=>p&&p.k&&p.k.yrs<=1&&!P[i]?null:p) }
+function dnFit(p,t){ const R=dnRosterAfterPlan(t), i=p.i, x=dnRead(p.pid,t);
   if(i===undefined||i<0)return ""; const s=R[i], b=R[BK(i)];
   if(!s)return "fills an empty starting spot";
   if(x.sr>s.r)return `would start over ${esc(s.n)} (${s.r})`;

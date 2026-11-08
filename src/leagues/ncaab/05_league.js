@@ -79,7 +79,7 @@ const LEAGUE={
  ["Program strength","The slow-moving baseline of a school \u2014 resources, recruiting pull, reputation. It moves over years, not weeks, and sets what's expected of you."],
  ["Rating (player)","0\u201399 scale. Starters matter most, but the bench plays a fifth of the minutes, so depth counts."],
  ["Ceiling","How good a player can still become. Freshmen have room; seniors usually don't."],
- ["Win probability","Derived from the rating gap plus home court (about three points). Your gameplan changes how swingy the game is, not the average."],
+ ["Chance to win","The game's own chance, before it starts, from the strengths it will be played with: your lineup and injuries, featuring, staff and home court. Your gameplan doesn't move it: plans change how swingy a game is, and are judged on the result card."],
  ["Automatic bid","Win your conference tournament and you're in the NCAA tournament, whatever your record."],
  ["At-large bid","The 44 best teams without an automatic bid, as the committee sees them: record, strength, who you beat."],
  ["Opening Round","The 12 lowest-seeded at-large teams and the 12 lowest-seeded automatic qualifiers play first, for spots on the 11, 12, 15 and 16 lines."]

@@ -456,6 +456,18 @@ LEAGUE.goals={
     if(p>=1420)return {w:34,par:0,l:"Draft well and show progress. Thirty-five wins would be a statement.",t:"REBUILD"};
     return {w:27,par:0,l:"The bottom of the league. Twenty-five wins would be real movement.",t:"START OVER"};
   },
+  /* the playoff part, as it stands (Grokbot: "win a series" still unmet after three series wins) */
+  clauseLine(e,my){
+    if(!e.par)return null;
+    const sea=SEA, all=[].concat(...Object.values(sea.series||{})).filter(x=>x&&x.w&&(x.w[my]!==undefined||x.a===my||x.b===my));
+    const won=all.filter(x=>x.winner===my).length, out=all.some(x=>x.winner&&x.winner!==my);
+    const inP=!!(sea.seeds&&sea.seeds[my]);
+    const want=e.par>=2.2?2:e.par>=1.3?1:0, what=want===2?"reach the conference final":want===1?"win a series":"";
+    if(sea.phase==="week")return want?`Still to do: make the playoffs and ${what}.`:"Still to do: make the playoffs.";
+    if(!inP&&!all.length)return "Missed the playoffs.";
+    if(won>=want)return want?`${won} series won: done.`:"Into the playoffs: done.";
+    return out?`In the playoffs, but out before you could ${what}.`:`In the playoffs. Still to do: ${what}.`;
+  },
   isTitle(result){ return /NBA CHAMPIONS/i.test(result) },
   firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
