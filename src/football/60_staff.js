@@ -206,6 +206,11 @@ function staffTake(dp, ctx){
       : [`Whatever we did to get here \u2014 more of that, please.`,`Don't change a thing. It's working!`,`We're winning! Keep doing the winning thing.`][seed%3],seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
+  else if(dp.k==="tied"){
+    R.push({who:"bears", pick:"push", line:`TIES ARE FOR NECKWEAR. THROW IT DEEP.`});
+    R.push({who:"pearl", pick:["push","sit","push"][Math.abs(seed)%3], line:pearlSay([`We can win this! Let's go and take it!`,`Don't give it away! Hold onto the ball and they'll make the mistake.`,`One drive! That's all we need. Let's go!`][Math.abs(seed)%3],seed)});
+    R.push({who:"capy", pick:"sit", line:`The interception, it seems to me, is the play that loses tied games.`});
+  }
   else if(dp.k==="rest"){
     R.push({who:"bears", pick:"keep", line:`Rest? We'll rest in the off-season.`});
     R.push({who:"pearl", pick:"rest", line:pearlSay(`It's won! Get the starters off before somebody gets hurt.`,seed)});

@@ -1,5 +1,5 @@
 {
- "fp": "99609225f39dc9ec",
+ "fp": "872d7a4f1026facd",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -250,6 +250,11 @@
    "fp": "99609225f39dc9ec",
    "from": "31479aefe0153a59",
    "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
+  },
+  {
+   "fp": "872d7a4f1026facd",
+   "from": "99609225f39dc9ec",
+   "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
   }
  ],
  "out": [
@@ -263,7 +268,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "c1be14574875d5c9"
+     "book": "fa87411f08182f9a"
     },
     {
      "team": "Tennessee",
@@ -272,7 +277,7 @@
       "result": "Missed the playoffs",
       "grade": "B+"
      },
-     "book": "54043df3739eb2fc"
+     "book": "7ed4fb595b09ab9f"
     }
    ]
   },
@@ -286,7 +291,7 @@
       "result": "Lost in the wild card round",
       "grade": "B"
      },
-     "book": "a9dcbcca6edc9fe0"
+     "book": "7b587482ed763a56"
     },
     {
      "team": "Tennessee",
@@ -295,7 +300,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "e79f946a52d3737f"
+     "book": "3fe876dabae3f79f"
     }
    ]
   },
@@ -305,11 +310,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
+      "rec": "12-5",
       "result": "Lost in the wild card round",
-      "grade": "B+"
+      "grade": "A-"
      },
-     "book": "9a67e4d37c2e32d8"
+     "book": "c76e88dac014e050"
     },
     {
      "team": "Tennessee",
@@ -318,7 +323,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "4ced773a43860d55"
+     "book": "eeb1272fe9906b0c"
     }
    ]
   }

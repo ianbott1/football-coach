@@ -358,6 +358,31 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 40: late calls in close finishes (Grokbot's top request, measured in round 39):
+- Hockey: the last five minutes up one or tied (finalCall, HK_FINAL): up one,
+  shut it down or go for the second; tied, go for the win or play for
+  overtime and the point (down one is the goalie call). 8.4 points a call
+  (tied 10.2, up one 6.4; 70 games x 40 replays). Regular-season overtime
+  (otCall, HK_OTQ): open it up (a goal likelier, the better side's edge 1.5x)
+  or keep the puck (the reverse, toward the shootout): 10.1 points a call,
+  and the better option splits 27 attack / 26 hold, so it's a decision, not
+  a quiz. One-goal finishes with no call: 81% -> 0%; overtime 4 of 4 asked.
+- Soccer at 80', within a goal (finalCall, SC_FINAL; the same sharper modes as
+  the 65' call): 4.6 points a call (65': 5.9). Close finishes with no call:
+  100% -> 22% (the rest out of reach, so the assistant's: callInReach).
+- Football, tied late (k "tied", FB_LATE2): go for the win or play it safe:
+  13.5 points a call in pro football, 12.5 in college. One-score finishes with
+  no call in pro football: 57% -> 0%. Tried and cut: "hurry-up now?" behind
+  with two or three possessions left, about 4 points with over half the calls
+  under 3, even with the stronger mode.
+- New kinds are gated like the other situation calls (GATE_KINDS final, tied).
+  Staff lines for each. test/late-calls.js joins the suite: each game's close
+  finishes must ask something (hockey at most 15% empty, the rest 25-60%).
+- Control (HK_FINAL, HK_OTQ, SC_FINAL, FB_LATE2 off): every golden fingerprint,
+  screens included, and the hot seat match round 39 exactly.
+- Still to do: the season story (Film Room, comebacks, title nights, rivals);
+  hockey name collisions; highlights; baseball.
+
 Round 39: the engine's ends, and a card you can trust (Ian, Grokbot, Muse, Instinct):
 - Football's end game (endgameDrive, twoChart; FB_END): a drive nobody is
   asked about (the computer's, your assistant's) was rolled without the score,

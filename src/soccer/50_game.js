@@ -101,6 +101,18 @@ function halfCall(lead){
        opts:[["sit","Sit on it"],["normal","Keep playing our game"]]};
 }
 function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five","thirty","twenty-five","twenty","fifteen"][LATE_SEG]||String(90-LATE_SEG*5) }
+/* ten minutes left, within a goal: the second late call (round 40: nothing was asked after 65' in 29 of 29 close
+   matches; Grokbot: an attacking change or parking the bus at 80') */
+const SC_FINAL=true;
+function finalCall(lead){
+  const A=["normal","Leave it to your assistant"];
+  if(lead<0)return {k:"final",h:`Down ${-lead}, ten minutes left`,q:"Everyone forward?",
+    opts:[["push","Everyone forward: a striker on for a defender"],["keep","Stay patient"],A]};
+  if(lead>0)return {k:"final",h:`Up ${lead}, ten minutes left`,q:"Close it out?",
+    opts:[["sit","Park the bus: a defender on"],["keep","Keep the ball, keep playing"],A]};
+  return {k:"final",h:"Level, ten minutes left",q:"Go for the win, or take the point?",
+    opts:[["win","Go for the win: fresh legs up front"],["point","Take the point"],A]};
+}
 function lateCall(lead){
   const A=["normal","Leave it to your assistant"];
   if(lead<0)return {k:"late",h:`Down ${-lead}, ${lateLeft()} minutes left`,q:"Throw everything at it?",
@@ -320,7 +332,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(dp.stage===2)assistantSub(side);
       return }
     // late: "keep" holds your plan; "normal" hands it to your assistant (the computer's rule)
-    if(dp.k==="late"){ st.late[side]=v==="keep"?st.mode[side]:v==="normal"?"auto":(AGGR["u"+v]?"u"+v:v); return }
+    if(dp.k==="late"||dp.k==="final"){ st.late[side]=v==="keep"?st.mode[side]:v==="normal"?"auto":(AGGR["u"+v]?"u"+v:v); return }
     st.late[side]=v==="normal"?null:v;
   };
   st.next=function(){
@@ -354,6 +366,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
+    if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,finalCall(lead(sd))) }); if(st.queue.length)return st.next()}
     if(s===LATE_SEG&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd))) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
     if(s>=SEGS){ if(st.h===st.a){ if(st.playoff)extraTime(); else st.draw=true } st.done=true; return fin() }
     const d=segment(s); st.seg++;

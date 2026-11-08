@@ -1,5 +1,5 @@
 {
- "fp": "ababfc5a184ce184",
+ "fp": "097659601dd12a12",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -305,59 +305,64 @@
    "fp": "ababfc5a184ce184",
    "from": "7bf4b76e17579092",
    "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
+  },
+  {
+   "fp": "097659601dd12a12",
+   "from": "ababfc5a184ce184",
+   "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "94fef22f88dab4a9",
-    "post": "2bbbefc5e63af756",
-    "champion": "Toronto",
-    "rec": "a158887fc41b0c47",
-    "poll": "2c3e806fec64bf3e",
-    "heis": "beb1b81b18d165c4",
-    "history": "de354b61f310ab25",
-    "universe": "5ffcef32928be602",
-    "screens": "a0cd748bf6bb7268"
+    "games": "318eb8700f6a1561",
+    "post": "851a8666557193ee",
+    "champion": "Los Angeles",
+    "rec": "2ccbff02305966bf",
+    "poll": "2b24884824b4ad66",
+    "heis": "a892a46ac8e2f35d",
+    "history": "288cfd0a340a5fcf",
+    "universe": "1ef4da86b6e99329",
+    "screens": "d5b9d1ae2834184f"
    },
    {
     "year": 2027,
-    "games": "73eb02e44a961b47",
-    "post": "8e8f44427f74b08a",
-    "champion": "Vegas",
-    "rec": "64d3ded08231f780",
-    "poll": "68dd3ff4ddf4ad31",
-    "heis": "b355cc7720969f2d",
-    "history": "d250b627c68c243c",
-    "universe": "c1d804049c8c8386",
-    "screens": "ee4e6fb5164eff2c"
+    "games": "0b52df8555b817f6",
+    "post": "78ec01def2b6d9f8",
+    "champion": "Florida",
+    "rec": "f1f3c051cc1407f7",
+    "poll": "c0a9ac7d0bc76ea2",
+    "heis": "b830afaf2198eb7c",
+    "history": "789f873403622107",
+    "universe": "cbeef80ac54627a8",
+    "screens": "8980a2ecf506e0a7"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "57a1a62b77eac541",
-    "post": "5f0e7b06eb5925c1",
+    "games": "47c5707a4decd221",
+    "post": "0c1321d63560a5af",
     "champion": "Vegas",
-    "rec": "d21f9ec1d364f80b",
-    "poll": "0024ffbefad27717",
-    "heis": "78bc070c6bfc0a9f",
-    "history": "52cc80f40d350356",
-    "universe": "a0feca8a7540254d",
-    "screens": "ff93ac39f8c4eead"
+    "rec": "debe18fa06875b43",
+    "poll": "d6140fc5cf19972b",
+    "heis": "877b5d8ac99d1b05",
+    "history": "4752fa252c825bc8",
+    "universe": "04364ba3603db5b5",
+    "screens": "25df6c759dd5adb0"
    },
    {
     "year": 2027,
-    "games": "6978ba3bdc3ee538",
-    "post": "b5a1dd402d3ce7c6",
-    "champion": "Colorado",
-    "rec": "e92ec2983a23663c",
-    "poll": "2d6de75119a097f3",
-    "heis": "764108be0c254e79",
-    "history": "c5b40f51c7b2757e",
-    "universe": "de2b66f57ab9058d",
-    "screens": "0b643f41f0223ef0"
+    "games": "1081ad9803be0a9f",
+    "post": "78e1dd3e40bfeeb2",
+    "champion": "St. Louis",
+    "rec": "dc4110442c35999e",
+    "poll": "5563cdbe9adf0e43",
+    "heis": "66c1bed55d00c7f8",
+    "history": "d959f0af0c774e6a",
+    "universe": "b580599d755c6712",
+    "screens": "7fcec6610a0d5d65"
    }
   ],
   "schedules#60": [

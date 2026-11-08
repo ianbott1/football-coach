@@ -174,6 +174,21 @@ function staffTake(dp, ctx){
       : `One goal isn't enough to sit on. Keep going!`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would suggest fewer chances, both ways. Fewer chances, fewer disasters.`});
   }
+  else if(dp.k==="final"){
+    const up=diff>0;
+    R.push({who:"bears", pick:"push", line:up?"ONE GOAL? THAT'S AN INSULT. GO GET ANOTHER.":"OVERTIME IS FOR COWARDS. WIN IT NOW."});
+    R.push({who:"pearl", pick:up?["sit","push","sit"][Math.abs(seed)%3]:["push","push","sit"][Math.abs(seed)%3], line:pearlSay(up
+      ? [`Five minutes! Let's be clever and close it down.`,`Get the second and it's over! Let's go!`,`Block everything! They won't get through us.`][Math.abs(seed)%3]
+      : [`We've got them rattled! Let's win it now!`,`Five minutes to win it! Let's go!`,`A point's a point. Let's not throw it away.`][Math.abs(seed)%3],seed)});
+    R.push({who:"capy", pick:"sit", line:up?`I would suggest the trap. Five minutes is, I find, a long time to be adventurous.`:`One point in the hand, it seems to me, is worth considering.`});
+  }
+  else if(dp.k==="ot"){
+    R.push({who:"bears", pick:"attack", line:`THREE ON THREE. NO FEAR. SEND EVERYONE.`});
+    R.push({who:"pearl", pick:diff>=0&&Math.abs(seed)%2?"attack":"hold", line:pearlSay(Math.abs(seed)%2
+      ? `We're the better team out there! Open it up and let's finish them.`
+      : `Shootouts are fun! Let's keep the puck and not give them anything.`,seed)});
+    R.push({who:"capy", pick:"hold", line:`An odd-man rush the other way, I'm afraid, ends a great many overtimes.`});
+  }
   else if(dp.k==="pull"){
     R.push({who:"bears", pick:"early", line:bearYell("pull",seed)});
     R.push({who:"pearl", pick: diff<=-2?"early":"late", line:pearlSay(diff<=-2

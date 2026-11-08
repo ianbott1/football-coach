@@ -589,6 +589,7 @@ function defendCall(diff,left){
 }
 
 /* Is this a moment worth stopping the game for? */
+const FB_LATE2=true;
 function decisionPoint(state, isUser){
   if (!isUser) return null;
   const q=state.q, idx=state.idx, total=state.total, mine=state.mine,
@@ -614,6 +615,14 @@ function decisionPoint(state, isUser){
       opts:[["push","Open it up"],["normal","Stay patient"]]
     };
   }
+  // round 40: one-score finishes with the ball and no call (4 of 7 in pro football): level late is a real choice
+  // (13.5 points a call in pro football, 12.5 in college)
+  if (FB_LATE2 && veryLate && diff === 0 && !used.tied) {
+    return { k:"tied", h:q>=4?"Tied late":"Tied in the third",
+      b:`Go for the win, or play it safe and don't hand it to them?`+clock,
+      opts:[["push","Go for the win: attack downfield"],["sit","Play it safe: run it, protect the ball"],["normal","Leave it to your assistant"]] };
+  }
+  // cut (round 40): "hurry-up now?" behind with two or three possessions left moved about 4 points, over half the calls under 3
   if (veryLate && diff > 0 && diff <= 10 && !used.protect) {   // up 12 to 14 the choice moved nothing (test/call-weight.js, Nov 2026)
     return {
       k:"protect",

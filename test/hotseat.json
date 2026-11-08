@@ -1,5 +1,5 @@
 {
- "fp": "c6551b37597cc14d",
+ "fp": "3dab7933996afa29",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -245,6 +245,11 @@
    "fp": "c6551b37597cc14d",
    "from": "f97cf2457cc7416d",
    "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
+  },
+  {
+   "fp": "3dab7933996afa29",
+   "from": "c6551b37597cc14d",
+   "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
   }
  ],
  "out": [
@@ -254,20 +259,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "13-3",
-      "result": "Eliminated in the semifinals",
-      "grade": "A+"
+      "rec": "12-2",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A"
      },
-     "book": "33f5cc0129ee861c"
+     "book": "917d2aa5b2b33e1b"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Cure Bowl",
-      "grade": "A"
+      "rec": "8-5",
+      "result": "Won the Boca Raton Bowl",
+      "grade": "A+"
      },
-     "book": "4714b6e655349fa3"
+     "book": "c8ce57440b8ba4a0"
     }
    ]
   },
@@ -277,20 +282,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "15-1",
-      "result": "NATIONAL CHAMPIONS",
+      "rec": "14-2",
+      "result": "Eliminated in the national title game",
       "grade": "A+"
      },
-     "book": "d52b0f3f47a38139"
+     "book": "7c1aa088e3328251"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "3-9",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "7f32b2b681033d57"
+     "book": "4c34990d7092202c"
     }
    ]
   },
@@ -300,20 +305,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-2",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A"
+      "rec": "16-0",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "6e67d87d8879ff62"
+     "book": "9afecea38580e86e"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Cure Bowl",
-      "grade": "A"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "7f1edf5f10d5a8ca"
+     "book": "f3f788e41f34d2e1"
     }
    ]
   }

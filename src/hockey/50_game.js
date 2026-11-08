@@ -117,6 +117,20 @@ function intCall(lead){
     : {k:"lock",h:`Up ${lead} after two`,q:"Twenty minutes left. Sit on it?",
        opts:[["sit","Lock it down: trap, block shots"],["keep","Keep playing our game"],ASSIST]};
 }
+/* the last five minutes, up one or level (round 40: 81% of one-goal finishes asked nothing; Grokbot). Down one is the
+   goalie call. Up one: sit on it or hunt the second; level: go for the win or play for overtime and the point. */
+const HK_FINAL=true, HK_OTQ=true;
+/* three-on-three overtime: open it up (more chances both ways, so the better side's edge shows) or hold the puck and
+   take your chances in a shootout. Edge-dependent by design: the stronger side should attack, the weaker hold. */
+function otCall(){ return {k:"ot",h:"Overtime: three on three",q:"Open it up, or keep the puck and take the shootout if it comes?",
+  opts:[["attack","Open it up: send a defenceman"],["hold","Keep the puck: no risks, shootout if it comes"],ASSIST]} }
+function finalCall(lead){
+  return lead>0
+    ? {k:"final",h:"Up one, five minutes left",q:"Shut it down, or go for the second and finish it?",
+       opts:[["sit","Shut it down: trap, block shots"],["push","Go for the second"],ASSIST]}
+    : {k:"final",h:"Tied, five minutes left",q:"Go for the win, or play for overtime and the point?",
+       opts:[["push","Go for the win"],["sit","Play for overtime: a point is a point"],ASSIST]};
+}
 function pullCall(lead,shortTo){
   // killing a penalty at the question (Grokbot: offered on a penalty kill, with no word of it)
   const pk=shortTo?`, a man short until ${Math.floor(shortTo)}:${String(Math.round((shortTo%1)*60)).padStart(2,"0")}`:"";
@@ -249,7 +263,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(st.h===st.a){ const w=rng.r()<pH?"home":"away"; if(w==="home")st.h++; else st.a++; ev.push({m:60+st.ot*20,side:w,k:"goal",u:rng.int(100)}) }
     } else {
       st.ot=1;
-      if(rng.r()<HK.otGoal){ const w=rng.r()<pH?"home":"away"; if(w==="home")st.h++; else st.a++; ev.push({m:60+rng.int(5),side:w,k:"goal",u:rng.int(100)}) }
+      // your overtime call (round 40): attack makes a goal likelier and tilts it to the better side; hold, the reverse
+      let og=HK.otGoal, ph=pH; ["home","away"].forEach(sd=>{ const m=st.late[sd+"ot"]; if(!m)return;
+        if(m==="attack"){ og=Math.min(0.92,og+0.14); ph=0.5+(ph-0.5)*1.5 } else if(m==="hold"){ og=Math.max(0.3,og-0.2); ph=0.5+(ph-0.5)*0.6 } });
+      if(rng.r()<og){ const w=rng.r()<ph?"home":"away"; if(w==="home")st.h++; else st.a++; ev.push({m:60+rng.int(5),side:w,k:"goal",u:rng.int(100)}) }
       else { st.so=true; if(rng.r()<0.5+(pH-0.5)*HK.soEdge)st.h++; else st.a++ }
     }
     st.drives.push({seg:SEGS,sh:st.h,sa:st.a,ot:st.ot,so:st.so,h:0,a:0,shots:[0,0],pp:[false,false],ev:ev});
@@ -272,6 +289,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal")cpuGoalie(side); return }
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; return }
     if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
+    if(dp.k==="ot"){ st.late[side+"ot"]=v==="attack"||v==="hold"?v:null; return }
+    if(dp.k==="final"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":"auto"; return }
   };
   st.next=function(){
     const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives});
@@ -319,8 +338,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s===10&&!st.t3q){st.t3q=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
         if(humans[sd]&&O.t3&&Math.abs(lead(sd))<=1)queueCall(sd,thirdCall(lead(sd),O.tell,O.t3,st.S[sd].ans)) });
       if(st.queue.length)return st.next()}
-    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
+    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(HK_FINAL&&(L===1||L===0))queueCall(sd,finalCall(L)); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
       if(st.queue.length)return st.next()}
+    if(s>=SEGS&&HK_OTQ&&st.h===st.a&&!st.playoff&&!st.otq){ st.otq=true; ["home","away"].forEach(sd=>queueCall(sd,otCall())); if(st.queue.length)return st.next() }
     if(s>=SEGS){ if(st.h===st.a)overtime(); st.done=true; return fin() }
     const d=segment(s); st.seg++;
     return {drive:d,h:st.h,a:st.a};
