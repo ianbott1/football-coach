@@ -1,5 +1,5 @@
 {
- "fp": "db8479a1f8998aa8",
+ "fp": "e903a1a9f990c18b",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -350,85 +350,110 @@
    "fp": "db8479a1f8998aa8",
    "from": "69787889adb19f84",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "cc428039ceeee80d",
+   "from": "db8479a1f8998aa8",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
+  },
+  {
+   "fp": "a9cb206bef7384f3",
+   "from": "cc428039ceeee80d",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "a9cb206bef7384f3",
+   "from": "a9cb206bef7384f3",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "ce10f4a09a9eba61",
+   "from": "a9cb206bef7384f3",
+   "note": "round 44: basketball foul trouble is a call again (BB_FOULQ), a star off the floor costs more (starOwn 0.034, starDef 0.009); control build with both reverted matches the round-43 fingerprint"
+  },
+  {
+   "fp": "e903a1a9f990c18b",
+   "from": "ce10f4a09a9eba61",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "49064efb3c49c91a",
-    "post": "938a2f5c104b0d77",
-    "champion": "North Carolina",
-    "rec": "09dac16ba571d00c",
-    "poll": "647b28cc9958dc07",
-    "heis": "f0ca3896b10da2b9",
-    "history": "32a7832ebb18996e",
-    "universe": "31d6d45e447330c2",
-    "screens": "a14d0af5a9e66f7e"
+    "games": "9ac64de271821482",
+    "post": "000971c2a4dd76b4",
+    "champion": "Ohio State",
+    "rec": "03f5fa869991ce65",
+    "poll": "e94f12746483b9a9",
+    "heis": "f8899270796f8e98",
+    "history": "1e5fad819c90c50d",
+    "universe": "842809bf1e5a29f9",
+    "screens": "4cd3975500e3ca01"
    },
    {
     "year": 2027,
-    "games": "b1b92c3165b467f8",
-    "post": "1059f7af67083ad2",
-    "champion": "NC State",
-    "rec": "40af74094b43fd21",
-    "poll": "b598b19e38b8b1c5",
-    "heis": "bdc76644c22f567f",
-    "history": "246464a1010cde3f",
-    "universe": "0a12db6e408b32c3",
-    "screens": "4962732bb488face"
+    "games": "65b1524df8559a5b",
+    "post": "c56650ea11dff014",
+    "champion": "Clemson",
+    "rec": "c98ea3b8c3d87c32",
+    "poll": "6504ac92bca9020d",
+    "heis": "51d2b4874878c083",
+    "history": "b5355527042930f0",
+    "universe": "f14c29e3f8edd17f",
+    "screens": "786a05eb5299fd0f"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "20d955f3cced4bf3",
-    "post": "caa7173e03e51e9e",
+    "games": "d088b6d53c4e83c7",
+    "post": "df38882be9321181",
     "champion": "Kansas",
-    "rec": "04df03c1cdda5e0c",
-    "poll": "48e6ddf7423a1bac",
-    "heis": "13bfe33d01f2b2a1",
-    "history": "61b538318a942cfd",
-    "universe": "590ac26570db1ec4",
-    "screens": "73212295ff7d954b"
+    "rec": "6e55dface9d0e135",
+    "poll": "421718e246802035",
+    "heis": "8ec66cc8dfc67bef",
+    "history": "714902bdf4a9e757",
+    "universe": "704e5a68aac20d52",
+    "screens": "47263bae786b0ad9"
    },
    {
     "year": 2027,
-    "games": "8c2507bb9528c65f",
-    "post": "364c9402e9c5d087",
-    "champion": "Michigan",
-    "rec": "030b373698b71d36",
-    "poll": "36b3ad73e74f89ad",
-    "heis": "dc41c7de51860732",
-    "history": "25de26b8b49c7474",
-    "universe": "c19ffe75f931ec9f",
-    "screens": "522e144e327bc4b1"
+    "games": "7a114540610d3a34",
+    "post": "157751871e4d019e",
+    "champion": "North Carolina",
+    "rec": "80a8e9de54611bcb",
+    "poll": "be6c30c974db1a63",
+    "heis": "9a0d5f66a3fffd19",
+    "history": "e2bb8ecb60980add",
+    "universe": "4f185d50a20d27f7",
+    "screens": "cd903a5a4389b9be"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "48511f63568657cc",
-    "post": "e3a3ff808fce7aa7",
-    "champion": "Texas",
-    "rec": "6ed5231c300ce042",
-    "poll": "aa6f6e93d70439ed",
-    "heis": "c94713712b4e6c61",
-    "history": "fdd11bde6db51ce9",
-    "universe": "384c52ebeaa8d02f",
-    "screens": "336a5979ea1b9e50"
+    "games": "8bc6877da9b4cc6c",
+    "post": "b85afba2a10d137f",
+    "champion": "NC State",
+    "rec": "b2b62d3341882b9b",
+    "poll": "6c5db0c98d3d0ccc",
+    "heis": "df14f739db772ccb",
+    "history": "b7730fb27bbd47e2",
+    "universe": "6debdbe4572ee03b",
+    "screens": "0633e735b65f464e"
    },
    {
     "year": 2027,
-    "games": "a7d2f77eef5ddebe",
-    "post": "de7b57f4e9675c7f",
+    "games": "6d4dd4ccd2581e78",
+    "post": "d629f09fd04cd3c3",
     "champion": "Illinois",
-    "rec": "9a4b49f57af492b2",
-    "poll": "327accd82368a4ba",
-    "heis": "fdd43efdedcfd2df",
-    "history": "8f23d8c8613f6d54",
-    "universe": "a20ae7d0ba92beaf",
-    "screens": "f3c9a3ae0a50fb9c"
+    "rec": "a55827325c34ca52",
+    "poll": "0ad4f20ce751bf62",
+    "heis": "a245a44f2819c4fd",
+    "history": "38f707792a8b19ff",
+    "universe": "5052a1ab68307985",
+    "screens": "9d461904cd357204"
    }
   ],
   "schedules#60": [

@@ -64,7 +64,9 @@ function deployRead(g){
 }
 function linesHTML(){
   const R=SEA.roster[S.myTeam], D=S.deploy||{};
-  const nm=i=>R[i]?`${esc(R[i].n.split(" ").slice(-1)[0])} ${R[i].r}`:"&ndash;";
+  // two of one surname get their initials ("SISSOKO 54, SISSOKO 42" made you work out who was who: Instinct)
+  const last=n=>n.split(" ").slice(-1)[0], dup={}; R.forEach(p=>{ if(p&&p.n)dup[last(p.n)]=(dup[last(p.n)]||0)+1 });
+  const nm=i=>R[i]?`${esc(dup[last(R[i].n)]>1?R[i].n.split(" ")[0][0]+". "+last(R[i].n):last(R[i].n))} ${R[i].r}`:"&ndash;";
   const units={f:[`Top line: ${[0,1,2].map(nm).join(", ")}`,`Depth: ${[0,1,2].map(i=>nm(BK(i))).join(", ")}`],
                d:[`Top pair: ${[3,4].map(nm).join(", ")}`,`Depth: ${[3,4].map(i=>nm(BK(i))).join(", ")}`],
                g:[`Starter: ${nm(5)}`,`Backup: ${nm(BK(5))}`]};

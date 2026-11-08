@@ -1,5 +1,5 @@
 {
- "fp": "1bb1f46e223b6064",
+ "fp": "2de3cb65397f2662",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -315,59 +315,84 @@
    "fp": "1bb1f46e223b6064",
    "from": "2009aa4a67d49fd2",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "08885e675d1f4efb",
+   "from": "1bb1f46e223b6064",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
+  },
+  {
+   "fp": "1f91da73fc4f5018",
+   "from": "08885e675d1f4efb",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "1f91da73fc4f5018",
+   "from": "1f91da73fc4f5018",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "88aa45cd0953d293",
+   "from": "1f91da73fc4f5018",
+   "note": "round 44: calls graded in league points (drawVal 1/3, shootouts to their winner), which changes which calls are asked; final call down or up one asked only when it gains (spread); control build with all three reverted matches the round-43 fingerprint"
+  },
+  {
+   "fp": "2de3cb65397f2662",
+   "from": "88aa45cd0953d293",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "c2c39fec6777f52a",
-    "post": "fbe1a616d7c8960a",
-    "champion": "Liverpool",
-    "rec": "4b6b4c6234de3b0c",
-    "poll": "314c0cbef7807167",
-    "heis": "00ad3e484347c13e",
-    "history": "93cb6112ec363453",
-    "universe": "424b747d8e578816",
-    "screens": "c3747fd2e300a80a"
+    "games": "d3426c82d781a2a5",
+    "post": "932bdcaf8e97a3f1",
+    "champion": "Manchester City",
+    "rec": "e44abe3b0ad1847b",
+    "poll": "bac30af691fcfadb",
+    "heis": "1c441ac03d83f1e2",
+    "history": "5638b71b5d8d0c16",
+    "universe": "38598aab1863c5ab",
+    "screens": "319fc18ed9152707"
    },
    {
     "year": 2027,
-    "games": "08bbf40d4b3fbaef",
-    "post": "b7cc776a38801cfc",
-    "champion": "Arsenal",
-    "rec": "f2dfc0f44db6c71e",
-    "poll": "1e9ef7d9ba90272b",
-    "heis": "da43777df1878195",
-    "history": "ff3d108c5857fe44",
-    "universe": "e7c5a46daa7493c2",
-    "screens": "e4853b6eadaa3b7b"
+    "games": "923656d6af3f418d",
+    "post": "dc6e99fb2ed6b98d",
+    "champion": "Manchester City",
+    "rec": "2102bae5aa9dc719",
+    "poll": "4c65840c2a5a75d8",
+    "heis": "fcaa3169d089afc0",
+    "history": "af67a362787c0e3b",
+    "universe": "7bb86e81b58a938c",
+    "screens": "24b0e67ef4fab00d"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "be90becf823319e0",
-    "post": "1f1aad1f35a16226",
-    "champion": "Liverpool",
-    "rec": "cd6c4946c66e4c39",
-    "poll": "9fcf8b6f27d0dfe3",
-    "heis": "9fa32ab6077ec965",
-    "history": "a4338fb4ce2a7838",
-    "universe": "bbee5b325bcaf029",
-    "screens": "3693c50c81a347fe"
+    "games": "085697cb7f754e0b",
+    "post": "4b1e56869081aabb",
+    "champion": "Aston Villa",
+    "rec": "b4147b17d767e5b0",
+    "poll": "f38111083512a157",
+    "heis": "e08a942134cb441d",
+    "history": "be654f9dced92b65",
+    "universe": "b6031699e7c137af",
+    "screens": "67f81f0bb63116af"
    },
    {
     "year": 2027,
-    "games": "5421140aa73be6df",
-    "post": "153a3e365301c5b2",
+    "games": "cf30c5ccde748216",
+    "post": "709f85d5288d0035",
     "champion": "Manchester City",
-    "rec": "acdb4f54d889dfd6",
-    "poll": "a300a9141afb1b9b",
-    "heis": "479842095efd22f5",
-    "history": "45138f63f8182552",
-    "universe": "60b1fa1330c45ffb",
-    "screens": "52ee8368975887fb"
+    "rec": "3294f624b6c0367d",
+    "poll": "79bfd7920cb0df5b",
+    "heis": "5bd58d2adcd64be9",
+    "history": "d6d8e44582e34644",
+    "universe": "c7614b1802665bb2",
+    "screens": "456a313d205cba25"
    }
   ],
   "schedules#60": [

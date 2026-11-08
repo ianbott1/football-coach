@@ -461,8 +461,12 @@ LEAGUE.goals={
     if(!e.par)return null;
     const sea=SEA, all=[].concat(...Object.values(sea.series||{})).filter(x=>x&&x.w&&(x.w[my]!==undefined||x.a===my||x.b===my));
     const won=all.filter(x=>x.winner===my).length, out=all.some(x=>x.winner&&x.winner!==my);
-    const inP=!!(sea.seeds&&sea.seeds[my]);
+    // between the last regular-season day and the seeding, the seeds aren't set yet: read the table as it stands, or
+    // a 71-11 first seed read "Missed the playoffs" for a screen (Instinct, round 42)
+    const unseeded=sea.phase!=="week"&&!(sea.field&&sea.field.length)&&typeof sea.seedsNow==="function", sn=unseeded?sea.seedsNow():null;
+    const inP=!!(sea.seeds&&sea.seeds[my])||!!(sn&&Object.values(sn).some(a=>a.slice(0,6).indexOf(my)>=0));
     const want=e.par>=2.2?2:e.par>=1.3?1:0, what=want===2?"reach the conference final":want===1?"win a series":"";
+    if(sn&&Object.values(sn).some(a=>a.slice(6,10).indexOf(my)>=0))return `Into the play-in: win it to make the playoffs${want?` and ${what}`:""}.`;
     if(sea.phase==="week")return want?`Still to do: make the playoffs and ${what}.`:"Still to do: make the playoffs.";
     if(!inP&&!all.length)return "Missed the playoffs.";
     if(won>=want)return want?`${won} series won: done.`:"Into the playoffs: done.";

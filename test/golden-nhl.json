@@ -1,5 +1,5 @@
 {
- "fp": "7e3ef5d4de21147d",
+ "fp": "723cebc5161289e4",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -315,59 +315,84 @@
    "fp": "7e3ef5d4de21147d",
    "from": "097659601dd12a12",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "4001e9029615a10e",
+   "from": "7e3ef5d4de21147d",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
+  },
+  {
+   "fp": "c929981d8116e1bc",
+   "from": "4001e9029615a10e",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "c929981d8116e1bc",
+   "from": "c929981d8116e1bc",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "df9cfae423544e3d",
+   "from": "c929981d8116e1bc",
+   "note": "round 44: who starts in goal on a back-to-back (HK_GSTART; computer starts the backup, the backup's cost by his rating gap); control build with HK_GSTART off matches the round-43 fingerprint"
+  },
+  {
+   "fp": "723cebc5161289e4",
+   "from": "df9cfae423544e3d",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "318eb8700f6a1561",
-    "post": "851a8666557193ee",
-    "champion": "Los Angeles",
-    "rec": "2ccbff02305966bf",
-    "poll": "2b24884824b4ad66",
-    "heis": "a892a46ac8e2f35d",
-    "history": "6fc2c15a83e8f1cc",
-    "universe": "1ef4da86b6e99329",
-    "screens": "a9606332b8ec7714"
+    "games": "836d9205e12580bf",
+    "post": "0b260e3516f40f10",
+    "champion": "Dallas",
+    "rec": "d9f06ad45d5bfaab",
+    "poll": "78e60273d276118d",
+    "heis": "c858175198a22229",
+    "history": "f7c37f5eb16f41a7",
+    "universe": "e37bb98ede6c4eeb",
+    "screens": "6d045182fc7a47ee"
    },
    {
     "year": 2027,
-    "games": "0b52df8555b817f6",
-    "post": "78ec01def2b6d9f8",
-    "champion": "Florida",
-    "rec": "f1f3c051cc1407f7",
-    "poll": "c0a9ac7d0bc76ea2",
-    "heis": "b830afaf2198eb7c",
-    "history": "3946d21483ab45a7",
-    "universe": "cbeef80ac54627a8",
-    "screens": "60277ff53a11604c"
+    "games": "f9e70fba90f6edf0",
+    "post": "4df78e2cf9d336f7",
+    "champion": "Colorado",
+    "rec": "dac6e4e478c2997a",
+    "poll": "d6e232a72b310df8",
+    "heis": "002bed91bf6be73d",
+    "history": "14196dcb4ce2c1a7",
+    "universe": "ff8c4f7c8bd9e297",
+    "screens": "d2f9abf8281b006b"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "47c5707a4decd221",
-    "post": "0c1321d63560a5af",
+    "games": "7c9629ab0f8b11e7",
+    "post": "859057f6df7c1175",
     "champion": "Vegas",
-    "rec": "debe18fa06875b43",
-    "poll": "d6140fc5cf19972b",
-    "heis": "877b5d8ac99d1b05",
-    "history": "9171dc0f1c703ead",
-    "universe": "04364ba3603db5b5",
-    "screens": "a48f4afc55bcf5ba"
+    "rec": "5e3fe5c8e38231f0",
+    "poll": "5acfba65a691aa8c",
+    "heis": "a8159cf440c089b4",
+    "history": "e547e5e3e565d757",
+    "universe": "ce9539b8cd76a42b",
+    "screens": "b446bccece622792"
    },
    {
     "year": 2027,
-    "games": "1081ad9803be0a9f",
-    "post": "78e1dd3e40bfeeb2",
-    "champion": "St. Louis",
-    "rec": "dc4110442c35999e",
-    "poll": "5563cdbe9adf0e43",
-    "heis": "66c1bed55d00c7f8",
-    "history": "415f550a601de074",
-    "universe": "b580599d755c6712",
-    "screens": "0637b000fbf2bdf8"
+    "games": "23e5c2efcf8b821a",
+    "post": "a20163aa2805792f",
+    "champion": "Edmonton",
+    "rec": "1daad1cf2034ff72",
+    "poll": "6310bab0deba7d1f",
+    "heis": "daf17ddf8ee2576b",
+    "history": "30075b1de36ce6fd",
+    "universe": "f6e780c6cb6c08c7",
+    "screens": "7bfdc2eaf1da6766"
    }
   ],
   "schedules#60": [

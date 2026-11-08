@@ -1,5 +1,5 @@
 {
- "fp": "108475f22c508ec3",
+ "fp": "ab3d7ad9af3eddc0",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -300,59 +300,84 @@
    "fp": "108475f22c508ec3",
    "from": "4fb5f7d1df7f9ab8",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "93e53770c1bc28a8",
+   "from": "108475f22c508ec3",
+   "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
+  },
+  {
+   "fp": "6c06a1a15531da79",
+   "from": "93e53770c1bc28a8",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "6c06a1a15531da79",
+   "from": "6c06a1a15531da79",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "67b33b586460db7f",
+   "from": "6c06a1a15531da79",
+   "note": "round 44: basketball foul trouble is a call again (BB_FOULQ), a star off the floor costs more (starOwn 0.034, starDef 0.009); control build with both reverted matches the round-43 fingerprint"
+  },
+  {
+   "fp": "ab3d7ad9af3eddc0",
+   "from": "67b33b586460db7f",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "63cf3b8758dfef47",
-    "post": "a5b12b651f68256a",
-    "champion": "Oklahoma City",
-    "rec": "0109ba5cc2b6fcad",
-    "poll": "1f6d815483d8e3e6",
-    "heis": "697586c737d37fb5",
-    "history": "25202b98f0010d42",
-    "universe": "6611130f4fa6d5f2",
-    "screens": "e43aeda4152fee4c"
+    "games": "021c6cdc863269c1",
+    "post": "ff670a8b6cb7b16f",
+    "champion": "Boston",
+    "rec": "2b549e93e5b39610",
+    "poll": "27ae56a54a1deaee",
+    "heis": "8f74811a9d08846d",
+    "history": "4e260b933c9fa649",
+    "universe": "83b3130aa8ed6036",
+    "screens": "85fb4a7b002bff7c"
    },
    {
     "year": 2027,
-    "games": "47ce4f36be2c5af7",
-    "post": "1bb7ed812833586e",
-    "champion": "Sacramento",
-    "rec": "72a72dc60a8da724",
-    "poll": "41b722b963180d0d",
-    "heis": "94fe75332c789ee2",
-    "history": "39c1302454d5f99a",
-    "universe": "1b14001d5ad2dca4",
-    "screens": "5fe0c979b05ffcce"
+    "games": "eb9d841a02d32e76",
+    "post": "f62100f00f20a3e1",
+    "champion": "Houston",
+    "rec": "b0d51ad823c69d43",
+    "poll": "af5d981638af951f",
+    "heis": "84ec549d1e1e9ebc",
+    "history": "0232e6584d3200e5",
+    "universe": "33a5e99d16b4577b",
+    "screens": "dd3a312f3ae242a5"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "5d858d7e5bb8c22b",
-    "post": "755799162f0b62b1",
-    "champion": "Golden State",
-    "rec": "f38659a27f94aee1",
-    "poll": "ad5e95e7742bf324",
-    "heis": "25dd8ba075c60cbb",
-    "history": "4ca49cabbf315988",
-    "universe": "68edcc2b9750b646",
-    "screens": "f8fbaf48759d2d6d"
+    "games": "7430296a3eddb92a",
+    "post": "e4269dd4fe1cd6de",
+    "champion": "Philadelphia",
+    "rec": "ae00ba752da0beea",
+    "poll": "b238f495b4a1d134",
+    "heis": "ff388a3acc0072de",
+    "history": "76fb675e9a7f4377",
+    "universe": "89d927fbc5881e13",
+    "screens": "4fae6f2c042f851d"
    },
    {
     "year": 2027,
-    "games": "82db0e37f2a7e256",
-    "post": "1dfb0a29030accea",
-    "champion": "Houston",
-    "rec": "cb32a6585bf2682f",
-    "poll": "ded7a00ee10e4fd2",
-    "heis": "c575db3df784470e",
-    "history": "da150eb671a5c81e",
-    "universe": "116ba6e8be23c28f",
-    "screens": "157a7eaf5ebf96e3"
+    "games": "527f921f30cd438a",
+    "post": "ebea8458d57b6755",
+    "champion": "Milwaukee",
+    "rec": "8afa5a4d1300a11f",
+    "poll": "ba6ec5788ea7454c",
+    "heis": "0e286f10bffcf87b",
+    "history": "de09d1d09b81e58a",
+    "universe": "762dc4be6853eef0",
+    "screens": "8f4abac166ab9728"
    }
   ],
   "schedules#60": [

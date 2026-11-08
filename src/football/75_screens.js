@@ -222,7 +222,7 @@ const VERDICT_SLACK=0.03;        // within this of the best answer: a good call 
 const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick",onside:"normal",defend:"normal"};
 // the tally is reads, as in every game; calls are priced in wins in the ledger line (round 37)
 function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
-  if(dp.k==="fourth")return o.indexOf("punt")>=0?"punt":"kick";
+  if(dp.k==="fourth")return dp.rolled&&o.indexOf(dp.rolled)>=0?dp.rolled:o.indexOf("punt")>=0?"punt":"kick";   // what the computer would have done (round 43)
   return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }
 function callVerdicts(args,seed,answers,meHome){
   const KINDS={fourth:1,two:1,chase:1,protect:1,half:1,onside:1,defend:1};
@@ -244,7 +244,7 @@ function callVerdicts(args,seed,answers,meHome){
             else if(i===j){ rng.f=mulberry32((seed^Math.imul(m+1,0x9E3779B1))>>>0); rng.sp=null; v=o }
             else v=verdictDefault(r.ask);
             e.reply(v); i++ } }
-        const mine=meHome?r.h:r.a, theirs=meHome?r.a:r.h; w+=mine>theirs?1:mine===theirs?0.5:0 }
+        w+=resultVal(r,meHome) }
       rate[o]=w/VERDICT_RUNS });
     const pick=answers[j], best=opts.reduce((a,o)=>rate[o]>rate[a]?o:a,opts[0]);
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0];
@@ -273,9 +273,12 @@ function callVerdicts(args,seed,answers,meHome){
    often" above "wins clearly more often", 3 points "better call" and 7 "a little": Grokbot, Muse) */
 const GAP_SAME=3, GAP_CLEAR=7;
 function gapWord(d){ const a=Math.abs(d); return a<=GAP_SAME?"same":a<=GAP_CLEAR?"little":"clear" }
-function readPickLabel(e){ return e.k==="call"||e.k==="rest"?"":(FB_ANSWERS[e.pick]?FB_ANSWERS[e.pick].l:"") }
+function readPickLabel(e){ if(e.waited)return "Wait and see"; return e.k==="call"||e.k==="rest"?"":(FB_ANSWERS[e.pick]?FB_ANSWERS[e.pick].l:"") }
 function readText(e){
   if(e.k==="rest")return e.pick==="rest"?"You rested your starters: the backups ran the clock out, and the snaps they sat can't hurt them (half the chance of a knock this week).":"You kept your starters in until it was safe.";
+  if(e.waited){ const t=SCHEMES[e.truth];
+    return e.unclear?`You waited and saw: the report was split, so there was nothing to set up for. They were ${t.l}.`
+      :e.right?`You waited, and it paid: the report pointed to ${SCHEMES[e.fav].l}, and they were ${t.l}.`:`You waited, and it cost you: the report was right, they were ${t.l}.` }
   if(e.k==="read"||e.k==="prep"){ const t=SCHEMES[e.truth], a=FB_ANSWERS[t.counter].l;
     if(e.k==="prep"&&e.unclear)return `The report was split, a coin flip, so it isn't graded either way. They were ${t.l}.`;
     return e.right?(e.k==="prep"?`Your game plan was right: they were ${t.l}.`:`Your read was right: they were ${t.l}.`)

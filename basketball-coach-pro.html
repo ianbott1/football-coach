@@ -759,6 +759,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 @media(max-width:1023px){ .hint{display:none} }
 .hint{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.1em;
  text-transform:uppercase;padding:10px 24px 0}
+.bknag{margin:12px 16px;padding:10px 12px;border:1px solid var(--line);background:var(--panel2);font-size:13px;line-height:1.5}
+.bknag .bkbtns{display:flex;gap:8px;margin-top:8px}
 /* round 41: the season story */
 .titlenight{position:relative;overflow:hidden;margin:14px 0 6px;padding:16px 14px 14px;border:1px solid var(--sodium);
  background:linear-gradient(180deg,rgba(244,166,58,.18),rgba(244,166,58,.04));text-align:left}
@@ -871,7 +873,9 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .objs{margin:0 16px 8px}
 .obj{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px solid rgba(42,49,69,.55);font-size:14px}
 .objmark{flex:none;width:16px;color:var(--muted)}.obj.met .objmark{color:var(--turf)}.obj.miss .objmark{color:var(--flag)}
-.objl{flex:1;color:var(--bone)}.obj.miss .objl{color:var(--muted);text-decoration:line-through}
+.objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
+.dinc{margin:6px 0 10px;text-align:left}.dinch{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.dincl{font-size:13px;line-height:1.45;margin:2px 0}.filmpre b{font-weight:600}
+.objre{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--sodium);font-weight:400;margin-right:4px;text-transform:uppercase}.obj.miss .objl{color:var(--muted);text-decoration:line-through}
 .objt{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right}
 .objnote{font-size:11.5px;color:var(--muted);padding-top:7px}
 .achtoast{margin:12px 16px 0;padding:12px 14px;border:1px solid #C9A227;background:linear-gradient(180deg,rgba(201,162,39,.16),transparent);animation:pop .4s ease-out}
@@ -940,7 +944,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="24b29a2";
+<script>const BUILD_ID="e0b0e8e";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -1211,10 +1215,14 @@ function statProd(pos,s){
    null rather than throwing. */
 const store=(function(){
   const claude=()=>{try{return (window.storage&&typeof window.storage.get==="function")?window.storage:null}catch(e){return null}};
-  const local=()=>{try{const L=window.localStorage||localStorage, t="__fc_probe";
-    L.setItem(t,"1"); L.removeItem(t); return L}catch(e){return null}};
+  // reading needs no test write: with storage full the probe's write failed, every read came back empty, the
+  // title screen showed three empty slots over careers still there, and the save check (reading the revision)
+  // got nothing and called it "changed in another tab" (Muse, round 42: careers lost after Reload)
+  const local=()=>{try{const L=window.localStorage||localStorage; void L.length; return L}catch(e){return null}};
   return {
     kind(){ return claude()?"claude":local()?"browser":"none" },
+    // can it take a write right now? (full or blocked storage says no)
+    writable(){ if(claude())return true; const L=local(); if(!L)return false; try{ L.setItem("__fc_probe","1"); L.removeItem("__fc_probe"); return true }catch(e){ return false } },
     async get(k,shared){
       const W=claude(); if(W){try{return await W.get(k,shared)}catch(e){return null}}
       const L=!shared&&local(); if(!L)return null;
@@ -2406,8 +2414,12 @@ LEAGUE.goals={
     if(!e.par)return null;
     const sea=SEA, all=[].concat(...Object.values(sea.series||{})).filter(x=>x&&x.w&&(x.w[my]!==undefined||x.a===my||x.b===my));
     const won=all.filter(x=>x.winner===my).length, out=all.some(x=>x.winner&&x.winner!==my);
-    const inP=!!(sea.seeds&&sea.seeds[my]);
+    // between the last regular-season day and the seeding, the seeds aren't set yet: read the table as it stands, or
+    // a 71-11 first seed read "Missed the playoffs" for a screen (Instinct, round 42)
+    const unseeded=sea.phase!=="week"&&!(sea.field&&sea.field.length)&&typeof sea.seedsNow==="function", sn=unseeded?sea.seedsNow():null;
+    const inP=!!(sea.seeds&&sea.seeds[my])||!!(sn&&Object.values(sn).some(a=>a.slice(0,6).indexOf(my)>=0));
     const want=e.par>=2.2?2:e.par>=1.3?1:0, what=want===2?"reach the conference final":want===1?"win a series":"";
+    if(sn&&Object.values(sn).some(a=>a.slice(6,10).indexOf(my)>=0))return `Into the play-in: win it to make the playoffs${want?` and ${what}`:""}.`;
     if(sea.phase==="week")return want?`Still to do: make the playoffs and ${what}.`:"Still to do: make the playoffs.";
     if(!inP&&!all.length)return "Missed the playoffs.";
     if(won>=want)return want?`${won} series won: done.`:"Into the playoffs: done.";
@@ -2507,19 +2519,19 @@ const BB_COLLEGE = {
   garbage: 13,          // a lead this big after 25 minutes: the benches come in
   benchPull: 0.05,      // the bench's make-rate cost to the side that's ahead
   // reading the game (test/bb-reads.js)
-  answer:{share:-0.10, p3:-0.03, p2:-0.035, f2:0.85, to:0.035, p2t:-0.015},   // the right defense on their style
-  leak:{p2:0.012, p3:0.008},  // the wrong one: easier looks somewhere else
+  answer:{share:-0.15, p3:-0.045, p2:-0.052, f2:0.78, to:0.052, p2t:-0.022},   // the right defense on their style (round 43: x1.5)
+  leak:{p2:0.0135, p3:0.009},  // the wrong one: easier looks somewhere else
   cueTrue:0.4,          // commentary on a style that is about the real one
   favW:4,               // a team's usual offense: this many times as likely as any other. The report is right 61% of
                         // the time in college (70% pro); 5 made it 72%, but more predictable opponents cut March upsets
                         // (6 v 11 favourites 63.5% to 67.1%, real 61.5), so it stays (Nov 2026)
   scouted:6,            // games in a scouting report
   prepped:{p2:-0.008, p3:-0.008},   // the right defense, drilled all week: sharper than a mid-game switch
-  misprep:{p2:0.008, p3:0.006},     // the wrong one from the tip: out of position until you change it
+  misprep:{p2:0.013, p3:0.0095},   // round 43 (0.008/0.006): a guess before tip-off would have paid     // the wrong one from the tip: out of position until you change it
   pnrTell:[2.0,5.0],    // ball screens a segment: other styles, pick-and-roll
-  starOwn:0.022,        // your star off the floor: your make rates, this much lower...
+  starOwn:0.034,        // your star off the floor: your make rates, this much lower... (round 44: 0.022; foul trouble a real call)
   starClutch:2.2,       // ...and this many times more in the closing segments (who finishes games)
-  starDef:0.006,        // ...and theirs this much higher
+  starDef:0.009,        // ...and theirs this much higher (0.006)
   starFouls:2.6,        // a star's fouls a game, an ordinary crew
   foulOut:5,
   teamFouls:17,         // fouls called on a side a game, an ordinary crew
@@ -2636,6 +2648,7 @@ function readCall(stage,T,hint,cur){
     opts:(stage===2&&cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).filter(d=>!(stage===2&&d===cur)).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
     tell:{tpa:T.tpa,fga:T.fga,paint:T.paint,pnr:T.pnr,n:T.n}, best:bbRead(T), pearl:hint||bbRead(T)};
 }
+const BB_FOULQ=true;
 function foulCall(half,X,T,seg){
   return {k:"fouls",h:`Your star has ${X.f} fouls`,b:half===1?"Sit him until the half, or ride it out?":"Sit him until the last ten minutes, or leave him in?",
     opts:[["sit",half===1?"Sit him until the half":"Sit him until crunch time"],["play","Leave him in"],ASSIST],
@@ -2845,7 +2858,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}); return }
     if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }
-    if(dp.k==="fouls"){ if(v!=="play")sitStar(X,dp.half); return }
+    if(dp.k==="fouls"){ if(v!=="play"){ sitStar(X,dp.half); st.pendEv=(st.pendEv||[]).concat([{side:side,k:"sit",f:X.f,u:rng.int(100)}]) } return }   // judged on the card against your assistant's (he sits him), like the other situation calls
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }
     if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; return }
     if(dp.k==="protect"){ st.late[side]=v==="sit"?"sit":v==="keep"?"keep":"auto"; return }
@@ -2873,8 +2886,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // foul trouble, either side, before any segment of regulation
     if(s<SEGS&&st.ft!==s){ st.ft=s; ["home","away"].forEach(sd=>{ const X=st.S[sd], h=troubleAt(s,X); if(!h)return;
         if(h===1)X.asked1=true; else X.asked2=true;
-        // measured as a call (sit him or ride it out, by how tight the referees are)
-        // it was worth nothing either way, so it isn't one: he sits, as most coaches do
+        // yours is a call again (round 44: Muse, "foul trouble is scenery in a game drowning in foul data"): sit him, as
+        // the computer and your assistant do, or ride it out on how tight tonight's referees are
+        if(BB_FOULQ&&humans[sd]){ queueCall(sd,Object.assign(foulCall(h,X,{fouls:st.fouls[sd],lastSeg:st.lastSeg[sd]},s),{half:h})); return }
         sitStar(X,h); st.pendEv=(st.pendEv||[]).concat([{side:sd,k:"sit",f:X.f,u:rng.int(100)}]) });
       if(st.queue.length)return st.next() }
     // the reads: end of the first quarter (two segments), and the half
@@ -3116,6 +3130,12 @@ function staffTake(dp, ctx){
       : `Whatever we did to get here: more of that, please.`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
+  else if(dp.k==="fouls"){
+    const per=dp.avg/Math.max(1,(dp.half===1?2:5)), hot=(dp.pearl||0)>per*1.3;   // Pearl goes by the last stretch alone
+    R.push({who:"bears", pick:"play", line:["FOULS ARE A STATE OF MIND. HE STAYS.","YOU DON'T WIN BY SITTING YOUR BEST PLAYER. LEAVE HIM IN."][Math.abs(seed)%2]});
+    R.push({who:"pearl", pick:hot?"sit":"play", line:pearlSay(hot?`They called ${dp.pearl} on us in the last stretch alone! Sit him before it's five!`:`They've calmed down! Only ${dp.pearl||0} in the last stretch. Keep him out there!`,seed)});
+    R.push({who:"capy", pick:"sit", line:`A man with ${dp.f} fouls, it seems to me, is a man best admired from the bench for a while.`});
+  }
   else if(dp.k==="rest"){
     R.push({who:"bears", pick:"keep", line:`Rest? REST? We rest when we're DEAD.`});
     R.push({who:"pearl", pick:"rest", line:pearlSay(`We've done the work! Let's not get anyone hurt now.`,seed)});
@@ -3232,7 +3252,8 @@ function bbPlayer(team,i,u){
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
   let best=-1; for(let i=0;i<5;i++)if(R[i]&&!hurt.has(i)&&(best<0||R[i].r>R[best].r))best=i; return best>=0?R[best].n:"his star" }
-const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+// a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
+const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 const ordw=n=>["","first","second","third","fourth","fifth","sixth"][n]||n+"th";
 const BB_CUE={
   threes:["{t} letting it fly from deep again","Another kick-out three for {t}","{t} spacing the floor and hunting threes"],
@@ -3324,6 +3345,13 @@ function evidenceHTML(g,my,d,dp){
       ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Close teams often go to a closing play of their own. Some stay with whatever's working.</div>${splitNote(R)}</div>`
       +(d&&d.T?evidenceHTML(g,my,d,{k:"read"}).replace("How "+esc(g[opp])+" are scoring","What they've run tonight"):""); }
+  // foul trouble: how tight tonight's referees are, against an ordinary crew by now (round 44)
+  if(dp.k==="fouls"){ const tight=dp.called>dp.avg*1.2, loose=dp.called<dp.avg*0.85;
+    return `<div class="evid"><div class="evh">Tonight's referees</div>
+      <div class="evr"><span class="evk">Fouls called on your team</span><span class="evv">${dp.called}</span></div>
+      <div class="evr"><span class="evk">An ordinary crew, by now</span><span class="evv">about ${dp.avg}</span></div>
+      <div class="evr"><span class="evk">Your star</span><span class="evv">${dp.f} of ${dp.out}</span></div>
+      <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div></div>` }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
@@ -4989,6 +5017,16 @@ function splitNote(R){
    it, for whether the call was worth it on average. The averages add up to a
    season's ledger: what your calls were worth in wins (Muse and Instinct:
    "nothing shows a good call mattering"). */
+/* what a result is worth to you: a win 1, a loss 0; a draw half, except where the table says otherwise (soccer: a point
+   against three for a win, LEAGUE.drawVal). A cup tie settled on penalties went to the side that won the shootout.
+   Round 44: soccer's calls were graded with a draw as half a win, so "take the point" was worth more than the table
+   gives for it, and level late the two answers rarely differed. */
+function resultVal(r,meHome){
+  const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; if(mine!==th)return mine>th?1:0;
+  if(r.pens)return (r.pens==="home")===!!meHome?1:0;
+  const ev=typeof process!=="undefined"&&process.env&&process.env.DRAW_VAL;   // tests: grade a draw another way
+  return ev?+ev:(LEAGUE.drawVal!=null?LEAGUE.drawVal:0.5);
+}
 const IMPACT_RUNS=400;
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
 /* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
@@ -5004,8 +5042,27 @@ function callInReach(args,seed,answers,meHome,j){
     while(g++<3000){ r=e.next(); if(r.done)break;
       if(r.ask){ let a; if(i<j)a=answers[i]; else { if(i===j){ rng.f=mulberry32((seed^Math.imul(m+101,0x9E3779B1))>>>0); rng.sp=null } a=impactDefault(r.ask) }
         e.reply(a); i++ } }
-    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    s+=resultVal(r,meHome) }
   return s/GATE_RUNS;
+}
+/* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
+   same dice for every option) goes to your assistant too: nothing to gain by taking it. asked, then stamped "close either way", it taught that
+   your calls don't matter (Muse, round 43). Reads and scouting are never skipped: their answer is in the evidence. */
+const SPREAD_ON=true;
+// mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
+// decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
+const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);   // round 44: who starts in goal, foul trouble
+const SPREAD_MIN=0.03, SPREAD_RUNS=60;
+function callSpread(args,seed,answers,meHome,j,opts,dp){
+  const rate=v=>{ let s=0;
+    for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+      while(g++<3000){ r=e.next(); if(r.done)break;
+        if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
+          e.reply(a); i++ } }
+      s+=resultVal(r,meHome) }
+    return s/SPREAD_RUNS };
+  const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
+  return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
 }
 /* the answers as yours: a call your assistant made because the game wasn't in reach is a blank (not graded, not weighed) */
 function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; return answers.map((a,i)=>auto.indexOf(i)>=0?undefined:a) }
@@ -5019,12 +5076,12 @@ function callImpact(args,seed,answers,meHome,runs){
         else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
         else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
         e.reply(a); i++ } }
-    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h};
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h, v:resultVal(r,meHome)};
   };
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<3000){ const r=e.next(); if(r.done)break;
       if(r.ask){ asks.push({dp:r.ask}); e.reply(answers[i]!==undefined?answers[i]:impactDefault(r.ask)); i++ } } }
-  const out=[], score=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0;
+  const out=[], score=x=>x.v;
   asks.forEach((A,j)=>{
     const pick=answers[j], def=impactDefault(A.dp);
     if(pick===undefined||pick===def||!A.dp.opts.some(o=>o[0]===def))return;      // left to him: nothing to compare
@@ -5272,7 +5329,7 @@ function recordStory(played,g,step,meHome){
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
-      w:Math.round(c.worth*100),po:po,title:g.title||null,team:my,k:c.k||null});
+      w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
@@ -5328,6 +5385,15 @@ function rivalLine(opp){
   return `<div class="series">${tag}${esc(c.n)}, their coach: <b>${r.w}-${LEAGUE.draws?r.d+"-":""}${r.l}${!LEAGUE.draws&&r.d?"-"+r.d:""}</b> against him${youWhere}${where}.</div>`;
 }
 
+/* before a game: the last call from the Film Room against this side (round 45: the room was a page nobody opened
+   before the games it was about) */
+const FILMPRE_ON=true;
+function filmLine(opp){
+  if(!STORY_ON||!FILMPRE_ON||!S.film)return "";
+  const F=S.film.filter(x=>x.opp===opp&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
+  const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`;
+  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${/assistant/i.test(F.def||"")?"his call":esc(F.def||"his call")}.</div>`;
+}
 /* who you are, in one line, once there's enough to say it (Muse: "a gambler who won his gambles") */
 function identityLine(){
   const L=S.lifeCalls; if(!L||L.n<8)return "";
@@ -5360,10 +5426,47 @@ function filmRoomHTML(){
 function storyRowLine(st){
   if(!st)return ""; const out=[];
   if(st.cb)out.push(`came back from ${st.cb.by} down ${st.cb.ha} ${esc(st.cb.opp)}${st.cb.wk?" ("+esc(st.cb.wk)+")":""}`);
-  if(st.cl)out.push(`let a ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
+  if(st.cl)out.push(`let ${/^(8|11|18)$|^8\d$/.test(String(st.cl.by))?"an":"a"} ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
   return out.length?`<div class="ystory">${out.join(" &middot; ")}</div>`:"";
 }
 
+/* Soccer: the night it's settled (round 45). A title, automatic promotion or relegation is decided when nobody can
+   catch you (or you can't catch them) on points, often weeks before the last day; the trophy still waits for it.
+   Checked whenever the team page is drawn; kept per season with the step it happened at. Ties on points count
+   against a clinch (goal difference could still go either way). */
+const CLINCH_ON=true;
+function clinchCheck(my){
+  if(!CLINCH_ON||!LEAGUE.draws||typeof DIVS==="undefined"||typeof LEAGUE.points!=="function"||!SEA||(SEA.phase!=="week"&&SEA.step!==LEAGUE.weeks))return null;   // the last day too
+  const d=CONF[my], R=DIVS[d]; if(!R)return null;
+  const C=S.clinch&&S.clinch.year===SEA.year&&S.clinch.team===my?S.clinch:(S.clinch={year:SEA.year,team:my,k:{}});
+  const div=NAMES.filter(t=>CONF[t]===d), P=t=>LEAGUE.points(t,SEA);
+  const done=SEA.half?SEA.step:SEA.step-1;   // the step just played (a cup week's league half doesn't move the step on)
+  const rem=t=>SEA.sched.filter(g=>!g.cup&&g.week>done&&g.week<LEAGUE.weeks&&(g.home===t||g.away===t)).length;
+  const mine=P(my), myMax=mine+3*rem(my), others=div.filter(t=>t!==my), left=rem(my);
+  const step=done;
+  if(!C.k.title&&others.every(t=>P(t)+3*rem(t)<mine))C.k.title={step:step,left:left};
+  if(R.up&&!C.k.title&&!C.k.up&&others.filter(t=>P(t)+3*rem(t)>=mine).length<R.up)C.k.up={step:step,left:left};
+  if(R.down&&!C.k.down&&others.filter(t=>P(t)>myMax).length>=div.length-R.down)C.k.down={step:step,left:left};
+  return C;
+}
+function clinchText(k,x,my){
+  const name=LEAGUE.conf.names[CONF[my]], spare=x.left?`, with ${x.left} game${x.left===1?"":"s"} to spare`:"";
+  return k==="title"?{h:"Champions",l:`${esc(my)} are ${esc(name)} champions${spare}. Nobody can catch you now.${DIVS[CONF[my]].up?" Promotion with it.":""}`}
+    :k==="up"?{h:"Promoted",l:`${esc(my)} are going up${spare}: a top-${DIVS[CONF[my]].up} finish in ${esc(typeof divThe==="function"?divThe(CONF[my]):name)} can't be taken off you.`}
+    :{h:"Relegated",l:`It's done: ${esc(my)} can't climb out of the bottom ${DIVS[CONF[my]].down} now${spare}.`};
+}
+/* on the result card of the game that settled it */
+function clinchHTML(my){
+  const C=clinchCheck(my); if(!C||!flash||flash.step===undefined)return "";
+  return Object.keys(C.k).filter(k=>C.k[k].step===flash.step).map(k=>{ const t=clinchText(k,C.k[k],my);
+    return k==="down"?`<div class="clinch dn"><div class="tnhead">${t.h}</div><div class="tnline">${t.l}</div></div>`
+      :`<div class="titlenight"><div class="tnconf" aria-hidden="true">${"<i></i>".repeat(18)}</div><div class="tnhead">${t.h}</div><div class="tnline">${t.l}</div></div>` }).join("");
+}
+/* in a sim digest: anything settled in the weeks simmed */
+function clinchDigest(my,from,to){
+  const C=clinchCheck(my); if(!C)return [];
+  return Object.keys(C.k).filter(k=>C.k[k].step>=from&&C.k[k].step<to).map(k=>{ const t=clinchText(k,C.k[k],my); return `<b>${t.h}.</b> ${t.l}` });
+}
 /* title night (Instinct: "a career's biggest night presented like a Tuesday in January") */
 function titleNightHTML(my){
   if(!STORY_ON)return "";
@@ -5456,12 +5559,68 @@ function objStatus(o,my){
     // played is in week order already: SEA.weeks
     if(best>=o.n)return {s:"met",t:`${best} in a row`};
     return done?{s:"miss",t:`Best run ${best}`}:{s:"on",t:`Best so far ${best}`} }
+  if(o.k==="last"){ const G=myLeagueGames(my).filter(g=>g.week>=o.from);
+    let w=0; for(let k=o.from;k<Math.min(SEA.weeks.length,LEAGUE.weeks);k++)(SEA.weeks[k].games||[]).forEach(x=>{ if(!x.cup&&(x.home===my||x.away===my)&&x.winner===my)w++ });
+    const left=G.filter(g=>g.week>=SEA.step).length;
+    if(w>=o.n)return {s:"met",t:`${w} won`};
+    if(w+left<o.n||done)return {s:"miss",t:`${w} won, ${o.n} needed`};
+    return {s:"on",t:`${w} won, ${left} to play`} }
   if(o.k==="home"){ const w=played.filter(g=>g.home===my&&!g.neutral&&g.winner===my).length;
     const left=myLeagueGames(my).filter(g=>g.home===my&&!g.neutral&&g.week>=SEA.step).length;
     if(w>=o.n)return {s:"met",t:`${w} won`};
     if(w+left<o.n||done)return {s:"miss",t:`${w} won, ${o.n} needed`};
     return {s:"on",t:`${w} won, ${left} to play`} }
   return {s:"on",t:""};
+}
+/* Re-aimed (round 45): an objective settled with a third of the season still to play, met or missed, leaves a
+   stretch with nothing on it (a series won by November, a streak gone in week 3). The board sets one more, at most
+   two a season: the side just above you in the table now, or so many wins from the games left (a little better than
+   your rating says, as the home record is). Set the first time it's seen and kept, so a reload doesn't move it. */
+const REAIM_ON=true, REAIM_MAX=2;
+function reaimObjectives(my){
+  if(!REAIM_ON||!SEA||SEA.phase!=="week"||!S.obj||S.obj.year!==SEA.year||S.obj.team!==my)return;
+  const O=S.obj; O.extra=O.extra||[]; if(O.extra.length>=REAIM_MAX)return;
+  const all=myLeagueGames(my), left=all.filter(g=>g.week>=SEA.step);
+  if(left.length<Math.max(3,Math.ceil(all.length/3)))return;
+  const settled=O.list.concat(O.extra).filter(o=>!o.re&&objStatus(o,my).s!=="on");
+  settled.forEach(o=>{ if(O.extra.length>=REAIM_MAX)return; o.re=SEA.step;
+    const used=O.list.concat(O.extra), pos=t=>LEAGUE.position?LEAGUE.position(t):standRank(t), mine=pos(my);
+    const above=NAMES.filter(t=>CONF[t]===CONF[my]&&t!==my&&pos(t)===mine-1)[0];
+    if(above&&!used.some(x=>(x.k==="above"&&x.opp===above)||x.k==="top"))O.extra.push({k:"above",opp:above,l:`Finish above ${above}`,re0:SEA.step});
+    else if(!used.some(x=>x.k==="last")){ const hfa=LEAGUE.tuning.hfa||0, e=t=>SEA.elo[t]||1500;
+      const p=left.reduce((s,g)=>{ const opp=g.home===my?g.away:g.home, h=g.home===my&&!g.neutral?hfa:g.away===my&&!g.neutral?-hfa:0; return s+1/(1+Math.pow(10,-(e(my)+h-e(opp))/400)) },0)/left.length;
+      const pw=LEAGUE.draws?p*0.74:p, n=Math.max(1,Math.min(left.length,Math.round(left.length*Math.min(0.88,pw)+0.5)));
+      O.extra.push({k:"last",from:SEA.step,n:n,of:left.length,l:`Win ${n} of your last ${left.length}`,re0:SEA.step}) } });
+}
+function objectivesAll(my){ const L=seasonObjectives(my); return S.obj&&S.obj.extra?L.concat(S.obj.extra):L }
+/* what the next game means (round 45): an objective it could settle, and where a win or a loss leaves you */
+function divThe(d){ const n=LEAGUE.conf.names[d]||"the group"; return /^(League |the )/.test(n)?n:"the "+n }   // "the Championship", "League One"
+const MEANS_ON=true;
+function meansStakes(ng,my){
+  const out=[]; if(!MEANS_ON||!SEA||SEA.phase!=="week"||!ng||ng.cup)return out;
+  const opp=ng.home===my?ng.away:ng.home;
+  reaimObjectives(my);
+  const games=[].concat(...SEA.weeks.slice(0,LEAGUE.weeks).map(w=>w.games)).filter(g=>!g.cup&&(g.home===my||g.away===my));
+  let cur=0; games.forEach(g=>{ cur=g.winner===my?cur+1:0 });
+  objectivesAll(my).forEach(o=>{ if(out.length||objStatus(o,my).s!=="on")return;
+    if(o.k==="rival"&&o.opp===opp){ const w=games.filter(g=>(g.home===opp||g.away===opp)&&g.winner===my).length;
+      out.push({p:97,tag:"THE BOARD",l:o.need?(w+1>=o.need?`Win and the season series against ${esc(opp)} is yours: one of the board's objectives.`:`Game ${games.filter(g=>g.home===opp||g.away===opp).length+1} of ${o.n} against ${esc(opp)}: the board wants the series.`):`The board wants this one: beat ${esc(opp)}.`}) }
+    else if(o.k==="above"&&o.opp===opp)out.push({p:96,tag:"THE BOARD",l:`${esc(opp)}: the side the board wants you to finish above. ${objStatus(o,my).t}.`});
+    else if(o.k==="streak"&&cur>0&&cur+1>=o.n)out.push({p:96,tag:"THE BOARD",l:`${cur} in a row. Win and it's ${o.n}: one of the board's objectives.`});
+    else if(o.k==="home"&&ng.home===my&&!ng.neutral){ const w=games.filter(g=>g.home===my&&!g.neutral&&g.winner===my).length; if(w+1>=o.n)out.push({p:96,tag:"THE BOARD",l:`Win here and that's ${o.n} home wins: one of the board's objectives.`}) }
+    else if(o.k==="last"){ const st=objStatus(o,my); const m=/^(\d+) won/.exec(st.t), w=m?+m[1]:0; if(w+1>=o.n)out.push({p:96,tag:"THE BOARD",l:`One more win and it's ${o.n} of your last ${o.of}: the board's re-aimed objective.`}) } });
+  // the table: where a win or a defeat leaves you, by the table's own order (its tiebreaks included): the record
+  // nudged for a moment and put back. The pros and soccer; college tables go by conference record.
+  if(!LEAGUE.standingsCompare||NAMES.filter(t=>CONF[t]===CONF[my]).length<3)return out;
+  const posNow=()=>LEAGUE.position&&LEAGUE.position(my)?LEAGUE.position(my):standRank(my);
+  const R=(SEA.regRec&&SEA.regRec[my])||SEA.rec[my], at=d=>{ R[d]++; try{ return posNow() }finally{ R[d]-- } };
+  const now=posNow(), win=at(0), loss=at(1), name=divThe(CONF[my]);
+  const played=games.length;
+  if(played>=3){
+    if(win<now)out.push({p:62,tag:"THE TABLE",l:`A win takes you ${win===1?"top of":"to "+ordinal(win)+" in"} ${esc(name)}${win===1?"":` (${ordinal(now)} now)`}.`});
+    else if(loss>now)out.push({p:55,tag:"THE TABLE",l:`${ordinal(now)} in ${esc(name)}. A defeat drops you to ${ordinal(loss)}.`});
+  }
+  return out;
 }
 /* where a team stands in its group, for leagues without a table: by win share, then rating */
 function standRank(t){
@@ -5475,16 +5634,19 @@ function standRank(t){
 }
 function objectivesHTML(my){
   if(SEA.phase==="done"&&!S.obj)return "";
-  const L=seasonObjectives(my); if(!L.length)return "";
+  reaimObjectives(my);
+  const L=objectivesAll(my); if(!L.length)return "";
   const why=typeof seatWhyNow==="function"&&SEA.phase!=="done"?seatWhyNow():"";
   return `<div class="grouphead">The board's objectives</div><div class="objs">${why?`<div class="objnote hotwhy">${esc(why)}</div>`:""}${L.map(o=>{const st=objStatus(o,my);
     return `<div class="obj ${st.s}"><span class="objmark">${st.s==="met"?"&#10003;":st.s==="miss"?"&#10007;":"&#9675;"}</span>
-      <span class="objl">${esc(o.l)}</span><span class="objt">${esc(st.t)}</span></div>`}).join("")}
-    <div class="objnote">Each one met is worth reputation: the next job, and the board's patience.</div></div>`;
+      <span class="objl">${o.re0!==undefined?`<b class="objre">Re-aimed</b> `:""}${esc(o.l)}</span><span class="objt">${esc(st.t)}</span></div>`}).join("")}
+    <div class="objnote">Each one met is worth reputation: the next job, and the board's patience.${L.some(o=>o.re0!==undefined)?" A re-aimed one counts in place of one missed.":""}</div></div>`;
 }
 /* at the end of the season: how many were met, and what it's worth */
 const OBJ_REP=2.5;
-function objectivesMet(my){ return seasonObjectives(my).filter(o=>objStatus(o,my).s==="met").length }
+// a re-aimed objective counts in place of one missed: the board still judges three (more would inflate reputation,
+// which fades 6% a season: two more met a season would settle 40 points higher)
+function objectivesMet(my,orig){ const L=seasonObjectives(my), n=(orig?L:objectivesAll(my)).filter(o=>objStatus(o,my).s==="met").length; return Math.min(L.length,n) }
 
 /* ---- achievements ---- */
 const ACH=[
@@ -5520,7 +5682,7 @@ function checkAchievements(){
   if(SEA.phase==="done"){
     const rec=(SEA.regRec||SEA.rec)[my];
     if(rec&&rec[1]===0)unlock("unbeaten");
-    if(objectivesMet(my)>=3)unlock("board");
+    if(objectivesMet(my,true)>=3)unlock("board");
     const res=SEA.seasonResult(my)||"";
     if(LEAGUE.draws&&/[Pp]romoted/.test(res))unlock("promoted");
     if(SEA.champion===my){ unlock("champ");
@@ -6335,10 +6497,10 @@ function liveTick(){
         continue;
       }
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
-      if(typeof GATE_KINDS!=="undefined"&&GATE_KINDS[r.ask.k]&&live.args&&!live.h2h){
+      if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
-        const p=callInReach(live.args,liveSeed(live.step),live.replay,meH,j);
-        if(p<GATE_LO||p>GATE_HI){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
+        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
@@ -6461,19 +6623,22 @@ function skipCupNight(){
   if(!LEAGUE.splitCup||!SEA.half||SEA.phase!=="week")return;
   const teams=isHotSeat()?S.coaches.map((c,i)=>i===(S.turn||0)?S.myTeam:c.myTeam):[S.myTeam];
   if(teams.some(t=>SEA.gamesFor(t,SEA.step).length))return;
-  SEA.userTeam=S.myTeam; SEA.advance(); S.steps++;
+  SEA.userTeam=S.myTeam; SEA.advance(); clinchAfter(); S.steps++;
 }
 /* Everyone has had their turn: play out the rest of the league. */
 function resolveWeek(step){
   handoffNotes={};
   SEA.userTeam=S.myTeam;
   const wasCup=!!SEA.half, wasPost=SEA.phase!=="week";
-  SEA.advance();
+  SEA.advance(); clinchAfter();
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
   if(isHotSeat())plan="balanced";               // one coach: your gameplan stays as you set it
   flash={type:wasPost?"post":"week",step:step,cup:wasCup};     // a live playoff game gets its result card too
+  // on a phone the result card is on the Team view: a game finished from Scores showed only the bracket (Instinct,
+  // round 42: "a playoff win without an ending")
+  if(!isWide())view="team";
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   save(); render();
 }
@@ -6661,13 +6826,22 @@ let savePending=null;
    six games gone), which testers saw as careers "coming back" after an
    erase, title summaries a season behind, and a playoff series that changed
    on reload. Now the older tab stops saving and says so. */
-let saveRev=null, staleTab=false;
+let saveRev=null, staleTab=false, saveFail=false;
 const REVKEY=n=>KEYFOR(n)+"-rev";
-async function readRev(n){ try{ const r=await store.get(REVKEY(n)); return r?(+r.value||0):0 }catch(e){ return 0 } }
+async function readRev(n){ try{ const r=await store.get(REVKEY(n)); return r?(+r.value||0):0 }catch(e){ return null } }
 async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
-function staleTabHTML(){ return staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
-  <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"" }
+/* a save that didn't land is said at once, not only on the way out: the browser's storage for these six games is
+   full (every career, every game, one allowance) or blocked */
+function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does).":"This browser's storage for these games is full: every career in all six games shares one allowance."} Download a backup now so nothing is lost, then erase a career you don't need from the title screen.
+  <button class="skip small" id="savefailbk">Download a backup</button></div>`:"" }
+/* once a season, as it's banked: a career lives only in this browser; a file keeps it safe (Muse: "nothing ever
+   points at" the backup) */
+function backupNagHTML(){ if(!S||!S.myTeam||S.h2h||S.backedUp===SEA.year||(S.history||[]).length<1)return "";
+  return `<div class="bknag"><b>Season banked.</b> Your career lives in this browser's storage, which can be cleared or fill up. A backup file keeps it safe.
+    <span class="bkbtns"><button class="skip small" id="offbk">Download a backup</button><button class="skip small" id="offbkno">Not now</button></span></div>` }
+function staleTabHTML(){ return saveFailHTML()+(staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
+  <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"") }
 function save(){
   if(savePending)return savePending;
   savePending=(async()=>{
@@ -6681,12 +6855,13 @@ function save(){
     if(!S||!S.myTeam)return false;
     if(staleTab)return false;
     if(saveRev!==null&&S.myTeam){ const cur=await readRev(slot);
-      if(cur!==saveRev){ staleTab=true; render(); return false } }
+      if(cur!==null&&cur!==saveRev){ staleTab=true; render(); return false } }
     S.league=LEAGUE.id;                                   // every save says which game it's from
     if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0),done:SEA.phase==="done",
       w:SEA.rec[S.myTeam][0],l:SEA.rec[S.myTeam][1],d:(SEA.drw&&SEA.drw[S.myTeam])||0,banked:!!(S.off&&S.off.year===SEA.year)};
   try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
     if(saveOK&&S.myTeam)saveRev=await bumpRev(slot);
+    if(saveFail!==!saveOK){ saveFail=!saveOK; render() }
     return saveOK;
   })();
   return savePending;
@@ -6914,7 +7089,7 @@ function skipIdleDays(){
   while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
     // the same bookkeeping as any advance: a reload replays exactly S.steps steps
     SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
-    SEA.advance(); S.steps++;
+    SEA.advance(); clinchAfter(); S.steps++;
   }
 }
 /* In the postseason, a round with no game of yours is the league's, not
@@ -6937,7 +7112,7 @@ function simPostOn(ph){
   let g=0, was=ph;
   while(SEA.phase!=="week"&&SEA.phase!=="done"&&g++<300){
     was=SEA.phase;
-    SEA.userTeam=S.myTeam; SEA.advance(); SEA.forcedList=[]; SEA.forced=null; S.steps++;
+    SEA.userTeam=S.myTeam; SEA.advance(); clinchAfter(); SEA.forcedList=[]; SEA.forced=null; S.steps++;
     if((LEAGUE.post.stopAfter||["selection"]).indexOf(was)>=0){ view="scores"; break }     // a moment to see, not sim past: Selection Sunday, the field
     // (and shown: the click stopped there with the team page still up, so it looked like nothing happened: Grokbot)
     if(SEA.phase!=="done"&&SEA.postMatchup(S.myTeam))break;
@@ -6945,6 +7120,8 @@ function simPostOn(ph){
   LEAGUE.ui.afterAdvance(was);                  // the views follow the last round played (Selection Sunday's field)
   flash={type:"post"}; reveal=null; save(); render();
 }
+/* soccer: a title, promotion or relegation settled by the week just played (95_story clinchCheck) */
+function clinchAfter(){ if(typeof clinchCheck==="function"&&S.myTeam)try{ clinchCheck(S.myTeam) }catch(e){} }
 function doAdvance(){
   scoreWk=null;                                   // Scores follows the new week
   skipIdleDays();
@@ -6982,7 +7159,7 @@ function doAdvance(){
   }
   SEA.userTeam=S.myTeam;
   const wasCup=!!SEA.half;
-  SEA.advance();
+  SEA.advance(); clinchAfter();
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
@@ -6990,6 +7167,7 @@ function doAdvance(){
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   LEAGUE.ui.afterAdvance(ph);
   flash={type:SEA.phase==="week"||before<LEAGUE.weeks?"week":"post",step:before,cup:wasCup};
+  if(!isWide()&&heroGame())view="team";              // your result first, on a phone too (round 42)
   const g=heroGame();
   const rk=SEA.poll.rankMap();
   if(g&&!prefersReduced()&&(S.watchMode||"all")==="never"){
@@ -7382,6 +7560,9 @@ function heroResult(){
         :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
+    // a conference tournament loss before Selection Sunday isn't the end of the season (Instinct, round 42)
+    else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&!(SEA.field&&SEA.field.length)&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)))
+      move=`<div class="hmove dn">Out of the ${esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/Tournament Tournament/,"Tournament"))}. Selection Sunday decides the rest.</div>`;
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   const cupRes=LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(Object.assign({week:flash&&flash.step},g),my):null;   // a league's own line (the NBA Cup's group games, league games too)
@@ -7398,7 +7579,7 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${won&&SEA.champion===my&&/Champions/.test(move)&&typeof titleNightHTML==="function"?titleNightHTML(my):""}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${won&&SEA.champion===my&&/Champions/.test(move)&&typeof titleNightHTML==="function"?titleNightHTML(my):""}${typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):""}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
       return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
@@ -7439,7 +7620,7 @@ function readsHTML(step){
   // a game you watched with no call in it gets a line, not silence (Instinct: a 34-23 win moved on without a word)
   const au=((S.callAuto||{})[callKey(step)]||[]).length, asked=Math.max(0,((S.calls||{})[callKey(step)]||[]).length-au);
   // the calls your assistant took while the game wasn't in the balance: said, not graded (Grokbot: "graded separately")
-  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} while the game wasn't in the balance; ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
+  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} that couldn't change much tonight (the game out of reach, or the options too close to matter); ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
   if(P0.length&&!P.length){
     // every call shown and left to the assistant: "none of the moments came up" was false (round 39)
     if(asked&&P0.some(p=>(p.impact||[]).length))return auLine?`<div class="reads">${auLine}</div>`:"";   // yours are judged above, against the assistant
@@ -7459,7 +7640,7 @@ function readsHTML(step){
   // a read goes by its own headline, the name it had on screen and in the line above ("First intermission" up top
   // and "First read" below read as two calls: round 39); the scouting report by that name
   const seen={}, label=x=>{ const k=x.k, n=seen[k]=(seen[k]||0)+1;
-    if(k!=="prep"&&k!=="rest"&&x.h)return String(x.h).replace(/<[^>]+>/g,"");
+    if(k!=="prep"&&k!=="rest"&&k!=="call"&&x.h)return String(x.h).replace(/<[^>]+>/g,"");
     return k==="prep"?"Scouting report":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
@@ -7607,6 +7788,7 @@ function stakesFor(ng){
     l:`Unbeaten: ${recStr(my)}. Nobody has found a way past you yet.`});
 
   out.push(...LEAGUE.ui.stakes({my:my,opp:opp,rk:rk,wk:wk,left:left,w:w,l:l,cp:cp}));
+  if(typeof meansStakes==="function")out.push(...meansStakes(ng,my));   // round 45: what this game means (an objective, the table)
   const st=streakOf(my);
   if(!st.won&&st.n>=3)out.push({p:74,tag:"SLIDE",
     l:`${st.n} straight losses. The seat under your coach is getting warm.`});
@@ -7629,7 +7811,10 @@ function stakesFor(ng){
         :`${at} A big ask. Nobody expects it, which is what would make it.` })(winProb(my,opp,ng.home===my,ng.neutral))});
 
   out.sort((x,y)=>y.p-x.p);
-  return out.slice(0,2);
+  // what this game means (round 45) always gets its line: a third, when two others outrank it
+  const top=out.slice(0,2), mean=out.find(x=>x.tag==="THE BOARD"||x.tag==="THE TABLE");
+  if(mean&&top.indexOf(mean)<0)top.push(mean);
+  return top;
 }
 
 /* A season misses expectations when its grade says so: "Short of the mark"
@@ -7678,7 +7863,11 @@ function seatBadge(){
     // college basketball's second year, with no warning all season that missing the tournament would cost the job)
     let res="";
     if(LEAGUE.ui.projectedField&&SEA.phase==="week"&&w+l>=6){ try{ const f=LEAGUE.ui.projectedField(); if(f&&f.length&&f.indexOf(my)<0)res="Projected outside the field" }catch(e){} }
-    g=seasonGrade(paceW,games-paceW,res,exp) }
+    // in the postseason: the wins you have and the run so far, not a pace scaled to the regular season (a Final Four
+    // team read "Under pressure: behind target" beside "24 wins reached ... Sweet 16: done": Instinct, round 42)
+    if(SEA.phase!=="week"&&typeof SEA.seasonResult==="function"){ let r2=""; try{ r2=SEA.seasonResult(my)||"" }catch(e){}
+      g=seasonGrade(w,l,r2,exp) }
+    else g=seasonGrade(paceW,games-paceW,res,exp) }
   if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
   return `<span class="seat cool">Secure</span>`;
 }
@@ -8011,7 +8200,7 @@ function nextUpHTML(my,rk){
           ? "you've won "+ser.streak.n+" straight"
           : esc(ser.streak.team)+" has won "+ser.streak.n+" straight"}`:""}
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
-      </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}${typeof rivalLine==="function"?rivalLine(opp):""}
+      </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}${typeof rivalLine==="function"?rivalLine(opp):""}${typeof filmLine==="function"?filmLine(opp):""}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
       ${cupNight?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} ${esc(LEAGUE.cup.rule||"")}</span></div>
         <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>`
@@ -8898,6 +9087,7 @@ function weekWeight(w){
   if(!g)return 0;
   const opp=g.home===my?g.away:g.home;
   if(LEAGUE.rivals.name(my,opp))return 3;
+  if(DIGEST_INC&&typeof rivalName==="function"&&U.coach&&U.coach[opp]&&rivalName()&&U.coach[opp].n===rivalName())return 3;   // your rival coach (round 45)
   const rk=SEA.poll.rankMap()[opp];
   if(rk<=(LEAGUE.bigTop||RANK_TOP))return 3;   // a top side: the top 25 in college, the top ten (five over 82 games) in the pros
   if(w>=LEAGUE.weeks-3)return 2;
@@ -8923,13 +9113,13 @@ function canSkip(){
 
 function simAhead(){
   const sk=canSkip(); if(!sk)return;
-  const from=SEA.step;
+  const from=SEA.step, snap=digestSnap();
   S.plans=S.plans||{};
   while(SEA.step<sk.to&&SEA.phase==="week"){
     S.plans[SEA.step]="balanced"; SEA.plan="balanced";
-    SEA.advance(); S.steps++;
+    SEA.advance(); clinchAfter(); S.steps++;
   }
-  flash={type:"digest",from:from,to:SEA.step};
+  flash={type:"digest",from:from,to:SEA.step,snap:snap};
   reveal=null; save(); render();
 }
 
@@ -8968,7 +9158,7 @@ function newDecision(t){
   const fresh=attnKeys(t).filter(x=>seen.indexOf(x)<0); fresh.forEach(x=>seen.push(x)); return fresh.length>0;
 }
 function simRun(to){
-  const my=S.myTeam, from=SEA.step, stops=simStops();
+  const my=S.myTeam, from=SEA.step, stops=simStops(), snap=digestSnap();
   let why=null;
   S.plans=S.plans||{};
   while(SEA.phase==="week"&&SEA.step<to){
@@ -8977,7 +9167,7 @@ function simRun(to){
     const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
     S.plans[SEA.step]="balanced"; SEA.plan="balanced";
     SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
-    SEA.advance(); S.steps++;
+    SEA.advance(); clinchAfter(); S.steps++;
     if(SEA.phase!=="week")break;
     // after it: did something happen you'd want to know about now?
     const st=streakOf(my);
@@ -8987,7 +9177,7 @@ function simRun(to){
     if(stops.decide&&newDecision(my)){why="decide";break}
   }
   simSheet=false;
-  flash={type:"digest",from:from,to:SEA.step,why:why};
+  flash={type:"digest",from:from,to:SEA.step,why:why,snap:snap};
   reveal=null; save(); render();
 }
 function simSheetHTML(){
@@ -9001,6 +9191,38 @@ function simSheetHTML(){
   </div></div>`;
 }
 
+/* the sim digest's incidents (round 45: a run of results said nothing about what happened in them) */
+const DIGEST_INC=true;
+function digestSnap(){
+  const my=S.myTeam; let obj={};
+  try{ if(typeof objectivesAll==="function")objectivesAll(my).forEach((o,i)=>{ obj[o.l]=objStatus(o,my).s }) }catch(e){}
+  return {pos:(()=>{ try{ return LEAGUE.position?LEAGUE.position(my):standRank(my) }catch(e){ return null } })(), obj:obj};
+}
+function digestIncidents(){
+  const my=S.myTeam, F=flash, out=[];
+  // your injuries
+  (SEA.talent.log[my]||[]).filter(x=>x.kind==="injury"&&x.who&&x.wk>F.from&&x.wk<=F.to).forEach(x=>
+    out.push(`<b>${esc(x.who)}</b> (${esc(x.what)}) got hurt: out ${x.weeks>=14?"for the season":"about "+x.weeks+" "+stepWord(x.weeks)}.`));
+  // the games that stood out: the biggest win, the worst defeat, a rival met
+  const G=[]; for(let i=F.from;i<Math.min(SEA.weeks.length,F.to+1);i++)(SEA.weeks[i]&&SEA.weeks[i].games||[]).forEach(g=>{ if(g.home===my||g.away===my)G.push(g) });
+  const mg=g=>(g.home===my?g.hp-g.ap:g.ap-g.hp), opp=g=>g.home===my?g.away:g.home, sc=g=>g.home===my?`${g.hp}-${g.ap}`:`${g.ap}-${g.hp}`;
+  if(G.length>=3){
+    const bw=G.filter(g=>g.winner===my).sort((a,b)=>mg(b)-mg(a))[0], bl=G.filter(g=>g.winner&&g.winner!==my).sort((a,b)=>mg(a)-mg(b))[0];
+    if(bw)out.push(`Best night: ${sc(bw)} ${haWord(bw,my)} ${esc(opp(bw))}.`);
+    if(bl)out.push(`Worst: ${sc(bl)} ${haWord(bl,my)} ${esc(opp(bl))}.`);
+  }
+  G.filter(g=>LEAGUE.rivals.name(my,opp(g))).forEach(g=>out.push(`${g.winner===my?"Beat":g.winner?"Lost to":"Drew with"} ${esc(opp(g))}, ${sc(g)}: ${esc(LEAGUE.rivals.name(my,opp(g)))}.`));
+  // the board's objectives settled along the way
+  const was=(F.snap&&F.snap.obj)||{};
+  try{ objectivesAll(my).forEach(o=>{ const st=objStatus(o,my).s; if(was[o.l]==="on"&&st!=="on")out.push(st==="met"?`Objective met: ${esc(o.l)}.`:`Objective missed: ${esc(o.l)}.`);
+    else if(was[o.l]===undefined&&o.re0!==undefined)out.push(`The board re-aimed: ${esc(o.l)}.`) }) }catch(e){}
+  if(typeof clinchDigest==="function")out.unshift(...clinchDigest(my,F.from,F.to));   // soccer: a title, promotion or relegation settled
+  // the run you're on, and the table
+  const st=streakOf(my); if(st.n>=3)out.push(st.won?`On a ${st.n}-game winning run.`:`${st.n} defeats in a row.`);
+  const p0=F.snap&&F.snap.pos, p1=(()=>{ try{ return LEAGUE.position?LEAGUE.position(my):standRank(my) }catch(e){ return null } })();
+  if(p0&&p1&&p0!==p1)out.push(`${p1<p0?"Up":"Down"} from ${ordinal(p0)} to ${ordinal(p1)} in ${esc(typeof divThe==="function"?divThe(CONF[my]):LEAGUE.conf.names[CONF[my]]||"the group")}.`);
+  return out.length?`<div class="dinc"><div class="dinch">What happened</div>${out.slice(0,8).map(x=>`<div class="dincl">${x}</div>`).join("")}</div>`:"";
+}
 function digestBlock(){
   const my=S.myTeam;
   const rows=[]; let n=0;
@@ -9022,6 +9244,7 @@ function digestBlock(){
   }
   let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):last<=flash.from?"Week "+(flash.from+1):"Weeks "+(flash.from+1)+"&ndash;"+(last+1)} simulated</div>`;
   if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
+  if(flash.snap&&DIGEST_INC)h+=digestIncidents();   // first: after a long sim it sat under thirty rows of results
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
   h+=`<div class="bsub">Now ${recStr(my)}${
@@ -9228,7 +9451,7 @@ function render(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?LEAGUE.ui.offseasonScreen():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
       (view==="team"?myTeamView():view==="scores"?scoresView():
@@ -9264,6 +9487,9 @@ function render(){
   const cb=el("cback"); if(cb)cb.onclick=()=>{dynCoach=null;render()};
   const scf=el("stconf"); if(scf)scf.onchange=()=>{stConf=scf.value||null; render()};
   const sg=el("stalego"); if(sg)sg.onclick=()=>{ try{location.reload()}catch(e){} };
+  const sfb=el("savefailbk"); if(sfb)sfb.onclick=()=>downloadBackup();
+  const obk=el("offbk"); if(obk)obk.onclick=()=>{ save(); downloadBackup(); S.backedUp=SEA.year; save(); render() };
+  const obn=el("offbkno"); if(obn)obn.onclick=()=>{ S.backedUp=SEA.year; save(); render() };
   const cf=el("cfind"); if(cf)cf.oninput=()=>{coachQ=cf.value;
     const p=cf.selectionStart; render();
     const n=el("cfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
@@ -9742,6 +9968,8 @@ function renderStart(){
 
 window.addEventListener("resize",()=>{
   const w=isWide();
+  // narrowing with a result showing: the card goes where a phone shows it, not away with the side column
+  if(w!==wide&&!w&&S.myTeam&&flash&&(flash.type==="week"||flash.type==="post"))view="team";
   if(w!==wide&&S.myTeam)render();
 });
 window.addEventListener("keydown",e=>{

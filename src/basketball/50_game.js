@@ -25,19 +25,19 @@ const BB_COLLEGE = {
   garbage: 13,          // a lead this big after 25 minutes: the benches come in
   benchPull: 0.05,      // the bench's make-rate cost to the side that's ahead
   // reading the game (test/bb-reads.js)
-  answer:{share:-0.10, p3:-0.03, p2:-0.035, f2:0.85, to:0.035, p2t:-0.015},   // the right defense on their style
-  leak:{p2:0.012, p3:0.008},  // the wrong one: easier looks somewhere else
+  answer:{share:-0.15, p3:-0.045, p2:-0.052, f2:0.78, to:0.052, p2t:-0.022},   // the right defense on their style (round 43: x1.5)
+  leak:{p2:0.0135, p3:0.009},  // the wrong one: easier looks somewhere else
   cueTrue:0.4,          // commentary on a style that is about the real one
   favW:4,               // a team's usual offense: this many times as likely as any other. The report is right 61% of
                         // the time in college (70% pro); 5 made it 72%, but more predictable opponents cut March upsets
                         // (6 v 11 favourites 63.5% to 67.1%, real 61.5), so it stays (Nov 2026)
   scouted:6,            // games in a scouting report
   prepped:{p2:-0.008, p3:-0.008},   // the right defense, drilled all week: sharper than a mid-game switch
-  misprep:{p2:0.008, p3:0.006},     // the wrong one from the tip: out of position until you change it
+  misprep:{p2:0.013, p3:0.0095},   // round 43 (0.008/0.006): a guess before tip-off would have paid     // the wrong one from the tip: out of position until you change it
   pnrTell:[2.0,5.0],    // ball screens a segment: other styles, pick-and-roll
-  starOwn:0.022,        // your star off the floor: your make rates, this much lower...
+  starOwn:0.034,        // your star off the floor: your make rates, this much lower... (round 44: 0.022; foul trouble a real call)
   starClutch:2.2,       // ...and this many times more in the closing segments (who finishes games)
-  starDef:0.006,        // ...and theirs this much higher
+  starDef:0.009,        // ...and theirs this much higher (0.006)
   starFouls:2.6,        // a star's fouls a game, an ordinary crew
   foulOut:5,
   teamFouls:17,         // fouls called on a side a game, an ordinary crew
@@ -154,6 +154,7 @@ function readCall(stage,T,hint,cur){
     opts:(stage===2&&cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).filter(d=>!(stage===2&&d===cur)).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
     tell:{tpa:T.tpa,fga:T.fga,paint:T.paint,pnr:T.pnr,n:T.n}, best:bbRead(T), pearl:hint||bbRead(T)};
 }
+const BB_FOULQ=true;
 function foulCall(half,X,T,seg){
   return {k:"fouls",h:`Your star has ${X.f} fouls`,b:half===1?"Sit him until the half, or ride it out?":"Sit him until the last ten minutes, or leave him in?",
     opts:[["sit",half===1?"Sit him until the half":"Sit him until crunch time"],["play","Leave him in"],ASSIST],
@@ -363,7 +364,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}); return }
     if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }
-    if(dp.k==="fouls"){ if(v!=="play")sitStar(X,dp.half); return }
+    if(dp.k==="fouls"){ if(v!=="play"){ sitStar(X,dp.half); st.pendEv=(st.pendEv||[]).concat([{side:side,k:"sit",f:X.f,u:rng.int(100)}]) } return }   // judged on the card against your assistant's (he sits him), like the other situation calls
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }
     if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; return }
     if(dp.k==="protect"){ st.late[side]=v==="sit"?"sit":v==="keep"?"keep":"auto"; return }
@@ -391,8 +392,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // foul trouble, either side, before any segment of regulation
     if(s<SEGS&&st.ft!==s){ st.ft=s; ["home","away"].forEach(sd=>{ const X=st.S[sd], h=troubleAt(s,X); if(!h)return;
         if(h===1)X.asked1=true; else X.asked2=true;
-        // measured as a call (sit him or ride it out, by how tight the referees are)
-        // it was worth nothing either way, so it isn't one: he sits, as most coaches do
+        // yours is a call again (round 44: Muse, "foul trouble is scenery in a game drowning in foul data"): sit him, as
+        // the computer and your assistant do, or ride it out on how tight tonight's referees are
+        if(BB_FOULQ&&humans[sd]){ queueCall(sd,Object.assign(foulCall(h,X,{fouls:st.fouls[sd],lastSeg:st.lastSeg[sd]},s),{half:h})); return }
         sitStar(X,h); st.pendEv=(st.pendEv||[]).concat([{side:sd,k:"sit",f:X.f,u:rng.int(100)}]) });
       if(st.queue.length)return st.next() }
     // the reads: end of the first quarter (two segments), and the half

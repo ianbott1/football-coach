@@ -11,7 +11,8 @@ function hkPlayer(team,unit,u){
   const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // an injured player is not on the ice (Grokbot: "out 91+ game days" took a penalty)
   const pick=(b&&(u%10)<3)||!p?b:p; return pick?pick.n:null;
 }
-const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+// a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
+const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 function hkSkater(team,u){
   const x=u%100, unit=x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2";
   return hkPlayer(team,unit,u)||"a forward";
@@ -156,6 +157,12 @@ function liveScoreboard(){
 /* ---- the evidence ---- */
 function evidenceHTML(g,my,d,dp){
   const opp=g.home===my?"away":"home";
+  // who's in goal: the two goalies, and what a back-to-back costs (round 44)
+  if(dp.k==="gstart"&&dp.gk){ const G=dp.gk;
+    return `<div class="evid"><div class="evh">Your goalies</div>
+      ${G.s?`<div class="evr"><span class="evk">${esc(G.s.n)} (played last night)</span><span class="evv">${G.s.r}</span></div>`:""}
+      ${G.b?`<div class="evr"><span class="evk">${esc(G.b.n)} (fresh)</span><span class="evv">${G.b.r}</span></div>`:""}
+      <div class="evn">A starter on the second night of a back-to-back plays below his rating; most benches start the backup. ${G.gap!==undefined?(G.gap>=18?"The gap between these two is big.":G.gap<=8?"These two are close.":"The gap between them is middling."):""}</div></div>` }
   if(dp.k==="prep"){ const R=dp.report, n=dp.n||6;
     const e=live&&live.eng&&live.eng.gap!==undefined?(opp==="home"?live.eng.gap:-live.eng.gap):0;
     const tilt=e>60?`${esc(g[opp])} are the stronger side tonight: sides like that forecheck more often than usual.`

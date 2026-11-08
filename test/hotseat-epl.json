@@ -1,5 +1,5 @@
 {
- "fp": "4324ae81fed5caa1",
+ "fp": "d99255c3695c071d",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -220,6 +220,21 @@
    "fp": "4324ae81fed5caa1",
    "from": "b4588203b32fdbfe",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "f2677399baa3a20c",
+   "from": "4324ae81fed5caa1",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "f2677399baa3a20c",
+   "from": "f2677399baa3a20c",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "d99255c3695c071d",
+   "from": "f2677399baa3a20c",
+   "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
   }
  ],
  "out": [
@@ -229,20 +244,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-7-11",
-      "result": "Finished 6th in the Premier League",
+      "rec": "17-9-12",
+      "result": "Finished 7th in the Premier League",
       "grade": "C+"
      },
-     "book": "30c1088f05f9c52d"
+     "book": "6c03430dfcb3cec8"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "18-6-14",
-      "result": "Finished 8th in the Premier League",
+      "rec": "17-6-15",
+      "result": "Finished 9th in the Premier League",
       "grade": "B"
      },
-     "book": "d4eb9c66a2a8d48a"
+     "book": "b94c5ebcb9c15a19"
     }
    ]
   },
@@ -252,20 +267,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "18-11-9",
-      "result": "Finished 7th in the Premier League",
-      "grade": "C+"
+      "rec": "16-15-7",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "8d21b55c922dbd5b"
+     "book": "bf82d675237b50c7"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-9-17",
-      "result": "Finished 13th in the Premier League",
-      "grade": "C+"
+      "rec": "10-9-19",
+      "result": "Finished 16th in the Premier League",
+      "grade": "C"
      },
-     "book": "56a553e57502ecb1"
+     "book": "e59f8273227b837c"
     }
    ]
   },
@@ -275,20 +290,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "15-9-14",
-      "result": "Finished 8th in the Premier League",
-      "grade": "C+"
+      "rec": "24-5-9",
+      "result": "Finished 2nd in the Premier League",
+      "grade": "B"
      },
-     "book": "3b763d514e38e84b"
+     "book": "de3a69722adcdf30"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "13-8-17",
-      "result": "Finished 12th in the Premier League",
+      "rec": "14-6-18",
+      "result": "Finished 13th in the Premier League",
       "grade": "C+"
      },
-     "book": "7f43865555475bb6"
+     "book": "421375c3b56a7cd2"
     }
    ]
   }

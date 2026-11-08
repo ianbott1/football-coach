@@ -759,6 +759,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 @media(max-width:1023px){ .hint{display:none} }
 .hint{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.1em;
  text-transform:uppercase;padding:10px 24px 0}
+.bknag{margin:12px 16px;padding:10px 12px;border:1px solid var(--line);background:var(--panel2);font-size:13px;line-height:1.5}
+.bknag .bkbtns{display:flex;gap:8px;margin-top:8px}
 /* round 41: the season story */
 .titlenight{position:relative;overflow:hidden;margin:14px 0 6px;padding:16px 14px 14px;border:1px solid var(--sodium);
  background:linear-gradient(180deg,rgba(244,166,58,.18),rgba(244,166,58,.04));text-align:left}
@@ -871,7 +873,9 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .objs{margin:0 16px 8px}
 .obj{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px solid rgba(42,49,69,.55);font-size:14px}
 .objmark{flex:none;width:16px;color:var(--muted)}.obj.met .objmark{color:var(--turf)}.obj.miss .objmark{color:var(--flag)}
-.objl{flex:1;color:var(--bone)}.obj.miss .objl{color:var(--muted);text-decoration:line-through}
+.objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
+.dinc{margin:6px 0 10px;text-align:left}.dinch{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.dincl{font-size:13px;line-height:1.45;margin:2px 0}.filmpre b{font-weight:600}
+.objre{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--sodium);font-weight:400;margin-right:4px;text-transform:uppercase}.obj.miss .objl{color:var(--muted);text-decoration:line-through}
 .objt{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right}
 .objnote{font-size:11.5px;color:var(--muted);padding-top:7px}
 .achtoast{margin:12px 16px 0;padding:12px 14px;border:1px solid #C9A227;background:linear-gradient(180deg,rgba(201,162,39,.16),transparent);animation:pop .4s ease-out}

@@ -13,7 +13,8 @@ function bbPlayer(team,i,u){
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
   let best=-1; for(let i=0;i<5;i++)if(R[i]&&!hurt.has(i)&&(best<0||R[i].r>R[best].r))best=i; return best>=0?R[best].n:"his star" }
-const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+// a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
+const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 const ordw=n=>["","first","second","third","fourth","fifth","sixth"][n]||n+"th";
 const BB_CUE={
   threes:["{t} letting it fly from deep again","Another kick-out three for {t}","{t} spacing the floor and hunting threes"],
@@ -105,6 +106,13 @@ function evidenceHTML(g,my,d,dp){
       ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Close teams often go to a closing play of their own. Some stay with whatever's working.</div>${splitNote(R)}</div>`
       +(d&&d.T?evidenceHTML(g,my,d,{k:"read"}).replace("How "+esc(g[opp])+" are scoring","What they've run tonight"):""); }
+  // foul trouble: how tight tonight's referees are, against an ordinary crew by now (round 44)
+  if(dp.k==="fouls"){ const tight=dp.called>dp.avg*1.2, loose=dp.called<dp.avg*0.85;
+    return `<div class="evid"><div class="evh">Tonight's referees</div>
+      <div class="evr"><span class="evk">Fouls called on your team</span><span class="evv">${dp.called}</span></div>
+      <div class="evr"><span class="evk">An ordinary crew, by now</span><span class="evv">about ${dp.avg}</span></div>
+      <div class="evr"><span class="evk">Your star</span><span class="evv">${dp.f} of ${dp.out}</span></div>
+      <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div></div>` }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);

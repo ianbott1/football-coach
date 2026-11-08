@@ -39,12 +39,14 @@ const HK_BASE = {
   pullAgainst:0.20,  // empty-net goals a minute against
   otGoal:0.68,       // chance three-on-three produces a goal (else a shootout)
   soEdge:0.25,       // how much edge counts in a shootout (of the overtime's)
-  counter:{own:1.10, opp:0.85},   // the right answer to their system
-  misread:0.95,      // the wrong answer: your own chances, slightly fewer
+  counter:{own:1.18, opp:0.75},   // the right answer to their system (round 43: 1.10/0.85; a strong reader +5.1 -> +8.4 a game)
+  misread:0.87,      // the wrong answer: your own chances, fewer (0.95: a blind guess before the game paid)
   offNight:0.10,     // how often a goalie has a genuinely bad night...
   offBy:0.060,       // ...and how much more often shots go in
   formSd:0.007,      // an ordinary night's spread
-  backup:0.006,      // the backup: this much worse than the starter on average
+  backup:0.006,      // the backup: this much worse than the starter on average (when the ratings aren't known)
+  backupPer:0.0009,  // ...or this much per rating point behind the starter (round 44)
+  tired:0.015,       // a starter on the second night of a back-to-back: this much worse (round 44)
   softBad:0.65, softOk:0.15,   // goals the commentary calls soft: on a bad night, on an ordinary one
   cueTrue:0.5,       // commentary on a system that is about the real one
   favW:5,            // a club's usual system: this many times as likely as any other (4: 61%, as basketball)
@@ -131,6 +133,14 @@ function finalCall(lead){
     : {k:"final",h:"Tied, five minutes left",q:"Go for the win, or play for overtime and the point?",
        opts:[["push","Go for the win"],["sit","Play for overtime: a point is a point"],ASSIST]};
 }
+const HK_GSTART=true;
+/* the second night of a back-to-back: the tired starter, or the backup (round 44: Muse, "a backup who can plausibly
+   play"). Your assistant starts the backup, as the computer does. */
+function goalStartCall(G){
+  return {k:"gstart",h:"In goal tonight",q:`${G.s?G.s.n:"Your starter"} played last night. Start him tired, or give the backup the night?`,
+    opts:[["starter",`Start ${G.s?G.s.n.split(" ").slice(-1)[0]:"the starter"}: tired, but your best`],["backup",`Start ${G.b?G.b.n.split(" ").slice(-1)[0]:"the backup"}: fresh`],ASSIST],
+    gk:G};
+}
 function pullCall(lead,shortTo){
   // killing a penalty at the question (Grokbot: offered on a penalty kill, with no word of it)
   const pk=shortTo?`, a man short until ${Math.floor(shortTo)}:${String(Math.round((shortTo%1)*60)).padStart(2,"0")}`:"";
@@ -158,10 +168,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const night=()=>rng.r()<HK.offNight?HK.offBy+rng.gauss(0,HK.formSd):rng.gauss(0,HK.formSd);
   const side0=()=>({sys:null, ans:null, form:night(), backupIn:false, ga:0, xga:0, soft:0, sa:0, lastSoft:null,
     tell:{to:0,fe:0,cy:0,n:0}, lastCue:null});
+  /* who's in goal (round 44): on the second night of a back-to-back the computer (and your assistant) starts the
+     backup, as most benches do; the starter, if he plays, is tired. The backup's cost is his rating gap. */
+  const GK=(ctx&&ctx.gk)||{}, bkCost=sd=>GK[sd]&&GK[sd].gap!==undefined?HK.backupPer*Math.max(0,GK[sd].gap):HK.backup;
   const st={h:0,a:0,drives:[],seg:0,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
     mode:{home:planH,away:planA}, late:{home:null,away:null}, asked:{}, queue:[], ask:null,
     ot:0, so:false, done:false, playoff:!!playoff, S:{home:side0(),away:side0()}};
   st.gap=gap;
+  // tonight's form was drawn above; who starts only shifts it (no new dice)
+  const startGoalie=(sd,who)=>{ const X=st.S[sd]; if(who==="starter")X.form+=HK.tired; else { X.backupIn=true; X.startedBk=true; X.form+=bkCost(sd) } };
+  if(HK_GSTART)["home","away"].forEach(sd=>{ if(GK[sd]&&GK[sd].b2b&&!humans[sd])startGoalie(sd,"backup") });
   const other=s=>s==="home"?"away":"home";
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   // a side's system: the better side forechecks, the weaker traps
@@ -183,7 +199,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ans=SYSTEM[st.S[other(side)].sys].counter; st.S[side].prepd=false} };
   // the computer's goalie rule: four in, he's out (once)
   const cpuGoalie=(side)=>{ const X=st.S[side]; if(!X.backupIn&&X.ga>=4)swapGoalie(side) };
-  const swapGoalie=(side)=>{ const X=st.S[side]; X.backupIn=true; X.form=night()+HK.backup; X.ga=0; X.xga=0; X.soft=0; X.sa=0;
+  const swapGoalie=(side)=>{ const X=st.S[side]; X.backupIn=true; X.form=night()+bkCost(side); X.ga=0; X.xga=0; X.soft=0; X.sa=0;
     (st.pendEv=st.pendEv||[]).push({m:st.seg*5,side:side,k:"swap"}) };
   const segment=(s)=>{
     const mH=modeOf(s,"home"), mA=modeOf(s,"away");
@@ -290,6 +306,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; return }
     if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
     if(dp.k==="ot"){ st.late[side+"ot"]=v==="attack"||v==="hold"?v:null; return }
+    if(dp.k==="gstart"){ startGoalie(side,v==="starter"?"starter":"backup"); return }
     if(dp.k==="final"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":"auto"; return }
   };
   st.next=function(){
@@ -300,6 +317,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       const r={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,theirs:Q.side==="home"?st.a:st.h,q:st.seg,side:Q.side};
       st.waiting=r; return r}
     const s=st.seg;
+    if(HK_GSTART&&s===0&&!st.gq){ st.gq=true; ["home","away"].forEach(sd=>{ if(humans[sd]&&GK[sd]&&GK[sd].b2b)queueCall(sd,goalStartCall(GK[sd])) }); if(st.queue.length)return st.next() }
     if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
       if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
       if(st.queue.length)return st.next()}
@@ -352,7 +370,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
    opts.decide for a person who isn't watching. */
 /* each club's usual system this season, and the seed for its scouting report */
 function clubStyle(t,year){ return SYSTEM_KEYS[strHash(t+"|"+year)%SYSTEM_KEYS.length] }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+/* the goalie picture for a game (round 44): the second night of a back-to-back, and the gap between the goalies */
+function gkCtx(t,step){
+  try{ if(typeof SEA==="undefined"||!SEA||!SEA.sched||!SEA.roster||!SEA.roster[t])return null;
+    const b2b=step>0&&SEA.sched.some(g=>g.week===step-1&&(g.home===t||g.away===t)), R=SEA.roster[t], st=R[5], bk=R[BK(5)];
+    if(!st||!bk)return {b2b:b2b};
+    return {b2b:b2b, gap:st.r-bk.r, s:{n:st.n,r:st.r}, b:{n:bk.n,r:bk.r}} }catch(e){ return null } }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, gk:HK_GSTART?{home:gkCtx(h,step),away:gkCtx(a,step)}:undefined, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

@@ -6,10 +6,14 @@
    null rather than throwing. */
 const store=(function(){
   const claude=()=>{try{return (window.storage&&typeof window.storage.get==="function")?window.storage:null}catch(e){return null}};
-  const local=()=>{try{const L=window.localStorage||localStorage, t="__fc_probe";
-    L.setItem(t,"1"); L.removeItem(t); return L}catch(e){return null}};
+  // reading needs no test write: with storage full the probe's write failed, every read came back empty, the
+  // title screen showed three empty slots over careers still there, and the save check (reading the revision)
+  // got nothing and called it "changed in another tab" (Muse, round 42: careers lost after Reload)
+  const local=()=>{try{const L=window.localStorage||localStorage; void L.length; return L}catch(e){return null}};
   return {
     kind(){ return claude()?"claude":local()?"browser":"none" },
+    // can it take a write right now? (full or blocked storage says no)
+    writable(){ if(claude())return true; const L=local(); if(!L)return false; try{ L.setItem("__fc_probe","1"); L.removeItem("__fc_probe"); return true }catch(e){ return false } },
     async get(k,shared){
       const W=claude(); if(W){try{return await W.get(k,shared)}catch(e){return null}}
       const L=!shared&&local(); if(!L)return null;

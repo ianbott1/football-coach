@@ -1,5 +1,5 @@
 {
- "fp": "9ce8c7112f455808",
+ "fp": "5e02ce7b5b04756d",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -260,6 +260,16 @@
    "fp": "9ce8c7112f455808",
    "from": "872d7a4f1026facd",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "5e02ce7b5b04756d",
+   "from": "9ce8c7112f455808",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "5e02ce7b5b04756d",
+   "from": "5e02ce7b5b04756d",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
   }
  ],
  "out": [
@@ -269,20 +279,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "14-3",
-      "result": "Lost the Super Bowl",
+      "rec": "13-4",
+      "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "fa87411f08182f9a"
+     "book": "a4201b2343d8bcb8"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "Missed the playoffs",
-      "grade": "B+"
+      "rec": "6-11",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "9cfae52fa2ad6a60"
+     "book": "f9283b969258af19"
     }
    ]
   },
@@ -292,20 +302,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the wild card round",
-      "grade": "B"
+      "rec": "14-3",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "7b587482ed763a56"
+     "book": "a5ed786a813dfcb8"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "Lost the Super Bowl",
-      "grade": "A+"
+      "rec": "10-7",
+      "result": "Lost the conference championship",
+      "grade": "A"
      },
-     "book": "bd7001a9c6185bc6"
+     "book": "451a9a9fbe994637"
     }
    ]
   },
@@ -315,20 +325,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
+      "rec": "11-6",
+      "result": "Lost the Super Bowl",
       "grade": "A-"
      },
-     "book": "c76e88dac014e050"
+     "book": "d4766fc2bb00594a"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "14-3",
-      "result": "Lost in the divisional round",
-      "grade": "A"
+      "rec": "8-9",
+      "result": "Losing season",
+      "grade": "B"
      },
-     "book": "79eb568ccf321a25"
+     "book": "5e4f80fc562f9fce"
     }
    ]
   }

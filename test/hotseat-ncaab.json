@@ -1,5 +1,5 @@
 {
- "fp": "779ac077afaa414e",
+ "fp": "75cfbbb403c33b52",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -230,6 +230,21 @@
    "fp": "779ac077afaa414e",
    "from": "60da6c4aed887d98",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "5c91037a0cd68b70",
+   "from": "779ac077afaa414e",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "5c91037a0cd68b70",
+   "from": "5c91037a0cd68b70",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "75cfbbb403c33b52",
+   "from": "5c91037a0cd68b70",
+   "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
   }
  ],
  "out": [
@@ -239,20 +254,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "38-1",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "30-6",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
      },
-     "book": "24b322656d266f0b"
+     "book": "9f7ded223fd9424d"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "32-5",
+      "rec": "33-3",
       "result": "Lost in the Sweet 16",
       "grade": "A"
      },
-     "book": "d0d15cb0b1c52fe4"
+     "book": "fe66d23f6082093c"
     }
    ]
   },
@@ -262,20 +277,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "32-3",
-      "result": "Lost in the Second Round",
-      "grade": "A-"
+      "rec": "21-11",
+      "result": "Missed the NCAA tournament",
+      "grade": "C-"
      },
-     "book": "1302e5b67c481923"
+     "book": "a00b2f92a56d502d"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "28-7",
-      "result": "Lost in the Sweet 16",
-      "grade": "A-"
+      "rec": "27-5",
+      "result": "Lost in the Second Round",
+      "grade": "B"
      },
-     "book": "86b16b5cf5e256fa"
+     "book": "09ac7857322d5a64"
     }
    ]
   },
@@ -285,20 +300,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "29-6",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "30-7",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "a1c025941fbed27c"
+     "book": "74118cf853314660"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "31-5",
+      "rec": "30-6",
       "result": "Lost in the Sweet 16",
-      "grade": "A"
+      "grade": "A-"
      },
-     "book": "f4715a55e76b66a8"
+     "book": "90bde0a6962a1922"
     }
    ]
   }

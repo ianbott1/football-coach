@@ -146,6 +146,16 @@ function splitNote(R){
    it, for whether the call was worth it on average. The averages add up to a
    season's ledger: what your calls were worth in wins (Muse and Instinct:
    "nothing shows a good call mattering"). */
+/* what a result is worth to you: a win 1, a loss 0; a draw half, except where the table says otherwise (soccer: a point
+   against three for a win, LEAGUE.drawVal). A cup tie settled on penalties went to the side that won the shootout.
+   Round 44: soccer's calls were graded with a draw as half a win, so "take the point" was worth more than the table
+   gives for it, and level late the two answers rarely differed. */
+function resultVal(r,meHome){
+  const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; if(mine!==th)return mine>th?1:0;
+  if(r.pens)return (r.pens==="home")===!!meHome?1:0;
+  const ev=typeof process!=="undefined"&&process.env&&process.env.DRAW_VAL;   // tests: grade a draw another way
+  return ev?+ev:(LEAGUE.drawVal!=null?LEAGUE.drawVal:0.5);
+}
 const IMPACT_RUNS=400;
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
 /* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
@@ -161,8 +171,27 @@ function callInReach(args,seed,answers,meHome,j){
     while(g++<3000){ r=e.next(); if(r.done)break;
       if(r.ask){ let a; if(i<j)a=answers[i]; else { if(i===j){ rng.f=mulberry32((seed^Math.imul(m+101,0x9E3779B1))>>>0); rng.sp=null } a=impactDefault(r.ask) }
         e.reply(a); i++ } }
-    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    s+=resultVal(r,meHome) }
   return s/GATE_RUNS;
+}
+/* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
+   same dice for every option) goes to your assistant too: nothing to gain by taking it. asked, then stamped "close either way", it taught that
+   your calls don't matter (Muse, round 43). Reads and scouting are never skipped: their answer is in the evidence. */
+const SPREAD_ON=true;
+// mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
+// decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
+const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);   // round 44: who starts in goal, foul trouble
+const SPREAD_MIN=0.03, SPREAD_RUNS=60;
+function callSpread(args,seed,answers,meHome,j,opts,dp){
+  const rate=v=>{ let s=0;
+    for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+      while(g++<3000){ r=e.next(); if(r.done)break;
+        if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
+          e.reply(a); i++ } }
+      s+=resultVal(r,meHome) }
+    return s/SPREAD_RUNS };
+  const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
+  return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
 }
 /* the answers as yours: a call your assistant made because the game wasn't in reach is a blank (not graded, not weighed) */
 function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; return answers.map((a,i)=>auto.indexOf(i)>=0?undefined:a) }
@@ -176,12 +205,12 @@ function callImpact(args,seed,answers,meHome,runs){
         else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
         else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
         e.reply(a); i++ } }
-    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h};
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h, v:resultVal(r,meHome)};
   };
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<3000){ const r=e.next(); if(r.done)break;
       if(r.ask){ asks.push({dp:r.ask}); e.reply(answers[i]!==undefined?answers[i]:impactDefault(r.ask)); i++ } } }
-  const out=[], score=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0;
+  const out=[], score=x=>x.v;
   asks.forEach((A,j)=>{
     const pick=answers[j], def=impactDefault(A.dp);
     if(pick===undefined||pick===def||!A.dp.opts.some(o=>o[0]===def))return;      // left to him: nothing to compare

@@ -1,5 +1,5 @@
 {
- "fp": "34aa13aac22f322b",
+ "fp": "1267cd44a6821497",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -225,6 +225,21 @@
    "fp": "34aa13aac22f322b",
    "from": "607feb8e9f1a330e",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "adbe3b5d18fdfa94",
+   "from": "34aa13aac22f322b",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "adbe3b5d18fdfa94",
+   "from": "adbe3b5d18fdfa94",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "1267cd44a6821497",
+   "from": "adbe3b5d18fdfa94",
+   "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
   }
  ],
  "out": [
@@ -234,20 +249,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "36-36-12",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "44-27-13",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "ac842dd300361d02"
+     "book": "07001f7a0555b353"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "47-26-11",
-      "result": "STANLEY CUP CHAMPIONS",
-      "grade": "A+"
+      "rec": "45-32-7",
+      "result": "Lost in the conference final",
+      "grade": "A"
      },
-     "book": "12376217a1b3dfb8"
+     "book": "4a5f3d090b4837f2"
     }
    ]
   },
@@ -257,20 +272,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-34-6",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "35-38-11",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "22359bdcdbbf21ac"
+     "book": "5e868a92927fef87"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "47-29-8",
-      "result": "Lost in the second round",
-      "grade": "A-"
+      "rec": "39-36-9",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "08dc64bc0a62f712"
+     "book": "cb7134e17720038a"
     }
    ]
   },
@@ -280,20 +295,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "35-40-9",
+      "rec": "36-36-12",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "70894a410e7ad162"
+     "book": "d2328189d1bd458a"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "44-31-9",
+      "rec": "46-31-7",
       "result": "Lost in the first round",
-      "grade": "B"
+      "grade": "B+"
      },
-     "book": "cbf862264dfa53a6"
+     "book": "46298a8411c5b6e0"
     }
    ]
   }

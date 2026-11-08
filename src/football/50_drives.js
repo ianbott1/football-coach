@@ -259,7 +259,10 @@ const FB_ANSWERS={
   run:  {beats:"shell", l:"Run the ball",             d:"Lean on them while they sit back"},
   deep: {beats:"box",   l:"Take shots downfield",     d:"Throw over a defense crowding the line"}
 };
-const FB_READ=Object.assign({right:{td:+0.070,fg:0,to:-0.025}, wrong:{td:-0.020,fg:0,to:+0.015},
+/* round 43 (Ian: simming should do about what the computer coaches do; only good calls beat it): computer drives have
+   no read layer, so "leave it to your assistant" keeps the plan as it stands (it read 45% for you, all upside: +3.6
+   points a game for doing nothing), and a wrong read costs half what a right one gains, so a guess comes out even */
+const FB_READ=Object.assign({right:{td:+0.090,fg:0,to:-0.030}, wrong:{td:-0.056,fg:0,to:+0.020},   // round 43: a right read hits harder (it was +0.070 a drive in touchdown chance)
   favW:3, scouted:6, sw:0.30, swBehind:0.50, tell:2.1, base:0.8}, (LEAGUE.tuning&&LEAGUE.tuning.fbRead)||{});
 // per drive of yours, what their defense leaves in the numbers: blitzes, deep safeties, men in the box
 const FB_TELL={blitz:[FB_READ.tell,FB_READ.base,FB_READ.base],shell:[FB_READ.base,FB_READ.tell,FB_READ.base],box:[FB_READ.base,FB_READ.base,FB_READ.tell]};
@@ -401,7 +404,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
 
     // ---- resume from a decision ----
     if(st.stage){
-      const choice=st.answer; st.answer=null;
+      let choice=st.answer; st.answer=null;
       const P=st.pend, stage=st.stage;
       if(stage==="strategy"){
         st.stage=null;
@@ -414,7 +417,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         // fall through and play the drive normally
       } else if(stage==="fourth"){
         let res;
-        if(choice==="go"){
+        // the call comes at the stall with the drive's end already rolled: choosing what was rolled keeps it. A missed
+        // kick asked about and kicked again got a second try the computer never gets (round 43: +5.5 points a game
+        // for leaving every call to your assistant)
+        const rolled=P.res.kind==="FG"||P.res.kind==="MISS"?"kick":P.res.kind==="DOWNS"?"go":"punt";
+        if(choice===undefined||choice===null||choice==="normal")choice=rolled;
+        if(choice===rolled&&P.res.kind!=="PUNT"){ res=Object.assign({},P.res); }
+        else if(choice==="go"){
           const tg=P.res.togo||3;
           if(rng.r()<goOdds(tg,offE,defE)){
             // converted: the drive carries on from there
@@ -441,7 +450,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
           const e={side:side,h:dp.h,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
           if(dp.k==="read")e.evid=dp.best; if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true }
           st.log.push(e); st.ans[side]=pick }
-        else if(dp.k==="read"&&rng.r()<0.45)st.ans[side]=SCHEMES[D.sch].counter;   // your assistant reads it, about as often as anyone
+        else if(dp.k==="prep"&&dp.report){   // waiting is graded too: right when the report's favourite was wrong (round 42; the
+          const ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);   // other four games had it from round 39)
+          st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:D.sch,right:ks[0]!==D.sch,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) }
+        // "leave it to your assistant": the plan stays as it is, as for the computer's offense (round 43)
         // fall through and play the drive
       } else if(stage==="rest"){
         st.stage=null;
@@ -539,9 +551,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
 
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
-      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
+      // asked at every stall, a made kick too: asked only after a miss, a punt or a failed try, every call was a
+      // second chance (round 43)
+      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS"||res.kind==="FG")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
-        if(dp){
+        if(dp)dp.rolled=res.kind==="FG"||res.kind==="MISS"?"kick":res.kind==="DOWNS"?"go":"punt";
+        if(dp&&dp.opts.some(o=>o[0]===dp.rolled)){
           used.fourth=(used.fourth||0)+1; called();
           st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr};
           return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};

@@ -358,6 +358,148 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 45: stakes in the flow (what a game means, before it and after a run of them):
+- What this game means (96_goals meansStakes, MEANS_ON): a stake line for the
+  board's objective the game could settle ("Win and the season series against
+  Ole Miss is yours", "5 in a row. Win and it's 6", "Win here and that's 4 home
+  wins") and for the table: where a win or a defeat leaves you, by the table's
+  own order and tiebreaks (the record nudged for a moment and put back; pros
+  and soccer only, college tables go by conference record; ties counted
+  against a "win takes you top"). It always gets a line: a third when two
+  others outrank it.
+- Re-aimed objectives (REAIM_ON): one settled, met or missed, with a third of
+  the league games still to play gets a replacement, two a season at most: the
+  side just above you in the table now, else "Win N of your last M" (a little
+  better than the ratings say, as the home record is). Set the first time it's
+  seen, kept in S.obj.extra. Credit is capped at the board's three (a re-aimed
+  one counts in place of one missed): with reputation fading 6% a season, two
+  more met a season would settle about 40 points higher. "The board's
+  favourite" still needs the original three.
+- The Film Room before games (95_story filmLine, FILMPRE_ON): the latest kept
+  call against this side, on the next-game card. A game against your rival
+  coach counts as a big game for sim ahead (weekWeight).
+- The sim digest (DIGEST_INC): under the results, what happened: your injuries,
+  the best night and the worst, rival games, objectives met, missed or
+  re-aimed, the run you're on, the move in the table, and soccer clinches.
+- Soccer clinches (95_story clinchCheck, CLINCH_ON): a title, automatic
+  promotion or relegation settled on points (ties count against it: goal
+  difference could go either way), checked after every advance and kept with
+  the step it happened. The result card of that game carries it ("Manchester
+  City are Premier League champions, with 2 games to spare"); a sim digest
+  lists it. The trophy night still waits for the last day.
+- test/stakes.js: all six, a season in sim-ahead chunks: digests, stakes and
+  objectives draw cleanly, the board never counts more than three, re-aims only
+  with a third to play, Manchester City (seed 11) clinch with 2 to spare.
+
+Round 44: a second decision per sport, each measured by replays, simming still
+equal to the computer coaches (test/sim-parity.js MATCH: every game within 1.5):
+- Basketball: foul trouble is a call again (BB_FOULQ). A star with foul
+  trouble: sit him for the stretch or play him; the evidence is the referees'
+  whistle against the league average and his own fouls. A star off the floor
+  costs more (starOwn 0.022 -> 0.034, starDef 0.006 -> 0.009), or sitting him
+  was never wrong. About 7 points a call; the best answer splits (pro: sit 8,
+  play 11). Asked only when it gains on the assistant (SPREAD_KINDS fouls).
+- Hockey: who starts in goal on the second night of a back-to-back
+  (HK_GSTART, goalStartCall k "gstart", 22 back-to-backs a season). A tired
+  starter (HK tired 0.015) against the backup, who costs by his rating gap
+  (backupPer 0.0009 a point, gkCtx). The computer starts its backup, as real
+  clubs do, so the assistant does too. About 4.5 points a call, the best answer
+  splits (backup 21, starter 12); asked only when it gains (SPREAD_KINDS gstart).
+- Soccer: calls are graded in league points. resultVal (core/94_staffplan):
+  a win 1, a loss 0, a draw LEAGUE.drawVal (soccer 1/3: a point against
+  three; every other league 0.5 as before), and a cup tie settled on
+  penalties goes to the shootout's winner (it scored half). Every replay
+  grade, gate and spread uses it. Measured at 80' (scfinal.js, 496 matches,
+  60 replays an option, league points): down one, everyone forward was best in
+  128 of 144; up one, parking the bus in 108 of 122; level, the answers split
+  (win 138, carry on 55, the point 37). A question with one answer is a quiz:
+  down or up, the final call is asked only when it beats the assistant's by 3
+  points (dp.spread); level, always (in reach). Beside the late calls, the
+  table: now, with a win, with a draw (tableStakesHTML). The final call's
+  changes are named (finalSub: who comes on, who comes off; flavour, the
+  engine's modes as before). Honest size: the final call is worth 1-2.5
+  points of a win on average; the table panel makes the level case a real
+  question, not a big one.
+- Football: a questionable starter during the week (play a starter due back
+  next week at about 60%, or two weeks early at 40%, against a trainers'
+  risk of 2-4 more weeks out; graded in expected wins) was built and cut.
+  Measured (both games, every team, 4 seasons): a candidate 1.2-1.8 times a
+  team-season, worth 3 points either way 0.3-0.4 times, and "give him the
+  week" was right in 85% of those (two weeks early: 1 in 134). A single
+  football player rarely moves a game 3 points. Football already has the most
+  decisions (prep, reads, fourth downs, two-point tries, the end game); the
+  code is kept out of the build.
+- A round-44 edit had swallowed the SPREAD_KINDS deletions into a comment (final,
+  tied, ot, pull, close and third were spread-gated in the WIP); restored before
+  shipping.
+
+Round 43: make skill pay (Muse: "being right 82% of the time earns you almost nothing"; Ian: simming should do
+about what the computer coaches do, only good calls beat it):
+- The rule, measured (test/sim-parity.js): even sides, the same dice, the home
+  side coached by the computer, then by you with every call left to your
+  assistant. Football was +9 points a game for doing nothing: a fourth-down
+  call came only after a punt, a miss or a failed try, and choosing the same
+  thing rolled it again (a second chance the computer never gets), and the
+  assistant read your reads for you 45% of the time with no downside. Now the
+  call comes at every stall (a made kick too), choosing what was rolled keeps
+  it, the assistant's default is what was rolled (verdictDefault dp.rolled),
+  and "leave it to your assistant" on a read keeps the plan as it is (the
+  computer's offense has no read layer). Within about a point in all six.
+- A right read hits harder; a wrong one costs about half a right one, so a
+  guess comes out even or worse. Per game, a strong player (the report, then
+  the numbers) against leaving it all to the assistant, before -> after:
+  hockey +5.1 -> +8.4 (HK counter 1.18/0.75, misread 0.87); pro basketball
+  +5.0 -> +5.8, college +4.3 -> +5.6 (BB answer x1.5, leak, misprep; the
+  report's reliability caps it); pro football +3.7 -> +9.4, college +9.7
+  (FB_READ right td +0.09 / to -0.03, wrong -0.056 / +0.02); soccer +7.5 ->
+  +10.4 (SC counter 1.20/0.72, misread 0.89, misprep 0.88/1.08). Reads now
+  weigh 11-16 points a call, the scouting report 11-25. The leagues stay
+  calibrated (every read test MATCH): hockey 6.12 goals, favourites 69.4%;
+  pro basketball 114.2, home 60.8%, favourites 69.5%; soccer 2.72 goals.
+- Mid-game situation calls with nothing to gain are not asked (callSpread,
+  SPREAD_KINDS: the gated kinds and the two-point try, less the final
+  stretch and the reads): over SPREAD_RUNS 60 replays per option on the same
+  dice, if no option beats the assistant's call by SPREAD_MIN 3 points, he
+  takes it, said on the card ("couldn't change much tonight: the game out of
+  reach, or the options too close to matter"). The final stretch (final,
+  tied, ot, pull) keeps round 40's promise; crunch-time and third-period
+  calls are reads. test/late-calls.js still MATCH. Soccer's 80' call mostly
+  had little to gain on the assistant's: kept, to deepen in round 44.
+- Across a season, from the per-game figures: an expert reader is worth about
+  +5 wins in pro basketball, +1.6 in pro football's 17, +7 in hockey's 82
+  (more in points), +14 points in a 46-match soccer season.
+
+Round 42: the save loss, and the joins (Muse, Instinct):
+- The save loss (Muse: six careers gone after "changed in another tab", Reload,
+  three empty slots). Reproduced: every career in all six games shares one
+  site's storage (~5.2M characters in Chromium). store.local() tested
+  storage with a write before every read; with storage full the write failed,
+  so every read came back empty. The save check read the revision as 0 (a
+  false "another tab" banner), and after Reload every slot read empty over
+  careers still stored, where a new career could overwrite one. Now reads
+  never write (store.writable() for the rare check), a revision read that
+  fails is not "another tab", a failed save shows a banner at once with a
+  backup button (saveFail), and the offseason asks once a season to download
+  a backup (backupNagHTML, S.backedUp). test/storage-full.js (browser): with
+  storage full a save that fits lands with no banner, one that can't is
+  said at once, and after a reload slot 1 still holds the career.
+- Phone endings: a game finished on a narrow screen lands on the Team view,
+  where its result card is (finishLive, doAdvance); narrowing the window with
+  a result showing does the same (Instinct: a playoff win showed only the
+  bracket).
+- State text at the transitions: pro playoff clauses read the standings
+  before the seeding (a 71-11 first seed read "Missed the playoffs" for a
+  screen); college basketball's conference-tournament loss before Selection
+  Sunday reads "Out of the SEC Tournament. Selection Sunday decides the rest"
+  (not "Season over"); the seat badge in a postseason grades the wins you have
+  and the run so far, not a regular-season pace (a Final Four team read
+  "Under pressure").
+- Football's "wait and see" is graded as in the other four games; football
+  call verdicts no longer repeat their headline; shared surnames get initials
+  (hockey lines, play-by-play in hockey, soccer, basketball); "an 18-point".
+- Results unchanged: every golden result field and the hot seat match round
+  41; screens only.
+
 Round 41: the season story (core/95_story.js; Muse's ideas, Instinct's "make the peak a peak"):
 - Kept per coach (COACH_FIELDS film, lifeCalls, storyYr, rivals), written only
   from games already played; none of it moves a game. recordStory after each

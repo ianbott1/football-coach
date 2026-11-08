@@ -25,8 +25,8 @@ const SC_BASE = {
   exposed:0.20,      // ...and concedes this much more on the break
   etGoals:0.30,      // extra time's share of a normal game's goals (tired legs)
   penEdge:0.12,      // how much edge counts in a shoot-out
-  counter:{own:1.12, opp:0.82},   // reading them right: you create more, they create less
-  misread:0.95,      // the wrong counter: your own chances, slightly fewer
+  counter:{own:1.20, opp:0.72},   // reading them right: you create more, they create less (round 43: 1.12/0.82)
+  misread:0.89,      // the wrong counter: your own chances, fewer (0.95)
   fit:[0.65,1.45],   // how hard each unit finds the day: a per-game spread on the drain
   drain:0.021,       // energy lost per spell, before approach and unit
   tiredOwn:0.55,     // chances made at zero energy, relative to fresh: 1 - this
@@ -39,7 +39,7 @@ const SC_BASE = {
   favW:7,            // a club's usual approach: this many times as likely as any other (was 4: the report's top
                      // approach was the one played 49% of the time; Instinct: about two-thirds. Nov 2026)
   scouted:6,         // games in a scouting report
-  misprep:{own:0.93, opp:1.05},  // set up from kick-off for the wrong thing: out of shape until you change it
+  misprep:{own:0.88, opp:1.08},   // round 43 (0.93/1.05)  // set up from kick-off for the wrong thing: out of shape until you change it
   prepped:{own:1.05, opp:0.95}   // ...and for the right thing: drilled all week, sharper than a change made mid-game
 };
 const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.sc)||{}, (typeof SC_TRY!=="undefined"?SC_TRY:{}));
@@ -106,9 +106,12 @@ function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five"
 const SC_FINAL=true;
 function finalCall(lead){
   const A=["normal","Leave it to your assistant"];
-  if(lead<0)return {k:"final",h:`Down ${-lead}, ten minutes left`,q:"Everyone forward?",
+  // round 44, graded in league points: down one, everyone forward was the best answer in 128 of 144 matches; up one,
+  // parking the bus in 108 of 122 (scratchpad scfinal.js). A question with one answer: asked only when it beats your
+  // assistant's by 3 points on the replays (spread). Level, the answers split (win 138, carry on 55, the point 37 of 230).
+  if(lead<0)return {k:"final",spread:true,h:`Down ${-lead}, ten minutes left`,q:"Everyone forward?",
     opts:[["push","Everyone forward: a striker on for a defender"],["keep","Stay patient"],A]};
-  if(lead>0)return {k:"final",h:`Up ${lead}, ten minutes left`,q:"Close it out?",
+  if(lead>0)return {k:"final",spread:true,h:`Up ${lead}, ten minutes left`,q:"Close it out?",
     opts:[["sit","Park the bus: a defender on"],["keep","Keep the ball, keep playing"],A]};
   return {k:"final",h:"Level, ten minutes left",q:"Go for the win, or take the point?",
     opts:[["win","Go for the win: fresh legs up front"],["point","Take the point"],A]};
@@ -336,7 +339,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     st.late[side]=v==="normal"?null:v;
   };
   st.next=function(){
-    const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives});
+    const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives,pens:st.pens||null});
     if(st.done)return fin();
     if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; apply(P.side,P.dp,v) }
     if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q;

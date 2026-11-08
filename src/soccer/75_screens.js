@@ -11,7 +11,8 @@ function scPlayer(team,unit,u){
   // the bench gets a game now and then (rotation, a knock)
   const pick=(b&&(u%10)<2)?b:p; return pick?pick.n:null;
 }
-const surname=n=>n?n.split(" ").slice(-1)[0]:"";
+// a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
+const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 function scScorer(team,u){
   // who scores: strikers most, then wingers, midfield, defenders off set pieces
   const x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
@@ -162,6 +163,26 @@ function evidenceHTML(g,my,d,kind){
     ${rows2?`<div class="evn">Left: the whole match, per 45 minutes. Right: counts since half-time, only ${T2.n*5} minutes: a hint, not proof.</div>`:""}
     ${firstReadTip()}<div class="evn">League average: possession 50%, turnovers 6.3, crosses 5.4, long balls 6.3.</div></div>`;
 }
+/* the change behind a final-ten-minutes call, by name (round 44): who comes on, who comes off */
+function finalSub(my,o){
+  const R=SEA&&SEA.roster&&SEA.roster[my]; if(!R)return "";
+  const nm=i=>R[i]&&R[i].n?surname(R[i].n):null, P=p=>POS.findIndex(x=>x.p===p);
+  const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")]}[o]; if(!sw)return "";
+  const on=nm(sw[0]), off=nm(sw[1]); return on&&off?`${on} on, ${off} off`:"";
+}
+/* the table, beside the late calls (round 44): a point against three, in places. A league game in the season only. */
+function tableStakesHTML(g,my){
+  if(!SEA||SEA.phase!=="week"||g.cup||typeof LEAGUE.points!=="function"||!CONF[my])return "";
+  const div=NAMES.filter(t=>CONF[t]===CONF[my]), P=t=>LEAGUE.points(t,SEA), me=P(my);
+  const left=SEA.sched.filter(x=>x.week>SEA.step&&!x.cup&&(x.home===my||x.away===my)).length;
+  const place=pts=>1+div.filter(t=>t!==my&&P(t)>pts).length, tied=pts=>div.filter(t=>t!==my&&P(t)===pts);
+  const say=pts=>{ const T=tied(pts); return `${ordinal(place(pts))}${T.length?`, level with ${esc(T[0])}${T.length>1?` and ${T.length-1} more`:""}`:""}` };
+  return `<div class="evid"><div class="evh">What it means in the table <span>before tonight's other results</span></div>
+    <div class="evr"><span class="evk">Now</span><span class="evv">${say(me)} on ${me} points</span></div>
+    <div class="evr"><span class="evk">A win (three)</span><span class="evv">${me+3} points: ${say(me+3)}</span></div>
+    <div class="evr"><span class="evk">A draw (one)</span><span class="evv">${me+1} points: ${say(me+1)}</span></div>
+    <div class="evn">${left} league game${left===1?"":"s"} left after this one. A draw is a point; a win is three.</div></div>`;
+}
 function statStrip(g,d){
   if(!d||!d.st)return "";
   const H=d.st.home, A=d.st.away;
@@ -206,7 +227,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>(dp.k==="read"||dp.k==="prep")&&COUNTERS[o]?COUNTERS[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep")&&COUNTERS[o]?COUNTERS[o].d:(dp.k==="final"?finalSub(my,o):"");
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -215,7 +236,7 @@ function liveCallView(){
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.q||"")}</div>
     </div>
-    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):""}
+    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):dp.k==="late"||dp.k==="final"?tableStakesHTML(g,my):""}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length,g:g,my:my}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>

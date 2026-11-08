@@ -28,7 +28,7 @@ function recordStory(played,g,step,meHome){
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
-      w:Math.round(c.worth*100),po:po,title:g.title||null,team:my,k:c.k||null});
+      w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
@@ -84,6 +84,15 @@ function rivalLine(opp){
   return `<div class="series">${tag}${esc(c.n)}, their coach: <b>${r.w}-${LEAGUE.draws?r.d+"-":""}${r.l}${!LEAGUE.draws&&r.d?"-"+r.d:""}</b> against him${youWhere}${where}.</div>`;
 }
 
+/* before a game: the last call from the Film Room against this side (round 45: the room was a page nobody opened
+   before the games it was about) */
+const FILMPRE_ON=true;
+function filmLine(opp){
+  if(!STORY_ON||!FILMPRE_ON||!S.film)return "";
+  const F=S.film.filter(x=>x.opp===opp&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
+  const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`;
+  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${/assistant/i.test(F.def||"")?"his call":esc(F.def||"his call")}.</div>`;
+}
 /* who you are, in one line, once there's enough to say it (Muse: "a gambler who won his gambles") */
 function identityLine(){
   const L=S.lifeCalls; if(!L||L.n<8)return "";
@@ -116,10 +125,47 @@ function filmRoomHTML(){
 function storyRowLine(st){
   if(!st)return ""; const out=[];
   if(st.cb)out.push(`came back from ${st.cb.by} down ${st.cb.ha} ${esc(st.cb.opp)}${st.cb.wk?" ("+esc(st.cb.wk)+")":""}`);
-  if(st.cl)out.push(`let a ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
+  if(st.cl)out.push(`let ${/^(8|11|18)$|^8\d$/.test(String(st.cl.by))?"an":"a"} ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
   return out.length?`<div class="ystory">${out.join(" &middot; ")}</div>`:"";
 }
 
+/* Soccer: the night it's settled (round 45). A title, automatic promotion or relegation is decided when nobody can
+   catch you (or you can't catch them) on points, often weeks before the last day; the trophy still waits for it.
+   Checked whenever the team page is drawn; kept per season with the step it happened at. Ties on points count
+   against a clinch (goal difference could still go either way). */
+const CLINCH_ON=true;
+function clinchCheck(my){
+  if(!CLINCH_ON||!LEAGUE.draws||typeof DIVS==="undefined"||typeof LEAGUE.points!=="function"||!SEA||(SEA.phase!=="week"&&SEA.step!==LEAGUE.weeks))return null;   // the last day too
+  const d=CONF[my], R=DIVS[d]; if(!R)return null;
+  const C=S.clinch&&S.clinch.year===SEA.year&&S.clinch.team===my?S.clinch:(S.clinch={year:SEA.year,team:my,k:{}});
+  const div=NAMES.filter(t=>CONF[t]===d), P=t=>LEAGUE.points(t,SEA);
+  const done=SEA.half?SEA.step:SEA.step-1;   // the step just played (a cup week's league half doesn't move the step on)
+  const rem=t=>SEA.sched.filter(g=>!g.cup&&g.week>done&&g.week<LEAGUE.weeks&&(g.home===t||g.away===t)).length;
+  const mine=P(my), myMax=mine+3*rem(my), others=div.filter(t=>t!==my), left=rem(my);
+  const step=done;
+  if(!C.k.title&&others.every(t=>P(t)+3*rem(t)<mine))C.k.title={step:step,left:left};
+  if(R.up&&!C.k.title&&!C.k.up&&others.filter(t=>P(t)+3*rem(t)>=mine).length<R.up)C.k.up={step:step,left:left};
+  if(R.down&&!C.k.down&&others.filter(t=>P(t)>myMax).length>=div.length-R.down)C.k.down={step:step,left:left};
+  return C;
+}
+function clinchText(k,x,my){
+  const name=LEAGUE.conf.names[CONF[my]], spare=x.left?`, with ${x.left} game${x.left===1?"":"s"} to spare`:"";
+  return k==="title"?{h:"Champions",l:`${esc(my)} are ${esc(name)} champions${spare}. Nobody can catch you now.${DIVS[CONF[my]].up?" Promotion with it.":""}`}
+    :k==="up"?{h:"Promoted",l:`${esc(my)} are going up${spare}: a top-${DIVS[CONF[my]].up} finish in ${esc(typeof divThe==="function"?divThe(CONF[my]):name)} can't be taken off you.`}
+    :{h:"Relegated",l:`It's done: ${esc(my)} can't climb out of the bottom ${DIVS[CONF[my]].down} now${spare}.`};
+}
+/* on the result card of the game that settled it */
+function clinchHTML(my){
+  const C=clinchCheck(my); if(!C||!flash||flash.step===undefined)return "";
+  return Object.keys(C.k).filter(k=>C.k[k].step===flash.step).map(k=>{ const t=clinchText(k,C.k[k],my);
+    return k==="down"?`<div class="clinch dn"><div class="tnhead">${t.h}</div><div class="tnline">${t.l}</div></div>`
+      :`<div class="titlenight"><div class="tnconf" aria-hidden="true">${"<i></i>".repeat(18)}</div><div class="tnhead">${t.h}</div><div class="tnline">${t.l}</div></div>` }).join("");
+}
+/* in a sim digest: anything settled in the weeks simmed */
+function clinchDigest(my,from,to){
+  const C=clinchCheck(my); if(!C)return [];
+  return Object.keys(C.k).filter(k=>C.k[k].step>=from&&C.k[k].step<to).map(k=>{ const t=clinchText(k,C.k[k],my); return `<b>${t.h}.</b> ${t.l}` });
+}
 /* title night (Instinct: "a career's biggest night presented like a Tuesday in January") */
 function titleNightHTML(my){
   if(!STORY_ON)return "";
