@@ -1,5 +1,5 @@
 {
- "fp": "f97cf2457cc7416d",
+ "fp": "c6551b37597cc14d",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -240,6 +240,11 @@
    "fp": "f97cf2457cc7416d",
    "from": "72840dd74ad66f9f",
    "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
+  },
+  {
+   "fp": "c6551b37597cc14d",
+   "from": "f97cf2457cc7416d",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
   }
  ],
  "out": [
@@ -249,20 +254,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-3",
-      "result": "Eliminated in the first round",
-      "grade": "B+"
+      "rec": "13-3",
+      "result": "Eliminated in the semifinals",
+      "grade": "A+"
      },
-     "book": "2ac89df3d60a34d1"
+     "book": "33f5cc0129ee861c"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "7-6",
-      "result": "Lost the Boca Raton Bowl",
+      "result": "Lost the Cure Bowl",
       "grade": "A"
      },
-     "book": "d5de9158ea3669fa"
+     "book": "4714b6e655349fa3"
     }
    ]
   },
@@ -276,16 +281,16 @@
       "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "e047a25f8ad827a2"
+     "book": "d52b0f3f47a38139"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "4-8",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "36c8566e0a9a692f"
+     "book": "7f32b2b681033d57"
     }
    ]
   },
@@ -295,20 +300,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-4",
+      "rec": "12-2",
       "result": "Eliminated in the quarterfinals",
-      "grade": "A-"
+      "grade": "A"
      },
-     "book": "3cdf3d96b1999b49"
+     "book": "6e67d87d8879ff62"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Camellia Bowl",
-      "grade": "A+"
+      "rec": "7-6",
+      "result": "Lost the Cure Bowl",
+      "grade": "A"
      },
-     "book": "b455e98c3a73dc8b"
+     "book": "7f1edf5f10d5a8ca"
     }
    ]
   }

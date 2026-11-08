@@ -64,7 +64,10 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode){
   const A0 = AGGR[aggr] || AGGR.balanced, D = typeof dmode==="string" ? DEF_MODE[dmode] : dmode;
   const A = D ? {td:A0.td+D.td, fg:A0.fg+D.fg, to:A0.to+D.to, gap:A0.gap} : A0;
   // risk makes a drive less about who is better; safe makes it more so
-  const x = (offElo - defElo) * GAP_SCALE / 470 * (A.gap || 1);
+  // pro football softens a big mismatch (past 100 a gap counts half): a stacked roster went 17-0, 98%+ was shown in
+  // 1.7% of games (Ian, round 39: "you never see 99% in pro football"); college, with its real mismatches, doesn't
+  const SD=LEAGUE.tuning.softDrive, gq=offElo-defElo, ga=Math.abs(gq), gs=!SD||ga<=SD[0]?gq:Math.sign(gq)*(SD[0]+(ga-SD[0])*SD[1]);
+  const x = gs * GAP_SCALE / 470 * (A.gap || 1);
   const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;
@@ -115,6 +118,33 @@ function goOdds(togo, offElo, defElo){
   return Math.max(0.12, Math.min(0.82, base + adj));
 }
 
+/* The end of a game nobody is asked about: the computer's drives, and your assistant's when no call comes up.
+   A drive's outcome was rolled without the score, so a team down 7 on its last possession kicked a field goal 18-19%
+   of the time and punted more often still, and nobody went for two (Ian, round 39: 0 of ~220,000 touchdowns).
+   d: the offense's margin before the drive; left: possessions to go, this one included (1: the last). */
+const FB_END=true;
+function endgameDrive(rng,res,d,left,offE,defE){
+  if(!FB_END||left>2||d>=0)return res;
+  const goFor=tg=>{                                     // fourth down, and it has to be a touchdown or at least points that matter
+    if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,
+      note:`needed ${d<=-4?"a touchdown":"points"}: went for it on fourth and ${tg} and came up short`};
+    const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent");
+    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on fourth and ${tg}, then scored`}
+      :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,note:"needed a touchdown: turned it over on downs in the red zone"};
+    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on fourth and ${tg}, then turned it over on downs`};
+    return Object.assign(r,{converted:true,note:r.pts>0?`went for it on fourth and ${tg}, then scored`:`converted on fourth and ${tg}, drive stalled later`}) };
+  if(res.kind==="FG"&&d<=-4){                            // three points don't help: from the red zone, go for the end zone
+    if(rng.r()<0.40)return {pts:7,kind:"TD",stall:100,note:"passed up the field goal and scored"};
+    return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,note:"needed a touchdown: passed up the field goal and came up short"} }
+  if(res.kind==="PUNT"||(res.kind==="MISS"&&(res.stall||0)<72&&d<=-4))return goFor(res.togo||4);   // nobody punts it away behind with the game ending
+  return res;
+}
+/* two points or one, by the chart every coach carries late in a game: the margin after the touchdown. */
+function twoChart(diff6,late){
+  if(!FB_END)return false;
+  if(diff6===-2)return true;                            // to tie, any time in the second half
+  return late&&[-10,-5,1,5].indexOf(diff6)>=0;
+}
 /* Where a drive starts, given how the previous one ended, and where: a turnover or a miss gives the
    other side the ball at the spot (it was a random ~42 whatever the spot, so a fumble at their 10 handed
    them the ball near midfield: "a kickoff after a Denver fumble", "started own 72": Grokbot) */
@@ -408,7 +438,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         st.stage=null; const D=st.D[side], dp=P.dp;
         const pick=choice==="keep"?st.ans[side]:FB_ANSWERS[choice]?choice:null;
         if(pick&&FB_ANSWERS[pick]){
-          const e={side:side,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
+          const e={side:side,h:dp.h,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
           if(dp.k==="read")e.evid=dp.best; if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true }
           st.log.push(e); st.ans[side]=pick }
         else if(dp.k==="read"&&rng.r()<0.45)st.ans[side]=SCHEMES[D.sch].counter;   // your assistant reads it, about as often as anyone
@@ -476,9 +506,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
     // ---- a decided game, your ball: rest the starters? (Muse: a 24-point fourth-quarter lead asked nothing) ----
-    if(isUser&&!st.stage&&q>=4&&mine-theirs>=14&&mine-theirs<=24&&!(home?st.usedH:st.usedA).rest){
+    // ...and from the third quarter in a rout (Muse, round 39: a 61-17 win asked nothing after the second quarter)
+    const RL=mine-theirs, restNow=(q>=4&&RL>=14&&RL<=24)||(q>=3&&RL>=21&&RL<=40);
+    if(isUser&&!st.stage&&restNow&&!(home?st.usedH:st.usedA).rest){
       (home?st.usedH:st.usedA).rest=true; st.stage="rest"; st.pend={q:q}; st.startHold=start;
-      return {ask:{k:"rest",h:`Up ${mine-theirs} in the fourth quarter`,
+      return {ask:{k:"rest",h:`Up ${mine-theirs} in the ${q>=4?"fourth":"third"} quarter`,
         b:`Rest your starters? The backups run the clock out: a lead this size usually holds, though not always, and nobody gets hurt on the sideline. ${possLeft(st.total-i,true)}`,
         opts:[["rest","Rest the starters"],["keep","Keep them in until it's safe"],["normal","Leave it to your assistant"]]},mine:mine,theirs:theirs,q:q,side:side} }
 
@@ -525,7 +557,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         }
       }
     }
-    return {drive:push(home,q,start,res,aggr),h:st.h,a:st.a};
+    { const effT=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
+      const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE);
+      if(r2.kind==="TD"&&r2.pts===7&&twoChart(mine+6-theirs,q>=4||effT-i<=8)){
+        const ok=rng.r()<0.47; r2.pts=ok?8:6; r2.note=(r2.note?r2.note+"; ":"")+(ok?"went for two and got it":"went for two and was stopped") }
+      return {drive:push(home,q,start,r2,aggr),h:st.h,a:st.a}; }
   };
   st.reply=function(v){ st.answer=v; };
   return st;

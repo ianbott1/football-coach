@@ -284,9 +284,10 @@ function readNote(e){
 }
 /* what you chose, for the start of the card's line: one line said "First read and second read: ... the answer was
    'Go long'" when that was the pre-match pick and the cross was for a later one (Grokbot) */
-function readPickLabel(e){ const o=COUNTERS[e.pick]; return o?o.l:e.k==="flank"?`Overload the ${e.pick}`:"" }
+function readPickLabel(e){ if(e.waited)return "Wait and see"; const o=COUNTERS[e.pick]; return o?o.l:e.k==="flank"?`Overload the ${e.pick}`:"" }
 function readText(e){ return readTextBase(e)+readNote(e) }
 function readTextBase(e){
+  if(e.waited)return e.unclear?`You waited and saw: the report was split, so there was nothing to set up for. They came out ${APPROACH[e.truth].l}.`:e.right?`You waited, and it paid: the report pointed to ${APPROACH[e.fav].l}, and they came out ${APPROACH[e.truth].l}.`:`You waited, and it cost you: the report was right, they came out ${APPROACH[e.truth].l}.`;
   if(e.k==="read")return e.right?`Your read was right: they were ${APPROACH[e.truth].l}.`
     :`They were ${APPROACH[e.truth].l}: the answer was "${COUNTERS[APPROACH[e.truth].counter].l}".`;
   if(e.k==="prep")return e.right?`Your preparation was right: they came out ${APPROACH[e.truth].l}.`

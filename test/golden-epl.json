@@ -1,5 +1,5 @@
 {
- "fp": "a2b008f76578bdf7",
+ "fp": "52cd49e81d03da43",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -300,6 +300,11 @@
    "fp": "a2b008f76578bdf7",
    "from": "ca60b5008e79ea7f",
    "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
+  },
+  {
+   "fp": "52cd49e81d03da43",
+   "from": "a2b008f76578bdf7",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
   }
  ],
  "result": {
@@ -314,7 +319,7 @@
     "heis": "af7f37f2652278c3",
     "history": "479026eb52783960",
     "universe": "2cf5ba0b924125ac",
-    "screens": "18727b3c8cafd4c2"
+    "screens": "7332227686d91426"
    },
    {
     "year": 2027,
@@ -326,7 +331,7 @@
     "heis": "1e17969eea1d9118",
     "history": "38911ac8b3e53807",
     "universe": "b4c08153165c19ba",
-    "screens": "850fc3ee56c7e7cd"
+    "screens": "3628df726452cb5c"
    }
   ],
   "Wrexham#777": [
@@ -340,7 +345,7 @@
     "heis": "400991731e24be6e",
     "history": "aaf4a14aa2b0c3ea",
     "universe": "7e82d8cb5d52b19f",
-    "screens": "3ffbdb9e601c6699"
+    "screens": "7fcc0fc4c9658779"
    },
    {
     "year": 2027,
@@ -352,7 +357,7 @@
     "heis": "7e62ca4a6bd95c73",
     "history": "aebd5702d8539966",
     "universe": "e38a812681de34a1",
-    "screens": "809e5ed2e760903d"
+    "screens": "a1f5995f0e0d1b75"
    }
   ],
   "schedules#60": [

@@ -144,8 +144,8 @@ function statLine(pos,s){
   if(pos==="QB")return `${n(s.pyd)} yds, ${s.ptd} TD, ${s.int} INT (${s.cmp}/${s.att})`;
   if(pos==="RB")return `${n(s.ryd)} yds, ${s.rtd} TD (${s.car} car)`;
   if(pos==="WR"||pos==="WR2")return `${s.rec} rec, ${n(s.cyd)} yds, ${s.ctd} TD`;
-  if(pos==="OT")return `${s.pan} pancakes, ${s.ska} sacks allowed`;
-  if(pos==="EDGE"||pos==="DT")return `${s.tkl} tkl, ${s.sck} sacks, ${s.tfl} TFL`;
+  if(pos==="OT")return `${s.pan} pancake${s.pan===1?"":"s"}, ${s.ska} sack${s.ska===1?"":"s"} allowed`;   // "1 SACKS ALLOWED" (Instinct)
+  if(pos==="EDGE"||pos==="DT")return `${s.tkl} tkl, ${s.sck} sack${s.sck===1?"":"s"}, ${s.tfl} TFL`;
   if(pos==="LB")return `${s.tkl} tkl, ${s.tfl} TFL, ${s.pd} PD`;
   return `${s.tkl} tkl, ${s.ints} INT, ${s.pd} PD`;
 }

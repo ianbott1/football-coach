@@ -210,6 +210,11 @@
    "fp": "d89b3ef6b60f398a",
    "from": "8781890e4c88d0d7",
    "note": "Round 37: NBA Cup games are league games (Cup off: matches round 35 exactly, 19a3071c); hockey's box score credits the men its log names."
+  },
+  {
+   "fp": "d89b3ef6b60f398a",
+   "from": "d89b3ef6b60f398a",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
   }
  ],
  "out": [

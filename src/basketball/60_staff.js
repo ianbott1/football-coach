@@ -141,7 +141,7 @@ const PEARL_STYLE={
 };
 function staffTake(dp, ctx){
   const diff = (ctx.mine||0)-(ctx.theirs||0);
-  const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
+  const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0)+((typeof live!=="undefined"&&live&&typeof liveSeed==="function")?(liveSeed(live.step)%9973):0);   // and the match: at 0-0 at the half every game said the same words (Muse, round 39)
   const R=[];
   if(dp.k==="prep"){
     const top=dp.pearl;

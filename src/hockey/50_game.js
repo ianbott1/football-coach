@@ -258,13 +258,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(ANSWERS[v]){ const t=st.S[other(side)].sys; X.ans=v; X.prepd=true;
-      st.log.push({side:side,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true }   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
-      } return }
-    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best}) }
-    if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
+      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true }   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
+      } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].sys, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
+        // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
+        st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
+    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best}) }
+    if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,h:dp.h,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else readIt(side,0.45); return }
     if(dp.k==="third"){ const t=st.S[other(side)].sys, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;
-      if(pick&&ANSWERS[pick]){ st.log.push({side:side,k:"third",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
+      if(pick&&ANSWERS[pick]){ st.log.push({side:side,h:dp.h,k:"third",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
       else readIt(side,0.3);
       return }
     if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal")cpuGoalie(side); return }

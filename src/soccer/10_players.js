@@ -70,8 +70,8 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
 function statLine(pos,s){
   if(!s||!s.g)return "";
-  if(pos==="GK")return `${s.cs||0} clean sheet${s.cs===1?"":"s"}, ${s.sv||0} saves in ${s.g} games`;
-  return `${s.goals||0} goal${s.goals===1?"":"s"}, ${s.ast||0} assist${s.ast===1?"":"s"} in ${s.g} games`;
+  if(pos==="GK")return `${s.cs||0} clean sheet${s.cs===1?"":"s"}, ${s.sv||0} save${s.sv===1?"":"s"} in ${s.g} game${s.g===1?"":"s"}`;
+  return `${s.goals||0} goal${s.goals===1?"":"s"}, ${s.ast||0} assist${s.ast===1?"":"s"} in ${s.g} game${s.g===1?"":"s"}`;   // "IN 1 GAMES" (Instinct)
 }
 function statProd(pos,s){
   if(!s||!s.g)return 0;

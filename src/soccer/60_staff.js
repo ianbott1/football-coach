@@ -130,8 +130,15 @@ function pearlRecall(dp,seed){
   return [`At 25 minutes I thought they were ${a.l}. The first half's numbers look more like ${b.l}. `,
     `I said ${a.l} at 25 minutes. Looking at the whole half, it's more ${b.l}. `,`My early read was ${a.l}; the first half says ${b.l}, and the numbers watched it all. `][n];
 }
+/* Pearl on the flanks: she backs the side the last attack got through, and says so when the half's count points the
+   other way (Muse: "Go left!" against a count favouring the right, read as a recycled line) */
+function pearlFlank(dp,p,seed){ const F=dp.flank||[0,0], cnt=F[0]>F[1]?"left":F[1]>F[0]?"right":null, n=Math.abs(seed|0)%3;
+  if(p==="normal")return ["The flanks, though, I couldn't tell. Both sides look the same to me!","The flanks? Honestly, nothing in it either side.","I've watched both wings and I can't split them. Keep it as it is!"][n];
+  if(cnt&&cnt!==p)return [`I know the count says ${cnt}, but the last one we got through came down the ${p}. Go ${p}!`,`The numbers like the ${cnt}. My eyes saw the ${p} open up just now. Go ${p}!`,`Forget the half's count: the ${p} just opened up. Go ${p}!`][n];
+  return [`And we just got through on the ${p} again! Go ${p}!`,`The ${p} is where it's happening. Go ${p}!`,`Their ${p==="left"?"right":"left"}-back is struggling. Go ${p}, and keep going ${p}!`][n];
+}
 function staffTake(dp, ctx){
-  const diff=(ctx.mine||0)-(ctx.theirs||0), seed=(ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0), R=[];
+  const diff=(ctx.mine||0)-(ctx.theirs||0), seed=(ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0)+((typeof live!=="undefined"&&live&&typeof liveSeed==="function")?(liveSeed(live.step)%9973):0), R=[];   // and the match (Muse: last match's line, word for word)
   const behind=diff<0, ahead=diff>0, o=dp.opts.map(x=>x[0]);
   if(dp.k==="read"){
     const p=dp.pearl&&APPROACH[dp.pearl]?APPROACH[dp.pearl].counter:"normal";
@@ -156,7 +163,7 @@ function staffTake(dp, ctx){
   if(dp.k==="flank"){
     const p=dp.pearl==="left"||dp.pearl==="right"?dp.pearl:"normal";
     R.push({who:"bears", pick:"left", line:bearYell("flank",seed)});
-    R.push({who:"pearl", pick:p, line:pearlSay(pearlRecall(dp,seed)+(p==="normal"?"The flanks, though, I couldn't tell. Both sides look the same to me!":`And we just got through on the ${p} again! Go ${p}!`),seed)});
+    R.push({who:"pearl", pick:p, line:pearlSay(pearlRecall(dp,seed)+pearlFlank(dp,p,seed),seed)});
     R.push({who:"capy", pick:"normal", line:"I would leave the shape alone. A count of attacks is, I believe, a small and noisy thing."});
     return R;
   }

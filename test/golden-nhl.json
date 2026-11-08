@@ -1,5 +1,5 @@
 {
- "fp": "7bf4b76e17579092",
+ "fp": "ababfc5a184ce184",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -300,6 +300,11 @@
    "fp": "7bf4b76e17579092",
    "from": "a5c16b1e58aa9a9f",
    "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
+  },
+  {
+   "fp": "ababfc5a184ce184",
+   "from": "7bf4b76e17579092",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
   }
  ],
  "result": {
@@ -314,7 +319,7 @@
     "heis": "beb1b81b18d165c4",
     "history": "de354b61f310ab25",
     "universe": "5ffcef32928be602",
-    "screens": "db7ebfff984af75a"
+    "screens": "a0cd748bf6bb7268"
    },
    {
     "year": 2027,
@@ -326,7 +331,7 @@
     "heis": "b355cc7720969f2d",
     "history": "d250b627c68c243c",
     "universe": "c1d804049c8c8386",
-    "screens": "d6631cf54fb34b2a"
+    "screens": "ee4e6fb5164eff2c"
    }
   ],
   "Edmonton#777": [
@@ -339,20 +344,20 @@
     "poll": "0024ffbefad27717",
     "heis": "78bc070c6bfc0a9f",
     "history": "52cc80f40d350356",
-    "universe": "7396abba2ff06728",
-    "screens": "1a9ba1181b7a6f36"
+    "universe": "a0feca8a7540254d",
+    "screens": "ff93ac39f8c4eead"
    },
    {
     "year": 2027,
-    "games": "c7ef9bf57fe407f7",
-    "post": "e7485a26c4dcfc93",
-    "champion": "Winnipeg",
-    "rec": "bac1e647d512b63d",
-    "poll": "591d9f36ced05caa",
-    "heis": "b8e9f2899bbecbcb",
-    "history": "b9f8e079a0ed5335",
-    "universe": "d4698f8973fa4fa5",
-    "screens": "6f650ffc65199a2f"
+    "games": "6978ba3bdc3ee538",
+    "post": "b5a1dd402d3ce7c6",
+    "champion": "Colorado",
+    "rec": "e92ec2983a23663c",
+    "poll": "2d6de75119a097f3",
+    "heis": "764108be0c254e79",
+    "history": "c5b40f51c7b2757e",
+    "universe": "de2b66f57ab9058d",
+    "screens": "0b643f41f0223ef0"
    }
   ],
   "schedules#60": [

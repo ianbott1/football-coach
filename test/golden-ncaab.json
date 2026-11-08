@@ -1,5 +1,5 @@
 {
- "fp": "f2ac997c9721aeb7",
+ "fp": "69787889adb19f84",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -335,6 +335,11 @@
    "fp": "f2ac997c9721aeb7",
    "from": "75bebcf409a58cef",
    "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
+  },
+  {
+   "fp": "69787889adb19f84",
+   "from": "f2ac997c9721aeb7",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
   }
  ],
  "result": {
@@ -361,7 +366,7 @@
     "heis": "bdc76644c22f567f",
     "history": "78ff0e134f339e3e",
     "universe": "0a12db6e408b32c3",
-    "screens": "a988e59dc5503eed"
+    "screens": "b4775371c90ac136"
    }
   ],
   "Coppin State#2024": [
@@ -387,7 +392,7 @@
     "heis": "dc41c7de51860732",
     "history": "2b93cd387064afd4",
     "universe": "c19ffe75f931ec9f",
-    "screens": "cb5a559a5557905e"
+    "screens": "971587bcd56f67df"
    }
   ],
   "Gonzaga#777": [
@@ -413,7 +418,7 @@
     "heis": "fdd43efdedcfd2df",
     "history": "a62790c821d6c4cb",
     "universe": "a20ae7d0ba92beaf",
-    "screens": "acbb2767690cb7c8"
+    "screens": "8c55a0cdc1bfd8cb"
    }
   ],
   "schedules#60": [

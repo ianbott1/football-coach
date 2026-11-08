@@ -1,5 +1,5 @@
 {
- "fp": "31479aefe0153a59",
+ "fp": "99609225f39dc9ec",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -245,6 +245,11 @@
    "fp": "31479aefe0153a59",
    "from": "75cbb020c399287c",
    "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
+  },
+  {
+   "fp": "99609225f39dc9ec",
+   "from": "31479aefe0153a59",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
   }
  ],
  "out": [
@@ -258,16 +263,16 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "4d218ffed35d7b5b"
+     "book": "c1be14574875d5c9"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "7-10",
-      "result": "Losing season",
-      "grade": "B-"
+      "rec": "9-8",
+      "result": "Missed the playoffs",
+      "grade": "B+"
      },
-     "book": "f1cc0464c47c68bd"
+     "book": "54043df3739eb2fc"
     }
    ]
   },
@@ -277,20 +282,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "14-3",
-      "result": "Lost the conference championship",
-      "grade": "A"
+      "rec": "10-7",
+      "result": "Lost in the wild card round",
+      "grade": "B"
      },
-     "book": "c31b9c250d27b0fd"
+     "book": "a9dcbcca6edc9fe0"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
+      "rec": "12-5",
       "result": "Lost the Super Bowl",
-      "grade": "A"
+      "grade": "A+"
      },
-     "book": "6d7be975b758b049"
+     "book": "e79f946a52d3737f"
     }
    ]
   },
@@ -300,20 +305,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
+      "rec": "11-6",
       "result": "Lost in the wild card round",
-      "grade": "A-"
+      "grade": "B+"
      },
-     "book": "af8b19d2aea2c78f"
+     "book": "9a67e4d37c2e32d8"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "17-0",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "14-3",
+      "result": "Lost in the divisional round",
+      "grade": "A"
      },
-     "book": "117d225dc08584b6"
+     "book": "4ced773a43860d55"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "6cd8c2237ae2116a",
+ "fp": "4fb5f7d1df7f9ab8",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -285,59 +285,64 @@
    "fp": "6cd8c2237ae2116a",
    "from": "924cbea634aaae1d",
    "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
+  },
+  {
+   "fp": "4fb5f7d1df7f9ab8",
+   "from": "6cd8c2237ae2116a",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e0d1e11dca51b4e2",
-    "post": "2fd7b248bc1d6035",
-    "champion": "Denver",
-    "rec": "eb41555b003610ac",
-    "poll": "2e2faa8af90db19d",
-    "heis": "a889fa8b5e8d4ab4",
-    "history": "f4cd9b92c9e7fbd0",
-    "universe": "242c474b0f7ff24d",
-    "screens": "001b6f08836a27ae"
+    "games": "63cf3b8758dfef47",
+    "post": "a5b12b651f68256a",
+    "champion": "Oklahoma City",
+    "rec": "0109ba5cc2b6fcad",
+    "poll": "1f6d815483d8e3e6",
+    "heis": "697586c737d37fb5",
+    "history": "f9765a7a8e665678",
+    "universe": "6611130f4fa6d5f2",
+    "screens": "d8217cc7a0583974"
    },
    {
     "year": 2027,
-    "games": "914cabd3f9d18a8c",
-    "post": "8642567b2b7a2975",
-    "champion": "Oklahoma City",
-    "rec": "5e1b27ab158224e5",
-    "poll": "13210d608a582ada",
-    "heis": "a6b6370be9f3c174",
-    "history": "78b448954ba426be",
-    "universe": "86eeddc385e77630",
-    "screens": "e8074f3c1a5edc44"
+    "games": "47ce4f36be2c5af7",
+    "post": "1bb7ed812833586e",
+    "champion": "Sacramento",
+    "rec": "72a72dc60a8da724",
+    "poll": "41b722b963180d0d",
+    "heis": "94fe75332c789ee2",
+    "history": "c2b0c760112135b7",
+    "universe": "1b14001d5ad2dca4",
+    "screens": "cc6464a9a001dad3"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "d0708d87389c60a2",
-    "post": "8b4d938274333518",
-    "champion": "Oklahoma City",
-    "rec": "310e091dbe6e470e",
-    "poll": "4a5830aab6b8f4a6",
-    "heis": "a93a44dfcf6920ba",
-    "history": "1cc29eafa6d053b4",
-    "universe": "e91c1230060ee542",
-    "screens": "480ad35de1255803"
+    "games": "5d858d7e5bb8c22b",
+    "post": "755799162f0b62b1",
+    "champion": "Golden State",
+    "rec": "f38659a27f94aee1",
+    "poll": "ad5e95e7742bf324",
+    "heis": "25dd8ba075c60cbb",
+    "history": "8aadacdb13940526",
+    "universe": "68edcc2b9750b646",
+    "screens": "9e2b1f113eaf07ae"
    },
    {
     "year": 2027,
-    "games": "7b7cf39246b56b5a",
-    "post": "038f4e2400fec847",
-    "champion": "Miami",
-    "rec": "44f9d5eb8f0a097f",
-    "poll": "a5373578f9d3faf0",
-    "heis": "215a15facb9a21f0",
-    "history": "6763f84ba52fc9a0",
-    "universe": "786df9cb8ebba6d8",
-    "screens": "60286165caba1871"
+    "games": "82db0e37f2a7e256",
+    "post": "1dfb0a29030accea",
+    "champion": "Houston",
+    "rec": "cb32a6585bf2682f",
+    "poll": "ded7a00ee10e4fd2",
+    "heis": "c575db3df784470e",
+    "history": "d6d6f212a85bb60e",
+    "universe": "116ba6e8be23c28f",
+    "screens": "4f28e5b5c46529aa"
    }
   ],
   "schedules#60": [
