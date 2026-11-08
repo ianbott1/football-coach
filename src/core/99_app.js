@@ -16,7 +16,7 @@ let plan="balanced", reveal=null, revealTimer=null;
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
-                    "history","expNow","readTally"];
+                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals"];   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -224,6 +224,7 @@ function finishLive(){ liveEndedAt=Date.now();
   S.played=S.played||{};
   const pk=callKey(live.step);
   S.played[pk]=(S.played[pk]||[]).concat([JSON.parse(JSON.stringify(played))]);
+  if(!live.h2h&&typeof recordStory==="function")recordStory(played,g,live.step,meHome);   // the Film Room, the night's comeback (round 41)
   const step=live.step;
   live.result={hp:live.eng.h,ap:live.eng.a,
                mine:(g.home===S.myTeam?live.eng.h:live.eng.a)};
@@ -961,6 +962,7 @@ function endSeason(rng,choices,act,seasonTeam){
   // the entry is written before the offseason runs: promotion, relegation
   // and realignment move teams, and the season belongs to the group it was played in
   const entry=seasonEntry(my);
+  if(typeof bankStory==="function")bankStory(entry);   // its comeback and collapse; the head-to-head with each coach (round 41)
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
@@ -1188,7 +1190,7 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${won&&SEA.champion===my&&/Champions/.test(move)&&typeof titleNightHTML==="function"?titleNightHTML(my):""}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
       return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
@@ -1801,7 +1803,7 @@ function nextUpHTML(my,rk){
           ? "you've won "+ser.streak.n+" straight"
           : esc(ser.streak.team)+" has won "+ser.streak.n+" straight"}`:""}
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
-      </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}
+      </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}${typeof rivalLine==="function"?rivalLine(opp):""}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
       ${cupNight?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} ${esc(LEAGUE.cup.rule||"")}</span></div>
         <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>`
@@ -2519,7 +2521,7 @@ function yourSeasonsHTML(noCards){
   return `<div class="grouphead">Your seasons</div>`+H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<div class="yrow ${h.honours&&h.honours.title?'gold':''}">
     <span class="yr">${h.year}</span>${h.grade?`<span class="ygrade">${esc(h.grade)}</span>`:""}
     <div class="ymain"><div class="yrec">${esc(h.team||"")} &middot; ${esc(h.rec||"")}</div>
-    <div class="yres">${esc(h.result||"")}</div></div>
+    <div class="yres">${esc(h.result||"")}</div>${typeof storyRowLine==="function"?storyRowLine(h.story):""}</div>
     ${h.coach&&!h.now&&!noCards?`<button class="ycard" data-card="${i}" title="Season card">&#8599;</button>`:""}</div>`).join("");
 }
 function firedHistoryHTML(){
@@ -2563,6 +2565,7 @@ function dynastyView(){
         <span class="stoprec">${careerRec(s,s.team,s.from,s.to)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
       </div>`}).join("")}</div>`;
     h+=yourSeasonsHTML();
+    h+=filmRoomHTML();
     h+=cabinetHTML();
     h+=teamCard(my);
     h+=`<div class="seedrow"><div class="seedbox seedshow">SEED ${S.seed}</div>

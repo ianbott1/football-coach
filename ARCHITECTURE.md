@@ -358,6 +358,42 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 41: the season story (core/95_story.js; Muse's ideas, Instinct's "make the peak a peak"):
+- Kept per coach (COACH_FIELDS film, lifeCalls, storyYr, rivals), written only
+  from games already played; none of it moves a game. recordStory after each
+  played game (finishLive), bankStory when the season is banked.
+- The Film Room (Dynasty, below Your seasons): your best five and costliest
+  three graded situation calls, career-long (S.film keeps the best and worst
+  thirty; at most two of one kind of moment shown). Reads stay out: their
+  card judges them right or wrong (round 39's one verdict per call). Each
+  with season, date, opponent, result, your choice and the assistant's, and
+  its worth in games per 100. Above it, who you are once there are eight
+  calls: bold or careful by the options you pick (STORY_BOLD / STORY_SAFE),
+  and whether it has paid (S.lifeCalls, career-long; the season ledger keeps
+  two years only).
+- Comebacks and collapses: the running score of each played game (drives'
+  sh/sa or h/a); down at least STORY_TH (football 10, basketball 12, hockey
+  and soccer 2) and won, up as much and lost. The season's biggest of each
+  goes into its history entry (story) and its row in Your seasons.
+- Rivals: at the season's bank, every game you coached against the head
+  coach of the other side then (interim staff skipped), into S.rivals by
+  name with the clubs on both sides, so the record follows both of you
+  between jobs. Before a game: "<name>, their coach: 6-3 against him (and
+  with X)". Your rival: the coach you've met most (four or more), the closer
+  record breaking ties, tagged.
+- Title night: the result card of the game that wins it ("Champions" in the
+  result line) carries a gold card: the record, the season's comeback, your
+  call of the season, the player who carried it, and which title it is.
+  CSS confetti, off under prefers-reduced-motion. Soccer's titles are won on
+  the table with no final, so no title night there yet.
+- test/story.js joins the suite (four games: film keeps no reads and nothing
+  under 4 points, story reaches history, coaches counted, the pages render).
+- Control (STORY_ON false): every golden fingerprint, screens included, and
+  the hot seat match round 40 (once a template's whitespace was matched).
+- Not done: in-game win probability, so "you were at 4% in the third" isn't
+  possible yet (comebacks are told by the score); rewatching a Film Room game
+  from a past season; soccer's title night.
+
 Round 40: late calls in close finishes (Grokbot's top request, measured in round 39):
 - Hockey: the last five minutes up one or tied (finalCall, HK_FINAL): up one,
   shut it down or go for the second; tied, go for the win or play for

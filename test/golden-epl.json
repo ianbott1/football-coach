@@ -1,5 +1,5 @@
 {
- "fp": "2009aa4a67d49fd2",
+ "fp": "1bb1f46e223b6064",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -310,6 +310,11 @@
    "fp": "2009aa4a67d49fd2",
    "from": "52cd49e81d03da43",
    "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "1bb1f46e223b6064",
+   "from": "2009aa4a67d49fd2",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "result": {
@@ -324,7 +329,7 @@
     "heis": "00ad3e484347c13e",
     "history": "93cb6112ec363453",
     "universe": "424b747d8e578816",
-    "screens": "f7a7cf7af0822ed6"
+    "screens": "c3747fd2e300a80a"
    },
    {
     "year": 2027,
@@ -336,7 +341,7 @@
     "heis": "da43777df1878195",
     "history": "ff3d108c5857fe44",
     "universe": "e7c5a46daa7493c2",
-    "screens": "5567f25bc520b8d7"
+    "screens": "e4853b6eadaa3b7b"
    }
   ],
   "Wrexham#777": [
@@ -348,9 +353,9 @@
     "rec": "cd6c4946c66e4c39",
     "poll": "9fcf8b6f27d0dfe3",
     "heis": "9fa32ab6077ec965",
-    "history": "699417f2b0970695",
+    "history": "a4338fb4ce2a7838",
     "universe": "bbee5b325bcaf029",
-    "screens": "b650b80ceccaadc4"
+    "screens": "3693c50c81a347fe"
    },
    {
     "year": 2027,
@@ -362,7 +367,7 @@
     "heis": "479842095efd22f5",
     "history": "45138f63f8182552",
     "universe": "60b1fa1330c45ffb",
-    "screens": "9f98e00ff30faa1f"
+    "screens": "52ee8368975887fb"
    }
   ],
   "schedules#60": [

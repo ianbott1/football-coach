@@ -1,5 +1,5 @@
 {
- "fp": "3dab7933996afa29",
+ "fp": "fe9d66abcd536ec3",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -250,6 +250,11 @@
    "fp": "3dab7933996afa29",
    "from": "c6551b37597cc14d",
    "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "fe9d66abcd536ec3",
+   "from": "3dab7933996afa29",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "out": [
@@ -272,7 +277,7 @@
       "result": "Won the Boca Raton Bowl",
       "grade": "A+"
      },
-     "book": "c8ce57440b8ba4a0"
+     "book": "4e00636d8bc3f4c4"
     }
    ]
   },
@@ -295,7 +300,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "4c34990d7092202c"
+     "book": "128a21117be6fb26"
     }
    ]
   },
@@ -318,7 +323,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "f3f788e41f34d2e1"
+     "book": "c3b8b9590f398045"
     }
    ]
   }

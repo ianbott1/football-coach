@@ -1,5 +1,5 @@
 {
- "fp": "69787889adb19f84",
+ "fp": "db8479a1f8998aa8",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -345,6 +345,11 @@
    "fp": "69787889adb19f84",
    "from": "69787889adb19f84",
    "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "db8479a1f8998aa8",
+   "from": "69787889adb19f84",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "result": {
@@ -357,9 +362,9 @@
     "rec": "09dac16ba571d00c",
     "poll": "647b28cc9958dc07",
     "heis": "f0ca3896b10da2b9",
-    "history": "daf8d1357dfefddb",
+    "history": "32a7832ebb18996e",
     "universe": "31d6d45e447330c2",
-    "screens": "07df88bf5293e6b4"
+    "screens": "a14d0af5a9e66f7e"
    },
    {
     "year": 2027,
@@ -369,9 +374,9 @@
     "rec": "40af74094b43fd21",
     "poll": "b598b19e38b8b1c5",
     "heis": "bdc76644c22f567f",
-    "history": "78ff0e134f339e3e",
+    "history": "246464a1010cde3f",
     "universe": "0a12db6e408b32c3",
-    "screens": "b4775371c90ac136"
+    "screens": "4962732bb488face"
    }
   ],
   "Coppin State#2024": [
@@ -383,9 +388,9 @@
     "rec": "04df03c1cdda5e0c",
     "poll": "48e6ddf7423a1bac",
     "heis": "13bfe33d01f2b2a1",
-    "history": "635d759c27825217",
+    "history": "61b538318a942cfd",
     "universe": "590ac26570db1ec4",
-    "screens": "1addae7a237af4ca"
+    "screens": "73212295ff7d954b"
    },
    {
     "year": 2027,
@@ -395,9 +400,9 @@
     "rec": "030b373698b71d36",
     "poll": "36b3ad73e74f89ad",
     "heis": "dc41c7de51860732",
-    "history": "2b93cd387064afd4",
+    "history": "25de26b8b49c7474",
     "universe": "c19ffe75f931ec9f",
-    "screens": "971587bcd56f67df"
+    "screens": "522e144e327bc4b1"
    }
   ],
   "Gonzaga#777": [
@@ -409,9 +414,9 @@
     "rec": "6ed5231c300ce042",
     "poll": "aa6f6e93d70439ed",
     "heis": "c94713712b4e6c61",
-    "history": "cd4d92f6f3f61aa8",
+    "history": "fdd11bde6db51ce9",
     "universe": "384c52ebeaa8d02f",
-    "screens": "3deeee486cd81a78"
+    "screens": "336a5979ea1b9e50"
    },
    {
     "year": 2027,
@@ -421,9 +426,9 @@
     "rec": "9a4b49f57af492b2",
     "poll": "327accd82368a4ba",
     "heis": "fdd43efdedcfd2df",
-    "history": "a62790c821d6c4cb",
+    "history": "8f23d8c8613f6d54",
     "universe": "a20ae7d0ba92beaf",
-    "screens": "8c55a0cdc1bfd8cb"
+    "screens": "f3c9a3ae0a50fb9c"
    }
   ],
   "schedules#60": [

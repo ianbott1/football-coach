@@ -1,5 +1,5 @@
 {
- "fp": "872d7a4f1026facd",
+ "fp": "9ce8c7112f455808",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -255,6 +255,11 @@
    "fp": "872d7a4f1026facd",
    "from": "99609225f39dc9ec",
    "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "9ce8c7112f455808",
+   "from": "872d7a4f1026facd",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "out": [
@@ -277,7 +282,7 @@
       "result": "Missed the playoffs",
       "grade": "B+"
      },
-     "book": "7ed4fb595b09ab9f"
+     "book": "9cfae52fa2ad6a60"
     }
    ]
   },
@@ -300,7 +305,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "3fe876dabae3f79f"
+     "book": "bd7001a9c6185bc6"
     }
    ]
   },
@@ -323,7 +328,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "eeb1272fe9906b0c"
+     "book": "79eb568ccf321a25"
     }
    ]
   }

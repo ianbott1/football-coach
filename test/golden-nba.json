@@ -1,5 +1,5 @@
 {
- "fp": "4fb5f7d1df7f9ab8",
+ "fp": "108475f22c508ec3",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -295,6 +295,11 @@
    "fp": "4fb5f7d1df7f9ab8",
    "from": "4fb5f7d1df7f9ab8",
    "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "108475f22c508ec3",
+   "from": "4fb5f7d1df7f9ab8",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "result": {
@@ -307,9 +312,9 @@
     "rec": "0109ba5cc2b6fcad",
     "poll": "1f6d815483d8e3e6",
     "heis": "697586c737d37fb5",
-    "history": "f9765a7a8e665678",
+    "history": "25202b98f0010d42",
     "universe": "6611130f4fa6d5f2",
-    "screens": "d8217cc7a0583974"
+    "screens": "e43aeda4152fee4c"
    },
    {
     "year": 2027,
@@ -319,9 +324,9 @@
     "rec": "72a72dc60a8da724",
     "poll": "41b722b963180d0d",
     "heis": "94fe75332c789ee2",
-    "history": "c2b0c760112135b7",
+    "history": "39c1302454d5f99a",
     "universe": "1b14001d5ad2dca4",
-    "screens": "cc6464a9a001dad3"
+    "screens": "5fe0c979b05ffcce"
    }
   ],
   "Detroit#777": [
@@ -333,9 +338,9 @@
     "rec": "f38659a27f94aee1",
     "poll": "ad5e95e7742bf324",
     "heis": "25dd8ba075c60cbb",
-    "history": "8aadacdb13940526",
+    "history": "4ca49cabbf315988",
     "universe": "68edcc2b9750b646",
-    "screens": "9e2b1f113eaf07ae"
+    "screens": "f8fbaf48759d2d6d"
    },
    {
     "year": 2027,
@@ -345,9 +350,9 @@
     "rec": "cb32a6585bf2682f",
     "poll": "ded7a00ee10e4fd2",
     "heis": "c575db3df784470e",
-    "history": "d6d6f212a85bb60e",
+    "history": "da150eb671a5c81e",
     "universe": "116ba6e8be23c28f",
-    "screens": "4f28e5b5c46529aa"
+    "screens": "157a7eaf5ebf96e3"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "b1c26619a70e57ca",
+ "fp": "7cedd1848281d774",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -195,6 +195,11 @@
    "fp": "b1c26619a70e57ca",
    "from": "b1c26619a70e57ca",
    "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "7cedd1848281d774",
+   "from": "b1c26619a70e57ca",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "out": [
@@ -217,7 +222,7 @@
       "result": "Lost in the NBA Finals",
       "grade": "A-"
      },
-     "book": "cac5e0e3683da568"
+     "book": "507021798ac53a80"
     }
    ]
   },
@@ -240,7 +245,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "2f834dfc1a85c791"
+     "book": "c6d0ecc9fbdba75a"
     }
    ]
   },
@@ -263,7 +268,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "1252c1b32bdb9007"
+     "book": "e5116560d7f83a05"
     }
    ]
   }

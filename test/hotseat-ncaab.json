@@ -1,5 +1,5 @@
 {
- "fp": "60da6c4aed887d98",
+ "fp": "779ac077afaa414e",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -225,6 +225,11 @@
    "fp": "60da6c4aed887d98",
    "from": "60da6c4aed887d98",
    "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "779ac077afaa414e",
+   "from": "60da6c4aed887d98",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "out": [
@@ -293,7 +298,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "A"
      },
-     "book": "f6b254e37de91e20"
+     "book": "f4715a55e76b66a8"
     }
    ]
   }

@@ -759,6 +759,30 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 @media(max-width:1023px){ .hint{display:none} }
 .hint{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.1em;
  text-transform:uppercase;padding:10px 24px 0}
+/* round 41: the season story */
+.titlenight{position:relative;overflow:hidden;margin:14px 0 6px;padding:16px 14px 14px;border:1px solid var(--sodium);
+ background:linear-gradient(180deg,rgba(244,166,58,.18),rgba(244,166,58,.04));text-align:left}
+.tnhead{font-family:var(--cond);font-weight:700;font-size:34px;letter-spacing:.06em;text-transform:uppercase;color:var(--sodium);
+ text-align:center;margin-bottom:8px;animation:tnpop .9s ease-out both}
+.tnline{font-size:13.5px;line-height:1.5;color:var(--bone);margin:5px 0;animation:tnin .6s ease-out both}
+.tnline:nth-child(3){animation-delay:.25s}.tnline:nth-child(4){animation-delay:.5s}.tnline:nth-child(5){animation-delay:.75s}.tnline:nth-child(6){animation-delay:1s}.tnline:nth-child(7){animation-delay:1.25s}
+.tnconf{position:absolute;inset:0;pointer-events:none}
+.tnconf i{position:absolute;top:-10px;width:6px;height:10px;opacity:.85;animation:tnfall 2.6s linear infinite}
+.tnconf i:nth-child(3n){background:var(--sodium)}.tnconf i:nth-child(3n+1){background:var(--bone)}.tnconf i:nth-child(3n+2){background:var(--tc,var(--turf))}
+.tnconf i:nth-child(1){left:0%;animation-delay:0.00s;animation-duration:2.2s}.tnconf i:nth-child(2){left:37%;animation-delay:0.37s;animation-duration:2.5s}.tnconf i:nth-child(3){left:74%;animation-delay:0.74s;animation-duration:2.8s}.tnconf i:nth-child(4){left:11%;animation-delay:1.11s;animation-duration:3.1s}.tnconf i:nth-child(5){left:48%;animation-delay:1.48s;animation-duration:3.4s}.tnconf i:nth-child(6){left:85%;animation-delay:1.85s;animation-duration:2.2s}.tnconf i:nth-child(7){left:22%;animation-delay:2.22s;animation-duration:2.5s}.tnconf i:nth-child(8){left:59%;animation-delay:2.59s;animation-duration:2.8s}.tnconf i:nth-child(9){left:96%;animation-delay:0.36s;animation-duration:3.1s}.tnconf i:nth-child(10){left:33%;animation-delay:0.73s;animation-duration:3.4s}.tnconf i:nth-child(11){left:70%;animation-delay:1.10s;animation-duration:2.2s}.tnconf i:nth-child(12){left:7%;animation-delay:1.47s;animation-duration:2.5s}.tnconf i:nth-child(13){left:44%;animation-delay:1.84s;animation-duration:2.8s}.tnconf i:nth-child(14){left:81%;animation-delay:2.21s;animation-duration:3.1s}.tnconf i:nth-child(15){left:18%;animation-delay:2.58s;animation-duration:3.4s}.tnconf i:nth-child(16){left:55%;animation-delay:0.35s;animation-duration:2.2s}.tnconf i:nth-child(17){left:92%;animation-delay:0.72s;animation-duration:2.5s}.tnconf i:nth-child(18){left:29%;animation-delay:1.09s;animation-duration:2.8s}
+@keyframes tnfall{to{transform:translateY(420px) rotate(540deg)}}
+@keyframes tnpop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}}
+@keyframes tnin{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+.ident{margin:6px 16px 10px;font-size:13.5px;line-height:1.5;color:var(--bone)}
+.ident b{color:var(--sodium)}
+.filmlab{margin:10px 16px 4px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.film{margin:6px 16px;padding:9px 12px;border-left:3px solid var(--turf);background:var(--panel2)}
+.film.dn{border-left-color:var(--flag)}
+.filmh{font-family:var(--cond);font-weight:600;font-size:16px;color:var(--bone)}
+.filmm{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.filmb{font-size:13px;line-height:1.45;margin-top:4px;color:var(--bone)}
+.ystory{font-size:12px;color:var(--sodium);margin-top:2px}
+.rivtag{color:var(--flag);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-right:4px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .clinch{display:inline-block;min-width:1.2em;margin-right:6px;padding:0 3px;border-radius:3px;
   font:700 10px/1.5 var(--mono);text-align:center;vertical-align:1px}
