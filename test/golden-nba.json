@@ -1,5 +1,5 @@
 {
- "fp": "6c06a1a15531da79",
+ "fp": "67b33b586460db7f",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -315,59 +315,64 @@
    "fp": "6c06a1a15531da79",
    "from": "6c06a1a15531da79",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "67b33b586460db7f",
+   "from": "6c06a1a15531da79",
+   "note": "round 44: basketball foul trouble is a call again (BB_FOULQ), a star off the floor costs more (starOwn 0.034, starDef 0.009); control build with both reverted matches the round-43 fingerprint"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "3d8cd43c55641e61",
-    "post": "6f5de5246c698b7d",
-    "champion": "LA Lakers",
-    "rec": "14ba983cf610ff06",
-    "poll": "b67c7f451f9993c5",
-    "heis": "52e2f0d25c122ede",
-    "history": "be34d109c89e9052",
-    "universe": "c2e384d7c6069ef1",
-    "screens": "3724d1f5f0be9d60"
+    "games": "021c6cdc863269c1",
+    "post": "ff670a8b6cb7b16f",
+    "champion": "Boston",
+    "rec": "2b549e93e5b39610",
+    "poll": "27ae56a54a1deaee",
+    "heis": "8f74811a9d08846d",
+    "history": "5936af801626ee3d",
+    "universe": "d09b718863522429",
+    "screens": "ddf622f5295e6449"
    },
    {
     "year": 2027,
-    "games": "854ba86617ecca52",
-    "post": "7d14350be26f1513",
-    "champion": "Minnesota",
-    "rec": "6d6ae736d259d3f1",
-    "poll": "b10617eb47d4b60e",
-    "heis": "0feb166942dc9e67",
-    "history": "527df15708298917",
-    "universe": "25acad37165440b0",
-    "screens": "46fe419542db4475"
+    "games": "eb9d841a02d32e76",
+    "post": "f62100f00f20a3e1",
+    "champion": "Houston",
+    "rec": "b0d51ad823c69d43",
+    "poll": "af5d981638af951f",
+    "heis": "84ec549d1e1e9ebc",
+    "history": "4da5d7ec3854aabd",
+    "universe": "45206d35ffdeee2a",
+    "screens": "193b75352e0c748b"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "bcdf7c2bc3eb5fa1",
-    "post": "6d9f01d9147a5f29",
-    "champion": "Houston",
-    "rec": "0b1ba718b26c20b8",
-    "poll": "aeb1c91464e0b327",
-    "heis": "102ee9f38116b0cf",
-    "history": "c8044e2bb370ddc4",
-    "universe": "c20d6773bdefaa13",
-    "screens": "144b6aa89c9fbb49"
+    "games": "7430296a3eddb92a",
+    "post": "e4269dd4fe1cd6de",
+    "champion": "Philadelphia",
+    "rec": "ae00ba752da0beea",
+    "poll": "b238f495b4a1d134",
+    "heis": "ff388a3acc0072de",
+    "history": "76fb675e9a7f4377",
+    "universe": "89d927fbc5881e13",
+    "screens": "38f6ec6025d67381"
    },
    {
     "year": 2027,
-    "games": "251e6b2812989664",
-    "post": "be3e526972c4629a",
-    "champion": "New York",
-    "rec": "3ba442b734ba19b8",
-    "poll": "621cf02b276e5843",
-    "heis": "4d2e6739fe9cb5d6",
-    "history": "f6b301e18233e089",
-    "universe": "cb9054075069b345",
-    "screens": "df4e1984053104a8"
+    "games": "527f921f30cd438a",
+    "post": "ebea8458d57b6755",
+    "champion": "Milwaukee",
+    "rec": "8afa5a4d1300a11f",
+    "poll": "ba6ec5788ea7454c",
+    "heis": "0e286f10bffcf87b",
+    "history": "de09d1d09b81e58a",
+    "universe": "762dc4be6853eef0",
+    "screens": "4528090408be3106"
    }
   ],
   "schedules#60": [

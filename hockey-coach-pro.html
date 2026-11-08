@@ -942,7 +942,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="b989790";
+<script>const BUILD_ID="a86a398";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -2680,7 +2680,9 @@ const HK_BASE = {
   offNight:0.10,     // how often a goalie has a genuinely bad night...
   offBy:0.060,       // ...and how much more often shots go in
   formSd:0.007,      // an ordinary night's spread
-  backup:0.006,      // the backup: this much worse than the starter on average
+  backup:0.006,      // the backup: this much worse than the starter on average (when the ratings aren't known)
+  backupPer:0.0009,  // ...or this much per rating point behind the starter (round 44)
+  tired:0.015,       // a starter on the second night of a back-to-back: this much worse (round 44)
   softBad:0.65, softOk:0.15,   // goals the commentary calls soft: on a bad night, on an ordinary one
   cueTrue:0.5,       // commentary on a system that is about the real one
   favW:5,            // a club's usual system: this many times as likely as any other (4: 61%, as basketball)
@@ -2767,6 +2769,14 @@ function finalCall(lead){
     : {k:"final",h:"Tied, five minutes left",q:"Go for the win, or play for overtime and the point?",
        opts:[["push","Go for the win"],["sit","Play for overtime: a point is a point"],ASSIST]};
 }
+const HK_GSTART=true;
+/* the second night of a back-to-back: the tired starter, or the backup (round 44: Muse, "a backup who can plausibly
+   play"). Your assistant starts the backup, as the computer does. */
+function goalStartCall(G){
+  return {k:"gstart",h:"In goal tonight",q:`${G.s?G.s.n:"Your starter"} played last night. Start him tired, or give the backup the night?`,
+    opts:[["starter",`Start ${G.s?G.s.n.split(" ").slice(-1)[0]:"the starter"}: tired, but your best`],["backup",`Start ${G.b?G.b.n.split(" ").slice(-1)[0]:"the backup"}: fresh`],ASSIST],
+    gk:G};
+}
 function pullCall(lead,shortTo){
   // killing a penalty at the question (Grokbot: offered on a penalty kill, with no word of it)
   const pk=shortTo?`, a man short until ${Math.floor(shortTo)}:${String(Math.round((shortTo%1)*60)).padStart(2,"0")}`:"";
@@ -2794,10 +2804,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const night=()=>rng.r()<HK.offNight?HK.offBy+rng.gauss(0,HK.formSd):rng.gauss(0,HK.formSd);
   const side0=()=>({sys:null, ans:null, form:night(), backupIn:false, ga:0, xga:0, soft:0, sa:0, lastSoft:null,
     tell:{to:0,fe:0,cy:0,n:0}, lastCue:null});
+  /* who's in goal (round 44): on the second night of a back-to-back the computer (and your assistant) starts the
+     backup, as most benches do; the starter, if he plays, is tired. The backup's cost is his rating gap. */
+  const GK=(ctx&&ctx.gk)||{}, bkCost=sd=>GK[sd]&&GK[sd].gap!==undefined?HK.backupPer*Math.max(0,GK[sd].gap):HK.backup;
   const st={h:0,a:0,drives:[],seg:0,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
     mode:{home:planH,away:planA}, late:{home:null,away:null}, asked:{}, queue:[], ask:null,
     ot:0, so:false, done:false, playoff:!!playoff, S:{home:side0(),away:side0()}};
   st.gap=gap;
+  // tonight's form was drawn above; who starts only shifts it (no new dice)
+  const startGoalie=(sd,who)=>{ const X=st.S[sd]; if(who==="starter")X.form+=HK.tired; else { X.backupIn=true; X.startedBk=true; X.form+=bkCost(sd) } };
+  if(HK_GSTART)["home","away"].forEach(sd=>{ if(GK[sd]&&GK[sd].b2b&&!humans[sd])startGoalie(sd,"backup") });
   const other=s=>s==="home"?"away":"home";
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   // a side's system: the better side forechecks, the weaker traps
@@ -2819,7 +2835,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ans=SYSTEM[st.S[other(side)].sys].counter; st.S[side].prepd=false} };
   // the computer's goalie rule: four in, he's out (once)
   const cpuGoalie=(side)=>{ const X=st.S[side]; if(!X.backupIn&&X.ga>=4)swapGoalie(side) };
-  const swapGoalie=(side)=>{ const X=st.S[side]; X.backupIn=true; X.form=night()+HK.backup; X.ga=0; X.xga=0; X.soft=0; X.sa=0;
+  const swapGoalie=(side)=>{ const X=st.S[side]; X.backupIn=true; X.form=night()+bkCost(side); X.ga=0; X.xga=0; X.soft=0; X.sa=0;
     (st.pendEv=st.pendEv||[]).push({m:st.seg*5,side:side,k:"swap"}) };
   const segment=(s)=>{
     const mH=modeOf(s,"home"), mA=modeOf(s,"away");
@@ -2926,6 +2942,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; return }
     if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
     if(dp.k==="ot"){ st.late[side+"ot"]=v==="attack"||v==="hold"?v:null; return }
+    if(dp.k==="gstart"){ startGoalie(side,v==="starter"?"starter":"backup"); return }
     if(dp.k==="final"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":"auto"; return }
   };
   st.next=function(){
@@ -2936,6 +2953,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       const r={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,theirs:Q.side==="home"?st.a:st.h,q:st.seg,side:Q.side};
       st.waiting=r; return r}
     const s=st.seg;
+    if(HK_GSTART&&s===0&&!st.gq){ st.gq=true; ["home","away"].forEach(sd=>{ if(humans[sd]&&GK[sd]&&GK[sd].b2b)queueCall(sd,goalStartCall(GK[sd])) }); if(st.queue.length)return st.next() }
     if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
       if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
       if(st.queue.length)return st.next()}
@@ -2988,7 +3006,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
    opts.decide for a person who isn't watching. */
 /* each club's usual system this season, and the seed for its scouting report */
 function clubStyle(t,year){ return SYSTEM_KEYS[strHash(t+"|"+year)%SYSTEM_KEYS.length] }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+/* the goalie picture for a game (round 44): the second night of a back-to-back, and the gap between the goalies */
+function gkCtx(t,step){
+  try{ if(typeof SEA==="undefined"||!SEA||!SEA.sched||!SEA.roster||!SEA.roster[t])return null;
+    const b2b=step>0&&SEA.sched.some(g=>g.week===step-1&&(g.home===t||g.away===t)), R=SEA.roster[t], st=R[5], bk=R[BK(5)];
+    if(!st||!bk)return {b2b:b2b};
+    return {b2b:b2b, gap:st.r-bk.r, s:{n:st.n,r:st.r}, b:{n:bk.n,r:bk.r}} }catch(e){ return null } }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, gk:HK_GSTART?{home:gkCtx(h,step),away:gkCtx(a,step)}:undefined, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};
@@ -3176,6 +3200,12 @@ function staffTake(dp, ctx){
       ? (diff===2?`We're two up! Let's make it boring and go home happy.`:`We're ${["","","two","three","four","five"][diff]||diff} up! Let's make it boring and go home happy.`)   // the real lead: "two up" at 4-1 (Instinct)
       : `One goal isn't enough to sit on. Keep going!`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would suggest fewer chances, both ways. Fewer chances, fewer disasters.`});
+  }
+  else if(dp.k==="gstart"){
+    const gap=dp.gk&&dp.gk.gap!==undefined?dp.gk.gap:12;
+    R.push({who:"bears", pick:"starter", line:["TIRED? HE'S A GOALIE. HE STANDS THERE. START HIM.","BACK-TO-BACKS BUILD CHARACTER. YOUR BEST GOES IN."][Math.abs(seed)%2]});
+    R.push({who:"pearl", pick:gap>=18?"starter":"backup", line:pearlSay(gap>=18?`Our backup's not ready for this! Let's ride the big guy one more night!`:`Our backup's good! Let's give the big guy a rest!`,seed)});
+    R.push({who:"capy", pick:"backup", line:`A tired goalie, it seems to me, is mostly a slower one.`});
   }
   else if(dp.k==="final"){
     const up=diff>0;
@@ -3431,6 +3461,12 @@ function liveScoreboard(){
 /* ---- the evidence ---- */
 function evidenceHTML(g,my,d,dp){
   const opp=g.home===my?"away":"home";
+  // who's in goal: the two goalies, and what a back-to-back costs (round 44)
+  if(dp.k==="gstart"&&dp.gk){ const G=dp.gk;
+    return `<div class="evid"><div class="evh">Your goalies</div>
+      ${G.s?`<div class="evr"><span class="evk">${esc(G.s.n)} (played last night)</span><span class="evv">${G.s.r}</span></div>`:""}
+      ${G.b?`<div class="evr"><span class="evk">${esc(G.b.n)} (fresh)</span><span class="evv">${G.b.r}</span></div>`:""}
+      <div class="evn">A starter on the second night of a back-to-back plays below his rating; most benches start the backup. ${G.gap!==undefined?(G.gap>=18?"The gap between these two is big.":G.gap<=8?"These two are close.":"The gap between them is middling."):""}</div></div>` }
   if(dp.k==="prep"){ const R=dp.report, n=dp.n||6;
     const e=live&&live.eng&&live.eng.gap!==undefined?(opp==="home"?live.eng.gap:-live.eng.gap):0;
     const tilt=e>60?`${esc(g[opp])} are the stronger side tonight: sides like that forecheck more often than usual.`
@@ -4934,6 +4970,16 @@ function splitNote(R){
    it, for whether the call was worth it on average. The averages add up to a
    season's ledger: what your calls were worth in wins (Muse and Instinct:
    "nothing shows a good call mattering"). */
+/* what a result is worth to you: a win 1, a loss 0; a draw half, except where the table says otherwise (soccer: a point
+   against three for a win, LEAGUE.drawVal). A cup tie settled on penalties went to the side that won the shootout.
+   Round 44: soccer's calls were graded with a draw as half a win, so "take the point" was worth more than the table
+   gives for it, and level late the two answers rarely differed. */
+function resultVal(r,meHome){
+  const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; if(mine!==th)return mine>th?1:0;
+  if(r.pens)return (r.pens==="home")===!!meHome?1:0;
+  const ev=typeof process!=="undefined"&&process.env&&process.env.DRAW_VAL;   // tests: grade a draw another way
+  return ev?+ev:(LEAGUE.drawVal!=null?LEAGUE.drawVal:0.5);
+}
 const IMPACT_RUNS=400;
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
 /* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
@@ -4949,7 +4995,7 @@ function callInReach(args,seed,answers,meHome,j){
     while(g++<3000){ r=e.next(); if(r.done)break;
       if(r.ask){ let a; if(i<j)a=answers[i]; else { if(i===j){ rng.f=mulberry32((seed^Math.imul(m+101,0x9E3779B1))>>>0); rng.sp=null } a=impactDefault(r.ask) }
         e.reply(a); i++ } }
-    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    s+=resultVal(r,meHome) }
   return s/GATE_RUNS;
 }
 /* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
@@ -4958,7 +5004,7 @@ function callInReach(args,seed,answers,meHome,j){
 const SPREAD_ON=true;
 // mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
 // decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
-const SPREAD_KINDS=Object.assign({two:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);
+const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);   // round 44: who starts in goal, foul trouble
 const SPREAD_MIN=0.03, SPREAD_RUNS=60;
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
@@ -4966,7 +5012,7 @@ function callSpread(args,seed,answers,meHome,j,opts,dp){
       while(g++<3000){ r=e.next(); if(r.done)break;
         if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
           e.reply(a); i++ } }
-      const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+      s+=resultVal(r,meHome) }
     return s/SPREAD_RUNS };
   const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
   return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
@@ -4983,12 +5029,12 @@ function callImpact(args,seed,answers,meHome,runs){
         else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
         else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
         e.reply(a); i++ } }
-    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h};
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h, v:resultVal(r,meHome)};
   };
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<3000){ const r=e.next(); if(r.done)break;
       if(r.ask){ asks.push({dp:r.ask}); e.reply(answers[i]!==undefined?answers[i]:impactDefault(r.ask)); i++ } } }
-  const out=[], score=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0;
+  const out=[], score=x=>x.v;
   asks.forEach((A,j)=>{
     const pick=answers[j], def=impactDefault(A.dp);
     if(pick===undefined||pick===def||!A.dp.opts.some(o=>o[0]===def))return;      // left to him: nothing to compare
@@ -6304,7 +6350,7 @@ function liveTick(){
       if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
-        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&SPREAD_KINDS[r.ask.k]&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }

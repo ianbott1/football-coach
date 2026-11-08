@@ -16,6 +16,7 @@ const LEAGUE={
   // Premier League (its relegation alone names no division), 46 in the 24-club divisions
   seasonGames:res=>/Premier League|^Relegated \(/i.test(res)?38:46,
   draws:true,                                 // a point for a draw, three for a win
+  drawVal:1/3,                                // ...so a call is graded on a draw as a third of a win (core: resultVal; round 44)
   homeFirst:true,                             // results read home first, as in Britain
   /* win, draw and loss, from the engine's own scoring model (Poisson) */
   wdl(me,opp,atHome,neutral){

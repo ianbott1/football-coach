@@ -942,7 +942,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="276dfcb";
+<script>const BUILD_ID="daa458a";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -961,6 +961,7 @@ const LEAGUE={
   // Premier League (its relegation alone names no division), 46 in the 24-club divisions
   seasonGames:res=>/Premier League|^Relegated \(/i.test(res)?38:46,
   draws:true,                                 // a point for a draw, three for a win
+  drawVal:1/3,                                // ...so a call is graded on a draw as a third of a win (core: resultVal; round 44)
   homeFirst:true,                             // results read home first, as in Britain
   /* win, draw and loss, from the engine's own scoring model (Poisson) */
   wdl(me,opp,atHome,neutral){
@@ -2787,9 +2788,12 @@ function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five"
 const SC_FINAL=true;
 function finalCall(lead){
   const A=["normal","Leave it to your assistant"];
-  if(lead<0)return {k:"final",h:`Down ${-lead}, ten minutes left`,q:"Everyone forward?",
+  // round 44, graded in league points: down one, everyone forward was the best answer in 128 of 144 matches; up one,
+  // parking the bus in 108 of 122 (scratchpad scfinal.js). A question with one answer: asked only when it beats your
+  // assistant's by 3 points on the replays (spread). Level, the answers split (win 138, carry on 55, the point 37 of 230).
+  if(lead<0)return {k:"final",spread:true,h:`Down ${-lead}, ten minutes left`,q:"Everyone forward?",
     opts:[["push","Everyone forward: a striker on for a defender"],["keep","Stay patient"],A]};
-  if(lead>0)return {k:"final",h:`Up ${lead}, ten minutes left`,q:"Close it out?",
+  if(lead>0)return {k:"final",spread:true,h:`Up ${lead}, ten minutes left`,q:"Close it out?",
     opts:[["sit","Park the bus: a defender on"],["keep","Keep the ball, keep playing"],A]};
   return {k:"final",h:"Level, ten minutes left",q:"Go for the win, or take the point?",
     opts:[["win","Go for the win: fresh legs up front"],["point","Take the point"],A]};
@@ -3017,7 +3021,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     st.late[side]=v==="normal"?null:v;
   };
   st.next=function(){
-    const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives});
+    const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives,pens:st.pens||null});
     if(st.done)return fin();
     if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; apply(P.side,P.dp,v) }
     if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q;
@@ -3481,6 +3485,26 @@ function evidenceHTML(g,my,d,kind){
     ${rows2?`<div class="evn">Left: the whole match, per 45 minutes. Right: counts since half-time, only ${T2.n*5} minutes: a hint, not proof.</div>`:""}
     ${firstReadTip()}<div class="evn">League average: possession 50%, turnovers 6.3, crosses 5.4, long balls 6.3.</div></div>`;
 }
+/* the change behind a final-ten-minutes call, by name (round 44): who comes on, who comes off */
+function finalSub(my,o){
+  const R=SEA&&SEA.roster&&SEA.roster[my]; if(!R)return "";
+  const nm=i=>R[i]&&R[i].n?surname(R[i].n):null, P=p=>POS.findIndex(x=>x.p===p);
+  const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")]}[o]; if(!sw)return "";
+  const on=nm(sw[0]), off=nm(sw[1]); return on&&off?`${on} on, ${off} off`:"";
+}
+/* the table, beside the late calls (round 44): a point against three, in places. A league game in the season only. */
+function tableStakesHTML(g,my){
+  if(!SEA||SEA.phase!=="week"||g.cup||typeof LEAGUE.points!=="function"||!CONF[my])return "";
+  const div=NAMES.filter(t=>CONF[t]===CONF[my]), P=t=>LEAGUE.points(t,SEA), me=P(my);
+  const left=SEA.sched.filter(x=>x.week>SEA.step&&!x.cup&&(x.home===my||x.away===my)).length;
+  const place=pts=>1+div.filter(t=>t!==my&&P(t)>pts).length, tied=pts=>div.filter(t=>t!==my&&P(t)===pts);
+  const say=pts=>{ const T=tied(pts); return `${ordinal(place(pts))}${T.length?`, level with ${esc(T[0])}${T.length>1?` and ${T.length-1} more`:""}`:""}` };
+  return `<div class="evid"><div class="evh">What it means in the table <span>before tonight's other results</span></div>
+    <div class="evr"><span class="evk">Now</span><span class="evv">${say(me)} on ${me} points</span></div>
+    <div class="evr"><span class="evk">A win (three)</span><span class="evv">${me+3} points: ${say(me+3)}</span></div>
+    <div class="evr"><span class="evk">A draw (one)</span><span class="evv">${me+1} points: ${say(me+1)}</span></div>
+    <div class="evn">${left} league game${left===1?"":"s"} left after this one. A draw is a point; a win is three.</div></div>`;
+}
 function statStrip(g,d){
   if(!d||!d.st)return "";
   const H=d.st.home, A=d.st.away;
@@ -3525,7 +3549,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>(dp.k==="read"||dp.k==="prep")&&COUNTERS[o]?COUNTERS[o].d:"";
+  const desc=o=>(dp.k==="read"||dp.k==="prep")&&COUNTERS[o]?COUNTERS[o].d:(dp.k==="final"?finalSub(my,o):"");
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -3534,7 +3558,7 @@ function liveCallView(){
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.q||"")}</div>
     </div>
-    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):""}
+    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):dp.k==="late"||dp.k==="final"?tableStakesHTML(g,my):""}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length,g:g,my:my}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
@@ -5025,6 +5049,16 @@ function splitNote(R){
    it, for whether the call was worth it on average. The averages add up to a
    season's ledger: what your calls were worth in wins (Muse and Instinct:
    "nothing shows a good call mattering"). */
+/* what a result is worth to you: a win 1, a loss 0; a draw half, except where the table says otherwise (soccer: a point
+   against three for a win, LEAGUE.drawVal). A cup tie settled on penalties went to the side that won the shootout.
+   Round 44: soccer's calls were graded with a draw as half a win, so "take the point" was worth more than the table
+   gives for it, and level late the two answers rarely differed. */
+function resultVal(r,meHome){
+  const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; if(mine!==th)return mine>th?1:0;
+  if(r.pens)return (r.pens==="home")===!!meHome?1:0;
+  const ev=typeof process!=="undefined"&&process.env&&process.env.DRAW_VAL;   // tests: grade a draw another way
+  return ev?+ev:(LEAGUE.drawVal!=null?LEAGUE.drawVal:0.5);
+}
 const IMPACT_RUNS=400;
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
 /* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
@@ -5040,7 +5074,7 @@ function callInReach(args,seed,answers,meHome,j){
     while(g++<3000){ r=e.next(); if(r.done)break;
       if(r.ask){ let a; if(i<j)a=answers[i]; else { if(i===j){ rng.f=mulberry32((seed^Math.imul(m+101,0x9E3779B1))>>>0); rng.sp=null } a=impactDefault(r.ask) }
         e.reply(a); i++ } }
-    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    s+=resultVal(r,meHome) }
   return s/GATE_RUNS;
 }
 /* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
@@ -5049,7 +5083,7 @@ function callInReach(args,seed,answers,meHome,j){
 const SPREAD_ON=true;
 // mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
 // decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
-const SPREAD_KINDS=Object.assign({two:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);
+const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);   // round 44: who starts in goal, foul trouble
 const SPREAD_MIN=0.03, SPREAD_RUNS=60;
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
@@ -5057,7 +5091,7 @@ function callSpread(args,seed,answers,meHome,j,opts,dp){
       while(g++<3000){ r=e.next(); if(r.done)break;
         if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
           e.reply(a); i++ } }
-      const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+      s+=resultVal(r,meHome) }
     return s/SPREAD_RUNS };
   const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
   return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
@@ -5074,12 +5108,12 @@ function callImpact(args,seed,answers,meHome,runs){
         else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
         else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
         e.reply(a); i++ } }
-    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h};
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h, v:resultVal(r,meHome)};
   };
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<3000){ const r=e.next(); if(r.done)break;
       if(r.ask){ asks.push({dp:r.ask}); e.reply(answers[i]!==undefined?answers[i]:impactDefault(r.ask)); i++ } } }
-  const out=[], score=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0;
+  const out=[], score=x=>x.v;
   asks.forEach((A,j)=>{
     const pick=answers[j], def=impactDefault(A.dp);
     if(pick===undefined||pick===def||!A.dp.opts.some(o=>o[0]===def))return;      // left to him: nothing to compare
@@ -6476,7 +6510,7 @@ function liveTick(){
       if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
-        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&SPREAD_KINDS[r.ask.k]&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }

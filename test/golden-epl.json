@@ -1,5 +1,5 @@
 {
- "fp": "1f91da73fc4f5018",
+ "fp": "88aa45cd0953d293",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -330,59 +330,64 @@
    "fp": "1f91da73fc4f5018",
    "from": "1f91da73fc4f5018",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "88aa45cd0953d293",
+   "from": "1f91da73fc4f5018",
+   "note": "round 44: calls graded in league points (drawVal 1/3, shootouts to their winner), which changes which calls are asked; final call down or up one asked only when it gains (spread); control build with all three reverted matches the round-43 fingerprint"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "5328e451ff13089c",
-    "post": "21671e2140c5dec6",
+    "games": "d3426c82d781a2a5",
+    "post": "932bdcaf8e97a3f1",
     "champion": "Manchester City",
-    "rec": "9eb4952912944259",
-    "poll": "363ca8c42cd25830",
-    "heis": "68f72f4e6c0a2f78",
-    "history": "433b4cb3bef90c97",
-    "universe": "14001ccc845c9990",
-    "screens": "192743e3da0982fd"
+    "rec": "e44abe3b0ad1847b",
+    "poll": "bac30af691fcfadb",
+    "heis": "1c441ac03d83f1e2",
+    "history": "f1c00903ba03dfa1",
+    "universe": "a07e69f47cc51d0f",
+    "screens": "1aa508b36f21e8f6"
    },
    {
     "year": 2027,
-    "games": "336bb11d12098427",
-    "post": "90dc118160a5cd77",
+    "games": "923656d6af3f418d",
+    "post": "dc6e99fb2ed6b98d",
     "champion": "Manchester City",
-    "rec": "8d138326abcac74e",
-    "poll": "a44b0108a75c94e4",
-    "heis": "c656cbe5ad6275ff",
-    "history": "7055404721e8d46e",
-    "universe": "b4a70479dae47915",
-    "screens": "6e3ae878bb9dfcb3"
+    "rec": "2102bae5aa9dc719",
+    "poll": "4c65840c2a5a75d8",
+    "heis": "fcaa3169d089afc0",
+    "history": "720119baea506276",
+    "universe": "d489e757272a0a32",
+    "screens": "306a673a5551a339"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "47564178fc310951",
-    "post": "411ea09e77def0d7",
-    "champion": "Newcastle United",
-    "rec": "007ce84cf0999b6f",
-    "poll": "48b1e4579d4ffcc7",
-    "heis": "0dc3ed3108252d9c",
-    "history": "8adb9656177bd9a1",
-    "universe": "ab904c40408adb80",
-    "screens": "8e58da041db976a6"
+    "games": "085697cb7f754e0b",
+    "post": "4b1e56869081aabb",
+    "champion": "Aston Villa",
+    "rec": "b4147b17d767e5b0",
+    "poll": "f38111083512a157",
+    "heis": "e08a942134cb441d",
+    "history": "be654f9dced92b65",
+    "universe": "b6031699e7c137af",
+    "screens": "f1b068f306107d85"
    },
    {
     "year": 2027,
-    "games": "a8eb36d21cb50dbf",
-    "post": "22d0cea6802798bd",
-    "champion": "Arsenal",
-    "rec": "926450feac2d0f82",
-    "poll": "c62f637a49f0aca0",
-    "heis": "d9d586f5ed1f8c07",
-    "history": "6217fdfc429c6210",
-    "universe": "2f89210494da5e3b",
-    "screens": "41a5035598b85559"
+    "games": "cf30c5ccde748216",
+    "post": "709f85d5288d0035",
+    "champion": "Manchester City",
+    "rec": "3294f624b6c0367d",
+    "poll": "79bfd7920cb0df5b",
+    "heis": "5bd58d2adcd64be9",
+    "history": "d6d8e44582e34644",
+    "universe": "c7614b1802665bb2",
+    "screens": "62e0609fb519bb89"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "4b61c3abea3323f6",
+ "fp": "966034876481f71e",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -210,6 +210,11 @@
    "fp": "4b61c3abea3323f6",
    "from": "4b61c3abea3323f6",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "966034876481f71e",
+   "from": "4b61c3abea3323f6",
+   "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
   }
  ],
  "out": [
@@ -219,20 +224,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "55-27",
+      "rec": "48-34",
       "result": "Lost in the conference semifinals",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "84af1ea44600842c"
+     "book": "51a2ed8a42e1e640"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "43-39",
+      "rec": "42-40",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "c614caf795963ff0"
+     "book": "4085df717cb46f3b"
     }
    ]
   },
@@ -242,20 +247,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "12-70",
+      "rec": "15-67",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "bddf42c265cac570"
+     "book": "a514752cc7440493"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "36-46",
+      "rec": "25-57",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "9d0fbb00e210835e"
+     "book": "7eb8303ff1c12590"
     }
    ]
   },
@@ -265,20 +270,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-51",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "39-43",
+      "result": "Lost in the first round",
+      "grade": "C-"
      },
-     "book": "063a5cfb08a4a904"
+     "book": "651fa467968c3108"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "36-46",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "54-28",
+      "result": "Lost in the conference semifinals",
+      "grade": "B+"
      },
-     "book": "18e84635894707d7"
+     "book": "bd0cc32bbfda10de"
     }
    ]
   }

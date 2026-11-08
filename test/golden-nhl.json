@@ -1,5 +1,5 @@
 {
- "fp": "c929981d8116e1bc",
+ "fp": "df9cfae423544e3d",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -330,59 +330,64 @@
    "fp": "c929981d8116e1bc",
    "from": "c929981d8116e1bc",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "df9cfae423544e3d",
+   "from": "c929981d8116e1bc",
+   "note": "round 44: who starts in goal on a back-to-back (HK_GSTART; computer starts the backup, the backup's cost by his rating gap); control build with HK_GSTART off matches the round-43 fingerprint"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4ccaa5c67c7f791e",
-    "post": "05db15fa8811ee7f",
-    "champion": "Pittsburgh",
-    "rec": "f5b17acfab73fc65",
-    "poll": "a21f28901188d311",
-    "heis": "d71c598c91347ab4",
-    "history": "5d3e67c4daf8aed5",
-    "universe": "5ecd74496185ff1b",
-    "screens": "f5e183617e4a7474"
+    "games": "836d9205e12580bf",
+    "post": "0b260e3516f40f10",
+    "champion": "Dallas",
+    "rec": "d9f06ad45d5bfaab",
+    "poll": "78e60273d276118d",
+    "heis": "c858175198a22229",
+    "history": "f7c37f5eb16f41a7",
+    "universe": "e37bb98ede6c4eeb",
+    "screens": "a8ae332916288252"
    },
    {
     "year": 2027,
-    "games": "20fd46b6e59f6886",
-    "post": "580438e285e50224",
-    "champion": "Winnipeg",
-    "rec": "b0662442fe9741a2",
-    "poll": "4b2c2896968005a4",
-    "heis": "f7d6ad400b3c536e",
-    "history": "48d8dc3cd1c384ad",
-    "universe": "2d487b2b8ba793d7",
-    "screens": "5dbab9bcc93cefc6"
+    "games": "f9e70fba90f6edf0",
+    "post": "4df78e2cf9d336f7",
+    "champion": "Colorado",
+    "rec": "dac6e4e478c2997a",
+    "poll": "d6e232a72b310df8",
+    "heis": "002bed91bf6be73d",
+    "history": "14196dcb4ce2c1a7",
+    "universe": "ff8c4f7c8bd9e297",
+    "screens": "05adfb9c84ee7ad2"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "061d18317467ef03",
-    "post": "88ea3e878a042010",
-    "champion": "New Jersey",
-    "rec": "d8eb1fb2969aad2d",
-    "poll": "372ea71d7a10d1ca",
-    "heis": "595a5668494111ab",
-    "history": "9d9c5dbb8abba0e3",
-    "universe": "841e5de1cf2fde02",
-    "screens": "354ef3071d337620"
+    "games": "7c9629ab0f8b11e7",
+    "post": "859057f6df7c1175",
+    "champion": "Vegas",
+    "rec": "5e3fe5c8e38231f0",
+    "poll": "5acfba65a691aa8c",
+    "heis": "a8159cf440c089b4",
+    "history": "e547e5e3e565d757",
+    "universe": "ce9539b8cd76a42b",
+    "screens": "144f54434fa4aa9a"
    },
    {
     "year": 2027,
-    "games": "a631ab140572be3c",
-    "post": "21932790380dc061",
-    "champion": "Los Angeles",
-    "rec": "f30176c29b5ee288",
-    "poll": "55c9c17dd98aa3bc",
-    "heis": "c9d9cd6c32e31725",
-    "history": "625fba4629e280dc",
-    "universe": "880669a949cb5bc7",
-    "screens": "632db76fd8d2d405"
+    "games": "23e5c2efcf8b821a",
+    "post": "a20163aa2805792f",
+    "champion": "Edmonton",
+    "rec": "1daad1cf2034ff72",
+    "poll": "6310bab0deba7d1f",
+    "heis": "daf17ddf8ee2576b",
+    "history": "30075b1de36ce6fd",
+    "universe": "f6e780c6cb6c08c7",
+    "screens": "9789d34b4412dabc"
    }
   ],
   "schedules#60": [

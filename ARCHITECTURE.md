@@ -358,6 +358,48 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 44: a second decision per sport, each measured by replays, simming still
+equal to the computer coaches (test/sim-parity.js MATCH: every game within 1.5):
+- Basketball: foul trouble is a call again (BB_FOULQ). A star with foul
+  trouble: sit him for the stretch or play him; the evidence is the referees'
+  whistle against the league average and his own fouls. A star off the floor
+  costs more (starOwn 0.022 -> 0.034, starDef 0.006 -> 0.009), or sitting him
+  was never wrong. About 7 points a call; the best answer splits (pro: sit 8,
+  play 11). Asked only when it gains on the assistant (SPREAD_KINDS fouls).
+- Hockey: who starts in goal on the second night of a back-to-back
+  (HK_GSTART, goalStartCall k "gstart", 22 back-to-backs a season). A tired
+  starter (HK tired 0.015) against the backup, who costs by his rating gap
+  (backupPer 0.0009 a point, gkCtx). The computer starts its backup, as real
+  clubs do, so the assistant does too. About 4.5 points a call, the best answer
+  splits (backup 21, starter 12); asked only when it gains (SPREAD_KINDS gstart).
+- Soccer: calls are graded in league points. resultVal (core/94_staffplan):
+  a win 1, a loss 0, a draw LEAGUE.drawVal (soccer 1/3: a point against
+  three; every other league 0.5 as before), and a cup tie settled on
+  penalties goes to the shootout's winner (it scored half). Every replay
+  grade, gate and spread uses it. Measured at 80' (scfinal.js, 496 matches,
+  60 replays an option, league points): down one, everyone forward was best in
+  128 of 144; up one, parking the bus in 108 of 122; level, the answers split
+  (win 138, carry on 55, the point 37). A question with one answer is a quiz:
+  down or up, the final call is asked only when it beats the assistant's by 3
+  points (dp.spread); level, always (in reach). Beside the late calls, the
+  table: now, with a win, with a draw (tableStakesHTML). The final call's
+  changes are named (finalSub: who comes on, who comes off; flavour, the
+  engine's modes as before). Honest size: the final call is worth 1-2.5
+  points of a win on average; the table panel makes the level case a real
+  question, not a big one.
+- Football: a questionable starter during the week (play a starter due back
+  next week at about 60%, or two weeks early at 40%, against a trainers'
+  risk of 2-4 more weeks out; graded in expected wins) was built and cut.
+  Measured (both games, every team, 4 seasons): a candidate 1.2-1.8 times a
+  team-season, worth 3 points either way 0.3-0.4 times, and "give him the
+  week" was right in 85% of those (two weeks early: 1 in 134). A single
+  football player rarely moves a game 3 points. Football already has the most
+  decisions (prep, reads, fourth downs, two-point tries, the end game); the
+  code is kept out of the build.
+- A round-44 edit had swallowed the SPREAD_KINDS deletions into a comment (final,
+  tied, ot, pull, close and third were spread-gated in the WIP); restored before
+  shipping.
+
 Round 43: make skill pay (Muse: "being right 82% of the time earns you almost nothing"; Ian: simming should do
 about what the computer coaches do, only good calls beat it):
 - The rule, measured (test/sim-parity.js): even sides, the same dice, the home

@@ -244,7 +244,7 @@ function callVerdicts(args,seed,answers,meHome){
             else if(i===j){ rng.f=mulberry32((seed^Math.imul(m+1,0x9E3779B1))>>>0); rng.sp=null; v=o }
             else v=verdictDefault(r.ask);
             e.reply(v); i++ } }
-        const mine=meHome?r.h:r.a, theirs=meHome?r.a:r.h; w+=mine>theirs?1:mine===theirs?0.5:0 }
+        w+=resultVal(r,meHome) }
       rate[o]=w/VERDICT_RUNS });
     const pick=answers[j], best=opts.reduce((a,o)=>rate[o]>rate[a]?o:a,opts[0]);
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0];

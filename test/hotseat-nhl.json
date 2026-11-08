@@ -1,5 +1,5 @@
 {
- "fp": "adbe3b5d18fdfa94",
+ "fp": "1267cd44a6821497",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -235,6 +235,11 @@
    "fp": "adbe3b5d18fdfa94",
    "from": "adbe3b5d18fdfa94",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "1267cd44a6821497",
+   "from": "adbe3b5d18fdfa94",
+   "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
   }
  ],
  "out": [
@@ -244,20 +249,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-32-9",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "44-27-13",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "dbc9f85d58021cbf"
+     "book": "07001f7a0555b353"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "54-27-3",
+      "rec": "45-32-7",
       "result": "Lost in the conference final",
       "grade": "A"
      },
-     "book": "3b87e0c1ee0c4e15"
+     "book": "4a5f3d090b4837f2"
     }
    ]
   },
@@ -267,20 +272,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "25-40-19",
+      "rec": "35-38-11",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "49ccfffbafa52ac6"
+     "book": "5e868a92927fef87"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "46-31-7",
-      "result": "Lost in the second round",
-      "grade": "A-"
+      "rec": "39-36-9",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "acb632fc89c92b72"
+     "book": "cb7134e17720038a"
     }
    ]
   },
@@ -290,20 +295,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-36-10",
+      "rec": "36-36-12",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "724554d525e6c5f8"
+     "book": "d2328189d1bd458a"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "40-30-14",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "46-31-7",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "84d6ec7271b70bee"
+     "book": "46298a8411c5b6e0"
     }
    ]
   }

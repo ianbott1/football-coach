@@ -1,5 +1,5 @@
 {
- "fp": "5c91037a0cd68b70",
+ "fp": "75cfbbb403c33b52",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -240,6 +240,11 @@
    "fp": "5c91037a0cd68b70",
    "from": "5c91037a0cd68b70",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "75cfbbb403c33b52",
+   "from": "5c91037a0cd68b70",
+   "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
   }
  ],
  "out": [
@@ -249,20 +254,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "33-3",
+      "rec": "30-6",
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "3b3c6a5a968330fb"
+     "book": "9f7ded223fd9424d"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "29-5",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "33-3",
+      "result": "Lost in the Sweet 16",
+      "grade": "A"
      },
-     "book": "819ac4c03ba9a374"
+     "book": "fe66d23f6082093c"
     }
    ]
   },
@@ -272,20 +277,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-7",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "21-11",
+      "result": "Missed the NCAA tournament",
+      "grade": "C-"
      },
-     "book": "9acba69566e87648"
+     "book": "a00b2f92a56d502d"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "25-9",
+      "rec": "27-5",
       "result": "Lost in the Second Round",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "cdc42e942584feab"
+     "book": "09ac7857322d5a64"
     }
    ]
   },
@@ -295,20 +300,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "32-4",
+      "rec": "30-7",
       "result": "Lost in the Sweet 16",
-      "grade": "A"
+      "grade": "A-"
      },
-     "book": "4a5464180827a1af"
+     "book": "74118cf853314660"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "32-6",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "30-6",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "485bc302ddc02b7b"
+     "book": "90bde0a6962a1922"
     }
    ]
   }

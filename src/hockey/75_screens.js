@@ -157,6 +157,12 @@ function liveScoreboard(){
 /* ---- the evidence ---- */
 function evidenceHTML(g,my,d,dp){
   const opp=g.home===my?"away":"home";
+  // who's in goal: the two goalies, and what a back-to-back costs (round 44)
+  if(dp.k==="gstart"&&dp.gk){ const G=dp.gk;
+    return `<div class="evid"><div class="evh">Your goalies</div>
+      ${G.s?`<div class="evr"><span class="evk">${esc(G.s.n)} (played last night)</span><span class="evv">${G.s.r}</span></div>`:""}
+      ${G.b?`<div class="evr"><span class="evk">${esc(G.b.n)} (fresh)</span><span class="evv">${G.b.r}</span></div>`:""}
+      <div class="evn">A starter on the second night of a back-to-back plays below his rating; most benches start the backup. ${G.gap!==undefined?(G.gap>=18?"The gap between these two is big.":G.gap<=8?"These two are close.":"The gap between them is middling."):""}</div></div>` }
   if(dp.k==="prep"){ const R=dp.report, n=dp.n||6;
     const e=live&&live.eng&&live.eng.gap!==undefined?(opp==="home"?live.eng.gap:-live.eng.gap):0;
     const tilt=e>60?`${esc(g[opp])} are the stronger side tonight: sides like that forecheck more often than usual.`

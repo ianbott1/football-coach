@@ -192,6 +192,12 @@ function staffTake(dp, ctx){
       : `Whatever we did to get here: more of that, please.`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
   }
+  else if(dp.k==="fouls"){
+    const per=dp.avg/Math.max(1,(dp.half===1?2:5)), hot=(dp.pearl||0)>per*1.3;   // Pearl goes by the last stretch alone
+    R.push({who:"bears", pick:"play", line:["FOULS ARE A STATE OF MIND. HE STAYS.","YOU DON'T WIN BY SITTING YOUR BEST PLAYER. LEAVE HIM IN."][Math.abs(seed)%2]});
+    R.push({who:"pearl", pick:hot?"sit":"play", line:pearlSay(hot?`They called ${dp.pearl} on us in the last stretch alone! Sit him before it's five!`:`They've calmed down! Only ${dp.pearl||0} in the last stretch. Keep him out there!`,seed)});
+    R.push({who:"capy", pick:"sit", line:`A man with ${dp.f} fouls, it seems to me, is a man best admired from the bench for a while.`});
+  }
   else if(dp.k==="rest"){
     R.push({who:"bears", pick:"keep", line:`Rest? REST? We rest when we're DEAD.`});
     R.push({who:"pearl", pick:"rest", line:pearlSay(`We've done the work! Let's not get anyone hurt now.`,seed)});

@@ -106,9 +106,12 @@ function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five"
 const SC_FINAL=true;
 function finalCall(lead){
   const A=["normal","Leave it to your assistant"];
-  if(lead<0)return {k:"final",h:`Down ${-lead}, ten minutes left`,q:"Everyone forward?",
+  // round 44, graded in league points: down one, everyone forward was the best answer in 128 of 144 matches; up one,
+  // parking the bus in 108 of 122 (scratchpad scfinal.js). A question with one answer: asked only when it beats your
+  // assistant's by 3 points on the replays (spread). Level, the answers split (win 138, carry on 55, the point 37 of 230).
+  if(lead<0)return {k:"final",spread:true,h:`Down ${-lead}, ten minutes left`,q:"Everyone forward?",
     opts:[["push","Everyone forward: a striker on for a defender"],["keep","Stay patient"],A]};
-  if(lead>0)return {k:"final",h:`Up ${lead}, ten minutes left`,q:"Close it out?",
+  if(lead>0)return {k:"final",spread:true,h:`Up ${lead}, ten minutes left`,q:"Close it out?",
     opts:[["sit","Park the bus: a defender on"],["keep","Keep the ball, keep playing"],A]};
   return {k:"final",h:"Level, ten minutes left",q:"Go for the win, or take the point?",
     opts:[["win","Go for the win: fresh legs up front"],["point","Take the point"],A]};
@@ -336,7 +339,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     st.late[side]=v==="normal"?null:v;
   };
   st.next=function(){
-    const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives});
+    const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives,pens:st.pens||null});
     if(st.done)return fin();
     if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; apply(P.side,P.dp,v) }
     if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q;

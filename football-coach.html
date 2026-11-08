@@ -942,7 +942,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="9e6451d";
+<script>const BUILD_ID="b4f45aa";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -5421,7 +5421,7 @@ function callVerdicts(args,seed,answers,meHome){
             else if(i===j){ rng.f=mulberry32((seed^Math.imul(m+1,0x9E3779B1))>>>0); rng.sp=null; v=o }
             else v=verdictDefault(r.ask);
             e.reply(v); i++ } }
-        const mine=meHome?r.h:r.a, theirs=meHome?r.a:r.h; w+=mine>theirs?1:mine===theirs?0.5:0 }
+        w+=resultVal(r,meHome) }
       rate[o]=w/VERDICT_RUNS });
     const pick=answers[j], best=opts.reduce((a,o)=>rate[o]>rate[a]?o:a,opts[0]);
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0];
@@ -7103,6 +7103,16 @@ function splitNote(R){
    it, for whether the call was worth it on average. The averages add up to a
    season's ledger: what your calls were worth in wins (Muse and Instinct:
    "nothing shows a good call mattering"). */
+/* what a result is worth to you: a win 1, a loss 0; a draw half, except where the table says otherwise (soccer: a point
+   against three for a win, LEAGUE.drawVal). A cup tie settled on penalties went to the side that won the shootout.
+   Round 44: soccer's calls were graded with a draw as half a win, so "take the point" was worth more than the table
+   gives for it, and level late the two answers rarely differed. */
+function resultVal(r,meHome){
+  const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; if(mine!==th)return mine>th?1:0;
+  if(r.pens)return (r.pens==="home")===!!meHome?1:0;
+  const ev=typeof process!=="undefined"&&process.env&&process.env.DRAW_VAL;   // tests: grade a draw another way
+  return ev?+ev:(LEAGUE.drawVal!=null?LEAGUE.drawVal:0.5);
+}
 const IMPACT_RUNS=400;
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
 /* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
@@ -7118,7 +7128,7 @@ function callInReach(args,seed,answers,meHome,j){
     while(g++<3000){ r=e.next(); if(r.done)break;
       if(r.ask){ let a; if(i<j)a=answers[i]; else { if(i===j){ rng.f=mulberry32((seed^Math.imul(m+101,0x9E3779B1))>>>0); rng.sp=null } a=impactDefault(r.ask) }
         e.reply(a); i++ } }
-    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    s+=resultVal(r,meHome) }
   return s/GATE_RUNS;
 }
 /* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
@@ -7127,7 +7137,7 @@ function callInReach(args,seed,answers,meHome,j){
 const SPREAD_ON=true;
 // mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
 // decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
-const SPREAD_KINDS=Object.assign({two:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);
+const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);   // round 44: who starts in goal, foul trouble
 const SPREAD_MIN=0.03, SPREAD_RUNS=60;
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
@@ -7135,7 +7145,7 @@ function callSpread(args,seed,answers,meHome,j,opts,dp){
       while(g++<3000){ r=e.next(); if(r.done)break;
         if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
           e.reply(a); i++ } }
-      const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+      s+=resultVal(r,meHome) }
     return s/SPREAD_RUNS };
   const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
   return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
@@ -7152,12 +7162,12 @@ function callImpact(args,seed,answers,meHome,runs){
         else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
         else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
         e.reply(a); i++ } }
-    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h};
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h, v:resultVal(r,meHome)};
   };
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<3000){ const r=e.next(); if(r.done)break;
       if(r.ask){ asks.push({dp:r.ask}); e.reply(answers[i]!==undefined?answers[i]:impactDefault(r.ask)); i++ } } }
-  const out=[], score=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0;
+  const out=[], score=x=>x.v;
   asks.forEach((A,j)=>{
     const pick=answers[j], def=impactDefault(A.dp);
     if(pick===undefined||pick===def||!A.dp.opts.some(o=>o[0]===def))return;      // left to him: nothing to compare
@@ -8526,7 +8536,7 @@ function liveTick(){
       if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
-        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&SPREAD_KINDS[r.ask.k]&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }

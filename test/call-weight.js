@@ -8,7 +8,7 @@
 const {load}=require('./harness.js'), path=require('path');
 const args=process.argv.slice(2), file=args.find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','football-coach.html');
 const nums=args.filter(a=>/^\d+$/.test(a)).map(Number), G=nums[0]||30, RUNS=nums[1]||40;
-const A=load({file,expose:['S','SEA','NAMES','newDynasty','doAdvance','live','liveTick','answerLive','makeLiveGame','RNG','mulberry32','impactDefault','liveSeed','callKey']});
+const A=load({file,expose:['S','SEA','NAMES','newDynasty','doAdvance','live','liveTick','answerLive','makeLiveGame','RNG','mulberry32','impactDefault','liveSeed','callKey','resultVal']});
 A.newDynasty(A.NAMES[+(process.env.TEAM||4)],+(process.env.SEED||7),'T');
 const by={}; let games=0;
 while(games<G&&A.SEA.phase!=='done'){ A.doAdvance(); let n=0;
@@ -17,7 +17,7 @@ while(games<G&&A.SEA.phase!=='done'){ A.doAdvance(); let n=0;
   const seed=A.liveSeed(L.step), ans=L.replay.slice(), meHome=L.g.home===A.S.myTeam;
   const play=(j,v,m)=>{ const rng=new A.RNG(seed), e=A.makeLiveGame(rng,...L.args); let i=0,g=0,r;
     while(g++<3000){ r=e.next(); if(r.done)break; if(r.ask){ let a; if(i<j)a=ans[i]; else if(i===j){ a=v; rng.f=A.mulberry32((seed^Math.imul(m+1,0x9E3779B1))>>>0); rng.sp=null } else a=A.impactDefault(r.ask); e.reply(a); i++ } }
-    const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; return mine>th?1:mine===th?0.5:0 };
+    return A.resultVal(r,meHome) };
   const asks=[]; { const e=A.makeLiveGame(new A.RNG(seed),...L.args); let i=0,g=0; while(g++<3000){ const r=e.next(); if(r.done)break; if(r.ask){ r.ask.__s={mine:r.mine,theirs:r.theirs,q:r.q,edge:meHome?L.args[0]-L.args[1]:L.args[1]-L.args[0]}; asks.push(r.ask); e.reply(ans[i]!==undefined?ans[i]:A.impactDefault(r.ask)); i++ } } }
   const AUTO=((A.S.callAuto||{})[L.ckey||A.callKey(L.step)])||[];   // calls the game didn't ask (not in reach): your assistant's, not measured
   asks.forEach((dp,j)=>{ if(AUTO.indexOf(j)>=0){ (by.__auto=by.__auto||{})[dp.k]=((by.__auto||{})[dp.k]||0)+1; return } const rates=dp.opts.map(o=>{ let s=0; for(let m=0;m<RUNS;m++)s+=play(j,o[0],m); return 100*s/RUNS });

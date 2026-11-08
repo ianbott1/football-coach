@@ -174,6 +174,12 @@ function staffTake(dp, ctx){
       : `One goal isn't enough to sit on. Keep going!`,seed)});
     R.push({who:"capy", pick:"sit", line:`I would suggest fewer chances, both ways. Fewer chances, fewer disasters.`});
   }
+  else if(dp.k==="gstart"){
+    const gap=dp.gk&&dp.gk.gap!==undefined?dp.gk.gap:12;
+    R.push({who:"bears", pick:"starter", line:["TIRED? HE'S A GOALIE. HE STANDS THERE. START HIM.","BACK-TO-BACKS BUILD CHARACTER. YOUR BEST GOES IN."][Math.abs(seed)%2]});
+    R.push({who:"pearl", pick:gap>=18?"starter":"backup", line:pearlSay(gap>=18?`Our backup's not ready for this! Let's ride the big guy one more night!`:`Our backup's good! Let's give the big guy a rest!`,seed)});
+    R.push({who:"capy", pick:"backup", line:`A tired goalie, it seems to me, is mostly a slower one.`});
+  }
   else if(dp.k==="final"){
     const up=diff>0;
     R.push({who:"bears", pick:"push", line:up?"ONE GOAL? THAT'S AN INSULT. GO GET ANOTHER.":"OVERTIME IS FOR COWARDS. WIN IT NOW."});

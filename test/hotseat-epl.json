@@ -1,5 +1,5 @@
 {
- "fp": "f2677399baa3a20c",
+ "fp": "d99255c3695c071d",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -230,6 +230,11 @@
    "fp": "f2677399baa3a20c",
    "from": "f2677399baa3a20c",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "d99255c3695c071d",
+   "from": "f2677399baa3a20c",
+   "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
   }
  ],
  "out": [
@@ -239,20 +244,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "19-6-13",
-      "result": "Finished 4th in the Premier League",
-      "grade": "B-"
+      "rec": "17-9-12",
+      "result": "Finished 7th in the Premier League",
+      "grade": "C+"
      },
-     "book": "605b133ae9ba5e43"
+     "book": "6c03430dfcb3cec8"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "19-6-13",
-      "result": "Finished 5th in the Premier League",
-      "grade": "A-"
+      "rec": "17-6-15",
+      "result": "Finished 9th in the Premier League",
+      "grade": "B"
      },
-     "book": "21df05cb034cf9e5"
+     "book": "b94c5ebcb9c15a19"
     }
    ]
   },
@@ -262,20 +267,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-13-9",
-      "result": "Finished 6th in the Premier League",
-      "grade": "C+"
+      "rec": "16-15-7",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "b25da67d0fe3c601"
+     "book": "bf82d675237b50c7"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "9-10-19",
-      "result": "Finished 17th in the Premier League",
-      "grade": "C-"
+      "rec": "10-9-19",
+      "result": "Finished 16th in the Premier League",
+      "grade": "C"
      },
-     "book": "bc8d63679d91f0eb"
+     "book": "e59f8273227b837c"
     }
    ]
   },
@@ -285,20 +290,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "27-5-6",
-      "result": "PREMIER LEAGUE CHAMPIONS",
-      "grade": "A+"
+      "rec": "24-5-9",
+      "result": "Finished 2nd in the Premier League",
+      "grade": "B"
      },
-     "book": "a37daa73bdce8fca"
+     "book": "de3a69722adcdf30"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-7-19",
+      "rec": "14-6-18",
       "result": "Finished 13th in the Premier League",
       "grade": "C+"
      },
-     "book": "1eb76224f4ba9acb"
+     "book": "421375c3b56a7cd2"
     }
    ]
   }
