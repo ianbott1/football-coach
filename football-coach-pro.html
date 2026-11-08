@@ -916,7 +916,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="53c9e0e";
+<script>const BUILD_ID="bedea7a";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -3168,6 +3168,7 @@ function defendCall(diff,left){
 }
 
 /* Is this a moment worth stopping the game for? */
+const FB_LATE2=true;
 function decisionPoint(state, isUser){
   if (!isUser) return null;
   const q=state.q, idx=state.idx, total=state.total, mine=state.mine,
@@ -3193,6 +3194,14 @@ function decisionPoint(state, isUser){
       opts:[["push","Open it up"],["normal","Stay patient"]]
     };
   }
+  // round 40: one-score finishes with the ball and no call (4 of 7 in pro football): level late is a real choice
+  // (13.5 points a call in pro football, 12.5 in college)
+  if (FB_LATE2 && veryLate && diff === 0 && !used.tied) {
+    return { k:"tied", h:q>=4?"Tied late":"Tied in the third",
+      b:`Go for the win, or play it safe and don't hand it to them?`+clock,
+      opts:[["push","Go for the win: attack downfield"],["sit","Play it safe: run it, protect the ball"],["normal","Leave it to your assistant"]] };
+  }
+  // cut (round 40): "hurry-up now?" behind with two or three possessions left moved about 4 points, over half the calls under 3
   if (veryLate && diff > 0 && diff <= 10 && !used.protect) {   // up 12 to 14 the choice moved nothing (test/call-weight.js, Nov 2026)
     return {
       k:"protect",
@@ -3426,6 +3435,11 @@ function staffTake(dp, ctx){
       ? `We're playing so well! Let's just keep playing.`
       : [`Whatever we did to get here \u2014 more of that, please.`,`Don't change a thing. It's working!`,`We're winning! Keep doing the winning thing.`][seed%3],seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
+  }
+  else if(dp.k==="tied"){
+    R.push({who:"bears", pick:"push", line:`TIES ARE FOR NECKWEAR. THROW IT DEEP.`});
+    R.push({who:"pearl", pick:["push","sit","push"][Math.abs(seed)%3], line:pearlSay([`We can win this! Let's go and take it!`,`Don't give it away! Hold onto the ball and they'll make the mistake.`,`One drive! That's all we need. Let's go!`][Math.abs(seed)%3],seed)});
+    R.push({who:"capy", pick:"sit", line:`The interception, it seems to me, is the play that loses tied games.`});
   }
   else if(dp.k==="rest"){
     R.push({who:"bears", pick:"keep", line:`Rest? We'll rest in the off-season.`});
@@ -5392,7 +5406,7 @@ function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDef
    either way" came mostly from calls in decided games (round 33: up 10 late in football, 100% either way;
    down 16 at half-time in basketball, 0-2%). Reads, scouting, flanks and the goalie are always asked: their
    answer is in the evidence, not the score. Football's fourth downs keep their own gate (inReach). */
-const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1,close:1,third:1,onside:1,defend:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
+const GATE_KINDS={protect:1,half:1,chase:1,push:1,lock:1,pull:1,late:1,close:1,third:1,onside:1,defend:1,final:1,tied:1}, GATE_LO=0.1, GATE_HI=0.9, GATE_RUNS=40;
 function callInReach(args,seed,answers,meHome,j){
   let s=0;
   for(let m=0;m<GATE_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
