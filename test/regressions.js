@@ -654,12 +654,16 @@ for(const [f,team] of [['football-coach.html','Missouri'],['football-coach-pro.h
 
 /* 89. a decided game still asks something: rest your starters (Muse, Grokbot: a 24-point fourth quarter and a
    13-point lead asked nothing), and a rest is kept for the week's knocks (SEA.restAt), even after a reload */
-for(const [f,team] of [['basketball-coach-pro.html','Boston'],['football-coach-pro.html','Kansas City']]){
-  const A=load({settable:SET,file:D(f),expose:EXP.concat(['rebuild'])}); A.newDynasty(team,6,'T'); let asked=0, rested=0;
-  for(let w=0;w<40&&A.SEA.phase==='week';w++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask;
+// the call is narrow by design (basketball: up 10-12 with six minutes left; football: a 14-24 fourth quarter or a
+// 21-40 third), so a season can go without one: up to three careers' seasons, stopping at the first rest (round 43)
+for(const [f,teams] of [['basketball-coach-pro.html',['Boston','Denver','Milwaukee']],['football-coach-pro.html',['Kansas City','Baltimore','Philadelphia']]]){
+  let A, asked=0, rested=0;
+  for(const team of teams){ if(asked)break;
+  A=load({settable:SET,file:D(f),expose:EXP.concat(['rebuild'])}); A.newDynasty(team,6,'T'); asked=0; rested=0;
+  for(let w=0;w<82&&A.SEA.phase==='week';w++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask;
       if(q){ if(q.dp.k==='rest'){asked++; A.answerLive('rest')} else A.answerLive(q.dp.opts[q.dp.opts.length-1][0]) } else A.liveTick() }
-    if(A.SEA.restAt&&A.SEA.restAt[A.S.myTeam]===A.SEA.step-1)rested++ }
-  ok(asked>0,`${f}: no rest call in 40 games`); ok(rested===asked,`${f}: ${asked} rests, ${rested} kept for the week`);
+    if(A.SEA.restAt&&A.SEA.restAt[A.S.myTeam]===A.SEA.step-1)rested++ } }
+  ok(asked>0,`${f}: no rest call in three seasons`); ok(rested===asked,`${f}: ${asked} rests, ${rested} kept for the week`);
   const n0=Object.keys(A.SEA.restAt||{}).length; A.rebuild(); ok(Object.keys(A.SEA.restAt||{}).length===n0,`${f}: a reload lost the rests`) }
 
 (async()=>{ await tabsCheck(); await slotCheck();

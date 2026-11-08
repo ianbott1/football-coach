@@ -358,6 +358,42 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 43: make skill pay (Muse: "being right 82% of the time earns you almost nothing"; Ian: simming should do
+about what the computer coaches do, only good calls beat it):
+- The rule, measured (test/sim-parity.js): even sides, the same dice, the home
+  side coached by the computer, then by you with every call left to your
+  assistant. Football was +9 points a game for doing nothing: a fourth-down
+  call came only after a punt, a miss or a failed try, and choosing the same
+  thing rolled it again (a second chance the computer never gets), and the
+  assistant read your reads for you 45% of the time with no downside. Now the
+  call comes at every stall (a made kick too), choosing what was rolled keeps
+  it, the assistant's default is what was rolled (verdictDefault dp.rolled),
+  and "leave it to your assistant" on a read keeps the plan as it is (the
+  computer's offense has no read layer). Within about a point in all six.
+- A right read hits harder; a wrong one costs about half a right one, so a
+  guess comes out even or worse. Per game, a strong player (the report, then
+  the numbers) against leaving it all to the assistant, before -> after:
+  hockey +5.1 -> +8.4 (HK counter 1.18/0.75, misread 0.87); pro basketball
+  +5.0 -> +5.8, college +4.3 -> +5.6 (BB answer x1.5, leak, misprep; the
+  report's reliability caps it); pro football +3.7 -> +9.4, college +9.7
+  (FB_READ right td +0.09 / to -0.03, wrong -0.056 / +0.02); soccer +7.5 ->
+  +10.4 (SC counter 1.20/0.72, misread 0.89, misprep 0.88/1.08). Reads now
+  weigh 11-16 points a call, the scouting report 11-25. The leagues stay
+  calibrated (every read test MATCH): hockey 6.12 goals, favourites 69.4%;
+  pro basketball 114.2, home 60.8%, favourites 69.5%; soccer 2.72 goals.
+- Mid-game situation calls with nothing to gain are not asked (callSpread,
+  SPREAD_KINDS: the gated kinds and the two-point try, less the final
+  stretch and the reads): over SPREAD_RUNS 60 replays per option on the same
+  dice, if no option beats the assistant's call by SPREAD_MIN 3 points, he
+  takes it, said on the card ("couldn't change much tonight: the game out of
+  reach, or the options too close to matter"). The final stretch (final,
+  tied, ot, pull) keeps round 40's promise; crunch-time and third-period
+  calls are reads. test/late-calls.js still MATCH. Soccer's 80' call mostly
+  had little to gain on the assistant's: kept, to deepen in round 44.
+- Across a season, from the per-game figures: an expert reader is worth about
+  +5 wins in pro basketball, +1.6 in pro football's 17, +7 in hockey's 82
+  (more in points), +14 points in a 46-match soccer season.
+
 Round 42: the save loss, and the joins (Muse, Instinct):
 - The save loss (Muse: six careers gone after "changed in another tab", Reload,
   three empty slots). Reproduced: every career in all six games shares one

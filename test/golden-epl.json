@@ -1,5 +1,5 @@
 {
- "fp": "08885e675d1f4efb",
+ "fp": "1f91da73fc4f5018",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -320,59 +320,69 @@
    "fp": "08885e675d1f4efb",
    "from": "1bb1f46e223b6064",
    "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
+  },
+  {
+   "fp": "1f91da73fc4f5018",
+   "from": "08885e675d1f4efb",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "1f91da73fc4f5018",
+   "from": "1f91da73fc4f5018",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "c2c39fec6777f52a",
-    "post": "fbe1a616d7c8960a",
-    "champion": "Liverpool",
-    "rec": "4b6b4c6234de3b0c",
-    "poll": "314c0cbef7807167",
-    "heis": "00ad3e484347c13e",
-    "history": "93cb6112ec363453",
-    "universe": "424b747d8e578816",
-    "screens": "c3747fd2e300a80a"
+    "games": "5328e451ff13089c",
+    "post": "21671e2140c5dec6",
+    "champion": "Manchester City",
+    "rec": "9eb4952912944259",
+    "poll": "363ca8c42cd25830",
+    "heis": "68f72f4e6c0a2f78",
+    "history": "433b4cb3bef90c97",
+    "universe": "14001ccc845c9990",
+    "screens": "192743e3da0982fd"
    },
    {
     "year": 2027,
-    "games": "08bbf40d4b3fbaef",
-    "post": "b7cc776a38801cfc",
-    "champion": "Arsenal",
-    "rec": "f2dfc0f44db6c71e",
-    "poll": "1e9ef7d9ba90272b",
-    "heis": "da43777df1878195",
-    "history": "ff3d108c5857fe44",
-    "universe": "e7c5a46daa7493c2",
-    "screens": "7a052dd546e7fedf"
+    "games": "336bb11d12098427",
+    "post": "90dc118160a5cd77",
+    "champion": "Manchester City",
+    "rec": "8d138326abcac74e",
+    "poll": "a44b0108a75c94e4",
+    "heis": "c656cbe5ad6275ff",
+    "history": "7055404721e8d46e",
+    "universe": "b4a70479dae47915",
+    "screens": "6e3ae878bb9dfcb3"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "be90becf823319e0",
-    "post": "1f1aad1f35a16226",
-    "champion": "Liverpool",
-    "rec": "cd6c4946c66e4c39",
-    "poll": "9fcf8b6f27d0dfe3",
-    "heis": "9fa32ab6077ec965",
-    "history": "a4338fb4ce2a7838",
-    "universe": "bbee5b325bcaf029",
-    "screens": "3693c50c81a347fe"
+    "games": "47564178fc310951",
+    "post": "411ea09e77def0d7",
+    "champion": "Newcastle United",
+    "rec": "007ce84cf0999b6f",
+    "poll": "48b1e4579d4ffcc7",
+    "heis": "0dc3ed3108252d9c",
+    "history": "8adb9656177bd9a1",
+    "universe": "ab904c40408adb80",
+    "screens": "8e58da041db976a6"
    },
    {
     "year": 2027,
-    "games": "5421140aa73be6df",
-    "post": "153a3e365301c5b2",
-    "champion": "Manchester City",
-    "rec": "acdb4f54d889dfd6",
-    "poll": "a300a9141afb1b9b",
-    "heis": "479842095efd22f5",
-    "history": "45138f63f8182552",
-    "universe": "60b1fa1330c45ffb",
-    "screens": "e8f417c5fd44db7b"
+    "games": "a8eb36d21cb50dbf",
+    "post": "22d0cea6802798bd",
+    "champion": "Arsenal",
+    "rec": "926450feac2d0f82",
+    "poll": "c62f637a49f0aca0",
+    "heis": "d9d586f5ed1f8c07",
+    "history": "6217fdfc429c6210",
+    "universe": "2f89210494da5e3b",
+    "screens": "41a5035598b85559"
    }
   ],
   "schedules#60": [

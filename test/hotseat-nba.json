@@ -1,5 +1,5 @@
 {
- "fp": "7cedd1848281d774",
+ "fp": "4b61c3abea3323f6",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -200,6 +200,16 @@
    "fp": "7cedd1848281d774",
    "from": "b1c26619a70e57ca",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "4b61c3abea3323f6",
+   "from": "7cedd1848281d774",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "4b61c3abea3323f6",
+   "from": "4b61c3abea3323f6",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
   }
  ],
  "out": [
@@ -209,20 +219,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "51-31",
-      "result": "Lost in the conference finals",
-      "grade": "A-"
+      "rec": "55-27",
+      "result": "Lost in the conference semifinals",
+      "grade": "B+"
      },
-     "book": "cafd24058d0b5d48"
+     "book": "84af1ea44600842c"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "48-34",
-      "result": "Lost in the NBA Finals",
-      "grade": "A-"
+      "rec": "43-39",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "507021798ac53a80"
+     "book": "c614caf795963ff0"
     }
    ]
   },
@@ -232,20 +242,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "33-49",
+      "rec": "12-70",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "9c05ddd06bd36000"
+     "book": "bddf42c265cac570"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "31-51",
+      "rec": "36-46",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "c6d0ecc9fbdba75a"
+     "book": "9d0fbb00e210835e"
     }
    ]
   },
@@ -255,20 +265,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "22-60",
+      "rec": "31-51",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "4d77d1ff384337bd"
+     "book": "063a5cfb08a4a904"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "43-39",
-      "result": "Lost in the first round",
-      "grade": "C+"
+      "rec": "36-46",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "e5116560d7f83a05"
+     "book": "18e84635894707d7"
     }
    ]
   }

@@ -164,6 +164,25 @@ function callInReach(args,seed,answers,meHome,j){
     const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
   return s/GATE_RUNS;
 }
+/* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
+   same dice for every option) goes to your assistant too: nothing to gain by taking it. asked, then stamped "close either way", it taught that
+   your calls don't matter (Muse, round 43). Reads and scouting are never skipped: their answer is in the evidence. */
+const SPREAD_ON=true;
+// mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
+// decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
+const SPREAD_KINDS=Object.assign({two:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);
+const SPREAD_MIN=0.03, SPREAD_RUNS=60;
+function callSpread(args,seed,answers,meHome,j,opts,dp){
+  const rate=v=>{ let s=0;
+    for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+      while(g++<3000){ r=e.next(); if(r.done)break;
+        if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
+          e.reply(a); i++ } }
+      const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    return s/SPREAD_RUNS };
+  const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
+  return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
+}
 /* the answers as yours: a call your assistant made because the game wasn't in reach is a blank (not graded, not weighed) */
 function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; return answers.map((a,i)=>auto.indexOf(i)>=0?undefined:a) }
 function callImpact(args,seed,answers,meHome,runs){

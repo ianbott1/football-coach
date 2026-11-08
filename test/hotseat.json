@@ -1,5 +1,5 @@
 {
- "fp": "fe9d66abcd536ec3",
+ "fp": "bd4279c8224b7871",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -255,6 +255,16 @@
    "fp": "fe9d66abcd536ec3",
    "from": "3dab7933996afa29",
    "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
+  },
+  {
+   "fp": "bd4279c8224b7871",
+   "from": "fe9d66abcd536ec3",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "bd4279c8224b7871",
+   "from": "bd4279c8224b7871",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
   }
  ],
  "out": [
@@ -264,20 +274,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-2",
+      "rec": "12-3",
       "result": "Eliminated in the quarterfinals",
       "grade": "A"
      },
-     "book": "917d2aa5b2b33e1b"
+     "book": "8b60d73cc1b449f5"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Boca Raton Bowl",
-      "grade": "A+"
+      "rec": "6-7",
+      "result": "Lost the Frisco Bowl",
+      "grade": "A-"
      },
-     "book": "4e00636d8bc3f4c4"
+     "book": "e50046544fc95f52"
     }
    ]
   },
@@ -287,20 +297,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "14-2",
-      "result": "Eliminated in the national title game",
-      "grade": "A+"
+      "rec": "10-4",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "B"
      },
-     "book": "7c1aa088e3328251"
+     "book": "c93eb45f54bd4316"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
+      "rec": "5-7",
       "result": "No bowl game",
-      "grade": "C+"
+      "grade": "B"
      },
-     "book": "128a21117be6fb26"
+     "book": "b270671273e56284"
     }
    ]
   },
@@ -310,20 +320,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "16-0",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "9-4",
+      "result": "Eliminated in the first round",
+      "grade": "C+"
      },
-     "book": "9afecea38580e86e"
+     "book": "8807a9108bb05c34"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
-      "result": "No bowl game",
-      "grade": "B-"
+      "rec": "7-7",
+      "result": "Won the Frisco Bowl",
+      "grade": "A"
      },
-     "book": "c3b8b9590f398045"
+     "book": "ae1ab4dabb468a5d"
     }
    ]
   }

@@ -25,15 +25,15 @@ const BB_COLLEGE = {
   garbage: 13,          // a lead this big after 25 minutes: the benches come in
   benchPull: 0.05,      // the bench's make-rate cost to the side that's ahead
   // reading the game (test/bb-reads.js)
-  answer:{share:-0.10, p3:-0.03, p2:-0.035, f2:0.85, to:0.035, p2t:-0.015},   // the right defense on their style
-  leak:{p2:0.012, p3:0.008},  // the wrong one: easier looks somewhere else
+  answer:{share:-0.15, p3:-0.045, p2:-0.052, f2:0.78, to:0.052, p2t:-0.022},   // the right defense on their style (round 43: x1.5)
+  leak:{p2:0.0135, p3:0.009},  // the wrong one: easier looks somewhere else
   cueTrue:0.4,          // commentary on a style that is about the real one
   favW:4,               // a team's usual offense: this many times as likely as any other. The report is right 61% of
                         // the time in college (70% pro); 5 made it 72%, but more predictable opponents cut March upsets
                         // (6 v 11 favourites 63.5% to 67.1%, real 61.5), so it stays (Nov 2026)
   scouted:6,            // games in a scouting report
   prepped:{p2:-0.008, p3:-0.008},   // the right defense, drilled all week: sharper than a mid-game switch
-  misprep:{p2:0.008, p3:0.006},     // the wrong one from the tip: out of position until you change it
+  misprep:{p2:0.013, p3:0.0095},   // round 43 (0.008/0.006): a guess before tip-off would have paid     // the wrong one from the tip: out of position until you change it
   pnrTell:[2.0,5.0],    // ball screens a segment: other styles, pick-and-roll
   starOwn:0.022,        // your star off the floor: your make rates, this much lower...
   starClutch:2.2,       // ...and this many times more in the closing segments (who finishes games)

@@ -1,5 +1,5 @@
 {
- "fp": "4001e9029615a10e",
+ "fp": "c929981d8116e1bc",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -320,59 +320,69 @@
    "fp": "4001e9029615a10e",
    "from": "7e3ef5d4de21147d",
    "note": "Round 42: full storage no longer hides careers (the probe), failed saves said at once, a backup reminder each season, the phone result route, state text at the transitions, football wait-and-see, text. Every result matches round 41; screens only."
+  },
+  {
+   "fp": "c929981d8116e1bc",
+   "from": "4001e9029615a10e",
+   "note": "Round 43: make skill pay. Football fairness (fourth downs keep their rolled result, the assistant leaves reads as they are), stronger reads and costlier wrong ones in all six games, mid-game situation calls with nothing to gain on the assistant's call skipped. Leaving every call to the assistant matches the computer coaches within about a point in all six; a strong reader gains +5.6 to +10.4 a game."
+  },
+  {
+   "fp": "c929981d8116e1bc",
+   "from": "c929981d8116e1bc",
+   "note": "Round 43: make skill pay (see ARCHITECTURE)."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "318eb8700f6a1561",
-    "post": "851a8666557193ee",
-    "champion": "Los Angeles",
-    "rec": "2ccbff02305966bf",
-    "poll": "2b24884824b4ad66",
-    "heis": "a892a46ac8e2f35d",
-    "history": "6fc2c15a83e8f1cc",
-    "universe": "1ef4da86b6e99329",
-    "screens": "a9606332b8ec7714"
+    "games": "4ccaa5c67c7f791e",
+    "post": "05db15fa8811ee7f",
+    "champion": "Pittsburgh",
+    "rec": "f5b17acfab73fc65",
+    "poll": "a21f28901188d311",
+    "heis": "d71c598c91347ab4",
+    "history": "5d3e67c4daf8aed5",
+    "universe": "5ecd74496185ff1b",
+    "screens": "f5e183617e4a7474"
    },
    {
     "year": 2027,
-    "games": "0b52df8555b817f6",
-    "post": "78ec01def2b6d9f8",
-    "champion": "Florida",
-    "rec": "f1f3c051cc1407f7",
-    "poll": "c0a9ac7d0bc76ea2",
-    "heis": "b830afaf2198eb7c",
-    "history": "3946d21483ab45a7",
-    "universe": "cbeef80ac54627a8",
-    "screens": "405d29040a1bb12f"
+    "games": "20fd46b6e59f6886",
+    "post": "580438e285e50224",
+    "champion": "Winnipeg",
+    "rec": "b0662442fe9741a2",
+    "poll": "4b2c2896968005a4",
+    "heis": "f7d6ad400b3c536e",
+    "history": "48d8dc3cd1c384ad",
+    "universe": "2d487b2b8ba793d7",
+    "screens": "5dbab9bcc93cefc6"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "47c5707a4decd221",
-    "post": "0c1321d63560a5af",
-    "champion": "Vegas",
-    "rec": "debe18fa06875b43",
-    "poll": "d6140fc5cf19972b",
-    "heis": "877b5d8ac99d1b05",
-    "history": "9171dc0f1c703ead",
-    "universe": "04364ba3603db5b5",
-    "screens": "a48f4afc55bcf5ba"
+    "games": "061d18317467ef03",
+    "post": "88ea3e878a042010",
+    "champion": "New Jersey",
+    "rec": "d8eb1fb2969aad2d",
+    "poll": "372ea71d7a10d1ca",
+    "heis": "595a5668494111ab",
+    "history": "9d9c5dbb8abba0e3",
+    "universe": "841e5de1cf2fde02",
+    "screens": "354ef3071d337620"
    },
    {
     "year": 2027,
-    "games": "1081ad9803be0a9f",
-    "post": "78e1dd3e40bfeeb2",
-    "champion": "St. Louis",
-    "rec": "dc4110442c35999e",
-    "poll": "5563cdbe9adf0e43",
-    "heis": "66c1bed55d00c7f8",
-    "history": "415f550a601de074",
-    "universe": "b580599d755c6712",
-    "screens": "b0ca68988d115b22"
+    "games": "a631ab140572be3c",
+    "post": "21932790380dc061",
+    "champion": "Los Angeles",
+    "rec": "f30176c29b5ee288",
+    "poll": "55c9c17dd98aa3bc",
+    "heis": "c9d9cd6c32e31725",
+    "history": "625fba4629e280dc",
+    "universe": "880669a949cb5bc7",
+    "screens": "632db76fd8d2d405"
    }
   ],
   "schedules#60": [

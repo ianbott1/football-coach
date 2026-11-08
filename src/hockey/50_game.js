@@ -39,8 +39,8 @@ const HK_BASE = {
   pullAgainst:0.20,  // empty-net goals a minute against
   otGoal:0.68,       // chance three-on-three produces a goal (else a shootout)
   soEdge:0.25,       // how much edge counts in a shootout (of the overtime's)
-  counter:{own:1.10, opp:0.85},   // the right answer to their system
-  misread:0.95,      // the wrong answer: your own chances, slightly fewer
+  counter:{own:1.18, opp:0.75},   // the right answer to their system (round 43: 1.10/0.85; a strong reader +5.1 -> +8.4 a game)
+  misread:0.87,      // the wrong answer: your own chances, fewer (0.95: a blind guess before the game paid)
   offNight:0.10,     // how often a goalie has a genuinely bad night...
   offBy:0.060,       // ...and how much more often shots go in
   formSd:0.007,      // an ordinary night's spread

@@ -28,7 +28,7 @@ function recordStory(played,g,step,meHome){
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
-      w:Math.round(c.worth*100),po:po,title:g.title||null,team:my,k:c.k||null});
+      w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }

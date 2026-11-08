@@ -127,10 +127,10 @@ function liveTick(){
         continue;
       }
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
-      if(typeof GATE_KINDS!=="undefined"&&GATE_KINDS[r.ask.k]&&live.args&&!live.h2h){
+      if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
-        const p=callInReach(live.args,liveSeed(live.step),live.replay,meH,j);
-        if(p<GATE_LO||p>GATE_HI){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
+        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&SPREAD_KINDS[r.ask.k]&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
@@ -1248,7 +1248,7 @@ function readsHTML(step){
   // a game you watched with no call in it gets a line, not silence (Instinct: a 34-23 win moved on without a word)
   const au=((S.callAuto||{})[callKey(step)]||[]).length, asked=Math.max(0,((S.calls||{})[callKey(step)]||[]).length-au);
   // the calls your assistant took while the game wasn't in the balance: said, not graded (Grokbot: "graded separately")
-  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} while the game wasn't in the balance; ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
+  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} that couldn't change much tonight (the game out of reach, or the options too close to matter); ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
   if(P0.length&&!P.length){
     // every call shown and left to the assistant: "none of the moments came up" was false (round 39)
     if(asked&&P0.some(p=>(p.impact||[]).length))return auLine?`<div class="reads">${auLine}</div>`:"";   // yours are judged above, against the assistant

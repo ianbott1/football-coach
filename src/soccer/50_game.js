@@ -25,8 +25,8 @@ const SC_BASE = {
   exposed:0.20,      // ...and concedes this much more on the break
   etGoals:0.30,      // extra time's share of a normal game's goals (tired legs)
   penEdge:0.12,      // how much edge counts in a shoot-out
-  counter:{own:1.12, opp:0.82},   // reading them right: you create more, they create less
-  misread:0.95,      // the wrong counter: your own chances, slightly fewer
+  counter:{own:1.20, opp:0.72},   // reading them right: you create more, they create less (round 43: 1.12/0.82)
+  misread:0.89,      // the wrong counter: your own chances, fewer (0.95)
   fit:[0.65,1.45],   // how hard each unit finds the day: a per-game spread on the drain
   drain:0.021,       // energy lost per spell, before approach and unit
   tiredOwn:0.55,     // chances made at zero energy, relative to fresh: 1 - this
@@ -39,7 +39,7 @@ const SC_BASE = {
   favW:7,            // a club's usual approach: this many times as likely as any other (was 4: the report's top
                      // approach was the one played 49% of the time; Instinct: about two-thirds. Nov 2026)
   scouted:6,         // games in a scouting report
-  misprep:{own:0.93, opp:1.05},  // set up from kick-off for the wrong thing: out of shape until you change it
+  misprep:{own:0.88, opp:1.08},   // round 43 (0.93/1.05)  // set up from kick-off for the wrong thing: out of shape until you change it
   prepped:{own:1.05, opp:0.95}   // ...and for the right thing: drilled all week, sharper than a change made mid-game
 };
 const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.sc)||{}, (typeof SC_TRY!=="undefined"?SC_TRY:{}));
