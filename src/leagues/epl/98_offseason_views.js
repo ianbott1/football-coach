@@ -308,6 +308,11 @@ function offseasonScreen(){
   h+=coachMark("contracts","Players you don't re-sign leave on a free transfer. Then the transfer window: buy and sell, inside your kitty and your wage budget.");
   h+=`<div class="budgetleft ${pay<=cap?'done':''}">Wages &pound;${pay.toFixed(1)}M a year &middot; budget &pound;${cap}M &middot; ${
     room>=0?"&pound;"+room.toFixed(1)+"M to spend":"&pound;"+(-room).toFixed(1)+"M over budget"}</div>`;
+  // the bridge from last season's wage bill to this one (Muse, four rounds: the summer page and the hub disagreed with
+  // nothing to connect them): what was paid, what's out of contract, what the re-signings you've ticked add back
+  { const was=R.reduce((t,p)=>t+(p&&p.k?p.k.sal:0),0), out=expiring.reduce((t,i)=>t+(R[i]&&R[i].k?R[i].k.sal:0),0),
+      back=expiring.reduce((t,i)=>t+(P.resign&&P.resign[i]&&P.asks[i]?P.asks[i].sal:0),0);
+    if(expiring.length)h+=`<div class="note">Last season's wage bill was ${money(was)}. ${money(out)} of it was players now out of contract; ${back>0?`the ones ticked to re-sign below come back at ${money(back)}, which makes ${money(pay)}`:`nobody's ticked to re-sign yet, which leaves ${money(pay)}`}. Signings in the window add to it.</div>` }
   h+=`<div class="note">No salary cap in English football: the budget is what the club earns. The Premier League earns far more, and a relegated club keeps a parachute for two summers.</div>`;
   if(!expiring.length)h+=`<div class="note">Nobody's contract is up this year.</div>`;
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];

@@ -37,7 +37,8 @@ let O=null; if(oldFile)O=league(engine(oldFile,tunOld),'old');
 const L=league(G,'new');
 // targets: the previous engine's own numbers (college 72.6 points, 12.2 margin, 62% home, 68% favourites;
 // pro 114.6, 13.2, 61%, 71%), within tolerance
-const TG=PRO?{p:114.6,m:13.2,h:61.4,f:71.1}:{p:72.6,m:12.2,h:62.4,f:68.2};
+const TG=PRO?{p:114.6,m:12.9,h:61.4,f:69.3}:   /* pro: round 39's narrower gap (favourites 71 -> 69, Ian: 76-6 and 99% chances) */
+  {p:72.6,m:12.2,h:62.4,f:68.2};
 ok(Math.abs(L.p-TG.p)<1.0,'points off '+TG.p); ok(Math.abs(L.h-TG.h)<1.8,'home wins off '+TG.h); ok(Math.abs(L.f-TG.f)<1.8,'favourites off '+TG.f); ok(Math.abs(L.m-TG.m)<0.7,'margins off '+TG.m);
 // each game on its own dice, the same for every strategy (as test/hk-reads.js: a shared stream let any changed draw
 // reshuffle every later game, and a guess before tip-off "paid" 0.6 on luck)

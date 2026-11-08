@@ -358,6 +358,127 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 41: the season story (core/95_story.js; Muse's ideas, Instinct's "make the peak a peak"):
+- Kept per coach (COACH_FIELDS film, lifeCalls, storyYr, rivals), written only
+  from games already played; none of it moves a game. recordStory after each
+  played game (finishLive), bankStory when the season is banked.
+- The Film Room (Dynasty, below Your seasons): your best five and costliest
+  three graded situation calls, career-long (S.film keeps the best and worst
+  thirty; at most two of one kind of moment shown). Reads stay out: their
+  card judges them right or wrong (round 39's one verdict per call). Each
+  with season, date, opponent, result, your choice and the assistant's, and
+  its worth in games per 100. Above it, who you are once there are eight
+  calls: bold or careful by the options you pick (STORY_BOLD / STORY_SAFE),
+  and whether it has paid (S.lifeCalls, career-long; the season ledger keeps
+  two years only).
+- Comebacks and collapses: the running score of each played game (drives'
+  sh/sa or h/a); down at least STORY_TH (football 10, basketball 12, hockey
+  and soccer 2) and won, up as much and lost. The season's biggest of each
+  goes into its history entry (story) and its row in Your seasons.
+- Rivals: at the season's bank, every game you coached against the head
+  coach of the other side then (interim staff skipped), into S.rivals by
+  name with the clubs on both sides, so the record follows both of you
+  between jobs. Before a game: "<name>, their coach: 6-3 against him (and
+  with X)". Your rival: the coach you've met most (four or more), the closer
+  record breaking ties, tagged.
+- Title night: the result card of the game that wins it ("Champions" in the
+  result line) carries a gold card: the record, the season's comeback, your
+  call of the season, the player who carried it, and which title it is.
+  CSS confetti, off under prefers-reduced-motion. Soccer's titles are won on
+  the table with no final, so no title night there yet.
+- test/story.js joins the suite (four games: film keeps no reads and nothing
+  under 4 points, story reaches history, coaches counted, the pages render).
+- Control (STORY_ON false): every golden fingerprint, screens included, and
+  the hot seat match round 40 (once a template's whitespace was matched).
+- Not done: in-game win probability, so "you were at 4% in the third" isn't
+  possible yet (comebacks are told by the score); rewatching a Film Room game
+  from a past season; soccer's title night.
+
+Round 40: late calls in close finishes (Grokbot's top request, measured in round 39):
+- Hockey: the last five minutes up one or tied (finalCall, HK_FINAL): up one,
+  shut it down or go for the second; tied, go for the win or play for
+  overtime and the point (down one is the goalie call). 8.4 points a call
+  (tied 10.2, up one 6.4; 70 games x 40 replays). Regular-season overtime
+  (otCall, HK_OTQ): open it up (a goal likelier, the better side's edge 1.5x)
+  or keep the puck (the reverse, toward the shootout): 10.1 points a call,
+  and the better option splits 27 attack / 26 hold, so it's a decision, not
+  a quiz. One-goal finishes with no call: 81% -> 0%; overtime 4 of 4 asked.
+- Soccer at 80', within a goal (finalCall, SC_FINAL; the same sharper modes as
+  the 65' call): 4.6 points a call (65': 5.9). Close finishes with no call:
+  100% -> 22% (the rest out of reach, so the assistant's: callInReach).
+- Football, tied late (k "tied", FB_LATE2): go for the win or play it safe:
+  13.5 points a call in pro football, 12.5 in college. One-score finishes with
+  no call in pro football: 57% -> 0%. Tried and cut: "hurry-up now?" behind
+  with two or three possessions left, about 4 points with over half the calls
+  under 3, even with the stronger mode.
+- New kinds are gated like the other situation calls (GATE_KINDS final, tied).
+  Staff lines for each. test/late-calls.js joins the suite: each game's close
+  finishes must ask something (hockey at most 15% empty, the rest 25-60%).
+- Control (HK_FINAL, HK_OTQ, SC_FINAL, FB_LATE2 off): every golden fingerprint,
+  screens included, and the hot seat match round 39 exactly.
+- Still to do: the season story (Film Room, comebacks, title nights, rivals);
+  hockey name collisions; highlights; baseball.
+
+Round 39: the engine's ends, and a card you can trust (Ian, Grokbot, Muse, Instinct):
+- Football's end game (endgameDrive, twoChart; FB_END): a drive nobody is
+  asked about (the computer's, your assistant's) was rolled without the score,
+  so a team down 4-8 on its last possession kicked a field goal 18-19% of the
+  time, punted more, and nobody went for two (0 of ~220,000 touchdowns). Now:
+  behind on the last possession, no punt (fourth down) and no field goal that
+  can't help (the end zone, 40%); after a touchdown, the chart (-2 any time in
+  the second half; -10, -5, +1, +5 late). Pointless last-drive kicks 0 of
+  ~4,900; scoring +0.3 a team, margin -0.1, favourites unchanged.
+- The strength gap (Ian: 99% chances, a 76-6 season). Rosters make an outlier
+  (best NFL roster +120 to +194 over average, often far clear of the second;
+  NBA up to +230). Pro football: gapScale 2.2 -> 1.6 and a big mismatch
+  softened past 100 (tuning.softDrive, driveOdds; college unchanged): over
+  16 seasons favourites 73.5% -> 66% (NFL ~66%), margin 14.0 -> 11.9, best
+  records 13-16 (a 17-0 before), wins sd 2.8, top chance shown ~94%. Pro
+  basketball: gapPerPoss 0.0006 -> 0.00052: favourites 73.6% -> 70%, margin
+  13.0, wins sd 12.5, best ~67 (77-5 before). The shown chance softens like
+  the engine (tuning.softWp, wpSoft in winProb; shown 98%+ won 94.7% before)
+  and is refit (wpK: NFL 300, NBA 280; plans in proportion). nba-history
+  MATCH (194 seasons). Cleveland's 99% leagues now top out at 92-94%.
+- The result card: each call once, by the name it had on screen. Reads carry
+  their headline (log h) and are judged only in the reads, right or wrong;
+  the top section is situation calls against the assistant (the two verdicts
+  disagreed on one call). The scouting report is "Scouting report" (the hub's
+  "Your gameplan" is another thing: why Grokbot thought he was graded on a
+  call never offered; the engine never did that in ~100 browser games at
+  every speed, with reloads). A split report shows a dash, not a tick. "You
+  left all N of tonight's calls to your assistant" replaces a false "none of
+  the moments came up"; calls the assistant took in a decided stretch are
+  said, not graded. "Wait and see" is graded (it paid when the report's
+  favourite was wrong; hockey, basketball, soccer).
+- Hockey: free agency from 52 (HK_POOL; it was 58, nobody under $5M): 14 under
+  $3M, the best 25's cheapest $2.4M; economy 12 seasons: payroll 66% (65),
+  top-six kept 76% (76), points sd 14.3 (13.1; NHL ~14). Backups' season lines
+  on the two-deep. Your career and stops in W-L-OTL on the coach page
+  (bankedRec: it read W-L with overtime losses inside the losses).
+- Pearl's flank line says when the count points the other way, three ways
+  each; every staff line's pick includes the match (liveSeed), so 0-0 at the
+  half no longer says last match's words. Soccer's summer page bridges last
+  season's wage bill to this one.
+- Ian's list: week 1's fixtures before the season; Scores steps over days
+  nobody plays; soccer's picker names the division (League One, not
+  "Football League"; National League North); colours for all 120 clubs from
+  League One down; "Keep it balanced: neither side" on the flank call; the
+  coach's notes are read once per browser (coach-guide-seen; "Skip the guide"
+  holds for new careers). Football's rest call also from the third quarter in
+  a rout (up 21-40; asked in 29-35% of games). Streak column in football and
+  hockey tables; plurals; pro football's glossary explains replay figures.
+- Control (engine switches off: FB_END, the rout rest call, NFL and NBA
+  tuning, HK_POOL 58): golden results match round 38 (only screens, and
+  stored "1 sack allowed" lines); hot seat exactly.
+- Measured, not changed: late calls are missing in close finishes in hockey
+  (81% of one-goal last five minutes asked nothing; overtime never), soccer
+  (nothing after 65') and pro football (4 of 7) - round 40. NBA scoring on
+  target (2 of 492 team scores at 150). Soccer Very fast: the 25' read showed
+  in 10 of 10 matches and Normal switched it off mid-match.
+- Still to do: late calls (hockey, soccer, pro football, hockey overtime);
+  the season story (Film Room, comebacks, title nights, rivals); hockey name
+  collisions (Sissoko on Sissoko); highlights; baseball.
+
 Round 32 (Grokbot's six; Muse; Ian on NBA scoring):
 - A call ignores taps for 0.7 s after it appears (live.ask.at): at Very fast
   soccer's 25' call came up under a tap meant for the game and was graded as
@@ -1049,10 +1170,13 @@ dynasty's first season (generated players have no earlier history).
 ## Calibration targets (checked by the history and reads tests)
 
     college football  favourite ~0.70, margin ~15, home 57-59%, ~54 pts/game
-    pro football      favourite 0.63-0.66, margin (NFL ~10-11), MVP QB ~85-90%
+    pro football      favourite 0.63-0.66, margin (NFL ~10-11), MVP QB ~85-90%;
+                      by the shown chance (round 39): favourites ~66%, margin
+                      ~12, best record 13-16, top chance shown ~94%
     college basketball 72.6 pts/team, margin 12.2, home 62%, favourites 68%;
                       first-round seed pairings vs NCAA history (bb-march)
-    pro basketball    114.6 pts/team, margin 13.2, home 61%, favourites 71%;
+    pro basketball    114.6 pts/team, margin ~12.9, home 61%, favourites ~69%
+                      (71% and 13.2 before round 39's narrower gap);
                       wins sd 12-13, 1 seeds ~55% of titles, series 4-7 games.
                       First seasons too (nba-history checks seasons 1-3):
                       wins sd ~13, best ~66, worst ~15 (NBA_K 1.0; it was
@@ -1104,10 +1228,10 @@ dynasty's first season (generated players have no earlier history).
   run. The check now asks only that it's positive. Grokbot scored hockey's
   decision weight 5/10; this is part of why.
 
-- Pro basketball: 70-win seasons in ~19% of long-run seasons (real ~10%);
+- Pro basketball (before round 39's narrower gap): 70-win seasons in ~19% of long-run seasons (real ~10%);
   max seen 79. Big mismatches (gap over 200) count half (BB.softGap) since an
   82-0 turned up; the tail is still a little fat.
-- Pro football: best record ~15 wins (real ~14), worst ~2 (real ~3).
+- Pro football: best record ~15 wins (real ~14), worst ~2 (real ~3). Round 39: 13-16 over 16 fresh seasons, favourites 66%, margin 11.9.
 - Salary caps (Nov 2026, Ian's go-ahead): veterans' asks are scaled (PAY:
   football 1.75, basketball 2.1, hockey 4.3; rookie scales and minimums are
   real and unscaled), with each league's maximum contract (20% of the cap,

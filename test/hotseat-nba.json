@@ -1,5 +1,5 @@
 {
- "fp": "03426ac40c65b986",
+ "fp": "7cedd1848281d774",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -185,6 +185,21 @@
    "fp": "03426ac40c65b986",
    "from": "2551d5fa5d969fc8",
    "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
+  },
+  {
+   "fp": "b1c26619a70e57ca",
+   "from": "03426ac40c65b986",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
+  },
+  {
+   "fp": "b1c26619a70e57ca",
+   "from": "b1c26619a70e57ca",
+   "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "7cedd1848281d774",
+   "from": "b1c26619a70e57ca",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "out": [
@@ -194,20 +209,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "61-21",
-      "result": "Lost in the conference semifinals",
+      "rec": "51-31",
+      "result": "Lost in the conference finals",
       "grade": "A-"
      },
-     "book": "03964ae06d75da60"
+     "book": "cafd24058d0b5d48"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "43-39",
-      "result": "Lost in the first round",
-      "grade": "C+"
+      "rec": "48-34",
+      "result": "Lost in the NBA Finals",
+      "grade": "A-"
      },
-     "book": "5c5c4d9ef8c9cfdb"
+     "book": "507021798ac53a80"
     }
    ]
   },
@@ -217,20 +232,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-50",
+      "rec": "33-49",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "95330764d6b822c3"
+     "book": "9c05ddd06bd36000"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "35-47",
-      "result": "Lost in the play-in",
-      "grade": "D"
+      "rec": "31-51",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "b8971936fbdd9719"
+     "book": "c6d0ecc9fbdba75a"
     }
    ]
   },
@@ -240,20 +255,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "29-53",
+      "rec": "22-60",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "dac9683762cb1e53"
+     "book": "4d77d1ff384337bd"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "41-41",
+      "rec": "43-39",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "502f0389a5eb377a"
+     "book": "e5116560d7f83a05"
     }
    ]
   }

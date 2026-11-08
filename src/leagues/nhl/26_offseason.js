@@ -42,6 +42,9 @@ const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of 
    runs at its number to its end. */
 const HK_A=+((typeof process!=="undefined"&&process.env&&process.env.HK_A)||16.3), HK_B=+((typeof process!=="undefined"&&process.env&&process.env.HK_B)||1.8), HK_0=+((typeof process!=="undefined"&&process.env&&process.env.HK_0)||47);
 const HK_L=+((typeof process!=="undefined"&&process.env&&process.env.HK_L)||0);   // a flat lift for regulars (ramps in from HK_0 to ~7 points above)
+/* who reaches the market rather than leaving the league: from 52, so free agency has depth at $2-5M as well as
+   starters at $6M and up (it was 58: nobody under $5M, three markets running: Muse, Grokbot) */
+const HK_POOL=+((typeof process!=="undefined"&&process.env&&process.env.HK_POOL)||52);
 function nflAsk(r,pos,age){
   const x=Math.max(0,(r-HK_0)/20);
   let s=0.85+HK_L*Math.min(1,x*3)+HK_A*Math.pow(x,HK_B);
@@ -174,7 +177,7 @@ function nflFreeAgentPreview(u,myTeam,users){
     if(t===myTeam)return;
     const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R);
     R.forEach((p,i)=>{ if(!p||p.k.yrs>1||plan[i])return;
-      if(p.r<58||p.age>=33)return;                  // likely to retire or go unsigned
+      if(p.r<HK_POOL||p.age>=33)return;             // likely to retire or go unsigned (from 52: the market has depth, round 39)
       out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
                 ask:Math.round(Math.min(MAX_SAL,nflAsk(p.r,p.p,p.age+1)*1.1)*10)/10});   // a signing's markup never passes the maximum contract (Instinct: a $22.9M ask over a $20.8M max)
     });
@@ -234,7 +237,7 @@ function nflApplyTrade(u,myTeam,T,rep,leave,pool){
     p.yrsHere=0; p.joined=u.year+1; p.keep=true;
     const i=POS.findIndex(P=>P.p===p.p);
     if(!R[i]){R[i]=p} else if(!R[BK(i)]){ if(p.r>R[i].r){R[BK(i)]=R[i];R[i]=p}else R[BK(i)]=p }
-    else { const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")} }
+    else { const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=HK_POOL){out.from=t;pool.push(out)} else leave(t,out,"released")} }
   });
   rep.trade[myTeam]={done:true,gave:give.n,gp:give.p,got:get.n,qp:get.p,r:get.r,with:tt};
 }
@@ -352,7 +355,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       if(wi<0){ // only starters left over: the most overpaid starter goes
         R.forEach((p,i)=>{if(!p)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}})}
       const out=R[wi]; R[wi]=null; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true});
-      if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released");
+      if(out.r>=HK_POOL){out.from=t;pool.push(out)} else leave(t,out,"released");
     }
   });
 
@@ -377,7 +380,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from,target:true});
       rep.targets[t].push({n:n,p:pos,from:team,got:true,sal:cost});
-      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
+      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=HK_POOL){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
     });
   });
   const styleOf=t=>{const ch=chFor(t); if(ch&&ch.fa)return ch.fa;
@@ -406,7 +409,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from});
-      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"fa"}); if(out.r>=58&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
+      if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"fa"}); if(out.r>=HK_POOL&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
     });
   }
   pool.filter(p=>!p.signed).forEach(p=>leave(p.from,p,"unsigned"));

@@ -1,5 +1,5 @@
 {
- "fp": "f97cf2457cc7416d",
+ "fp": "fe9d66abcd536ec3",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -240,6 +240,21 @@
    "fp": "f97cf2457cc7416d",
    "from": "72840dd74ad66f9f",
    "note": "Round 38: rest your starters in decided games (with it off: matches round 37 exactly)."
+  },
+  {
+   "fp": "c6551b37597cc14d",
+   "from": "f97cf2457cc7416d",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
+  },
+  {
+   "fp": "3dab7933996afa29",
+   "from": "c6551b37597cc14d",
+   "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "fe9d66abcd536ec3",
+   "from": "3dab7933996afa29",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "out": [
@@ -249,20 +264,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-3",
-      "result": "Eliminated in the first round",
-      "grade": "B+"
+      "rec": "12-2",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A"
      },
-     "book": "2ac89df3d60a34d1"
+     "book": "917d2aa5b2b33e1b"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Boca Raton Bowl",
-      "grade": "A"
+      "rec": "8-5",
+      "result": "Won the Boca Raton Bowl",
+      "grade": "A+"
      },
-     "book": "d5de9158ea3669fa"
+     "book": "4e00636d8bc3f4c4"
     }
    ]
   },
@@ -272,20 +287,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "15-1",
-      "result": "NATIONAL CHAMPIONS",
+      "rec": "14-2",
+      "result": "Eliminated in the national title game",
       "grade": "A+"
      },
-     "book": "e047a25f8ad827a2"
+     "book": "7c1aa088e3328251"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "3-9",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "C+"
      },
-     "book": "36c8566e0a9a692f"
+     "book": "128a21117be6fb26"
     }
    ]
   },
@@ -295,20 +310,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-4",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A-"
+      "rec": "16-0",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "3cdf3d96b1999b49"
+     "book": "9afecea38580e86e"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Camellia Bowl",
-      "grade": "A+"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "b455e98c3a73dc8b"
+     "book": "c3b8b9590f398045"
     }
    ]
   }

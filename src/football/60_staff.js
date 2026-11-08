@@ -160,7 +160,7 @@ function staffTake(dp, ctx){
     const m=o[1].match(/(\d+)%/); return m?+m[1]:null;
   };
   const diff = (ctx.mine||0)-(ctx.theirs||0);
-  const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0);
+  const seed = (ctx.mine||0)*7+(ctx.theirs||0)*3+(ctx.q||0)+((typeof live!=="undefined"&&live&&typeof liveSeed==="function")?(liveSeed(live.step)%9973):0);   // and the match: at 0-0 at the half every game said the same words (Muse, round 39)
   const R=[];
 
   if(dp.k==="fourth"){
@@ -205,6 +205,11 @@ function staffTake(dp, ctx){
       ? `We're playing so well! Let's just keep playing.`
       : [`Whatever we did to get here \u2014 more of that, please.`,`Don't change a thing. It's working!`,`We're winning! Keep doing the winning thing.`][seed%3],seed)});
     R.push({who:"capy", pick:"sit", line:`I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.`});
+  }
+  else if(dp.k==="tied"){
+    R.push({who:"bears", pick:"push", line:`TIES ARE FOR NECKWEAR. THROW IT DEEP.`});
+    R.push({who:"pearl", pick:["push","sit","push"][Math.abs(seed)%3], line:pearlSay([`We can win this! Let's go and take it!`,`Don't give it away! Hold onto the ball and they'll make the mistake.`,`One drive! That's all we need. Let's go!`][Math.abs(seed)%3],seed)});
+    R.push({who:"capy", pick:"sit", line:`The interception, it seems to me, is the play that loses tied games.`});
   }
   else if(dp.k==="rest"){
     R.push({who:"bears", pick:"keep", line:`Rest? We'll rest in the off-season.`});

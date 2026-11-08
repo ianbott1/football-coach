@@ -11,7 +11,7 @@ function nflCareerLine(a){
   if(P==="EDGE"||P==="DT") return `${c.sck||0} sacks, ${c.tkl||0} tackles`;
   if(P==="LB")   return `${c.tkl||0} tackles, ${c.tfl||0} for loss`;
   if(P==="CB"||P==="S") return `${c.ints||0} INT, ${c.pd||0} passes defended`;
-  if(P==="OT")   return `${c.ska||0} sacks allowed in ${a.yrs} season${a.yrs===1?"":"s"}`;
+  if(P==="OT")   return `${c.ska||0} sack${(c.ska||0)===1?"":"s"} allowed in ${a.yrs} season${a.yrs===1?"":"s"}`;
   return `${a.yrs} season${a.yrs===1?"":"s"}`;
 }
 const NFL_LEADERS=[

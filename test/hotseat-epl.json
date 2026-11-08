@@ -1,5 +1,5 @@
 {
- "fp": "04855f6ab3fa01d2",
+ "fp": "4324ae81fed5caa1",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -205,6 +205,21 @@
    "fp": "04855f6ab3fa01d2",
    "from": "20741a755c84f3a9",
    "note": "Round 33: soccer's late call at 65' (the reading edge over Pearl held: 1.0 at 60,000 games; main 1.2)"
+  },
+  {
+   "fp": "04855f6ab3fa01d2",
+   "from": "04855f6ab3fa01d2",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
+  },
+  {
+   "fp": "b4588203b32fdbfe",
+   "from": "04855f6ab3fa01d2",
+   "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "4324ae81fed5caa1",
+   "from": "b4588203b32fdbfe",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "out": [
@@ -214,20 +229,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "21-6-11",
-      "result": "Finished 4th in the Premier League",
-      "grade": "B-"
+      "rec": "20-7-11",
+      "result": "Finished 6th in the Premier League",
+      "grade": "C+"
      },
-     "book": "6f8fa8a5b34e721c"
+     "book": "30c1088f05f9c52d"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "19-5-14",
-      "result": "Finished 6th in the Premier League",
-      "grade": "B+"
+      "rec": "18-6-14",
+      "result": "Finished 8th in the Premier League",
+      "grade": "B"
      },
-     "book": "6a37e0612570be3a"
+     "book": "d4eb9c66a2a8d48a"
     }
    ]
   },
@@ -237,20 +252,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-10-8",
-      "result": "Finished 3rd in the Premier League",
-      "grade": "B"
+      "rec": "18-11-9",
+      "result": "Finished 7th in the Premier League",
+      "grade": "C+"
      },
-     "book": "20906649c5cb568e"
+     "book": "8d21b55c922dbd5b"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "10-9-19",
-      "result": "Finished 17th in the Premier League",
-      "grade": "C-"
+      "rec": "12-9-17",
+      "result": "Finished 13th in the Premier League",
+      "grade": "C+"
      },
-     "book": "10575ca3e14b4e27"
+     "book": "56a553e57502ecb1"
     }
    ]
   },
@@ -260,20 +275,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "22-12-4",
-      "result": "Finished 2nd in the Premier League",
-      "grade": "B"
+      "rec": "15-9-14",
+      "result": "Finished 8th in the Premier League",
+      "grade": "C+"
      },
-     "book": "636e76dd19fe09ba"
+     "book": "3b763d514e38e84b"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "10-9-19",
-      "result": "Finished 17th in the Premier League",
-      "grade": "C-"
+      "rec": "13-8-17",
+      "result": "Finished 12th in the Premier League",
+      "grade": "C+"
      },
-     "book": "b40e4cd2002f7df6"
+     "book": "7f43865555475bb6"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "a2b008f76578bdf7",
+ "fp": "1bb1f46e223b6064",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -300,59 +300,74 @@
    "fp": "a2b008f76578bdf7",
    "from": "ca60b5008e79ea7f",
    "note": "Round 38: rest your starters in decided games (basketball, football), points for and against in the standings, text. With the rest call off, every result matches round 37."
+  },
+  {
+   "fp": "52cd49e81d03da43",
+   "from": "a2b008f76578bdf7",
+   "note": "Round 39: football end-game decisions (no pointless late kicks or punts, a two-point chart), a narrower strength gap in pro football and pro basketball with the shown chance refitted, hockey free agency from 52, the card listing each call once, wait-and-see graded, text. With the engine changes off, every result matches round 38."
+  },
+  {
+   "fp": "2009aa4a67d49fd2",
+   "from": "52cd49e81d03da43",
+   "note": "Round 40: late calls in close finishes (hockey's last five minutes and overtime, soccer at 80', football tied late). With them off, every result and screen matches round 39 exactly."
+  },
+  {
+   "fp": "1bb1f46e223b6064",
+   "from": "2009aa4a67d49fd2",
+   "note": "Round 41: the season story (Film Room, career identity, comebacks and collapses, rivals across jobs, title night). With it off, every result and screen matches round 40 exactly."
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "e99b13df5fc8b493",
-    "post": "64790ac81d06581a",
-    "champion": "Manchester City",
-    "rec": "c8087331bccabf11",
-    "poll": "2a903f993fc478b7",
-    "heis": "af7f37f2652278c3",
-    "history": "479026eb52783960",
-    "universe": "2cf5ba0b924125ac",
-    "screens": "18727b3c8cafd4c2"
+    "games": "c2c39fec6777f52a",
+    "post": "fbe1a616d7c8960a",
+    "champion": "Liverpool",
+    "rec": "4b6b4c6234de3b0c",
+    "poll": "314c0cbef7807167",
+    "heis": "00ad3e484347c13e",
+    "history": "93cb6112ec363453",
+    "universe": "424b747d8e578816",
+    "screens": "c3747fd2e300a80a"
    },
    {
     "year": 2027,
-    "games": "45cd3ea105254e7f",
-    "post": "81d2d2135e7fac8b",
+    "games": "08bbf40d4b3fbaef",
+    "post": "b7cc776a38801cfc",
     "champion": "Arsenal",
-    "rec": "f15d3d4b48e90314",
-    "poll": "fc65b44d88da816b",
-    "heis": "1e17969eea1d9118",
-    "history": "38911ac8b3e53807",
-    "universe": "b4c08153165c19ba",
-    "screens": "850fc3ee56c7e7cd"
+    "rec": "f2dfc0f44db6c71e",
+    "poll": "1e9ef7d9ba90272b",
+    "heis": "da43777df1878195",
+    "history": "ff3d108c5857fe44",
+    "universe": "e7c5a46daa7493c2",
+    "screens": "e4853b6eadaa3b7b"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "6ceb6b96859e48d3",
-    "post": "03f67d6bb49a4121",
-    "champion": "Manchester United",
-    "rec": "ef1cf897409a01e2",
-    "poll": "737fcb24092335a7",
-    "heis": "400991731e24be6e",
-    "history": "aaf4a14aa2b0c3ea",
-    "universe": "7e82d8cb5d52b19f",
-    "screens": "3ffbdb9e601c6699"
+    "games": "be90becf823319e0",
+    "post": "1f1aad1f35a16226",
+    "champion": "Liverpool",
+    "rec": "cd6c4946c66e4c39",
+    "poll": "9fcf8b6f27d0dfe3",
+    "heis": "9fa32ab6077ec965",
+    "history": "a4338fb4ce2a7838",
+    "universe": "bbee5b325bcaf029",
+    "screens": "3693c50c81a347fe"
    },
    {
     "year": 2027,
-    "games": "ddb3ce42ddd11a8d",
-    "post": "706dc71d359dae9f",
-    "champion": "Arsenal",
-    "rec": "ed3b327c1297446d",
-    "poll": "ca70cfcf19903672",
-    "heis": "7e62ca4a6bd95c73",
-    "history": "aebd5702d8539966",
-    "universe": "e38a812681de34a1",
-    "screens": "809e5ed2e760903d"
+    "games": "5421140aa73be6df",
+    "post": "153a3e365301c5b2",
+    "champion": "Manchester City",
+    "rec": "acdb4f54d889dfd6",
+    "poll": "a300a9141afb1b9b",
+    "heis": "479842095efd22f5",
+    "history": "45138f63f8182552",
+    "universe": "60b1fa1330c45ffb",
+    "screens": "52ee8368975887fb"
    }
   ],
   "schedules#60": [

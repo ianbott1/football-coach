@@ -130,4 +130,4 @@ function teamScoring(t){
 const STAND_PER_GAME=[{label:"PPG",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pf/o.g).toFixed(1):"-" }},
   {label:"OPP",opt:1,val:t=>{ const o=teamScoring(t); return o.g?(o.pa/o.g).toFixed(1):"-" }},
   {label:"STRK",opt:1,val:t=>{ const r=teamScoring(t).res; if(!r.length)return "-"; let k=1; while(k<r.length&&r[r.length-1-k]===r[r.length-1])k++; return r[r.length-1]+k }}];
-const STAND_TOTALS=(f,a)=>[{label:f,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pf:"-" }},{label:a,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pa:"-" }}];
+const STAND_TOTALS=(f,a)=>[{label:f,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pf:"-" }},{label:a,opt:1,val:t=>{ const o=teamScoring(t); return o.g?o.pa:"-" }},STAND_PER_GAME[2]];   // the streak in every table (Instinct: the NBA's had one, football's didn't)

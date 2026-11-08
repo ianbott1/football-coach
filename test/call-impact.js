@@ -33,14 +33,16 @@ for(const [f,team] of GAMES){
       ok(c.cf&&Number.isFinite(c.cf.mine)&&Number.isFinite(c.worth)&&c.worth>=-1&&c.worth<=1,`${f}: a call's impact is malformed ${JSON.stringify(c)}`);
       const s=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0; const d=s({mine:P.mine,theirs:P.theirs})-s(c.cf); sumDiff+=d;
       if((d>0&&c.worth>0)||(d<0&&c.worth<0))agree++ });
-    if(I.length){ const h=A.impactHTML([P]); ok(/class="impact( quiet)?"/.test(h)&&!/undefined|null|NaN/.test(h),`${f}: the post-game line reads "${h.replace(/<[^>]+>/g,' ').slice(0,140)}"`);
+    // round 39: a read is judged in the reads only; the top line covers the situation calls (one verdict per call)
+    const RK={}; (P&&P.reads||[]).forEach(r=>{ RK[r.k]=1 }); const IS=I.filter(x=>!(x.k&&RK[x.k]));
+    if(IS.length){ const h=A.impactHTML([P]); ok(/class="impact( quiet)?"/.test(h)&&!/undefined|null|NaN/.test(h),`${f}: the post-game line reads "${h.replace(/<[^>]+>/g,' ').slice(0,140)}"`);
       const head=(h.match(/class="imphead">([^<]*)</)||[])[1]||'?'; heads[head]=(heads[head]||0)+1;
       // the headline credits or blames the call only when the average agrees
-      const c=I.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,I[0]);
+      const c=IS.reduce((a,x)=>Math.abs(x.worth)>Math.abs(a.worth)?x:a,IS[0]);
       // the decision leads (Muse): "good"/"strong" only for a call that wins more often, "wrong"/"not quite" only for one that loses more
       // a call graded against every option (football) is judged as its bullets are: q points behind the best, sp the spread
       // round 28: the clearest call leads, and only beyond 7 points (callClarity) does it get a headline
-      const ks=I.map(x=>A.callClarity(x)), k=ks.reduce((a,x)=>Math.abs(x)>Math.abs(a)?x:a,0), crossed=(P.reads||[]).some(r=>r.right===false);
+      const ks=IS.map(x=>A.callClarity(x)), k=ks.reduce((a,x)=>Math.abs(x)>Math.abs(a)?x:a,0), crossed=(P.reads||[]).some(r=>r.right===false);
       if(/^A strong call/.test(head))ok(k>7,`${f}: "${head}" with the clearest call at ${k}`);
       if(/^The wrong call/.test(head))ok(k<-7,`${f}: "${head}" with the clearest call at ${k}`);
       if(head==='?')ok(Math.abs(k)<=7||(k>0&&crossed),`${f}: no headline with the clearest call at ${k}`) }
