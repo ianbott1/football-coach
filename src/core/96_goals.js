@@ -75,12 +75,68 @@ function objStatus(o,my){
     // played is in week order already: SEA.weeks
     if(best>=o.n)return {s:"met",t:`${best} in a row`};
     return done?{s:"miss",t:`Best run ${best}`}:{s:"on",t:`Best so far ${best}`} }
+  if(o.k==="last"){ const G=myLeagueGames(my).filter(g=>g.week>=o.from);
+    let w=0; for(let k=o.from;k<Math.min(SEA.weeks.length,LEAGUE.weeks);k++)(SEA.weeks[k].games||[]).forEach(x=>{ if(!x.cup&&(x.home===my||x.away===my)&&x.winner===my)w++ });
+    const left=G.filter(g=>g.week>=SEA.step).length;
+    if(w>=o.n)return {s:"met",t:`${w} won`};
+    if(w+left<o.n||done)return {s:"miss",t:`${w} won, ${o.n} needed`};
+    return {s:"on",t:`${w} won, ${left} to play`} }
   if(o.k==="home"){ const w=played.filter(g=>g.home===my&&!g.neutral&&g.winner===my).length;
     const left=myLeagueGames(my).filter(g=>g.home===my&&!g.neutral&&g.week>=SEA.step).length;
     if(w>=o.n)return {s:"met",t:`${w} won`};
     if(w+left<o.n||done)return {s:"miss",t:`${w} won, ${o.n} needed`};
     return {s:"on",t:`${w} won, ${left} to play`} }
   return {s:"on",t:""};
+}
+/* Re-aimed (round 45): an objective settled with a third of the season still to play, met or missed, leaves a
+   stretch with nothing on it (a series won by November, a streak gone in week 3). The board sets one more, at most
+   two a season: the side just above you in the table now, or so many wins from the games left (a little better than
+   your rating says, as the home record is). Set the first time it's seen and kept, so a reload doesn't move it. */
+const REAIM_ON=true, REAIM_MAX=2;
+function reaimObjectives(my){
+  if(!REAIM_ON||!SEA||SEA.phase!=="week"||!S.obj||S.obj.year!==SEA.year||S.obj.team!==my)return;
+  const O=S.obj; O.extra=O.extra||[]; if(O.extra.length>=REAIM_MAX)return;
+  const all=myLeagueGames(my), left=all.filter(g=>g.week>=SEA.step);
+  if(left.length<Math.max(3,Math.ceil(all.length/3)))return;
+  const settled=O.list.concat(O.extra).filter(o=>!o.re&&objStatus(o,my).s!=="on");
+  settled.forEach(o=>{ if(O.extra.length>=REAIM_MAX)return; o.re=SEA.step;
+    const used=O.list.concat(O.extra), pos=t=>LEAGUE.position?LEAGUE.position(t):standRank(t), mine=pos(my);
+    const above=NAMES.filter(t=>CONF[t]===CONF[my]&&t!==my&&pos(t)===mine-1)[0];
+    if(above&&!used.some(x=>(x.k==="above"&&x.opp===above)||x.k==="top"))O.extra.push({k:"above",opp:above,l:`Finish above ${above}`,re0:SEA.step});
+    else if(!used.some(x=>x.k==="last")){ const hfa=LEAGUE.tuning.hfa||0, e=t=>SEA.elo[t]||1500;
+      const p=left.reduce((s,g)=>{ const opp=g.home===my?g.away:g.home, h=g.home===my&&!g.neutral?hfa:g.away===my&&!g.neutral?-hfa:0; return s+1/(1+Math.pow(10,-(e(my)+h-e(opp))/400)) },0)/left.length;
+      const pw=LEAGUE.draws?p*0.74:p, n=Math.max(1,Math.min(left.length,Math.round(left.length*Math.min(0.88,pw)+0.5)));
+      O.extra.push({k:"last",from:SEA.step,n:n,of:left.length,l:`Win ${n} of your last ${left.length}`,re0:SEA.step}) } });
+}
+function objectivesAll(my){ const L=seasonObjectives(my); return S.obj&&S.obj.extra?L.concat(S.obj.extra):L }
+/* what the next game means (round 45): an objective it could settle, and where a win or a loss leaves you */
+function divThe(d){ const n=LEAGUE.conf.names[d]||"the group"; return /^(League |the )/.test(n)?n:"the "+n }   // "the Championship", "League One"
+const MEANS_ON=true;
+function meansStakes(ng,my){
+  const out=[]; if(!MEANS_ON||!SEA||SEA.phase!=="week"||!ng||ng.cup)return out;
+  const opp=ng.home===my?ng.away:ng.home;
+  reaimObjectives(my);
+  const games=[].concat(...SEA.weeks.slice(0,LEAGUE.weeks).map(w=>w.games)).filter(g=>!g.cup&&(g.home===my||g.away===my));
+  let cur=0; games.forEach(g=>{ cur=g.winner===my?cur+1:0 });
+  objectivesAll(my).forEach(o=>{ if(out.length||objStatus(o,my).s!=="on")return;
+    if(o.k==="rival"&&o.opp===opp){ const w=games.filter(g=>(g.home===opp||g.away===opp)&&g.winner===my).length;
+      out.push({p:97,tag:"THE BOARD",l:o.need?(w+1>=o.need?`Win and the season series against ${esc(opp)} is yours: one of the board's objectives.`:`Game ${games.filter(g=>g.home===opp||g.away===opp).length+1} of ${o.n} against ${esc(opp)}: the board wants the series.`):`The board wants this one: beat ${esc(opp)}.`}) }
+    else if(o.k==="above"&&o.opp===opp)out.push({p:96,tag:"THE BOARD",l:`${esc(opp)}: the side the board wants you to finish above. ${objStatus(o,my).t}.`});
+    else if(o.k==="streak"&&cur>0&&cur+1>=o.n)out.push({p:96,tag:"THE BOARD",l:`${cur} in a row. Win and it's ${o.n}: one of the board's objectives.`});
+    else if(o.k==="home"&&ng.home===my&&!ng.neutral){ const w=games.filter(g=>g.home===my&&!g.neutral&&g.winner===my).length; if(w+1>=o.n)out.push({p:96,tag:"THE BOARD",l:`Win here and that's ${o.n} home wins: one of the board's objectives.`}) }
+    else if(o.k==="last"){ const st=objStatus(o,my); const m=/^(\d+) won/.exec(st.t), w=m?+m[1]:0; if(w+1>=o.n)out.push({p:96,tag:"THE BOARD",l:`One more win and it's ${o.n} of your last ${o.of}: the board's re-aimed objective.`}) } });
+  // the table: where a win or a defeat leaves you, by the table's own order (its tiebreaks included): the record
+  // nudged for a moment and put back. The pros and soccer; college tables go by conference record.
+  if(!LEAGUE.standingsCompare||NAMES.filter(t=>CONF[t]===CONF[my]).length<3)return out;
+  const posNow=()=>LEAGUE.position&&LEAGUE.position(my)?LEAGUE.position(my):standRank(my);
+  const R=(SEA.regRec&&SEA.regRec[my])||SEA.rec[my], at=d=>{ R[d]++; try{ return posNow() }finally{ R[d]-- } };
+  const now=posNow(), win=at(0), loss=at(1), name=divThe(CONF[my]);
+  const played=games.length;
+  if(played>=3){
+    if(win<now)out.push({p:62,tag:"THE TABLE",l:`A win takes you ${win===1?"top of":"to "+ordinal(win)+" in"} ${esc(name)}${win===1?"":` (${ordinal(now)} now)`}.`});
+    else if(loss>now)out.push({p:55,tag:"THE TABLE",l:`${ordinal(now)} in ${esc(name)}. A defeat drops you to ${ordinal(loss)}.`});
+  }
+  return out;
 }
 /* where a team stands in its group, for leagues without a table: by win share, then rating */
 function standRank(t){
@@ -94,16 +150,19 @@ function standRank(t){
 }
 function objectivesHTML(my){
   if(SEA.phase==="done"&&!S.obj)return "";
-  const L=seasonObjectives(my); if(!L.length)return "";
+  reaimObjectives(my);
+  const L=objectivesAll(my); if(!L.length)return "";
   const why=typeof seatWhyNow==="function"&&SEA.phase!=="done"?seatWhyNow():"";
   return `<div class="grouphead">The board's objectives</div><div class="objs">${why?`<div class="objnote hotwhy">${esc(why)}</div>`:""}${L.map(o=>{const st=objStatus(o,my);
     return `<div class="obj ${st.s}"><span class="objmark">${st.s==="met"?"&#10003;":st.s==="miss"?"&#10007;":"&#9675;"}</span>
-      <span class="objl">${esc(o.l)}</span><span class="objt">${esc(st.t)}</span></div>`}).join("")}
-    <div class="objnote">Each one met is worth reputation: the next job, and the board's patience.</div></div>`;
+      <span class="objl">${o.re0!==undefined?`<b class="objre">Re-aimed</b> `:""}${esc(o.l)}</span><span class="objt">${esc(st.t)}</span></div>`}).join("")}
+    <div class="objnote">Each one met is worth reputation: the next job, and the board's patience.${L.some(o=>o.re0!==undefined)?" A re-aimed one counts in place of one missed.":""}</div></div>`;
 }
 /* at the end of the season: how many were met, and what it's worth */
 const OBJ_REP=2.5;
-function objectivesMet(my){ return seasonObjectives(my).filter(o=>objStatus(o,my).s==="met").length }
+// a re-aimed objective counts in place of one missed: the board still judges three (more would inflate reputation,
+// which fades 6% a season: two more met a season would settle 40 points higher)
+function objectivesMet(my,orig){ const L=seasonObjectives(my), n=(orig?L:objectivesAll(my)).filter(o=>objStatus(o,my).s==="met").length; return Math.min(L.length,n) }
 
 /* ---- achievements ---- */
 const ACH=[
@@ -139,7 +198,7 @@ function checkAchievements(){
   if(SEA.phase==="done"){
     const rec=(SEA.regRec||SEA.rec)[my];
     if(rec&&rec[1]===0)unlock("unbeaten");
-    if(objectivesMet(my)>=3)unlock("board");
+    if(objectivesMet(my,true)>=3)unlock("board");
     const res=SEA.seasonResult(my)||"";
     if(LEAGUE.draws&&/[Pp]romoted/.test(res))unlock("promoted");
     if(SEA.champion===my){ unlock("champ");

@@ -1,5 +1,5 @@
 {
- "fp": "df9cfae423544e3d",
+ "fp": "723cebc5161289e4",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -335,6 +335,11 @@
    "fp": "df9cfae423544e3d",
    "from": "c929981d8116e1bc",
    "note": "round 44: who starts in goal on a back-to-back (HK_GSTART; computer starts the backup, the backup's cost by his rating gap); control build with HK_GSTART off matches the round-43 fingerprint"
+  },
+  {
+   "fp": "723cebc5161289e4",
+   "from": "df9cfae423544e3d",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
@@ -349,7 +354,7 @@
     "heis": "c858175198a22229",
     "history": "f7c37f5eb16f41a7",
     "universe": "e37bb98ede6c4eeb",
-    "screens": "a8ae332916288252"
+    "screens": "6d045182fc7a47ee"
    },
    {
     "year": 2027,
@@ -361,7 +366,7 @@
     "heis": "002bed91bf6be73d",
     "history": "14196dcb4ce2c1a7",
     "universe": "ff8c4f7c8bd9e297",
-    "screens": "05adfb9c84ee7ad2"
+    "screens": "d2f9abf8281b006b"
    }
   ],
   "Edmonton#777": [
@@ -375,7 +380,7 @@
     "heis": "a8159cf440c089b4",
     "history": "e547e5e3e565d757",
     "universe": "ce9539b8cd76a42b",
-    "screens": "144f54434fa4aa9a"
+    "screens": "b446bccece622792"
    },
    {
     "year": 2027,
@@ -387,7 +392,7 @@
     "heis": "daf17ddf8ee2576b",
     "history": "30075b1de36ce6fd",
     "universe": "f6e780c6cb6c08c7",
-    "screens": "9789d34b4412dabc"
+    "screens": "7bfdc2eaf1da6766"
    }
   ],
   "schedules#60": [

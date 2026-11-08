@@ -253,14 +253,14 @@ function skipCupNight(){
   if(!LEAGUE.splitCup||!SEA.half||SEA.phase!=="week")return;
   const teams=isHotSeat()?S.coaches.map((c,i)=>i===(S.turn||0)?S.myTeam:c.myTeam):[S.myTeam];
   if(teams.some(t=>SEA.gamesFor(t,SEA.step).length))return;
-  SEA.userTeam=S.myTeam; SEA.advance(); S.steps++;
+  SEA.userTeam=S.myTeam; SEA.advance(); clinchAfter(); S.steps++;
 }
 /* Everyone has had their turn: play out the rest of the league. */
 function resolveWeek(step){
   handoffNotes={};
   SEA.userTeam=S.myTeam;
   const wasCup=!!SEA.half, wasPost=SEA.phase!=="week";
-  SEA.advance();
+  SEA.advance(); clinchAfter();
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
@@ -719,7 +719,7 @@ function skipIdleDays(){
   while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
     // the same bookkeeping as any advance: a reload replays exactly S.steps steps
     SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
-    SEA.advance(); S.steps++;
+    SEA.advance(); clinchAfter(); S.steps++;
   }
 }
 /* In the postseason, a round with no game of yours is the league's, not
@@ -742,7 +742,7 @@ function simPostOn(ph){
   let g=0, was=ph;
   while(SEA.phase!=="week"&&SEA.phase!=="done"&&g++<300){
     was=SEA.phase;
-    SEA.userTeam=S.myTeam; SEA.advance(); SEA.forcedList=[]; SEA.forced=null; S.steps++;
+    SEA.userTeam=S.myTeam; SEA.advance(); clinchAfter(); SEA.forcedList=[]; SEA.forced=null; S.steps++;
     if((LEAGUE.post.stopAfter||["selection"]).indexOf(was)>=0){ view="scores"; break }     // a moment to see, not sim past: Selection Sunday, the field
     // (and shown: the click stopped there with the team page still up, so it looked like nothing happened: Grokbot)
     if(SEA.phase!=="done"&&SEA.postMatchup(S.myTeam))break;
@@ -750,6 +750,8 @@ function simPostOn(ph){
   LEAGUE.ui.afterAdvance(was);                  // the views follow the last round played (Selection Sunday's field)
   flash={type:"post"}; reveal=null; save(); render();
 }
+/* soccer: a title, promotion or relegation settled by the week just played (95_story clinchCheck) */
+function clinchAfter(){ if(typeof clinchCheck==="function"&&S.myTeam)try{ clinchCheck(S.myTeam) }catch(e){} }
 function doAdvance(){
   scoreWk=null;                                   // Scores follows the new week
   skipIdleDays();
@@ -787,7 +789,7 @@ function doAdvance(){
   }
   SEA.userTeam=S.myTeam;
   const wasCup=!!SEA.half;
-  SEA.advance();
+  SEA.advance(); clinchAfter();
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
@@ -1207,7 +1209,7 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${won&&SEA.champion===my&&/Champions/.test(move)&&typeof titleNightHTML==="function"?titleNightHTML(my):""}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${won&&SEA.champion===my&&/Champions/.test(move)&&typeof titleNightHTML==="function"?titleNightHTML(my):""}${typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):""}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
       return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
@@ -1416,6 +1418,7 @@ function stakesFor(ng){
     l:`Unbeaten: ${recStr(my)}. Nobody has found a way past you yet.`});
 
   out.push(...LEAGUE.ui.stakes({my:my,opp:opp,rk:rk,wk:wk,left:left,w:w,l:l,cp:cp}));
+  if(typeof meansStakes==="function")out.push(...meansStakes(ng,my));   // round 45: what this game means (an objective, the table)
   const st=streakOf(my);
   if(!st.won&&st.n>=3)out.push({p:74,tag:"SLIDE",
     l:`${st.n} straight losses. The seat under your coach is getting warm.`});
@@ -1438,7 +1441,10 @@ function stakesFor(ng){
         :`${at} A big ask. Nobody expects it, which is what would make it.` })(winProb(my,opp,ng.home===my,ng.neutral))});
 
   out.sort((x,y)=>y.p-x.p);
-  return out.slice(0,2);
+  // what this game means (round 45) always gets its line: a third, when two others outrank it
+  const top=out.slice(0,2), mean=out.find(x=>x.tag==="THE BOARD"||x.tag==="THE TABLE");
+  if(mean&&top.indexOf(mean)<0)top.push(mean);
+  return top;
 }
 
 /* A season misses expectations when its grade says so: "Short of the mark"
@@ -1824,7 +1830,7 @@ function nextUpHTML(my,rk){
           ? "you've won "+ser.streak.n+" straight"
           : esc(ser.streak.team)+" has won "+ser.streak.n+" straight"}`:""}
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
-      </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}${typeof rivalLine==="function"?rivalLine(opp):""}
+      </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}${typeof rivalLine==="function"?rivalLine(opp):""}${typeof filmLine==="function"?filmLine(opp):""}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
       ${cupNight?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} ${esc(LEAGUE.cup.rule||"")}</span></div>
         <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>`
@@ -2711,6 +2717,7 @@ function weekWeight(w){
   if(!g)return 0;
   const opp=g.home===my?g.away:g.home;
   if(LEAGUE.rivals.name(my,opp))return 3;
+  if(DIGEST_INC&&typeof rivalName==="function"&&U.coach&&U.coach[opp]&&rivalName()&&U.coach[opp].n===rivalName())return 3;   // your rival coach (round 45)
   const rk=SEA.poll.rankMap()[opp];
   if(rk<=(LEAGUE.bigTop||RANK_TOP))return 3;   // a top side: the top 25 in college, the top ten (five over 82 games) in the pros
   if(w>=LEAGUE.weeks-3)return 2;
@@ -2736,13 +2743,13 @@ function canSkip(){
 
 function simAhead(){
   const sk=canSkip(); if(!sk)return;
-  const from=SEA.step;
+  const from=SEA.step, snap=digestSnap();
   S.plans=S.plans||{};
   while(SEA.step<sk.to&&SEA.phase==="week"){
     S.plans[SEA.step]="balanced"; SEA.plan="balanced";
-    SEA.advance(); S.steps++;
+    SEA.advance(); clinchAfter(); S.steps++;
   }
-  flash={type:"digest",from:from,to:SEA.step};
+  flash={type:"digest",from:from,to:SEA.step,snap:snap};
   reveal=null; save(); render();
 }
 
@@ -2781,7 +2788,7 @@ function newDecision(t){
   const fresh=attnKeys(t).filter(x=>seen.indexOf(x)<0); fresh.forEach(x=>seen.push(x)); return fresh.length>0;
 }
 function simRun(to){
-  const my=S.myTeam, from=SEA.step, stops=simStops();
+  const my=S.myTeam, from=SEA.step, stops=simStops(), snap=digestSnap();
   let why=null;
   S.plans=S.plans||{};
   while(SEA.phase==="week"&&SEA.step<to){
@@ -2790,7 +2797,7 @@ function simRun(to){
     const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
     S.plans[SEA.step]="balanced"; SEA.plan="balanced";
     SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
-    SEA.advance(); S.steps++;
+    SEA.advance(); clinchAfter(); S.steps++;
     if(SEA.phase!=="week")break;
     // after it: did something happen you'd want to know about now?
     const st=streakOf(my);
@@ -2800,7 +2807,7 @@ function simRun(to){
     if(stops.decide&&newDecision(my)){why="decide";break}
   }
   simSheet=false;
-  flash={type:"digest",from:from,to:SEA.step,why:why};
+  flash={type:"digest",from:from,to:SEA.step,why:why,snap:snap};
   reveal=null; save(); render();
 }
 function simSheetHTML(){
@@ -2814,6 +2821,38 @@ function simSheetHTML(){
   </div></div>`;
 }
 
+/* the sim digest's incidents (round 45: a run of results said nothing about what happened in them) */
+const DIGEST_INC=true;
+function digestSnap(){
+  const my=S.myTeam; let obj={};
+  try{ if(typeof objectivesAll==="function")objectivesAll(my).forEach((o,i)=>{ obj[o.l]=objStatus(o,my).s }) }catch(e){}
+  return {pos:(()=>{ try{ return LEAGUE.position?LEAGUE.position(my):standRank(my) }catch(e){ return null } })(), obj:obj};
+}
+function digestIncidents(){
+  const my=S.myTeam, F=flash, out=[];
+  // your injuries
+  (SEA.talent.log[my]||[]).filter(x=>x.kind==="injury"&&x.who&&x.wk>F.from&&x.wk<=F.to).forEach(x=>
+    out.push(`<b>${esc(x.who)}</b> (${esc(x.what)}) got hurt: out ${x.weeks>=14?"for the season":"about "+x.weeks+" "+stepWord(x.weeks)}.`));
+  // the games that stood out: the biggest win, the worst defeat, a rival met
+  const G=[]; for(let i=F.from;i<Math.min(SEA.weeks.length,F.to+1);i++)(SEA.weeks[i]&&SEA.weeks[i].games||[]).forEach(g=>{ if(g.home===my||g.away===my)G.push(g) });
+  const mg=g=>(g.home===my?g.hp-g.ap:g.ap-g.hp), opp=g=>g.home===my?g.away:g.home, sc=g=>g.home===my?`${g.hp}-${g.ap}`:`${g.ap}-${g.hp}`;
+  if(G.length>=3){
+    const bw=G.filter(g=>g.winner===my).sort((a,b)=>mg(b)-mg(a))[0], bl=G.filter(g=>g.winner&&g.winner!==my).sort((a,b)=>mg(a)-mg(b))[0];
+    if(bw)out.push(`Best night: ${sc(bw)} ${haWord(bw,my)} ${esc(opp(bw))}.`);
+    if(bl)out.push(`Worst: ${sc(bl)} ${haWord(bl,my)} ${esc(opp(bl))}.`);
+  }
+  G.filter(g=>LEAGUE.rivals.name(my,opp(g))).forEach(g=>out.push(`${g.winner===my?"Beat":g.winner?"Lost to":"Drew with"} ${esc(opp(g))}, ${sc(g)}: ${esc(LEAGUE.rivals.name(my,opp(g)))}.`));
+  // the board's objectives settled along the way
+  const was=(F.snap&&F.snap.obj)||{};
+  try{ objectivesAll(my).forEach(o=>{ const st=objStatus(o,my).s; if(was[o.l]==="on"&&st!=="on")out.push(st==="met"?`Objective met: ${esc(o.l)}.`:`Objective missed: ${esc(o.l)}.`);
+    else if(was[o.l]===undefined&&o.re0!==undefined)out.push(`The board re-aimed: ${esc(o.l)}.`) }) }catch(e){}
+  if(typeof clinchDigest==="function")out.unshift(...clinchDigest(my,F.from,F.to));   // soccer: a title, promotion or relegation settled
+  // the run you're on, and the table
+  const st=streakOf(my); if(st.n>=3)out.push(st.won?`On a ${st.n}-game winning run.`:`${st.n} defeats in a row.`);
+  const p0=F.snap&&F.snap.pos, p1=(()=>{ try{ return LEAGUE.position?LEAGUE.position(my):standRank(my) }catch(e){ return null } })();
+  if(p0&&p1&&p0!==p1)out.push(`${p1<p0?"Up":"Down"} from ${ordinal(p0)} to ${ordinal(p1)} in ${esc(typeof divThe==="function"?divThe(CONF[my]):LEAGUE.conf.names[CONF[my]]||"the group")}.`);
+  return out.length?`<div class="dinc"><div class="dinch">What happened</div>${out.slice(0,8).map(x=>`<div class="dincl">${x}</div>`).join("")}</div>`:"";
+}
 function digestBlock(){
   const my=S.myTeam;
   const rows=[]; let n=0;
@@ -2835,6 +2874,7 @@ function digestBlock(){
   }
   let h=`<div class="banner"><div class="bkick">${LEAGUE.skipIdle||LEAGUE.daily?n+" game"+(n===1?"":"s"):last<=flash.from?"Week "+(flash.from+1):"Weeks "+(flash.from+1)+"&ndash;"+(last+1)} simulated</div>`;
   if(flash.why)h+=`<div class="simwhy">Stopped: ${esc(SIM_WHY[flash.why]||"")}</div>`;
+  if(flash.snap&&DIGEST_INC)h+=digestIncidents();   // first: after a long sim it sat under thirty rows of results
   h+=`<div class="digest">${rows.join("")}</div>`;
   const rk=SEA.poll.rankMap();
   h+=`<div class="bsub">Now ${recStr(my)}${

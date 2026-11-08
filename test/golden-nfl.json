@@ -1,5 +1,5 @@
 {
- "fp": "7a04a048a45752fe",
+ "fp": "0a3733c1ad586599",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -395,6 +395,11 @@
    "fp": "7a04a048a45752fe",
    "from": "284eecfc8c0d04b5",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "0a3733c1ad586599",
+   "from": "7a04a048a45752fe",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
@@ -409,7 +414,7 @@
     "heis": "465da515685d3d6d",
     "history": "e03b07bb207b54b4",
     "universe": "1b982cb50eff81cf",
-    "screens": "d4acbcbc6a481477"
+    "screens": "55c2fa531886322a"
    },
    {
     "year": 2027,
@@ -421,7 +426,7 @@
     "heis": "4067445f8398eeb0",
     "history": "b9aaa4e67a2e0869",
     "universe": "a036acfa85ecf19a",
-    "screens": "05e513af29f88e44"
+    "screens": "0076b5a8caa122be"
    },
    {
     "year": 2028,
@@ -433,7 +438,7 @@
     "heis": "1b827efa002c2138",
     "history": "070866a343ec6950",
     "universe": "1aaa3bc8d1beb50a",
-    "screens": "2757ca7674dd8c89"
+    "screens": "4488e56077afdf78"
    },
    {
     "year": 2029,
@@ -445,7 +450,7 @@
     "heis": "51f26508a65c4627",
     "history": "a7761bae91bb25c0",
     "universe": "b9858b77c0a00aba",
-    "screens": "75e017b0df02c678"
+    "screens": "20bcacc452dbc109"
    }
   ],
   "Tennessee#2024": [
@@ -459,7 +464,7 @@
     "heis": "67e2ce854ab18892",
     "history": "a32f09e75ee880f6",
     "universe": "c44dfe7d704be505",
-    "screens": "c65d60fd764d3dd0"
+    "screens": "fca5cd3f3c630ccf"
    },
    {
     "year": 2027,
@@ -471,7 +476,7 @@
     "heis": "3e772335d88868e7",
     "history": "5924e43eb74cfaf6",
     "universe": "8c01d50d31f60bc2",
-    "screens": "706bfc4cd98c42e9"
+    "screens": "e5aa4d83e8b72545"
    },
    {
     "year": 2028,
@@ -483,7 +488,7 @@
     "heis": "48a8dee9ee4b0780",
     "history": "b461330b3d9fdbe9",
     "universe": "e9e418afa209a02c",
-    "screens": "b420dbca62128786"
+    "screens": "d2dd0b99149f9dc3"
    },
    {
     "year": 2029,
@@ -495,7 +500,7 @@
     "heis": "77b30ed34955c0bc",
     "history": "6733dcb707d652d3",
     "universe": "64b3abb5f591cd59",
-    "screens": "3cf0a7bf9912f1e8"
+    "screens": "f4487cca238e246d"
    }
   ],
   "Detroit#777": [
@@ -509,7 +514,7 @@
     "heis": "b063340df1ecedd0",
     "history": "c1c60442b91304ec",
     "universe": "1d756019880b3e7e",
-    "screens": "5bfe3fa1a0542ea1"
+    "screens": "7411003268a7935c"
    },
    {
     "year": 2027,
@@ -519,9 +524,9 @@
     "rec": "4c8805341e0cd730",
     "poll": "47889ab7840e7089",
     "heis": "62ee1c4dae368f64",
-    "history": "3a356f2117edb957",
-    "universe": "f3932348681418ef",
-    "screens": "1538922ed0bd6f2b"
+    "history": "343d2b815b5e5983",
+    "universe": "056c01a667216d6d",
+    "screens": "729192a96dd15ad8"
    },
    {
     "year": 2028,
@@ -531,9 +536,9 @@
     "rec": "d2dd484658c919ad",
     "poll": "e51d8cd1df3d21ae",
     "heis": "dcd856f0c1110c38",
-    "history": "79f497aef4177534",
-    "universe": "1fa7c6792ae7d6e3",
-    "screens": "c2fb6a905feb4fa7"
+    "history": "425a612ba4821ae2",
+    "universe": "f4866c4980067550",
+    "screens": "625b17b46472d991"
    }
   ],
   "NY Giants#31337": [
@@ -547,7 +552,7 @@
     "heis": "dc663f5066b4e3ab",
     "history": "4d814418abcbe71a",
     "universe": "7628075d92bf84f7",
-    "screens": "9e37ac86a1a2bb10"
+    "screens": "0aadf3069ec93ac4"
    },
    {
     "year": 2027,
@@ -559,7 +564,7 @@
     "heis": "feefcfc11e2133c6",
     "history": "49dc0f43133f7d3d",
     "universe": "654f8af5a1e2e89f",
-    "screens": "5adafe7d0d7888fa"
+    "screens": "806c8eced7a69bc3"
    },
    {
     "year": 2028,
@@ -571,7 +576,7 @@
     "heis": "cbe04531f6d45347",
     "history": "2a681aa75a8f8b38",
     "universe": "1b5e0d022386ee84",
-    "screens": "28415c04be6c9a71"
+    "screens": "70cb8ca8dec84d59"
    }
   ],
   "schedules#60": [

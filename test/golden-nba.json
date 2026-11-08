@@ -1,5 +1,5 @@
 {
- "fp": "67b33b586460db7f",
+ "fp": "ab3d7ad9af3eddc0",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -320,6 +320,11 @@
    "fp": "67b33b586460db7f",
    "from": "6c06a1a15531da79",
    "note": "round 44: basketball foul trouble is a call again (BB_FOULQ), a star off the floor costs more (starOwn 0.034, starDef 0.009); control build with both reverted matches the round-43 fingerprint"
+  },
+  {
+   "fp": "ab3d7ad9af3eddc0",
+   "from": "67b33b586460db7f",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
@@ -332,9 +337,9 @@
     "rec": "2b549e93e5b39610",
     "poll": "27ae56a54a1deaee",
     "heis": "8f74811a9d08846d",
-    "history": "5936af801626ee3d",
-    "universe": "d09b718863522429",
-    "screens": "ddf622f5295e6449"
+    "history": "4e260b933c9fa649",
+    "universe": "83b3130aa8ed6036",
+    "screens": "85fb4a7b002bff7c"
    },
    {
     "year": 2027,
@@ -344,9 +349,9 @@
     "rec": "b0d51ad823c69d43",
     "poll": "af5d981638af951f",
     "heis": "84ec549d1e1e9ebc",
-    "history": "4da5d7ec3854aabd",
-    "universe": "45206d35ffdeee2a",
-    "screens": "193b75352e0c748b"
+    "history": "0232e6584d3200e5",
+    "universe": "33a5e99d16b4577b",
+    "screens": "dd3a312f3ae242a5"
    }
   ],
   "Detroit#777": [
@@ -360,7 +365,7 @@
     "heis": "ff388a3acc0072de",
     "history": "76fb675e9a7f4377",
     "universe": "89d927fbc5881e13",
-    "screens": "38f6ec6025d67381"
+    "screens": "4fae6f2c042f851d"
    },
    {
     "year": 2027,
@@ -372,7 +377,7 @@
     "heis": "0e286f10bffcf87b",
     "history": "de09d1d09b81e58a",
     "universe": "762dc4be6853eef0",
-    "screens": "4528090408be3106"
+    "screens": "8f4abac166ab9728"
    }
   ],
   "schedules#60": [

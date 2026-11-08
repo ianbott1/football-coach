@@ -1,5 +1,5 @@
 {
- "fp": "ce10f4a09a9eba61",
+ "fp": "e903a1a9f990c18b",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -370,6 +370,11 @@
    "fp": "ce10f4a09a9eba61",
    "from": "a9cb206bef7384f3",
    "note": "round 44: basketball foul trouble is a call again (BB_FOULQ), a star off the floor costs more (starOwn 0.034, starDef 0.009); control build with both reverted matches the round-43 fingerprint"
+  },
+  {
+   "fp": "e903a1a9f990c18b",
+   "from": "ce10f4a09a9eba61",
+   "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
   }
  ],
  "result": {
@@ -396,7 +401,7 @@
     "heis": "51d2b4874878c083",
     "history": "b5355527042930f0",
     "universe": "f14c29e3f8edd17f",
-    "screens": "4a213cc6052e737a"
+    "screens": "786a05eb5299fd0f"
    }
   ],
   "Coppin State#2024": [
@@ -410,7 +415,7 @@
     "heis": "8ec66cc8dfc67bef",
     "history": "714902bdf4a9e757",
     "universe": "704e5a68aac20d52",
-    "screens": "9d0f318e096e1172"
+    "screens": "47263bae786b0ad9"
    },
    {
     "year": 2027,
@@ -422,7 +427,7 @@
     "heis": "9a0d5f66a3fffd19",
     "history": "e2bb8ecb60980add",
     "universe": "4f185d50a20d27f7",
-    "screens": "8b45472f1a2761e1"
+    "screens": "cd903a5a4389b9be"
    }
   ],
   "Gonzaga#777": [
@@ -436,7 +441,7 @@
     "heis": "df14f739db772ccb",
     "history": "b7730fb27bbd47e2",
     "universe": "6debdbe4572ee03b",
-    "screens": "0a26c2c1cc78cc39"
+    "screens": "0633e735b65f464e"
    },
    {
     "year": 2027,
@@ -446,9 +451,9 @@
     "rec": "a55827325c34ca52",
     "poll": "0ad4f20ce751bf62",
     "heis": "a245a44f2819c4fd",
-    "history": "93ee21b81415b201",
-    "universe": "c75b6e910277fd48",
-    "screens": "f12bc6d7eb1bb908"
+    "history": "38f707792a8b19ff",
+    "universe": "5052a1ab68307985",
+    "screens": "9d461904cd357204"
    }
   ],
   "schedules#60": [

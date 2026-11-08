@@ -358,6 +358,39 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 45: stakes in the flow (what a game means, before it and after a run of them):
+- What this game means (96_goals meansStakes, MEANS_ON): a stake line for the
+  board's objective the game could settle ("Win and the season series against
+  Ole Miss is yours", "5 in a row. Win and it's 6", "Win here and that's 4 home
+  wins") and for the table: where a win or a defeat leaves you, by the table's
+  own order and tiebreaks (the record nudged for a moment and put back; pros
+  and soccer only, college tables go by conference record; ties counted
+  against a "win takes you top"). It always gets a line: a third when two
+  others outrank it.
+- Re-aimed objectives (REAIM_ON): one settled, met or missed, with a third of
+  the league games still to play gets a replacement, two a season at most: the
+  side just above you in the table now, else "Win N of your last M" (a little
+  better than the ratings say, as the home record is). Set the first time it's
+  seen, kept in S.obj.extra. Credit is capped at the board's three (a re-aimed
+  one counts in place of one missed): with reputation fading 6% a season, two
+  more met a season would settle about 40 points higher. "The board's
+  favourite" still needs the original three.
+- The Film Room before games (95_story filmLine, FILMPRE_ON): the latest kept
+  call against this side, on the next-game card. A game against your rival
+  coach counts as a big game for sim ahead (weekWeight).
+- The sim digest (DIGEST_INC): under the results, what happened: your injuries,
+  the best night and the worst, rival games, objectives met, missed or
+  re-aimed, the run you're on, the move in the table, and soccer clinches.
+- Soccer clinches (95_story clinchCheck, CLINCH_ON): a title, automatic
+  promotion or relegation settled on points (ties count against it: goal
+  difference could go either way), checked after every advance and kept with
+  the step it happened. The result card of that game carries it ("Manchester
+  City are Premier League champions, with 2 games to spare"); a sim digest
+  lists it. The trophy night still waits for the last day.
+- test/stakes.js: all six, a season in sim-ahead chunks: digests, stakes and
+  objectives draw cleanly, the board never counts more than three, re-aims only
+  with a third to play, Manchester City (seed 11) clinch with 2 to spare.
+
 Round 44: a second decision per sport, each measured by replays, simming still
 equal to the computer coaches (test/sim-parity.js MATCH: every game within 1.5):
 - Basketball: foul trouble is a call again (BB_FOULQ). A star with foul
