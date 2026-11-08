@@ -942,7 +942,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="dacc989";
+<script>const BUILD_ID="32cb173";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -2869,7 +2869,10 @@ const FB_ANSWERS={
   run:  {beats:"shell", l:"Run the ball",             d:"Lean on them while they sit back"},
   deep: {beats:"box",   l:"Take shots downfield",     d:"Throw over a defense crowding the line"}
 };
-const FB_READ=Object.assign({right:{td:+0.070,fg:0,to:-0.025}, wrong:{td:-0.020,fg:0,to:+0.015},
+/* round 43 (Ian: simming should do about what the computer coaches do; only good calls beat it): computer drives have
+   no read layer, so "leave it to your assistant" keeps the plan as it stands (it read 45% for you, all upside: +3.6
+   points a game for doing nothing), and a wrong read costs half what a right one gains, so a guess comes out even */
+const FB_READ=Object.assign({right:{td:+0.090,fg:0,to:-0.030}, wrong:{td:-0.056,fg:0,to:+0.020},   // round 43: a right read hits harder (it was +0.070 a drive in touchdown chance)
   favW:3, scouted:6, sw:0.30, swBehind:0.50, tell:2.1, base:0.8}, (LEAGUE.tuning&&LEAGUE.tuning.fbRead)||{});
 // per drive of yours, what their defense leaves in the numbers: blitzes, deep safeties, men in the box
 const FB_TELL={blitz:[FB_READ.tell,FB_READ.base,FB_READ.base],shell:[FB_READ.base,FB_READ.tell,FB_READ.base],box:[FB_READ.base,FB_READ.base,FB_READ.tell]};
@@ -3011,7 +3014,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
 
     // ---- resume from a decision ----
     if(st.stage){
-      const choice=st.answer; st.answer=null;
+      let choice=st.answer; st.answer=null;
       const P=st.pend, stage=st.stage;
       if(stage==="strategy"){
         st.stage=null;
@@ -3024,7 +3027,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         // fall through and play the drive normally
       } else if(stage==="fourth"){
         let res;
-        if(choice==="go"){
+        // the call comes at the stall with the drive's end already rolled: choosing what was rolled keeps it. A missed
+        // kick asked about and kicked again got a second try the computer never gets (round 43: +5.5 points a game
+        // for leaving every call to your assistant)
+        const rolled=P.res.kind==="FG"||P.res.kind==="MISS"?"kick":P.res.kind==="DOWNS"?"go":"punt";
+        if(choice===undefined||choice===null||choice==="normal")choice=rolled;
+        if(choice===rolled&&P.res.kind!=="PUNT"){ res=Object.assign({},P.res); }
+        else if(choice==="go"){
           const tg=P.res.togo||3;
           if(rng.r()<goOdds(tg,offE,defE)){
             // converted: the drive carries on from there
@@ -3054,7 +3063,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         else if(dp.k==="prep"&&dp.report){   // waiting is graded too: right when the report's favourite was wrong (round 42; the
           const ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);   // other four games had it from round 39)
           st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:D.sch,right:ks[0]!==D.sch,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) }
-        else if(dp.k==="read"&&rng.r()<0.45)st.ans[side]=SCHEMES[D.sch].counter;   // your assistant reads it, about as often as anyone
+        // "leave it to your assistant": the plan stays as it is, as for the computer's offense (round 43)
         // fall through and play the drive
       } else if(stage==="rest"){
         st.stage=null;
@@ -3152,9 +3161,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
 
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
-      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
+      // asked at every stall, a made kick too: asked only after a miss, a punt or a failed try, every call was a
+      // second chance (round 43)
+      if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS"||res.kind==="FG")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
-        if(dp){
+        if(dp)dp.rolled=res.kind==="FG"||res.kind==="MISS"?"kick":res.kind==="DOWNS"?"go":"punt";
+        if(dp&&dp.opts.some(o=>o[0]===dp.rolled)){
           used.fourth=(used.fourth||0)+1; called();
           st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr};
           return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
@@ -3978,7 +3990,7 @@ const VERDICT_SLACK=0.03;        // within this of the best answer: a good call 
 const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick",onside:"normal",defend:"normal"};
 // the tally is reads, as in every game; calls are priced in wins in the ledger line (round 37)
 function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
-  if(dp.k==="fourth")return o.indexOf("punt")>=0?"punt":"kick";
+  if(dp.k==="fourth")return dp.rolled&&o.indexOf(dp.rolled)>=0?dp.rolled:o.indexOf("punt")>=0?"punt":"kick";   // what the computer would have done (round 43)
   return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }
 function callVerdicts(args,seed,answers,meHome){
   const KINDS={fourth:1,two:1,chase:1,protect:1,half:1,onside:1,defend:1};
@@ -5453,6 +5465,25 @@ function callInReach(args,seed,answers,meHome,j){
     const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
   return s/GATE_RUNS;
 }
+/* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
+   same dice for every option) goes to your assistant too: nothing to gain by taking it. asked, then stamped "close either way", it taught that
+   your calls don't matter (Muse, round 43). Reads and scouting are never skipped: their answer is in the evidence. */
+const SPREAD_ON=true;
+// mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
+// decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
+const SPREAD_KINDS=Object.assign({two:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);
+const SPREAD_MIN=0.03, SPREAD_RUNS=60;
+function callSpread(args,seed,answers,meHome,j,opts,dp){
+  const rate=v=>{ let s=0;
+    for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+      while(g++<3000){ r=e.next(); if(r.done)break;
+        if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
+          e.reply(a); i++ } }
+      const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    return s/SPREAD_RUNS };
+  const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
+  return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
+}
 /* the answers as yours: a call your assistant made because the game wasn't in reach is a blank (not graded, not weighed) */
 function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; return answers.map((a,i)=>auto.indexOf(i)>=0?undefined:a) }
 function callImpact(args,seed,answers,meHome,runs){
@@ -5718,7 +5749,7 @@ function recordStory(played,g,step,meHome){
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
-      w:Math.round(c.worth*100),po:po,title:g.title||null,team:my,k:c.k||null});
+      w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
@@ -6744,10 +6775,10 @@ function liveTick(){
         continue;
       }
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
-      if(typeof GATE_KINDS!=="undefined"&&GATE_KINDS[r.ask.k]&&live.args&&!live.h2h){
+      if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
-        const p=callInReach(live.args,liveSeed(live.step),live.replay,meH,j);
-        if(p<GATE_LO||p>GATE_HI){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
+        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&SPREAD_KINDS[r.ask.k]&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
@@ -7865,7 +7896,7 @@ function readsHTML(step){
   // a game you watched with no call in it gets a line, not silence (Instinct: a 34-23 win moved on without a word)
   const au=((S.callAuto||{})[callKey(step)]||[]).length, asked=Math.max(0,((S.calls||{})[callKey(step)]||[]).length-au);
   // the calls your assistant took while the game wasn't in the balance: said, not graded (Grokbot: "graded separately")
-  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} while the game wasn't in the balance; ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
+  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} that couldn't change much tonight (the game out of reach, or the options too close to matter); ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
   if(P0.length&&!P.length){
     // every call shown and left to the assistant: "none of the moments came up" was false (round 39)
     if(asked&&P0.some(p=>(p.impact||[]).length))return auLine?`<div class="reads">${auLine}</div>`:"";   // yours are judged above, against the assistant

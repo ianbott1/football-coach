@@ -942,7 +942,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="ce88844";
+<script>const BUILD_ID="b989790";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -2675,8 +2675,8 @@ const HK_BASE = {
   pullAgainst:0.20,  // empty-net goals a minute against
   otGoal:0.68,       // chance three-on-three produces a goal (else a shootout)
   soEdge:0.25,       // how much edge counts in a shootout (of the overtime's)
-  counter:{own:1.10, opp:0.85},   // the right answer to their system
-  misread:0.95,      // the wrong answer: your own chances, slightly fewer
+  counter:{own:1.18, opp:0.75},   // the right answer to their system (round 43: 1.10/0.85; a strong reader +5.1 -> +8.4 a game)
+  misread:0.87,      // the wrong answer: your own chances, fewer (0.95: a blind guess before the game paid)
   offNight:0.10,     // how often a goalie has a genuinely bad night...
   offBy:0.060,       // ...and how much more often shots go in
   formSd:0.007,      // an ordinary night's spread
@@ -4952,6 +4952,25 @@ function callInReach(args,seed,answers,meHome,j){
     const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
   return s/GATE_RUNS;
 }
+/* ...and in reach, a call where no option beats your assistant's by SPREAD_MIN over SPREAD_RUNS replays each (the
+   same dice for every option) goes to your assistant too: nothing to gain by taking it. asked, then stamped "close either way", it taught that
+   your calls don't matter (Muse, round 43). Reads and scouting are never skipped: their answer is in the evidence. */
+const SPREAD_ON=true;
+// mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
+// decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
+const SPREAD_KINDS=Object.assign({two:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);
+const SPREAD_MIN=0.03, SPREAD_RUNS=60;
+function callSpread(args,seed,answers,meHome,j,opts,dp){
+  const rate=v=>{ let s=0;
+    for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
+      while(g++<3000){ r=e.next(); if(r.done)break;
+        if(r.ask){ let a; if(i<j)a=answers[i]; else if(i===j){ a=v; rng.f=mulberry32((seed^Math.imul(m+211,0x9E3779B1))>>>0); rng.sp=null } else a=impactDefault(r.ask);
+          e.reply(a); i++ } }
+      const mine=meHome?r.h:r.a, th=meHome?r.a:r.h; s+=mine>th?1:mine===th?0.5:0 }
+    return s/SPREAD_RUNS };
+  const def=dp?impactDefault(dp):opts[opts.length-1][0], R=opts.map(o=>rate(o[0])), di=opts.findIndex(o=>o[0]===def);
+  return di<0?Math.max(...R)-Math.min(...R):Math.max(...R)-R[di];   // the most you could gain on your assistant's call
+}
 /* the answers as yours: a call your assistant made because the game wasn't in reach is a blank (not graded, not weighed) */
 function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; return answers.map((a,i)=>auto.indexOf(i)>=0?undefined:a) }
 function callImpact(args,seed,answers,meHome,runs){
@@ -5217,7 +5236,7 @@ function recordStory(played,g,step,meHome){
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
-      w:Math.round(c.worth*100),po:po,title:g.title||null,team:my,k:c.k||null});
+      w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
@@ -6282,10 +6301,10 @@ function liveTick(){
         continue;
       }
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
-      if(typeof GATE_KINDS!=="undefined"&&GATE_KINDS[r.ask.k]&&live.args&&!live.h2h){
+      if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
-        const p=callInReach(live.args,liveSeed(live.step),live.replay,meH,j);
-        if(p<GATE_LO||p>GATE_HI){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
+        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&SPREAD_KINDS[r.ask.k]&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
@@ -7403,7 +7422,7 @@ function readsHTML(step){
   // a game you watched with no call in it gets a line, not silence (Instinct: a 34-23 win moved on without a word)
   const au=((S.callAuto||{})[callKey(step)]||[]).length, asked=Math.max(0,((S.calls||{})[callKey(step)]||[]).length-au);
   // the calls your assistant took while the game wasn't in the balance: said, not graded (Grokbot: "graded separately")
-  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} while the game wasn't in the balance; ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
+  const auLine=au?`<div class="readnone">Your assistant took ${au===1?"one call":au+" calls"} that couldn't change much tonight (the game out of reach, or the options too close to matter); ${au===1?"it isn't":"they aren't"} graded.</div>`:"";
   if(P0.length&&!P.length){
     // every call shown and left to the assistant: "none of the moments came up" was false (round 39)
     if(asked&&P0.some(p=>(p.impact||[]).length))return auLine?`<div class="reads">${auLine}</div>`:"";   // yours are judged above, against the assistant
