@@ -718,6 +718,11 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
   body.offseason .cols{grid-template-columns:minmax(0,1fr)}
   body.offseason #view{max-width:820px;margin:0 auto}
   #app{max-width:1340px}
+  /* the live game uses the width (Muse, rounds 14-20: a narrow column with dark margins on a wide screen) */
+  .watchwrap{max-width:900px}
+  .watchwrap .callopts .advance{max-width:none}
+  .watchwrap .play .ptxt{font-size:16px}
+  .livewp{max-width:900px}
   .cols{display:grid;grid-template-columns:390px minmax(0,1fr);align-items:start}
   #side{border-right:1px solid var(--line);
     position:sticky;top:92px;max-height:calc(100vh - 92px);overflow-y:auto;
@@ -876,6 +881,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
 details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 0;list-style:none}details.audit>summary::before{content:"\25B8  "}details.audit[open]>summary::before{content:"\25BE  "}
 .livewp{display:flex;align-items:center;gap:10px;margin:8px auto;padding:0 16px;max-width:760px;box-sizing:border-box;font-size:12px}.livewp .lwlab{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}.livewp .lwbar{flex:1;min-width:60px;height:6px;background:var(--line);display:flex;overflow:hidden;border-radius:3px}.livewp .lwbar i{background:var(--sodium);display:block;height:100%}.livewp .lwbar b{background:var(--muted);opacity:.5;display:block;height:100%}.livewp .lwpct{color:var(--bone);white-space:nowrap;font-family:var(--mono);font-size:11px}
+.filmmem{font-size:12.5px;line-height:1.45;border-left:2px solid var(--bone);padding:4px 10px;margin:8px 0;color:var(--dim,#9aa)}.filmmem b{color:var(--bone);font-weight:600}
 .autonote{font-size:12.5px;color:var(--dim,#9aa);border-left:2px solid var(--sodium);padding:4px 8px;margin:6px 0}
 .dinc{margin:6px 0 10px;text-align:left}.dinch{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.dincl{font-size:13px;line-height:1.45;margin:2px 0}.filmpre b{font-weight:600}
 .objre{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--sodium);font-weight:400;margin-right:4px;text-transform:uppercase}.obj.miss .objl{color:var(--muted);text-decoration:line-through}
@@ -947,7 +953,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="6caee0a";
+<script>const BUILD_ID="6ff8a0e";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -5350,6 +5356,166 @@ function milestoneNews(my){
     h:`${other[0].n} of ${other[0].team} reaches ${other[0].at} career ${other[0].label}`,b:""});
   return out;
 }
+/* ============ the staff's voices, varied across games (round 47) ============ */
+/* Muse (round 20): Pearl's pre-kickoff line and the capybara's half-time line were word for word the same in all
+   four matches. Within a game staffFresh (94_staffplan) already stops a voice repeating itself; across games the fixed
+   lines came back verbatim. VOICE_ALT holds, for each fixed line, other ways the same voice says the same thing (the
+   same advice, never a different pick). voiceVary swaps the line for the next one in its rotation the first time it's
+   heard in a game, and keeps it for that game (one rotation per line, kept in S.voice, so a reload carries on from
+   where it was). Lines are matched as sentences inside the composed line, so a recall or a bark around them stays. */
+const VOICE_ON=true;
+const VOICE_ALT={
+  // ---- the capybara ----
+  "It seems to me dropping off a little rarely hurts anyone. Though I confess I haven't looked at the numbers.":[
+    "Dropping a few metres deeper has, in my experience, never ruined anyone's afternoon. I haven't checked the numbers, mind.",
+    "I'd sit a touch deeper and let them come. I say that without having looked at anything, you understand.",
+    "A little less adventure at the back would suit me. The numbers I leave to braver souls."],
+  "I'd rather see them first, myself. Twenty-five minutes of watching never hurt anybody. Well. Rarely.":[
+    "I'd watch them for a while before deciding anything. Teams have a way of not being their reports.",
+    "Let's see what turns up first. A plan for the wrong opponent is, I find, worse than no plan.",
+    "Twenty-five minutes of looking costs us very little. Guessing costs us, occasionally, everything."],
+  "I would leave the shape alone. A count of attacks is, I believe, a small and noisy thing.":[
+    "I'd keep the shape as it is. A handful of attacks down one side is not, to my mind, a pattern.",
+    "Changing the shape on a few raids seems hasty. They may simply have been lucky down there.",
+    "I'd stay balanced. One rather suspects a short count tells us more about chance than about them."],
+  "Chasing a game, one finds, mostly concedes on the break.":[
+    "Throwing everyone forward, I find, is how a one-goal game becomes a three-goal one.",
+    "If we chase it, they'll have the whole pitch to run into. I'd be patient.",
+    "Patience, if I may. The equaliser tends to come to sides that haven't left the door open."],
+  "I would suggest keeping what we have.":[
+    "We have something worth keeping. I'd keep it.",
+    "I'd be quite content to hold on to this, if nobody minds.",
+    "A lead, it seems to me, is best treated like a full cup of tea: carefully."],
+  "A point, I do believe, is a point.":[
+    "A point is not nothing. Not in this league.",
+    "I'd take the point and go home quietly. Points add up, I'm told.",
+    "A draw is still something in the table. Losing it chasing three would be a shame."],
+  "I would rather watch a period first. One finds teams are not always who they were last week.":[
+    "A period of watching first, I think. Last week's team and tonight's are not always the same one.",
+    "I'd let the first period tell us who they are tonight. Scouting reports are, after all, about other nights.",
+    "Let's look before we leap. Twenty minutes is a small price for knowing."],
+  "It seems to me protecting the slot rarely hurts. I have not, I admit, studied their system.":[
+    "Keeping the slot clear seems sensible whatever they're doing. I confess I haven't studied it.",
+    "I'd look after the front of our net first. The clever stuff can wait.",
+    "The slot is where goals come from, I believe. I'd crowd it."],
+  "Changing goalies, I find, mostly changes who gets blamed. I'd leave it with the assistant.":[
+    "Pulling a goalie mid-game, in my experience, rarely fixes the goalie. I'd leave it.",
+    "I'd let the assistant judge it. A change can unsettle the whole bench.",
+    "Swapping him out mostly gives the papers a headline. I'd stay put."],
+  "Chasing, one finds, mostly produces goals at the other end.":[
+    "If we chase it, they'll get odd-man rushes all night. I'd hold.",
+    "Pressing for the goal tends to hand them the next one. Patience.",
+    "The goal will come or it won't. Opening up mostly decides which end it comes at."],
+  "I would suggest fewer chances, both ways. Fewer chances, fewer disasters.":[
+    "I'd make it a dull game now. Dull games are lovely when you're winning them.",
+    "Let's take the excitement out of it. Fewer chances suits the side that's ahead.",
+    "Slow it down, keep it tidy. The clock is on our side."],
+  "A tired goalie, it seems to me, is mostly a slower one.":[
+    "Second night on his legs? I'd worry about his reactions late on.",
+    "He played last night. A half-step slow is a lot of goals in this league.",
+    "Rest is not a luxury for a goalie, I think. Not two nights running."],
+  "An odd-man rush the other way, I'm afraid, ends a great many overtimes.":[
+    "In overtime one mistake ends it. I'd rather it wasn't ours.",
+    "Three-on-three is, I find, mostly a contest in not being caught up the ice.",
+    "I'd keep someone home. The breakaway the other way is the whole danger."],
+  "An empty net, I'm afraid, rather invites them to score into it.":[
+    "Pulling him early does rather leave the door open. I'd wait.",
+    "Every second of an empty net is a second they can end it. Late, if at all.",
+    "The extra attacker helps, but so does a goalie. I'd keep him in a little longer."],
+  "A press, one rather suspects, is mostly a way of giving up layups quickly.":[
+    "A full-court press is a gamble, and the house usually wins. I'd stay home.",
+    "Press them and we'll see a lot of easy baskets. Some of them ours, not many.",
+    "I'd keep our shape. A press beaten once is two points for nothing."],
+  "I would gently suggest fewer possessions. Fewer possessions, fewer catastrophes.":[
+    "Shorten the game, I'd say. The fewer chances they get, the better.",
+    "Run the clock. Every possession we don't play is one they can't use.",
+    "Let's make it a slow one now. Slow games are kind to the side in front."],
+  "It seems to me a lead like this usually holds. Usually.":[
+    "This lead should hold. I'd rest the legs that matter.",
+    "We're far enough ahead, I think, to look after the stars.",
+    "A lead like this is rarely lost. I'd rather not lose a starter protecting it."],
+  "A lead like this usually holds, it seems to me. Usually.":[
+    "This lead should hold. I'd get the starters out of harm's way.",
+    "We're far enough ahead, I think, to look after the people we need next week.",
+    "A lead like this is rarely lost. I'd rather not lose a starter protecting it."],
+  "It seems to me a two is the likelier shot. Overtime is, at least, not losing.":[
+    "I'd go for the two and take our chances in overtime. Overtime is still a game.",
+    "The two is the better percentage, I believe. A miss from three ends everything.",
+    "Tie it. Five more minutes is better than none."],
+  "A missed conversion would be, I fear, one more thing to worry about.":[
+    "I'd kick it. The extra point is nearly certain, and certainty is restful.",
+    "Take the point. Missing a two-pointer has a way of haunting the fourth quarter.",
+    "One point in the bank, please. I've no appetite for a coin flip just now."],
+  "One rather suspects each additional risk compounds against us. Stay measured.":[
+    "Every risk we add makes the next one likelier to bite. I'd stay measured.",
+    "Let's not stack gamble on gamble. Measured football, please.",
+    "One bold call is fine. Three in a row is how games get away."],
+  "The interception, it seems to me, is the play that loses tied games.":[
+    "Tied games are lost on turnovers. I'd keep it on the ground.",
+    "A pick here and it's over. I'd be careful with the ball.",
+    "I'd rather punt than throw into traffic. A tie isn't a defeat."],
+  "I'd want to see a few of our drives first. Teams aren't always who the tape says.":[
+    "Let's see how the first drives go before we commit. Tape is about last week.",
+    "I'd play it straight early and learn. The report could be stale.",
+    "A few series of watching first, I think. They may have changed things."],
+  "It seems to me running the ball rarely hurts. I haven't, I confess, looked at the numbers.":[
+    "Run it. Running the ball has a way of calming everyone down. Numbers unexamined, I admit.",
+    "I'd lean on the ground game. It's hard to throw an interception on a handoff.",
+    "Hand it off, I say. I haven't looked at a single number, but it feels sturdy."],
+  "It seems to me the big play is what loses these. I'd keep everyone deep, whatever the score.":[
+    "The long ball over the top is the danger. I'd keep the safeties back.",
+    "Give them the short stuff, never the deep one. That's my whole plan.",
+    "I'd rather concede ten yards than seventy. Deep and patient."],
+  "Whatever got us here seems to me worth keeping. Though I couldn't tell you what they do late; I haven't watched ":null,
+  "I would change nothing that has got us this far. Though I confess I haven't studied the last ten minutes.":[
+    "Nothing has gone wrong yet, so I'd change nothing. I haven't studied the late game, mind.",
+    "We're here doing what we've done all night. I'd keep doing it.",
+    "Leave it be, I think. A change now is a change for its own sake."],
+  // ---- Pearl ----
+  "We need a goal! Let's go and get it.":[
+    "We're behind but we're not done! Let's go get one!",
+    "One goal, that's all! Let's go find it!",
+    "Come on, come on! There's time for a goal!"],
+  "Let's be sensible and see this out!":[
+    "We're winning! Let's just keep it tidy now!",
+    "Nearly there! Careful, careful, careful!",
+    "Hold on to it! We're so close!"],
+  "A draw's a point, but a win's three! Let's be brave.":[
+    "Three points are RIGHT THERE. Let's be brave!",
+    "A point's nice but three's nicer! Go for it!",
+    "Let's win it! Draws are boring!"],
+  "They're not playing badly! Let's just play a bit better.":[
+    "It's fine! We just need a few things to go our way!",
+    "We're okay! Same plan, a little sharper!",
+    "Don't worry! We're still in this!"],
+  "This is going great. Exactly as we are, please.":[
+    "This is going so well! Don't change a thing!",
+    "Keep doing exactly this! It's working!",
+    "Same again, please! Everything's lovely!"],
+  // ---- the hint voice ----
+  "Same place to look as before. Has anything in the numbers moved?":[
+    "Look where you looked last time. Is it still telling the same story?",
+    "Nothing new to watch: the same numbers as the first read. Have they shifted?",
+    "Same spot as before. The question is whether it's moved."],
+  "I've got a feeling, but you've got the numbers. What do they say?":[
+    "I have a hunch, but the numbers are yours. Trust them over me.",
+    "My nose says one thing. What do your numbers say?",
+    "Feelings are cheap. Check the numbers first."],
+  "Look at what they did most, and ask whether today is any different. Who's the stronger side?":[
+    "What do they usually do, and is there any reason today's different? Weigh it against who's stronger.",
+    "Start from their habit. Then ask: are we good enough to just play our game?",
+    "Their most common way is the first clue. The strength of the two sides is the second."],
+};
+function voiceGameKey(){ try{ return typeof live!=="undefined"&&live?`${SEA.year}-${live.step}${live.g&&live.g.cup?"c":""}`:`${SEA&&SEA.year}-${SEA&&SEA.step}` }catch(e){ return "" } }
+function voiceVary(line){
+  if(!VOICE_ON||!line||typeof line!=="string")return line;
+  const V=S.voice=S.voice||{}, G=voiceGameKey();
+  let out=line;
+  for(const k of Object.keys(VOICE_ALT)){ const alts=VOICE_ALT[k]; if(!alts||out.indexOf(k)<0)continue;
+    const r=V[k]||(V[k]={g:"",i:-1}); if(r.g!==G){ r.i=(r.i+1)%(alts.length+1); r.g=G }
+    if(r.i>0)out=out.replace(k,alts[r.i-1]) }
+  return out;
+}
 /* ============ the staff's plan for the offseason ============ */
 /* The offseason screen asks a lot at once. Every choice on it starts at what
    your staff would do (the plan the computer's teams follow), so the card at
@@ -5470,6 +5636,10 @@ function staffFresh(R,dp,L){
     S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });
 }
 function staffAdvice0(dp,ctx){
+  const R=staffAdvice00(dp,ctx);
+  return typeof voiceVary==="function"?R.map(x=>x&&x.line?Object.assign({},x,{line:voiceVary(x.line)}):x):R;   // round 47: the fixed lines, varied across games
+}
+function staffAdvice00(dp,ctx){
   const R=staffTake(dp,ctx);
   if(!staffHints()||(dp.k!=="read"&&dp.k!=="prep"))return R;
   const H=SPORT.hints||{};
@@ -5587,7 +5757,9 @@ function impactHTML(P){
   // one verdict per call: a read is judged in the reads below, right or wrong; judged here too, against the assistant,
   // the two could disagree on one call ("a little worse" above a tick: round 39), so here it's situation calls only
   const RK={}; P.forEach(q=>(q.reads||[]).forEach(r=>{ RK[r.k]=1 }));
-  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c)))).filter(c=>!(c.k&&RK[c.k]));
+  // football grades each call in its own list below, option by option against the best; summarised here too, the same
+  // fourth down came twice on one card, from two sets of replays with two sets of numbers (Muse, rounds 14 and 20)
+  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c)))).filter(c=>!(c.k&&RK[c.k])&&c.q===undefined);
   if(!C.length)return "";
   // the clearest call leads, the wrong ones first when as clear (a field goal praised above two crossed punts: Grokbot)
   const c=C.reduce((a,x)=>Math.abs(callClarity(x))>Math.abs(callClarity(a))||(Math.abs(callClarity(x))===Math.abs(callClarity(a))&&callClarity(x)<callClarity(a))?x:a,C[0]), p=c.res;
@@ -5691,8 +5863,8 @@ function liveWPHTML(){
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
   const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
-  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
-    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${P(w)}% to win</span></div>`;
+  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span></div>`;
 }
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
@@ -5915,6 +6087,15 @@ function rivalLine(opp){
   return `<div class="series">${tag}${esc(c.n)}, their coach: <b>${r.w}-${LEAGUE.draws?r.d+"-":""}${r.l}${!LEAGUE.draws&&r.d?"-"+r.d:""}</b> against him${youWhere}${where}.</div>`;
 }
 
+/* on a call: the last time the Film Room kept one like it (round 47, Muse: "memory that changes the week": the room
+   remembered your fourth-and-2, the staff never mentioned it the next time the same call came up). Same heading, this
+   team; the most recent. Shown as evidence, beside the staff, before you choose. */
+function filmMemoryHTML(dp){
+  if(!STORY_ON||!FILMPRE_ON||!S.film||!dp||!dp.h)return "";
+  const F=S.film.filter(x=>x.h===dp.h&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
+  const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`, alt=filmDef(F.def)||"his call";
+  return `<div class="filmmem"><b>The Film Room remembers:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}), the same call. ${/assistant/i.test(F.pick)?"You left it to your assistant":"You went with "+esc(F.pick)}, and it was ${F.w>7?"clearly better than":F.w>0?"a little better than":F.w<-7?"clearly worse than":"a little worse than"} ${esc(alt)}. Tonight is its own game.</div>`;   // in words: no number on tonight's options (Ian)
+}
 /* before a game: the last call from the Film Room against this side (round 45: the room was a page nobody opened
    before the games it was about) */
 const FILMPRE_ON=true;
@@ -5955,8 +6136,12 @@ function filmRoomHTML(){
     <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
   return `<div class="grouphead">The Film Room</div>${id}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
-    (worst.length?`<div class="filmlab">The ones that got away</div>`+worst.map(row).join(""):"")+
-    (!best.length&&!worst.length?`<div class="note">No call clear enough to keep yet: the Film Room keeps the ones that made a real difference.</div>`:"");
+    (worst.length?`<div class="filmlab">The ones that got away</div>`:"")+(worst.length?worst.map(row).join(""):"")+
+    // an empty list says so (Muse, round 20: "a memory that silently stops recording is worse than none")
+    (best.length&&!worst.length?`<div class="note">No costly call kept yet: none of yours has cost a game clearly enough to make the list.</div>`:"")+
+    (!best.length&&worst.length?`<div class="note">No best call kept yet: none of yours has won a game clearly enough to make the list.</div>`:"")+
+    (!best.length&&!worst.length?`<div class="note">No call clear enough to keep yet: the Film Room keeps the ones that made a real difference.</div>`:"")+
+    (()=>{ const yr=SEA&&SEA.year, n=F.filter(x=>x.y===yr).length, L=S.callLedger&&S.callLedger[yr]; return L&&L.n&&!n?`<div class="note">This season: ${L.n} call${L.n===1?"":"s"} made your own way, none clear enough to keep. Most calls are close; the room keeps the ones that weren't.</div>`:"" })();
 }
 
 /* a season's shape, in a line for its row in Your seasons */
@@ -9876,7 +10061,7 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+'<div class="callbox">'):autoNoteIn(liveView());
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
     bindGuide();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the

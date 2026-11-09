@@ -1,5 +1,5 @@
 {
- "fp": "81d0f2dbc41ee704",
+ "fp": "fa6bbba8b5d9de0e",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -345,6 +345,11 @@
    "fp": "81d0f2dbc41ee704",
    "from": "2de3cb65397f2662",
    "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "fa6bbba8b5d9de0e",
+   "from": "81d0f2dbc41ee704",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
@@ -359,7 +364,7 @@
     "heis": "c2e271bc0791ef96",
     "history": "5fea2626198271a8",
     "universe": "15517245df33fd3c",
-    "screens": "5da52829acc3f35b"
+    "screens": "1b28dfb3e810e77c"
    },
    {
     "year": 2027,
@@ -371,7 +376,7 @@
     "heis": "89d90f7d38fc940d",
     "history": "0fd270ec8f71e513",
     "universe": "79e4db51aa1ebabd",
-    "screens": "79079e480ac324d8"
+    "screens": "0b056dffd182d9cf"
    }
   ],
   "Wrexham#777": [
@@ -385,7 +390,7 @@
     "heis": "c4e690c8797cd4d3",
     "history": "019cab89378f7825",
     "universe": "40034f08db0f1b6e",
-    "screens": "de5212e175937f5a"
+    "screens": "71f1fe5b1be57d22"
    },
    {
     "year": 2027,
@@ -397,7 +402,7 @@
     "heis": "955547db9512c36c",
     "history": "3b999b905217d885",
     "universe": "68083adffdf8113c",
-    "screens": "58721fd39a00cab4"
+    "screens": "33352896cb4e0d4f"
    }
   ],
   "schedules#60": [

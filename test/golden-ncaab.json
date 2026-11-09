@@ -1,5 +1,5 @@
 {
- "fp": "e217190d4be2f8d3",
+ "fp": "2da1290159fb4084",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -380,6 +380,11 @@
    "fp": "e217190d4be2f8d3",
    "from": "e903a1a9f990c18b",
    "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "2da1290159fb4084",
+   "from": "e217190d4be2f8d3",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
@@ -394,7 +399,7 @@
     "heis": "f8899270796f8e98",
     "history": "d1f67f306d02cbb4",
     "universe": "351152736ef2a6bd",
-    "screens": "0a21101ee60e5974"
+    "screens": "6bd1a5bc9e85e50c"
    },
    {
     "year": 2027,
@@ -406,7 +411,7 @@
     "heis": "51d2b4874878c083",
     "history": "34555a8106734ee1",
     "universe": "dd02b2d323a2d537",
-    "screens": "56361523bae911cb"
+    "screens": "ee76700a03e7ae86"
    }
   ],
   "Coppin State#2024": [
@@ -420,7 +425,7 @@
     "heis": "8ec66cc8dfc67bef",
     "history": "0eb7c936fd2fec20",
     "universe": "e8f9126e64b6550b",
-    "screens": "dc3c88a82b53b9db"
+    "screens": "5d2852653ac50e11"
    },
    {
     "year": 2027,
@@ -432,7 +437,7 @@
     "heis": "9a0d5f66a3fffd19",
     "history": "d469aecb48d96b35",
     "universe": "81af593d348d5768",
-    "screens": "ca702a5af115f9b9"
+    "screens": "4a696c4a95de890e"
    }
   ],
   "Gonzaga#777": [
@@ -446,7 +451,7 @@
     "heis": "df14f739db772ccb",
     "history": "b7730fb27bbd47e2",
     "universe": "6debdbe4572ee03b",
-    "screens": "e8b19b753f0e465b"
+    "screens": "3dd1185cf40816d9"
    },
    {
     "year": 2027,
@@ -458,7 +463,7 @@
     "heis": "a245a44f2819c4fd",
     "history": "0a87a8fbea7f50cc",
     "universe": "a49ce6e4b922e1bf",
-    "screens": "a06b49b3efd298ce"
+    "screens": "d1396e7d63cabc49"
    }
   ],
   "schedules#60": [

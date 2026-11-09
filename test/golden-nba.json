@@ -1,5 +1,5 @@
 {
- "fp": "eb282e6eb00c9833",
+ "fp": "f30d4344bffd5391",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -330,6 +330,11 @@
    "fp": "eb282e6eb00c9833",
    "from": "ab3d7ad9af3eddc0",
    "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "f30d4344bffd5391",
+   "from": "eb282e6eb00c9833",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
@@ -382,7 +387,7 @@
     "heis": "239369160291c0fe",
     "history": "540ed574b10235b3",
     "universe": "61e08c77cbba5701",
-    "screens": "82e2c1aecbf260b9"
+    "screens": "550f6027beac4125"
    }
   ],
   "schedules#60": [

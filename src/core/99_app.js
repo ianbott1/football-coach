@@ -3004,7 +3004,7 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+'<div class="callbox">'):autoNoteIn(liveView());
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
     bindGuide();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the

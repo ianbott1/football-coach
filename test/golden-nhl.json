@@ -1,5 +1,5 @@
 {
- "fp": "822343163161f78f",
+ "fp": "1d560c3f7e62fda1",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -345,6 +345,11 @@
    "fp": "822343163161f78f",
    "from": "723cebc5161289e4",
    "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "1d560c3f7e62fda1",
+   "from": "822343163161f78f",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
@@ -371,7 +376,7 @@
     "heis": "9a3f3a71cfab593e",
     "history": "f09bb9e11b34c585",
     "universe": "31a31b59f141bf36",
-    "screens": "efee257ab188f4aa"
+    "screens": "216522922b22774b"
    }
   ],
   "Edmonton#777": [

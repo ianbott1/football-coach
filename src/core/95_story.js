@@ -84,6 +84,15 @@ function rivalLine(opp){
   return `<div class="series">${tag}${esc(c.n)}, their coach: <b>${r.w}-${LEAGUE.draws?r.d+"-":""}${r.l}${!LEAGUE.draws&&r.d?"-"+r.d:""}</b> against him${youWhere}${where}.</div>`;
 }
 
+/* on a call: the last time the Film Room kept one like it (round 47, Muse: "memory that changes the week": the room
+   remembered your fourth-and-2, the staff never mentioned it the next time the same call came up). Same heading, this
+   team; the most recent. Shown as evidence, beside the staff, before you choose. */
+function filmMemoryHTML(dp){
+  if(!STORY_ON||!FILMPRE_ON||!S.film||!dp||!dp.h)return "";
+  const F=S.film.filter(x=>x.h===dp.h&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
+  const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`, alt=filmDef(F.def)||"his call";
+  return `<div class="filmmem"><b>The Film Room remembers:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}), the same call. ${/assistant/i.test(F.pick)?"You left it to your assistant":"You went with "+esc(F.pick)}, and it was ${F.w>7?"clearly better than":F.w>0?"a little better than":F.w<-7?"clearly worse than":"a little worse than"} ${esc(alt)}. Tonight is its own game.</div>`;   // in words: no number on tonight's options (Ian)
+}
 /* before a game: the last call from the Film Room against this side (round 45: the room was a page nobody opened
    before the games it was about) */
 const FILMPRE_ON=true;
@@ -124,8 +133,12 @@ function filmRoomHTML(){
     <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
   return `<div class="grouphead">The Film Room</div>${id}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
-    (worst.length?`<div class="filmlab">The ones that got away</div>`+worst.map(row).join(""):"")+
-    (!best.length&&!worst.length?`<div class="note">No call clear enough to keep yet: the Film Room keeps the ones that made a real difference.</div>`:"");
+    (worst.length?`<div class="filmlab">The ones that got away</div>`:"")+(worst.length?worst.map(row).join(""):"")+
+    // an empty list says so (Muse, round 20: "a memory that silently stops recording is worse than none")
+    (best.length&&!worst.length?`<div class="note">No costly call kept yet: none of yours has cost a game clearly enough to make the list.</div>`:"")+
+    (!best.length&&worst.length?`<div class="note">No best call kept yet: none of yours has won a game clearly enough to make the list.</div>`:"")+
+    (!best.length&&!worst.length?`<div class="note">No call clear enough to keep yet: the Film Room keeps the ones that made a real difference.</div>`:"")+
+    (()=>{ const yr=SEA&&SEA.year, n=F.filter(x=>x.y===yr).length, L=S.callLedger&&S.callLedger[yr]; return L&&L.n&&!n?`<div class="note">This season: ${L.n} call${L.n===1?"":"s"} made your own way, none clear enough to keep. Most calls are close; the room keeps the ones that weren't.</div>`:"" })();
 }
 
 /* a season's shape, in a line for its row in Your seasons */

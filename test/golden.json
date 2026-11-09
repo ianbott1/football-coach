@@ -1,5 +1,5 @@
 {
- "fp": "8f1459fc9944f1d0",
+ "fp": "fb9537ed430b31fa",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -404,6 +404,11 @@
    "fp": "8f1459fc9944f1d0",
    "from": "9cfa1d5ac8958021",
    "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "fb9537ed430b31fa",
+   "from": "8f1459fc9944f1d0",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
@@ -556,7 +561,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "9246de9dfc927409",
     "universe": "9ce9f84fe8413eee",
-    "screens": "d8b7bd2f4faf7af2"
+    "screens": "567795e72a960a98"
    },
    {
     "year": 2027,

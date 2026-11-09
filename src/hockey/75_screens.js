@@ -181,6 +181,13 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are playing us <span>per period | last ${D.n*5} min</span></div>
       ${rows.map(r=>`<div class="evr ${D.n&&D[r[1]]/D.n>=1.4?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${per(T[r[1]])} | ${D[r[1]]}</span></div>`).join("")}
       <div class="evn">Left: the whole game, per period. Right: counts since the second intermission. League average: 2.8 of each a period, about 1.4 in ten minutes. Some clubs change system for the third, more often when they're behind. Ten minutes is a small sample: a hint, not proof.</div></div>`; }
+  // the pull: who's in goal and how his night has gone (round 47, Muse: "put his night on the pull card")
+  if(dp.k==="pull"&&dp.gn){ const N=dp.gn, sv=N.sa?((N.sa-N.ga)/N.sa).toFixed(3).replace(/^0/,""):"-";
+    const R=SEA&&SEA.roster&&SEA.roster[my], G=R&&R.filter(p=>p&&p.p==="G")[N.bk?1:0];
+    return `<div class="evid"><div class="evh">${G?esc(G.n):"Your goalie"} tonight${N.bk?" (the backup, in since the change)":""}</div>
+      <div class="evr"><span class="evk">Goals against</span><span class="evv">${N.ga} on ${N.sa} shots (${sv})</span></div>
+      <div class="evr"><span class="evk">Expected from those shots</span><span class="evv">${N.xga.toFixed(1)}</span></div>
+      <div class="evn">Pulled, he isn't stopping anything. ${N.sa&&N.ga<N.xga-1?"He's been better than his shots tonight.":N.sa&&N.ga>N.xga+1?"He's let in more than his shots were worth.":"About what his shots were worth."} Early means more time six-on-five, and more time with the net empty.</div></div>` }
   if(dp.k==="goalie"){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>

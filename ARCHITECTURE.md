@@ -358,6 +358,29 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 47: voices and presentation:
+- The staff's fixed lines vary across games (core/93_voice: VOICE_ALT, voiceVary,
+  VOICE_ON). Each fixed line has three other ways the same voice gives the same
+  advice; the first time a line is heard in a game it moves one along its
+  rotation, kept in S.voice, and stays for that game (staffFresh still stops a
+  voice repeating itself within one). Muse, round 20: Pearl's pre-kickoff line
+  and the capybara's half-time line were word for word in all four matches.
+  Measured on soccer: the capybara's flank, prep and read lines, and Pearl's
+  prep hint, four distinct in six matches.
+- The Film Room remembers on the call screen (95_story filmMemoryHTML): the
+  latest kept call with the same heading, this team, and how it went, in words
+  (no number on tonight's options).
+- Hockey's pull card shows the goalie's night: who, goals on shots, the save
+  percentage, what those shots were worth, the backup if he's in (dp.gn).
+- The live game uses a wide screen (watchwrap 900px from 1024px; larger run of
+  play); the live chance names your team.
+- Football's result card lists each call once: the impact summary skips calls
+  graded in football's own option-by-option list (the same fourth down came
+  twice, from two sets of replays with two sets of numbers).
+- The Film Room says when a list is empty, and when this season's calls made
+  none clear enough to keep.
+- Goldens: screens only; games, records and universes unchanged.
+
 Round 46: trust (Muse round 20, Instinct round 15):
 - Saves in IndexedDB (core/15_store idb, IDB_ON). All six games share one
   origin and localStorage gave them about 5 MB between them; veteran careers

@@ -118,6 +118,10 @@ function staffFresh(R,dp,L){
     S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });
 }
 function staffAdvice0(dp,ctx){
+  const R=staffAdvice00(dp,ctx);
+  return typeof voiceVary==="function"?R.map(x=>x&&x.line?Object.assign({},x,{line:voiceVary(x.line)}):x):R;   // round 47: the fixed lines, varied across games
+}
+function staffAdvice00(dp,ctx){
   const R=staffTake(dp,ctx);
   if(!staffHints()||(dp.k!=="read"&&dp.k!=="prep"))return R;
   const H=SPORT.hints||{};
@@ -235,7 +239,9 @@ function impactHTML(P){
   // one verdict per call: a read is judged in the reads below, right or wrong; judged here too, against the assistant,
   // the two could disagree on one call ("a little worse" above a tick: round 39), so here it's situation calls only
   const RK={}; P.forEach(q=>(q.reads||[]).forEach(r=>{ RK[r.k]=1 }));
-  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c)))).filter(c=>!(c.k&&RK[c.k]));
+  // football grades each call in its own list below, option by option against the best; summarised here too, the same
+  // fourth down came twice on one card, from two sets of replays with two sets of numbers (Muse, rounds 14 and 20)
+  const C=[].concat(...P.map(p=>(p.impact||[]).map(c=>Object.assign({res:p},c)))).filter(c=>!(c.k&&RK[c.k])&&c.q===undefined);
   if(!C.length)return "";
   // the clearest call leads, the wrong ones first when as clear (a field goal praised above two crossed punts: Grokbot)
   const c=C.reduce((a,x)=>Math.abs(callClarity(x))>Math.abs(callClarity(a))||(Math.abs(callClarity(x))===Math.abs(callClarity(a))&&callClarity(x)<callClarity(a))?x:a,C[0]), p=c.res;
@@ -339,6 +345,6 @@ function liveWPHTML(){
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
   const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
-  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
-    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${P(w)}% to win</span></div>`;
+  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span></div>`;
 }
