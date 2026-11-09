@@ -161,6 +161,7 @@ function resultVal(r,meHome){
   return ev?+ev:(LEAGUE.drawVal!=null?LEAGUE.drawVal:0.5);
 }
 const IMPACT_RUNS=400;
+const IMPACT_ALL=true;   // round 48: grade against the third option too, where there is one
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
 /* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
    chance, with your assistant's choice from here, between GATE_LO and GATE_HI over GATE_RUNS replays of the rest.
@@ -189,7 +190,7 @@ const SPREAD_ON=true;
 // close game always had a late decision; both testers found those calls graded "close either way" (soccer's 80th
 // minute, the college press, hockey's overtime), which is the round-40 rule for cutting a call.
 const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS);   // round 44: who starts in goal, foul trouble
-const SPREAD_MIN=0.03, SPREAD_RUNS=60;
+const SPREAD_MIN=0.03, SPREAD_RUNS=+((typeof process!=="undefined"&&process.env&&process.env.SPREAD_RUNS)||60);
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
     for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
@@ -225,7 +226,14 @@ function callImpact(args,seed,answers,meHome,runs){
     const cf=play(j,def);                    // the same dice, his call
     let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
-    out.push({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)});
+    // the other options too, on the same dice (round 48: seven in ten asked situation calls came back "close either
+    // way" because the pick was level with the assistant's while a third option was the one that mattered; Muse:
+    // "grade the dramatic calls"). Not for football, which grades every option in its own list.
+    let best=null; if(IMPACT_ALL&&A.dp.k!=="read"&&A.dp.k!=="prep"&&typeof verdictDefault==="undefined"){
+      A.dp.opts.forEach(o=>{ const v=o[0]; if(v===pick||v===def||/assistant/i.test(o[1]))return; let r=0; for(let m=0;m<runs;m++)r+=score(play(j,v,m));
+        if(!best||r>best.r)best={k:v,r:r} }); }
+    const bo=best&&best.r>Math.max(rp,rd)?{alt:lab(best.k),altv:Math.round((best.r-rp)/runs*1000)/1000,wa:Math.round(best.r/runs*100)}:{};
+    out.push(Object.assign({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)},bo));
   });
   return out;
 }
@@ -256,14 +264,15 @@ function impactHTML(P){
   const k=callClarity(c), rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
   // a read is listed once, in the reads below with its right-or-wrong; listed here too under its own headline, the
   // same call read as a second call and its answer as one never offered (Grokbot, round 38: "graded on a call I never saw")
-  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} (${pickWord(x)}): ${word(x)}`);
+  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} (${pickWord(x)}): ${Math.abs(callClarity(x))<=3&&x.altv>=0.03?`level with his, but "${esc(x.alt)}" was better by about ${Math.round(x.altv*100)} in 100`:word(x)}`);
   const restHTML=rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} tonight: ${rest.join("; ")}.</div>`:"";
   // a read graded wrong is never headlined as a good call: "A STRONG CALL" sat above a cross for the same game plan
   // (Grokbot, pro basketball); the two judge different things (against the assistant; against the truth), so then
   // the card says the plain line instead
   const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear));
   if(Math.abs(k)<=7||(k>0&&crossed)){   // no headline: one plain line, sized to the gap
-    const lead=Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
+    const lead=Math.abs(k)<=3&&c.altv>=0.03?`${esc(c.h)}: ${pickWord(c)}, level with your assistant's call over many replays, but "${esc(c.alt)}" was the better option: about ${Math.round(c.altv*100)} more wins in 100.${repRates(c)} <span class="reprate">"${esc(c.alt)}" won ${c.wa}%.</span>`
+      :Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
       :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.${repRates(c)}`;
     return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
   const good=k>0;

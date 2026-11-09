@@ -1,5 +1,5 @@
 {
- "fp": "fa6bbba8b5d9de0e",
+ "fp": "e4fd368537ab7abe",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -350,6 +350,11 @@
    "fp": "fa6bbba8b5d9de0e",
    "from": "81d0f2dbc41ee704",
    "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
+  },
+  {
+   "fp": "e4fd368537ab7abe",
+   "from": "fa6bbba8b5d9de0e",
+   "note": "round 48: history keeps the live chance's extremes (story cbw/clw), screens (playoff headline basis, goal lines, tallies, Film Room rule, hints, series so far); soccer from the first summer on: gaps filled at the club's level, non-league budgets a quarter up (season-1 games unchanged)"
   }
  ],
  "result": {
@@ -363,20 +368,20 @@
     "poll": "bac30af691fcfadb",
     "heis": "c2e271bc0791ef96",
     "history": "5fea2626198271a8",
-    "universe": "15517245df33fd3c",
-    "screens": "1b28dfb3e810e77c"
+    "universe": "392f6128624f4522",
+    "screens": "362e5c18b2ee2afb"
    },
    {
     "year": 2027,
-    "games": "2dd90a788d2da576",
-    "post": "dc6e99fb2ed6b98d",
-    "champion": "Manchester City",
-    "rec": "f87252448d4964bf",
-    "poll": "d5dc51513e6aa2b0",
-    "heis": "89d90f7d38fc940d",
-    "history": "0fd270ec8f71e513",
-    "universe": "79e4db51aa1ebabd",
-    "screens": "0b056dffd182d9cf"
+    "games": "d75743db04ee935e",
+    "post": "3c4b76569a894f75",
+    "champion": "Liverpool",
+    "rec": "898cdbf3473184b3",
+    "poll": "f27b6537d741efb0",
+    "heis": "9cf1e31b00920333",
+    "history": "c8a93f5a4c36064a",
+    "universe": "84e2a85fcd7b4a31",
+    "screens": "928a45b1b983d718"
    }
   ],
   "Wrexham#777": [
@@ -388,21 +393,21 @@
     "rec": "da72a289a1edfb45",
     "poll": "7423e441dcb6ef1d",
     "heis": "c4e690c8797cd4d3",
-    "history": "019cab89378f7825",
-    "universe": "40034f08db0f1b6e",
-    "screens": "71f1fe5b1be57d22"
+    "history": "aba4c69a6d0bb034",
+    "universe": "f2e23b4a5ed5b21c",
+    "screens": "363fc98d57753f04"
    },
    {
     "year": 2027,
-    "games": "f816d61957b3567c",
-    "post": "a6f6b1cc8c57362a",
-    "champion": "Arsenal",
-    "rec": "5be4cd3bd3fcbc65",
-    "poll": "dd1ef05d6d605084",
-    "heis": "955547db9512c36c",
-    "history": "3b999b905217d885",
-    "universe": "68083adffdf8113c",
-    "screens": "33352896cb4e0d4f"
+    "games": "b6a0f71fc494dd7f",
+    "post": "e41e66763f283f03",
+    "champion": "Manchester City",
+    "rec": "d6ab3c54051f2d96",
+    "poll": "d81968b2ae91bcef",
+    "heis": "efdc01f6b37c39d0",
+    "history": "3a4d1c73254350ac",
+    "universe": "7bf247a41894a806",
+    "screens": "5a813ca203977371"
    }
   ],
   "schedules#60": [

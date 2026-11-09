@@ -1,5 +1,5 @@
 {
- "fp": "170e523cf8de225d",
+ "fp": "78f72617f7c3f47c",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -240,6 +240,16 @@
    "fp": "170e523cf8de225d",
    "from": "d99255c3695c071d",
    "note": "round 46: gating, scorer credit, careers on regular-season records, state text"
+  },
+  {
+   "fp": "78f72617f7c3f47c",
+   "from": "170e523cf8de225d",
+   "note": "round 48: history and screens; soccer economy from the first summer"
+  },
+  {
+   "fp": "78f72617f7c3f47c",
+   "from": "78f72617f7c3f47c",
+   "note": "round 48: history and screens; soccer economy from the first summer"
   }
  ],
  "out": [
@@ -272,20 +282,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "15-12-11",
-      "result": "Finished 7th in the Premier League",
-      "grade": "C+"
+      "rec": "15-18-5",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "c2560f06a25361b5"
+     "book": "c6388c29ca612aee"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-7-20",
-      "result": "Finished 15th in the Premier League",
-      "grade": "C"
+      "rec": "10-7-21",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "203ae266ba9cae97"
+     "book": "9fe0ccffc41d7f82"
     }
    ]
   },
@@ -296,19 +306,19 @@
      "team": "Arsenal",
      "last": {
       "rec": "21-8-9",
-      "result": "Finished 4th in the Premier League",
+      "result": "Finished 5th in the Premier League",
       "grade": "B-"
      },
-     "book": "df597d5bc1fa564b"
+     "book": "9c09a10151c142f5"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-11-16",
-      "result": "Finished 12th in the Premier League",
-      "grade": "C+"
+      "rec": "12-6-20",
+      "result": "Finished 15th in the Premier League",
+      "grade": "C"
      },
-     "book": "2e16b98ea94ac11f"
+     "book": "6adad69ac98bbc7a"
     }
    ]
   }

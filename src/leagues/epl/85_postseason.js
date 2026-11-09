@@ -90,7 +90,7 @@ extendSeason({
     return pr?{home:pr[0],away:pr[1],neutral:p==="po3",label:LEAGUE.conf.names[d]+" play-off "+pr[2]}:null;
   },
   postMatchup(team){return this._nextFor(team)},
-  postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:m.neutral}},
+  postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:m.neutral,home:m.home}},
   mySeries(){return null},
   /* a club's season, frozen once the season is over */
   seasonResult(my){

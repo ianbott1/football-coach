@@ -110,7 +110,7 @@ extendSeason({
       label:`${ROUND_NAME[r]}, game ${k} \u00b7 ${seriesFrom(x,team)}`};
   },
   postMatchup(team){return this._nextFor(team)},
-  postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:false}},
+  postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:false,home:m.home}},
   mySeries(team){                                        // the series a team is in now, for the views
     for(const r of NBA_ROUNDS.slice().reverse()){const x=(this.series[r]||[]).find(x=>x.hi===team||x.lo===team); if(x)return Object.assign({round:r},x)}
     return null;

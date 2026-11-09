@@ -1,5 +1,5 @@
 {
- "fp": "934cd518494ec6f6",
+ "fp": "d41529d701222302",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -250,6 +250,11 @@
    "fp": "934cd518494ec6f6",
    "from": "75cfbbb403c33b52",
    "note": "round 46: gating, scorer credit, careers on regular-season records, state text"
+  },
+  {
+   "fp": "d41529d701222302",
+   "from": "934cd518494ec6f6",
+   "note": "round 48: history and screens; soccer economy from the first summer"
   }
  ],
  "out": [
@@ -272,7 +277,7 @@
       "result": "Lost in the Elite Eight",
       "grade": "A+"
      },
-     "book": "1485eda297a893aa"
+     "book": "6498ce1a622023c4"
     }
    ]
   },
@@ -295,7 +300,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "B+"
      },
-     "book": "817af359117b01d7"
+     "book": "264b7dcdc942e084"
     }
    ]
   },
@@ -318,7 +323,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "A"
      },
-     "book": "e9f8e566dddba6b4"
+     "book": "5ba492ed4a983e9a"
     }
    ]
   }

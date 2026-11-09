@@ -1,5 +1,5 @@
 {
- "fp": "8327fdfcaaec443b",
+ "fp": "e0a38795b6f47750",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -275,6 +275,16 @@
    "fp": "8327fdfcaaec443b",
    "from": "5e02ce7b5b04756d",
    "note": "round 46: gating, scorer credit, careers on regular-season records, state text"
+  },
+  {
+   "fp": "e0a38795b6f47750",
+   "from": "8327fdfcaaec443b",
+   "note": "round 48: history and screens; soccer economy from the first summer"
+  },
+  {
+   "fp": "e0a38795b6f47750",
+   "from": "e0a38795b6f47750",
+   "note": "round 48: history and screens; soccer economy from the first summer"
   }
  ],
  "out": [
@@ -297,7 +307,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "f9283b969258af19"
+     "book": "553e4d9abec709c7"
     }
    ]
   },
@@ -320,7 +330,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "451a9a9fbe994637"
+     "book": "6007ab038c577cbd"
     }
    ]
   },
@@ -343,7 +353,7 @@
       "result": "Missed the playoffs",
       "grade": "B+"
      },
-     "book": "77b37a9f1bf9f81d"
+     "book": "4b4e9b94e38dd0cc"
     }
    ]
   }

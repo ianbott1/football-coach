@@ -17,7 +17,7 @@ function budgetOf(u,t){
   const s=(u&&u.program&&u.program[t])||1500, d=CONF[t];
   // per tier: a floor, a ceiling, and how fast stature lifts it (millions a year)
   const B={PL:[90,320,1500,1.0],CH:[20,60,1300,0.1],L1:[5,18,1150,0.032],L2:[2,6,1050,0.0115],
-           NL:[0.8,3,950,0.0063],NN:[0.5,1.6,820,0.0031],NS:[0.5,1.6,820,0.0031]}[d]||[1,5,1100,0.02];
+           NL:[1.0,3.6,950,0.0076],NN:[0.65,2,820,0.004],NS:[0.65,2,820,0.004]}[d]||[1,5,1100,0.02];   // round 48: the non-league a quarter up, where squads settle at their own level (they sat 1.2 times the old budgets)
   let b=Math.max(B[0],Math.min(B[1],B[0]+(s-B[2])*B[3]));
   if(d!=="PL"&&u&&u.chute&&u.chute[t])b=Math.max(b,u.chute[t]);
   return Math.round(b*100)/100;
@@ -462,8 +462,13 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   NAMES.forEach(t=>{
     const R=u.roster[t];
     for(let i=0;i<R.length;i++)if(!R[i]){
-      const p=nflPlayer(rng,53+rng.range(0,5),24+rng.int(8),i%POS.length);
-      p.k={sal:0.9,yrs:1}; p.joined=u.year+1; R[i]=p;
+      // at the club's level and the pyramid's wages (round 48): a gap was filled with a 53-58 rated player on £0.9M,
+      // the football game's numbers; in the non-league that's a star on ten times the wage budget, and after three
+      // summers National League payrolls ran six times their budgets and the tiers' ratings had closed up (Muse,
+      // round 21: "Payroll £7.8M of £0.8M wage budget")
+      const lvl=eloToRating(u.program[t]||1500);
+      const p=nflPlayer(rng,lvl-rng.range(2,7),24+rng.int(8),i%POS.length);
+      p.k={sal:nflAsk(p.r,p.p,p.age),yrs:1}; p.joined=u.year+1; R[i]=p;
       rep.filled[t].push({n:p.n,p:p.p,r:p.r});
     }
     POS.forEach((_,i)=>{const s=R[i],b=R[BK(i)]; if(b.r>s.r+1){R[i]=b;R[BK(i)]=s}});

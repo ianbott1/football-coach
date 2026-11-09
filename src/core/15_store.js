@@ -21,7 +21,7 @@ const idb=(function(){
         rq.onupgradeneeded=()=>{ try{ rq.result.createObjectStore(IDB_STORE) }catch(e){} };
         rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close() }catch(e){} P=null }; fin(db) };
         rq.onerror=()=>fin(null); rq.onblocked=()=>fin(null);
-        setTimeout(()=>fin(null),4000);   // a database that never answers is no database
+        setTimeout(()=>{ if(!done){ fin(null); P=null } },8000);   // slow to answer: no database this time, and the next call asks again
       }catch(e){ res(null) } });
     P.then(db=>{ if(db)try{ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{}) }catch(e){} });
     return P };
@@ -61,7 +61,9 @@ const store=(function(){
       const W=claude(); if(W){try{return await W.set(k,v,shared)}catch(e){return null}}
       if(shared)return null;
       const D=await idb.set(k,v); if(D.ok)return {key:k,value:v};
-      if(usingIdb)return null;   // the database refused it: a real failure, not a reason to fall back to a full localStorage
+      // the database refused it, or was slow to open: a failure (the banner says so), never a save into localStorage, which
+      // the next load would read under the database's newer copy (round 48: a first load showed empty slots until a reload)
+      if(usingIdb||(IDB_ON&&typeof indexedDB!=="undefined"&&indexedDB))return null;
       const L=local(); if(!L)return null;
       try{L.setItem(k,v); return {key:k,value:v}}catch(e){return null}      // full, or blocked
     },

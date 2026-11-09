@@ -99,8 +99,12 @@ function nflTargetsHTML(P,room){
   if(mine.length)h+=`<div class="note">Prices are this summer's asks plus about 10%; a player who improves over the summer can ask more by the time free agency opens.</div>`;
   h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet: your free-agency style will decide. Players you add get your first look, in your order, if you have the room.</div>`;
-  const pool=pre.filter(x=>mine.indexOf(x.key)<0).slice(0,25);
-  h+=`<div class="grouphead">Likely free agents &mdash; the best 25</div>`+
+  // cheapest first, on a tap (Muse, rounds 18-21: four markets read "nothing under $5M" from the best-25 view, while the
+  // bargains sat below the rating cut). The count under $3M is said either way.
+  const cheap=!!S.faCheap, rest=pre.filter(x=>mine.indexOf(x.key)<0), under3=rest.filter(x=>x.ask<3).length;
+  const pool=(cheap?rest.slice().sort((a,b)=>a.ask-b.ask||b.r-a.r):rest).slice(0,25);
+  h+=`<div class="grouphead">Likely free agents &mdash; ${cheap?"the cheapest 25":"the best 25"}</div>
+    <div class="note">${rest.length} likely free agents; ${under3} asking under $3M. <button class="skip small" data-facheap="1">${cheap?"Show the best first":"Show the cheapest first"}</button></div>`+
     (pool.length?pool.map(x=>row(x,false)).join(""):`<div class="note">Nobody worth chasing this year.</div>`);
   return h;
 }

@@ -735,7 +735,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
     background:linear-gradient(180deg,transparent,var(--ink) 26%);margin-top:6px}
   .sidebtn .advance{font-size:17px;padding:13px}
   .sidebtn .skip{margin-top:8px}
-  #view{min-height:calc(100vh - 96px)}
+  #view{min-height:calc(100vh - 96px);padding-bottom:110px}   /* the last card clears a fixed action bar (Instinct: the costliest call hid behind BEGIN 2028 SEASON) */
+  #side{padding-bottom:90px}
   .mast{padding:44px 32px 26px}
   .mast h1{font-size:60px}
   .mast p{font-size:15px;max-width:640px}
@@ -953,7 +954,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="6ff8a0e";
+<script>const BUILD_ID="86850bc";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -1330,7 +1331,7 @@ const idb=(function(){
         rq.onupgradeneeded=()=>{ try{ rq.result.createObjectStore(IDB_STORE) }catch(e){} };
         rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close() }catch(e){} P=null }; fin(db) };
         rq.onerror=()=>fin(null); rq.onblocked=()=>fin(null);
-        setTimeout(()=>fin(null),4000);   // a database that never answers is no database
+        setTimeout(()=>{ if(!done){ fin(null); P=null } },8000);   // slow to answer: no database this time, and the next call asks again
       }catch(e){ res(null) } });
     P.then(db=>{ if(db)try{ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{}) }catch(e){} });
     return P };
@@ -1370,7 +1371,9 @@ const store=(function(){
       const W=claude(); if(W){try{return await W.set(k,v,shared)}catch(e){return null}}
       if(shared)return null;
       const D=await idb.set(k,v); if(D.ok)return {key:k,value:v};
-      if(usingIdb)return null;   // the database refused it: a real failure, not a reason to fall back to a full localStorage
+      // the database refused it, or was slow to open: a failure (the banner says so), never a save into localStorage, which
+      // the next load would read under the database's newer copy (round 48: a first load showed empty slots until a reload)
+      if(usingIdb||(IDB_ON&&typeof indexedDB!=="undefined"&&indexedDB))return null;
       const L=local(); if(!L)return null;
       try{L.setItem(k,v); return {key:k,value:v}}catch(e){return null}      // full, or blocked
     },
@@ -5471,6 +5474,30 @@ const VOICE_ALT={
     "Nothing has gone wrong yet, so I'd change nothing. I haven't studied the late game, mind.",
     "We're here doing what we've done all night. I'd keep doing it.",
     "Leave it be, I think. A change now is a change for its own sake."],
+  "Teams are not always who the tape says they are.":[
+    "Tape, I find, is mostly about other nights.",
+    "A report is a rumour with numbers in it.",
+    "Let's meet them before we decide who they are."],
+  "It seems to me protecting the rim rarely hurts. I haven't, I confess, looked at the shot chart.":[
+    "Guard the basket first, I say. The chart I leave to younger eyes.",
+    "Layups are the expensive kind of basket. I'd stop those and see.",
+    "I'd pack the paint and let them prove they can shoot. I haven't checked whether they can."],
+  "I'd still rather protect the rim, whatever they did in the first half. I haven't looked at the shot chart since, either.":[
+    "Same as before, if I may: the rim first. I still haven't looked at the chart.",
+    "The paint, still. A half is a short story.",
+    "I'd keep guarding the basket. What they did before half-time was before half-time."],
+  "If I may: hurrying rarely mends a scoreline. It tends to lengthen it.":[
+    "Rushing, in my experience, turns a small deficit into a large one.",
+    "We're not far behind. I'd not panic our way further back.",
+    "Speeding up mostly gives them more chances too. I'd stay calm."],
+  "We have, I think, got what we came for. I'd rather slow things down.":[
+    "We're ahead. Slower suits us now.",
+    "I'd take some air out of the ball. Fewer possessions, fewer surprises.",
+    "Let's make the second half a quiet one."],
+  "A press, one rather suspects, is mostly a way of giving up layups quickly.":[
+    "Press them and we'll see a lot of easy baskets. Some of them ours, not many.",
+    "A press beaten once is two points for nothing. I'd stay home.",
+    "I'd keep our shape. The press is a coin with two ugly sides."],
   // ---- Pearl ----
   "We need a goal! Let's go and get it.":[
     "We're behind but we're not done! Let's go get one!",
@@ -5679,6 +5706,7 @@ function resultVal(r,meHome){
   return ev?+ev:(LEAGUE.drawVal!=null?LEAGUE.drawVal:0.5);
 }
 const IMPACT_RUNS=400;
+const IMPACT_ALL=true;   // round 48: grade against the third option too, where there is one
 function impactDefault(dp){ return typeof verdictDefault==="function"?verdictDefault(dp):dp.opts[dp.opts.length-1][0] }
 /* Situation calls (push, sit, protect, chase, half-time, late) are asked only when the game is in reach: a
    chance, with your assistant's choice from here, between GATE_LO and GATE_HI over GATE_RUNS replays of the rest.
@@ -5707,7 +5735,7 @@ const SPREAD_ON=true;
 // close game always had a late decision; both testers found those calls graded "close either way" (soccer's 80th
 // minute, the college press, hockey's overtime), which is the round-40 rule for cutting a call.
 const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS);   // round 44: who starts in goal, foul trouble
-const SPREAD_MIN=0.03, SPREAD_RUNS=60;
+const SPREAD_MIN=0.03, SPREAD_RUNS=+((typeof process!=="undefined"&&process.env&&process.env.SPREAD_RUNS)||60);
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
     for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
@@ -5743,7 +5771,14 @@ function callImpact(args,seed,answers,meHome,runs){
     const cf=play(j,def);                    // the same dice, his call
     let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
-    out.push({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)});
+    // the other options too, on the same dice (round 48: seven in ten asked situation calls came back "close either
+    // way" because the pick was level with the assistant's while a third option was the one that mattered; Muse:
+    // "grade the dramatic calls"). Not for football, which grades every option in its own list.
+    let best=null; if(IMPACT_ALL&&A.dp.k!=="read"&&A.dp.k!=="prep"&&typeof verdictDefault==="undefined"){
+      A.dp.opts.forEach(o=>{ const v=o[0]; if(v===pick||v===def||/assistant/i.test(o[1]))return; let r=0; for(let m=0;m<runs;m++)r+=score(play(j,v,m));
+        if(!best||r>best.r)best={k:v,r:r} }); }
+    const bo=best&&best.r>Math.max(rp,rd)?{alt:lab(best.k),altv:Math.round((best.r-rp)/runs*1000)/1000,wa:Math.round(best.r/runs*100)}:{};
+    out.push(Object.assign({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)},bo));
   });
   return out;
 }
@@ -5774,14 +5809,15 @@ function impactHTML(P){
   const k=callClarity(c), rank={win:2,draw:1,loss:0,defeat:0}, better=rank[res]>rank[alt], worse=rank[res]<rank[alt];
   // a read is listed once, in the reads below with its right-or-wrong; listed here too under its own headline, the
   // same call read as a second call and its answer as one never offered (Grokbot, round 38: "graded on a call I never saw")
-  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} (${pickWord(x)}): ${word(x)}`);
+  const rest=C.filter(x=>x!==c).map(x=>`${esc(x.h)} (${pickWord(x)}): ${Math.abs(callClarity(x))<=3&&x.altv>=0.03?`level with his, but "${esc(x.alt)}" was better by about ${Math.round(x.altv*100)} in 100`:word(x)}`);
   const restHTML=rest.length?`<div class="impbody imprest">Your other ${rest.length===1?"call":rest.length+" calls"} tonight: ${rest.join("; ")}.</div>`:"";
   // a read graded wrong is never headlined as a good call: "A STRONG CALL" sat above a cross for the same game plan
   // (Grokbot, pro basketball); the two judge different things (against the assistant; against the truth), so then
   // the card says the plain line instead
   const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear));
   if(Math.abs(k)<=7||(k>0&&crossed)){   // no headline: one plain line, sized to the gap
-    const lead=Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
+    const lead=Math.abs(k)<=3&&c.altv>=0.03?`${esc(c.h)}: ${pickWord(c)}, level with your assistant's call over many replays, but "${esc(c.alt)}" was the better option: about ${Math.round(c.altv*100)} more wins in 100.${repRates(c)} <span class="reprate">"${esc(c.alt)}" won ${c.wa}%.</span>`
+      :Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
       :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.${repRates(c)}`;
     return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
   const good=k>0;
@@ -6049,13 +6085,27 @@ function recordStory(played,g,step,meHome){
   const one={wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,po:po};
   if(down>=th&&(won||(LEAGUE.draws&&!lost&&down>=th))&&(!Y.cb||down>Y.cb.by))Y.cb=Object.assign({by:down,won:won},one);
   if(up>=th&&lost&&(!Y.cl||up>Y.cl.by))Y.cl=Object.assign({by:up},one);
+  // the live chance at its lowest and highest (round 48, Muse: "You were at 7% in Blacksburg and won anyway" is a
+  // sentence a player keeps; round 41 wanted it and had no live chance to quote)
+  const ext=storyExtremes(played,meHome,opp);
+  if(ext){ if(won&&ext.lo<=0.12&&(!Y.cbw||ext.lo<Y.cbw.lo))Y.cbw=Object.assign({lo:ext.lo},one);
+    if(lost&&ext.hi>=0.88&&(!Y.clw||ext.hi>Y.clw.hi))Y.clw=Object.assign({hi:ext.hi},one) }
+}
+function storyExtremes(played,meHome,opp){
+  if(typeof liveChance!=="function"||typeof LIVE_WP_ON==="undefined"||!LIVE_WP_ON||!played.drives||!played.drives.length)return null;
+  let pre; try{ pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meHome,false)):[winProb(S.myTeam,opp,meHome,false),0] }catch(e){ return null }
+  const sig=LIVE_SIG[LEAGUE.id]||10; let lo=1, hi=0;
+  played.drives.forEach((d,i)=>{ if(i===played.drives.length-1)return; const sc=liveScore(d); if(sc[0]===undefined)return;
+    const m=meHome?sc[0]-sc[1]:sc[1]-sc[0], poss=d.q!==undefined?(d.home===meHome?-1:1):0, c=liveChance(m,liveTau(d),pre,sig,poss), v=c[0]+c[1]/2;
+    if(v<lo)lo=v; if(v>hi)hi=v });
+  return {lo:lo,hi:hi};
 }
 
 /* the season banked: its comeback and collapse go into its history entry, and the head-to-head with each coach */
 function bankStory(entry){
   if(!STORY_ON)return;
   const yr=SEA.year;
-  if(S.storyYr&&S.storyYr[yr]&&(S.storyYr[yr].cb||S.storyYr[yr].cl))entry.story=JSON.parse(JSON.stringify(S.storyYr[yr]));
+  if(S.storyYr&&S.storyYr[yr]&&(S.storyYr[yr].cb||S.storyYr[yr].cl||S.storyYr[yr].cbw||S.storyYr[yr].clw))entry.story=JSON.parse(JSON.stringify(S.storyYr[yr]));
   if(S.storyYr){ Object.keys(S.storyYr).forEach(y=>{ if(+y<=yr)delete S.storyYr[y] }) }
   // every game you coached this season, against whoever was coaching the other side when it ended
   const my=S.myTeam, seen=new Set(), G=[].concat(...SEA.weeks.map(w=>w.games||[]));
@@ -6096,6 +6146,18 @@ function filmMemoryHTML(dp){
   const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`, alt=filmDef(F.def)||"his call";
   return `<div class="filmmem"><b>The Film Room remembers:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}), the same call. ${/assistant/i.test(F.pick)?"You left it to your assistant":"You went with "+esc(F.pick)}, and it was ${F.w>7?"clearly better than":F.w>0?"a little better than":F.w<-7?"clearly worse than":"a little worse than"} ${esc(alt)}. Tonight is its own game.</div>`;   // in words: no number on tonight's options (Ian)
 }
+/* the series so far, before a play-off game (round 48, Instinct: "the game-7 scouting screen is the emptiest screen in
+   the most meaningful game of the season"): every game of it, and what your calls in the ones you watched were worth */
+function seriesBookHTML(opp){
+  if(!STORY_ON||!SEA||SEA.phase==="week"||typeof SEA.postGamesFor!=="function")return "";
+  const my=S.myTeam, G=SEA.postGamesFor(my).map(x=>Array.isArray(x)?x[0]:x).filter(g=>g&&(g.home===opp||g.away===opp)&&g.hp!==undefined);
+  if(!G.length)return "";
+  const sc=g=>{ const m=g.home===my?g.hp:g.ap, t=g.home===my?g.ap:g.hp; return `${m>t?"W":"L"} ${m}&ndash;${t}` };
+  const w=G.filter(g=>g.winner===my).length, l=G.length-w;
+  let n=0, worth=0; Object.keys(S.played||{}).forEach(k=>{ const [y,st]=k.split(":"); if(+y!==SEA.year||!(+st>=LEAGUE.weeks))return;   // play-off steps only
+    (S.played[k]||[]).forEach(p=>{ if(p.team!==my||p.other!==opp)return; (p.impact||[]).forEach(c=>{ if(Number.isFinite(c.worth)){ n++; worth+=c.worth } }) }) });
+  return `<div class="series seriesbook"><b>The series so far:</b> ${w>l?"you lead "+w+"-"+l:w<l?"they lead "+l+"-"+w:"level at "+w+"-"+l}. ${G.map((g,i)=>`Game ${i+1} ${sc(g)}`).join(" &middot; ")}.${n?` Your calls in the games you watched: ${n}, worth about ${worth>=0?"+":"\u2212"}${Math.abs(worth).toFixed(1)} wins against leaving them to your assistant.`:""}</div>`;
+}
 /* before a game: the last call from the Film Room against this side (round 45: the room was a page nobody opened
    before the games it was about) */
 const FILMPRE_ON=true;
@@ -6130,11 +6192,15 @@ function filmRoomHTML(){
   // no more than two of one kind of moment: five overtimes in a row read as one story told five times
   const vary=(L,n)=>{ const c={}, out=[]; L.forEach(x=>{ const k=String(x.h).replace(/\d+/g,"#"); if(out.length<n&&(c[k]=(c[k]||0)+1)<=2)out.push(x) }); return out };
   const best=vary(F.filter(x=>x.w>0).sort((a,b)=>b.w-a.w),5), worst=vary(F.filter(x=>x.w<0).sort((a,b)=>a.w-b.w),3);
+  // what the room shows and why (Muse, round 21: "the best list caps at three and evicts an older entry without a word":
+  // it was the two-of-a-kind rule, unsaid)
+  const kept=F.filter(x=>x.w>0).length+F.filter(x=>x.w<0).length, hidden=kept-best.length-worst.length;
+  const rule=`<div class="note">Up to five of your best calls and three of your costliest, no more than two of one kind of moment; only calls that weren't close are kept.${hidden>0?` ${hidden} more ${hidden===1?"is":"are"} in the room, behind ones like ${hidden===1?"it":"them"}.`:""}</div>`;
   const res=x=>`${x.mine>x.theirs?"W":x.mine<x.theirs?"L":"D"} ${x.mine}&ndash;${x.theirs}`;
   const row=x=>`<div class="film ${x.w>0?'up':'dn'}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.y}${x.wk?" &middot; "+esc(x.wk):""}${x.title?" &middot; "+esc(x.title):""} &middot; ${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x)}</div>
     <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
-  return `<div class="grouphead">The Film Room</div>${id}`+
+  return `<div class="grouphead">The Film Room</div>${id}${best.length||worst.length?rule:""}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
     (worst.length?`<div class="filmlab">The ones that got away</div>`:"")+(worst.length?worst.map(row).join(""):"")+
     // an empty list says so (Muse, round 20: "a memory that silently stops recording is worse than none")
@@ -6149,6 +6215,10 @@ function storyRowLine(st){
   if(!st)return ""; const out=[];
   if(st.cb)out.push(`came back from ${st.cb.by} down ${st.cb.ha} ${esc(st.cb.opp)}${st.cb.wk?" ("+esc(st.cb.wk)+")":""}`);
   if(st.cl)out.push(`let ${/^(8|11|18)$|^8\d$/.test(String(st.cl.by))?"an":"a"} ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
+  // the live chance's extremes: added to the same night's line, or a line of their own
+  const same=(a,b)=>a&&b&&a.wk===b.wk&&a.opp===b.opp;
+  if(st.cbw){ const t=`${Math.max(1,Math.round(st.cbw.lo*100))}% to win at one point`; if(same(st.cb,st.cbw))out[0]+=` (${t})`; else out.push(`won from ${t.replace(" to win at one point","")} ${st.cbw.ha} ${esc(st.cbw.opp)}`) }
+  if(st.clw){ const t=`${Math.min(99,Math.round(st.clw.hi*100))}% to win at one point`, i=st.cb?1:0; if(same(st.cl,st.clw)&&out[i])out[i]+=` (${t})`; else out.push(`lost from ${t.replace(" to win at one point","")} ${st.clw.ha} ${esc(st.clw.opp)}`) }
   return out.length?`<div class="ystory">${out.join(" &middot; ")}</div>`:"";
 }
 
@@ -6197,7 +6267,8 @@ function titleNightHTML(my){
   const star=(()=>{ try{ return (SEA.mvpRace(60)||[]).find(x=>x.t===my) }catch(e){ return null } })();
   const ord=n=>n+(n%100>=11&&n%100<=13?"th":["th","st","nd","rd"][n%10]||"th");
   const lines=[`${esc(my)} ${yr}: ${esc(recStr(my))}.`];
-  if(Y.cb)lines.push(`The night it could have gone: ${Y.cb.by} down ${Y.cb.ha} ${esc(Y.cb.opp)}, and you came back to win ${Y.cb.mine}&ndash;${Y.cb.theirs}.`);
+  if(Y.cbw)lines.push(`You were at ${Math.max(1,Math.round(Y.cbw.lo*100))}% ${Y.cbw.ha} ${esc(Y.cbw.opp)}${Y.cbw.wk?" ("+esc(Y.cbw.wk)+")":""}, and won anyway, ${Y.cbw.mine}&ndash;${Y.cbw.theirs}.`);
+    if(Y.cb)lines.push(`The night it could have gone: ${Y.cb.by} down ${Y.cb.ha} ${esc(Y.cb.opp)}, and you came back to win ${Y.cb.mine}&ndash;${Y.cb.theirs}.`);
   if(call)lines.push(`Your call of the season: ${esc(call.h)}, ${call.ha} ${esc(call.opp)}. From that moment it won about ${call.w} more games in 100 than your assistant's call.`);
   if(star)lines.push(`${esc(star.n)} carried it${star.line?": "+esc(star.line):""}.`);
   lines.push(titles>1?`Your ${ord(titles)} title.`:`Your first title. Nobody can take it off you now.`);
@@ -7192,7 +7263,7 @@ function liveTick(){
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           // the rare decisions say so when the assistant takes them (round 46: both testers met neither foul trouble nor
           // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
-          if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length} }
+          if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length, rule:r.ask.k==="fouls"&&typeof foulRule==="function"?foulRule():""} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       live.ff=false;                            // skipping stops at your next call
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
@@ -7530,7 +7601,7 @@ function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="s
 function backupNagHTML(){ if(!S||!S.myTeam||S.h2h||S.backedUp===SEA.year||(S.history||[]).length<1)return "";
   return `<div class="bknag"><b>Season banked.</b> Your career lives in this browser's storage, which can be cleared or fill up. A backup file keeps it safe.
     <span class="bkbtns"><button class="skip small" id="offbk">Download a backup</button><button class="skip small" id="offbkno">Not now</button></span></div>` }
-function staleTabHTML(){ return saveFailHTML()+(staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
+function staleTabHTML(){ return newerHTML()+saveFailHTML()+(staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
   <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"") }
 function save(){
   if(savePending)return savePending;
@@ -7812,6 +7883,16 @@ function simPostOn(ph){
   LEAGUE.ui.afterAdvance(was);                  // the views follow the last round played (Selection Sunday's field)
   flash={type:"post"}; reveal=null; save(); render();
 }
+/* an old copy (round 48): the site's version.json names every game's current build; a page whose own stamp differs
+   was served from the browser's cache, and says so once, with a reload that asks for the new one */
+function versionCheck(){
+  try{ if(typeof fetch!=="function"||!/^https?:/.test(location.protocol))return;
+    const me=(location.pathname.split("/").pop()||"").split("?")[0]; if(!me)return;
+    fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(V=>{
+      if(!V||!V[me]||V[me]===BUILD_ID)return; window.__newer=V[me]; render() }).catch(()=>{});
+  }catch(e){}
+}
+function newerHTML(){ return window.__newer?`<div class="savefail"><b>A newer version of this game is out.</b> Your browser opened an older copy (build ${esc(BUILD_ID)}; the current one is ${esc(window.__newer)}). <button class="skip small" onclick="location.replace(location.pathname+'?v='+window.__newer)">Load the new one</button> Your careers carry over.</div>`:"" }
 /* soccer: a title, promotion or relegation settled by the week just played (95_story clinchCheck) */
 function clinchAfter(){ if(typeof clinchCheck==="function"&&S.myTeam)try{ clinchCheck(S.myTeam) }catch(e){} }
 function doAdvance(){
@@ -8283,7 +8364,7 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -8310,8 +8391,12 @@ function tallyHTML(){
 function simmedThisSeason(){
   const my=S.myTeam, pre=SEA.year+":";
   // postseason games too: a bowl was watched but not counted ("watched 5 of your 12" after 13: Grokbot)
-  const post=typeof SEA.postGamesFor==="function"?SEA.postGamesFor(my).length:0;
-  const all=SEA.weeks.reduce((c,W)=>c+W.games.filter(g=>g.home===my||g.away===my).length,0)+post;
+  // each game once: college basketball's conference tournament sits in both lists ("watched 4 of your 39" after a
+  // 31-5 season: Instinct, round 16)
+  const G=new Set();   // the post list is [game, label] pairs, and holds games the weeks have too (a title game)
+  SEA.weeks.forEach(W=>W.games.forEach(g=>{ if(g.home===my||g.away===my)G.add(g) }));
+  if(typeof SEA.postGamesFor==="function")SEA.postGamesFor(my).forEach(x=>{ const g=Array.isArray(x)?x[0]:x; if(g)G.add(g) });
+  const all=G.size;
   const watched=Object.keys(S.played||{}).filter(k=>k.indexOf(pre)===0).reduce((c,k)=>c+S.played[k].filter(p=>p.team===my).length,0);
   return {all:all, watched:Math.min(watched,all), sim:Math.max(0,all-watched)};
 }
@@ -8415,8 +8500,10 @@ function injuredLine(opp,atHome,neutral){
   const my=S.myTeam; if(!opp||!SEA||!SEA.talent||!SEA.talent.inj)return "";
   const hurt=(SEA.talent.inj[my]||[]).filter(e=>e.w>0&&e.who); if(!hurt.length)return "";
   const g=SEA.nextGame?SEA.nextGame(my):null; if(atHome===null){ atHome=g?g.home===my:true; neutral=g?!!g.neutral:false }
-  const now=winProb(my,opp,atHome,neutral), keep=SEA.talent.inj[my];
-  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=winProb(my,opp,atHome,neutral) }finally{ SEA.talent.inj[my]=keep }
+  // on the headline's own basis (the balanced plan): computed under the plan you'd picked, the note read 73% beside a
+  // headline of 62% on all six screens of a conference final (Muse, round 21; Instinct, round 16: 24% over 34%)
+  const now=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)), keep=SEA.talent.inj[my];
+  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)) }finally{ SEA.talent.inj[my]=keep }
   if(fit-now<0.03)return "";
   const names=hurt.slice().sort((a,b)=>a.m-b.m).slice(0,2).map(e=>esc(e.who)).join(" and ");
   return `<div class="oinj">${pctShown(now)}% without ${names} (injured); about ${pctShown(fit)}% with ${hurt.length>1?"them":"him"}.</div>`;
@@ -8593,7 +8680,7 @@ function rosterOf(t){
         <span class="ppos">${esc(p.p)}</span>
         <div class="pmain"><div class="pname">${esc(p.n)}</div>
           <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
-            inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
+            inj?` &middot; <span class="outtag">out ${inj.w} ${stepWord(inj.w)}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
         ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`};
   return `<div class="grouphead">Starters &middot; average rating ${avg}</div>`+R.slice(0,POS.length).map((p,i)=>row(p,i)).join("")
@@ -8720,15 +8807,20 @@ function teamCardHTML(my,rk,co){
       // games left: your remaining regular-season games (was 12 minus games
       // played, a college football season), plus what a postseason run can add
       const left=SEA.sched.filter(g=>g.week>=SEA.step&&(g.home===my||g.away===my)).length;
-      const postMax=LEAGUE.post.phases.filter(p=>p!=="selection").length;
+      // only where play-off games count in the record (college); the pros count the regular season, so "it will take
+      // a postseason run" promised wins that never arrive (Instinct, round 16: "6 to go" after a series win)
+      const postMax=LEAGUE.postRecord?LEAGUE.post.phases.filter(p=>p!=="selection").length:0;
       const need=Math.max(0,e.w-w);
       // after the regular season, only a team still playing can add wins (it said "it will take a
       // postseason run" to a 36-46 team that had missed the playoffs)
-      const alive=SEA.phase==="week"||(SEA.phase!=="done"&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
+      const alive=SEA.phase==="week"||(SEA.phase!=="done"&&LEAGUE.postRecord&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
         ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?posGoalLine(e,my)
+          // the pros after game 82: the wins are in; the play-offs are judged on their own (the board weighs both)
+          :!LEAGUE.postRecord&&SEA.phase!=="week"&&need>0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;
+              return `${w} wins of the ${e.w} asked. ${c?esc(c):SEA.phase==="done"?"":"The play-offs count for the rest."}` })()
           :need===0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;   // each clause as it stands (Instinct)
               return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
@@ -8742,7 +8834,7 @@ function teamCardHTML(my,rk,co){
 const ANNOUNCE_KINDS={fouls:1,gstart:1};
 function autoNoteIn(h){
   const N=live&&live.autoNote, wp=typeof liveWPHTML==="function"?liveWPHTML():"";
-  const note=wp+(N&&live.drives.length-N.at<=3?`<div class="autonote"><b>${esc(N.h)}.</b> Your assistant's call: ${esc(N.l.toLowerCase())}. Nothing much between the options tonight, so it wasn't put to you.</div>`:"");
+  const note=wp+(N&&live.drives.length-N.at<=3?`<div class="autonote"><b>${esc(N.h)}.</b> Your assistant's call: ${esc(N.l.toLowerCase())}. Nothing much between the options tonight, so it wasn't put to you.${N.rule?" "+esc(N.rule):""}</div>`:"");
   if(!note)return h;
   const i=h.indexOf('<div class="watchwrap">'); return i<0?note+h:h.slice(0,i+23)+note+h.slice(i+23);
 }
@@ -8853,7 +8945,7 @@ function attentionHTML(my){
     out.push({k:"staff",side:side,
       h:`Your ${SPORT.staff[side].long} is under fire`,
       // says why he's under fire (Grokbot: "under fire" after a 1-5 run, no reason given)
-      b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. ${st[my].q<=-25?"One of the weakest at the job in the league.":`You're ${w}-${l}, and he isn't good enough to be spared it.`}
+      b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. ${st[my].q<=-25?"One of the weakest at the job in the league.":`You're ${recStr(my)}, and he isn't good enough to be spared it.`}
         An interim would be replacement level; you'd hire properly in the offseason.`});
   });
   if(!out.length)return "";
@@ -8874,16 +8966,19 @@ function nextUpHTML(my,rk){
   if(SEA.phase!=="week"&&SEA.phase!=="done"){
     const pn=SEA.postNext(my);
     if(pn){
-      const wp=pn.opp?winProb(my,pn.opp,false,true):null;
+      // where it's played, as the game will be (round 48: the headline took every play-off game as neutral while the
+      // injury note under it took it as a home game: 62% over "73% without him; about 81% with him", Muse round 21)
+      const atH=pn.home===my||pn.home===true, neu=!!pn.neutral||pn.home===undefined;
+      const wp=pn.opp?withPlan("balanced",()=>winProb(my,pn.opp,atH,neu)):null;
       h+=`<div class="grouphead">Next up</div>
         <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
-        <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>
+        <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>${pn.opp&&typeof seriesBookHTML==="function"?seriesBookHTML(pn.opp):""}${pn.opp&&typeof filmLine==="function"?filmLine(pn.opp):""}
         <div class="nrec">${pn.opp?recStr(pn.opp)
           +" &middot; "+esc(LEAGUE.conf.names[CONF[pn.opp]])
           :"Matchup set when the round is played"}</div>
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
           <span class="opct">${pctShown(wp)}%</span>
-          <span class="olab">to win, before the game</span></div>${injuredLine(pn.opp,null,null)}`:""}
+          <span class="olab">to win, before the game</span></div>${injuredLine(pn.opp,atH,neu)}`:""}
         ${planPickerHTML(wp)}</div>`;
     }
     return h;
@@ -9090,7 +9185,9 @@ function weekNews(W){
     else if(won&&mg.margin<=3)b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
     else if(won)b=v([`Business handled.`,`A solid day's work.`,`No drama. Next.`]);
     else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
-    else if(oppR>25)b=v(LEAGUE.text.badLoss);
+    else if(oppR>25){ const T=LEAGUE.text, played=(SEA.rec[my]||[0,0]).slice(0,2).reduce((x,y)=>x+y,0)+((SEA.drw&&SEA.drw[my])||0);
+      const grp=NAMES.filter(t=>CONF[t]===CONF[my]).length, pos=LEAGUE.position?LEAGUE.position(my):0;
+      b=v(T.badLossEarly&&played<=Math.ceil(LEAGUE.weeks/6)?T.badLossEarly:T.badLossLow&&pos&&pos>grp-6?T.badLossLow:T.badLoss) }
     else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
     const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
                   :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
@@ -10291,6 +10388,7 @@ function render(){
   if(rw)rw.onclick=()=>{const g=heroGame(); if(g)startWatch(g)};
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
+  document.querySelectorAll("[data-facheap]").forEach(b=>b.onclick=()=>{ S.faCheap=!S.faCheap; save(); render() });   // hockey's market, cheapest first (round 48)
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.feat;
     const was=S.featured; S.featured=(S.featured===i?null:i);
@@ -10454,7 +10552,7 @@ function copyHTML(s){
 }
 function renderTitle(){
   const slots=S._slots||[];
-  el("app").innerHTML=`<div class="titlewrap">
+  el("app").innerHTML=`${newerHTML()}<div class="titlewrap">
     <div class="owlstage">
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
@@ -10761,6 +10859,7 @@ function watchOtherTabs(){
   S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true};
   S._slots=await allSlots();
   render();
+  versionCheck();
 })();
 
 </script></body></html>
