@@ -857,7 +857,11 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 /* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
 @media(max-width:480px){.steam .rivmark{display:block;margin:1px 0 0;overflow:hidden;text-overflow:ellipsis}   /* the rivalry's name on its own line: it was cut off at 390px */
 .tb-yr{display:none}.tb-team{margin-left:0;font-size:19px}.tb-team.tb-long{font-size:15px}.tb-team.tb-xl{font-size:13px}
- .tb-right .reset{padding:4px 7px;margin-left:4px}.tb-right{font-size:12px}}
+ .tb-right .reset{padding:9px 6px;margin-left:3px;min-width:28px}.tb-right{font-size:12px}
+ /* round 49, phone audit: five 24px buttons cut "WREXHAM" to "WREXH..." and were small to tap; music moves to the ? panel */
+ .tb-right #mus{display:none}.topbar{padding:6px 12px 4px;gap:8px}}
+/* round 49, phone audit: speed, sub-tab and rewatch buttons were 26-29px tall on a phone */
+@media (pointer:coarse){.spbtn,.subtab,.rewatch{min-height:36px}}
 .cupw{font-weight:700;color:var(--bone)}
 .cupsc{font-family:var(--mono);font-size:12px;color:var(--sodium);margin:0 4px}
 .nextcard.cupcard{border-color:#C9A227;background:linear-gradient(180deg,rgba(201,162,39,.10),transparent)}

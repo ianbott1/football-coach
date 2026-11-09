@@ -1,5 +1,5 @@
 {
- "fp": "e0a38795b6f47750",
+ "fp": "069bc906ce82a5b7",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -285,6 +285,11 @@
    "fp": "e0a38795b6f47750",
    "from": "e0a38795b6f47750",
    "note": "round 48: history and screens; soccer economy from the first summer"
+  },
+  {
+   "fp": "069bc906ce82a5b7",
+   "from": "e0a38795b6f47750",
+   "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
   }
  ],
  "out": [
@@ -298,7 +303,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "a4201b2343d8bcb8"
+     "book": "4bbf4f048d905c3a"
     },
     {
      "team": "Tennessee",
@@ -307,7 +312,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "553e4d9abec709c7"
+     "book": "40d35af7d51a1110"
     }
    ]
   },
@@ -321,7 +326,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "a5ed786a813dfcb8"
+     "book": "b742509c7eeb1d1c"
     },
     {
      "team": "Tennessee",
@@ -330,7 +335,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "6007ab038c577cbd"
+     "book": "c62efa3aa64ba281"
     }
    ]
   },
@@ -340,20 +345,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
-      "result": "Lost the Super Bowl",
+      "rec": "12-5",
+      "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "f0a2fa799d054b72"
+     "book": "27c5649b71dc2b16"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "Missed the playoffs",
-      "grade": "B+"
+      "rec": "10-7",
+      "result": "Lost in the wild card round",
+      "grade": "A-"
      },
-     "book": "4b4e9b94e38dd0cc"
+     "book": "ac84860ec7f1a341"
     }
    ]
   }

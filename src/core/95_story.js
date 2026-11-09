@@ -30,6 +30,13 @@ function recordStory(played,g,step,meHome){
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
       w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
+  // the season's "what if" (round 49): each call made your own way, with how the same night ends on your assistant's
+  // call (the same dice). Kept per season, the three that diverged most; shown at the season's end.
+  (played.impact||[]).forEach(c=>{ if(c.k&&RK[c.k])return; if(!c.cf||!Number.isFinite(c.worth))return;
+    const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
+    const W=(S.whatIf=S.whatIf||{})[yr]=(S.whatIf[yr]||[]);
+    W.push({wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,cm:c.cf.mine,ct:c.cf.theirs,h:c.h,pick:c.pick,def:c.def,w:Math.round(k),po:po});
+    W.sort((a,b)=>whatIfRank(b)-whatIfRank(a)); W.length=Math.min(W.length,3) });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
   // the style: bold or careful, and what each has been worth
@@ -62,12 +69,32 @@ function storyExtremes(played,meHome,opp){
   return {lo:lo,hi:hi};
 }
 
+/* how far the road not taken diverged: a different result on the same night first, then by how much the score
+   moved and how clear the call was over many replays */
+function whatIfRank(x){ const r=(a,b)=>a>b?1:a<b?-1:0, flip=r(x.mine,x.theirs)!==r(x.cm,x.ct);
+  return (flip?100:0)+Math.abs((x.mine-x.theirs)-(x.cm-x.ct))*(typeof SPORT!=="undefined"&&(SPORT.id==="hockey"||SPORT.id==="soccer")?6:1)+Math.abs(x.w)/2 }
+const WHATIF_ON=true;
+function whatIfHTML(){
+  if(!WHATIF_ON||!S||!SEA||SEA.phase!=="done")return "";
+  // only a road that went somewhere: the score moved on his call, or the call was clear over many replays
+  const W=((S.whatIf&&S.whatIf[SEA.year])||[]).filter(x=>x.cm!==x.mine||x.ct!==x.theirs||Math.abs(x.w)>3); if(!W.length)return "";
+  const res=(a,b)=>a>b?"win":a<b?(LEAGUE.draws?"defeat":"loss"):"draw";
+  const verdict=w=>w>7?"Over many replays from that moment, yours was clearly the better call."
+    :w>3?"Over many replays, yours was a little better.":w<-7?"Over many replays, his was clearly the better call."
+    :w<-3?"Over many replays, his was a little better.":"Over many replays, there was little in it: this night the dice decided.";
+  const row=x=>{ const flip=res(x.mine,x.theirs)!==res(x.cm,x.ct);
+    return `<div class="film ${x.w>3?'up':x.w<-3?'dn':''}"><div class="filmh">${esc(x.h)}</div>
+    <div class="filmm">${x.wk?esc(x.wk)+" &middot; ":""}${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x.mine,x.theirs).toUpperCase()} ${x.mine}&ndash;${x.theirs}</div>
+    <div class="filmb">You: ${esc(x.pick)}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:" Your assistant would have kept to his plan."} On his call, the same night ends ${x.cm}&ndash;${x.ct}${flip?`, a ${res(x.cm,x.ct)} instead`:""}. ${verdict(x.w)}</div></div>` };
+  return `<div class="grouphead">What if</div><div class="note">${W.length===1?"The call":`The ${W.length===2?"two":"three"} calls`} this season where the road not taken went furthest from the one you took.</div>`+W.map(row).join("");
+}
 /* the season banked: its comeback and collapse go into its history entry, and the head-to-head with each coach */
 function bankStory(entry){
   if(!STORY_ON)return;
   const yr=SEA.year;
   if(S.storyYr&&S.storyYr[yr]&&(S.storyYr[yr].cb||S.storyYr[yr].cl||S.storyYr[yr].cbw||S.storyYr[yr].clw))entry.story=JSON.parse(JSON.stringify(S.storyYr[yr]));
   if(S.storyYr){ Object.keys(S.storyYr).forEach(y=>{ if(+y<=yr)delete S.storyYr[y] }) }
+  if(S.whatIf){ Object.keys(S.whatIf).forEach(y=>{ if(+y<yr)delete S.whatIf[y] }) }   // only this season's reel is shown
   // every game you coached this season, against whoever was coaching the other side when it ended
   const my=S.myTeam, seen=new Set(), G=[].concat(...SEA.weeks.map(w=>w.games||[]));
   if(typeof SEA.postPools==="function"){ try{ G.push(...[].concat(...SEA.postPools())) }catch(e){} }

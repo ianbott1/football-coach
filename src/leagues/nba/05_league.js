@@ -64,6 +64,9 @@ const LEAGUE={
   bigTop:5,                                   // a big game in an 82-game season: a top-five side
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty
   playoff:{size:16, perSide:8, byes:0, playIn:true},
+  /* round 49: nobody coasts in the playoffs. The regular season halves a mismatch past softGap (the better side rests);
+     with that in the postseason too, 1 seeds won 43% of titles over 194 seasons (real ~55) and beat 8 seeds 85% (real ~94) */
+  postFull:true,
   /* the baby owl, suited up for the pros: a headband and a jersey number */
   art:{owlExtra:`
       <path d="M19.2 14.2 C24 11.2 30 10.2 36 10.2 C42 10.2 48 11.2 52.8 14.2 L52.2 18.4 C47.6 15.8 42 14.8 36 14.8 C30 14.8 24.4 15.8 19.8 18.4 Z" fill="#E4572E"/>

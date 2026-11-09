@@ -857,7 +857,11 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 /* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
 @media(max-width:480px){.steam .rivmark{display:block;margin:1px 0 0;overflow:hidden;text-overflow:ellipsis}   /* the rivalry's name on its own line: it was cut off at 390px */
 .tb-yr{display:none}.tb-team{margin-left:0;font-size:19px}.tb-team.tb-long{font-size:15px}.tb-team.tb-xl{font-size:13px}
- .tb-right .reset{padding:4px 7px;margin-left:4px}.tb-right{font-size:12px}}
+ .tb-right .reset{padding:9px 6px;margin-left:3px;min-width:28px}.tb-right{font-size:12px}
+ /* round 49, phone audit: five 24px buttons cut "WREXHAM" to "WREXH..." and were small to tap; music moves to the ? panel */
+ .tb-right #mus{display:none}.topbar{padding:6px 12px 4px;gap:8px}}
+/* round 49, phone audit: speed, sub-tab and rewatch buttons were 26-29px tall on a phone */
+@media (pointer:coarse){.spbtn,.subtab,.rewatch{min-height:36px}}
 .cupw{font-weight:700;color:var(--bone)}
 .cupsc{font-family:var(--mono);font-size:12px;color:var(--sodium);margin:0 4px}
 .nextcard.cupcard{border-color:#C9A227;background:linear-gradient(180deg,rgba(201,162,39,.10),transparent)}
@@ -954,7 +958,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="e9b46c0";
+<script>const BUILD_ID="b2a3670";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -1021,6 +1025,9 @@ const LEAGUE={
   bigTop:5,                                   // a big game in an 82-game season: a top-five side
   rankTop:10,                                 // a number on the ten best, not twenty-five of thirty
   playoff:{size:16, perSide:8, byes:0, playIn:true},
+  /* round 49: nobody coasts in the playoffs. The regular season halves a mismatch past softGap (the better side rests);
+     with that in the postseason too, 1 seeds won 43% of titles over 194 seasons (real ~55) and beat 8 seeds 85% (real ~94) */
+  postFull:true,
   /* the baby owl, suited up for the pros: a headband and a jersey number */
   art:{owlExtra:`
       <path d="M19.2 14.2 C24 11.2 30 10.2 36 10.2 C42 10.2 48 11.2 52.8 14.2 L52.2 18.4 C47.6 15.8 42 14.8 36 14.8 C30 14.8 24.4 15.8 19.8 18.4 Z" fill="#E4572E"/>
@@ -1161,7 +1168,7 @@ function pickInjuredPos(rng){
 const R_SLOPE=24.3, R_INT=56;
 const ratingToElo=r=>R_INT+R_SLOPE*r;
 const eloToRating=e=>(e-R_INT)/R_SLOPE;
-function playerName(rng){return rng.pick(PNAMES_F)+" "+rng.pick(PNAMES_L)}
+function playerName(rng){ const f=rng.pick(PNAMES_F), l=rng.pick(PNAMES_L); return f+" "+wideLast(f,l,PNAMES_L) }   // the same two draws; the surname read through a wider list (core 21_names)
 /* ten players: 0-4 start, 5-9 back up the same spot */
 const BK=i=>i+POS.length;
 function teamRating(roster){
@@ -1906,6 +1913,43 @@ function coordCandidates(rng,prestige,side,rep){
     return c;
   });
 }
+/* Player surnames, wider (round 49). Each sport drew from 55 to 61 surnames, so six rosters in ten shared one, college
+   football's nearly all, often three deep ("Pettigrew x3"). playerName still draws a first name and a surname from its
+   own list, the same two draws as before, so every result is unchanged; the surname is then read through this wider
+   list by a hash of the pair: the same draws, more names. */
+const WIDE_LAST=["Abernathy","Achterberg","Adebayo","Agbaje","Aguilar","Ahlgren","Akintola","Alcorn","Aldana","Alvarado",
+"Amadi","Ambrose","Ancheta","Arceneaux","Archuleta","Arnaud","Arrington","Ashby","Atwater","Ayodele","Babineaux","Bachman",
+"Baek","Balogun","Bancroft","Barbosa","Barksdale","Battaglia","Beaumont","Becerra","Belanger","Benavides","Bergeron",
+"Bertrand","Bjornstad","Blackwood","Blanchard","Bolden","Bonilla","Bouchard","Boudreaux","Brannigan","Brathwaite",
+"Breckenridge","Brisbane","Brockman","Bustamante","Cabrera","Calloway","Camacho","Carrasco","Castile","Cervantes",
+"Chukwu","Cisneros","Claiborne","Coleridge","Contreras","Corriveau","Covington","Crenshaw","Cuthbert","Dabney","Dalby",
+"Dandridge","Dearborn","Desrosiers","Dimitrov","Dorsett","Draper","Dubois","Dumont","Duquette","Eberhardt","Egwu",
+"Ellington","Emenike","Escobar","Espinoza","Etheridge","Ezeh","Fairbanks","Falcone","Farrow","Faulkner","Fennell",
+"Figueroa","Fitzgerald","Fontenot","Forsberg","Fullerton","Gaines","Galloway","Garnett","Gauthier","Gentry","Giordano",
+"Goodwin","Granger","Greaves","Grigsby","Guidry","Gustafson","Haddad","Halvorsen","Hammond","Harlan","Hartsfield",
+"Hatcher","Haverford","Hebert","Hendrix","Hinojosa","Holloway","Huckaby","Ibekwe","Ingram","Iwobi","Jaramillo","Jessup",
+"Juarez","Kaminski","Karlsson","Keane","Kettering","Kimbrough","Kingsley","Kirkwood","Kofi","Krueger","Lachance",
+"Lafleur","Landry","Langston","Laroche","Ledbetter","Lemieux","Lindqvist","Lockhart","Lombardi","Lundgren","Maddox",
+"Malone","Mancini","Marchand","Marlowe","Mbeki","McCullough","Medeiros","Mendoza","Merriweather","Mitchum","Moncrief",
+"Montague","Moreau","Moynihan","Munoz","Nakamura","Navarro","Ndiaye","Nesbitt","Nordstrom","Nunez","Obi","Ochoa",
+"Odom","Ogbonna","Olsen","Onyeka","Orozco","Ouellette","Pacheco","Padilla","Pankratz","Paquette","Pemberton","Penick",
+"Peralta","Perrault","Pinckney","Plummer","Poirier","Prioleau","Quarles","Quintero","Radcliffe","Ramsey","Rasmussen",
+"Redmond","Rigsby","Rinaldi","Rochester","Rousseau","Rutherford","Saavedra","Sakamoto","Salinger","Santana","Saucier",
+"Schaefer","Seabrook","Sepulveda","Shackleford","Silvestri","Simmonds","Slocum","Soto","Spearman","Stanhope",
+"Steadman","Strickland","Sundqvist","Swann","Tafoya","Takahashi","Talbert","Tanaka","Teague","Thornbury","Toussaint",
+"Trujillo","Tubman","Underhill","Uzoma","Valdez","Valentin","Vanterpool","Varga","Villanueva","Waddell","Wakefield",
+"Walcott","Watanabe","Wexler","Whitlock","Wilder","Winslow","Woodard","Wyatt","Yancey","Yeboah","Ybarra","Zamora",
+"Zeller","Zielinski","Zimmerman"];
+function wideLast(f,l,base){ const pool=wideLast.pool||(wideLast.pool=Array.from(new Set(base.concat(WIDE_LAST))));
+  return pool[strHash(f+"/"+l)%pool.length] }
+/* a new roster (a league's first day): no surname twice, a repeat re-read by hash, so no draw moves. Rosters later
+   fill from drafts, classes and transfers, where a shared surname can still come (real rosters have them too), and
+   commentary then adds the initial (surnameIn). */
+function distinctSurnames(r){ const pool=wideLast.pool||[], seen=new Set(), last=n=>n.slice(n.indexOf(" ")+1);
+  r.forEach((p,i)=>{ if(!p||!p.n||!pool.length)return; let l=last(p.n);
+    if(seen.has(l)){ const h=strHash(p.n+"|"+i); for(let k=0;k<pool.length&&seen.has(l);k++)l=pool[(h+k)%pool.length]; p.n=p.n.slice(0,p.n.indexOf(" ")+1)+l }
+    seen.add(l) });
+  return r }
 /* ============ power ranking: pro football ============ */
 /* No poll. Teams are ranked the way people actually rank them in the pros:
    record first, then how good they look. The core asks any ranking for
@@ -2096,7 +2140,7 @@ function nflRoster(rng,programElo){
   // nobody starts over the cap
   const pay=payroll(r);
   if(pay>NFL_CAP*0.94){const f=NFL_CAP*0.94/pay; r.forEach(p=>p.k.sal=Math.round(p.k.sal*f*10)/10)}
-  return r;
+  return distinctSurnames(r);   // round 49: no surname twice on a new roster (core 21_names)
 }
 
 /* the draft: worst regular season first; playoff teams after, by the round
@@ -2775,7 +2819,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const poss=Math.max(50,Math.round(rng.gauss(BB.pace*tempo,BB.paceSd)));
   // a mismatch past BB.softGap counts half: the better side rests and coasts, so
   // even a great team loses some (unset: no change). Pro: 82-0 happened.
-  const rawGap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1), sg=BB.softGap;
+  const rawGap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1), sg=playoff&&LEAGUE.postFull?0:BB.softGap;   // the playoffs: full strength (round 49)
   const gap=sg&&Math.abs(rawGap)>sg?Math.sign(rawGap)*(sg+(Math.abs(rawGap)-sg)*0.5):rawGap;
   const eH=gap*BB.gapPerPoss/2;
   // tonight's referees
@@ -3726,7 +3770,7 @@ class Season{
         LEAGUE.draws?{draw:fdraw,pens:fpens}:{},extra||{});
     }
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
-    if(LEAGUE.tracksOT||LEAGUE.draws)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
+    if(LEAGUE.tracksOT||LEAGUE.draws||LEAGUE.postFull)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
     // what the sport knows about the two sides before kick-off (soccer: each club's usual approach)
     if(typeof gameCtx==="function")gopts=Object.assign({},gopts||{},{ctx:gameCtx(a,b,this.year,this.step)});
     const gs=playGame(this.rng,eloH,eloA,
@@ -5316,7 +5360,16 @@ const SPREAD_ON=true;
 // close game always had a late decision; both testers found those calls graded "close either way" (soccer's 80th
 // minute, the college press, hockey's overtime), which is the round-40 rule for cutting a call.
 const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS);   // round 44: who starts in goal, foul trouble
-const SPREAD_MIN=0.03, SPREAD_RUNS=+((typeof process!=="undefined"&&process.env&&process.env.SPREAD_RUNS)||60);
+/* round 49, measured (1,172 gated calls, six seasons a game, each option's worth checked on 1,600 fresh replays):
+   at 60 replays and 3 points the gate let through 432 calls, and only one in five of them truly gained 3 points on the
+   assistant (picking the best of three noisy numbers flatters the best). 120 replays and 4 points: 269 through, one in
+   three real, and a little over half the real ones still asked. Some kinds almost never matter whatever the gate:
+   hockey's push and lock (0 of 68 truly worth 3 points) and its final stretch (1 of 40), college basketball's half-time
+   and chase calls (3 of 95), college football's protect and onside (0 of 22), the pro onside kick (0 of 7). Those go
+   to your assistant every time: asking them taught that the calls don't matter. */
+const NEVER_ASK={nhl:{push:1,lock:1,final:1}, ncaab:{half:1,chase:1}, cfb:{protect:1,onside:1}, nfl:{onside:1}};
+function neverAsk(k){ return !!(typeof LEAGUE!=="undefined"&&NEVER_ASK[LEAGUE.id]&&NEVER_ASK[LEAGUE.id][k]) }
+const SPREAD_MIN=0.04, SPREAD_RUNS=+((typeof process!=="undefined"&&process.env&&process.env.SPREAD_RUNS)||120);
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
     for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
@@ -5650,6 +5703,13 @@ function recordStory(played,g,step,meHome){
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
       w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
+  // the season's "what if" (round 49): each call made your own way, with how the same night ends on your assistant's
+  // call (the same dice). Kept per season, the three that diverged most; shown at the season's end.
+  (played.impact||[]).forEach(c=>{ if(c.k&&RK[c.k])return; if(!c.cf||!Number.isFinite(c.worth))return;
+    const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
+    const W=(S.whatIf=S.whatIf||{})[yr]=(S.whatIf[yr]||[]);
+    W.push({wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,cm:c.cf.mine,ct:c.cf.theirs,h:c.h,pick:c.pick,def:c.def,w:Math.round(k),po:po});
+    W.sort((a,b)=>whatIfRank(b)-whatIfRank(a)); W.length=Math.min(W.length,3) });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
   // the style: bold or careful, and what each has been worth
@@ -5682,12 +5742,32 @@ function storyExtremes(played,meHome,opp){
   return {lo:lo,hi:hi};
 }
 
+/* how far the road not taken diverged: a different result on the same night first, then by how much the score
+   moved and how clear the call was over many replays */
+function whatIfRank(x){ const r=(a,b)=>a>b?1:a<b?-1:0, flip=r(x.mine,x.theirs)!==r(x.cm,x.ct);
+  return (flip?100:0)+Math.abs((x.mine-x.theirs)-(x.cm-x.ct))*(typeof SPORT!=="undefined"&&(SPORT.id==="hockey"||SPORT.id==="soccer")?6:1)+Math.abs(x.w)/2 }
+const WHATIF_ON=true;
+function whatIfHTML(){
+  if(!WHATIF_ON||!S||!SEA||SEA.phase!=="done")return "";
+  // only a road that went somewhere: the score moved on his call, or the call was clear over many replays
+  const W=((S.whatIf&&S.whatIf[SEA.year])||[]).filter(x=>x.cm!==x.mine||x.ct!==x.theirs||Math.abs(x.w)>3); if(!W.length)return "";
+  const res=(a,b)=>a>b?"win":a<b?(LEAGUE.draws?"defeat":"loss"):"draw";
+  const verdict=w=>w>7?"Over many replays from that moment, yours was clearly the better call."
+    :w>3?"Over many replays, yours was a little better.":w<-7?"Over many replays, his was clearly the better call."
+    :w<-3?"Over many replays, his was a little better.":"Over many replays, there was little in it: this night the dice decided.";
+  const row=x=>{ const flip=res(x.mine,x.theirs)!==res(x.cm,x.ct);
+    return `<div class="film ${x.w>3?'up':x.w<-3?'dn':''}"><div class="filmh">${esc(x.h)}</div>
+    <div class="filmm">${x.wk?esc(x.wk)+" &middot; ":""}${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x.mine,x.theirs).toUpperCase()} ${x.mine}&ndash;${x.theirs}</div>
+    <div class="filmb">You: ${esc(x.pick)}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:" Your assistant would have kept to his plan."} On his call, the same night ends ${x.cm}&ndash;${x.ct}${flip?`, a ${res(x.cm,x.ct)} instead`:""}. ${verdict(x.w)}</div></div>` };
+  return `<div class="grouphead">What if</div><div class="note">${W.length===1?"The call":`The ${W.length===2?"two":"three"} calls`} this season where the road not taken went furthest from the one you took.</div>`+W.map(row).join("");
+}
 /* the season banked: its comeback and collapse go into its history entry, and the head-to-head with each coach */
 function bankStory(entry){
   if(!STORY_ON)return;
   const yr=SEA.year;
   if(S.storyYr&&S.storyYr[yr]&&(S.storyYr[yr].cb||S.storyYr[yr].cl||S.storyYr[yr].cbw||S.storyYr[yr].clw))entry.story=JSON.parse(JSON.stringify(S.storyYr[yr]));
   if(S.storyYr){ Object.keys(S.storyYr).forEach(y=>{ if(+y<=yr)delete S.storyYr[y] }) }
+  if(S.whatIf){ Object.keys(S.whatIf).forEach(y=>{ if(+y<yr)delete S.whatIf[y] }) }   // only this season's reel is shown
   // every game you coached this season, against whoever was coaching the other side when it ended
   const my=S.myTeam, seen=new Set(), G=[].concat(...SEA.weeks.map(w=>w.games||[]));
   if(typeof SEA.postPools==="function"){ try{ G.push(...[].concat(...SEA.postPools())) }catch(e){} }
@@ -6876,7 +6956,7 @@ function liveTick(){
       if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
-        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        if(p<GATE_LO||p>GATE_HI||neverAsk(r.ask.k)||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           // the rare decisions say so when the assistant takes them (round 46: both testers met neither foul trouble nor
@@ -7625,8 +7705,13 @@ function openOffseason(){
   ["oc","dc"].forEach(side=>{ if(SEA.midFired&&SEA.midFired[side]&&!staffCands[side]){
     staffCands[side]=coordCandidates(rng,U.program[my],side,C.rep); A.staffOpen=Object.assign({},A.staffOpen||{},{[side]:true}) } });
   // a league can run its own market (soccer: relative to your club, not fixed bands)
-  const jobs=A.userOpen?(LEAGUE.jobMarket?LEAGUE.jobMarket(U,rng,C.rep,A.openJobs,my,!!A.fired):jobMarket(U,rng,C.rep,A.openJobs,my)):[];
-  const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,A.openJobs,my):poachOffers(U,rng,C.rep,A.openJobs,my));
+  // a hot seat: another coach's program is never on your market, even when they were fired from it the same winter.
+  // Round 49 (test/firing.js): both humans fired in one offseason, the first took the second's program off the market,
+  // then the second's departure handed it to a computer coach, and the first was left coaching nothing.
+  const humanT=isHotSeat()?new Set((S.coaches||[]).map((x,i)=>i===(S.turn||0)?null:x&&x.myTeam).filter(Boolean)):null;
+  const openJ=humanT?A.openJobs.filter(t=>!humanT.has(t)):A.openJobs;
+  const jobs=A.userOpen?(LEAGUE.jobMarket?LEAGUE.jobMarket(U,rng,C.rep,openJ,my,!!A.fired):jobMarket(U,rng,C.rep,openJ,my)):[];
+  const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,openJ,my):poachOffers(U,rng,C.rep,openJ,my));
   const LO=LEAGUE.offseason.open(U,my,SEA.rec[my][0]);   // the league's own choices
   S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:LO.pool,staff:staffCands,
     picks:Object.assign({phil:(U.phil||"balanced"),oc:null,dc:null},LO.picks),
@@ -8392,8 +8477,8 @@ function myTeamView(){
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
   if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
-    (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+starsHTML(my))}
-  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+starsHTML(my);
+    (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my))}
+  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my);
   h+=(reveal==="half"?"":seasonLogHTML(my));
   return h;
 }
@@ -9837,6 +9922,7 @@ function render(){
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
     document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide){ Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); GUIDE_SEEN={}; guideMark(null,false) } save(); render() });
+    document.querySelectorAll("[data-music]").forEach(b=>b.onclick=()=>{ S.music=b.dataset.music==="true"; if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
       S.sound=b.dataset.sound==="true"; save(); if(soundOn())sfx("tap"); render();});
     return;
@@ -10339,6 +10425,9 @@ function helpPanel(){
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
+    <div class="grouphead">Music</div>
+    <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-music="${v}"
+      aria-pressed="${musicOn()===v}">${l}</button>`).join("")}</div>
     ${S.myTeam?`<div class="grouphead">Your save</div>
     <div class="setrow"><button class="setbtn" id="backupbtn">Download a backup</button>
       <label class="setbtn restorelbl">Restore a backup<input type="file" id="restorefile2" accept=".coach,.txt,text/plain" hidden></label></div>

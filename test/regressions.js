@@ -567,10 +567,12 @@ for(const [f,team] of [['basketball-coach-pro.html','Detroit'],['basketball-coac
 
 /* 81. a close finish asks a call: basketball's crunch time level or ahead, hockey's third period within a goal
    (Grokbot: a 93-92 elimination game, a tied finish and a 5-4 playoff game asked nothing), with the right answer graded */
-for(const [f,team,k] of [['basketball-coach-pro.html','Orlando','close'],['basketball-coach.html','Minnesota','close'],['hockey-coach-pro.html','Florida','third']]){
-  const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,8,'T'); let n=0, graded=0;
+// round 49: the gate at 4 points over 120 replays asks college basketball's close finish about one game in twenty
+// (seeds 8-11: 0, 0, 3, 4 in 30 games each), so its case plays two seasons
+for(const [f,team,k,seeds] of [['basketball-coach-pro.html','Orlando','close',[8]],['basketball-coach.html','Minnesota','close',[8,10]],['hockey-coach-pro.html','Florida','third',[8]]]){
+  let n=0, graded=0; for(const seed of seeds){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,seed,'T');
   for(let w=0;w<40&&A.SEA.phase==='week';w++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<4000){ const q=A.live.ask; if(q){ if(q.dp.k===k)n++; A.answerLive(q.dp.opts[0][0]) } else A.liveTick() }
-    if(A.live&&A.live.eng&&A.live.eng.log)graded+=A.live.eng.log.filter(x=>x.k===k).length }
+    if(A.live&&A.live.eng&&A.live.eng.log)graded+=A.live.eng.log.filter(x=>x.k===k).length } }
   // round 46: asked only when worth 3 points (Ian: "gate them"), so rarer; still asked, and graded when asked
   ok(n>=1,`${f}: ${n} ${k} calls in 40 games`); ok(!n||graded>0,`${f}: ${k} calls never graded`) }
 
@@ -603,7 +605,9 @@ for(const [f,team] of [['football-coach-pro.html','Green Bay'],['football-coach.
   console.log(`  ${f}: ${games} games, calls ${JSON.stringify(K)}`);
   ok((K.prep||0)>=games*0.8,`${f}: a scouting report in ${K.prep||0} of ${games} games`);
   ok((K.read||0)>=games*0.8,`${f}: ${K.read||0} reads in ${games} games`);
-  ok((K.onside||0)+(K.defend||0)>=2,`${f}: ${(K.onside||0)+(K.defend||0)} onside or late-defense calls in ${games} games`);
+  // round 49: the onside kick goes to your assistant in both football games (measured: 0 of 29 truly worth 3 points
+  // on his choice), and late defense is asked only when it is (Ian's rule: calls under about 3 points are cut). What
+  // stays checked: a late call that is asked gives the clock in possessions (below).
   ok(late===clock,`${f}: ${late-clock} of ${late} late calls without the possessions left`);
   ok(graded>0,`${f}: reads never graded`) }
 
