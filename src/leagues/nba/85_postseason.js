@@ -138,6 +138,10 @@ extendSeason({
     if(this.champion===my)return "NBA CHAMPIONS";
     for(const [r,l] of [["r4","Lost in the NBA Finals"],["r3","Lost in the conference finals"],["r2","Lost in the conference semifinals"],["r1","Lost in the first round"]])
       if((this.series[r]||[]).some(x=>x.loser===my))return l;
+    // not settled yet: the field not drawn (the step between game 82 and the play-in), or a play-in still to finish.
+    // "Missed the playoffs" there turned the coach's badge to "Under pressure" for a 57-25 team for one screen (Instinct, round 15)
+    if(!this.field||!this.field.length)return "";
+    if(Object.values(this.playIn).some(P=>P.s&&P.s.indexOf(my)>=0&&!(P.g8&&P.g8.winner))&&!this.seeds[my])return "";
     if(Object.values(this.playIn).some(P=>P.s&&P.s.indexOf(my)>=0)&&!this.seeds[my])return "Lost in the play-in";
     if(this.seeds[my])return "Made the playoffs";
     return this.rec[my][0]>this.rec[my][1]?"Missed the playoffs":"Losing season";
@@ -146,7 +150,10 @@ extendSeason({
     const post={}, pnote={};
     const bump=(t,w)=>{post[t]=post[t]||[0,0];post[t][w?0:1]++};
     ["pi"].concat(NBA_ROUNDS).forEach(r=>this.rounds[r].forEach(g=>{bump(g.winner,true);bump(g.loser,false)}));
-    NBA_ROUNDS.forEach(r=>(this.series[r]||[]).forEach(x=>{if(x.loser)pnote[x.loser]=r==="r4"?"Lost the NBA Finals":"Playoffs \u2014 lost in the "+ROUND_NAME[r].toLowerCase()}));
+    NBA_ROUNDS.forEach(r=>(this.series[r]||[]).forEach(x=>{if(x.loser)pnote[x.loser]=r==="r4"?"Lost in the NBA Finals":"Playoffs \u2014 lost in the "+ROUND_NAME[r].toLowerCase()}));
+    // the play-in's losers: the season list said "Missed the playoffs" where the season card said "Lost in the play-in"
+    // (Muse, round 20); one phrase for one season
+    Object.values(this.playIn||{}).forEach(P=>(P.s||[]).forEach(t=>{ if(!this.seeds[t]&&!pnote[t])pnote[t]="Lost in the play-in" }));
     if(this.champion)pnote[this.champion]="NBA champions";
     const cfpOf={}; this.field.forEach(t=>cfpOf[t]=this.seeds[t]);
     return {confChamps:this.champs,post:post,pnote:pnote,cfpOf:cfpOf};

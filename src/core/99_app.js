@@ -133,6 +133,9 @@ function liveTick(){
         if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
+          // the rare decisions say so when the assistant takes them (round 46: both testers met neither foul trouble nor
+          // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
+          if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       live.ff=false;                            // skipping stops at your next call
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
@@ -463,7 +466,7 @@ async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
 /* a save that didn't land is said at once, not only on the way out: the browser's storage for these six games is
    full (every career, every game, one allowance) or blocked */
-function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does).":"This browser's storage for these games is full: every career in all six games shares one allowance."} Download a backup now so nothing is lost, then erase a career you don't need from the title screen.
+function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does). Download a backup now so nothing is lost.":store.kind()==="database"?"This browser refused the save (the disk may be nearly full). Download a backup now so nothing is lost.":"This browser's older storage for these games is full: every career in all six games shares one allowance. Download a backup now so nothing is lost, then erase a career you don't need from the title screen."}
   <button class="skip small" id="savefailbk">Download a backup</button></div>`:"" }
 /* once a season, as it's banked: a career lives only in this browser; a file keeps it safe (Muse: "nothing ever
    points at" the backup) */
@@ -674,7 +677,9 @@ function yourOTL(team,from,to){
 function careerNow(C){
   const my=S.myTeam, banked=S.off&&S.off.year===SEA.year;
   if(!SEA||!SEA.rec||!SEA.rec[my]||banked)return C;
-  const r=SEA.rec[my]; return Object.assign({},C,{w:C.w+r[0],l:C.l+r[1],d:(C.d||0)+((SEA.drw&&SEA.drw[my])||0)});
+  // the regular season, as the franchise's all-time line counts it (round 46: soccer's and hockey's careers took in
+  // their play-off games, the all-time line didn't, and the two disagreed for every play-off season)
+  const r=(SEA.regRec||SEA.rec)[my]; return Object.assign({},C,{w:C.w+r[0],l:C.l+r[1],d:(C.d||0)+((SEA.drw&&SEA.drw[my])||0)});
 }
 function ordinal(n){return n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th")}
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
@@ -845,11 +850,12 @@ function openOffseason(){
   const om=objectivesMet(my); C.rep+=OBJ_REP*om;
   C.objLog=(C.objLog||[]).concat([{year:SEA.year,team:my,met:om,of:seasonObjectives(my).length}]);
   C.rep=Math.max(-48,Math.min(80,C.rep));
-  C.w+=SEA.rec[my][0]; C.l+=SEA.rec[my][1];
+  const RR=(SEA.regRec||SEA.rec)[my];   // the regular season (careerNow)
+  C.w+=RR[0]; C.l+=RR[1];
   if(LEAGUE.draws)C.d=(C.d||0)+((SEA.drw&&SEA.drw[my])||0);
   if(titles.natl)C.titles++; if(titles.conf)C.confs++;
   const st=C.stops[C.stops.length-1];
-  st.w+=SEA.rec[my][0]; st.l+=SEA.rec[my][1]; if(LEAGUE.draws)st.d=(st.d||0)+((SEA.drw&&SEA.drw[my])||0);
+  st.w+=RR[0]; st.l+=RR[1]; if(LEAGUE.draws)st.d=(st.d||0)+((SEA.drw&&SEA.drw[my])||0);
   if(titles.natl)st.titles++;
   st.to=SEA.year;
   const staffCands={};
@@ -1191,8 +1197,14 @@ function heroResult(){
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
     // a conference tournament loss before Selection Sunday isn't the end of the season (Instinct, round 42)
-    else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&!(SEA.field&&SEA.field.length)&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)))
-      move=`<div class="hmove dn">Out of the ${esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/Tournament Tournament/,"Tournament"))}. Selection Sunday decides the rest.</div>`;
+    // ...nor after it, when the card is drawn again over a bracket you're in (Instinct, round 15: "Season over" above
+    // "YOU'RE IN · 2 SEED"): a conference tournament game (g.ct) says what the field did
+    else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&(g.ct||!(SEA.field&&SEA.field.length))&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)&&!g.ct)){
+      const ctn=esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/ Championship$/i,"").replace(/Tournament Tournament/,"Tournament"));
+      const inF=SEA.field&&SEA.field.length&&SEA.seeds&&SEA.seeds[my];
+      move=!(SEA.field&&SEA.field.length)?`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`
+        :inF?`<div class="hmove flat">Out of the ${ctn}, and into the NCAA Tournament: a ${SEA.seeds[my]} seed${SEA.region&&SEA.region[my]?`, ${esc(SEA.region[my])}`:""}.</div>`
+        :`<div class="hmove dn">Out of the ${ctn}, and left out of the NCAA field.</div>` }
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   const cupRes=LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(Object.assign({week:flash&&flash.step},g),my):null;   // a league's own line (the NBA Cup's group games, league games too)
@@ -1206,11 +1218,15 @@ function heroResult(){
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>
     <div class="hfoot">Second half under way&hellip;</div></div>`;
-  return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
+  // the big nights in order (Instinct, round 15): what happened, what it means, and then, a tap away, the audit
+  const banner=(won&&SEA.champion===my&&/Champions/.test(move||"")&&typeof titleNightHTML==="function"?titleNightHTML(my):"")+(typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):"");
+  const moment=!!banner||/Season over|Out of the|out of the|beaten in the|Champions|WINNERS|winners/.test(move||"");
+  const audit=(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()+readsHTML(flash&&flash.step);
+  return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${won&&SEA.champion===my&&/Champions/.test(move)&&typeof titleNightHTML==="function"?titleNightHTML(my):""}${typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):""}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
-      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -1655,7 +1671,7 @@ function teamCardHTML(my,rk,co){
         ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
-          :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
+          :e.pos?posGoalLine(e,my)
           :need===0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;   // each clause as it stands (Instinct)
               return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
@@ -1666,6 +1682,25 @@ function teamCardHTML(my,rk,co){
   return h;
 }
 
+const ANNOUNCE_KINDS={fouls:1,gstart:1};
+function autoNoteIn(h){
+  const N=live&&live.autoNote, wp=typeof liveWPHTML==="function"?liveWPHTML():"";
+  const note=wp+(N&&live.drives.length-N.at<=3?`<div class="autonote"><b>${esc(N.h)}.</b> Your assistant's call: ${esc(N.l.toLowerCase())}. Nothing much between the options tonight, so it wasn't put to you.</div>`:"");
+  if(!note)return h;
+  const i=h.indexOf('<div class="watchwrap">'); return i<0?note+h:h.slice(0,i+23)+note+h.slice(i+23);
+}
+/* soccer's goal line, aware of the occasion (Instinct, round 15: "Target: finish 2nd or better. You're 5th." on the
+   night MK Dons went up through the play-offs). A clinch or a settled season says what happened first. */
+function posGoalLine(e,my){
+  const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0, tgt=`finish ${ordinal(e.pos)} or better`;
+  const C=S.clinch&&S.clinch.year===SEA.year&&S.clinch.team===my?S.clinch.k:{};
+  let res=""; if(SEA.phase!=="week"&&typeof SEA.seasonResult==="function"){ try{ res=SEA.seasonResult(my)||"" }catch(e){} }
+  if(C.title||/CHAMPIONS/.test(res))return `Champions. The target was to ${tgt}: done, and then some.`;
+  if(C.up||/^Promoted \(/.test(res))return `Promoted. The target was to ${tgt}: done.`;
+  if(/Promoted through/.test(res))return `Up through the play-offs. The board asked for ${ordinal(e.pos)} or better (you finished ${ordinal(p)}); going up is what it wanted.`;
+  if(C.down||/^Relegated/.test(res))return `Relegated. The target was to ${tgt}.`;
+  return `Target: ${tgt}. ${p?"You're "+ordinal(p)+".":""}`;
+}
 /* how much an absence hurts, in a word: the size stays under the hood (it was a
    raw team-strength number, and a -195 read like nonsense next to a 78 rating) */
 /* judged against a typical starter's absence in the same sport (the median,
@@ -2969,7 +3004,7 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+'<div class="callbox">'):liveView();
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+'<div class="callbox">'):autoNoteIn(liveView());
     bindGuide();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the

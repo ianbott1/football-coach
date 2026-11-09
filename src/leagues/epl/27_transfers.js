@@ -33,7 +33,9 @@ function tFee(p,starter){
   let f=w*(2.4+young)*(0.6+0.2*yrs)*(starter?1.25:1);
   return Math.max(0.05,Math.round(f*10)/10);
 }
-const money=x=>"£"+(x>=10?Math.round(x):x>=1?x.toFixed(1):x.toFixed(2))+"M";
+// one decimal from £1M up to £100M: rounded to whole millions, last season's £17.5M wage bill read £17M on the summer
+// page and £17.5M on the hub, and the summer's sums came out £0.5M short (Muse, rounds 19-20)
+const money=x=>"£"+(x>=100?Math.round(x):x>=1?(+x).toFixed(1).replace(/\.0$/,""):(+x).toFixed(2))+"M";
 /* would he join you? */
 function tWilling(u,buyer,seller,prog){
   prog=prog||u.program;

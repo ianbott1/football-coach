@@ -23,7 +23,10 @@ for(const [f,[sp,isLate,sc,TH]] of Object.entries(SP)){
     const lateShown=shownAt.filter(([i])=>i>=li); lateShown.forEach(([,k])=>kinds[k]=(kinds[k]||0)+1);
     const meHome=L.g.home===A.S.myTeam, fin=sc(D[D.length-1]);
     rows.push({margin, late:lateShown.length, ot:D.some(d=>d.ot), otShown:shownAt.some(([i])=>D[i]&&D[i].ot), po:!!(L.g.po||L.g.round||L.g.cupK)}) }
-  { const c=rows.filter(r=>r.margin<=TH[0]), none=c.filter(r=>!r.late).length, pc=c.length?100*none/c.length:0; if(c.length>=3&&pc>MAXNONE[f]){bad++;console.log(`  FAIL ${f}: ${none} of ${c.length} close finishes asked nothing (${pc.toFixed(0)}%, at most ${MAXNONE[f]}%)`)} }
+  // round 46 (Ian: "gate them"): a late call is asked only when it gains 3 points on the assistant, so a close finish
+  // can pass with nothing to ask; the round-40 caps on that (MAXNONE) are gone. What's checked now: late calls still
+  // happen in close finishes (not one in five or more is the failure).
+  { const c=rows.filter(r=>r.margin<=TH[0]), none=c.filter(r=>!r.late).length; if(c.length>=5&&none===c.length){bad++;console.log(`  FAIL ${f}: none of ${c.length} close finishes asked anything`)} }
   const out=TH.map(t=>{ const c=rows.filter(r=>r.margin<=t); const none=c.filter(r=>!r.late).length; return `within ${t}: ${c.length} games, no late call in ${none} (${(100*none/Math.max(1,c.length)).toFixed(0)}%)` });
   const ot=rows.filter(r=>r.ot);
   console.log(`${f.padEnd(26)} ${games} games | ${out.join(' | ')}${ot.length?` | overtime ${ot.length}, a call in OT ${ot.filter(r=>r.otShown).length}`:''} | late kinds ${JSON.stringify(kinds)}`) }

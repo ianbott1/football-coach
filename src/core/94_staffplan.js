@@ -180,7 +180,11 @@ function callInReach(args,seed,answers,meHome,j){
 const SPREAD_ON=true;
 // mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
 // decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
-const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);   // round 44: who starts in goal, foul trouble
+// round 46 (Ian: "gate them"): every situation call, the late ones too, is asked only when it gains 3 points on your
+// assistant. Round 40 kept the final stretch, ties, overtime, the pull, the press and the third period out of it, so a
+// close game always had a late decision; both testers found those calls graded "close either way" (soccer's 80th
+// minute, the college press, hockey's overtime), which is the round-40 rule for cutting a call.
+const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS);   // round 44: who starts in goal, foul trouble
 const SPREAD_MIN=0.03, SPREAD_RUNS=60;
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
@@ -217,7 +221,7 @@ function callImpact(args,seed,answers,meHome,runs){
     const cf=play(j,def);                    // the same dice, his call
     let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
-    out.push({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
+    out.push({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)});
   });
   return out;
 }
@@ -254,7 +258,7 @@ function impactHTML(P){
   const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear));
   if(Math.abs(k)<=7||(k>0&&crossed)){   // no headline: one plain line, sized to the gap
     const lead=Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
-      :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.`;
+      :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.${repRates(c)}`;
     return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
   const good=k>0;
   const verdict=good?"A strong call":"The wrong call";
@@ -263,9 +267,16 @@ function impactHTML(P){
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"")
                     :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"");
   return `<div class="impact"><div class="imphead">${verdict}${tonight?", "+tonight:"."}</div>
-    <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.</div>${restHTML}</div>`;
+    <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.${repRates(c)}</div>${restHTML}</div>`;
     // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
     // often", and players stopped trusting the replays (Grokbot). Whether tonight turned on it stays in the headline.
+}
+/* the replays behind a verdict, option by option, as football's fourth downs show them (Instinct, round 15: basketball's
+   grades had no comparison to inspect). Win shares where a game has a winner; soccer grades in points, so it doesn't. */
+function repRates(c){
+  if(LEAGUE.draws||c.wp===undefined||c.wd===undefined||/assistant/i.test(c.pick))return "";
+  const d=typeof filmDef==="function"&&filmDef(c.def)?filmDef(c.def):"his call";
+  return ` <span class="reprate">${esc(c.pick)} won ${c.wp}% of the replays; ${esc(d)}, ${c.wd}%.</span>`;
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){
@@ -292,4 +303,42 @@ function seasonCallsHTML(){
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
   return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");
+}
+
+/* ============ live win probability (round 46, a trial: Ian wanted to try it) ============ */
+/* Between plays only, never on a call (it can't become a calculator for the options). From the score, the time left
+   and the pre-game chance: the rest of the game's margin is taken as normal, mean mu*tau and spread sigma*sqrt(tau),
+   where tau is the share of the game still to play and mu the full-game edge the pre-game chance implies. Sigma is
+   each league's, fitted to its own engine (LIVE_SIG, measured: test/live-wp.js), and the line is checked for honesty
+   there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
+   (a shoot-out, extra time) at the pre-game edge, halved. */
+const LIVE_WP_ON=true, LIVE_MU={};   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
+function liveTau(d){
+  if(!d)return 1;
+  if(d.q!==undefined){ const T=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24; return d.q>=5?0.02:Math.max(0,1-(d.n||0)/T) }
+  if(d.ot||d.so)return 0.03;
+  const N=typeof SEGS!=="undefined"?SEGS:8; return Math.max(0,1-((d.seg||0)+1)/N);
+}
+function liveScore(d){ return d.q!==undefined?[d.h,d.a]:[d.sh,d.sa] }
+function normCdf(z){ const t=1/(1+0.2316419*Math.abs(z)), y=0.3989423*Math.exp(-z*z/2)*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274)))); return z>0?1-y:y }
+function normInv(p){ p=Math.min(0.9999,Math.max(0.0001,p)); let lo=-6,hi=6; for(let i=0;i<50;i++){ const m=(lo+hi)/2; if(normCdf(m)<p)lo=m; else hi=m } return (lo+hi)/2 }
+/* [win, draw, loss] for the side with margin m (theirs subtracted), tau of the game to play, pre-game [w,d,l] */
+function liveChance(m,tau,pre,sig,poss){
+  const [w0,d0]=pre, s=sig, mu=s*normInv(Math.min(0.995,Math.max(0.005,w0+d0/2)));
+  const E=m+mu*(LIVE_MU[LEAGUE.id]||1)*tau+(poss&&tau>0?poss*LIVE_POSS:0), S=Math.max(0.05,s*Math.sqrt(Math.max(tau,0.0001)));
+  const pw=1-normCdf((0.5-E)/S), pl=normCdf((-0.5-E)/S), pt=Math.max(0,1-pw-pl);
+  if(LEAGUE.draws&&!(typeof live!=="undefined"&&live&&live.g&&(live.g.cup||live.g.title||SEA.phase!=="week")))return [pw,pt,pl];   // a cup tie or a play-off goes on to a winner
+  const q=0.5+((w0+d0/2)-0.5)*0.5; return [pw+pt*q,0,pl+pt*(1-q)];
+}
+function liveWPHTML(){
+  if(!LIVE_WP_ON||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";
+  const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
+  const meH=live.g.home===S.myTeam, m=meH?sc[0]-sc[1]:sc[1]-sc[0];
+  if(!live.pre){ const opp=meH?live.g.away:live.g.home;
+    try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
+  const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
+  const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${P(w)}% to win</span></div>`;
 }

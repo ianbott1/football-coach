@@ -1,5 +1,5 @@
 {
- "fp": "ab3d7ad9af3eddc0",
+ "fp": "eb282e6eb00c9833",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -325,59 +325,64 @@
    "fp": "ab3d7ad9af3eddc0",
    "from": "67b33b586460db7f",
    "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
+  },
+  {
+   "fp": "eb282e6eb00c9833",
+   "from": "ab3d7ad9af3eddc0",
+   "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "021c6cdc863269c1",
-    "post": "ff670a8b6cb7b16f",
-    "champion": "Boston",
-    "rec": "2b549e93e5b39610",
-    "poll": "27ae56a54a1deaee",
-    "heis": "8f74811a9d08846d",
-    "history": "4e260b933c9fa649",
-    "universe": "83b3130aa8ed6036",
-    "screens": "85fb4a7b002bff7c"
+    "games": "1a4e736e03ddf3b2",
+    "post": "95ead1d84170ca99",
+    "champion": "Denver",
+    "rec": "c0318c6a792f8395",
+    "poll": "714397e8a391f9c0",
+    "heis": "5e810aeb96357b5f",
+    "history": "95e1d01b94e2ad07",
+    "universe": "66db136d3c64d468",
+    "screens": "8aeed21a01a8ffee"
    },
    {
     "year": 2027,
-    "games": "eb9d841a02d32e76",
-    "post": "f62100f00f20a3e1",
-    "champion": "Houston",
-    "rec": "b0d51ad823c69d43",
-    "poll": "af5d981638af951f",
-    "heis": "84ec549d1e1e9ebc",
-    "history": "0232e6584d3200e5",
-    "universe": "33a5e99d16b4577b",
-    "screens": "dd3a312f3ae242a5"
+    "games": "cde20d66d5dbc1c1",
+    "post": "8f0964f38149f7e2",
+    "champion": "Oklahoma City",
+    "rec": "a64608b15fc3c0e7",
+    "poll": "7cc429085c229f0a",
+    "heis": "342d2e65fe5ffaa2",
+    "history": "4865c5966b65e023",
+    "universe": "488ac43956073447",
+    "screens": "0106e1b918ed048e"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "7430296a3eddb92a",
+    "games": "c4641aebcfb9f802",
     "post": "e4269dd4fe1cd6de",
     "champion": "Philadelphia",
-    "rec": "ae00ba752da0beea",
-    "poll": "b238f495b4a1d134",
+    "rec": "2e4ecc77753feb02",
+    "poll": "9c70d09cf8e1e4d6",
     "heis": "ff388a3acc0072de",
-    "history": "76fb675e9a7f4377",
-    "universe": "89d927fbc5881e13",
-    "screens": "4fae6f2c042f851d"
+    "history": "30d3010ca5a0f145",
+    "universe": "98ceeda083e37881",
+    "screens": "fc1f317f7af2c107"
    },
    {
     "year": 2027,
-    "games": "527f921f30cd438a",
-    "post": "ebea8458d57b6755",
-    "champion": "Milwaukee",
-    "rec": "8afa5a4d1300a11f",
-    "poll": "ba6ec5788ea7454c",
-    "heis": "0e286f10bffcf87b",
-    "history": "de09d1d09b81e58a",
-    "universe": "762dc4be6853eef0",
-    "screens": "8f4abac166ab9728"
+    "games": "057b899c493de58e",
+    "post": "de5611879b3dcab1",
+    "champion": "Houston",
+    "rec": "64b85d01ab6523b3",
+    "poll": "6da781cc64b8eee4",
+    "heis": "239369160291c0fe",
+    "history": "540ed574b10235b3",
+    "universe": "61e08c77cbba5701",
+    "screens": "82e2c1aecbf260b9"
    }
   ],
   "schedules#60": [

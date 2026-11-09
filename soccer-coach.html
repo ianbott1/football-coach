@@ -874,6 +874,9 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .obj{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px solid rgba(42,49,69,.55);font-size:14px}
 .objmark{flex:none;width:16px;color:var(--muted)}.obj.met .objmark{color:var(--turf)}.obj.miss .objmark{color:var(--flag)}
 .objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
+details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 0;list-style:none}details.audit>summary::before{content:"\25B8  "}details.audit[open]>summary::before{content:"\25BE  "}
+.livewp{display:flex;align-items:center;gap:10px;margin:8px auto;padding:0 16px;max-width:760px;box-sizing:border-box;font-size:12px}.livewp .lwlab{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}.livewp .lwbar{flex:1;min-width:60px;height:6px;background:var(--line);display:flex;overflow:hidden;border-radius:3px}.livewp .lwbar i{background:var(--sodium);display:block;height:100%}.livewp .lwbar b{background:var(--muted);opacity:.5;display:block;height:100%}.livewp .lwpct{color:var(--bone);white-space:nowrap;font-family:var(--mono);font-size:11px}
+.autonote{font-size:12.5px;color:var(--dim,#9aa);border-left:2px solid var(--sodium);padding:4px 8px;margin:6px 0}
 .dinc{margin:6px 0 10px;text-align:left}.dinch{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.dincl{font-size:13px;line-height:1.45;margin:2px 0}.filmpre b{font-weight:600}
 .objre{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--sodium);font-weight:400;margin-right:4px;text-transform:uppercase}.obj.miss .objl{color:var(--muted);text-decoration:line-through}
 .objt{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right}
@@ -944,7 +947,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="48bf314";
+<script>const BUILD_ID="cb2aa81";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -1222,36 +1225,79 @@ function statProd(pos,s){
    browser's localStorage. The shared league table needs window.storage and
    is simply unavailable elsewhere. Every call resolves; failures resolve to
    null rather than throwing. */
+/* Round 46: saves live in IndexedDB. All six games share one origin, and localStorage gave them one allowance of
+   about 5 MB between them; a veteran career is 240 KB to 1.7 MB, so a few long careers filled it and every save after
+   that silently failed (Muse, round 20). IndexedDB's allowance is a share of the disk. A key not yet in IndexedDB is
+   read from localStorage and copied across the first time it's read; the localStorage copy stays as it was (a
+   fallback if the browser ever clears the database, and what an older cached page would still see), and is removed
+   only when the key is deleted, so an erased career can't come back from it. Where IndexedDB can't open (some
+   private windows, the test harness) everything works as before, on localStorage. */
+const IDB_ON=true, IDB_NAME="coach-games", IDB_STORE="kv";
+const idb=(function(){
+  let P=null;
+  const open=()=>{ if(P)return P;
+    P=new Promise(res=>{ try{
+        if(!IDB_ON||typeof indexedDB==="undefined"||!indexedDB){ res(null); return }
+        const rq=indexedDB.open(IDB_NAME,1); let done=false; const fin=v=>{ if(!done){ done=true; res(v) } };
+        rq.onupgradeneeded=()=>{ try{ rq.result.createObjectStore(IDB_STORE) }catch(e){} };
+        rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close() }catch(e){} P=null }; fin(db) };
+        rq.onerror=()=>fin(null); rq.onblocked=()=>fin(null);
+        setTimeout(()=>fin(null),4000);   // a database that never answers is no database
+      }catch(e){ res(null) } });
+    P.then(db=>{ if(db)try{ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{}) }catch(e){} });
+    return P };
+  const req=(db,mode,fn)=>new Promise(res=>{ try{ const tx=db.transaction(IDB_STORE,mode), os=tx.objectStore(IDB_STORE), r=fn(os);
+      let val; if(r)r.onsuccess=()=>{ val=r.result };
+      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false}); tx.onabort=()=>res({ok:false}) }catch(e){ res({ok:false}) } });
+  return {
+    open:open,
+    async get(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.get(k)) },
+    async set(k,v){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.put(v,k)) },
+    async del(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.delete(k)) },
+    async keys(){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.getAllKeys?os.getAllKeys():null) },
+  };
+})();
 const store=(function(){
   const claude=()=>{try{return (window.storage&&typeof window.storage.get==="function")?window.storage:null}catch(e){return null}};
   // reading needs no test write: with storage full the probe's write failed, every read came back empty, the
   // title screen showed three empty slots over careers still there, and the save check (reading the revision)
   // got nothing and called it "changed in another tab" (Muse, round 42: careers lost after Reload)
   const local=()=>{try{const L=window.localStorage||localStorage; void L.length; return L}catch(e){return null}};
+  let usingIdb=null;   // known once the database has opened (or failed to)
+  idb.open().then(db=>{ usingIdb=!!db });
   return {
-    kind(){ return claude()?"claude":local()?"browser":"none" },
-    // can it take a write right now? (full or blocked storage says no)
-    writable(){ if(claude())return true; const L=local(); if(!L)return false; try{ L.setItem("__fc_probe","1"); L.removeItem("__fc_probe"); return true }catch(e){ return false } },
+    kind(){ return claude()?"claude":usingIdb?"database":local()?"browser":"none" },
+    // can it take a write right now? (full or blocked storage says no; the database is checked on the write itself)
+    writable(){ if(claude()||usingIdb)return true; const L=local(); if(!L)return false; try{ L.setItem("__fc_probe","1"); L.removeItem("__fc_probe"); return true }catch(e){ return false } },
     async get(k,shared){
       const W=claude(); if(W){try{return await W.get(k,shared)}catch(e){return null}}
-      const L=!shared&&local(); if(!L)return null;
-      const v=L.getItem(k); return v===null?null:{key:k,value:v};
+      if(shared)return null;
+      const L=local(), D=await idb.get(k);
+      if(D.ok&&D.val!==undefined&&D.val!==null)return {key:k,value:D.val};
+      const v=L?L.getItem(k):null; if(v===null)return null;
+      if(D.ok)await idb.set(k,v);   // copied across on first read; the localStorage copy stays
+      return {key:k,value:v};
     },
     async set(k,v,shared){
       const W=claude(); if(W){try{return await W.set(k,v,shared)}catch(e){return null}}
-      const L=!shared&&local(); if(!L)return null;
+      if(shared)return null;
+      const D=await idb.set(k,v); if(D.ok)return {key:k,value:v};
+      if(usingIdb)return null;   // the database refused it: a real failure, not a reason to fall back to a full localStorage
+      const L=local(); if(!L)return null;
       try{L.setItem(k,v); return {key:k,value:v}}catch(e){return null}      // full, or blocked
     },
     async delete(k,shared){
       const W=claude(); if(W){try{return await W.delete(k,shared)}catch(e){return null}}
-      const L=!shared&&local(); if(!L)return null;
-      L.removeItem(k); return {key:k,deleted:true};
+      if(shared)return null;
+      await idb.del(k); const L=local(); if(L)try{ L.removeItem(k) }catch(e){}
+      return {key:k,deleted:true};
     },
     async list(prefix,shared){
       const W=claude(); if(W){try{return await W.list(prefix,shared)}catch(e){return null}}
-      const L=!shared&&local(); if(!L)return null;
-      const keys=[]; for(let i=0;i<L.length;i++){const k=L.key(i); if(!prefix||k.indexOf(prefix)===0)keys.push(k)}
-      return {keys:keys,prefix:prefix};
+      if(shared)return null;
+      const keys=new Set(), D=await idb.keys(); if(D.ok&&D.val)D.val.forEach(k=>{ if(typeof k==="string"&&(!prefix||k.indexOf(prefix)===0))keys.add(k) });
+      const L=local(); if(L)for(let i=0;i<L.length;i++){const k=L.key(i); if(!prefix||k.indexOf(prefix)===0)keys.add(k)}
+      return {keys:[...keys],prefix:prefix};
     }
   };
 })();
@@ -2562,7 +2608,9 @@ function tFee(p,starter){
   let f=w*(2.4+young)*(0.6+0.2*yrs)*(starter?1.25:1);
   return Math.max(0.05,Math.round(f*10)/10);
 }
-const money=x=>"£"+(x>=10?Math.round(x):x>=1?x.toFixed(1):x.toFixed(2))+"M";
+// one decimal from £1M up to £100M: rounded to whole millions, last season's £17.5M wage bill read £17M on the summer
+// page and £17.5M on the hub, and the summer's sums came out £0.5M short (Muse, rounds 19-20)
+const money=x=>"£"+(x>=100?Math.round(x):x>=1?(+x).toFixed(1).replace(/\.0$/,""):(+x).toFixed(2))+"M";
 /* would he join you? */
 function tWilling(u,buyer,seller,prog){
   prog=prog||u.program;
@@ -3342,6 +3390,11 @@ function scScorer(team,u){
   const x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
   return {n:scPlayer(team,unit,u)||"a forward", unit:unit};
 }
+/* a game you watched: the goals go to the men the commentary named (core 80_season) */
+function scLogCredit(tm,side,drives){
+  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scScorer(tm,e.u||0); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
+  return C;
+}
 const FINISH={
   ST:["slots it under the keeper","finishes first time from close range","turns and fires into the bottom corner","heads in at the near post","rounds the keeper and rolls it in"],
   W:["cuts inside and curls it into the far corner","arrives at the back post to tap in","beats his man and drills it low past the keeper"],
@@ -3502,9 +3555,9 @@ function tableStakesHTML(g,my){
   const place=pts=>1+div.filter(t=>t!==my&&P(t)>pts).length, tied=pts=>div.filter(t=>t!==my&&P(t)===pts);
   const say=pts=>{ const T=tied(pts); return `${ordinal(place(pts))}${T.length?`, level with ${esc(T[0])}${T.length>1?` and ${T.length-1} more`:""}`:""}` };
   return `<div class="evid"><div class="evh">What it means in the table <span>before tonight's other results</span></div>
-    <div class="evr"><span class="evk">Now</span><span class="evv">${say(me)} on ${me} points</span></div>
+    <div class="evr"><span class="evk">Now</span><span class="evv">${say(me)} on ${me} point${me===1?"":"s"}</span></div>
     <div class="evr"><span class="evk">A win (three)</span><span class="evv">${me+3} points: ${say(me+3)}</span></div>
-    <div class="evr"><span class="evk">A draw (one)</span><span class="evv">${me+1} points: ${say(me+1)}</span></div>
+    <div class="evr"><span class="evk">A draw (one)</span><span class="evv">${me+1} point${me+1===1?"":"s"}: ${say(me+1)}</span></div>
     <div class="evn">${left} league game${left===1?"":"s"} left after this one. A draw is a point; a win is three.</div></div>`;
 }
 function statStrip(g,d){
@@ -3794,19 +3847,22 @@ class Season{
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
           if(typeof statDeploy=="function")statDeploy(this,tm);   // hockey: the box score follows the ice time
           // a game you watched: goals and assists go to the men the log named, backups too (hockey)
-          const LC=F.drives&&typeof hkLogCredit==="function"?hkLogCredit(tm,tm===a?"home":"away",F.drives):null, done=new Set();
+          // soccer too (round 46: Muse, three scorers credited with no goals): the log's scorers get the goals
+          const LCf=typeof hkLogCredit==="function"?hkLogCredit:typeof scLogCredit==="function"?scLogCredit:null, HKC=typeof hkLogCredit==="function"&&LCf===hkLogCredit;
+          const LC=F.drives&&LCf?LCf(tm,tm===a?"home":"away",F.drives):null, done=new Set();
           POS.forEach((P,i)=>{
             const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
             if(!pl)return;
             if(!pl.st2)pl.st2=blankStats(P.p);
             const line=gameStats(this.rng,pl,i,pf,pa2,pf>pa2);
-            if(LC&&P.p!=="G"){ const c=LC[pl.n]||{goals:0,ast:0}; line.goals=c.goals; line.ast=c.ast; line.pts=c.goals+c.ast; line.sog=Math.max(line.sog,c.goals); done.add(pl.n) }
+            if(LC&&P.p!=="G"&&P.p!=="GK"){ const c=LC[pl.n]||{goals:0}; line.goals=c.goals; if(HKC)line.ast=c.ast||0;   // soccer's log names scorers, not assists: those stay
+              if("pts" in line)line.pts=line.goals+(line.ast||0); if("sog" in line)line.sog=Math.max(line.sog,c.goals); if("shots" in line)line.shots=Math.max(line.shots,c.goals); done.add(pl.n) }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
             pl.last={line:line,pos:P.p,week:this.step,team:tm};
           });
           if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
-            const pl=this.roster[tm][i], P=POS[i]||POS[0], c=LC[nm], line={goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals};
+            const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=LC[nm], line=HKC?{goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals}:{goals:c.goals,shots:c.goals};
             if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
         });
       }
@@ -5085,7 +5141,11 @@ function callInReach(args,seed,answers,meHome,j){
 const SPREAD_ON=true;
 // mid-game situation calls only: the final stretch (final, tied, overtime, the goalie pull) keeps its promise of a
 // decision when the game is in reach (round 40), and crunch-time and third-period calls are reads
-const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS); ["final","tied","ot","pull","close","third"].forEach(k=>delete SPREAD_KINDS[k]);   // round 44: who starts in goal, foul trouble
+// round 46 (Ian: "gate them"): every situation call, the late ones too, is asked only when it gains 3 points on your
+// assistant. Round 40 kept the final stretch, ties, overtime, the pull, the press and the third period out of it, so a
+// close game always had a late decision; both testers found those calls graded "close either way" (soccer's 80th
+// minute, the college press, hockey's overtime), which is the round-40 rule for cutting a call.
+const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS);   // round 44: who starts in goal, foul trouble
 const SPREAD_MIN=0.03, SPREAD_RUNS=60;
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
@@ -5122,7 +5182,7 @@ function callImpact(args,seed,answers,meHome,runs){
     const cf=play(j,def);                    // the same dice, his call
     let rp=0,rd=0; for(let m=0;m<runs;m++){ rp+=score(play(j,pick,m)); rd+=score(play(j,def,m)) }
     const lab=o=>(A.dp.opts.find(x=>x[0]===o)||[o,o])[1].split(" · ")[0].split(":")[0];
-    out.push({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000});
+    out.push({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)});
   });
   return out;
 }
@@ -5159,7 +5219,7 @@ function impactHTML(P){
   const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear));
   if(Math.abs(k)<=7||(k>0&&crossed)){   // no headline: one plain line, sized to the gap
     const lead=Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
-      :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.`;
+      :`${esc(c.h)}: ${pickWord(c)}. Over many replays it was ${k>0?"a little better than":"a little worse than"} ${c.q!==undefined&&k<0?"the best option":"the assistant's"} &mdash; worth knowing, not worth a headline.${repRates(c)}`;
     return `<div class="impact quiet"><div class="impbody">${lead}</div>${restHTML}</div>`; }
   const good=k>0;
   const verdict=good?"A strong call":"The wrong call";
@@ -5168,9 +5228,16 @@ function impactHTML(P){
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"")
                     :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"");
   return `<div class="impact"><div class="imphead">${verdict}${tonight?", "+tonight:"."}</div>
-    <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.</div>${restHTML}</div>`;
+    <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.${repRates(c)}</div>${restHTML}</div>`;
     // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
     // often", and players stopped trusting the replays (Grokbot). Whether tonight turned on it stays in the headline.
+}
+/* the replays behind a verdict, option by option, as football's fourth downs show them (Instinct, round 15: basketball's
+   grades had no comparison to inspect). Win shares where a game has a winner; soccer grades in points, so it doesn't. */
+function repRates(c){
+  if(LEAGUE.draws||c.wp===undefined||c.wd===undefined||/assistant/i.test(c.pick))return "";
+  const d=typeof filmDef==="function"&&filmDef(c.def)?filmDef(c.def):"his call";
+  return ` <span class="reprate">${esc(c.pick)} won ${c.wp}% of the replays; ${esc(d)}, ${c.wd}%.</span>`;
 }
 /* the season's ledger: what your calls were worth, in wins, against leaving them to the assistant */
 function ledgerLine(){
@@ -5197,6 +5264,44 @@ function seasonCallsHTML(){
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
   return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");
+}
+
+/* ============ live win probability (round 46, a trial: Ian wanted to try it) ============ */
+/* Between plays only, never on a call (it can't become a calculator for the options). From the score, the time left
+   and the pre-game chance: the rest of the game's margin is taken as normal, mean mu*tau and spread sigma*sqrt(tau),
+   where tau is the share of the game still to play and mu the full-game edge the pre-game chance implies. Sigma is
+   each league's, fitted to its own engine (LIVE_SIG, measured: test/live-wp.js), and the line is checked for honesty
+   there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
+   (a shoot-out, extra time) at the pre-game edge, halved. */
+const LIVE_WP_ON=true, LIVE_MU={};   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
+function liveTau(d){
+  if(!d)return 1;
+  if(d.q!==undefined){ const T=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24; return d.q>=5?0.02:Math.max(0,1-(d.n||0)/T) }
+  if(d.ot||d.so)return 0.03;
+  const N=typeof SEGS!=="undefined"?SEGS:8; return Math.max(0,1-((d.seg||0)+1)/N);
+}
+function liveScore(d){ return d.q!==undefined?[d.h,d.a]:[d.sh,d.sa] }
+function normCdf(z){ const t=1/(1+0.2316419*Math.abs(z)), y=0.3989423*Math.exp(-z*z/2)*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274)))); return z>0?1-y:y }
+function normInv(p){ p=Math.min(0.9999,Math.max(0.0001,p)); let lo=-6,hi=6; for(let i=0;i<50;i++){ const m=(lo+hi)/2; if(normCdf(m)<p)lo=m; else hi=m } return (lo+hi)/2 }
+/* [win, draw, loss] for the side with margin m (theirs subtracted), tau of the game to play, pre-game [w,d,l] */
+function liveChance(m,tau,pre,sig,poss){
+  const [w0,d0]=pre, s=sig, mu=s*normInv(Math.min(0.995,Math.max(0.005,w0+d0/2)));
+  const E=m+mu*(LIVE_MU[LEAGUE.id]||1)*tau+(poss&&tau>0?poss*LIVE_POSS:0), S=Math.max(0.05,s*Math.sqrt(Math.max(tau,0.0001)));
+  const pw=1-normCdf((0.5-E)/S), pl=normCdf((-0.5-E)/S), pt=Math.max(0,1-pw-pl);
+  if(LEAGUE.draws&&!(typeof live!=="undefined"&&live&&live.g&&(live.g.cup||live.g.title||SEA.phase!=="week")))return [pw,pt,pl];   // a cup tie or a play-off goes on to a winner
+  const q=0.5+((w0+d0/2)-0.5)*0.5; return [pw+pt*q,0,pl+pt*(1-q)];
+}
+function liveWPHTML(){
+  if(!LIVE_WP_ON||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";
+  const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
+  const meH=live.g.home===S.myTeam, m=meH?sc[0]-sc[1]:sc[1]-sc[0];
+  if(!live.pre){ const opp=meH?live.g.away:live.g.home;
+    try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
+  const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
+  const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${P(w)}% to win</span></div>`;
 }
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
@@ -5426,18 +5531,25 @@ function filmLine(opp){
   if(!STORY_ON||!FILMPRE_ON||!S.film)return "";
   const F=S.film.filter(x=>x.opp===opp&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
   const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`;
-  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${/assistant/i.test(F.def||"")?"his call":esc(F.def||"his call")}.</div>`;
+  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${filmDef(F.def)?esc(filmDef(F.def)):"his call"}.</div>`;
 }
 /* who you are, in one line, once there's enough to say it (Muse: "a gambler who won his gambles") */
 function identityLine(){
   const L=S.lifeCalls; if(!L||L.n<8)return "";
-  const tot=L.bold+L.safe, bs=tot?L.bold/tot:0.5, w=L.w;
+  const tot=L.bold+L.safe, bs=tot?L.bold/tot:0.5;
+  // career-long, from the same ledger as the season's count beside it: the life tally began in round 41, so a career's
+  // "30" sat under a season's "92" (Muse, round 20). Older seasons kept no ledger; they count from this one.
+  const CL=S.callLedger||{}, ys=Object.keys(CL), n=Math.max(L.n,ys.reduce((t,y)=>t+(CL[y].n||0),0)), w=ys.length?ys.reduce((t,y)=>t+(CL[y].worth||0),0):L.w;
   const res=x=>x>0.3?"and it's paid":x<-0.3?"and it's cost you":"and it's come out about even";
   const who=bs>=0.6?`A gambler, ${res(L.boldW)}`:bs<=0.4?`A percentages coach, ${res(L.safeW)}`:`Even-handed, bold when it's called for, careful when it isn't, ${res(w)}`;
   const a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?Math.round(a*10)/10:Math.round(a*2)/2} win${a>=0.75&&a<1.25?"":"s"}`;
-  return `<div class="ident"><b>${who}.</b> Every call you've made differently from your assistant, career-long (${L.n}): ${say} against leaving them to him, over many replays.</div>`;
+  return `<div class="ident"><b>${who}.</b> Every call you've made differently from your assistant, career-long (${n}): ${say} against leaving them to him, over many replays.</div>`;
 }
 
+/* the assistant's call, by name: "Play it straight, as your assistant would" was hidden for saying "assistant", so
+   college football's entries never named the alternative (Muse, round 20) */
+function filmDef(d){ if(!d)return ""; const t=String(d).replace(/,?\s*(as|like|what) your assistant (would|does)[^.]*$/i,"").trim();
+  return /assistant/i.test(t)||!t?"":t }
 /* the Film Room: your biggest calls, career-long */
 function filmRoomHTML(){
   if(!STORY_ON)return "";
@@ -5449,7 +5561,7 @@ function filmRoomHTML(){
   const res=x=>`${x.mine>x.theirs?"W":x.mine<x.theirs?"L":"D"} ${x.mine}&ndash;${x.theirs}`;
   const row=x=>`<div class="film ${x.w>0?'up':'dn'}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.y}${x.wk?" &middot; "+esc(x.wk):""}${x.title?" &middot; "+esc(x.title):""} &middot; ${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x)}</div>
-    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${x.def&&!/assistant/i.test(x.def)?` Your assistant: ${esc(x.def)}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
+    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
   return `<div class="grouphead">The Film Room</div>${id}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
     (worst.length?`<div class="filmlab">The ones that got away</div>`+worst.map(row).join(""):"")+
@@ -5603,7 +5715,9 @@ function objStatus(o,my){
     const left=myLeagueGames(my).filter(g=>g.home===my&&!g.neutral&&g.week>=SEA.step).length;
     if(w>=o.n)return {s:"met",t:`${w} won`};
     if(w+left<o.n||done)return {s:"miss",t:`${w} won, ${o.n} needed`};
-    return {s:"on",t:`${w} won, ${left} to play`} }
+    // the ones not won too: "13 won, 28 to play" of 44 read as arithmetic gone wrong (Muse, round 20)
+    const pl=played.filter(g=>g.home===my&&!g.neutral).length-w;
+    return {s:"on",t:`${w} won${pl?`, ${pl} not`:""}, ${left} to play`} }
   return {s:"on",t:""};
 }
 /* Re-aimed (round 45): an objective settled with a third of the season still to play, met or missed, leaves a
@@ -5951,6 +6065,7 @@ function musicStop(){
 /* a browser starts sound only after a tap: music that was on last time waits for the first one */
 try{ if(typeof document!=="undefined"&&document.addEventListener)
   document.addEventListener("pointerdown",()=>{ if(musicOn()&&soundOn()&&!musicT)musicStart() },{passive:true}) }catch(e){}
+const ptsW=n=>`${n} point${n===1?"":"s"}`;   // "1 points" (Instinct, round 15)
 /* ============ views: English football ============ */
 /* The tables, zones marked (the Premier League's Champions League places and
    the drop; the Championship's automatic promotion and play-offs), the
@@ -6059,16 +6174,16 @@ function eplStakes(x){
   const R=DIVS[d];
   if(d==="PL"){
     if(pos<=2)out.push({p:90,tag:"TITLE RACE",l:`${pos===1?"Top of the table":"Second, "+(P(T[0])-P(my))+" behind "+esc(T[0])} with ${left} to play.`});
-    else if(pos<=7)out.push({p:84,tag:"EUROPE",l:`${pos<=5?"In the Champions League places":"Chasing the top five"}: ${P(T[4])-P(my)>0?(P(T[4])-P(my))+" points off fifth":"fifth or better"}.`});
+    else if(pos<=7)out.push({p:84,tag:"EUROPE",l:`${pos<=5?"In the Champions League places":"Chasing the top five"}: ${P(T[4])-P(my)>0?ptsW(P(T[4])-P(my))+" off fifth":"fifth or better"}.`});
     const gap=P(my)-P(T[17]);
-    if(pos>=15)out.push({p:92,tag:pos>=18?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>=18?`${P(T[16])-P(my)} points from safety with ${left} to play.`:`${gap} point${gap===1?"":"s"} above the drop.`});
+    if(pos>=15)out.push({p:92,tag:pos>=18?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>=18?`${ptsW(P(T[16])-P(my))} from safety with ${left} to play.`:`${gap} point${gap===1?"":"s"} above the drop.`});
   } else {
     const pe=R.po[1], six=R.po[1]-R.po[0]===5;
     const ord=n=>n+(n%10===1&&n%100!==11?"st":n%10===2&&n%100!==12?"nd":n%10===3&&n%100!==13?"rd":"th");   // the places by number (Grokbot)
     if(pos<=R.up)out.push({p:90,tag:"PROMOTION",l:`${ord(pos)}: in the automatic places (top ${R.up}) with ${left} to play.`});
     else if(pos<=pe)out.push({p:86,tag:"PLAY-OFFS",l:`${ord(pos)}: in the play-off places (${ord(R.po[0])} to ${ord(pe)}). ${six&&pos<R.po[0]+2?"Straight to the semi-finals if it stays that way.":six?"An eliminator first.":"A semi-final if it stays that way."}`});
-    else if(pos<=pe+4)out.push({p:80,tag:"PLAY-OFF RACE",l:`${P(T[pe-1])-P(my)} points off the play-offs.`});
-    if(R.down&&pos>=24-R.down-2)out.push({p:92,tag:pos>24-R.down?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>24-R.down?`${P(T[23-R.down])-P(my)} points from safety.`:`${P(my)-P(T[24-R.down])} points above the drop.`});
+    else if(pos<=pe+4)out.push({p:80,tag:"PLAY-OFF RACE",l:`${ptsW(P(T[pe-1])-P(my))} off the play-offs.`});
+    if(R.down&&pos>=24-R.down-2)out.push({p:92,tag:pos>24-R.down?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>24-R.down?`${ptsW(P(T[23-R.down])-P(my))} from safety.`:`${ptsW(P(my)-P(T[24-R.down]))} above the drop.`});
   }
   if(CONF[opp]===d&&Math.abs(T.indexOf(opp)+1-pos)<=2)out.push({p:82,tag:"SIX-POINTER",l:`${esc(opp)} are right beside you in the table. Three points for you, none for them.`});
   return out;
@@ -6620,6 +6735,9 @@ function liveTick(){
         if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
+          // the rare decisions say so when the assistant takes them (round 46: both testers met neither foul trouble nor
+          // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
+          if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       live.ff=false;                            // skipping stops at your next call
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
@@ -6950,7 +7068,7 @@ async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
 /* a save that didn't land is said at once, not only on the way out: the browser's storage for these six games is
    full (every career, every game, one allowance) or blocked */
-function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does).":"This browser's storage for these games is full: every career in all six games shares one allowance."} Download a backup now so nothing is lost, then erase a career you don't need from the title screen.
+function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does). Download a backup now so nothing is lost.":store.kind()==="database"?"This browser refused the save (the disk may be nearly full). Download a backup now so nothing is lost.":"This browser's older storage for these games is full: every career in all six games shares one allowance. Download a backup now so nothing is lost, then erase a career you don't need from the title screen."}
   <button class="skip small" id="savefailbk">Download a backup</button></div>`:"" }
 /* once a season, as it's banked: a career lives only in this browser; a file keeps it safe (Muse: "nothing ever
    points at" the backup) */
@@ -7161,7 +7279,9 @@ function yourOTL(team,from,to){
 function careerNow(C){
   const my=S.myTeam, banked=S.off&&S.off.year===SEA.year;
   if(!SEA||!SEA.rec||!SEA.rec[my]||banked)return C;
-  const r=SEA.rec[my]; return Object.assign({},C,{w:C.w+r[0],l:C.l+r[1],d:(C.d||0)+((SEA.drw&&SEA.drw[my])||0)});
+  // the regular season, as the franchise's all-time line counts it (round 46: soccer's and hockey's careers took in
+  // their play-off games, the all-time line didn't, and the two disagreed for every play-off season)
+  const r=(SEA.regRec||SEA.rec)[my]; return Object.assign({},C,{w:C.w+r[0],l:C.l+r[1],d:(C.d||0)+((SEA.drw&&SEA.drw[my])||0)});
 }
 function ordinal(n){return n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th")}
 function recStr(t){ return LEAGUE.recText?LEAGUE.recText(t,SEA):SEA.rec[t][0]+"-"+SEA.rec[t][1] }
@@ -7332,11 +7452,12 @@ function openOffseason(){
   const om=objectivesMet(my); C.rep+=OBJ_REP*om;
   C.objLog=(C.objLog||[]).concat([{year:SEA.year,team:my,met:om,of:seasonObjectives(my).length}]);
   C.rep=Math.max(-48,Math.min(80,C.rep));
-  C.w+=SEA.rec[my][0]; C.l+=SEA.rec[my][1];
+  const RR=(SEA.regRec||SEA.rec)[my];   // the regular season (careerNow)
+  C.w+=RR[0]; C.l+=RR[1];
   if(LEAGUE.draws)C.d=(C.d||0)+((SEA.drw&&SEA.drw[my])||0);
   if(titles.natl)C.titles++; if(titles.conf)C.confs++;
   const st=C.stops[C.stops.length-1];
-  st.w+=SEA.rec[my][0]; st.l+=SEA.rec[my][1]; if(LEAGUE.draws)st.d=(st.d||0)+((SEA.drw&&SEA.drw[my])||0);
+  st.w+=RR[0]; st.l+=RR[1]; if(LEAGUE.draws)st.d=(st.d||0)+((SEA.drw&&SEA.drw[my])||0);
   if(titles.natl)st.titles++;
   st.to=SEA.year;
   const staffCands={};
@@ -7678,8 +7799,14 @@ function heroResult(){
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
     // a conference tournament loss before Selection Sunday isn't the end of the season (Instinct, round 42)
-    else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&!(SEA.field&&SEA.field.length)&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)))
-      move=`<div class="hmove dn">Out of the ${esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/Tournament Tournament/,"Tournament"))}. Selection Sunday decides the rest.</div>`;
+    // ...nor after it, when the card is drawn again over a bracket you're in (Instinct, round 15: "Season over" above
+    // "YOU'RE IN · 2 SEED"): a conference tournament game (g.ct) says what the field did
+    else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&(g.ct||!(SEA.field&&SEA.field.length))&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)&&!g.ct)){
+      const ctn=esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/ Championship$/i,"").replace(/Tournament Tournament/,"Tournament"));
+      const inF=SEA.field&&SEA.field.length&&SEA.seeds&&SEA.seeds[my];
+      move=!(SEA.field&&SEA.field.length)?`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`
+        :inF?`<div class="hmove flat">Out of the ${ctn}, and into the NCAA Tournament: a ${SEA.seeds[my]} seed${SEA.region&&SEA.region[my]?`, ${esc(SEA.region[my])}`:""}.</div>`
+        :`<div class="hmove dn">Out of the ${ctn}, and left out of the NCAA field.</div>` }
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   const cupRes=LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(Object.assign({week:flash&&flash.step},g),my):null;   // a league's own line (the NBA Cup's group games, league games too)
@@ -7693,11 +7820,15 @@ function heroResult(){
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>
     <div class="hfoot">Second half under way&hellip;</div></div>`;
-  return `<div class="hero ${won?'win':g.draw?'draw':'loss'}" style="--tc:${teamInk(my)}">
+  // the big nights in order (Instinct, round 15): what happened, what it means, and then, a tap away, the audit
+  const banner=(won&&SEA.champion===my&&/Champions/.test(move||"")&&typeof titleNightHTML==="function"?titleNightHTML(my):"")+(typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):"");
+  const moment=!!banner||/Season over|Out of the|out of the|beaten in the|Champions|WINNERS|winners/.test(move||"");
+  const audit=(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
+      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()+readsHTML(flash&&flash.step);
+  return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${won&&SEA.champion===my&&/Champions/.test(move)&&typeof titleNightHTML==="function"?titleNightHTML(my):""}${typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):""}${cupG?cupLineHTML(cupG,my):""}${(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
-      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()}${readsHTML(flash&&flash.step)}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -8142,7 +8273,7 @@ function teamCardHTML(my,rk,co){
         ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
-          :e.pos?`Target: finish ${ordinal(e.pos)} or better. ${(()=>{const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0; return p?"You're "+ordinal(p)+".":""})()}`
+          :e.pos?posGoalLine(e,my)
           :need===0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;   // each clause as it stands (Instinct)
               return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
@@ -8153,6 +8284,25 @@ function teamCardHTML(my,rk,co){
   return h;
 }
 
+const ANNOUNCE_KINDS={fouls:1,gstart:1};
+function autoNoteIn(h){
+  const N=live&&live.autoNote, wp=typeof liveWPHTML==="function"?liveWPHTML():"";
+  const note=wp+(N&&live.drives.length-N.at<=3?`<div class="autonote"><b>${esc(N.h)}.</b> Your assistant's call: ${esc(N.l.toLowerCase())}. Nothing much between the options tonight, so it wasn't put to you.</div>`:"");
+  if(!note)return h;
+  const i=h.indexOf('<div class="watchwrap">'); return i<0?note+h:h.slice(0,i+23)+note+h.slice(i+23);
+}
+/* soccer's goal line, aware of the occasion (Instinct, round 15: "Target: finish 2nd or better. You're 5th." on the
+   night MK Dons went up through the play-offs). A clinch or a settled season says what happened first. */
+function posGoalLine(e,my){
+  const T=SEA.table?SEA.table(CONF[my]):null, p=T?T.indexOf(my)+1:0, tgt=`finish ${ordinal(e.pos)} or better`;
+  const C=S.clinch&&S.clinch.year===SEA.year&&S.clinch.team===my?S.clinch.k:{};
+  let res=""; if(SEA.phase!=="week"&&typeof SEA.seasonResult==="function"){ try{ res=SEA.seasonResult(my)||"" }catch(e){} }
+  if(C.title||/CHAMPIONS/.test(res))return `Champions. The target was to ${tgt}: done, and then some.`;
+  if(C.up||/^Promoted \(/.test(res))return `Promoted. The target was to ${tgt}: done.`;
+  if(/Promoted through/.test(res))return `Up through the play-offs. The board asked for ${ordinal(e.pos)} or better (you finished ${ordinal(p)}); going up is what it wanted.`;
+  if(C.down||/^Relegated/.test(res))return `Relegated. The target was to ${tgt}.`;
+  return `Target: ${tgt}. ${p?"You're "+ordinal(p)+".":""}`;
+}
 /* how much an absence hurts, in a word: the size stays under the hood (it was a
    raw team-strength number, and a -195 read like nonsense next to a 78 rating) */
 /* judged against a typical starter's absence in the same sport (the median,
@@ -9456,7 +9606,7 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+'<div class="callbox">'):liveView();
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+'<div class="callbox">'):autoNoteIn(liveView());
     bindGuide();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the

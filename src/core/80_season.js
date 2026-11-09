@@ -150,19 +150,22 @@ class Season{
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
           if(typeof statDeploy=="function")statDeploy(this,tm);   // hockey: the box score follows the ice time
           // a game you watched: goals and assists go to the men the log named, backups too (hockey)
-          const LC=F.drives&&typeof hkLogCredit==="function"?hkLogCredit(tm,tm===a?"home":"away",F.drives):null, done=new Set();
+          // soccer too (round 46: Muse, three scorers credited with no goals): the log's scorers get the goals
+          const LCf=typeof hkLogCredit==="function"?hkLogCredit:typeof scLogCredit==="function"?scLogCredit:null, HKC=typeof hkLogCredit==="function"&&LCf===hkLogCredit;
+          const LC=F.drives&&LCf?LCf(tm,tm===a?"home":"away",F.drives):null, done=new Set();
           POS.forEach((P,i)=>{
             const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
             if(!pl)return;
             if(!pl.st2)pl.st2=blankStats(P.p);
             const line=gameStats(this.rng,pl,i,pf,pa2,pf>pa2);
-            if(LC&&P.p!=="G"){ const c=LC[pl.n]||{goals:0,ast:0}; line.goals=c.goals; line.ast=c.ast; line.pts=c.goals+c.ast; line.sog=Math.max(line.sog,c.goals); done.add(pl.n) }
+            if(LC&&P.p!=="G"&&P.p!=="GK"){ const c=LC[pl.n]||{goals:0}; line.goals=c.goals; if(HKC)line.ast=c.ast||0;   // soccer's log names scorers, not assists: those stay
+              if("pts" in line)line.pts=line.goals+(line.ast||0); if("sog" in line)line.sog=Math.max(line.sog,c.goals); if("shots" in line)line.shots=Math.max(line.shots,c.goals); done.add(pl.n) }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
             pl.last={line:line,pos:P.p,week:this.step,team:tm};
           });
           if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
-            const pl=this.roster[tm][i], P=POS[i]||POS[0], c=LC[nm], line={goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals};
+            const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=LC[nm], line=HKC?{goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals}:{goals:c.goals,shots:c.goals};
             if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
         });
       }

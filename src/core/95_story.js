@@ -91,18 +91,25 @@ function filmLine(opp){
   if(!STORY_ON||!FILMPRE_ON||!S.film)return "";
   const F=S.film.filter(x=>x.opp===opp&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
   const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`;
-  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${/assistant/i.test(F.def||"")?"his call":esc(F.def||"his call")}.</div>`;
+  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${filmDef(F.def)?esc(filmDef(F.def)):"his call"}.</div>`;
 }
 /* who you are, in one line, once there's enough to say it (Muse: "a gambler who won his gambles") */
 function identityLine(){
   const L=S.lifeCalls; if(!L||L.n<8)return "";
-  const tot=L.bold+L.safe, bs=tot?L.bold/tot:0.5, w=L.w;
+  const tot=L.bold+L.safe, bs=tot?L.bold/tot:0.5;
+  // career-long, from the same ledger as the season's count beside it: the life tally began in round 41, so a career's
+  // "30" sat under a season's "92" (Muse, round 20). Older seasons kept no ledger; they count from this one.
+  const CL=S.callLedger||{}, ys=Object.keys(CL), n=Math.max(L.n,ys.reduce((t,y)=>t+(CL[y].n||0),0)), w=ys.length?ys.reduce((t,y)=>t+(CL[y].worth||0),0):L.w;
   const res=x=>x>0.3?"and it's paid":x<-0.3?"and it's cost you":"and it's come out about even";
   const who=bs>=0.6?`A gambler, ${res(L.boldW)}`:bs<=0.4?`A percentages coach, ${res(L.safeW)}`:`Even-handed, bold when it's called for, careful when it isn't, ${res(w)}`;
   const a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?Math.round(a*10)/10:Math.round(a*2)/2} win${a>=0.75&&a<1.25?"":"s"}`;
-  return `<div class="ident"><b>${who}.</b> Every call you've made differently from your assistant, career-long (${L.n}): ${say} against leaving them to him, over many replays.</div>`;
+  return `<div class="ident"><b>${who}.</b> Every call you've made differently from your assistant, career-long (${n}): ${say} against leaving them to him, over many replays.</div>`;
 }
 
+/* the assistant's call, by name: "Play it straight, as your assistant would" was hidden for saying "assistant", so
+   college football's entries never named the alternative (Muse, round 20) */
+function filmDef(d){ if(!d)return ""; const t=String(d).replace(/,?\s*(as|like|what) your assistant (would|does)[^.]*$/i,"").trim();
+  return /assistant/i.test(t)||!t?"":t }
 /* the Film Room: your biggest calls, career-long */
 function filmRoomHTML(){
   if(!STORY_ON)return "";
@@ -114,7 +121,7 @@ function filmRoomHTML(){
   const res=x=>`${x.mine>x.theirs?"W":x.mine<x.theirs?"L":"D"} ${x.mine}&ndash;${x.theirs}`;
   const row=x=>`<div class="film ${x.w>0?'up':'dn'}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.y}${x.wk?" &middot; "+esc(x.wk):""}${x.title?" &middot; "+esc(x.title):""} &middot; ${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x)}</div>
-    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${x.def&&!/assistant/i.test(x.def)?` Your assistant: ${esc(x.def)}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
+    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
   return `<div class="grouphead">The Film Room</div>${id}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
     (worst.length?`<div class="filmlab">The ones that got away</div>`+worst.map(row).join(""):"")+

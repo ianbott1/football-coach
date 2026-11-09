@@ -1,5 +1,5 @@
 {
- "fp": "966034876481f71e",
+ "fp": "f6095d6415d23419",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -215,6 +215,11 @@
    "fp": "966034876481f71e",
    "from": "4b61c3abea3323f6",
    "note": "round 44 (foul trouble / goalie start / soccer graded in league points); control build matches the round-43 fingerprint"
+  },
+  {
+   "fp": "f6095d6415d23419",
+   "from": "966034876481f71e",
+   "note": "round 46: gating, scorer credit, careers on regular-season records, state text"
   }
  ],
  "out": [
@@ -224,20 +229,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "48-34",
+      "rec": "50-32",
       "result": "Lost in the conference semifinals",
       "grade": "B"
      },
-     "book": "51a2ed8a42e1e640"
+     "book": "e36bee94cc386e65"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "42-40",
+      "rec": "44-38",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "4085df717cb46f3b"
+     "book": "4ae35534773a88ea"
     }
    ]
   },
@@ -247,20 +252,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "15-67",
+      "rec": "16-66",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "a514752cc7440493"
+     "book": "db5c19de7d6229e0"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "25-57",
+      "rec": "34-48",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "7eb8303ff1c12590"
+     "book": "7e88711f36a579c2"
     }
    ]
   },
@@ -270,20 +275,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "39-43",
-      "result": "Lost in the first round",
-      "grade": "C-"
+      "rec": "23-59",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "651fa467968c3108"
+     "book": "c1095008f1d34b68"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "54-28",
-      "result": "Lost in the conference semifinals",
-      "grade": "B+"
+      "rec": "63-19",
+      "result": "Lost in the conference finals",
+      "grade": "A"
      },
-     "book": "bd0cc32bbfda10de"
+     "book": "4386a29f1764e5da"
     }
    ]
   }

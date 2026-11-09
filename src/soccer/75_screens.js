@@ -18,6 +18,11 @@ function scScorer(team,u){
   const x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
   return {n:scPlayer(team,unit,u)||"a forward", unit:unit};
 }
+/* a game you watched: the goals go to the men the commentary named (core 80_season) */
+function scLogCredit(tm,side,drives){
+  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scScorer(tm,e.u||0); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
+  return C;
+}
 const FINISH={
   ST:["slots it under the keeper","finishes first time from close range","turns and fires into the bottom corner","heads in at the near post","rounds the keeper and rolls it in"],
   W:["cuts inside and curls it into the far corner","arrives at the back post to tap in","beats his man and drills it low past the keeper"],
@@ -178,9 +183,9 @@ function tableStakesHTML(g,my){
   const place=pts=>1+div.filter(t=>t!==my&&P(t)>pts).length, tied=pts=>div.filter(t=>t!==my&&P(t)===pts);
   const say=pts=>{ const T=tied(pts); return `${ordinal(place(pts))}${T.length?`, level with ${esc(T[0])}${T.length>1?` and ${T.length-1} more`:""}`:""}` };
   return `<div class="evid"><div class="evh">What it means in the table <span>before tonight's other results</span></div>
-    <div class="evr"><span class="evk">Now</span><span class="evv">${say(me)} on ${me} points</span></div>
+    <div class="evr"><span class="evk">Now</span><span class="evv">${say(me)} on ${me} point${me===1?"":"s"}</span></div>
     <div class="evr"><span class="evk">A win (three)</span><span class="evv">${me+3} points: ${say(me+3)}</span></div>
-    <div class="evr"><span class="evk">A draw (one)</span><span class="evv">${me+1} points: ${say(me+1)}</span></div>
+    <div class="evr"><span class="evk">A draw (one)</span><span class="evv">${me+1} point${me+1===1?"":"s"}: ${say(me+1)}</span></div>
     <div class="evn">${left} league game${left===1?"":"s"} left after this one. A draw is a point; a win is three.</div></div>`;
 }
 function statStrip(g,d){
