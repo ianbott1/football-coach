@@ -46,13 +46,27 @@ function recordStory(played,g,step,meHome){
   const one={wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,po:po};
   if(down>=th&&(won||(LEAGUE.draws&&!lost&&down>=th))&&(!Y.cb||down>Y.cb.by))Y.cb=Object.assign({by:down,won:won},one);
   if(up>=th&&lost&&(!Y.cl||up>Y.cl.by))Y.cl=Object.assign({by:up},one);
+  // the live chance at its lowest and highest (round 48, Muse: "You were at 7% in Blacksburg and won anyway" is a
+  // sentence a player keeps; round 41 wanted it and had no live chance to quote)
+  const ext=storyExtremes(played,meHome,opp);
+  if(ext){ if(won&&ext.lo<=0.12&&(!Y.cbw||ext.lo<Y.cbw.lo))Y.cbw=Object.assign({lo:ext.lo},one);
+    if(lost&&ext.hi>=0.88&&(!Y.clw||ext.hi>Y.clw.hi))Y.clw=Object.assign({hi:ext.hi},one) }
+}
+function storyExtremes(played,meHome,opp){
+  if(typeof liveChance!=="function"||typeof LIVE_WP_ON==="undefined"||!LIVE_WP_ON||!played.drives||!played.drives.length)return null;
+  let pre; try{ pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meHome,false)):[winProb(S.myTeam,opp,meHome,false),0] }catch(e){ return null }
+  const sig=LIVE_SIG[LEAGUE.id]||10; let lo=1, hi=0;
+  played.drives.forEach((d,i)=>{ if(i===played.drives.length-1)return; const sc=liveScore(d); if(sc[0]===undefined)return;
+    const m=meHome?sc[0]-sc[1]:sc[1]-sc[0], poss=d.q!==undefined?(d.home===meHome?-1:1):0, c=liveChance(m,liveTau(d),pre,sig,poss), v=c[0]+c[1]/2;
+    if(v<lo)lo=v; if(v>hi)hi=v });
+  return {lo:lo,hi:hi};
 }
 
 /* the season banked: its comeback and collapse go into its history entry, and the head-to-head with each coach */
 function bankStory(entry){
   if(!STORY_ON)return;
   const yr=SEA.year;
-  if(S.storyYr&&S.storyYr[yr]&&(S.storyYr[yr].cb||S.storyYr[yr].cl))entry.story=JSON.parse(JSON.stringify(S.storyYr[yr]));
+  if(S.storyYr&&S.storyYr[yr]&&(S.storyYr[yr].cb||S.storyYr[yr].cl||S.storyYr[yr].cbw||S.storyYr[yr].clw))entry.story=JSON.parse(JSON.stringify(S.storyYr[yr]));
   if(S.storyYr){ Object.keys(S.storyYr).forEach(y=>{ if(+y<=yr)delete S.storyYr[y] }) }
   // every game you coached this season, against whoever was coaching the other side when it ended
   const my=S.myTeam, seen=new Set(), G=[].concat(...SEA.weeks.map(w=>w.games||[]));
@@ -93,6 +107,18 @@ function filmMemoryHTML(dp){
   const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`, alt=filmDef(F.def)||"his call";
   return `<div class="filmmem"><b>The Film Room remembers:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}), the same call. ${/assistant/i.test(F.pick)?"You left it to your assistant":"You went with "+esc(F.pick)}, and it was ${F.w>7?"clearly better than":F.w>0?"a little better than":F.w<-7?"clearly worse than":"a little worse than"} ${esc(alt)}. Tonight is its own game.</div>`;   // in words: no number on tonight's options (Ian)
 }
+/* the series so far, before a play-off game (round 48, Instinct: "the game-7 scouting screen is the emptiest screen in
+   the most meaningful game of the season"): every game of it, and what your calls in the ones you watched were worth */
+function seriesBookHTML(opp){
+  if(!STORY_ON||!SEA||SEA.phase==="week"||typeof SEA.postGamesFor!=="function")return "";
+  const my=S.myTeam, G=SEA.postGamesFor(my).map(x=>Array.isArray(x)?x[0]:x).filter(g=>g&&(g.home===opp||g.away===opp)&&g.hp!==undefined);
+  if(!G.length)return "";
+  const sc=g=>{ const m=g.home===my?g.hp:g.ap, t=g.home===my?g.ap:g.hp; return `${m>t?"W":"L"} ${m}&ndash;${t}` };
+  const w=G.filter(g=>g.winner===my).length, l=G.length-w;
+  let n=0, worth=0; Object.keys(S.played||{}).forEach(k=>{ const [y,st]=k.split(":"); if(+y!==SEA.year||!(+st>=LEAGUE.weeks))return;   // play-off steps only
+    (S.played[k]||[]).forEach(p=>{ if(p.team!==my||p.other!==opp)return; (p.impact||[]).forEach(c=>{ if(Number.isFinite(c.worth)){ n++; worth+=c.worth } }) }) });
+  return `<div class="series seriesbook"><b>The series so far:</b> ${w>l?"you lead "+w+"-"+l:w<l?"they lead "+l+"-"+w:"level at "+w+"-"+l}. ${G.map((g,i)=>`Game ${i+1} ${sc(g)}`).join(" &middot; ")}.${n?` Your calls in the games you watched: ${n}, worth about ${worth>=0?"+":"\u2212"}${Math.abs(worth).toFixed(1)} wins against leaving them to your assistant.`:""}</div>`;
+}
 /* before a game: the last call from the Film Room against this side (round 45: the room was a page nobody opened
    before the games it was about) */
 const FILMPRE_ON=true;
@@ -127,11 +153,15 @@ function filmRoomHTML(){
   // no more than two of one kind of moment: five overtimes in a row read as one story told five times
   const vary=(L,n)=>{ const c={}, out=[]; L.forEach(x=>{ const k=String(x.h).replace(/\d+/g,"#"); if(out.length<n&&(c[k]=(c[k]||0)+1)<=2)out.push(x) }); return out };
   const best=vary(F.filter(x=>x.w>0).sort((a,b)=>b.w-a.w),5), worst=vary(F.filter(x=>x.w<0).sort((a,b)=>a.w-b.w),3);
+  // what the room shows and why (Muse, round 21: "the best list caps at three and evicts an older entry without a word":
+  // it was the two-of-a-kind rule, unsaid)
+  const kept=F.filter(x=>x.w>0).length+F.filter(x=>x.w<0).length, hidden=kept-best.length-worst.length;
+  const rule=`<div class="note">Up to five of your best calls and three of your costliest, no more than two of one kind of moment; only calls that weren't close are kept.${hidden>0?` ${hidden} more ${hidden===1?"is":"are"} in the room, behind ones like ${hidden===1?"it":"them"}.`:""}</div>`;
   const res=x=>`${x.mine>x.theirs?"W":x.mine<x.theirs?"L":"D"} ${x.mine}&ndash;${x.theirs}`;
   const row=x=>`<div class="film ${x.w>0?'up':'dn'}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.y}${x.wk?" &middot; "+esc(x.wk):""}${x.title?" &middot; "+esc(x.title):""} &middot; ${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x)}</div>
     <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
-  return `<div class="grouphead">The Film Room</div>${id}`+
+  return `<div class="grouphead">The Film Room</div>${id}${best.length||worst.length?rule:""}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
     (worst.length?`<div class="filmlab">The ones that got away</div>`:"")+(worst.length?worst.map(row).join(""):"")+
     // an empty list says so (Muse, round 20: "a memory that silently stops recording is worse than none")
@@ -146,6 +176,10 @@ function storyRowLine(st){
   if(!st)return ""; const out=[];
   if(st.cb)out.push(`came back from ${st.cb.by} down ${st.cb.ha} ${esc(st.cb.opp)}${st.cb.wk?" ("+esc(st.cb.wk)+")":""}`);
   if(st.cl)out.push(`let ${/^(8|11|18)$|^8\d$/.test(String(st.cl.by))?"an":"a"} ${st.cl.by}-point lead go ${st.cl.ha} ${esc(st.cl.opp)}`);
+  // the live chance's extremes: added to the same night's line, or a line of their own
+  const same=(a,b)=>a&&b&&a.wk===b.wk&&a.opp===b.opp;
+  if(st.cbw){ const t=`${Math.max(1,Math.round(st.cbw.lo*100))}% to win at one point`; if(same(st.cb,st.cbw))out[0]+=` (${t})`; else out.push(`won from ${t.replace(" to win at one point","")} ${st.cbw.ha} ${esc(st.cbw.opp)}`) }
+  if(st.clw){ const t=`${Math.min(99,Math.round(st.clw.hi*100))}% to win at one point`, i=st.cb?1:0; if(same(st.cl,st.clw)&&out[i])out[i]+=` (${t})`; else out.push(`lost from ${t.replace(" to win at one point","")} ${st.clw.ha} ${esc(st.clw.opp)}`) }
   return out.length?`<div class="ystory">${out.join(" &middot; ")}</div>`:"";
 }
 
@@ -194,7 +228,8 @@ function titleNightHTML(my){
   const star=(()=>{ try{ return (SEA.mvpRace(60)||[]).find(x=>x.t===my) }catch(e){ return null } })();
   const ord=n=>n+(n%100>=11&&n%100<=13?"th":["th","st","nd","rd"][n%10]||"th");
   const lines=[`${esc(my)} ${yr}: ${esc(recStr(my))}.`];
-  if(Y.cb)lines.push(`The night it could have gone: ${Y.cb.by} down ${Y.cb.ha} ${esc(Y.cb.opp)}, and you came back to win ${Y.cb.mine}&ndash;${Y.cb.theirs}.`);
+  if(Y.cbw)lines.push(`You were at ${Math.max(1,Math.round(Y.cbw.lo*100))}% ${Y.cbw.ha} ${esc(Y.cbw.opp)}${Y.cbw.wk?" ("+esc(Y.cbw.wk)+")":""}, and won anyway, ${Y.cbw.mine}&ndash;${Y.cbw.theirs}.`);
+    if(Y.cb)lines.push(`The night it could have gone: ${Y.cb.by} down ${Y.cb.ha} ${esc(Y.cb.opp)}, and you came back to win ${Y.cb.mine}&ndash;${Y.cb.theirs}.`);
   if(call)lines.push(`Your call of the season: ${esc(call.h)}, ${call.ha} ${esc(call.opp)}. From that moment it won about ${call.w} more games in 100 than your assistant's call.`);
   if(star)lines.push(`${esc(star.n)} carried it${star.line?": "+esc(star.line):""}.`);
   lines.push(titles>1?`Your ${ord(titles)} title.`:`Your first title. Nobody can take it off you now.`);

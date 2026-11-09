@@ -82,6 +82,11 @@ def site():
         m = re.search(r'const BUILD_ID="([0-9a-f]+)"', g)
         stamps.append(m.group(1) if m else "?")
     page = page.replace("<!--BUILDS-->", "Builds: " + " &middot; ".join(stamps))
+    # round 48: every game checks this on load and says when the browser served it an older copy (Muse, round 21: a
+    # pro football page two builds old for a whole review, and a college page with the last build's stamp on first load)
+    import json
+    with open(os.path.join(out, "version.json"), "w", encoding="utf-8") as f:
+        json.dump({OUTNAME[lg]: st for lg, st in zip(OUTNAME, stamps)}, f)
     with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as f:
         f.write(page)
     print("site: %s" % ", ".join(sorted(os.listdir(out))))

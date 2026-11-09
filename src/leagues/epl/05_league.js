@@ -93,7 +93,10 @@ const LEAGUE={
 
   text:{unit:"club",bye:"No game this week",
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a big club. That's the kind of result that changes a season.","Three points off a real side."],
-    badLoss:["Points you can't afford to drop.","Beaten by a side you should beat. It'll be remembered in May.","The kind of result that decides who goes down."],
+    badLoss:["Points you can't afford to drop.","Beaten by a side you should beat. It'll be remembered in May.","Dropped points against a side you'd expect to beat."],
+    // by the occasion (Instinct, round 16: "the kind of result that decides who goes down" after matchday 1)
+    badLossEarly:["Not the start anyone wanted.","An early stumble. Plenty of season left to put it right.","A poor start, and against a side you'd expect to beat."],
+    badLossLow:["The kind of result that decides who goes down.","Points you can't afford to drop, down there.","Beaten by a side you should beat, with the bottom close."],
     champions:"champions",
     org:"Club", orgs:"clubs", group:"Division", rank:"Position",
     groupShort:"Div",

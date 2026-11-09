@@ -113,6 +113,30 @@ const VOICE_ALT={
     "Nothing has gone wrong yet, so I'd change nothing. I haven't studied the late game, mind.",
     "We're here doing what we've done all night. I'd keep doing it.",
     "Leave it be, I think. A change now is a change for its own sake."],
+  "Teams are not always who the tape says they are.":[
+    "Tape, I find, is mostly about other nights.",
+    "A report is a rumour with numbers in it.",
+    "Let's meet them before we decide who they are."],
+  "It seems to me protecting the rim rarely hurts. I haven't, I confess, looked at the shot chart.":[
+    "Guard the basket first, I say. The chart I leave to younger eyes.",
+    "Layups are the expensive kind of basket. I'd stop those and see.",
+    "I'd pack the paint and let them prove they can shoot. I haven't checked whether they can."],
+  "I'd still rather protect the rim, whatever they did in the first half. I haven't looked at the shot chart since, either.":[
+    "Same as before, if I may: the rim first. I still haven't looked at the chart.",
+    "The paint, still. A half is a short story.",
+    "I'd keep guarding the basket. What they did before half-time was before half-time."],
+  "If I may: hurrying rarely mends a scoreline. It tends to lengthen it.":[
+    "Rushing, in my experience, turns a small deficit into a large one.",
+    "We're not far behind. I'd not panic our way further back.",
+    "Speeding up mostly gives them more chances too. I'd stay calm."],
+  "We have, I think, got what we came for. I'd rather slow things down.":[
+    "We're ahead. Slower suits us now.",
+    "I'd take some air out of the ball. Fewer possessions, fewer surprises.",
+    "Let's make the second half a quiet one."],
+  "A press, one rather suspects, is mostly a way of giving up layups quickly.":[
+    "Press them and we'll see a lot of easy baskets. Some of them ours, not many.",
+    "A press beaten once is two points for nothing. I'd stay home.",
+    "I'd keep our shape. The press is a coin with two ugly sides."],
   // ---- Pearl ----
   "We need a goal! Let's go and get it.":[
     "We're behind but we're not done! Let's go get one!",

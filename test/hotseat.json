@@ -1,5 +1,5 @@
 {
- "fp": "bd4279c8224b7871",
+ "fp": "fe467b97c8dc14b5",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -265,6 +265,16 @@
    "fp": "bd4279c8224b7871",
    "from": "bd4279c8224b7871",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "fe467b97c8dc14b5",
+   "from": "bd4279c8224b7871",
+   "note": "round 48: history and screens; soccer economy from the first summer"
+  },
+  {
+   "fp": "fe467b97c8dc14b5",
+   "from": "fe467b97c8dc14b5",
+   "note": "round 48: history and screens; soccer economy from the first summer"
   }
  ],
  "out": [
@@ -333,7 +343,7 @@
       "result": "Won the Frisco Bowl",
       "grade": "A"
      },
-     "book": "ae1ab4dabb468a5d"
+     "book": "02a832665cd8afb9"
     }
    ]
   }

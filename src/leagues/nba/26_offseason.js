@@ -504,6 +504,9 @@ LEAGUE.historyExtras=function(sea,off,my){
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};
 LEAGUE.seasonLine=function(h,t,r,seed){
   if(h.pnote&&h.pnote[t])return h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
+  // seasons banked before round 46 kept no play-in note: your own season's result says it (Muse, round 21: one season,
+  // "Lost in the play-in" and "Missed the playoffs" on one page)
+  if(h.team===t&&h.result&&/play-in/i.test(h.result))return "Lost in the play-in";
   if(h.champion===t)return "NBA champions";
   if(seed)return "Playoffs, No. "+seed+" seed";
   return r[0]>r[1]?"Missed the playoffs":"Losing season";

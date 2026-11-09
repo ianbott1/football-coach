@@ -1,5 +1,5 @@
 {
- "fp": "f30d4344bffd5391",
+ "fp": "022b9c6ed94db81b",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -335,6 +335,11 @@
    "fp": "f30d4344bffd5391",
    "from": "eb282e6eb00c9833",
    "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
+  },
+  {
+   "fp": "022b9c6ed94db81b",
+   "from": "f30d4344bffd5391",
+   "note": "round 48: history keeps the live chance's extremes (story cbw/clw), screens (playoff headline basis, goal lines, tallies, Film Room rule, hints, series so far); soccer from the first summer on: gaps filled at the club's level, non-league budgets a quarter up (season-1 games unchanged)"
   }
  ],
  "result": {
@@ -347,9 +352,9 @@
     "rec": "c0318c6a792f8395",
     "poll": "714397e8a391f9c0",
     "heis": "5e810aeb96357b5f",
-    "history": "95e1d01b94e2ad07",
+    "history": "4c0e94370aebe146",
     "universe": "66db136d3c64d468",
-    "screens": "8aeed21a01a8ffee"
+    "screens": "c9a35328753dea8f"
    },
    {
     "year": 2027,
@@ -359,9 +364,9 @@
     "rec": "a64608b15fc3c0e7",
     "poll": "7cc429085c229f0a",
     "heis": "342d2e65fe5ffaa2",
-    "history": "4865c5966b65e023",
+    "history": "ca73ac51a5412415",
     "universe": "488ac43956073447",
-    "screens": "0106e1b918ed048e"
+    "screens": "a319d754619fc9c4"
    }
   ],
   "Detroit#777": [
@@ -373,9 +378,9 @@
     "rec": "2e4ecc77753feb02",
     "poll": "9c70d09cf8e1e4d6",
     "heis": "ff388a3acc0072de",
-    "history": "30d3010ca5a0f145",
+    "history": "6de3d4be86a47ec3",
     "universe": "98ceeda083e37881",
-    "screens": "fc1f317f7af2c107"
+    "screens": "24fc7cf8f9277280"
    },
    {
     "year": 2027,
@@ -385,9 +390,9 @@
     "rec": "64b85d01ab6523b3",
     "poll": "6da781cc64b8eee4",
     "heis": "239369160291c0fe",
-    "history": "540ed574b10235b3",
+    "history": "2cf547f43939061f",
     "universe": "61e08c77cbba5701",
-    "screens": "550f6027beac4125"
+    "screens": "1adf5bddb5a1e150"
    }
   ],
   "schedules#60": [

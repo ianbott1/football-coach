@@ -12,7 +12,7 @@ const SPORT={
     <path d="M4 66.5 H68" stroke="#4E9A55" stroke-width="2.2" opacity=".85"/>`,
   featureMore:"gives a player more of the ball",          // what featuring a player means in this sport
   /* Pearl in hint mode: where to look, not the answer */
-  hints:{press:"They keep winning the ball back in our half. What does that tell you?",
+  hints:{press:"Look at how often they win the ball back in our half. What does that tell you?",   /* where to look, not a claim: it read as fact beside 0.0 turnovers forced (Muse, round 21) */
     block:"Look how deep they're sitting, and how much of the ball they're giving us.",
     wing:"Count where their attacks are coming from.",
     direct:"Watch how often the ball goes long."},

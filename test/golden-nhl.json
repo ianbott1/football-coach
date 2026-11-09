@@ -1,5 +1,5 @@
 {
- "fp": "1d560c3f7e62fda1",
+ "fp": "5bae230ba72cd7bb",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -350,6 +350,11 @@
    "fp": "1d560c3f7e62fda1",
    "from": "822343163161f78f",
    "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
+  },
+  {
+   "fp": "5bae230ba72cd7bb",
+   "from": "1d560c3f7e62fda1",
+   "note": "round 48: history keeps the live chance's extremes (story cbw/clw), screens (playoff headline basis, goal lines, tallies, Film Room rule, hints, series so far); soccer from the first summer on: gaps filled at the club's level, non-league budgets a quarter up (season-1 games unchanged)"
   }
  ],
  "result": {
@@ -362,9 +367,9 @@
     "rec": "7ed46f7515142243",
     "poll": "4f1846ada2df9247",
     "heis": "6717833acf0ba470",
-    "history": "0c5d7f4f6489777c",
+    "history": "4f0360bfdee61be3",
     "universe": "d9aa9abf21f7934f",
-    "screens": "4fd5de050c35899d"
+    "screens": "b76bf6456bf1424e"
    },
    {
     "year": 2027,
@@ -374,9 +379,9 @@
     "rec": "f8dbc841d33a80e4",
     "poll": "77db9e13d46b8744",
     "heis": "9a3f3a71cfab593e",
-    "history": "f09bb9e11b34c585",
+    "history": "0168a15dce2f04cd",
     "universe": "31a31b59f141bf36",
-    "screens": "216522922b22774b"
+    "screens": "cd71c19f4d3cbab2"
    }
   ],
   "Edmonton#777": [
@@ -388,9 +393,9 @@
     "rec": "ed63df8ff7be135c",
     "poll": "90074da57a3066b3",
     "heis": "ec5eb0e69e082650",
-    "history": "653d3c887639672f",
+    "history": "c8f5b7095b0655c2",
     "universe": "4e87f91668a56b89",
-    "screens": "c5fe21166e9125a3"
+    "screens": "91e4ae50399f3721"
    },
    {
     "year": 2027,
@@ -400,9 +405,9 @@
     "rec": "4ac8bd322dfa175f",
     "poll": "51a9259fa118f30b",
     "heis": "1d35e6dba2a682e0",
-    "history": "138c507d18d612d7",
+    "history": "7448a8d7eea3f243",
     "universe": "915bf8800cb37dd7",
-    "screens": "c5cb947da3a1d040"
+    "screens": "f62b992390fc7169"
    }
   ],
   "schedules#60": [

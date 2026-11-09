@@ -135,7 +135,7 @@ function liveTick(){
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           // the rare decisions say so when the assistant takes them (round 46: both testers met neither foul trouble nor
           // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
-          if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length} }
+          if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length, rule:r.ask.k==="fouls"&&typeof foulRule==="function"?foulRule():""} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       live.ff=false;                            // skipping stops at your next call
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
@@ -473,7 +473,7 @@ function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="s
 function backupNagHTML(){ if(!S||!S.myTeam||S.h2h||S.backedUp===SEA.year||(S.history||[]).length<1)return "";
   return `<div class="bknag"><b>Season banked.</b> Your career lives in this browser's storage, which can be cleared or fill up. A backup file keeps it safe.
     <span class="bkbtns"><button class="skip small" id="offbk">Download a backup</button><button class="skip small" id="offbkno">Not now</button></span></div>` }
-function staleTabHTML(){ return saveFailHTML()+(staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
+function staleTabHTML(){ return newerHTML()+saveFailHTML()+(staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
   <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"") }
 function save(){
   if(savePending)return savePending;
@@ -755,6 +755,16 @@ function simPostOn(ph){
   LEAGUE.ui.afterAdvance(was);                  // the views follow the last round played (Selection Sunday's field)
   flash={type:"post"}; reveal=null; save(); render();
 }
+/* an old copy (round 48): the site's version.json names every game's current build; a page whose own stamp differs
+   was served from the browser's cache, and says so once, with a reload that asks for the new one */
+function versionCheck(){
+  try{ if(typeof fetch!=="function"||!/^https?:/.test(location.protocol))return;
+    const me=(location.pathname.split("/").pop()||"").split("?")[0]; if(!me)return;
+    fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(V=>{
+      if(!V||!V[me]||V[me]===BUILD_ID)return; window.__newer=V[me]; render() }).catch(()=>{});
+  }catch(e){}
+}
+function newerHTML(){ return window.__newer?`<div class="savefail"><b>A newer version of this game is out.</b> Your browser opened an older copy (build ${esc(BUILD_ID)}; the current one is ${esc(window.__newer)}). <button class="skip small" onclick="location.replace(location.pathname+'?v='+window.__newer)">Load the new one</button> Your careers carry over.</div>`:"" }
 /* soccer: a title, promotion or relegation settled by the week just played (95_story clinchCheck) */
 function clinchAfter(){ if(typeof clinchCheck==="function"&&S.myTeam)try{ clinchCheck(S.myTeam) }catch(e){} }
 function doAdvance(){
@@ -1226,7 +1236,7 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -1253,8 +1263,12 @@ function tallyHTML(){
 function simmedThisSeason(){
   const my=S.myTeam, pre=SEA.year+":";
   // postseason games too: a bowl was watched but not counted ("watched 5 of your 12" after 13: Grokbot)
-  const post=typeof SEA.postGamesFor==="function"?SEA.postGamesFor(my).length:0;
-  const all=SEA.weeks.reduce((c,W)=>c+W.games.filter(g=>g.home===my||g.away===my).length,0)+post;
+  // each game once: college basketball's conference tournament sits in both lists ("watched 4 of your 39" after a
+  // 31-5 season: Instinct, round 16)
+  const G=new Set();   // the post list is [game, label] pairs, and holds games the weeks have too (a title game)
+  SEA.weeks.forEach(W=>W.games.forEach(g=>{ if(g.home===my||g.away===my)G.add(g) }));
+  if(typeof SEA.postGamesFor==="function")SEA.postGamesFor(my).forEach(x=>{ const g=Array.isArray(x)?x[0]:x; if(g)G.add(g) });
+  const all=G.size;
   const watched=Object.keys(S.played||{}).filter(k=>k.indexOf(pre)===0).reduce((c,k)=>c+S.played[k].filter(p=>p.team===my).length,0);
   return {all:all, watched:Math.min(watched,all), sim:Math.max(0,all-watched)};
 }
@@ -1358,8 +1372,10 @@ function injuredLine(opp,atHome,neutral){
   const my=S.myTeam; if(!opp||!SEA||!SEA.talent||!SEA.talent.inj)return "";
   const hurt=(SEA.talent.inj[my]||[]).filter(e=>e.w>0&&e.who); if(!hurt.length)return "";
   const g=SEA.nextGame?SEA.nextGame(my):null; if(atHome===null){ atHome=g?g.home===my:true; neutral=g?!!g.neutral:false }
-  const now=winProb(my,opp,atHome,neutral), keep=SEA.talent.inj[my];
-  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=winProb(my,opp,atHome,neutral) }finally{ SEA.talent.inj[my]=keep }
+  // on the headline's own basis (the balanced plan): computed under the plan you'd picked, the note read 73% beside a
+  // headline of 62% on all six screens of a conference final (Muse, round 21; Instinct, round 16: 24% over 34%)
+  const now=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)), keep=SEA.talent.inj[my];
+  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)) }finally{ SEA.talent.inj[my]=keep }
   if(fit-now<0.03)return "";
   const names=hurt.slice().sort((a,b)=>a.m-b.m).slice(0,2).map(e=>esc(e.who)).join(" and ");
   return `<div class="oinj">${pctShown(now)}% without ${names} (injured); about ${pctShown(fit)}% with ${hurt.length>1?"them":"him"}.</div>`;
@@ -1536,7 +1552,7 @@ function rosterOf(t){
         <span class="ppos">${esc(p.p)}</span>
         <div class="pmain"><div class="pname">${esc(p.n)}</div>
           <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
-            inj?` &middot; <span class="outtag">out ${inj.w} wk${inj.w===1?"":"s"}</span>`:""}</div></div>
+            inj?` &middot; <span class="outtag">out ${inj.w} ${stepWord(inj.w)}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
         ${p.st2&&p.st2.g?`<div class="sline2">${esc(statLine(p.p,p.st2))}</div>`:""}`};
   return `<div class="grouphead">Starters &middot; average rating ${avg}</div>`+R.slice(0,POS.length).map((p,i)=>row(p,i)).join("")
@@ -1663,15 +1679,20 @@ function teamCardHTML(my,rk,co){
       // games left: your remaining regular-season games (was 12 minus games
       // played, a college football season), plus what a postseason run can add
       const left=SEA.sched.filter(g=>g.week>=SEA.step&&(g.home===my||g.away===my)).length;
-      const postMax=LEAGUE.post.phases.filter(p=>p!=="selection").length;
+      // only where play-off games count in the record (college); the pros count the regular season, so "it will take
+      // a postseason run" promised wins that never arrive (Instinct, round 16: "6 to go" after a series win)
+      const postMax=LEAGUE.postRecord?LEAGUE.post.phases.filter(p=>p!=="selection").length:0;
       const need=Math.max(0,e.w-w);
       // after the regular season, only a team still playing can add wins (it said "it will take a
       // postseason run" to a 36-46 team that had missed the playoffs)
-      const alive=SEA.phase==="week"||(SEA.phase!=="done"&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
+      const alive=SEA.phase==="week"||(SEA.phase!=="done"&&LEAGUE.postRecord&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
         ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?posGoalLine(e,my)
+          // the pros after game 82: the wins are in; the play-offs are judged on their own (the board weighs both)
+          :!LEAGUE.postRecord&&SEA.phase!=="week"&&need>0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;
+              return `${w} wins of the ${e.w} asked. ${c?esc(c):SEA.phase==="done"?"":"The play-offs count for the rest."}` })()
           :need===0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;   // each clause as it stands (Instinct)
               return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
@@ -1685,7 +1706,7 @@ function teamCardHTML(my,rk,co){
 const ANNOUNCE_KINDS={fouls:1,gstart:1};
 function autoNoteIn(h){
   const N=live&&live.autoNote, wp=typeof liveWPHTML==="function"?liveWPHTML():"";
-  const note=wp+(N&&live.drives.length-N.at<=3?`<div class="autonote"><b>${esc(N.h)}.</b> Your assistant's call: ${esc(N.l.toLowerCase())}. Nothing much between the options tonight, so it wasn't put to you.</div>`:"");
+  const note=wp+(N&&live.drives.length-N.at<=3?`<div class="autonote"><b>${esc(N.h)}.</b> Your assistant's call: ${esc(N.l.toLowerCase())}. Nothing much between the options tonight, so it wasn't put to you.${N.rule?" "+esc(N.rule):""}</div>`:"");
   if(!note)return h;
   const i=h.indexOf('<div class="watchwrap">'); return i<0?note+h:h.slice(0,i+23)+note+h.slice(i+23);
 }
@@ -1796,7 +1817,7 @@ function attentionHTML(my){
     out.push({k:"staff",side:side,
       h:`Your ${SPORT.staff[side].long} is under fire`,
       // says why he's under fire (Grokbot: "under fire" after a 1-5 run, no reason given)
-      b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. ${st[my].q<=-25?"One of the weakest at the job in the league.":`You're ${w}-${l}, and he isn't good enough to be spared it.`}
+      b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. ${st[my].q<=-25?"One of the weakest at the job in the league.":`You're ${recStr(my)}, and he isn't good enough to be spared it.`}
         An interim would be replacement level; you'd hire properly in the offseason.`});
   });
   if(!out.length)return "";
@@ -1817,16 +1838,19 @@ function nextUpHTML(my,rk){
   if(SEA.phase!=="week"&&SEA.phase!=="done"){
     const pn=SEA.postNext(my);
     if(pn){
-      const wp=pn.opp?winProb(my,pn.opp,false,true):null;
+      // where it's played, as the game will be (round 48: the headline took every play-off game as neutral while the
+      // injury note under it took it as a home game: 62% over "73% without him; about 81% with him", Muse round 21)
+      const atH=pn.home===my||pn.home===true, neu=!!pn.neutral||pn.home===undefined;
+      const wp=pn.opp?withPlan("balanced",()=>winProb(my,pn.opp,atH,neu)):null;
       h+=`<div class="grouphead">Next up</div>
         <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
-        <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>
+        <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>${pn.opp&&typeof seriesBookHTML==="function"?seriesBookHTML(pn.opp):""}${pn.opp&&typeof filmLine==="function"?filmLine(pn.opp):""}
         <div class="nrec">${pn.opp?recStr(pn.opp)
           +" &middot; "+esc(LEAGUE.conf.names[CONF[pn.opp]])
           :"Matchup set when the round is played"}</div>
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
           <span class="opct">${pctShown(wp)}%</span>
-          <span class="olab">to win, before the game</span></div>${injuredLine(pn.opp,null,null)}`:""}
+          <span class="olab">to win, before the game</span></div>${injuredLine(pn.opp,atH,neu)}`:""}
         ${planPickerHTML(wp)}</div>`;
     }
     return h;
@@ -2033,7 +2057,9 @@ function weekNews(W){
     else if(won&&mg.margin<=3)b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
     else if(won)b=v([`Business handled.`,`A solid day's work.`,`No drama. Next.`]);
     else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
-    else if(oppR>25)b=v(LEAGUE.text.badLoss);
+    else if(oppR>25){ const T=LEAGUE.text, played=(SEA.rec[my]||[0,0]).slice(0,2).reduce((x,y)=>x+y,0)+((SEA.drw&&SEA.drw[my])||0);
+      const grp=NAMES.filter(t=>CONF[t]===CONF[my]).length, pos=LEAGUE.position?LEAGUE.position(my):0;
+      b=v(T.badLossEarly&&played<=Math.ceil(LEAGUE.weeks/6)?T.badLossEarly:T.badLossLow&&pos&&pos>grp-6?T.badLossLow:T.badLoss) }
     else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
     const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
                   :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
@@ -3234,6 +3260,7 @@ function render(){
   if(rw)rw.onclick=()=>{const g=heroGame(); if(g)startWatch(g)};
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
+  document.querySelectorAll("[data-facheap]").forEach(b=>b.onclick=()=>{ S.faCheap=!S.faCheap; save(); render() });   // hockey's market, cheapest first (round 48)
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.feat;
     const was=S.featured; S.featured=(S.featured===i?null:i);
@@ -3397,7 +3424,7 @@ function copyHTML(s){
 }
 function renderTitle(){
   const slots=S._slots||[];
-  el("app").innerHTML=`<div class="titlewrap">
+  el("app").innerHTML=`${newerHTML()}<div class="titlewrap">
     <div class="owlstage">
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
@@ -3704,5 +3731,6 @@ function watchOtherTabs(){
   S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,title:true};
   S._slots=await allSlots();
   render();
+  versionCheck();
 })();
 

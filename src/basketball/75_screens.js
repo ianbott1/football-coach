@@ -107,12 +107,15 @@ function evidenceHTML(g,my,d,dp){
       <div class="evn">Close teams often go to a closing play of their own. Some stay with whatever's working.</div>${splitNote(R)}</div>`
       +(d&&d.T?evidenceHTML(g,my,d,{k:"read"}).replace("How "+esc(g[opp])+" are scoring","What they've run tonight"):""); }
   // foul trouble: how tight tonight's referees are, against an ordinary crew by now (round 44)
+/* the rule, said (round 48, Muse: "a rule the player can learn beats a lottery"): once a half, at a set count */
+function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once a half: a star with ${o-3} fouls or more before half-time, ${o-2} or more after it. Your assistant takes the ones not worth asking.` }
   if(dp.k==="fouls"){ const tight=dp.called>dp.avg*1.2, loose=dp.called<dp.avg*0.85;
     return `<div class="evid"><div class="evh">Tonight's referees</div>
       <div class="evr"><span class="evk">Fouls called on your team</span><span class="evv">${dp.called}</span></div>
       <div class="evr"><span class="evk">An ordinary crew, by now</span><span class="evv">about ${dp.avg}</span></div>
       <div class="evr"><span class="evk">Your star</span><span class="evv">${dp.f} of ${dp.out}</span></div>
-      <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div></div>` }
+      <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div>
+      <div class="evn">${foulRule()}</div></div>` }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);

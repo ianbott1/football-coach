@@ -358,6 +358,58 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 48: one number, one basis (Muse round 21, Instinct round 16):
+- The play-off pre-game card took every game as neutral while the injury note
+  under it took it as a home game (62% over "73% without him; about 81% with
+  him"). postNext now gives the host (nba, nhl, epl; nfl already did) and both
+  use it, on the balanced plan.
+- An old copy says so: build.py writes version.json (each game's stamp); a game
+  served over http fetches it uncached on load and, if its own stamp differs,
+  shows "A newer version of this game is out" with a reload that asks for the
+  new build (Muse reviewed a pro football page two builds old, and a college
+  page showed the last build's stamp on first load). test/version.js.
+- Saves: a database slow to open (8 s) is retried on the next call, and a save
+  that can't reach it fails (the banner says so) instead of landing in
+  localStorage under the database's newer copy.
+- NBA seasons banked before round 46 read "Lost in the play-in" from your own
+  season's result. An absence reads in one unit everywhere (stepWord). The
+  hot-seat sentence quotes the record as shown (recStr: it read "6-12" beside
+  6-8-4). The pros' goal line after game 82 stops promising postseason wins
+  ("N wins of the M asked" and the play-off clause): only college play-off
+  games count in the record (LEAGUE.postRecord).
+- The watched tally counts each game once (the post list is [game, label] pairs
+  holding title games the weeks have: "watched 4 of your 39" after 31-5).
+- Soccer's economy: a summer gap was filled with a 53-58 rated player on
+  GBP 0.9M (the football game's numbers). In the non-league that is a star on
+  ten times the wage budget: after three summers National League payrolls ran
+  6.3 times their budgets, North/South 8.6-9.7, and the tiers' ratings had
+  closed up (NN 32 to 42 in one summer). Gaps are now filled at the club's level
+  (eloToRating(program) minus 2-7) on the pyramid's wages; the non-league
+  budgets are a quarter up. Over seven summers: ratings hold their tiers
+  (NL ~35-37, NN/NS ~31-32), payrolls settle at 1.1-1.2 times the non-league
+  budgets, 0.4-0.9 above. epl-predict and epl-rules pass.
+- Hockey's market: "Show the cheapest first", and the count asking under $3M
+  (measured: 9-13 of 48-67 likely free agents, rated 52-54, below the best-25
+  cut that Muse checked four times).
+- Calls: a situation call graded level with the assistant's is checked against
+  its third option on the same dice (IMPACT_ALL); "level with your assistant's
+  call, but X was the better option by about N in 100" replaces "close either
+  way" when that's so. Measured: seven in ten asked situation calls were
+  graded within 3 points (the pick level with the assistant's while the gate's
+  60 replays had seen 3 points somewhere). The foul-trouble rule is said on the
+  card and the note (foulRule: once a half, at foulOut-3 and foulOut-2).
+- Film Room: the rule line (five best, three costliest, two of a kind, only the
+  ones that weren't close) and how many more are kept behind them; the story
+  keeps the live chance at its lowest in a win and highest in a defeat
+  (storyExtremes: "won from 7% at Virginia Tech", "You were at 7% ... and won
+  anyway" on title night). The play-off card shows the series so far (each game,
+  and what your calls in the watched ones were worth).
+- Also: the season-ending audit opens by itself; the page clears a fixed action
+  bar; soccer's loss lines know the occasion (early season, near the drop);
+  Pearl's hints point rather than assert; more capybara wordings in basketball.
+- Not done here: duplicate surnames on one roster; the NBA title-slot lag by a
+  game (not reproduced); the NBA long-run 1-seed title share (43%).
+
 Round 47: voices and presentation:
 - The staff's fixed lines vary across games (core/93_voice: VOICE_ALT, voiceVary,
   VOICE_ON). Each fixed line has three other ways the same voice gives the same

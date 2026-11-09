@@ -1,5 +1,5 @@
 {
- "fp": "2da1290159fb4084",
+ "fp": "fa025f7e8242f44d",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -385,6 +385,11 @@
    "fp": "2da1290159fb4084",
    "from": "e217190d4be2f8d3",
    "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
+  },
+  {
+   "fp": "fa025f7e8242f44d",
+   "from": "2da1290159fb4084",
+   "note": "round 48: history keeps the live chance's extremes (story cbw/clw), screens (playoff headline basis, goal lines, tallies, Film Room rule, hints, series so far); soccer from the first summer on: gaps filled at the club's level, non-league budgets a quarter up (season-1 games unchanged)"
   }
  ],
  "result": {
@@ -397,9 +402,9 @@
     "rec": "03f5fa869991ce65",
     "poll": "e94f12746483b9a9",
     "heis": "f8899270796f8e98",
-    "history": "d1f67f306d02cbb4",
+    "history": "420d3b43aad38bd7",
     "universe": "351152736ef2a6bd",
-    "screens": "6bd1a5bc9e85e50c"
+    "screens": "b648fd67a1faec2e"
    },
    {
     "year": 2027,
@@ -409,9 +414,9 @@
     "rec": "c98ea3b8c3d87c32",
     "poll": "fc969cfdf8ccb2b5",
     "heis": "51d2b4874878c083",
-    "history": "34555a8106734ee1",
+    "history": "d7d80c81403ba4f8",
     "universe": "dd02b2d323a2d537",
-    "screens": "ee76700a03e7ae86"
+    "screens": "f478df8dbd25020e"
    }
   ],
   "Coppin State#2024": [
@@ -423,9 +428,9 @@
     "rec": "6e55dface9d0e135",
     "poll": "58b94312379d73ec",
     "heis": "8ec66cc8dfc67bef",
-    "history": "0eb7c936fd2fec20",
+    "history": "9eac13d83d15f9ce",
     "universe": "e8f9126e64b6550b",
-    "screens": "5d2852653ac50e11"
+    "screens": "ec28a825acbe9b9e"
    },
    {
     "year": 2027,
@@ -435,9 +440,9 @@
     "rec": "1e7a20db5b9a62b3",
     "poll": "211057ec6164a91e",
     "heis": "9a0d5f66a3fffd19",
-    "history": "d469aecb48d96b35",
+    "history": "a0b04e538f8c11d8",
     "universe": "81af593d348d5768",
-    "screens": "4a696c4a95de890e"
+    "screens": "cc106e02749a80bb"
    }
   ],
   "Gonzaga#777": [
@@ -449,9 +454,9 @@
     "rec": "b2b62d3341882b9b",
     "poll": "6c5db0c98d3d0ccc",
     "heis": "df14f739db772ccb",
-    "history": "b7730fb27bbd47e2",
+    "history": "19acc6b2dce911cb",
     "universe": "6debdbe4572ee03b",
-    "screens": "3dd1185cf40816d9"
+    "screens": "285ddcc4f5400196"
    },
    {
     "year": 2027,
@@ -463,7 +468,7 @@
     "heis": "a245a44f2819c4fd",
     "history": "0a87a8fbea7f50cc",
     "universe": "a49ce6e4b922e1bf",
-    "screens": "d1396e7d63cabc49"
+    "screens": "9c330b8075ec0268"
    }
   ],
   "schedules#60": [
