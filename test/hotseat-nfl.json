@@ -1,5 +1,5 @@
 {
- "fp": "5e02ce7b5b04756d",
+ "fp": "8327fdfcaaec443b",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -270,6 +270,11 @@
    "fp": "5e02ce7b5b04756d",
    "from": "5e02ce7b5b04756d",
    "note": "Round 43: make skill pay (see ARCHITECTURE)."
+  },
+  {
+   "fp": "8327fdfcaaec443b",
+   "from": "5e02ce7b5b04756d",
+   "note": "round 46: gating, scorer credit, careers on regular-season records, state text"
   }
  ],
  "out": [
@@ -329,16 +334,16 @@
       "result": "Lost the Super Bowl",
       "grade": "A-"
      },
-     "book": "d4766fc2bb00594a"
+     "book": "f0a2fa799d054b72"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "8-9",
-      "result": "Losing season",
-      "grade": "B"
+      "rec": "9-8",
+      "result": "Missed the playoffs",
+      "grade": "B+"
      },
-     "book": "5e4f80fc562f9fce"
+     "book": "77b37a9f1bf9f81d"
     }
    ]
   }

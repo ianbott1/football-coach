@@ -1,5 +1,5 @@
 {
- "fp": "9cfa1d5ac8958021",
+ "fp": "fb9537ed430b31fa",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -399,6 +399,16 @@
    "fp": "9cfa1d5ac8958021",
    "from": "112bd6953210f5d8",
    "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
+  },
+  {
+   "fp": "8f1459fc9944f1d0",
+   "from": "9cfa1d5ac8958021",
+   "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "fb9537ed430b31fa",
+   "from": "8f1459fc9944f1d0",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
@@ -413,7 +423,7 @@
     "heis": "b16fc23e36f51661",
     "history": "283fa71470960355",
     "universe": "4d791a8472195cfe",
-    "screens": "689f477310dd7da0"
+    "screens": "2e316664eb24f591"
    },
    {
     "year": 2027,
@@ -425,7 +435,7 @@
     "heis": "13056cfe4082e083",
     "history": "e0c028037eaf4b9d",
     "universe": "29dc23893c7235cb",
-    "screens": "24f89e3da5817668"
+    "screens": "cb955b9cae65d361"
    },
    {
     "year": 2028,
@@ -437,7 +447,7 @@
     "heis": "2c7606bf9162156a",
     "history": "5a73f49699d61c6e",
     "universe": "90b30d24e30a320d",
-    "screens": "be7c9b59afe55468"
+    "screens": "4e8c3de34c160dea"
    },
    {
     "year": 2029,
@@ -449,7 +459,7 @@
     "heis": "1f37c7f1fbada413",
     "history": "dad86d2b266955dd",
     "universe": "a280374c9d619602",
-    "screens": "f0aa74ee652800a0"
+    "screens": "ade47bf165b56ca0"
    }
   ],
   "Rice#2024": [
@@ -463,7 +473,7 @@
     "heis": "7bf7e3712631f7d7",
     "history": "e10811cb19fe171f",
     "universe": "f3160f00494ff222",
-    "screens": "9281447eb1bd0908"
+    "screens": "28018e5fc3d74bfe"
    },
    {
     "year": 2027,
@@ -475,7 +485,7 @@
     "heis": "fff83b09ade540f1",
     "history": "5abeed23f693a443",
     "universe": "c6e6e9807e67fc21",
-    "screens": "7557df5b3542fd0c"
+    "screens": "b414f3f7dc621d4e"
    },
    {
     "year": 2028,
@@ -487,7 +497,7 @@
     "heis": "36e74927cad5e409",
     "history": "a1685bd91325f94b",
     "universe": "a49c536190453cf6",
-    "screens": "68c33261fad75849"
+    "screens": "e1478e80c6457564"
    },
    {
     "year": 2029,
@@ -499,7 +509,7 @@
     "heis": "6dc33285d85b4535",
     "history": "947f06ed11577d8d",
     "universe": "b271b2dfb338a1b8",
-    "screens": "f5c360132843d23d"
+    "screens": "0a41415f0a14c020"
    }
   ],
   "Oregon#777": [
@@ -513,7 +523,7 @@
     "heis": "4282b35b4b804d2d",
     "history": "9f88f0f4bfed939a",
     "universe": "3efb886517811a76",
-    "screens": "41f3a02048b85268"
+    "screens": "f15681dbcc5524b2"
    },
    {
     "year": 2027,
@@ -537,7 +547,7 @@
     "heis": "74500c20418d1e2a",
     "history": "30ecae30c4600dbb",
     "universe": "b254b2ca4d92e869",
-    "screens": "22be451d8d907c9c"
+    "screens": "1627927e8c34a23a"
    }
   ],
   "Kent State#31337": [
@@ -551,7 +561,7 @@
     "heis": "cb0e444abdc437b0",
     "history": "9246de9dfc927409",
     "universe": "9ce9f84fe8413eee",
-    "screens": "d8b7bd2f4faf7af2"
+    "screens": "567795e72a960a98"
    },
    {
     "year": 2027,
@@ -563,7 +573,7 @@
     "heis": "4b4a55fac01384cc",
     "history": "f4a11883c750aea2",
     "universe": "c27fe3bf1727fd96",
-    "screens": "4a2efdecd5d17a15"
+    "screens": "f4a30924e8cd0842"
    },
    {
     "year": 2028,
@@ -575,7 +585,7 @@
     "heis": "493d42a5521eff0d",
     "history": "2288e3552351f783",
     "universe": "d0ec395775d49c5f",
-    "screens": "cb9b82e246c2c3c3"
+    "screens": "29efe667f4b79ed5"
    }
   ],
   "schedules#60": [

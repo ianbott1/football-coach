@@ -571,7 +571,8 @@ for(const [f,team,k] of [['basketball-coach-pro.html','Orlando','close'],['baske
   const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,8,'T'); let n=0, graded=0;
   for(let w=0;w<40&&A.SEA.phase==='week';w++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<4000){ const q=A.live.ask; if(q){ if(q.dp.k===k)n++; A.answerLive(q.dp.opts[0][0]) } else A.liveTick() }
     if(A.live&&A.live.eng&&A.live.eng.log)graded+=A.live.eng.log.filter(x=>x.k===k).length }
-  ok(n>=2,`${f}: ${n} ${k} calls in 40 games`); ok(graded>0,`${f}: ${k} calls never graded`) }
+  // round 46: asked only when worth 3 points (Ian: "gate them"), so rarer; still asked, and graded when asked
+  ok(n>=1,`${f}: ${n} ${k} calls in 40 games`); ok(!n||graded>0,`${f}: ${k} calls never graded`) }
 
 /* 82. Skip plays on to your next call and stops there: it never makes your calls for you (Grokbot: one tap jumped to
    the final score and a read you never made was graded) */

@@ -1,5 +1,5 @@
 {
- "fp": "e903a1a9f990c18b",
+ "fp": "2da1290159fb4084",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -375,59 +375,69 @@
    "fp": "e903a1a9f990c18b",
    "from": "ce10f4a09a9eba61",
    "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
+  },
+  {
+   "fp": "e217190d4be2f8d3",
+   "from": "e903a1a9f990c18b",
+   "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "2da1290159fb4084",
+   "from": "e217190d4be2f8d3",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "9ac64de271821482",
-    "post": "000971c2a4dd76b4",
+    "games": "49338646b775b7bb",
+    "post": "8d2bf66783d9e298",
     "champion": "Ohio State",
     "rec": "03f5fa869991ce65",
     "poll": "e94f12746483b9a9",
     "heis": "f8899270796f8e98",
-    "history": "1e5fad819c90c50d",
-    "universe": "842809bf1e5a29f9",
-    "screens": "4cd3975500e3ca01"
+    "history": "d1f67f306d02cbb4",
+    "universe": "351152736ef2a6bd",
+    "screens": "6bd1a5bc9e85e50c"
    },
    {
     "year": 2027,
-    "games": "65b1524df8559a5b",
+    "games": "30cb049fc7ec9eaa",
     "post": "c56650ea11dff014",
     "champion": "Clemson",
     "rec": "c98ea3b8c3d87c32",
-    "poll": "6504ac92bca9020d",
+    "poll": "fc969cfdf8ccb2b5",
     "heis": "51d2b4874878c083",
-    "history": "b5355527042930f0",
-    "universe": "f14c29e3f8edd17f",
-    "screens": "786a05eb5299fd0f"
+    "history": "34555a8106734ee1",
+    "universe": "dd02b2d323a2d537",
+    "screens": "ee76700a03e7ae86"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "d088b6d53c4e83c7",
-    "post": "df38882be9321181",
+    "games": "07d1700393a176a5",
+    "post": "df17a672297311aa",
     "champion": "Kansas",
     "rec": "6e55dface9d0e135",
-    "poll": "421718e246802035",
+    "poll": "58b94312379d73ec",
     "heis": "8ec66cc8dfc67bef",
-    "history": "714902bdf4a9e757",
-    "universe": "704e5a68aac20d52",
-    "screens": "47263bae786b0ad9"
+    "history": "0eb7c936fd2fec20",
+    "universe": "e8f9126e64b6550b",
+    "screens": "5d2852653ac50e11"
    },
    {
     "year": 2027,
-    "games": "7a114540610d3a34",
-    "post": "157751871e4d019e",
+    "games": "1089392d3a8dee1e",
+    "post": "8412be4e883ebdff",
     "champion": "North Carolina",
-    "rec": "80a8e9de54611bcb",
-    "poll": "be6c30c974db1a63",
+    "rec": "1e7a20db5b9a62b3",
+    "poll": "211057ec6164a91e",
     "heis": "9a0d5f66a3fffd19",
-    "history": "e2bb8ecb60980add",
-    "universe": "4f185d50a20d27f7",
-    "screens": "cd903a5a4389b9be"
+    "history": "d469aecb48d96b35",
+    "universe": "81af593d348d5768",
+    "screens": "4a696c4a95de890e"
    }
   ],
   "Gonzaga#777": [
@@ -441,19 +451,19 @@
     "heis": "df14f739db772ccb",
     "history": "b7730fb27bbd47e2",
     "universe": "6debdbe4572ee03b",
-    "screens": "0633e735b65f464e"
+    "screens": "3dd1185cf40816d9"
    },
    {
     "year": 2027,
-    "games": "6d4dd4ccd2581e78",
-    "post": "d629f09fd04cd3c3",
-    "champion": "Illinois",
-    "rec": "a55827325c34ca52",
-    "poll": "0ad4f20ce751bf62",
+    "games": "c380a26dc03a0469",
+    "post": "28b2c31b1b1250a5",
+    "champion": "Houston",
+    "rec": "f77191391537c341",
+    "poll": "1dabc88399a70662",
     "heis": "a245a44f2819c4fd",
-    "history": "38f707792a8b19ff",
-    "universe": "5052a1ab68307985",
-    "screens": "9d461904cd357204"
+    "history": "0a87a8fbea7f50cc",
+    "universe": "a49ce6e4b922e1bf",
+    "screens": "d1396e7d63cabc49"
    }
   ],
   "schedules#60": [

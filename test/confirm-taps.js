@@ -11,6 +11,10 @@ let bad=0,checks=0; const ok=(c,m)=>{checks++; if(!c){bad++; console.log('  FAIL
 const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(k)).sort().join(','));
 (async()=>{
   const b=await chromium.launch();
+  // round 46: saves live in IndexedDB; these screens are checked on the localStorage path (no database), which their
+  // helpers read and clear directly. The two-tab check below runs on both. (test/storage-full.js covers the database.)
+  const ncx=b.newContext.bind(b), noDB=async c=>{ await c.addInitScript(()=>{ try{ Object.defineProperty(window,'indexedDB',{value:undefined}) }catch(e){} }); return c };
+  b.newContext=async o=>noDB(await ncx(o));
   for(const f of ['hockey-coach-pro.html','football-coach.html','soccer-coach.html']){
     const ctx=await b.newContext({viewport:{width:1280,height:900}}); const p=await ctx.newPage();
     const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.dismiss());
@@ -77,7 +81,7 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     await ctx.close(); }
   // two tabs on one career: the one left behind stops saving instead of wiping the newer progress
   // (it wiped six games: Muse's "ghost" careers and lagging title summaries)
-  { const ctx=await b.newContext({viewport:{width:390,height:844}}); const url='file://'+path.join(DIST,'basketball-coach-pro.html');
+  for(const db of [false,true]){ const ctx=db?await ncx({viewport:{width:390,height:844}}):await b.newContext({viewport:{width:390,height:844}}); const url='file://'+path.join(DIST,'basketball-coach-pro.html');
     const A=await ctx.newPage(); A.on('dialog',d=>d.dismiss()); await A.goto(url); await A.waitForTimeout(600); await A.click('#qstart'); await A.waitForTimeout(900);
     const B=await ctx.newPage(); await B.goto(url); await B.waitForTimeout(800); await B.click('[data-slot="1"]'); await B.waitForTimeout(1200);
     for(let i=0;i<6;i++)await B.evaluate(()=>simAdvance()); await B.waitForTimeout(400);
@@ -85,8 +89,8 @@ const keys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/slot\d$/.test(
     await A.evaluate(()=>{ S.featured=1; save() }); await A.waitForTimeout(500);
     const C=await ctx.newPage(); await C.goto(url); await C.waitForTimeout(900); await C.click('[data-slot="1"]'); await C.waitForTimeout(1200);
     const got=await C.evaluate(()=>S.steps);
-    ok(got===want,`two tabs: the older tab's save wiped the newer one (${got} steps saved, ${want} played)`);
-    ok(await A.evaluate(()=>!!document.getElementById('staletab')),'two tabs: the older tab doesn\'t say it has stopped saving');
+    ok(got===want,`two tabs${db?' (database)':''}: the older tab's save wiped the newer one (${got} steps saved, ${want} played)`);
+    ok(await A.evaluate(()=>!!document.getElementById('staletab')),`two tabs${db?' (database)':''}: the older tab doesn't say it has stopped saving`);
     await ctx.close(); }
   // "How to play" on the title screen, skipped or read to the end, never touches slot 1
   // (Grokbot: its Skip and its last Next saved with no career open, an empty one over slot 1)

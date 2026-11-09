@@ -1,3 +1,4 @@
+const ptsW=n=>`${n} point${n===1?"":"s"}`;   // "1 points" (Instinct, round 15)
 /* ============ views: English football ============ */
 /* The tables, zones marked (the Premier League's Champions League places and
    the drop; the Championship's automatic promotion and play-offs), the
@@ -106,16 +107,16 @@ function eplStakes(x){
   const R=DIVS[d];
   if(d==="PL"){
     if(pos<=2)out.push({p:90,tag:"TITLE RACE",l:`${pos===1?"Top of the table":"Second, "+(P(T[0])-P(my))+" behind "+esc(T[0])} with ${left} to play.`});
-    else if(pos<=7)out.push({p:84,tag:"EUROPE",l:`${pos<=5?"In the Champions League places":"Chasing the top five"}: ${P(T[4])-P(my)>0?(P(T[4])-P(my))+" points off fifth":"fifth or better"}.`});
+    else if(pos<=7)out.push({p:84,tag:"EUROPE",l:`${pos<=5?"In the Champions League places":"Chasing the top five"}: ${P(T[4])-P(my)>0?ptsW(P(T[4])-P(my))+" off fifth":"fifth or better"}.`});
     const gap=P(my)-P(T[17]);
-    if(pos>=15)out.push({p:92,tag:pos>=18?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>=18?`${P(T[16])-P(my)} points from safety with ${left} to play.`:`${gap} point${gap===1?"":"s"} above the drop.`});
+    if(pos>=15)out.push({p:92,tag:pos>=18?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>=18?`${ptsW(P(T[16])-P(my))} from safety with ${left} to play.`:`${gap} point${gap===1?"":"s"} above the drop.`});
   } else {
     const pe=R.po[1], six=R.po[1]-R.po[0]===5;
     const ord=n=>n+(n%10===1&&n%100!==11?"st":n%10===2&&n%100!==12?"nd":n%10===3&&n%100!==13?"rd":"th");   // the places by number (Grokbot)
     if(pos<=R.up)out.push({p:90,tag:"PROMOTION",l:`${ord(pos)}: in the automatic places (top ${R.up}) with ${left} to play.`});
     else if(pos<=pe)out.push({p:86,tag:"PLAY-OFFS",l:`${ord(pos)}: in the play-off places (${ord(R.po[0])} to ${ord(pe)}). ${six&&pos<R.po[0]+2?"Straight to the semi-finals if it stays that way.":six?"An eliminator first.":"A semi-final if it stays that way."}`});
-    else if(pos<=pe+4)out.push({p:80,tag:"PLAY-OFF RACE",l:`${P(T[pe-1])-P(my)} points off the play-offs.`});
-    if(R.down&&pos>=24-R.down-2)out.push({p:92,tag:pos>24-R.down?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>24-R.down?`${P(T[23-R.down])-P(my)} points from safety.`:`${P(my)-P(T[24-R.down])} points above the drop.`});
+    else if(pos<=pe+4)out.push({p:80,tag:"PLAY-OFF RACE",l:`${ptsW(P(T[pe-1])-P(my))} off the play-offs.`});
+    if(R.down&&pos>=24-R.down-2)out.push({p:92,tag:pos>24-R.down?"IN THE DROP ZONE":"RELEGATION SCRAP",l:pos>24-R.down?`${ptsW(P(T[23-R.down])-P(my))} from safety.`:`${ptsW(P(my)-P(T[24-R.down]))} above the drop.`});
   }
   if(CONF[opp]===d&&Math.abs(T.indexOf(opp)+1-pos)<=2)out.push({p:82,tag:"SIX-POINTER",l:`${esc(opp)} are right beside you in the table. Three points for you, none for them.`});
   return out;

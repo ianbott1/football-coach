@@ -85,7 +85,9 @@ function objStatus(o,my){
     const left=myLeagueGames(my).filter(g=>g.home===my&&!g.neutral&&g.week>=SEA.step).length;
     if(w>=o.n)return {s:"met",t:`${w} won`};
     if(w+left<o.n||done)return {s:"miss",t:`${w} won, ${o.n} needed`};
-    return {s:"on",t:`${w} won, ${left} to play`} }
+    // the ones not won too: "13 won, 28 to play" of 44 read as arithmetic gone wrong (Muse, round 20)
+    const pl=played.filter(g=>g.home===my&&!g.neutral).length-w;
+    return {s:"on",t:`${w} won${pl?`, ${pl} not`:""}, ${left} to play`} }
   return {s:"on",t:""};
 }
 /* Re-aimed (round 45): an objective settled with a third of the season still to play, met or missed, leaves a

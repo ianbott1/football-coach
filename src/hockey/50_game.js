@@ -356,7 +356,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s===10&&!st.t3q){st.t3q=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
         if(humans[sd]&&O.t3&&Math.abs(lead(sd))<=1)queueCall(sd,thirdCall(lead(sd),O.tell,O.t3,st.S[sd].ans)) });
       if(st.queue.length)return st.next()}
-    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(HK_FINAL&&(L===1||L===0))queueCall(sd,finalCall(L)); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; queueCall(sd,pullCall(L,p!==undefined&&p+2>s*5?p+2:0)) } });
+    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(HK_FINAL&&(L===1||L===0))queueCall(sd,finalCall(L)); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; const X=st.S[sd]; queueCall(sd,Object.assign(pullCall(L,p!==undefined&&p+2>s*5?p+2:0),{gn:{ga:X.ga,sa:X.sa,xga:X.xga,bk:!!X.backupIn}})) }   /* his night, on the card (round 47, Muse: the pull is a coin flip about a stranger) */ });
       if(st.queue.length)return st.next()}
     if(s>=SEGS&&HK_OTQ&&st.h===st.a&&!st.playoff&&!st.otq){ st.otq=true; ["home","away"].forEach(sd=>queueCall(sd,otCall())); if(st.queue.length)return st.next() }
     if(s>=SEGS){ if(st.h===st.a)overtime(); st.done=true; return fin() }

@@ -34,7 +34,7 @@ for(const [f,team] of GAMES){
       const s=x=>x.mine>x.theirs?1:x.mine===x.theirs?0.5:0; const d=s({mine:P.mine,theirs:P.theirs})-s(c.cf); sumDiff+=d;
       if((d>0&&c.worth>0)||(d<0&&c.worth<0))agree++ });
     // round 39: a read is judged in the reads only; the top line covers the situation calls (one verdict per call)
-    const RK={}; (P&&P.reads||[]).forEach(r=>{ RK[r.k]=1 }); const IS=I.filter(x=>!(x.k&&RK[x.k]));
+    const RK={}; (P&&P.reads||[]).forEach(r=>{ RK[r.k]=1 }); const IS=I.filter(x=>!(x.k&&RK[x.k])&&x.q===undefined);   // round 47: football's graded calls are listed once, in its own option-by-option list, not in this line
     if(IS.length){ const h=A.impactHTML([P]); ok(/class="impact( quiet)?"/.test(h)&&!/undefined|null|NaN/.test(h),`${f}: the post-game line reads "${h.replace(/<[^>]+>/g,' ').slice(0,140)}"`);
       const head=(h.match(/class="imphead">([^<]*)</)||[])[1]||'?'; heads[head]=(heads[head]||0)+1;
       // the headline credits or blames the call only when the average agrees

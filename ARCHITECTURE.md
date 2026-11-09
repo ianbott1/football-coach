@@ -358,6 +358,89 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 47: voices and presentation:
+- The staff's fixed lines vary across games (core/93_voice: VOICE_ALT, voiceVary,
+  VOICE_ON). Each fixed line has three other ways the same voice gives the same
+  advice; the first time a line is heard in a game it moves one along its
+  rotation, kept in S.voice, and stays for that game (staffFresh still stops a
+  voice repeating itself within one). Muse, round 20: Pearl's pre-kickoff line
+  and the capybara's half-time line were word for word in all four matches.
+  Measured on soccer: the capybara's flank, prep and read lines, and Pearl's
+  prep hint, four distinct in six matches.
+- The Film Room remembers on the call screen (95_story filmMemoryHTML): the
+  latest kept call with the same heading, this team, and how it went, in words
+  (no number on tonight's options).
+- Hockey's pull card shows the goalie's night: who, goals on shots, the save
+  percentage, what those shots were worth, the backup if he's in (dp.gn).
+- The live game uses a wide screen (watchwrap 900px from 1024px; larger run of
+  play); the live chance names your team.
+- Football's result card lists each call once: the impact summary skips calls
+  graded in football's own option-by-option list (the same fourth down came
+  twice, from two sets of replays with two sets of numbers).
+- The Film Room says when a list is empty, and when this season's calls made
+  none clear enough to keep.
+- Goldens: screens only; games, records and universes unchanged.
+
+Round 46: trust (Muse round 20, Instinct round 15):
+- Saves in IndexedDB (core/15_store idb, IDB_ON). All six games share one
+  origin and localStorage gave them about 5 MB between them; veteran careers
+  run 240 KB to 1.7 MB. A key not yet in the database is read from
+  localStorage and copied across on first read; the localStorage copy stays
+  (a fallback, and what an older cached page sees) and goes only when the key
+  is deleted, so an erased career can't return. No database (some private
+  windows, the node harness): localStorage as before. navigator.storage.persist
+  is asked once. test/storage-full.js: six careers of 1.6 MB (9.6 MB) all save
+  and reload; an old career with localStorage full loads, plays, saves and
+  reloads; erased stays erased; without a database the old full-storage path
+  holds.
+- One story per screen: the college basketball card after a conference
+  tournament exit says what the field did (g.ct); NBA play-in losers are
+  "Lost in the play-in" in the history too, and the season result is pending
+  (empty) before the field is drawn or while a play-in is unfinished, which is
+  what turned a 57-25 team's badge to "Under pressure" for a screen; careers
+  bank and show the regular-season record, as the franchise all-time line does
+  (soccer's and hockey's careers took in play-off games); soccer goals in a
+  watched game go to the commentary's scorers (scLogCredit, as hockey's
+  hkLogCredit); the home objective says the ones not won; "1 points" fixed;
+  soccer money to one decimal under £100M (the £17M/£17.5M bridge); soccer's
+  goal line knows the occasion (posGoalLine: champions, promoted, up through
+  the play-offs, relegated).
+- Not reproduced (asked for the tester's backup): a soccer player released in
+  the summer still on the squad (offseasons with the computer's choices and
+  with every expiring player let go: 0 of 77 stayed); pro football's three
+  career records (fresh careers agree to the game across three seasons).
+- Every situation call gated at 3 points (Ian: "gate them"): SPREAD_KINDS now
+  takes the final stretch, ties, overtime, the pull, the press and the third
+  period too. Shown per game after (30 games): hockey overtime 0.35 -> 0.27,
+  final stretch 0.45 -> 0.20, third period 0.50 -> 0.27; soccer final 0.10.
+- The rare decisions announced: when the assistant takes foul trouble or the
+  back-to-back goalie (not worth asking), the live view says so for a few
+  stretches (ANNOUNCE_KINDS, autoNoteIn). Foul trouble is asked in about one
+  basketball game in seven, the goalie start in one hockey game in twenty.
+- The big nights in order: a title, clinch, promotion or elimination card puts
+  the banner first, then the score and what it means, with the graded calls
+  behind a tap (details.audit).
+- Film Room: the assistant's call named ("Play it straight, as your assistant
+  would" was hidden for saying "assistant": filmDef); the career count comes
+  from the same ledger as the season's (it sat 30 under 92).
+- Verdicts show the replays option by option (repRates: your call's share of
+  the replays won beside the assistant's), win shares, not in soccer (graded in
+  points).
+- Live win probability (a trial, LIVE_WP_ON): between plays only, never on a
+  call. The rest of the margin as normal: mean mu*tau, spread sigma*sqrt(tau),
+  mu from the pre-game chance; football adds the next possession (1.5 points);
+  a level finish goes to overtime at half the pre-game edge. LIVE_SIG fitted
+  per league on 400 live games (cfb 18, nfl 14, ncaab 16, nba 18, nhl 2.75,
+  epl 1.9); calibration bands within 7.5 points everywhere (pro football's
+  50-70 band the worst: shown 60, won 52), most within 3. test/live-wp.js (200
+  games, bands within 10: the same model reads 2 to 9 by seed in pro football).
+- Tests changed with Ian's gating: late-calls no longer caps close finishes with
+  nothing asked (it fails only if none of five or more asks anything); case 81
+  needs one close call in 40 games, not two. confirm-taps runs its screens on
+  the localStorage path and the two-tab check on both.
+- Found, not caused here: the long-run NBA history check (not in --quick) has
+  1 seeds winning 43% of titles against a real ~55%, on the round-45 build too.
+
 Round 45: stakes in the flow (what a game means, before it and after a run of them):
 - What this game means (96_goals meansStakes, MEANS_ON): a stake line for the
   board's objective the game could settle ("Win and the season series against

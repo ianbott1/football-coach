@@ -718,6 +718,11 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
   body.offseason .cols{grid-template-columns:minmax(0,1fr)}
   body.offseason #view{max-width:820px;margin:0 auto}
   #app{max-width:1340px}
+  /* the live game uses the width (Muse, rounds 14-20: a narrow column with dark margins on a wide screen) */
+  .watchwrap{max-width:900px}
+  .watchwrap .callopts .advance{max-width:none}
+  .watchwrap .play .ptxt{font-size:16px}
+  .livewp{max-width:900px}
   .cols{display:grid;grid-template-columns:390px minmax(0,1fr);align-items:start}
   #side{border-right:1px solid var(--line);
     position:sticky;top:92px;max-height:calc(100vh - 92px);overflow-y:auto;
@@ -874,6 +879,10 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .obj{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px solid rgba(42,49,69,.55);font-size:14px}
 .objmark{flex:none;width:16px;color:var(--muted)}.obj.met .objmark{color:var(--turf)}.obj.miss .objmark{color:var(--flag)}
 .objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
+details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 0;list-style:none}details.audit>summary::before{content:"\25B8  "}details.audit[open]>summary::before{content:"\25BE  "}
+.livewp{display:flex;align-items:center;gap:10px;margin:8px auto;padding:0 16px;max-width:760px;box-sizing:border-box;font-size:12px}.livewp .lwlab{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}.livewp .lwbar{flex:1;min-width:60px;height:6px;background:var(--line);display:flex;overflow:hidden;border-radius:3px}.livewp .lwbar i{background:var(--sodium);display:block;height:100%}.livewp .lwbar b{background:var(--muted);opacity:.5;display:block;height:100%}.livewp .lwpct{color:var(--bone);white-space:nowrap;font-family:var(--mono);font-size:11px}
+.filmmem{font-size:12.5px;line-height:1.45;border-left:2px solid var(--bone);padding:4px 10px;margin:8px 0;color:var(--dim,#9aa)}.filmmem b{color:var(--bone);font-weight:600}
+.autonote{font-size:12.5px;color:var(--dim,#9aa);border-left:2px solid var(--sodium);padding:4px 8px;margin:6px 0}
 .dinc{margin:6px 0 10px;text-align:left}.dinch{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.dincl{font-size:13px;line-height:1.45;margin:2px 0}.filmpre b{font-weight:600}
 .objre{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--sodium);font-weight:400;margin-right:4px;text-transform:uppercase}.obj.miss .objl{color:var(--muted);text-decoration:line-through}
 .objt{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right}

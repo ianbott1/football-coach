@@ -1,5 +1,5 @@
 {
- "fp": "2de3cb65397f2662",
+ "fp": "fa6bbba8b5d9de0e",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -340,6 +340,16 @@
    "fp": "2de3cb65397f2662",
    "from": "88aa45cd0953d293",
    "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
+  },
+  {
+   "fp": "81d0f2dbc41ee704",
+   "from": "2de3cb65397f2662",
+   "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "fa6bbba8b5d9de0e",
+   "from": "81d0f2dbc41ee704",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
@@ -351,48 +361,48 @@
     "champion": "Manchester City",
     "rec": "e44abe3b0ad1847b",
     "poll": "bac30af691fcfadb",
-    "heis": "1c441ac03d83f1e2",
-    "history": "5638b71b5d8d0c16",
-    "universe": "38598aab1863c5ab",
-    "screens": "319fc18ed9152707"
+    "heis": "c2e271bc0791ef96",
+    "history": "5fea2626198271a8",
+    "universe": "15517245df33fd3c",
+    "screens": "1b28dfb3e810e77c"
    },
    {
     "year": 2027,
-    "games": "923656d6af3f418d",
+    "games": "2dd90a788d2da576",
     "post": "dc6e99fb2ed6b98d",
     "champion": "Manchester City",
-    "rec": "2102bae5aa9dc719",
-    "poll": "4c65840c2a5a75d8",
-    "heis": "fcaa3169d089afc0",
-    "history": "af67a362787c0e3b",
-    "universe": "7bb86e81b58a938c",
-    "screens": "24b0e67ef4fab00d"
+    "rec": "f87252448d4964bf",
+    "poll": "d5dc51513e6aa2b0",
+    "heis": "89d90f7d38fc940d",
+    "history": "0fd270ec8f71e513",
+    "universe": "79e4db51aa1ebabd",
+    "screens": "0b056dffd182d9cf"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "085697cb7f754e0b",
-    "post": "4b1e56869081aabb",
-    "champion": "Aston Villa",
-    "rec": "b4147b17d767e5b0",
-    "poll": "f38111083512a157",
-    "heis": "e08a942134cb441d",
-    "history": "be654f9dced92b65",
-    "universe": "b6031699e7c137af",
-    "screens": "67f81f0bb63116af"
+    "games": "475df4deef6cf29c",
+    "post": "c2b13891aabdcf64",
+    "champion": "Manchester City",
+    "rec": "da72a289a1edfb45",
+    "poll": "7423e441dcb6ef1d",
+    "heis": "c4e690c8797cd4d3",
+    "history": "019cab89378f7825",
+    "universe": "40034f08db0f1b6e",
+    "screens": "71f1fe5b1be57d22"
    },
    {
     "year": 2027,
-    "games": "cf30c5ccde748216",
-    "post": "709f85d5288d0035",
-    "champion": "Manchester City",
-    "rec": "3294f624b6c0367d",
-    "poll": "79bfd7920cb0df5b",
-    "heis": "5bd58d2adcd64be9",
-    "history": "d6d8e44582e34644",
-    "universe": "c7614b1802665bb2",
-    "screens": "456a313d205cba25"
+    "games": "f816d61957b3567c",
+    "post": "a6f6b1cc8c57362a",
+    "champion": "Arsenal",
+    "rec": "5be4cd3bd3fcbc65",
+    "poll": "dd1ef05d6d605084",
+    "heis": "955547db9512c36c",
+    "history": "3b999b905217d885",
+    "universe": "68083adffdf8113c",
+    "screens": "33352896cb4e0d4f"
    }
   ],
   "schedules#60": [

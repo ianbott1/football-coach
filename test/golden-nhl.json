@@ -1,5 +1,5 @@
 {
- "fp": "723cebc5161289e4",
+ "fp": "1d560c3f7e62fda1",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -340,59 +340,69 @@
    "fp": "723cebc5161289e4",
    "from": "df9cfae423544e3d",
    "note": "round 45: what this game means (the board, the table), re-aimed objectives (counted in place of a missed one), the Film Room before games, the sim digest's incidents, soccer clinches; control build with all five switches off matches round 44"
+  },
+  {
+   "fp": "822343163161f78f",
+   "from": "723cebc5161289e4",
+   "note": "round 46: all situation calls gated at 3 points (results change through which calls are asked), soccer goals credited to the commentary's scorers, careers on regular-season records, state-text and presentation fixes; control with the old gating and no scorer credit leaves games, records and results unchanged (screens, history and universe text differ)"
+  },
+  {
+   "fp": "1d560c3f7e62fda1",
+   "from": "822343163161f78f",
+   "note": "round 47: screens only (staff lines varied across games, Film Room memory on calls and empty-list notes, the goalie's night on the pull card, football's card lists each call once); games, records and universes unchanged"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "836d9205e12580bf",
-    "post": "0b260e3516f40f10",
-    "champion": "Dallas",
-    "rec": "d9f06ad45d5bfaab",
-    "poll": "78e60273d276118d",
-    "heis": "c858175198a22229",
-    "history": "f7c37f5eb16f41a7",
-    "universe": "e37bb98ede6c4eeb",
-    "screens": "6d045182fc7a47ee"
+    "games": "a9a0caeb3695c8c1",
+    "post": "2951f7baf86b7282",
+    "champion": "Florida",
+    "rec": "7ed46f7515142243",
+    "poll": "4f1846ada2df9247",
+    "heis": "6717833acf0ba470",
+    "history": "0c5d7f4f6489777c",
+    "universe": "d9aa9abf21f7934f",
+    "screens": "4fd5de050c35899d"
    },
    {
     "year": 2027,
-    "games": "f9e70fba90f6edf0",
-    "post": "4df78e2cf9d336f7",
-    "champion": "Colorado",
-    "rec": "dac6e4e478c2997a",
-    "poll": "d6e232a72b310df8",
-    "heis": "002bed91bf6be73d",
-    "history": "14196dcb4ce2c1a7",
-    "universe": "ff8c4f7c8bd9e297",
-    "screens": "d2f9abf8281b006b"
+    "games": "72b01d1480032b1c",
+    "post": "d62be704073cc97b",
+    "champion": "NY Rangers",
+    "rec": "f8dbc841d33a80e4",
+    "poll": "77db9e13d46b8744",
+    "heis": "9a3f3a71cfab593e",
+    "history": "f09bb9e11b34c585",
+    "universe": "31a31b59f141bf36",
+    "screens": "216522922b22774b"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "7c9629ab0f8b11e7",
-    "post": "859057f6df7c1175",
-    "champion": "Vegas",
-    "rec": "5e3fe5c8e38231f0",
-    "poll": "5acfba65a691aa8c",
-    "heis": "a8159cf440c089b4",
-    "history": "e547e5e3e565d757",
-    "universe": "ce9539b8cd76a42b",
-    "screens": "b446bccece622792"
+    "games": "2eafb96413c53566",
+    "post": "6be0f7ca20bdb1d2",
+    "champion": "Florida",
+    "rec": "ed63df8ff7be135c",
+    "poll": "90074da57a3066b3",
+    "heis": "ec5eb0e69e082650",
+    "history": "653d3c887639672f",
+    "universe": "4e87f91668a56b89",
+    "screens": "c5fe21166e9125a3"
    },
    {
     "year": 2027,
-    "games": "23e5c2efcf8b821a",
-    "post": "a20163aa2805792f",
-    "champion": "Edmonton",
-    "rec": "1daad1cf2034ff72",
-    "poll": "6310bab0deba7d1f",
-    "heis": "daf17ddf8ee2576b",
-    "history": "30075b1de36ce6fd",
-    "universe": "f6e780c6cb6c08c7",
-    "screens": "7bfdc2eaf1da6766"
+    "games": "238ae29ae9215981",
+    "post": "4ac11623875a55cb",
+    "champion": "Tampa Bay",
+    "rec": "4ac8bd322dfa175f",
+    "poll": "51a9259fa118f30b",
+    "heis": "1d35e6dba2a682e0",
+    "history": "138c507d18d612d7",
+    "universe": "915bf8800cb37dd7",
+    "screens": "c5cb947da3a1d040"
    }
   ],
   "schedules#60": [
