@@ -36,7 +36,7 @@ function pickInjuredPos(rng){
 const R_SLOPE=24.3, R_INT=56;
 const ratingToElo=r=>R_INT+R_SLOPE*r;
 const eloToRating=e=>(e-R_INT)/R_SLOPE;
-function playerName(rng){return rng.pick(PNAMES_F)+" "+rng.pick(PNAMES_L)}
+function playerName(rng){ const f=rng.pick(PNAMES_F), l=rng.pick(PNAMES_L); return f+" "+wideLast(f,l,PNAMES_L) }   // the same two draws; the surname read through a wider list (core 21_names)
 const BK=i=>i+POS.length;
 function teamRating(roster){
   let s=0;

@@ -223,7 +223,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const poss=Math.max(50,Math.round(rng.gauss(BB.pace*tempo,BB.paceSd)));
   // a mismatch past BB.softGap counts half: the better side rests and coasts, so
   // even a great team loses some (unset: no change). Pro: 82-0 happened.
-  const rawGap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1), sg=BB.softGap;
+  const rawGap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1), sg=playoff&&LEAGUE.postFull?0:BB.softGap;   // the playoffs: full strength (round 49)
   const gap=sg&&Math.abs(rawGap)>sg?Math.sign(rawGap)*(sg+(Math.abs(rawGap)-sg)*0.5):rawGap;
   const eH=gap*BB.gapPerPoss/2;
   // tonight's referees

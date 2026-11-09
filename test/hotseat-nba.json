@@ -1,5 +1,5 @@
 {
- "fp": "0e5a3c7e45512f04",
+ "fp": "6abf80895b8e7277",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -230,6 +230,11 @@
    "fp": "0e5a3c7e45512f04",
    "from": "0e5a3c7e45512f04",
    "note": "round 48: history and screens; soccer economy from the first summer"
+  },
+  {
+   "fp": "6abf80895b8e7277",
+   "from": "0e5a3c7e45512f04",
+   "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
   }
  ],
  "out": [
@@ -239,20 +244,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "50-32",
-      "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "rec": "49-33",
+      "result": "Lost in the first round",
+      "grade": "B-"
      },
-     "book": "e36bee94cc386e65"
+     "book": "29529213a322c5a1"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "44-38",
-      "result": "Lost in the first round",
-      "grade": "C+"
+      "rec": "43-39",
+      "result": "Lost in the conference semifinals",
+      "grade": "B-"
      },
-     "book": "67bfd674b22ebf3f"
+     "book": "976e8613e5806a6e"
     }
    ]
   },
@@ -262,20 +267,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "16-66",
+      "rec": "19-63",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "db5c19de7d6229e0"
+     "book": "b2ed317367ec2a84"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "34-48",
+      "rec": "27-55",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "4630841461a4999f"
+     "book": "effed0f93413b0ef"
     }
    ]
   },
@@ -285,20 +290,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "23-59",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "38-44",
+      "result": "Lost in the first round",
+      "grade": "D"
      },
-     "book": "c1095008f1d34b68"
+     "book": "fdd95c295bd2aaa4"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "63-19",
+      "rec": "52-30",
       "result": "Lost in the conference finals",
-      "grade": "A"
+      "grade": "A-"
      },
-     "book": "c9e3cec9905da7b3"
+     "book": "9700f6e021b0fc69"
     }
    ]
   }

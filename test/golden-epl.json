@@ -1,5 +1,5 @@
 {
- "fp": "e4fd368537ab7abe",
+ "fp": "60a9bc21fc9c77b7",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -355,59 +355,64 @@
    "fp": "e4fd368537ab7abe",
    "from": "fa6bbba8b5d9de0e",
    "note": "round 48: history keeps the live chance's extremes (story cbw/clw), screens (playoff headline basis, goal lines, tallies, Film Room rule, hints, series so far); soccer from the first summer on: gaps filled at the club's level, non-league budgets a quarter up (season-1 games unchanged)"
+  },
+  {
+   "fp": "60a9bc21fc9c77b7",
+   "from": "e4fd368537ab7abe",
+   "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "d3426c82d781a2a5",
-    "post": "932bdcaf8e97a3f1",
+    "games": "0c12b72260544e56",
+    "post": "336ae667dd5680bc",
     "champion": "Manchester City",
-    "rec": "e44abe3b0ad1847b",
-    "poll": "bac30af691fcfadb",
-    "heis": "c2e271bc0791ef96",
-    "history": "5fea2626198271a8",
-    "universe": "392f6128624f4522",
-    "screens": "362e5c18b2ee2afb"
+    "rec": "5bd100dbebc2dac6",
+    "poll": "e294fb9fca094f90",
+    "heis": "debb27f463bb3027",
+    "history": "2e2f245f8892117d",
+    "universe": "e56eff06c9e080ca",
+    "screens": "3fb0935ccea01c6d"
    },
    {
     "year": 2027,
-    "games": "d75743db04ee935e",
-    "post": "3c4b76569a894f75",
-    "champion": "Liverpool",
-    "rec": "898cdbf3473184b3",
-    "poll": "f27b6537d741efb0",
-    "heis": "9cf1e31b00920333",
-    "history": "c8a93f5a4c36064a",
-    "universe": "84e2a85fcd7b4a31",
-    "screens": "928a45b1b983d718"
+    "games": "a8c931f6f43001d3",
+    "post": "529590ff683882de",
+    "champion": "Manchester City",
+    "rec": "44cf80b81f3ffd06",
+    "poll": "0f308c05cfb56af6",
+    "heis": "e1abe8e17e8d2920",
+    "history": "e40ec1d33d6e3c00",
+    "universe": "9412e9a7d0a6c65a",
+    "screens": "a85d470f4ab567ef"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "475df4deef6cf29c",
-    "post": "c2b13891aabdcf64",
+    "games": "bc9c6a4863d23a2d",
+    "post": "30b75192e1ec3538",
     "champion": "Manchester City",
-    "rec": "da72a289a1edfb45",
-    "poll": "7423e441dcb6ef1d",
-    "heis": "c4e690c8797cd4d3",
-    "history": "aba4c69a6d0bb034",
-    "universe": "f2e23b4a5ed5b21c",
-    "screens": "363fc98d57753f04"
+    "rec": "834e090cafd4f31f",
+    "poll": "8a0a3059f0ed3a71",
+    "heis": "383b90a62a5c3fab",
+    "history": "01149d1d7c2d48aa",
+    "universe": "d9b84e87c22c069f",
+    "screens": "3ed1ee0756a26072"
    },
    {
     "year": 2027,
-    "games": "b6a0f71fc494dd7f",
-    "post": "e41e66763f283f03",
+    "games": "88a47d4c2a99012a",
+    "post": "2e1bc23eee8e7dcf",
     "champion": "Manchester City",
-    "rec": "d6ab3c54051f2d96",
-    "poll": "d81968b2ae91bcef",
-    "heis": "efdc01f6b37c39d0",
-    "history": "3a4d1c73254350ac",
-    "universe": "7bf247a41894a806",
-    "screens": "5a813ca203977371"
+    "rec": "7bda8fa20036b19b",
+    "poll": "95e7ce0f075f9876",
+    "heis": "660f0e098cfc5670",
+    "history": "f47dcddc4c4288a3",
+    "universe": "28c3fcbf1c2cfceb",
+    "screens": "ba3456724ddee972"
    }
   ],
   "schedules#60": [

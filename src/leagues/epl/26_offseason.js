@@ -95,7 +95,7 @@ function nflRoster(rng,programElo){
   // nobody starts over the cap
   const pay=payroll(r);
   if(pay>NFL_CAP*0.94){const f=NFL_CAP*0.94/pay; r.forEach(p=>p.k.sal=Math.round(p.k.sal*f*10)/10)}
-  return r;
+  return distinctSurnames(r);   // round 49: no surname twice on a new roster (core 21_names)
 }
 
 /* the draft: worst regular season first; playoff teams after, by the round

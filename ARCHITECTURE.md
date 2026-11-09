@@ -358,6 +358,51 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 49: phones, the call gate measured, playoff strength, names:
+- Phones (390px, Playwright, every main screen in all six): nothing ran past the
+  edge. The top bar's five 24px buttons cut "WREXHAM" to "WREXH..."; on phones
+  they are 34px tall and music moves to the ? panel (a Music row there). Speed,
+  sub-tab and rewatch buttons 36px on touch screens. Not checked: a clinch night.
+- The spread gate, measured (1,172 gated calls, six seasons a game, each option's
+  worth on 1,600 fresh replays): at 60 replays and 3 points it asked 432, and 79%
+  of them truly gained under 3 points on the assistant (the max of several noisy
+  numbers flatters the best; raising the threshold alone didn't help). Only 14%
+  of gated calls truly gain 3 points. Now 120 replays at 4 points, and NEVER_ASK
+  (core 94) gives the assistant kinds that almost never matter: nhl push, lock,
+  final (1 of 108); ncaab half, chase (3 of 95); cfb protect, onside (0 of 22);
+  nfl onside (0 of 7). On fresh seeds: 66% of asked calls under 3 points (was
+  79%): hockey and pro football ~one in three, pro and college basketball and
+  soccer still ~75-89%, because their calls rarely move a game. The fix there
+  is rebalancing those options, not the gate. Gate cost ~2x (about 30 ms a call
+  in node). Scratch tools: r49/gate.js, gate2.js, rules.js.
+- NBA playoffs at full strength (LEAGUE.postFull): the regular season halves a
+  mismatch past softGap (the better side coasts); the postseason no longer does.
+  1 seeds 43% -> 53% of titles over 194 seasons (real ~55), 1 v 8 86%; the
+  regular season is untouched (the gopts playoff flag, as hockey and soccer).
+  nba-history passes.
+- Names (core 21_names): each sport drew from 55-61 surnames, so 60-100% of new
+  rosters shared one. playerName makes the same two draws and reads the surname
+  through ~300 by hash (wideLast); a new roster's repeats are re-read by hash
+  (distinctSurnames). New rosters: none shared (test/names.js). After six
+  seasons newcomers bring some back: ~20% of basketball and soccer rosters,
+  40-55% of football and hockey. Against a control build, games, records and
+  champions unchanged in five games; college basketball's changed because the
+  recruiting commit dice are seeded by the recruit's name (core 92).
+- What if (95_story whatIfHTML, WHATIF_ON): at the season's end, up to three
+  calls where the replay on the assistant's call (the same dice) went furthest:
+  a flipped result first, then the score swing, then clarity; words for the
+  verdict, the replayed score shown. Kept per season (S.whatIf).
+- Hot seat (found by firing.js once round 49's results moved): when both humans
+  were fired in one winter, the first was offered the second's program (open,
+  since its coach was fired), took it, and the second's departure then handed it
+  to a computer coach: the first coached nothing. Another human's program is now
+  never on your job market or poach list (openOffseason, humanT). Single-player
+  markets unchanged; hot-seat goldens unchanged.
+- Tests that followed the gate: regressions 81 (college basketball's close finish
+  over two seasons: asked about one game in twenty) and 84 (no onside-call count:
+  the onside kick is the assistant's); recruiting on eight basketball programs
+  (three read +4.8 by luck; eight +2.3, round 48's build +1.8; the bar is 2.5).
+
 Round 48: one number, one basis (Muse round 21, Instinct round 16):
 - The play-off pre-game card took every game as neutral while the injury note
   under it took it as a home game (62% over "73% without him; about 81% with

@@ -176,7 +176,7 @@ class Season{
         LEAGUE.draws?{draw:fdraw,pens:fpens}:{},extra||{});
     }
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
-    if(LEAGUE.tracksOT||LEAGUE.draws)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
+    if(LEAGUE.tracksOT||LEAGUE.draws||LEAGUE.postFull)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
     // what the sport knows about the two sides before kick-off (soccer: each club's usual approach)
     if(typeof gameCtx==="function")gopts=Object.assign({},gopts||{},{ctx:gameCtx(a,b,this.year,this.step)});
     const gs=playGame(this.rng,eloH,eloA,

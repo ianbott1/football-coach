@@ -1,5 +1,5 @@
 {
- "fp": "fa025f7e8242f44d",
+ "fp": "2c24a7f6c83cafa8",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -390,85 +390,90 @@
    "fp": "fa025f7e8242f44d",
    "from": "2da1290159fb4084",
    "note": "round 48: history keeps the live chance's extremes (story cbw/clw), screens (playoff headline basis, goal lines, tallies, Film Room rule, hints, series so far); soccer from the first summer on: gaps filled at the club's level, non-league budgets a quarter up (season-1 games unchanged)"
+  },
+  {
+   "fp": "2c24a7f6c83cafa8",
+   "from": "fa025f7e8242f44d",
+   "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "49338646b775b7bb",
-    "post": "8d2bf66783d9e298",
-    "champion": "Ohio State",
-    "rec": "03f5fa869991ce65",
-    "poll": "e94f12746483b9a9",
-    "heis": "f8899270796f8e98",
-    "history": "420d3b43aad38bd7",
-    "universe": "351152736ef2a6bd",
-    "screens": "b648fd67a1faec2e"
+    "games": "195585351d094f73",
+    "post": "549e43ae0ccb3b70",
+    "champion": "Baylor",
+    "rec": "c45feaa2e02b4cad",
+    "poll": "19e9c67507236749",
+    "heis": "d547b6f92b0dea50",
+    "history": "4de39b123690a94b",
+    "universe": "3dfd7929b312c183",
+    "screens": "a80b3bc829a1217a"
    },
    {
     "year": 2027,
-    "games": "30cb049fc7ec9eaa",
-    "post": "c56650ea11dff014",
-    "champion": "Clemson",
-    "rec": "c98ea3b8c3d87c32",
-    "poll": "fc969cfdf8ccb2b5",
-    "heis": "51d2b4874878c083",
-    "history": "d7d80c81403ba4f8",
-    "universe": "dd02b2d323a2d537",
-    "screens": "f478df8dbd25020e"
+    "games": "b56e99d8f33c2fd5",
+    "post": "2dc98ea2908774fb",
+    "champion": "Maryland",
+    "rec": "bb817b92730dbe2e",
+    "poll": "bdde7a959136a7a0",
+    "heis": "1e64b83a64e25c4f",
+    "history": "7566f81f20ef099b",
+    "universe": "dc394d731d7a2130",
+    "screens": "24d02ddeec86bcfe"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "07d1700393a176a5",
-    "post": "df17a672297311aa",
-    "champion": "Kansas",
-    "rec": "6e55dface9d0e135",
-    "poll": "58b94312379d73ec",
-    "heis": "8ec66cc8dfc67bef",
-    "history": "9eac13d83d15f9ce",
-    "universe": "e8f9126e64b6550b",
-    "screens": "ec28a825acbe9b9e"
+    "games": "ffc029b17b51d109",
+    "post": "c0da4a2aacc5b127",
+    "champion": "Iowa",
+    "rec": "6085b8448137d065",
+    "poll": "1321c72512114f59",
+    "heis": "ed67545cb919d745",
+    "history": "e1f6df0e30cb1c7e",
+    "universe": "0824634f2ca374fc",
+    "screens": "7866a5f46f1e5ccc"
    },
    {
     "year": 2027,
-    "games": "1089392d3a8dee1e",
-    "post": "8412be4e883ebdff",
-    "champion": "North Carolina",
-    "rec": "1e7a20db5b9a62b3",
-    "poll": "211057ec6164a91e",
-    "heis": "9a0d5f66a3fffd19",
-    "history": "a0b04e538f8c11d8",
-    "universe": "81af593d348d5768",
-    "screens": "cc106e02749a80bb"
+    "games": "a9681c1530796004",
+    "post": "7b27fd1026eacb20",
+    "champion": "Kansas",
+    "rec": "10e960d3ccaf12c2",
+    "poll": "6da59bd5315a75f4",
+    "heis": "5c2721eb67eab2c8",
+    "history": "e81f681bc675c3d5",
+    "universe": "ac42c7258288c385",
+    "screens": "f950b56e9df060bb"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "8bc6877da9b4cc6c",
-    "post": "b85afba2a10d137f",
-    "champion": "NC State",
-    "rec": "b2b62d3341882b9b",
-    "poll": "6c5db0c98d3d0ccc",
-    "heis": "df14f739db772ccb",
-    "history": "19acc6b2dce911cb",
-    "universe": "6debdbe4572ee03b",
-    "screens": "285ddcc4f5400196"
+    "games": "3b2dc6c4bde7fa16",
+    "post": "02911b5eb77c39b5",
+    "champion": "Baylor",
+    "rec": "b2e5daecf03b25ef",
+    "poll": "dcfd319d4f2d0ca2",
+    "heis": "9def810c51af58df",
+    "history": "34f14b00ea412eba",
+    "universe": "d454c471afdf4c39",
+    "screens": "9e0d71bda0b2e01f"
    },
    {
     "year": 2027,
-    "games": "c380a26dc03a0469",
-    "post": "28b2c31b1b1250a5",
-    "champion": "Houston",
-    "rec": "f77191391537c341",
-    "poll": "1dabc88399a70662",
-    "heis": "a245a44f2819c4fd",
-    "history": "0a87a8fbea7f50cc",
-    "universe": "a49ce6e4b922e1bf",
-    "screens": "9c330b8075ec0268"
+    "games": "c30781e40787da2f",
+    "post": "fbf077040de9e913",
+    "champion": "USC",
+    "rec": "ab93c33f9641939b",
+    "poll": "eaeab1a51a5a6651",
+    "heis": "fe104a4686ebb8ee",
+    "history": "6cd94c76731d0e90",
+    "universe": "92f3165478263bd2",
+    "screens": "ccfc1001eebf8968"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "ebe3bbb4053ff61b",
+ "fp": "4a9101e554755616",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -255,6 +255,11 @@
    "fp": "ebe3bbb4053ff61b",
    "from": "ebe3bbb4053ff61b",
    "note": "round 48: history and screens; soccer economy from the first summer"
+  },
+  {
+   "fp": "4a9101e554755616",
+   "from": "ebe3bbb4053ff61b",
+   "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
   }
  ],
  "out": [
@@ -264,20 +269,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-32-9",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "41-31-12",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "5a1f310253ef668d"
+     "book": "12db09b640b9a117"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "45-33-6",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "48-30-6",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "da9394712864a29e"
+     "book": "9e5c7da790f5e770"
     }
    ]
   },
@@ -287,20 +292,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "27-39-18",
+      "rec": "38-34-12",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "d4bbed78c5eb3338"
+     "book": "92cf77163150c28e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "47-32-5",
-      "result": "Lost in the conference final",
-      "grade": "A"
+      "rec": "38-37-9",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "4caac525ad545177"
+     "book": "0d27d249e1c7b76a"
     }
    ]
   },
@@ -310,20 +315,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-28-16",
-      "result": "Lost in the first round",
-      "grade": "B-"
+      "rec": "34-38-12",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "cc304aa7753e5abb"
+     "book": "fec6447ab36a9420"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "47-26-11",
+      "rec": "44-33-7",
       "result": "Lost in the first round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "d11403226b8d9a53"
+     "book": "580355a2652f3df8"
     }
    ]
   }

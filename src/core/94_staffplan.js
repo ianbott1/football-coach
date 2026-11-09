@@ -190,7 +190,16 @@ const SPREAD_ON=true;
 // close game always had a late decision; both testers found those calls graded "close either way" (soccer's 80th
 // minute, the college press, hockey's overtime), which is the round-40 rule for cutting a call.
 const SPREAD_KINDS=Object.assign({two:1,gstart:1,fouls:1},GATE_KINDS);   // round 44: who starts in goal, foul trouble
-const SPREAD_MIN=0.03, SPREAD_RUNS=+((typeof process!=="undefined"&&process.env&&process.env.SPREAD_RUNS)||60);
+/* round 49, measured (1,172 gated calls, six seasons a game, each option's worth checked on 1,600 fresh replays):
+   at 60 replays and 3 points the gate let through 432 calls, and only one in five of them truly gained 3 points on the
+   assistant (picking the best of three noisy numbers flatters the best). 120 replays and 4 points: 269 through, one in
+   three real, and a little over half the real ones still asked. Some kinds almost never matter whatever the gate:
+   hockey's push and lock (0 of 68 truly worth 3 points) and its final stretch (1 of 40), college basketball's half-time
+   and chase calls (3 of 95), college football's protect and onside (0 of 22), the pro onside kick (0 of 7). Those go
+   to your assistant every time: asking them taught that the calls don't matter. */
+const NEVER_ASK={nhl:{push:1,lock:1,final:1}, ncaab:{half:1,chase:1}, cfb:{protect:1,onside:1}, nfl:{onside:1}};
+function neverAsk(k){ return !!(typeof LEAGUE!=="undefined"&&NEVER_ASK[LEAGUE.id]&&NEVER_ASK[LEAGUE.id][k]) }
+const SPREAD_MIN=0.04, SPREAD_RUNS=+((typeof process!=="undefined"&&process.env&&process.env.SPREAD_RUNS)||120);
 function callSpread(args,seed,answers,meHome,j,opts,dp){
   const rate=v=>{ let s=0;
     for(let m=0;m<SPREAD_RUNS;m++){ const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;

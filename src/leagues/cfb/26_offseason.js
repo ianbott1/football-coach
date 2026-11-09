@@ -26,7 +26,7 @@ function makeRoster(rng,programElo){
     b.r=Math.min(b.r,r[i].r);            // never better than the starter on day one
     r.push(b);
   });
-  return r;
+  return distinctSurnames(r);   // round 49: no surname twice on a new roster (core 21_names)
 }
 
 /* one newcomer at position i: the class's draw (developRoster), and the

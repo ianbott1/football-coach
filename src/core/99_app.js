@@ -130,7 +130,7 @@ function liveTick(){
       if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
-        if(p<GATE_LO||p>GATE_HI||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
+        if(p<GATE_LO||p>GATE_HI||neverAsk(r.ask.k)||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
           S.calls=S.calls||{}; S.calls[k]=(S.calls[k]||[]).concat([v]);
           S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([j]);
           // the rare decisions say so when the assistant takes them (round 46: both testers met neither foul trouble nor
@@ -879,8 +879,13 @@ function openOffseason(){
   ["oc","dc"].forEach(side=>{ if(SEA.midFired&&SEA.midFired[side]&&!staffCands[side]){
     staffCands[side]=coordCandidates(rng,U.program[my],side,C.rep); A.staffOpen=Object.assign({},A.staffOpen||{},{[side]:true}) } });
   // a league can run its own market (soccer: relative to your club, not fixed bands)
-  const jobs=A.userOpen?(LEAGUE.jobMarket?LEAGUE.jobMarket(U,rng,C.rep,A.openJobs,my,!!A.fired):jobMarket(U,rng,C.rep,A.openJobs,my)):[];
-  const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,A.openJobs,my):poachOffers(U,rng,C.rep,A.openJobs,my));
+  // a hot seat: another coach's program is never on your market, even when they were fired from it the same winter.
+  // Round 49 (test/firing.js): both humans fired in one offseason, the first took the second's program off the market,
+  // then the second's departure handed it to a computer coach, and the first was left coaching nothing.
+  const humanT=isHotSeat()?new Set((S.coaches||[]).map((x,i)=>i===(S.turn||0)?null:x&&x.myTeam).filter(Boolean)):null;
+  const openJ=humanT?A.openJobs.filter(t=>!humanT.has(t)):A.openJobs;
+  const jobs=A.userOpen?(LEAGUE.jobMarket?LEAGUE.jobMarket(U,rng,C.rep,openJ,my,!!A.fired):jobMarket(U,rng,C.rep,openJ,my)):[];
+  const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,openJ,my):poachOffers(U,rng,C.rep,openJ,my));
   const LO=LEAGUE.offseason.open(U,my,SEA.rec[my][0]);   // the league's own choices
   S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:LO.pool,staff:staffCands,
     picks:Object.assign({phil:(U.phil||"balanced"),oc:null,dc:null},LO.picks),
@@ -1646,8 +1651,8 @@ function myTeamView(){
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
   if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
-    (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+starsHTML(my))}
-  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+starsHTML(my);
+    (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my))}
+  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my);
   h+=(reveal==="half"?"":seasonLogHTML(my));
   return h;
 }
@@ -3091,6 +3096,7 @@ function render(){
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
     document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide){ Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); GUIDE_SEEN={}; guideMark(null,false) } save(); render() });
+    document.querySelectorAll("[data-music]").forEach(b=>b.onclick=()=>{ S.music=b.dataset.music==="true"; if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
       S.sound=b.dataset.sound==="true"; save(); if(soundOn())sfx("tap"); render();});
     return;
@@ -3593,6 +3599,9 @@ function helpPanel(){
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
+    <div class="grouphead">Music</div>
+    <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-music="${v}"
+      aria-pressed="${musicOn()===v}">${l}</button>`).join("")}</div>
     ${S.myTeam?`<div class="grouphead">Your save</div>
     <div class="setrow"><button class="setbtn" id="backupbtn">Download a backup</button>
       <label class="setbtn restorelbl">Restore a backup<input type="file" id="restorefile2" accept=".coach,.txt,text/plain" hidden></label></div>

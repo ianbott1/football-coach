@@ -1,5 +1,5 @@
 {
- "fp": "78f72617f7c3f47c",
+ "fp": "bb0ad2a64796d66b",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -250,6 +250,11 @@
    "fp": "78f72617f7c3f47c",
    "from": "78f72617f7c3f47c",
    "note": "round 48: history and screens; soccer economy from the first summer"
+  },
+  {
+   "fp": "bb0ad2a64796d66b",
+   "from": "78f72617f7c3f47c",
+   "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
   }
  ],
  "out": [
@@ -259,20 +264,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-8-14",
-      "result": "Finished 9th in the Premier League",
-      "grade": "C"
+      "rec": "18-8-12",
+      "result": "Finished 7th in the Premier League",
+      "grade": "C+"
      },
-     "book": "26e4794a3e41ab26"
+     "book": "b421e5bd6f3ad914"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "14-10-14",
-      "result": "Finished 11th in the Premier League",
+      "rec": "16-9-13",
+      "result": "Finished 10th in the Premier League",
       "grade": "B-"
      },
-     "book": "e5104bdd3cd47f6e"
+     "book": "caa04d4781d7ec51"
     }
    ]
   },
@@ -282,20 +287,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "15-18-5",
-      "result": "Finished 5th in the Premier League",
-      "grade": "B-"
+      "rec": "15-11-12",
+      "result": "Finished 9th in the Premier League",
+      "grade": "C"
      },
-     "book": "c6388c29ca612aee"
+     "book": "40ef40258c937ef2"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "10-7-21",
+      "rec": "10-11-17",
       "result": "Finished 17th in the Premier League",
       "grade": "C-"
      },
-     "book": "9fe0ccffc41d7f82"
+     "book": "80511f65bef8e92d"
     }
    ]
   },
@@ -305,20 +310,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "21-8-9",
-      "result": "Finished 5th in the Premier League",
-      "grade": "B-"
+      "rec": "16-15-7",
+      "result": "Finished 6th in the Premier League",
+      "grade": "C+"
      },
-     "book": "9c09a10151c142f5"
+     "book": "ade7dbb7fa763b7b"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-6-20",
-      "result": "Finished 15th in the Premier League",
-      "grade": "C"
+      "rec": "10-11-17",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "6adad69ac98bbc7a"
+     "book": "c50c2fdd0128416c"
     }
    ]
   }
