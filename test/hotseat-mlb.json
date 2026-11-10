@@ -1,0 +1,81 @@
+{
+ "fp": "7f1e7a94492ca973",
+ "log": [
+  {
+   "fp": "7f1e7a94492ca973",
+   "from": null,
+   "note": "round 52: baseball's first"
+  }
+ ],
+ "out": [
+  {
+   "year": 2026,
+   "coaches": [
+    {
+     "team": "NY Yankees",
+     "last": {
+      "rec": "108-54",
+      "result": "Lost in the division series",
+      "grade": "A+"
+     },
+     "book": "3bc273f7a0d032c4"
+    },
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "87-75",
+      "result": "Lost in the championship series",
+      "grade": "A+"
+     },
+     "book": "0b5b1eae6407b265"
+    }
+   ]
+  },
+  {
+   "year": 2027,
+   "coaches": [
+    {
+     "team": "NY Yankees",
+     "last": {
+      "rec": "65-97",
+      "result": "Losing season",
+      "grade": "B-"
+     },
+     "book": "ed4fc15ddd3675e8"
+    },
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "70-92",
+      "result": "Losing season",
+      "grade": "A-"
+     },
+     "book": "895aff5844bd8d19"
+    }
+   ]
+  },
+  {
+   "year": 2028,
+   "coaches": [
+    {
+     "team": "NY Yankees",
+     "last": {
+      "rec": "77-85",
+      "result": "Losing season",
+      "grade": "A"
+     },
+     "book": "0518b78fbedcaa11"
+    },
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "99-63",
+      "result": "Lost in the wild-card series",
+      "grade": "A+"
+     },
+     "book": "372522d2f039f72e"
+    }
+   ]
+  }
+ ]
+}

@@ -258,6 +258,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   const risers=[],fallers=[];
   u.alumni=u.alumni||{};
   const leave=(t,p,why)=>{
+    if(p.joined>u.year)return;   // arrived this summer and let go before a game: never played here (round 50: a rookie drafted, cut, and listed as a 2026 alumnus: Instinct)
     u.alumni[t]=u.alumni[t]||[];
     u.alumni[t].push({n:p.n,p:p.p,from:Math.min(u.year,p.joined||u.year-(p.yrsHere||1)),to:u.year,   // never after "to" (it read 2027-2026)
       peak:p.peak||p.r,yrs:p.yrsHere||1,draft:p.draft||null,

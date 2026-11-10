@@ -9,7 +9,7 @@ const {spawn,execFileSync}=require('child_process'), path=require('path'), fs=re
 const ROOT=path.join(__dirname,'..'), D=f=>path.join(ROOT,'dist',f);
 const quick=process.argv.includes('--quick');
 const G={cfb:'football-coach.html', nfl:'football-coach-pro.html', ncaab:'basketball-coach.html',
-         nba:'basketball-coach-pro.html', nhl:'hockey-coach-pro.html', epl:'soccer-coach.html'};
+         nba:'basketball-coach-pro.html', nhl:'hockey-coach-pro.html', epl:'soccer-coach.html', mlb:'baseball-coach-pro.html'};
 const T=[];
 // --resume LOG: skip the tests a previous run of the same build logged as ok (a restarted machine lost the rest)
 const resumeLog=(i=>i>=0&&process.argv[i+1])(process.argv.indexOf('--resume')), done0=new Set(resumeLog?require('fs').readFileSync(resumeLog,'utf8').split('\n').map(l=>(l.match(/^  ok   (.*) \(\d+s\)$/)||[])[1]).filter(Boolean):[]);
@@ -45,7 +45,7 @@ add('playoffs (nhl)',['nhl-playoffs.js','3']); add('clinch marks (nhl)',['nhl-cl
 add('screens (nhl)',['nhl-screens.js']); add('NHL history (nhl)',['nhl-history.js','2','60'],{long:true});
 // English football
 add('rules (epl)',['epl-rules.js','4']); add('screens (epl)',['epl-screens.js']); add('strength predicts the table (epl)',['epl-predict.js']); add('decisions (epl)',['sc-decisions.js']); add('FA Cup (epl)',['epl-cup.js','6']); add('transfer window (epl)',['transfers.js']); add('reads (nhl)',['hk-reads.js']); add('reads (ncaab)',['bb-reads.js','college']); add('reads (nba)',['bb-reads.js','pro']); add('reads (cfb)',['fb-reads.js','college','8000']); add('reads (nfl)',['fb-reads.js','pro','8000']);
-add('reported cases (all six)',['regressions.js'],{timeout:1200000});   /* ~375s alone; past 600s beside the browser tests (round 47) */ add('what your calls did (all six)',['call-impact.js']); add('recruiting board (cfb, ncaab)',['recruiting.js']); add('lines and ice time (nhl)',['lines.js']); add('two-tap confirms in a browser',['confirm-taps.js']); add('cards name only choices made (browser)',['card-honest.js']); add('late calls in close finishes (all six)',['late-calls.js']); add('the season story (four games)',['story.js']); add('full storage never hides a career (browser)',['storage-full.js']); add('simming plays like the computer coaches',['sim-parity.js']); add('what is at stake (all six)',['stakes.js']); add('the live chance is honest (all six)',['live-wp.js']); add('an old copy says so (browser)',['version.js']); add('no shared surname on a new roster (all six)',['names.js']);
+add('reported cases (all six)',['regressions.js'],{timeout:1200000});   /* ~375s alone; past 600s beside the browser tests (round 47) */ add('what your calls did (all six)',['call-impact.js']); add('recruiting board (cfb, ncaab)',['recruiting.js']); add('lines and ice time (nhl)',['lines.js']); add('two-tap confirms in a browser',['confirm-taps.js']); add('cards name only choices made (browser)',['card-honest.js']); add('late calls in close finishes (all six)',['late-calls.js']); add('the season story (four games)',['story.js']); add('full storage never hides a career (browser)',['storage-full.js']); add('simming plays like the computer coaches',['sim-parity.js']); add('what is at stake (all six)',['stakes.js']); add('the live chance is honest (all six)',['live-wp.js']); add('an old copy says so (browser)',['version.js']); add('no shared surname on a new roster (all six)',['names.js']); add('highlights play and change nothing (browser)',['highlights.js']); add('baseball plays like MLB',['bs-calibrate.js']);
 
 (async()=>{
   const t0=Date.now();

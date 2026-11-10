@@ -155,6 +155,7 @@ function readCall(stage,T,hint,cur){
     tell:{tpa:T.tpa,fga:T.fga,paint:T.paint,pnr:T.pnr,n:T.n}, best:bbRead(T), pearl:hint||bbRead(T)};
 }
 const BB_FOULQ=true;
+const CLOSE_FLOOR=3;   // round 50: within this many points late, the crunch-time read is always yours (core 99: not gated)
 function foulCall(half,X,T,seg){
   return {k:"fouls",h:`Your star has ${X.f} fouls`,b:half===1?"Sit him until the half, or ride it out?":"Sit him until the last ten minutes, or leave him in?",
     opts:[["sit",half===1?"Sit him until the half":"Sit him until crunch time"],["play","Leave him in"],ASSIST],
@@ -189,7 +190,7 @@ function restCall(lead){
 }
 function closeCall(lead,rep,n,cur){
   const top=STYLE_KEYS.reduce((a,k)=>rep[k]>rep[a]?k:a,STYLE_KEYS[0]);
-  return {k:"close",h:`${lead>0?"Up "+lead:"Tied"}, ${BB.lateLeft||"five"} minutes left`,
+  return {k:"close",h:`${lead>0?"Up "+lead:lead<0?"Down "+(-lead):"Tied"}, ${BB.lateLeft||"five"} minutes left`,
     b:"Timeout. They'll go to their closing play, or stay with what's worked tonight. What do you take away?",
     opts:(cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).filter(d=>d!==cur).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
     report:Object.assign({},rep), n:n, pearl:top};
@@ -254,6 +255,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(when==="half"){ if(Math.abs(L)<20)dp=halfCall(L) }
       // only when behind: protecting a lead (milk the clock or keep attacking) measured about 3 points a call and
       // 0.1 a game, close either way two times in three (round 33): cut, as Ian's rule asks
+      // round 50, the last decision of a close game is yours: down one to three, the crunch-time read (what do they go to
+      // now?) comes to you as it does when ahead. Both testers: after half-time in six straight close games, nothing
+      // (the press, the old call here, rarely mattered: 1 of 15 calls worth 3 points in college)
+      else if(when==="late"&&L<0&&L>=-CLOSE_FLOOR){ const o=other(side), O=st.S[o];
+        if(!humans[o]){ const cp=(ctx.close&&ctx.close[o])||fav[o]||O.off;
+          O.closeTo=rng.r()<(BB.closePref||0.6)?cp:O.off;
+          dp=closeCall(L,scoutReport(cp,(ctx.seed||0)+(o==="home"?11:12)),BB.scouted,st.S[side].def) } }
       else if(when==="late"&&L<0&&L>=-9)dp=lateCall(L);
       else if(when==="late"&&L>=10&&L<BB.garbage)dp=restCall(L);
       else if(when==="late"&&L>=0&&L<=9){
@@ -363,24 +371,24 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
     if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}); return }
     if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ok,evid:dp.best,unclear:!ok&&!shownOf(dp,t)}) }
-    if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else readIt(side,dp.stage===2?0.3:0.45); return }
+    if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else { const was=X.def; readIt(side,dp.stage===2?0.3:0.45); st.autoDid=X.def!==was&&DEFENSES[X.def]?"read them himself and switched to "+DEFENSES[X.def].l.split(":")[0].toLowerCase():"read them himself and kept the defense as it was" } return }
     if(dp.k==="fouls"){ if(v!=="play"){ sitStar(X,dp.half); st.pendEv=(st.pendEv||[]).concat([{side:side,k:"sit",f:X.f,u:rng.int(100)}]) } return }   // judged on the card against your assistant's (he sits him), like the other situation calls
-    if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; return }
-    if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; return }
-    if(dp.k==="protect"){ st.late[side]=v==="sit"?"sit":v==="keep"?"keep":"auto"; return }
+    if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; if(v!=="push"&&v!=="sit")st.autoDid="kept the pace as it was"; return }
+    if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; if(st.late[side]==="auto")st.autoDid="managed the finish by the score, as every computer coach does"; return }
+    if(dp.k==="protect"){ st.late[side]=v==="sit"?"sit":v==="keep"?"keep":"auto"; if(st.late[side]==="auto")st.autoDid="managed the finish by the score, as every computer coach does"; return }
     if(dp.k==="rest"){ st.late[side]="auto"; if(v==="rest"){ st.rest=st.rest||{}; st.rest[side]=true }
       st.log.push({side:side,k:"rest",pick:v==="rest"?"rest":"keep",unclear:true}); return }   // not right or wrong: priced in knocks, not wins
     if(dp.k==="close"){ const O=st.S[other(side)]; if(O.closeTo)O.off=O.closeTo; const t=O.off;
       const pick=v==="keep"?X.def:DEFENSES[v]?v:null;
       if(pick&&DEFENSES[pick]){ st.log.push({side:side,h:dp.h,k:"close",pick:pick,truth:t,right:DEFENSES[pick].beats===t}); if(pick!==X.def)X.prepd=false; X.def=pick }
-      else readIt(side,0.45);
+      else { const was=X.def; readIt(side,0.45); st.autoDid=X.def!==was&&DEFENSES[X.def]?"read their finish himself and switched to "+DEFENSES[X.def].l.split(":")[0].toLowerCase():"read their finish himself and kept the defense as it was" }
       return }
     if(dp.k==="last"){ lastShot(side,v==="three"?"three":"two"); st.lastDone=true }
   };
   st.next=function(){
     if(st.done)return {done:true,h:st.h,a:st.a,drives:st.drives};
     if(st.ask)return st.ask;
-    if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; apply(P.side,P.dp,v) }
+    if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; st.autoDid=null; apply(P.side,P.dp,v) }
     if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q;
       st.ask={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,
               theirs:Q.side==="home"?st.a:st.h,q:st.seg<4?1:st.seg<SEGS?2:3,side:Q.side};

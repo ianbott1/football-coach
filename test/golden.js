@@ -112,6 +112,7 @@ const CASES = LG==='cfb' ? [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['K
   : LG==='ncaab' ? [['Duke',1,2],['Coppin State',2024,2],['Gonzaga',777,2]]    // 365 teams: shorter careers
   : LG==='nba' ? [['Boston',1,2],['Detroit',777,2]]
   : LG==='nhl' ? [['Boston',1,2],['Edmonton',777,2]]
+  : LG==='mlb' ? [['Seattle',1,2],['Colorado',777,2]]
   : LG==='epl' ? [['Arsenal',1,2],['Wrexham',777,2]]
   : [['Kansas City',1,4],['Tennessee',2024,4],['Detroit',777,3],['NY Giants',31337,3]];
 const result = {};

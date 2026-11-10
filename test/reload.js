@@ -25,6 +25,7 @@ const state=api=>{const E=api.SEA;return {
     :LG==='nba'?['Boston','Denver','Boston','New York']
     :LG==='nhl'?['Boston','Toronto','Boston','Montreal']
     :LG==='epl'?['Arsenal','Wrexham','Arsenal','Tottenham Hotspur']
+    :LG==='mlb'?['Seattle','Colorado','NY Yankees','Boston']
     :['Kansas City','Tennessee','Kansas City','Denver'];
   for(const [team,seed,roster] of [[T1,1],[T2,2024],
         [R1,99,[{team:R1,name:'Coach A'},{team:R2,name:'Coach B'}]]]){

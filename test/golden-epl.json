@@ -1,5 +1,5 @@
 {
- "fp": "60a9bc21fc9c77b7",
+ "fp": "67a22e75f3a08779",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -360,6 +360,16 @@
    "fp": "60a9bc21fc9c77b7",
    "from": "e4fd368537ab7abe",
    "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
+  },
+  {
+   "fp": "dd954313c938238b",
+   "from": "60a9bc21fc9c77b7",
+   "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "67a22e75f3a08779",
+   "from": "dd954313c938238b",
+   "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
   }
  ],
  "result": {
@@ -373,8 +383,8 @@
     "poll": "e294fb9fca094f90",
     "heis": "debb27f463bb3027",
     "history": "2e2f245f8892117d",
-    "universe": "e56eff06c9e080ca",
-    "screens": "3fb0935ccea01c6d"
+    "universe": "f84115d5e94d852c",
+    "screens": "3cbf85ed75716204"
    },
    {
     "year": 2027,
@@ -385,8 +395,8 @@
     "poll": "0f308c05cfb56af6",
     "heis": "e1abe8e17e8d2920",
     "history": "e40ec1d33d6e3c00",
-    "universe": "9412e9a7d0a6c65a",
-    "screens": "a85d470f4ab567ef"
+    "universe": "6564f2cf9f90204d",
+    "screens": "5b0b61ac6ae6cd45"
    }
   ],
   "Wrexham#777": [
@@ -399,8 +409,8 @@
     "poll": "8a0a3059f0ed3a71",
     "heis": "383b90a62a5c3fab",
     "history": "01149d1d7c2d48aa",
-    "universe": "d9b84e87c22c069f",
-    "screens": "3ed1ee0756a26072"
+    "universe": "6425949c55893f6a",
+    "screens": "531675891f96b9ff"
    },
    {
     "year": 2027,
@@ -411,8 +421,8 @@
     "poll": "95e7ce0f075f9876",
     "heis": "660f0e098cfc5670",
     "history": "f47dcddc4c4288a3",
-    "universe": "28c3fcbf1c2cfceb",
-    "screens": "ba3456724ddee972"
+    "universe": "cc42a91bcb17c479",
+    "screens": "debbbb09f0f07d60"
    }
   ],
   "schedules#60": [

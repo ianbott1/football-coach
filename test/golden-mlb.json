@@ -1,0 +1,69 @@
+{
+ "fp": "fd7d63d08d925ed3",
+ "log": [
+  {
+   "fp": "fd7d63d08d925ed3",
+   "from": null,
+   "note": "round 52: baseball's first golden"
+  }
+ ],
+ "result": {
+  "Seattle#1": [
+   {
+    "year": 2026,
+    "games": "7ebbce6f3ebca012",
+    "post": "7127f1305786fd81",
+    "champion": "St. Louis",
+    "rec": "b839b54d8eca4d6f",
+    "poll": "194a3098178b8b58",
+    "heis": "81aa4127513b7cde",
+    "history": "c38959561a7e450f",
+    "universe": "e52e7dcb6d9c64ba",
+    "screens": "6d0fb39bb691c080"
+   },
+   {
+    "year": 2027,
+    "games": "174d1cb86348e58d",
+    "post": "b86579632cc448a5",
+    "champion": "Houston",
+    "rec": "eb5ab0ab67040a02",
+    "poll": "017555874ad6678d",
+    "heis": "302681329c919cd1",
+    "history": "b402b5a587f9e78e",
+    "universe": "d6cf82cf13b8450f",
+    "screens": "3b9d17bbf3ea2c7b"
+   }
+  ],
+  "Colorado#777": [
+   {
+    "year": 2026,
+    "games": "1187860c8bf9ade6",
+    "post": "cb4b7675f92dcf77",
+    "champion": "Seattle",
+    "rec": "aa6b07b18a67106a",
+    "poll": "e52bb4fd10176b6f",
+    "heis": "956a436cbadfb030",
+    "history": "b3dba53fb72bd537",
+    "universe": "99038a2f1fc9c1ec",
+    "screens": "008014ca126e7314"
+   },
+   {
+    "year": 2027,
+    "games": "d0ea3acbfe321749",
+    "post": "93dc82050508b6a2",
+    "champion": "Toronto",
+    "rec": "681bb72ec01e7b28",
+    "poll": "4ae05bcb3dd3e59d",
+    "heis": "4fcefe676894f636",
+    "history": "a048d3d6218e7f2d",
+    "universe": "dba9f5c62f8b874a",
+    "screens": "82196c73a97b0996"
+   }
+  ],
+  "schedules#60": [
+   {
+    "all": "591874dafa6a6c67"
+   }
+  ]
+ }
+}

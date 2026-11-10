@@ -266,6 +266,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const d={seg:s,h:st.h-prev.sh,a:st.a-prev.sa,sh:st.h,sa:st.a,shots:[sH+ppH,sA+ppA],pp:[ppH>0,ppA>0],en:en,ot:0,ev:ev,mom:mom,
       T:{home:Object.assign({},st.S.home.tell),away:Object.assign({},st.S.away.tell)},
       sog:[Lh.sog,La.sog]};
+    // who started in goal, for the commentary (round 50: "your assistant's call: start Vann: fresh", and the starter's name
+    // made every save: Muse). Data only; no dice.
+    if(!st.drives.length&&(st.S.home.startedBk||st.S.away.startedBk))d.bk={home:!!st.S.home.startedBk,away:!!st.S.away.startedBk};
     st.drives.push(d); return d;
   };
   const overtime=()=>{
@@ -297,22 +300,22 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
     if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,h:dp.h,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
-    if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else readIt(side,0.45); return }
+    if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the system as it was" } return }
     if(dp.k==="third"){ const t=st.S[other(side)].sys, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;
       if(pick&&ANSWERS[pick]){ st.log.push({side:side,h:dp.h,k:"third",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
-      else readIt(side,0.3);
+      else { const was=X.ans; readIt(side,0.3); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the system as it was" }
       return }
-    if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal")cpuGoalie(side); return }
-    if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; return }
+    if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal"){ cpuGoalie(side); st.autoDid="made the computer's goalie call" } return }
+    if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; if(st.late[side]==="auto")st.autoDid="managed it by the score, as every computer coach does"; return }
     if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
     if(dp.k==="ot"){ st.late[side+"ot"]=v==="attack"||v==="hold"?v:null; return }
     if(dp.k==="gstart"){ startGoalie(side,v==="starter"?"starter":"backup"); return }
-    if(dp.k==="final"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":"auto"; return }
+    if(dp.k==="final"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":"auto"; if(st.late[side]==="auto")st.autoDid="managed it by the score, as every computer coach does"; return }
   };
   st.next=function(){
     const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives});
     if(st.done)return fin();
-    if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; apply(P.side,P.dp,v) }
+    if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; st.autoDid=null; apply(P.side,P.dp,v) }
     if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q;
       const r={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,theirs:Q.side==="home"?st.a:st.h,q:st.seg,side:Q.side};
       st.waiting=r; return r}

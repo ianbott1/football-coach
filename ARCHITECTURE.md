@@ -358,6 +358,105 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 52: baseball, a seventh game (Pro Baseball Coach, league mlb, game layer baseball):
+- Built from the hockey and NHL layers: the league machinery (contracts, draft,
+  offseason, records, views) adapted; the sport replaced. Positions (10_players):
+  the nine in the lineup (DH among them), three starters and the closer, each with
+  a man behind (the fourth and fifth starters take about two starts in five).
+  gameStats gives a starter a line on the days he starts (about one in five).
+- Engine (50_game): plate appearance by plate appearance (K, BB, HBP, 1B, 2B, 3B,
+  HR, out in play with double plays and sacrifice flies), the starter tiring past
+  eighteen batters, the bullpen, the closer for a save, extra innings with a runner
+  on second (not in the postseason). The read: their hitters' approach (pull,
+  patient, contact) against your plan (away, zone, spin), from tells (pulled balls
+  in play, pitches an at-bat, strikeout rate). Calls: prep, the read after three,
+  pull (your tiring starter in a close game), pinch (7th+, men in scoring position,
+  the bottom of the order), steal (7th+, one-run game). st.autoDid names the
+  assistant's action. BS.edge 0.00031 a point of Elo; wpK 650/680/720; hfa 40.
+- MLB (05_league, 25_schedule, 85_postseason, 97_views): thirty clubs by city, the
+  balanced 162-game schedule (13 x division, 6-7 x league, 3 x interleague, 4 x
+  rival) fitted into 186 days (a team running out of days plays whenever it can);
+  twelve-team postseason: byes for the top two division winners, best-of-three wild
+  card at the higher seed, 2-2-1, 2-3-2, 2-3-2. Payroll limit $244M.
+- Measured (test/bs-calibrate.js): 4.48 runs a side, one-run games 27.7%, extras
+  8.9%, home sides 53.8%, the spread of wins 12.6 (10.8-15.6 by season), the best
+  record 107 on average (97-117): a little high against MLB (~101).
+- Screens (75_screens): line score, the run of play an inning at a time with names,
+  evidence for each call; highlights (72_highlights) for home runs and big hits.
+- First version: not yet in the cross-game tests (layouts, saves, sim and skip,
+  objectives, live-wp, call-gate lists); in goldens, hot seat, storage, reload.
+
+Round 51: highlights (Football Manager's 2D match, in all six):
+- core 97_highlights: HL state, a canvas that survives redraws (hlMount moves it
+  into #hlpitch after each render), hlPlay(live,drive) returns the clips' length
+  and liveTick waits that long for the next stretch; tap to skip (the next
+  stretch comes at once). S.highlights: "key" (default), "goals", "off", in the
+  ? panel. No canvas or requestAnimationFrame (tests), or reduced motion:
+  nothing plays and nothing waits. Each sport's HL_SPORT {aspect, clips, pitch,
+  idle, frame, collapseIdle}: soccer and hockey 72_highlights (the only pitch on
+  their live screen, idle when nothing plays), basketball and football (shown
+  only while a clip plays: they have their own field or flow).
+- Nothing decided: the event (goal, save, miss; three, and-one, last shot; a
+  touchdown) is the engine's; its draw (e.u, seeded mulberry32) picks the move;
+  the commentary's words pick it where they say how (soccer "from the penalty
+  spot", "heads in at the near post", "blazes over"; hockey "tips in a point
+  shot", "finishes a two-on-one"); the man the commentary names takes the shot.
+  Football's drives have no plays and the chart names no scorer, so its
+  touchdown is drawn by position (QB, WR, RB), never by name.
+- test/highlights.js: each sport's first watched game plays its clips with no
+  page errors and ends the same with highlights on and off; clips 1 to 10 a game.
+- Phones: the goal flash scaled a full-screen layer to 1.04 and widened the
+  live screen to 421-465px in about one soccer match in three; it grows inside
+  the screen now, and html/body clip any overflow. A long club name ellipsizes
+  (.wside min-width 0) and the live W/D/L wraps under its bar.
+
+Round 50: the testers' rounds 46-49 review (Muse, Instinct):
+- Saves: store.get, when the database and localStorage both hold a key and
+  differ, asks store.pick (core 99: revisions by number; careers by season,
+  seasons banked, steps) and loads the copy further along, copying it into the
+  database. Muse's rollbacks (pro football 3-2 to 1-1; a finished pro basketball
+  season back to Game 7) fit an old cached tab writing localStorage after the
+  new build had made a database copy: reproduced on round 49's build (loads the
+  older database copy), fixed here (storage-full case 5, both directions).
+- One ledger for calls: engines record what "leave it to your assistant" did on
+  the night (st.autoDid: his own read and what he switched to, the score rule,
+  his goalie call); callImpact keeps it from the same-dice replay (c.dd).
+  assistantSaid() names it on the What if, the Film Room and the season's big
+  calls. The Film Room keeps only calls the match graded (4+ points), and its
+  rule line now says so in the card's words; entries carry the match verdict.
+  What if: a flipped result or a graded call only (a close call that moved
+  only the score is out); the night and the replays are told apart ("graded
+  close either way... this night the dice decided it"); an empty state says why.
+- Bugs: a player drafted or signed and let go in one summer is named once, in
+  "gone", and is never an alumnus (all four pro leagues: leave() skips
+  joined>year). Soccer bookings name a man once per match, the red goes to the
+  booked centre-back (1,500 matches: 101 repeat bookings -> 0). College: no
+  target "missed" before Selection Sunday (10 premature lines -> 0). Hockey:
+  the goalie who started (backup on a back-to-back) is the one named (first
+  drive carries bk). The career count and its worth from one ledger (callLedger
+  keeps two seasons; lifeCalls the career): never a count from one and a worth
+  from the other. The slot counts a title just won before the offseason banks
+  it; "0 earlier seasons" dropped. "Out for the season" only past the season's
+  remaining steps (it was 14, football's weeks). Career leaders include current
+  players (a 108-yard passer led pro football's list of departed players).
+  Not reproduced: hockey's 2034 record in two versions; the counters reads vs
+  differing calls (they count different things).
+- Live win chance: early states measured (300 games a game, more than half to
+  play): shown 90%+ won 91-99%, shown under 10% won 1-11%: the extremes are this
+  engine's honest odds (favourites win more than in real sport). W/D/L now adds
+  to 100 (largest remainder). On/off in the ? panel (S.liveWP), with a line on
+  why early leads can read high.
+- Phones: upright, the two sims share a row; the result card and Rewatch clear
+  the bar on the first view (390x844, three games).
+- The late-call floor: basketball's crunch-time read (close) now comes down 1-3
+  as well as up 0-9, and in a one-score game it is never gated (CLOSE_FLOOR,
+  core 99 floorCall): a read, judged on the evidence. College: close calls 8 ->
+  23 in 116 watched games; close finishes with a late call 4/18 -> 10/18. The
+  rebalance of soccer's late attitude call was not done: AGGR push/sit were
+  already widened once (Nov 2026) and the call still moves under 3 points in 9
+  of 10; soccer and hockey already give the player a graded read after half-
+  time (55' read; hockey's third-period read and overtime).
+
 Round 49: phones, the call gate measured, playoff strength, names:
 - Phones (390px, Playwright, every main screen in all six): nothing ran past the
   edge. The top bar's five 24px buttons cut "WREXHAM" to "WREXH..."; on phones

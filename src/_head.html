@@ -204,6 +204,10 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--muted);text-align:center;padding-top:8px}
 @media(max-width:1023px){.whint{display:block}}
 .watchwrap{max-width:640px;margin:0 auto;padding-bottom:96px}
+.linescore{overflow-x:auto;margin:10px 0 2px}.linescore table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12px}
+.linescore th{text-align:left;font-weight:600;color:var(--bone);padding:2px 6px 2px 0;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
+.linescore td{text-align:center;padding:2px 3px;color:var(--muted);min-width:14px}.linescore td.b{color:var(--bone);font-weight:700}
+.hlpitch{margin:8px 0 6px}.hlcv{display:block;border-radius:4px;cursor:pointer;touch-action:manipulation}
 .wtop{margin:16px;padding:18px 16px;border:1px solid var(--vote);
  background:linear-gradient(180deg,rgba(139,159,232,.13),transparent)}
 .wtop.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.14),transparent)}
@@ -212,7 +216,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--vote);text-align:center}
 .wtop.win .wlabel{color:var(--turf)}.wtop.loss .wlabel{color:var(--flag)}
 .wscore{display:flex;gap:14px;margin-top:14px}
-.wside{flex:1;text-align:center;padding:10px 4px;border:1px solid var(--line)}
+.wside{flex:1;min-width:0;text-align:center;padding:10px 4px;border:1px solid var(--line)}   /* min-width 0: a long club name ellipsizes instead of widening the page (round 51) */
 .wside.lead{border-color:var(--sodium)}
 .wt{display:block;font-family:var(--cond);font-size:17px;font-weight:600;color:var(--muted);
  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -851,7 +855,12 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  text-transform:uppercase;text-shadow:0 4px 30px rgba(0,0,0,.5),0 0 2px var(--fc);transform:skewX(-6deg)}
 .goalflash.theirs{background:radial-gradient(circle at 50% 40%,rgba(10,12,18,.55),transparent 70%)}
 .goalflash.theirs span{font-size:clamp(26px,7vw,46px);color:var(--muted)}
-@keyframes gflash{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1.04)}24%{transform:scale(1)}72%{opacity:1}100%{opacity:0}}
+/* round 51: the flash grew past the screen's edge (scale 1.04 of a full-screen layer) and, on a phone, widened the page
+   for good: the live screen read 421 or 465px wide at 390 in about one match in three. It grows inside the screen now. */
+@keyframes gflash{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1)}72%{opacity:1}100%{opacity:0}}
+html,body{overflow-x:clip}
+/* the live chance on a phone: the line under the bar when a long club name and W/D/L won't fit beside it */
+@media (max-width:480px){.livewp{flex-wrap:wrap;row-gap:4px}.livewp .lwbar{flex:1 1 120px}.livewp .lwpct{white-space:normal}}
 canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .reset.off{opacity:.45;text-decoration:line-through}
 /* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
@@ -946,6 +955,14 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 .selcard.in .selhead{color:var(--turf)}.selcard.out .selhead{color:var(--flag)}
 .selbig{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;margin:4px 0}
 .selsub{font-size:13.5px;color:var(--bone)}
+/* phones upright (round 50): the bar's three stacked buttons took 160px and sat over the end of the result card, its
+   Rewatch and the costliest call (Instinct). The two sims share a row: one row less. */
+@media (max-width:480px) and (min-height:641px){
+  .actionbar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 12px}
+  .actionbar .skip{flex:1 1 40%;width:auto;margin:0;padding:10px 6px;font-size:12px;letter-spacing:.06em}
+  .actionbar .advance{flex:1 1 100%;width:auto;margin:0;padding:13px}
+  .actionbar>*:not(.skip):not(.advance){flex:1 1 100%}
+}
 /* short screens (a phone on its side, a desktop zoomed to 200-300%): the full bar took a third to half
    of the view (Grokbot), and unpinned it ended up below the whole schedule, Play last (Grokbot, twice).
    Pinned, as one compact row: Play takes the width, the others shrink beside it. The header scrolls away. */

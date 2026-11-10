@@ -1,5 +1,5 @@
 {
- "fp": "a8cd49bbc609fe6f",
+ "fp": "a0d9cf35ff6ca4c9",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -260,6 +260,11 @@
    "fp": "a8cd49bbc609fe6f",
    "from": "d41529d701222302",
    "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
+  },
+  {
+   "fp": "a0d9cf35ff6ca4c9",
+   "from": "a8cd49bbc609fe6f",
+   "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
   }
  ],
  "out": [
@@ -269,20 +274,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "34-4",
-      "result": "Lost in the Elite Eight",
-      "grade": "A+"
+      "rec": "31-5",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
      },
-     "book": "acbbbe1971f83925"
+     "book": "c0a6661aa6def1ed"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "32-3",
-      "result": "Lost in the Second Round",
-      "grade": "A-"
+      "rec": "34-3",
+      "result": "Lost in the Elite Eight",
+      "grade": "A+"
      },
-     "book": "d65186e37e608353"
+     "book": "d0ea33c506d885c2"
     }
    ]
   },
@@ -292,20 +297,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "29-7",
+      "rec": "24-10",
       "result": "Lost in the Second Round",
-      "grade": "B+"
+      "grade": "B-"
      },
-     "book": "4805d11a2533f28c"
+     "book": "2f89108a19d98941"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "26-6",
+      "rec": "30-4",
       "result": "Lost in the Second Round",
-      "grade": "B"
+      "grade": "A-"
      },
-     "book": "0d1ec58211c03509"
+     "book": "64e3a6734acd5077"
     }
    ]
   },
@@ -315,20 +320,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "35-4",
+      "rec": "31-7",
       "result": "Lost the national championship",
       "grade": "A+"
      },
-     "book": "3a0f265bd120bfc0"
+     "book": "23d4935bcc90470f"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "33-6",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "28-6",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "e594af6f6478241a"
+     "book": "0eafdb01185f3828"
     }
    ]
   }

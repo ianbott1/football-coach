@@ -71,7 +71,7 @@ function hkEventText(g,e,swapped,used){
 const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function rowsOf(g,drives){
-  const rows=[], sw={home:false,away:false}, used={}; let last=null; const said=new Set();
+  const b0=(drives[0]&&drives[0].bk)||{}, rows=[], sw={home:!!b0.home,away:!!b0.away}, used={}; let last=null; const said=new Set();
   drives.forEach(d=>{
     let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
     if(d.seg>=SEGS){ (d.ev||[]).forEach(e=>{ const t=hkEventText(g,e,sw,used); rows.push({m:d.so?"SO":"OT",team:t.team,tag:"OT GOAL",text:t.text,h:d.sh,a:d.sa,goal:true}) });
@@ -211,6 +211,7 @@ function liveView(){
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   return `<div class="watchwrap">
     ${liveScoreboard()}
+    ${typeof hlBox==="function"?hlBox():""}
     <div class="grouphead">Run of play</div>
     <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Puck drop at ${esc(venue)}&hellip;</span></div>`}</div>
     <div class="actionbar">

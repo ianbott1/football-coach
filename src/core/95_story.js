@@ -27,7 +27,7 @@ function recordStory(played,g,step,meHome){
   (played.impact||[]).forEach(c=>{ if(c.k&&RK[c.k])return;
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
-    (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
+    (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,dd:c.dd,
       w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
   // the season's "what if" (round 49): each call made your own way, with how the same night ends on your assistant's
@@ -35,7 +35,7 @@ function recordStory(played,g,step,meHome){
   (played.impact||[]).forEach(c=>{ if(c.k&&RK[c.k])return; if(!c.cf||!Number.isFinite(c.worth))return;
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     const W=(S.whatIf=S.whatIf||{})[yr]=(S.whatIf[yr]||[]);
-    W.push({wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,cm:c.cf.mine,ct:c.cf.theirs,h:c.h,pick:c.pick,def:c.def,w:Math.round(k),po:po});
+    W.push({wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,cm:c.cf.mine,ct:c.cf.theirs,h:c.h,pick:c.pick,def:c.def,dd:c.dd,w:Math.round(k),po:po});
     W.sort((a,b)=>whatIfRank(b)-whatIfRank(a)); W.length=Math.min(W.length,3) });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
@@ -69,6 +69,15 @@ function storyExtremes(played,meHome,opp){
   return {lo:lo,hi:hi};
 }
 
+/* what your assistant would have done, in the same words everywhere (round 50: "Keep your setup" against "he would have left
+   things as they were" read as one action, and "kept to his plan" never named the plan: Instinct, Muse). From the replay
+   on the same dice when the engine says (dd); else his option, when it names an action; else nothing invented. */
+function assistantSaid(c){
+  if(c.dd)return c.cf?` On the same night your assistant ${esc(c.dd)}.`:` Your assistant ${esc(c.dd)}.`;
+  const d=filmDef(c.def); if(d&&!/assistant/i.test(c.def||""))return ` Your assistant would have gone with ${esc(d)}.`;
+  return "" }
+/* the match card's own word for a call, so the season's showcases speak in it (round 50: one ledger) */
+function verdictWord(k){ return k>7?"clearly better than your assistant's":k>3?"a little better than your assistant's":k<-7?"clearly worse than your assistant's":k<-3?"a little worse than your assistant's":"close either way" }
 /* how far the road not taken diverged: a different result on the same night first, then by how much the score
    moved and how clear the call was over many replays */
 function whatIfRank(x){ const r=(a,b)=>a>b?1:a<b?-1:0, flip=r(x.mine,x.theirs)!==r(x.cm,x.ct);
@@ -76,17 +85,22 @@ function whatIfRank(x){ const r=(a,b)=>a>b?1:a<b?-1:0, flip=r(x.mine,x.theirs)!=
 const WHATIF_ON=true;
 function whatIfHTML(){
   if(!WHATIF_ON||!S||!SEA||SEA.phase!=="done")return "";
-  // only a road that went somewhere: the score moved on his call, or the call was clear over many replays
-  const W=((S.whatIf&&S.whatIf[SEA.year])||[]).filter(x=>x.cm!==x.mine||x.ct!==x.theirs||Math.abs(x.w)>3); if(!W.length)return "";
+  // a road that went somewhere: the result flips on his call, or the match itself graded the call (round 50: a close call
+  // whose replay changed only the score, "3-2 instead of 5-2", deflated the idea: Muse)
   const res=(a,b)=>a>b?"win":a<b?(LEAGUE.draws?"defeat":"loss"):"draw";
-  const verdict=w=>w>7?"Over many replays from that moment, yours was clearly the better call."
-    :w>3?"Over many replays, yours was a little better.":w<-7?"Over many replays, his was clearly the better call."
-    :w<-3?"Over many replays, his was a little better.":"Over many replays, there was little in it: this night the dice decided.";
-  const row=x=>{ const flip=res(x.mine,x.theirs)!==res(x.cm,x.ct);
-    return `<div class="film ${x.w>3?'up':x.w<-3?'dn':''}"><div class="filmh">${esc(x.h)}</div>
+  const all=(S.whatIf&&S.whatIf[SEA.year])||[], W=all.filter(x=>res(x.mine,x.theirs)!==res(x.cm,x.ct)||Math.abs(x.w)>3);
+  const head=`<div class="grouphead">What if</div>`;
+  // empty, it says why (Instinct looked on five screens and found nothing: the feature shouldn't need hunting)
+  if(!W.length)return head+`<div class="note">${all.length?"None of your own calls this season changed a result on your assistant's road, and none stood out over many replays.":"No call of yours to replay this season: reads are judged right or wrong on their own cards, and calls you left to your assistant have no other road."} Each season keeps up to three.</div>`;
+  const row=x=>{ const flip=res(x.mine,x.theirs)!==res(x.cm,x.ct), k=x.w;
+    // the night first, then the replays, and the lens named: what one night did is not what the call is worth
+    const night=`The same night replayed on his call: ${x.cm}&ndash;${x.ct}${flip?`, a ${res(x.cm,x.ct)} instead of your ${res(x.mine,x.theirs)}`:""}.`;
+    const lens=Math.abs(k)<=3?` In the match this call was graded close either way: over many replays the two win about as often, so this night the dice decided it.`
+      :` In the match it was graded ${verdictWord(k)}${flip&&((k>0)!==(res(x.mine,x.theirs)==="win"))?`, whatever this night did`:""}.`;
+    return `<div class="film ${k>3?'up':k<-3?'dn':''}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.wk?esc(x.wk)+" &middot; ":""}${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x.mine,x.theirs).toUpperCase()} ${x.mine}&ndash;${x.theirs}</div>
-    <div class="filmb">You: ${esc(x.pick)}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:" Your assistant would have kept to his plan."} On his call, the same night ends ${x.cm}&ndash;${x.ct}${flip?`, a ${res(x.cm,x.ct)} instead`:""}. ${verdict(x.w)}</div></div>` };
-  return `<div class="grouphead">What if</div><div class="note">${W.length===1?"The call":`The ${W.length===2?"two":"three"} calls`} this season where the road not taken went furthest from the one you took.</div>`+W.map(row).join("");
+    <div class="filmb">You: ${esc(x.pick)}.${assistantSaid({dd:x.dd,def:x.def,cf:1})} ${night}${lens}</div></div>` };
+  return head+`<div class="note">${W.length===1?"The call":`The ${W.length===2?"two":"three"} calls`} this season where your assistant's road went furthest from yours: each night replayed on the same dice with his call instead.</div>`+W.map(row).join("");
 }
 /* the season banked: its comeback and collapse go into its history entry, and the head-to-head with each coach */
 function bankStory(entry){
@@ -161,7 +175,10 @@ function identityLine(){
   const tot=L.bold+L.safe, bs=tot?L.bold/tot:0.5;
   // career-long, from the same ledger as the season's count beside it: the life tally began in round 41, so a career's
   // "30" sat under a season's "92" (Muse, round 20). Older seasons kept no ledger; they count from this one.
-  const CL=S.callLedger||{}, ys=Object.keys(CL), n=Math.max(L.n,ys.reduce((t,y)=>t+(CL[y].n||0),0)), w=ys.length?ys.reduce((t,y)=>t+(CL[y].worth||0),0):L.w;
+  // the count and the worth from one source, never one from each: a count from one ledger beside a worth from the other read
+  // 123 at +0.7, then 117 at +0.7, then 117 at +0.8, with no game played (Muse, round 50)
+  const CL=S.callLedger||{}, ys=Object.keys(CL), ln=ys.reduce((t,y)=>t+(CL[y].n||0),0), useL=ys.length&&ln>=L.n,
+    n=useL?ln:L.n, w=useL?Math.round(ys.reduce((t,y)=>t+(CL[y].worth||0),0)*1000)/1000:L.w;
   const res=x=>x>0.3?"and it's paid":x<-0.3?"and it's cost you":"and it's come out about even";
   const who=bs>=0.6?`A gambler, ${res(L.boldW)}`:bs<=0.4?`A percentages coach, ${res(L.safeW)}`:`Even-handed, bold when it's called for, careful when it isn't, ${res(w)}`;
   const a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?Math.round(a*10)/10:Math.round(a*2)/2} win${a>=0.75&&a<1.25?"":"s"}`;
@@ -183,11 +200,11 @@ function filmRoomHTML(){
   // what the room shows and why (Muse, round 21: "the best list caps at three and evicts an older entry without a word":
   // it was the two-of-a-kind rule, unsaid)
   const kept=F.filter(x=>x.w>0).length+F.filter(x=>x.w<0).length, hidden=kept-best.length-worst.length;
-  const rule=`<div class="note">Up to five of your best calls and three of your costliest, no more than two of one kind of moment; only calls that weren't close are kept.${hidden>0?` ${hidden} more ${hidden===1?"is":"are"} in the room, behind ones like ${hidden===1?"it":"them"}.`:""}</div>`;
+  const rule=`<div class="note">Up to five of your best calls and three of your costliest, no more than two of one kind of moment; only calls the match graded better or worse than your assistant's are kept (never one it called close either way).${hidden>0?` ${hidden} more ${hidden===1?"is":"are"} in the room, behind ones like ${hidden===1?"it":"them"}.`:""}</div>`;
   const res=x=>`${x.mine>x.theirs?"W":x.mine<x.theirs?"L":"D"} ${x.mine}&ndash;${x.theirs}`;
   const row=x=>`<div class="film ${x.w>0?'up':'dn'}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.y}${x.wk?" &middot; "+esc(x.wk):""}${x.title?" &middot; "+esc(x.title):""} &middot; ${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x)}</div>
-    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
+    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${assistantSaid({dd:x.dd,def:x.def})} The match graded it ${verdictWord(x.w)}: from that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
   return `<div class="grouphead">The Film Room</div>${id}${best.length||worst.length?rule:""}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
     (worst.length?`<div class="filmlab">The ones that got away</div>`:"")+(worst.length?worst.map(row).join(""):"")+

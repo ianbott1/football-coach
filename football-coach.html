@@ -204,6 +204,10 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--muted);text-align:center;padding-top:8px}
 @media(max-width:1023px){.whint{display:block}}
 .watchwrap{max-width:640px;margin:0 auto;padding-bottom:96px}
+.linescore{overflow-x:auto;margin:10px 0 2px}.linescore table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12px}
+.linescore th{text-align:left;font-weight:600;color:var(--bone);padding:2px 6px 2px 0;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
+.linescore td{text-align:center;padding:2px 3px;color:var(--muted);min-width:14px}.linescore td.b{color:var(--bone);font-weight:700}
+.hlpitch{margin:8px 0 6px}.hlcv{display:block;border-radius:4px;cursor:pointer;touch-action:manipulation}
 .wtop{margin:16px;padding:18px 16px;border:1px solid var(--vote);
  background:linear-gradient(180deg,rgba(139,159,232,.13),transparent)}
 .wtop.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.14),transparent)}
@@ -212,7 +216,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--vote);text-align:center}
 .wtop.win .wlabel{color:var(--turf)}.wtop.loss .wlabel{color:var(--flag)}
 .wscore{display:flex;gap:14px;margin-top:14px}
-.wside{flex:1;text-align:center;padding:10px 4px;border:1px solid var(--line)}
+.wside{flex:1;min-width:0;text-align:center;padding:10px 4px;border:1px solid var(--line)}   /* min-width 0: a long club name ellipsizes instead of widening the page (round 51) */
 .wside.lead{border-color:var(--sodium)}
 .wt{display:block;font-family:var(--cond);font-size:17px;font-weight:600;color:var(--muted);
  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -851,7 +855,12 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  text-transform:uppercase;text-shadow:0 4px 30px rgba(0,0,0,.5),0 0 2px var(--fc);transform:skewX(-6deg)}
 .goalflash.theirs{background:radial-gradient(circle at 50% 40%,rgba(10,12,18,.55),transparent 70%)}
 .goalflash.theirs span{font-size:clamp(26px,7vw,46px);color:var(--muted)}
-@keyframes gflash{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1.04)}24%{transform:scale(1)}72%{opacity:1}100%{opacity:0}}
+/* round 51: the flash grew past the screen's edge (scale 1.04 of a full-screen layer) and, on a phone, widened the page
+   for good: the live screen read 421 or 465px wide at 390 in about one match in three. It grows inside the screen now. */
+@keyframes gflash{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1)}72%{opacity:1}100%{opacity:0}}
+html,body{overflow-x:clip}
+/* the live chance on a phone: the line under the bar when a long club name and W/D/L won't fit beside it */
+@media (max-width:480px){.livewp{flex-wrap:wrap;row-gap:4px}.livewp .lwbar{flex:1 1 120px}.livewp .lwpct{white-space:normal}}
 canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .reset.off{opacity:.45;text-decoration:line-through}
 /* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
@@ -946,6 +955,14 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 .selcard.in .selhead{color:var(--turf)}.selcard.out .selhead{color:var(--flag)}
 .selbig{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;margin:4px 0}
 .selsub{font-size:13.5px;color:var(--bone)}
+/* phones upright (round 50): the bar's three stacked buttons took 160px and sat over the end of the result card, its
+   Rewatch and the costliest call (Instinct). The two sims share a row: one row less. */
+@media (max-width:480px) and (min-height:641px){
+  .actionbar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 12px}
+  .actionbar .skip{flex:1 1 40%;width:auto;margin:0;padding:10px 6px;font-size:12px;letter-spacing:.06em}
+  .actionbar .advance{flex:1 1 100%;width:auto;margin:0;padding:13px}
+  .actionbar>*:not(.skip):not(.advance){flex:1 1 100%}
+}
 /* short screens (a phone on its side, a desktop zoomed to 200-300%): the full bar took a third to half
    of the view (Grokbot), and unpinned it ended up below the whole schedule, Play last (Grokbot, twice).
    Pinned, as one compact row: Play takes the width, the others shrink beside it. The header scrolls away. */
@@ -958,7 +975,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="557e206";
+<script>const BUILD_ID="51f7862";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -1504,6 +1521,7 @@ const store=(function(){
   let usingIdb=null;   // known once the database has opened (or failed to)
   idb.open().then(db=>{ usingIdb=!!db });
   return {
+    pick:null,   // (databaseCopy, localStorageCopy, key) => 1 when the localStorage copy is further along (set by the game)
     kind(){ return claude()?"claude":usingIdb?"database":local()?"browser":"none" },
     // can it take a write right now? (full or blocked storage says no; the database is checked on the write itself)
     writable(){ if(claude()||usingIdb)return true; const L=local(); if(!L)return false; try{ L.setItem("__fc_probe","1"); L.removeItem("__fc_probe"); return true }catch(e){ return false } },
@@ -1511,7 +1529,15 @@ const store=(function(){
       const W=claude(); if(W){try{return await W.get(k,shared)}catch(e){return null}}
       if(shared)return null;
       const L=local(), D=await idb.get(k);
-      if(D.ok&&D.val!==undefined&&D.val!==null)return {key:k,value:D.val};
+      if(D.ok&&D.val!==undefined&&D.val!==null){
+        // round 50: both stores hold a copy, and they differ. An old copy of the game (a cached tab, a bookmark to an
+        // older build) writes localStorage only; the database copy can then be the older one. Muse lost three pro football
+        // games and the end of a pro basketball season this way. The copy further along wins (the game says which).
+        let lv=null; try{ lv=L?L.getItem(k):null }catch(e){}
+        if(lv!==null&&lv!==D.val&&typeof this.pick==="function"){ let w=0; try{ w=this.pick(D.val,lv,k) }catch(e){ w=0 }
+          if(w===1){ await idb.set(k,lv); return {key:k,value:lv} } }
+        return {key:k,value:D.val};
+      }
       const v=L?L.getItem(k):null; if(v===null)return null;
       if(D.ok)await idb.set(k,v);   // copied across on first read; the localStorage copy stays
       return {key:k,value:v};
@@ -5273,6 +5299,71 @@ const PLANS={
 };
 
 
+/* Football's highlights (round 51, core 97_highlights): a touchdown, played out from the snap. The engine plays whole
+   drives, not plays, and names no scorer on the drive chart, so the scoring play is drawn by position, not name: a
+   pass to a receiver or a run, from a distance the drive's draw picks, ending in the end zone the way the drive did.
+   In "goals" mode, only touchdowns in the fourth quarter of a one-score game. The home side drives to the left, as
+   the drive chart's field has it. */
+const HL_SPORT=(function(){
+  const PADX=0.02, PADY=0.06, Y=v=>(v+10)/120;   // yards (0 own goal line .. 100 the one attacked) to the field's length with end zones
+  // offense at the snap, relative to the line of scrimmage (yards back, across 0..1): QB, RB, WR, WR, TE, slot, then five linemen
+  const OFF=[[-5,0.5],[-7,0.5],[-0.5,0.08],[-0.5,0.92],[-0.8,0.66],[-1,0.2],[-0.5,0.4],[-0.5,0.45],[-0.5,0.5],[-0.5,0.55],[-0.5,0.6]];
+  const DEF=[[1,0.42],[1,0.47],[1,0.53],[1,0.58],[4.5,0.35],[4.5,0.5],[4.5,0.65],[6,0.1],[6,0.9],[12,0.32],[12,0.68]];
+  function clips(L,d,mode){
+    if(d.kind!=="TD"||d.q===5&&!d.pts)return [];
+    const close=Math.abs((d.h||0)-(d.a||0))<=8;
+    if(mode==="goals"&&!(d.q>=4&&close))return [];
+    return [mk(L,d)];
+  }
+  function mk(L,d){
+    const g=L.g, tm=d.home?g.home:g.away;
+    const r=mulberry32(((d.n||1)*7919+(d.h||0)*131+(d.a||0)*37+(d.home?17:29))>>>0);
+    const pass=r()<0.56, len=pass?Math.round(4+r()*45):Math.round(1+r()*30);
+    const los=100-len, rcv=pass?(r()<0.62?2:3):1;
+    const catchY=pass?Math.min(104,100+Math.round(r()*6)):104, lane=pass?(rcv===2?0.15:0.85)+(r()-0.5)*0.1:0.4+r()*0.2;
+    const inks=hlInks(g.home,g.away);
+    return {d,tm,home:!!d.home,pass,len,los,rcv,catchY,lane,q:d.q,inks,base:3400,ot:d.q>=5};
+  }
+  const P=(W,H,c,yd,y)=>{ const f=Y(yd), X=c.home?1-f:f, YY=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+YY*H*(1-2*PADY)] };
+  function pitch(x,W,H){
+    x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
+    const L=W*PADX, T=H*PADY, w=W*(1-2*PADX), h=H*(1-2*PADY);
+    x.fillStyle="#2F7A3B"; x.fillRect(L,T,w,h);
+    x.fillStyle="rgba(0,0,0,.18)"; x.fillRect(L,T,w*10/120,h); x.fillRect(L+w*110/120,T,w*10/120,h);
+    x.strokeStyle="rgba(240,246,236,.8)"; x.lineWidth=1; x.strokeRect(L,T,w,h);
+    for(let yd=0;yd<=100;yd+=10){ const px=L+w*Y(yd); x.beginPath(); x.moveTo(px,T); x.lineTo(px,T+h); x.lineWidth=yd===0||yd===100?2:1; x.stroke() }
+    x.fillStyle="rgba(240,246,236,.35)"; x.font=`600 ${Math.max(8,Math.round(w/50))}px var(--mono),monospace`; x.textAlign="center"; x.textBaseline="middle";
+    [10,20,30,40,50,60,70,80,90].forEach(yd=>{ x.fillText(String(Math.min(yd,100-yd)),L+w*Y(yd),T+h*0.12); x.fillText(String(Math.min(yd,100-yd)),L+w*Y(yd),T+h*0.88) });
+  }
+  function idle(x,W,H){ hlCaption(x,W,H,"Highlights: touchdowns play here",null) }
+  function frame(x,W,H,c,t){
+    const snap=0.18, throwT=0.5, tEnd=0.86;
+    // the ball: snapped, then a drop and a throw, or a handoff and a run
+    let bx,by,z=0;
+    const qb=[c.los-5-(t>snap?Math.min(1,(t-snap)/(throwT-snap))*2:0),0.5];
+    const carrierAt=s=>{ if(c.pass){ return [hlLerp(c.los-0.5,c.catchY,hlEase(s)),hlLerp(c.rcv===2?0.08:0.92,c.lane,hlEase(Math.min(1,s*1.4)))] }
+      return [hlLerp(c.los-7,c.catchY,hlEase(s)),hlLerp(0.5,c.lane,hlEase(Math.min(1,s*2)))] };
+    const runS=Math.max(0,Math.min(1,(t-snap)/(tEnd-snap)));
+    if(t<snap){ bx=c.los; by=0.5 }
+    else if(c.pass){ if(t<throwT){ bx=qb[0]; by=0.5 } else { const s=Math.min(1,(t-throwT)/(tEnd-throwT-0.08)); const tg=carrierAt(Math.min(1,runS+0.05)); bx=hlLerp(qb[0],tg[0],s); by=hlLerp(0.5,tg[1],s); z=Math.sin(Math.min(1,s)*Math.PI)*0.05 } }
+    else{ const p=carrierAt(runS); bx=p[0]; by=p[1] }
+    const off=OFF.map((p,i)=>{ let yd=c.los+p[0], y=p[1];
+      if(t>snap){ if(i===0)return qb; if(c.pass&&i===c.rcv){ const q=carrierAt(runS); return q }
+        if(!c.pass&&i===1){ return carrierAt(runS) }
+        if(i>=6){ yd+=runS*1.5 } else if(i>=2){ yd+=runS*Math.min(18,c.len*0.7); y=hlLerp(y,0.5,runS*0.2) } }
+      return [yd,y] });
+    const def=DEF.map((p,i)=>{ let yd=c.los+p[0], y=p[1]; if(t>snap){ const k=i<4?0.15:0.45*runS; yd=hlLerp(yd,bx,k*0.6); y=hlLerp(y,by,k) } return [yd,y] });
+    const r=Math.max(2.8,W/120), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const tag=i=>t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
+    def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
+    off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i)) });
+    const [qx,qy]=P(W,H,c,bx,by); x.beginPath(); x.ellipse(qx,qy-z*W,r*0.75,r*0.48,0,0,Math.PI*2); x.fillStyle="#7A4A22"; x.fill(); x.lineWidth=1; x.strokeStyle="#fff"; x.stroke();
+    const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm}, ${c.len} yard${c.len===1?"":"s"} out`;
+    const end=t>=tEnd?`TOUCHDOWN! ${c.len}-yard ${c.pass?"pass":"run"}`:null;
+    hlCaption(x,W,H,top,end,ink);
+  }
+  return {collapseIdle:true, aspect:0.46, clips, pitch, idle, frame};
+})();
 /* ============ game screens: football ============ */
 /* How a football game looks while you watch it: the scoreboard, the drive
    log and drive script, the call screen with the staff's advice, and the
@@ -5403,6 +5494,7 @@ function liveView(){
     ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
     ${last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started own ${last.start}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
+    ${typeof hlBox==="function"?hlBox():""}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${live.drives.slice().reverse().map(d=>{
       const tm=d.home?g.home:g.away;
@@ -7458,14 +7550,14 @@ function yourAnswers(answers,auto){ if(!auto||!auto.length)return answers; retur
 function callImpact(args,seed,answers,meHome,runs){
   runs=runs||IMPACT_RUNS;
   const play=(j,v,reseed)=>{                 // replay with answers before j, v at j; later asks: yours where they match, else his
-    const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r;
-    while(g++<3000){ r=e.next(); if(r.done)break;
-      if(r.ask){ let a;
+    const rng=new RNG(seed), e=makeLiveGame(rng,...args); let i=0,g=0,r,dd=null,want=false;
+    while(g++<3000){ r=e.next(); if(want){ dd=e.autoDid||null; want=false } if(r.done)break;
+      if(r.ask){ let a; if(i===j)want=true;
         if(i<j)a=answers[i];
         else if(i===j){ a=v; if(reseed!==undefined){ rng.f=mulberry32((seed^Math.imul(reseed+1,0x9E3779B1))>>>0); rng.sp=null } }
         else a=(asks[i]&&asks[i].dp.k===r.ask.k&&answers[i]!==undefined)?answers[i]:impactDefault(r.ask);
         e.reply(a); i++ } }
-    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h, v:resultVal(r,meHome)};
+    return {mine:meHome?r.h:r.a, theirs:meHome?r.a:r.h, v:resultVal(r,meHome), dd:dd};   // dd: what your assistant did with the call, on that night (round 50)
   };
   const asks=[]; { const e=makeLiveGame(new RNG(seed),...args); let i=0,g=0;
     while(g++<3000){ const r=e.next(); if(r.done)break;
@@ -7484,7 +7576,7 @@ function callImpact(args,seed,answers,meHome,runs){
       A.dp.opts.forEach(o=>{ const v=o[0]; if(v===pick||v===def||/assistant/i.test(o[1]))return; let r=0; for(let m=0;m<runs;m++)r+=score(play(j,v,m));
         if(!best||r>best.r)best={k:v,r:r} }); }
     const bo=best&&best.r>Math.max(rp,rd)?{alt:lab(best.k),altv:Math.round((best.r-rp)/runs*1000)/1000,wa:Math.round(best.r/runs*100)}:{};
-    out.push(Object.assign({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:cf, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)},bo));
+    out.push(Object.assign({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:{mine:cf.mine,theirs:cf.theirs}, dd:cf.dd||undefined, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)},bo));
   });
   return out;
 }
@@ -7564,7 +7656,7 @@ function seasonCallsHTML(){
   P.sort((a,b)=>b.c.worth-a.c.worth);
   const one=(x,lab)=>`<div class="cand"><div class="candtop"><div><div class="fname">${lab}</div>
     <div class="fnote">${esc(x.c.h)}, against ${esc(x.p.other)} (${x.p.mine}&ndash;${x.p.theirs})</div></div></div>
-    <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${!x.c.def?"":/assistant/i.test(x.c.def)?" Your assistant would have left things as they were.":` Your assistant would have gone with ${esc(x.c.def)}.`}
+    <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${typeof assistantSaid==="function"?assistantSaid(x.c):""}
     ${(w=>w>=1?` Why: from that moment, your choice won about ${w} more games in 100 than his${x.p.mine>x.p.theirs?"":", though the game went the other way"}.`:w<=-1?` Why: from that moment, your choice won about ${-w} fewer games in 100 than his${x.p.mine>x.p.theirs?", though you won anyway":""}.`:"")(Math.round(x.c.worth*100))}</div></div>`;
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
@@ -7579,7 +7671,7 @@ function seasonCallsHTML(){
    there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
    (a shoot-out, extra time) at the pre-game edge, halved. */
 const LIVE_WP_ON=true, LIVE_MU={};   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
-const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
+const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9,mlb:3.6}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
 function liveTau(d){
   if(!d)return 1;
   if(d.q!==undefined){ const T=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24; return d.q>=5?0.02:Math.max(0,1-(d.n||0)/T) }
@@ -7598,13 +7690,18 @@ function liveChance(m,tau,pre,sig,poss){
   const q=0.5+((w0+d0/2)-0.5)*0.5; return [pw+pt*q,0,pl+pt*(1-q)];
 }
 function liveWPHTML(){
-  if(!LIVE_WP_ON||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";
+  if(!LIVE_WP_ON||(S&&S.liveWP===false)||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
   const meH=live.g.home===S.myTeam, m=meH?sc[0]-sc[1]:sc[1]-sc[0];
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
   const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+  // the three add to 100 (round 50: soccer's line read 101 twice: Muse): each rounded down, the leftover points to the largest remainders
+  if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
+    v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });
+    const Q=f.map(x=>Math.max(1,Math.min(98,x)));
+    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span></div>` }
   return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
     :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span></div>`;
 }
@@ -7772,7 +7869,7 @@ function recordStory(played,g,step,meHome){
   (played.impact||[]).forEach(c=>{ if(c.k&&RK[c.k])return;
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
-    (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,
+    (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,dd:c.dd,
       w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
   });
   // the season's "what if" (round 49): each call made your own way, with how the same night ends on your assistant's
@@ -7780,7 +7877,7 @@ function recordStory(played,g,step,meHome){
   (played.impact||[]).forEach(c=>{ if(c.k&&RK[c.k])return; if(!c.cf||!Number.isFinite(c.worth))return;
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     const W=(S.whatIf=S.whatIf||{})[yr]=(S.whatIf[yr]||[]);
-    W.push({wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,cm:c.cf.mine,ct:c.cf.theirs,h:c.h,pick:c.pick,def:c.def,w:Math.round(k),po:po});
+    W.push({wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,cm:c.cf.mine,ct:c.cf.theirs,h:c.h,pick:c.pick,def:c.def,dd:c.dd,w:Math.round(k),po:po});
     W.sort((a,b)=>whatIfRank(b)-whatIfRank(a)); W.length=Math.min(W.length,3) });
   if(S.film&&S.film.length>FILM_KEEP*2){ const F=S.film.slice().sort((a,b)=>b.w-a.w);
     S.film=F.slice(0,FILM_KEEP).concat(F.slice(-FILM_KEEP)).filter((x,i,a)=>a.indexOf(x)===i) }
@@ -7814,6 +7911,15 @@ function storyExtremes(played,meHome,opp){
   return {lo:lo,hi:hi};
 }
 
+/* what your assistant would have done, in the same words everywhere (round 50: "Keep your setup" against "he would have left
+   things as they were" read as one action, and "kept to his plan" never named the plan: Instinct, Muse). From the replay
+   on the same dice when the engine says (dd); else his option, when it names an action; else nothing invented. */
+function assistantSaid(c){
+  if(c.dd)return c.cf?` On the same night your assistant ${esc(c.dd)}.`:` Your assistant ${esc(c.dd)}.`;
+  const d=filmDef(c.def); if(d&&!/assistant/i.test(c.def||""))return ` Your assistant would have gone with ${esc(d)}.`;
+  return "" }
+/* the match card's own word for a call, so the season's showcases speak in it (round 50: one ledger) */
+function verdictWord(k){ return k>7?"clearly better than your assistant's":k>3?"a little better than your assistant's":k<-7?"clearly worse than your assistant's":k<-3?"a little worse than your assistant's":"close either way" }
 /* how far the road not taken diverged: a different result on the same night first, then by how much the score
    moved and how clear the call was over many replays */
 function whatIfRank(x){ const r=(a,b)=>a>b?1:a<b?-1:0, flip=r(x.mine,x.theirs)!==r(x.cm,x.ct);
@@ -7821,17 +7927,22 @@ function whatIfRank(x){ const r=(a,b)=>a>b?1:a<b?-1:0, flip=r(x.mine,x.theirs)!=
 const WHATIF_ON=true;
 function whatIfHTML(){
   if(!WHATIF_ON||!S||!SEA||SEA.phase!=="done")return "";
-  // only a road that went somewhere: the score moved on his call, or the call was clear over many replays
-  const W=((S.whatIf&&S.whatIf[SEA.year])||[]).filter(x=>x.cm!==x.mine||x.ct!==x.theirs||Math.abs(x.w)>3); if(!W.length)return "";
+  // a road that went somewhere: the result flips on his call, or the match itself graded the call (round 50: a close call
+  // whose replay changed only the score, "3-2 instead of 5-2", deflated the idea: Muse)
   const res=(a,b)=>a>b?"win":a<b?(LEAGUE.draws?"defeat":"loss"):"draw";
-  const verdict=w=>w>7?"Over many replays from that moment, yours was clearly the better call."
-    :w>3?"Over many replays, yours was a little better.":w<-7?"Over many replays, his was clearly the better call."
-    :w<-3?"Over many replays, his was a little better.":"Over many replays, there was little in it: this night the dice decided.";
-  const row=x=>{ const flip=res(x.mine,x.theirs)!==res(x.cm,x.ct);
-    return `<div class="film ${x.w>3?'up':x.w<-3?'dn':''}"><div class="filmh">${esc(x.h)}</div>
+  const all=(S.whatIf&&S.whatIf[SEA.year])||[], W=all.filter(x=>res(x.mine,x.theirs)!==res(x.cm,x.ct)||Math.abs(x.w)>3);
+  const head=`<div class="grouphead">What if</div>`;
+  // empty, it says why (Instinct looked on five screens and found nothing: the feature shouldn't need hunting)
+  if(!W.length)return head+`<div class="note">${all.length?"None of your own calls this season changed a result on your assistant's road, and none stood out over many replays.":"No call of yours to replay this season: reads are judged right or wrong on their own cards, and calls you left to your assistant have no other road."} Each season keeps up to three.</div>`;
+  const row=x=>{ const flip=res(x.mine,x.theirs)!==res(x.cm,x.ct), k=x.w;
+    // the night first, then the replays, and the lens named: what one night did is not what the call is worth
+    const night=`The same night replayed on his call: ${x.cm}&ndash;${x.ct}${flip?`, a ${res(x.cm,x.ct)} instead of your ${res(x.mine,x.theirs)}`:""}.`;
+    const lens=Math.abs(k)<=3?` In the match this call was graded close either way: over many replays the two win about as often, so this night the dice decided it.`
+      :` In the match it was graded ${verdictWord(k)}${flip&&((k>0)!==(res(x.mine,x.theirs)==="win"))?`, whatever this night did`:""}.`;
+    return `<div class="film ${k>3?'up':k<-3?'dn':''}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.wk?esc(x.wk)+" &middot; ":""}${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x.mine,x.theirs).toUpperCase()} ${x.mine}&ndash;${x.theirs}</div>
-    <div class="filmb">You: ${esc(x.pick)}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:" Your assistant would have kept to his plan."} On his call, the same night ends ${x.cm}&ndash;${x.ct}${flip?`, a ${res(x.cm,x.ct)} instead`:""}. ${verdict(x.w)}</div></div>` };
-  return `<div class="grouphead">What if</div><div class="note">${W.length===1?"The call":`The ${W.length===2?"two":"three"} calls`} this season where the road not taken went furthest from the one you took.</div>`+W.map(row).join("");
+    <div class="filmb">You: ${esc(x.pick)}.${assistantSaid({dd:x.dd,def:x.def,cf:1})} ${night}${lens}</div></div>` };
+  return head+`<div class="note">${W.length===1?"The call":`The ${W.length===2?"two":"three"} calls`} this season where your assistant's road went furthest from yours: each night replayed on the same dice with his call instead.</div>`+W.map(row).join("");
 }
 /* the season banked: its comeback and collapse go into its history entry, and the head-to-head with each coach */
 function bankStory(entry){
@@ -7906,7 +8017,10 @@ function identityLine(){
   const tot=L.bold+L.safe, bs=tot?L.bold/tot:0.5;
   // career-long, from the same ledger as the season's count beside it: the life tally began in round 41, so a career's
   // "30" sat under a season's "92" (Muse, round 20). Older seasons kept no ledger; they count from this one.
-  const CL=S.callLedger||{}, ys=Object.keys(CL), n=Math.max(L.n,ys.reduce((t,y)=>t+(CL[y].n||0),0)), w=ys.length?ys.reduce((t,y)=>t+(CL[y].worth||0),0):L.w;
+  // the count and the worth from one source, never one from each: a count from one ledger beside a worth from the other read
+  // 123 at +0.7, then 117 at +0.7, then 117 at +0.8, with no game played (Muse, round 50)
+  const CL=S.callLedger||{}, ys=Object.keys(CL), ln=ys.reduce((t,y)=>t+(CL[y].n||0),0), useL=ys.length&&ln>=L.n,
+    n=useL?ln:L.n, w=useL?Math.round(ys.reduce((t,y)=>t+(CL[y].worth||0),0)*1000)/1000:L.w;
   const res=x=>x>0.3?"and it's paid":x<-0.3?"and it's cost you":"and it's come out about even";
   const who=bs>=0.6?`A gambler, ${res(L.boldW)}`:bs<=0.4?`A percentages coach, ${res(L.safeW)}`:`Even-handed, bold when it's called for, careful when it isn't, ${res(w)}`;
   const a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?Math.round(a*10)/10:Math.round(a*2)/2} win${a>=0.75&&a<1.25?"":"s"}`;
@@ -7928,11 +8042,11 @@ function filmRoomHTML(){
   // what the room shows and why (Muse, round 21: "the best list caps at three and evicts an older entry without a word":
   // it was the two-of-a-kind rule, unsaid)
   const kept=F.filter(x=>x.w>0).length+F.filter(x=>x.w<0).length, hidden=kept-best.length-worst.length;
-  const rule=`<div class="note">Up to five of your best calls and three of your costliest, no more than two of one kind of moment; only calls that weren't close are kept.${hidden>0?` ${hidden} more ${hidden===1?"is":"are"} in the room, behind ones like ${hidden===1?"it":"them"}.`:""}</div>`;
+  const rule=`<div class="note">Up to five of your best calls and three of your costliest, no more than two of one kind of moment; only calls the match graded better or worse than your assistant's are kept (never one it called close either way).${hidden>0?` ${hidden} more ${hidden===1?"is":"are"} in the room, behind ones like ${hidden===1?"it":"them"}.`:""}</div>`;
   const res=x=>`${x.mine>x.theirs?"W":x.mine<x.theirs?"L":"D"} ${x.mine}&ndash;${x.theirs}`;
   const row=x=>`<div class="film ${x.w>0?'up':'dn'}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.y}${x.wk?" &middot; "+esc(x.wk):""}${x.title?" &middot; "+esc(x.title):""} &middot; ${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x)}</div>
-    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${filmDef(x.def)?` Your assistant: ${esc(filmDef(x.def))}.`:""} From that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
+    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${assistantSaid({dd:x.dd,def:x.def})} The match graded it ${verdictWord(x.w)}: from that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
   return `<div class="grouphead">The Film Room</div>${id}${best.length||worst.length?rule:""}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
     (worst.length?`<div class="filmlab">The ones that got away</div>`:"")+(worst.length?worst.map(row).join(""):"")+
@@ -8445,6 +8559,91 @@ function musicStop(){
 /* a browser starts sound only after a tap: music that was on last time waits for the first one */
 try{ if(typeof document!=="undefined"&&document.addEventListener)
   document.addEventListener("pointerdown",()=>{ if(musicOn()&&soundOn()&&!musicT)musicStart() },{passive:true}) }catch(e){}
+/* Highlights (round 51): the game's big moments drawn on a pitch, as Football Manager's 2D match does, while you watch.
+   Nothing here decides anything. The engine has already played the stretch: a goal at 23', a save at 27'; a sport's
+   choreographer (HL_SPORT, e.g. soccer 72_highlights) turns each event into a few seconds of movement that ends the
+   way the event did. Shown in the live view's #hlpitch, one clip after another; the next stretch waits for them.
+   Tap the pitch to skip. Off, goals only, or goals and big chances, in the ? panel (S.highlights). Without a canvas
+   (tests, a reduced-motion setting) nothing plays and nothing waits. */
+const HL={cv:null, x:null, clips:[], cur:null, t0:0, raf:0, done:null, idle:null};
+function hlMode(){ return (S&&S.highlights)||"key" }
+function hlCan(){
+  if(typeof HL_SPORT==="undefined"||!HL_SPORT)return false;
+  if(typeof requestAnimationFrame!=="function"||typeof document==="undefined"||!document.createElement)return false;
+  if(typeof prefersReduced==="function"&&prefersReduced())return false;
+  return true }
+/* the pitch box in the live view: a place for the canvas, which moves in after each redraw (the redraw replaces the
+   page; the canvas, and a clip half played, carry on) */
+function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; return `<div id="hlpitch" class="hlpitch" aria-label="Highlights"></div>` }
+function hlMount(){
+  if(!hlCan())return; const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return;
+  if(!HL.cv){ const c=document.createElement("canvas"); if(!c||!c.getContext)return; HL.cv=c; HL.x=c.getContext("2d"); if(!HL.x){ HL.cv=null; return }
+    c.className="hlcv"; c.onclick=()=>hlSkip(); }
+  if(HL.cv.parentNode!==box){ try{ box.appendChild(HL.cv) }catch(e){ return } }
+  // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
+  if(HL_SPORT.collapseIdle){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }
+  const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
+  if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
+  if(!HL.cur)hlDraw(null,0);
+}
+/* this stretch's clips; returns how long they take (ms), for the next stretch to wait */
+function hlPlay(L,drive){
+  if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return 0;
+  const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return 0;
+  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  if(!clips.length)return 0;
+  box.style.display=""; HL.cur={dur:1}; hlMount();
+  const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
+  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)) });
+  HL.clips=clips.slice(1); hlStart(clips[0]);
+  return clips.reduce((t,c)=>t+c.dur+250,0);
+}
+function hlStart(c){ HL.cur=c; HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
+function hlFrame(){
+  const c=HL.cur; if(!c)return; const t=Math.min(1,(Date.now()-HL.t0)/c.dur);
+  hlDraw(c,t);
+  if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
+  // a beat on the last frame, then the next clip
+  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount() } },250);
+}
+function hlSkip(){
+  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount();
+  // the next stretch was waiting for the clips: it comes now
+  if(typeof live!=="undefined"&&live&&!live.done&&!live.paused&&!live.ask&&live.timer){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.min(400,liveGap())) }
+}
+function hlDraw(c,t){
+  const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);
+  x.setTransform(dpr,0,0,dpr,0,0); const W=cv.width/dpr, H=cv.height/dpr;
+  try{ HL_SPORT.pitch(x,W,H); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H) }catch(e){}
+}
+/* shared drawing */
+function hlDot(x,px,py,r,fill,ring,label){
+  x.beginPath(); x.arc(px,py,r,0,Math.PI*2); x.fillStyle=fill; x.fill(); x.lineWidth=1.4; x.strokeStyle=ring; x.stroke();
+  if(label){ x.font=`600 ${Math.round(r*2.1)}px var(--mono),monospace`; x.textAlign="center"; x.textBaseline="bottom";
+    x.lineWidth=3; x.strokeStyle="rgba(0,0,0,.65)"; x.strokeText(label,px,py-r-2); x.fillStyle="#fff"; x.fillText(label,px,py-r-2) } }
+function hlCaption(x,W,H,top,bottom,ink){
+  x.textAlign="left"; x.textBaseline="top";
+  if(top){ x.font=`600 ${Math.max(10,Math.round(W/34))}px var(--mono),monospace`; x.fillStyle="rgba(0,0,0,.55)"; x.fillRect(0,0,W,Math.round(W/34)+10);
+    let tt=top; while(tt.length>8&&x.measureText(tt).width>W-16)tt=tt.slice(0,-2);   // the commentary line, cut to the pitch's width
+    if(tt!==top)tt=tt.replace(/\s*\S*$/,"")+"\u2026";
+    x.fillStyle="#fff"; x.fillText(tt,8,5) }
+  if(bottom){ const fs=Math.max(15,Math.round(W/16)), cy=H*0.84; x.fillStyle="rgba(0,0,0,.6)"; x.fillRect(0,cy-fs*0.8,W,fs*1.6);
+    if(ink){ x.fillStyle=ink; x.fillRect(0,cy-fs*0.8,6,fs*1.6); x.fillRect(W-6,cy-fs*0.8,6,fs*1.6) }
+    x.font=`700 ${fs}px var(--cond),sans-serif`; x.textAlign="center"; x.textBaseline="middle";
+    x.lineWidth=4; x.strokeStyle="rgba(0,0,0,.7)"; x.strokeText(bottom,W/2,cy); x.fillStyle="#fff"; x.fillText(bottom,W/2,cy) } }
+const hlEase=t=>t<0?0:t>1?1:t*t*(3-2*t);
+const hlLerp=(a,b,t)=>a+(b-a)*t;
+/* colours not close to any of these (the keepers', away from both sides') */
+function hlRGB(s){ const m=/^#?([0-9a-f]{6})$/i.exec(String(s||"")); if(!m)return [200,200,200]; const n=parseInt(m[1],16); return [n>>16,(n>>8)&255,n&255] }
+function hlFar(cands,avoid){ const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };
+  return cands.slice().sort((a,b)=>Math.min(...avoid.map(v=>d(b,v)))-Math.min(...avoid.map(v=>d(a,v)))) }
+/* two team colours that can be told apart on grass: the away side goes white when they're close */
+function hlInks(home,away){
+  const hx=s=>{ const m=/^#?([0-9a-f]{6})$/i.exec(String(s||"")); if(!m)return [200,200,200]; const n=parseInt(m[1],16); return [n>>16,(n>>8)&255,n&255] };
+  const a=teamInk(home), b=teamInk(away), A=hx(a), B=hx(b), d=Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]);
+  const green=c=>c[1]>c[0]+30&&c[1]>c[2]+20;
+  return [green(A)?"#F4F1E8":a, d<90||green(B)?(green(A)?"#1A1D26":"#F4F1E8"):b];
+}
 /* ============ screens: college football ============ */
 /* The views only college football has: the Top 25 and the playoff picture
    under the ranking tab, and the bracket, selection field and bowls under
@@ -8956,7 +9155,7 @@ Object.assign(LEAGUE.ui,{
    so they share the browser's storage: the slots used to be shared too, and a
    game could list (and overwrite) another game's saves. College football
    keeps the original keys, so its saves are untouched. */
-const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1", nhl:"hkcoach-pro-v1", epl:"sccoach-v1"};
+const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1", nhl:"hkcoach-pro-v1", epl:"sccoach-v1", mlb:"bscoach-pro-v1"};
 const LEGACY_KEY="fbcoach-v2";
 const KEYBASE=SAVE_KEYS[LEAGUE.id]||LEGACY_KEY;
 const NSLOTS=3;
@@ -9067,7 +9266,7 @@ function liveTick(){
     if(!live.paused){live.timer=setTimeout(liveTick,650);return}
     return;
   }
-  let guard=0;
+  let guard=0, fresh=null;
   while(guard++<(live.ff?4000:200)){
     const r=live.eng.next();
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
@@ -9080,7 +9279,10 @@ function liveTick(){
         continue;
       }
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
-      if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
+      // the floor (round 50): in a one-score game the crunch-time read is the player's, never gated: "the gate should filter
+      // the trivial; it must not confiscate the climax" (Muse). A read is judged on the evidence, not the replays.
+      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR;
+      if(!floorCall&&typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
         if(p<GATE_LO||p>GATE_HI||neverAsk(r.ask.k)||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
@@ -9099,15 +9301,17 @@ function liveTick(){
     // the score before this stretch (kept here: drives record it differently by sport,
     // and football's don't carry sh/sa, which made every drive look like a score)
     const pH=live.lastH||0, pA=live.lastA||0;
-    live.drives.push(r.drive);
+    live.drives.push(r.drive); fresh=r.drive;
     if(!live.ff)feelSpell(live,pH,pA);
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
   }
   render();
+  // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
+  const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
   if(!live.paused&&!live.done&&!live.ask){
-    live.timer=setTimeout(liveTick, liveGap());
+    live.timer=setTimeout(liveTick, Math.max(liveGap(),hm));
   }
 }
 function liveGap(){
@@ -9414,6 +9618,16 @@ let savePending=null;
    on reload. Now the older tab stops saving and says so. */
 let saveRev=null, staleTab=false, saveFail=false;
 const REVKEY=n=>KEYFOR(n)+"-rev";
+/* which of two copies of a save is further along (round 50; store.get asks when the database and localStorage
+   disagree): revisions by number; careers by season, then by steps played. Anything unreadable: the database's. */
+const savePos=v=>{ const d=JSON.parse(lzwUnpack(v)); if(!d||!d.myTeam)return null;
+  return [(d.seasonNow&&d.seasonNow.year)||0, (d.history||[]).length, +d.steps||0] };
+const pickMemo=new Map();
+store.pick=function(dv,lv,k){
+  if(/-rev/.test(k)||/^\d+$/.test(dv)&&/^\d+$/.test(lv))return (+lv||0)>(+dv||0)?1:0;
+  const mk=k+"|"+dv.length+"|"+lv.length; if(pickMemo.has(mk))return pickMemo.get(mk);
+  let w=0; try{ const a=savePos(dv), b=savePos(lv); if(a&&b){ for(let i=0;i<3;i++){ if(b[i]!==a[i]){ w=b[i]>a[i]?1:0; break } } } }catch(e){ w=0 }
+  pickMemo.set(mk,w); return w };
 async function readRev(n){ try{ const r=await store.get(REVKEY(n)); return r?(+r.value||0):0 }catch(e){ return null } }
 async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
@@ -9444,7 +9658,7 @@ function save(){
       if(cur!==null&&cur!==saveRev){ staleTab=true; render(); return false } }
     S.league=LEAGUE.id;                                   // every save says which game it's from
     if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0),done:SEA.phase==="done",
-      w:SEA.rec[S.myTeam][0],l:SEA.rec[S.myTeam][1],d:(SEA.drw&&SEA.drw[S.myTeam])||0,banked:!!(S.off&&S.off.year===SEA.year)};
+      w:SEA.rec[S.myTeam][0],l:SEA.rec[S.myTeam][1],d:(SEA.drw&&SEA.drw[S.myTeam])||0,banked:!!(S.off&&S.off.year===SEA.year),champ:SEA.phase==="done"&&SEA.champion===S.myTeam};
   try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
     if(saveOK&&S.myTeam)saveRev=await bumpRev(slot);
     if(saveFail!==!saveOK){ saveFail=!saveOK; render() }
@@ -9474,6 +9688,7 @@ function saveLeague(d){
   for(const t in R){const ps=(R[t]||[]).filter(x=>x).map(x=>x.p), p=(R[t]||[]).find(x=>x); if(!p)continue;
     if(ps.indexOf("GK")>=0||ps.indexOf("ST")>=0)return "epl";     // soccer: goalkeepers and strikers
     if(ps.indexOf("G")>=0||ps.indexOf("LW")>=0)return "nhl";      // hockey: wingers and goalies (it has a C too)
+    if(ps.indexOf("SS")>=0||ps.indexOf("SP")>=0)return "mlb";     // baseball: shortstops and starting pitchers (it has a C too)
     const hoops=["PG","SG","SF","PF","C"].indexOf(p.p)>=0;      // basketball positions first:
     if(hoops)return p.k?"nba":"ncaab";                            // pro basketball has contracts too
     return p.k?"nfl":"cfb"}
@@ -9563,7 +9778,9 @@ async function allSlots(){
     const N=d&&d.seasonNow, bk=N&&N.banked&&N.w!==undefined, C=d&&d.career&&(bk?{w:d.career.w-N.w,l:d.career.l-N.l,d:(d.career.d||0)-(N.d||0)}:d.career);
     out.push(d&&d.myTeam?{n:n,team:d.myTeam,year:(d.uStart&&d.uStart.year)||2026,
       coach:(d.career&&d.career.name)||"",seasons:(d.history||[]).length,
-      rec:C?(LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:C.w+"-"+C.l):"",titles:d.career?d.career.titles:0,
+      rec:C?(LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:C.w+"-"+C.l):"",
+      // a title just won counts before the offseason banks it (round 50: "1x champion" after the second title: Muse)
+      titles:(d.career?d.career.titles:0)+(N&&N.done&&N.champ&&!N.banked?1:0),
       now:d.seasonNow&&d.seasonNow.played?d.seasonNow:null}:{n:n,empty:true});
   }
   // the copy of the last career opened, offered back when its slot is empty or unreadable
@@ -9605,6 +9822,9 @@ function newDynasty(team,seed,coachName,roster){
 /* the season's unit in words: a week in college and pro football; a night (and
    game days) in the long pro seasons */
 function WK(){ return LEAGUE.text.week||"week" }
+/* "for the season" only when it is: the rest of the regular season (14 was a football season's weeks, and in basketball
+   "out for the season" sat beside "out 10 more game days" on one screen: Muse, round 50) */
+function injSeason(w){ const left=(SEA&&LEAGUE.weeks)?Math.max(1,LEAGUE.weeks-SEA.step):14; return w>=Math.min(left,LEAGUE.weeks||14) }
 /* an injury's length on a badge: games where a step is a game day (Ian: "Out 10w" in basketball) */
 function outFor(n){ return LEAGUE.daily?`${n} ${n===1?"game":"games"}`:`${n}w` }
 function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
@@ -10590,9 +10810,14 @@ function changedHTML(my){
   if(!SEA||SEA.step>0||!S.history.length)return "";
   const h=S.history[S.history.length-1], X=h&&h.league; if(!X||(h.team&&h.team!==my))return "";
   const top=(L,n)=>(L||[]).filter(p=>p&&p.r).sort((a,b)=>b.r-a.r).slice(0,n);
-  const out=top([].concat(X.released||[],X.retired||[]),3), inn=top([].concat(X.signed||[],(X.draft||[]).filter(d=>d.team===my)),3);
+  // a player who arrived and left in one summer (drafted, then cut) is in neither list as such: Instinct read a rookie as
+  // both gone and in (round 50). He's named once, among those gone, for what happened.
+  const arr=[].concat(X.signed||[],(X.draft||[]).filter(d=>d.team===my)), arrN=new Set(arr.map(p=>p&&p.n));
+  const gone=[].concat(X.released||[],X.retired||[]), goneN=new Set(gone.map(p=>p&&p.n));
+  const drN=new Set((X.draft||[]).filter(d=>d.team===my).map(d=>d.n));
+  const out=top(gone.map(p=>arrN.has(p.n)?Object.assign({},p,{brief:drN.has(p.n)?"drafted":"signed"}):p),3), inn=top(arr.filter(p=>!goneN.has(p.n)),3);
   if(!out.length&&!inn.length)return "";
-  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r})`;
+  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r}${p.brief?`, ${p.brief} and let go this summer`:""})`;
   return `<div class="note"><b>Since last season:</b> ${out.length?`gone, ${out.map(nm).join(", ")}`:"nobody important left"}${inn.length?`; in, ${inn.map(nm).join(", ")}`:""}. Players also age and develop over the summer: the roster tab shows where you stand now.</div>`;
 }
 function myTeamView(){
@@ -10644,7 +10869,10 @@ function teamCardHTML(my,rk,co){
       // after the regular season, only a team still playing can add wins (it said "it will take a
       // postseason run" to a 36-46 team that had missed the playoffs)
       const alive=SEA.phase==="week"||(SEA.phase!=="done"&&LEAGUE.postRecord&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
-        ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
+        ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)
+        // before Selection Sunday everyone can still be picked: "Target of 21 wins missed: 19" came during the conference
+        // tournament, three wins before Butler reached 22 (Muse, round 50)
+        ||(LEAGUE.post&&LEAGUE.post.phases&&LEAGUE.post.phases.indexOf("selection")>=0&&LEAGUE.post.phases.indexOf(SEA.phase)>=0&&LEAGUE.post.phases.indexOf(SEA.phase)<=LEAGUE.post.phases.indexOf("selection"))));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?posGoalLine(e,my)
@@ -10684,7 +10912,7 @@ function posGoalLine(e,my){
    raw team-strength number, and a -195 read like nonsense next to a 78 rating) */
 /* judged against a typical starter's absence in the same sport (the median,
    measured Nov 2026): Big loss ~ the top fifth, Minor ~ the bottom third */
-const INJ_MED={cfb:28,nfl:21,ncaab:60,nba:42,nhl:34,epl:39};
+const INJ_MED={cfb:28,nfl:21,ncaab:60,nba:42,nhl:34,epl:39,mlb:60};
 function injHurt(m){ const x=Math.abs(m||0)/(INJ_MED[LEAGUE.id]||30);
   return x>=1.7?{l:"Big loss",c:"big"}:x>=0.7?{l:"Real loss",c:"mid"}:{l:"Minor",c:"low"} }
 function injuryHTML(inj){
@@ -11096,7 +11324,7 @@ function weekNews(W){
     if(hurt.length){const x=hurt[0];
       items.push({p:70,k:"inj",tone:"flag",
         h:`${rankTxt(x.rk)}${x.t} loses ${x.who} (${x.p})`,
-        b:`Out ${x.w>=14?"for the season":"about "+x.w+" "+stepWord(x.w)}.`+
+        b:`Out ${injSeason(x.w)?"for the season":"about "+x.w+" "+stepWord(x.w)}.`+
           (hurt.length>1?` ${hurt.length-1} other ranked team${hurt.length>2?"s":""} took a hit too.`:"")});
     }
   }
@@ -11513,7 +11741,11 @@ function teamCard(t){
   h+=`<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(t);
   if(!rows.length)return h+`<div class="note">No completed seasons yet.</div>`;
   const book=(LEAGUE.records&&U)?LEAGUE.records.book(U,t):[];
-  const leaders=(LEAGUE.records&&U)?LEAGUE.records.leaders(U,t):[];
+  // the franchise's leaders, the players still here included: from the departed alone, a backup who left with 108 passing
+  // yards led pro football's list (Muse, round 50)
+  const curL=((SEA&&SEA.roster&&SEA.roster[t])||[]).filter(p=>p&&p.car).map(p=>({n:p.n,p:p.p,to:SEA.year,now:true,car:p.car,
+    line:LEAGUE.records.alumniLine?LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}):""}));
+  const leaders=(LEAGUE.records&&U)?LEAGUE.records.leaders(Object.assign({},U,{alumni:Object.assign({},U.alumni||{},{[t]:((U.alumni&&U.alumni[t])||[]).concat(curL)})}),t):[];
   if(leaders.length){
     h+=`<div class="grouphead">Career leaders</div>`;
     h+=`<div class="ldwrap">`+leaders.map(L=>`<div class="ldcat">
@@ -11521,7 +11753,7 @@ function teamCard(t){
       ${L.top.map((x,i)=>`<div class="ldrow ${i===0?'first':''}">
         <span class="ldn">${i+1}</span>
         <span class="ldname">${esc(x.a.n)}</span>
-        <span class="ldyr">${x.a.to}</span>
+        <span class="ldyr">${x.a.now?"now":x.a.to}</span>
         <span class="ldv">${x.v.toLocaleString()}</span></div>`).join("")}
     </div>`).join("")+`</div>`;
   }
@@ -11851,7 +12083,7 @@ function digestIncidents(){
   const my=S.myTeam, F=flash, out=[];
   // your injuries
   (SEA.talent.log[my]||[]).filter(x=>x.kind==="injury"&&x.who&&x.wk>F.from&&x.wk<=F.to).forEach(x=>
-    out.push(`<b>${esc(x.who)}</b> (${esc(x.what)}) got hurt: out ${x.weeks>=14?"for the season":"about "+x.weeks+" "+stepWord(x.weeks)}.`));
+    out.push(`<b>${esc(x.who)}</b> (${esc(x.what)}) got hurt: out ${injSeason(x.weeks)?"for the season":"about "+x.weeks+" "+stepWord(x.weeks)}.`));
   // the games that stood out: the biggest win, the worst defeat, a rival met
   const G=[]; for(let i=F.from;i<Math.min(SEA.weeks.length,F.to+1);i++)(SEA.weeks[i]&&SEA.weeks[i].games||[]).forEach(g=>{ if(g.home===my||g.away===my)G.push(g) });
   const mg=g=>(g.home===my?g.hp-g.ap:g.ap-g.hp), opp=g=>g.home===my?g.away:g.home, sc=g=>g.home===my?`${g.hp}-${g.ap}`:`${g.ap}-${g.hp}`;
@@ -11990,6 +12222,7 @@ function render(){
   if(live&&S.myTeam&&!live.done){
     el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
     bindGuide();
+    if(typeof hlMount==="function")hlMount();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the
       // game, took it as an answer, and graded a call the player never made (Grokbot, soccer: five matches)
@@ -12049,6 +12282,8 @@ function render(){
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
     document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide){ Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); GUIDE_SEEN={}; guideMark(null,false) } save(); render() });
+    document.querySelectorAll("[data-hl]").forEach(b=>b.onclick=()=>{ if(!S)return; S.highlights=b.dataset.hl; save(); render() });
+    document.querySelectorAll("[data-livewp]").forEach(b=>b.onclick=()=>{ if(!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() });
     document.querySelectorAll("[data-music]").forEach(b=>b.onclick=()=>{ S.music=b.dataset.music==="true"; if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
       S.sound=b.dataset.sound==="true"; save(); if(soundOn())sfx("tap"); render();});
@@ -12405,8 +12640,8 @@ function renderTitle(){
       : `<div class="slotwrap"><button class="slot" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
-           <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} ${s.now.done?"finished":"so far"}: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
-             ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
+           <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} ${s.now.done?"finished":"so far"}: ${esc(s.now.rec)}`:""}${s.now&&!s.seasons?"":`${s.now?" &middot; ":""}${s.seasons}
+             ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}`}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            </button>${replaceAsk
              ?`<button class="slotdel repl" data-repl="${s.n}" aria-label="Replace the career in slot ${s.n} with a new one">Replace</button>`
              :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}</div>`).join("")}</div>
@@ -12552,6 +12787,14 @@ function helpPanel(){
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
+    ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
+    <div class="setrow">${[["key","Goals and big chances"],["goals","Goals only"],["off","Off"]].map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+      aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
+    <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
+    <div class="grouphead">Live win chance</div>
+    <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-livewp="${v}"
+      aria-pressed="${(!S||S.liveWP!==false)===v}">${l}</button>`).join("")}</div>
+    <div class="note">The bar above the score in a game you watch. It reads this game's odds, from replays of games like it: in these leagues the better side wins more often than in real life, so early leads can read high.</div>
     <div class="grouphead">Music</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-music="${v}"
       aria-pressed="${musicOn()===v}">${l}</button>`).join("")}</div>
