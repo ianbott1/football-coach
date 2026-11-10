@@ -1,5 +1,5 @@
 {
- "fp": "ea448da11fd49b60",
+ "fp": "f715c12887241588",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -370,6 +370,11 @@
    "fp": "ea448da11fd49b60",
    "from": "52c42b16f4c2ebb6",
    "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
+  },
+  {
+   "fp": "f715c12887241588",
+   "from": "ea448da11fd49b60",
+   "note": "round 54: own franchise-strength range (was 1480-1920)"
   }
  ],
  "result": {
@@ -383,20 +388,20 @@
     "poll": "3787511717940927",
     "heis": "72c4700494f6c62c",
     "history": "56993daae0adafdf",
-    "universe": "7d46bb9ee5d4820e",
+    "universe": "011afc36d59045e5",
     "screens": "622f396c50221c59"
    },
    {
     "year": 2027,
-    "games": "1672eda21a406dbe",
-    "post": "96a5d9911f2e376f",
-    "champion": "Winnipeg",
-    "rec": "63c77c7469dc5271",
-    "poll": "e0ea9182e1e13cdb",
-    "heis": "aa3341e7f2e686d6",
-    "history": "8fd8f796b09561a1",
-    "universe": "0bb56ed029a135d3",
-    "screens": "d78a18d6e70cce77"
+    "games": "36e35599c0722528",
+    "post": "be5755ed33f53ea0",
+    "champion": "Vegas",
+    "rec": "c7273f9d4a99b12c",
+    "poll": "1083d15ea9ce0491",
+    "heis": "620b9b05ed91f4c9",
+    "history": "d180492a39d64d8c",
+    "universe": "bf973d93472b5ab0",
+    "screens": "756e7164a7f0c2c3"
    }
   ],
   "Edmonton#777": [
@@ -409,20 +414,20 @@
     "poll": "bc021833c20d4158",
     "heis": "1506ba3a83c2abeb",
     "history": "d79a2cf38f83ec07",
-    "universe": "cbfdb2ef0f599b7f",
-    "screens": "59d247303ab7077b"
+    "universe": "a34c5f1a2935aa35",
+    "screens": "c3e6d056c77c53d3"
    },
    {
     "year": 2027,
-    "games": "3a831d80f396c7ab",
-    "post": "307cfa77b41a6905",
-    "champion": "Vancouver",
-    "rec": "1dbfcee33668f522",
-    "poll": "b1bd44c884e3b079",
-    "heis": "da6b66483c98611e",
-    "history": "ce638e0708651a87",
-    "universe": "37e98c6cf75335c8",
-    "screens": "ff0036ef7a0402a8"
+    "games": "ae54ebf119c24c7d",
+    "post": "f9962443e61b3012",
+    "champion": "New Jersey",
+    "rec": "b99fb68944509824",
+    "poll": "83a4d6a1bef10936",
+    "heis": "6f6f8535d9d82902",
+    "history": "20742a1a381c47ee",
+    "universe": "15e8d329b6479632",
+    "screens": "f706b1d553b45a5e"
    }
   ],
   "schedules#60": [

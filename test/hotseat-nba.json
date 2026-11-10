@@ -1,5 +1,5 @@
 {
- "fp": "f8a804e1aca0406a",
+ "fp": "5702b572cfbd52eb",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -240,6 +240,11 @@
    "fp": "f8a804e1aca0406a",
    "from": "6abf80895b8e7277",
    "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "5702b572cfbd52eb",
+   "from": "f8a804e1aca0406a",
+   "note": "round 54: own franchise-strength range"
   }
  ],
  "out": [
@@ -272,20 +277,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "16-66",
+      "rec": "13-69",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "bd9b05850fd055cc"
+     "book": "2099c9c5c75e39dd"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "39-43",
-      "result": "Lost in the conference finals",
-      "grade": "B-"
+      "rec": "35-47",
+      "result": "Lost in the play-in",
+      "grade": "D"
      },
-     "book": "391299a1b7110247"
+     "book": "72200ab977a7ae23"
     }
    ]
   },
@@ -295,20 +300,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-44",
-      "result": "Losing season",
-      "grade": "D"
-     },
-     "book": "f8d37c900c6afefd"
-    },
-    {
-     "team": "New York",
-     "last": {
       "rec": "44-38",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "a8895fe5ccfadda3"
+     "book": "22c758407700b257"
+    },
+    {
+     "team": "New York",
+     "last": {
+      "rec": "46-36",
+      "result": "Lost in the first round",
+      "grade": "B-"
+     },
+     "book": "25e9f232eb33e99b"
     }
    ]
   }

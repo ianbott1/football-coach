@@ -358,6 +358,16 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 54: each pro league keeps its own franchise-strength range (26_offseason, the summer's u.program clamp).
+- Hockey and pro basketball carried pro football's 1480-1920. Both start clubs below 1480 (hockey 1372-1628, NBA
+  1420-1640), so after one summer every weak club sat at 1480 (11 in each) and expectations had no rebuild or
+  start-over jobs left (measured over five seasons: hockey 9 rebuild + 2 start over in year one, none after; NBA
+  8 rebuild, none after). Now hockey 1300-1720, NBA 1320-1740, baseball 1320-1680 (1380 still held its weakest
+  club); the job mix holds year to year and nothing sits on a floor.
+- Calibration after: NBA history (194 seasons) wins sd 11.7, margin 12.9, 1 seeds 54% of titles; NHL history
+  (114 seasons) mean points 94.1, sd 14.0, best 122, worst 64; draft labels hold. Goldens and hot seat
+  rewritten for hockey and pro basketball; the other five unchanged.
+
 Round 53: baseball, second pass (measured):
 - The best record over 12 seasons averages 104.8 (98-113; MLB 2015-25 ~104), the worst 56 (MLB ~52), the spread of
   wins 11.8: the round-52 "107" was five seasons. The engine's edge is unchanged.
@@ -375,8 +385,7 @@ Round 53: baseball, second pass (measured):
 - Baseball is now in saves, layouts, sim and skip, sim ahead, objectives, people, postseason-gate, regressions,
   call-impact, late-calls, stakes, live-wp, names, highlights, sim-parity and story. Not in goals.js (college and
   pro football only, a 60-step loop).
-- Open, not baseball: hockey and pro basketball carry the same 1480-1920 strength clamp, and both start clubs below
-  1480 (eleven and eight).
+- Hockey and pro basketball had the same 1480-1920 clamp: fixed in round 54.
 
 Round 52: baseball, a seventh game (Pro Baseball Coach, league mlb, game layer baseball):
 - Built from the hockey and NHL layers: the league machinery (contracts, draft,

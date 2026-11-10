@@ -286,7 +286,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R);
     // the organisation moves slowly: results nudge it, they don't define it
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
-    u.program[t]=Math.max(1380,Math.min(1680,u.program[t]));   // round 53: baseball's own range (was pro football's 1480-1920, which lifted the weakest clubs)
+    u.program[t]=Math.max(1320,Math.min(1680,u.program[t]));   // round 53 (floor 1320 round 54: 1380 still held the weakest club): baseball's own range (was pro football's 1480-1920, which lifted the weakest clubs)
     c.t++;
     // 1. contracts that end now
     for(let i=0;i<R.length;i++){

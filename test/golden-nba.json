@@ -1,5 +1,5 @@
 {
- "fp": "bbfe3dc7f0fcb113",
+ "fp": "b481a1bf74568891",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -355,6 +355,11 @@
    "fp": "bbfe3dc7f0fcb113",
    "from": "fdf11419c737f2c2",
    "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
+  },
+  {
+   "fp": "b481a1bf74568891",
+   "from": "bbfe3dc7f0fcb113",
+   "note": "round 54: own franchise-strength range (was 1480-1920)"
   }
  ],
  "result": {
@@ -368,20 +373,20 @@
     "poll": "a605fa2c4fcbcec4",
     "heis": "22f4a9cd8c36b4a4",
     "history": "eec782d6363770d3",
-    "universe": "ff25b166ab4bf6ad",
+    "universe": "bc77fd9b521a9548",
     "screens": "e4335e1a09846933"
    },
    {
     "year": 2027,
-    "games": "914c39fac2680cb8",
-    "post": "4c160992c75f6a59",
-    "champion": "Detroit",
-    "rec": "183c8e4d0197eac5",
-    "poll": "d127e8728f22ecdd",
-    "heis": "fff1d2fd16d80098",
-    "history": "9d9602f9b7029db8",
-    "universe": "77538bb534a21f51",
-    "screens": "64b6fbd427f41781"
+    "games": "15728d9f8a584d78",
+    "post": "31c7b5c5e51b4ce7",
+    "champion": "San Antonio",
+    "rec": "4013aac6c7505f38",
+    "poll": "74d68c1076bda30f",
+    "heis": "ab13cd68b27edce4",
+    "history": "9626cee9ed0ee95e",
+    "universe": "ba8e1c5dabbe091a",
+    "screens": "2c244b0c1dca4315"
    }
   ],
   "Detroit#777": [
@@ -394,20 +399,20 @@
     "poll": "ec5c13550423e99b",
     "heis": "4c753ccdcbc17fd0",
     "history": "21a8fcbdcac92950",
-    "universe": "d3c3d927248eae1d",
+    "universe": "02f89186763aa3a9",
     "screens": "31974cdd8f4b009b"
    },
    {
     "year": 2027,
-    "games": "c51bed54ed029003",
-    "post": "466b91c318a6b284",
-    "champion": "Houston",
-    "rec": "eaf9581b96b600aa",
-    "poll": "dd7f16694b68fb10",
-    "heis": "e87db80c477c3ae0",
-    "history": "fedceb1f17190bdc",
-    "universe": "9d39ace91d7f6a99",
-    "screens": "d184464767c328f6"
+    "games": "6f7435f822bcbfce",
+    "post": "20a46f9e63d0edc5",
+    "champion": "Oklahoma City",
+    "rec": "85fbde3add9972ba",
+    "poll": "f06adc331952654b",
+    "heis": "f63b6208b8e02068",
+    "history": "81fb067eae20d51f",
+    "universe": "a1136bbc60b36219",
+    "screens": "6f56b0794a83b7f2"
    }
   ],
   "schedules#60": [
