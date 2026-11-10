@@ -337,7 +337,7 @@ function seasonCallsHTML(){
    there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
    (a shoot-out, extra time) at the pre-game edge, halved. */
 const LIVE_WP_ON=true, LIVE_MU={};   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
-const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
+const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9,mlb:3.6}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
 function liveTau(d){
   if(!d)return 1;
   if(d.q!==undefined){ const T=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24; return d.q>=5?0.02:Math.max(0,1-(d.n||0)/T) }

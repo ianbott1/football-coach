@@ -358,6 +358,34 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 52: baseball, a seventh game (Pro Baseball Coach, league mlb, game layer baseball):
+- Built from the hockey and NHL layers: the league machinery (contracts, draft,
+  offseason, records, views) adapted; the sport replaced. Positions (10_players):
+  the nine in the lineup (DH among them), three starters and the closer, each with
+  a man behind (the fourth and fifth starters take about two starts in five).
+  gameStats gives a starter a line on the days he starts (about one in five).
+- Engine (50_game): plate appearance by plate appearance (K, BB, HBP, 1B, 2B, 3B,
+  HR, out in play with double plays and sacrifice flies), the starter tiring past
+  eighteen batters, the bullpen, the closer for a save, extra innings with a runner
+  on second (not in the postseason). The read: their hitters' approach (pull,
+  patient, contact) against your plan (away, zone, spin), from tells (pulled balls
+  in play, pitches an at-bat, strikeout rate). Calls: prep, the read after three,
+  pull (your tiring starter in a close game), pinch (7th+, men in scoring position,
+  the bottom of the order), steal (7th+, one-run game). st.autoDid names the
+  assistant's action. BS.edge 0.00031 a point of Elo; wpK 650/680/720; hfa 40.
+- MLB (05_league, 25_schedule, 85_postseason, 97_views): thirty clubs by city, the
+  balanced 162-game schedule (13 x division, 6-7 x league, 3 x interleague, 4 x
+  rival) fitted into 186 days (a team running out of days plays whenever it can);
+  twelve-team postseason: byes for the top two division winners, best-of-three wild
+  card at the higher seed, 2-2-1, 2-3-2, 2-3-2. Payroll limit $244M.
+- Measured (test/bs-calibrate.js): 4.48 runs a side, one-run games 27.7%, extras
+  8.9%, home sides 53.8%, the spread of wins 12.6 (10.8-15.6 by season), the best
+  record 107 on average (97-117): a little high against MLB (~101).
+- Screens (75_screens): line score, the run of play an inning at a time with names,
+  evidence for each call; highlights (72_highlights) for home runs and big hits.
+- First version: not yet in the cross-game tests (layouts, saves, sim and skip,
+  objectives, live-wp, call-gate lists); in goldens, hot seat, storage, reload.
+
 Round 51: highlights (Football Manager's 2D match, in all six):
 - core 97_highlights: HL state, a canvas that survives redraws (hlMount moves it
   into #hlpitch after each render), hlPlay(live,drive) returns the clips' length

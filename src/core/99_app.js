@@ -3,7 +3,7 @@
    so they share the browser's storage: the slots used to be shared too, and a
    game could list (and overwrite) another game's saves. College football
    keeps the original keys, so its saves are untouched. */
-const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1", nhl:"hkcoach-pro-v1", epl:"sccoach-v1"};
+const SAVE_KEYS={cfb:"fbcoach-v2", nfl:"fbcoach-pro-v2", ncaab:"bbcoach-v1", nba:"bbcoach-pro-v1", nhl:"hkcoach-pro-v1", epl:"sccoach-v1", mlb:"bscoach-pro-v1"};
 const LEGACY_KEY="fbcoach-v2";
 const KEYBASE=SAVE_KEYS[LEAGUE.id]||LEGACY_KEY;
 const NSLOTS=3;
@@ -536,6 +536,7 @@ function saveLeague(d){
   for(const t in R){const ps=(R[t]||[]).filter(x=>x).map(x=>x.p), p=(R[t]||[]).find(x=>x); if(!p)continue;
     if(ps.indexOf("GK")>=0||ps.indexOf("ST")>=0)return "epl";     // soccer: goalkeepers and strikers
     if(ps.indexOf("G")>=0||ps.indexOf("LW")>=0)return "nhl";      // hockey: wingers and goalies (it has a C too)
+    if(ps.indexOf("SS")>=0||ps.indexOf("SP")>=0)return "mlb";     // baseball: shortstops and starting pitchers (it has a C too)
     const hoops=["PG","SG","SF","PF","C"].indexOf(p.p)>=0;      // basketball positions first:
     if(hoops)return p.k?"nba":"ncaab";                            // pro basketball has contracts too
     return p.k?"nfl":"cfb"}
@@ -1759,7 +1760,7 @@ function posGoalLine(e,my){
    raw team-strength number, and a -195 read like nonsense next to a 78 rating) */
 /* judged against a typical starter's absence in the same sport (the median,
    measured Nov 2026): Big loss ~ the top fifth, Minor ~ the bottom third */
-const INJ_MED={cfb:28,nfl:21,ncaab:60,nba:42,nhl:34,epl:39};
+const INJ_MED={cfb:28,nfl:21,ncaab:60,nba:42,nhl:34,epl:39,mlb:60};
 function injHurt(m){ const x=Math.abs(m||0)/(INJ_MED[LEAGUE.id]||30);
   return x>=1.7?{l:"Big loss",c:"big"}:x>=0.7?{l:"Real loss",c:"mid"}:{l:"Minor",c:"low"} }
 function injuryHTML(inj){
