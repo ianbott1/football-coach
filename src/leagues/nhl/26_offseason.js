@@ -291,7 +291,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R);
     // the organisation moves slowly: results nudge it, they don't define it
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
-    u.program[t]=Math.max(1480,Math.min(1920,u.program[t]));
+    u.program[t]=Math.max(1300,Math.min(1720,u.program[t]));   // round 54: hockey's own range (was pro football's 1480-1920: after one summer every weak club sat at 1480, and the rebuild and start-over jobs were gone)
     c.t++;
     // 1. contracts that end now
     for(let i=0;i<R.length;i++){

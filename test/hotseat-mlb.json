@@ -1,10 +1,15 @@
 {
- "fp": "7f1e7a94492ca973",
+ "fp": "565c167d5c9b5f03",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
    "from": null,
    "note": "round 52: baseball's first"
+  },
+  {
+   "fp": "565c167d5c9b5f03",
+   "from": "7f1e7a94492ca973",
+   "note": "round 53: baseball fixes"
   }
  ],
  "out": [
@@ -14,20 +19,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "108-54",
+      "rec": "101-61",
       "result": "Lost in the division series",
-      "grade": "A+"
+      "grade": "A-"
      },
-     "book": "3bc273f7a0d032c4"
+     "book": "449bfef509adc560"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "87-75",
-      "result": "Lost in the championship series",
-      "grade": "A+"
+      "rec": "71-91",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "0b5b1eae6407b265"
+     "book": "f4ee09233a76a2ad"
     }
    ]
   },
@@ -37,20 +42,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "65-97",
+      "rec": "60-102",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "F"
      },
-     "book": "ed4fc15ddd3675e8"
+     "book": "25b7cfa7f6a0ff6f"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "70-92",
-      "result": "Losing season",
-      "grade": "A-"
+      "rec": "85-77",
+      "result": "Missed the postseason",
+      "grade": "B"
      },
-     "book": "895aff5844bd8d19"
+     "book": "3bff3083203ee847"
     }
    ]
   },
@@ -60,20 +65,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "77-85",
+      "rec": "75-87",
       "result": "Losing season",
-      "grade": "A"
+      "grade": "C+"
      },
-     "book": "0518b78fbedcaa11"
+     "book": "1aee440995af160d"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "99-63",
-      "result": "Lost in the wild-card series",
+      "rec": "110-52",
+      "result": "Lost in the division series",
       "grade": "A+"
      },
-     "book": "372522d2f039f72e"
+     "book": "caeb6e331371d214"
     }
    ]
   }

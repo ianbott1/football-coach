@@ -1,5 +1,5 @@
 {
- "fp": "4a9101e554755616",
+ "fp": "7aa0d73f65b3fca2",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -265,6 +265,11 @@
    "fp": "4a9101e554755616",
    "from": "4a9101e554755616",
    "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "7aa0d73f65b3fca2",
+   "from": "4a9101e554755616",
+   "note": "round 54: own franchise-strength range"
   }
  ],
  "out": [
@@ -297,20 +302,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-34-12",
+      "rec": "25-41-18",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "D"
      },
-     "book": "92cf77163150c28e"
+     "book": "0bb7b789f24b1177"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "38-37-9",
+      "rec": "41-37-6",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "0d27d249e1c7b76a"
+     "book": "3b4ba103c529db3c"
     }
    ]
   },
@@ -320,20 +325,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-38-12",
+      "rec": "39-31-14",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "fec6447ab36a9420"
+     "book": "0612f6d182e5f080"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "44-33-7",
+      "rec": "48-29-7",
       "result": "Lost in the first round",
-      "grade": "B"
+      "grade": "B+"
      },
-     "book": "580355a2652f3df8"
+     "book": "9170527b02f4750d"
     }
    ]
   }

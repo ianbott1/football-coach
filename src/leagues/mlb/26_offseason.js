@@ -109,26 +109,21 @@ function nflRoster(rng,programElo){
 
 /* the draft: worst regular season first; playoff teams after, by the round
    they went out in; the champion picks last */
-/* The draft order: the sixteen teams that missed the playoffs draw for the
-   top two picks (weighted to the worst records; no team moves up more than
-   ten places), the rest of them follow worst first, then the playoff teams,
-   worst record first. */
-const LOTTERY_ODDS=[185,135,115,95,85,75,65,60,50,35,30,25,20,15,5,5];      // per thousand
+/* The draft order (round 53, MLB's lottery): the eighteen teams that missed the postseason draw for the top six
+   picks, weighted to the worst records; the rest of them follow worst first, then the postseason teams, worst
+   record first. */
+const LOTTERY_ODDS=[165,165,165,132,100,75,55,39,27,18,14,11,9,8,7,6,5,4];      // per thousand
 function nflDraftOrder(rec,elo,rng){
   const S2=(typeof SEA!=="undefined"&&SEA&&SEA.field)?SEA:null;
   const pts=t=>S2&&S2.pts?S2.pts(t):rec[t][0]*2;
   const worstFirst=(a,b)=>pts(a)-pts(b)||elo[a]-elo[b];
   const inPO=t=>S2&&S2.field.indexOf(t)>=0;
   const lot=NAMES.filter(t=>!inPO(t)).sort(worstFirst), po=NAMES.filter(inPO).sort(worstFirst);
-  if(!rng||lot.length!==16)return lot.concat(po);
-  const order=lot.slice();
-  for(let k=0;k<2;k++){
-    const w=LOTTERY_ODDS.slice(0,order.length).map((x,i)=>i>=k?x:0);
-    let x=rng.r()*w.reduce((a,b)=>a+b,0), i=0; while(x>w[i]){x-=w[i];i++}
-    const to=Math.max(k,i-10);                         // at most ten places up
-    const t=order.splice(i,1)[0]; order.splice(to,0,t);
-  }
-  return order.concat(po);
+  if(!rng||lot.length!==LOTTERY_ODDS.length)return lot.concat(po);
+  const pool=lot.map((t,i)=>({t:t,w:LOTTERY_ODDS[i]})), drawn=[];
+  for(let k=0;k<6;k++){ const tot=pool.reduce((a,b)=>a+b.w,0); let x=rng.r()*tot, i=0; while(i<pool.length-1&&x>pool[i].w){x-=pool[i].w;i++}
+    drawn.push(pool.splice(i,1)[0].t) }
+  return drawn.concat(pool.map(p=>p.t),po);
 }
 
 function nflProspects(rng,n,sh){
@@ -291,7 +286,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R);
     // the organisation moves slowly: results nudge it, they don't define it
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
-    u.program[t]=Math.max(1480,Math.min(1920,u.program[t]));
+    u.program[t]=Math.max(1320,Math.min(1680,u.program[t]));   // round 53 (floor 1320 round 54: 1380 still held the weakest club): baseball's own range (was pro football's 1480-1920, which lifted the weakest clubs)
     c.t++;
     // 1. contracts that end now
     for(let i=0;i<R.length;i++){
@@ -466,23 +461,25 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
-  /* what the job demands, by franchise strength: wins over 84 games, and a
-     par for the playoffs (how far the job expects you to go) */
+  /* what the job demands, by franchise strength: wins over 162 games (round 53, measured: a club wins about
+     81 + 0.157 a point of strength above 1507, so each line sits at its band's expected wins), and a par for
+     the postseason (how far the job expects you to go) */
   expectations(p){
-    if(p>=1600)return {w:50,par:2.2,l:"Built to win now. A conference final is the floor.",t:"CONTEND"};
-    if(p>=1540)return {w:45,par:1.3,l:"Make the playoffs and win a round.",t:"WIN A ROUND"};
-    if(p>=1480)return {w:41,par:0.4,l:"Get into the playoffs, a wild card if that's what it takes.",t:"MAKE THE PLAYOFFS"};
-    if(p>=1420)return {w:34,par:0,l:"Draft well and show progress. Thirty-five wins would be a statement.",t:"REBUILD"};
-    return {w:27,par:0,l:"The bottom of the league. Twenty-five wins would be real movement.",t:"START OVER"};
+    if(p>=1555)return {w:89,par:1.8,l:"Built to win now. Anything short of the championship series is a disappointment.",t:"CONTEND"};
+    if(p>=1530)return {w:86,par:1.1,l:"Make the postseason and win a series.",t:"WIN A SERIES"};
+    if(p>=1490)return {w:81,par:0,l:"Stay in the wild-card race into September. A postseason berth would be a good year.",t:"WILD-CARD RACE"};
+    if(p>=1450)return {w:75,par:0,l:"Develop the young players and show progress. Eighty wins would be a statement.",t:"REBUILD"};
+    return {w:68,par:0,l:"The bottom of the league. Seventy-five wins would be real movement.",t:"START OVER"};
   },
-  isTitle(result){ return /STANLEY CUP CHAMPIONS/i.test(result) },
+  isTitle(result){ return /WORLD SERIES CHAMPIONS/i.test(result) },
   firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
-    // no result yet (a season in progress, as the seat badge asks): the playoffs at par
-    const po=!result?(exp.par||0):/STANLEY CUP CHAMPIONS/i.test(result)?5:/Stanley Cup Final/.test(result)?3.6:/conference final/.test(result)?2.6:
-      /second round/.test(result)?1.7:/first round/.test(result)?0.9:/Made the playoffs/.test(result)?0.9:-(exp.par>=0.4?0.8:0);
-    let s=(wins-exp.w)*0.13+po-(exp.par||0);
-    if(wins<losses)s-=(exp.w>=41?0.8:0.2);
+    // no result yet (a season in progress, as the seat badge asks): the postseason at par
+    const po=!result?(exp.par||0):/WORLD SERIES CHAMPIONS/i.test(result)?5:/Lost the World Series/.test(result)?3.6:/championship series/.test(result)?2.6:
+      /division series/.test(result)?1.7:/wild-card series/.test(result)?0.9:/Made the postseason/.test(result)?0.9:-(exp.par>=0.4?0.8:0);
+    let s=(wins-exp.w)*0.09+po-(exp.par||0);     // a win is worth less than hockey's 0.13: 162 games, and wins spread about 12. Only twelve of thirty
+                                                 // go to October (hockey: sixteen of thirty-two), so the middle band's par is a race, not a berth
+    if(wins<losses)s-=(exp.w>=86?0.8:0.2);
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
             s>=-1.4?"C+":s>=-2.2?"C":s>=-3.2?"C-":s>=-4.4?"D":"F";
     const l=s>=2.6?"Far beyond what anyone expected.":s>=0.9?"Ahead of schedule.":
@@ -506,9 +503,9 @@ LEAGUE.historyExtras=function(sea,off,my){
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};
 LEAGUE.seasonLine=function(h,t,r,seed){
   if(h.pnote&&h.pnote[t])return h.pnote[t]+(seed?" \u00b7 No. "+seed+" seed":"");
-  if(h.champion===t)return "Stanley Cup champions";
-  if(seed)return "Playoffs, No. "+seed+" seed";
-  return r[0]>r[1]?"Missed the playoffs":"Losing season";
+  if(h.champion===t)return "World Series champions";
+  if(seed)return "Postseason, No. "+seed+" seed";
+  return r[0]>r[1]?"Missed the postseason":"Losing season";
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;

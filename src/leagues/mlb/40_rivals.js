@@ -1,11 +1,9 @@
-/* ============ rivalries: pro hockey ============ */
+/* ============ rivalries: pro baseball ============ */
 /* Every division rival is a rivalry and the series is kept across seasons;
    a few of the oldest have names. */
 const nflDivRival=(a,b)=>a!==b&&CONF[a]&&CONF[a]===CONF[b];
-const NHL_NAMED={"Calgary~Edmonton":"The Battle of Alberta","Boston~Montreal":"Bruins-Canadiens",
-  "Montreal~Toronto":"Leafs-Habs","Philadelphia~Pittsburgh":"The Battle of Pennsylvania",
-  "NY Islanders~NY Rangers":"The Battle of New York","Los Angeles~Anaheim":"The Freeway Faceoff",
-  "Anaheim~Los Angeles":"The Freeway Faceoff"};
+const NHL_NAMED={"Boston~NY Yankees":"Yankees-Red Sox","Chicago Cubs~St. Louis":"Cubs-Cardinals",
+  "LA Dodgers~San Francisco":"Dodgers-Giants","NY Mets~Philadelphia":"Mets-Phillies","Atlanta~NY Mets":"Braves-Mets"};
 function nflRivalName(a,b){return NHL_NAMED[[a,b].sort().join("~")]||null}
 const NFL_RIVAL_OF={};
 NAMES.forEach(t=>{NFL_RIVAL_OF[t]=NAMES.filter(o=>o!==t&&CONF[o]===CONF[t]).map(o=>({o:o,n:LEAGUE.conf.names[CONF[t]]}))});

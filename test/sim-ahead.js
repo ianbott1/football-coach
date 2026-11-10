@@ -10,7 +10,7 @@ const D=f=>path.join(__dirname,'..','dist',f);
 let bad=0,checks=0; const ok=(c,msg)=>{checks++; if(!c){bad++; console.log('  FAIL '+msg)}};
 const EXP=['S','SEA','simRun','simTargets','simStops','flash','streakOf','hurtCount','attnCount','weekWeight','newDynasty','loadSave','rebuild','LEAGUE','NAMES'];
 (async()=>{
-for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Kansas City'],['basketball-coach.html','Duke'],['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston'],['soccer-coach.html','Wrexham']]){
+for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro.html','Kansas City'],['basketball-coach.html','Duke'],['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston'],['soccer-coach.html','Wrexham'],['baseball-coach-pro.html','Seattle']]){
   const name=file.replace('.html','');
   // no stops: all the way
   { const A=load({file:D(file),expose:EXP}); A.newDynasty(team,8,'T'); const st=A.simStops(); Object.keys(st).forEach(k=>st[k]=false);

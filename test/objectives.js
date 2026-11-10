@@ -9,7 +9,7 @@ const N=+(process.argv.find(a=>/^\d+$/.test(a))||3);
 let bad=0,checks=0; const ok=(c,msg)=>{checks++; if(!c){bad++; console.log('  FAIL '+msg)}};
 const EXP=['S','SEA','seasonObjectives','objStatus','objectivesMet','newDynasty','openOffseason','commitOffseason','NAMES','LEAGUE'];
 const all={};
-for(const file of ['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html']){
+for(const file of ['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html','baseball-coach-pro.html']){
   const name=file.replace('.html',''), K={};
   for(const pick of [0.1,0.35,0.6,0.85]){
     const A=load({file:D(file),expose:EXP}); A.newDynasty(A.NAMES[Math.floor(A.NAMES.length*pick)],13,'T');

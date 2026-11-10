@@ -7,7 +7,8 @@ const path=require('path');const {load}=require('./harness.js');
 let bad=0,checks=0; const ok=(c,m)=>{checks++; if(!c){bad++; if(bad<=10)console.log('  FAIL '+m)}};
 const CASES=[['football-coach-pro.html',['NY Jets','Kansas City']],['basketball-coach-pro.html',['Washington','Boston']],
   ['hockey-coach-pro.html',['San Jose','Colorado']],['soccer-coach.html',['Hull City','Arsenal']],
-  ['football-coach.html',['Kent State','Ohio State']],['basketball-coach.html',['Coppin State','Duke']]];
+  ['football-coach.html',['Kent State','Ohio State']],['basketball-coach.html',['Coppin State','Duke']],
+  ['baseball-coach-pro.html',['Colorado','LA Dodgers']]];
 for(const [f,teams] of CASES) for(const team of teams){
   const A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','newDynasty','doAdvance','live','liveTick','answerLive','endLive','advLabel']});
   A.newDynasty(team,3,'T'); A.S.watchMode='never'; let g=0;

@@ -10,7 +10,7 @@ const play=(A,n)=>{ let k=0; while(A.SEA.phase!=='done'&&k++<n){ A.doAdvance(); 
 const off=A=>{ A.openOffseason(); for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() } };
 const strip=h=>String(h||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
 const GAMES=[['football-coach.html','Alabama'],['football-coach-pro.html','Denver'],['basketball-coach.html','Duke'],
-  ['basketball-coach-pro.html','Orlando'],['hockey-coach-pro.html','Vegas'],['soccer-coach.html','Dover Athletic']];
+  ['basketball-coach-pro.html','Orlando'],['hockey-coach-pro.html','Vegas'],['soccer-coach.html','Dover Athletic'],['baseball-coach-pro.html','Seattle']];
 const EXP=['S','SEA','U','POS','NAMES','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','openOffseason','commitOffseason',
   'rosterView','weekNews','teamPanel','attentionHTML','advLabel','ordinal','coachCard','careerNow','hkEventText','bbEventText','scEventText','nflPickSlot','BUILD_ID',
   'winProb','ownEdge','rosterOf','promote','fireCoord','migrateSave','standingsView','dynastyView','teamCard','milestones','BK','stConf','dynTab','seasonRowsFor','allTime','FEATURE_EDGE','nflAsk','nflFreeAgentPreview','MAX_SAL','recStr','oddsHTML','noteChoice','simAdvance','rebuild','coachRows','careerNow','yourSeasonsHTML','dynastyView','claimSlot','save','staleTab','store','REVKEY','slot','allSlots','ownMark','readsHTML','callKey','impactHTML','bearYell','evidenceHTML','makeLiveGame','RNG','playGame','PLANS','staffPlanHTML','stakesFor','objStatus','seasonObjectives','attentionHTML','plan','heroGame','checkAchievements','seatBadge','fixtureLine','simStops','portalChance','eloToRating','dynastyView','collegePlanHTML','openOffseason'];
@@ -637,7 +637,7 @@ for(const [f,team] of [['football-coach-pro.html','Green Bay'],['football-coach.
 
 /* 87. the number is the same number twice: a backup in and out returns the chance to exactly where it was, and a
    reload gives the same (Muse: a restored lineup read 83% then 66%; college football 33% then 28%, for good) */
-for(const [f,team] of [['football-coach.html','Missouri'],['football-coach-pro.html','Green Bay'],['basketball-coach.html','Wake Forest'],['basketball-coach-pro.html','Detroit'],['hockey-coach-pro.html','Washington'],['soccer-coach.html','Derby County']]){
+for(const [f,team] of [['football-coach.html','Missouri'],['football-coach-pro.html','Green Bay'],['basketball-coach.html','Wake Forest'],['basketball-coach-pro.html','Detroit'],['hockey-coach-pro.html','Washington'],['soccer-coach.html','Derby County'],['baseball-coach-pro.html','Colorado']]){
   const A=load({settable:SET,file:D(f),expose:EXP.concat(['winProb','swapDepth','BK','rebuild'])}); A.newDynasty(team,5,'T');
   for(let i=0;i<3;i++){ A.S.watchMode='never'; A.doAdvance() }
   const my=A.S.myTeam, g=A.SEA.sched.find(x=>x.week>=A.SEA.step&&(x.home===my||x.away===my)); if(!g)continue;

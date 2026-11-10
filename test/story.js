@@ -3,7 +3,7 @@
    reach its history entry, the head-to-head with coaches counts real games, and title night renders.
      node test/story.js     last line: MATCH or MISMATCH */
 const {load}=require('./harness.js'), path=require('path'); let bad=0, checks=0; const ok=(c,m)=>{checks++; if(!c){bad++; console.log('  FAIL '+m)}};
-for(const [f,team] of [['basketball-coach-pro.html','Oklahoma City'],['hockey-coach-pro.html','Colorado'],['football-coach-pro.html','Kansas City'],['soccer-coach.html','Arsenal']]){
+for(const [f,team] of [['basketball-coach-pro.html','Oklahoma City'],['hockey-coach-pro.html','Colorado'],['football-coach-pro.html','Kansas City'],['soccer-coach.html','Arsenal'],['baseball-coach-pro.html','Seattle']]){
   const A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','U','NAMES','newDynasty','doAdvance','live','liveTick','answerLive','openOffseason','commitOffseason','filmRoomHTML','titleNightHTML','rivalLine','READ_KINDS']});
   A.newDynasty(team,5,'T'); let g=0, readK={}, games=0;
   while(A.SEA.phase!=='done'&&g++<900){ A.doAdvance(); let n=0,was=false; while(A.live&&!A.live.done&&n++<1500){ was=true; const L=A.live; if(L.ask){ A.answerLive(L.ask.dp.opts[(n+g)%L.ask.dp.opts.length][0]) } else A.liveTick() }
