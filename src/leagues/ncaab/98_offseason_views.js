@@ -37,7 +37,7 @@ function offseasonBanner(){
     rec+=`<div class="bnews small">${early.map(p=>esc(p.n)+" ("+esc(p.p)+")").join(", ")}
       declared early for the draft.</div>`;
     if(early.some(p=>p.featured))
-      rec+=`<div class="bnews"><b>NFL pipeline.</b> Sending a player you built to the draft
+      rec+=`<div class="bnews"><b>NBA pipeline.</b> Sending a player you built to the draft
         is a recruiting pitch &mdash; future classes take note.</div>`;
   }
   const ra=(last.league.realigned||[]).length?`<div class="bnews"><b>Realignment.</b> ${

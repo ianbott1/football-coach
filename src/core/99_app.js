@@ -2027,7 +2027,8 @@ function milestones(wins,losses,result,rank,team,history){
   let streak=0;
   for(let i=mine.length-1;i>=0;i--){if(mine[i][0]>mine[i][1])streak++;else break}
   if(wins>losses&&streak+1>=5)out.push(`${streak+1} straight winning seasons.`);
-  if(losses>=9&&wins<=3&&wins<Math.min(...mine.map(r=>r[0])))out.push(`Worst season of your ${mine.length+1} in charge. That will be remembered.`);
+  if((wins+losses>=20?wins<=0.35*(wins+losses):losses>=9&&wins<=3)&&wins<Math.min(...mine.map(r=>r[0])))   /* round 55: 3 wins or fewer was football's; 82- and 162-game seasons never qualified */
+  out.push(`Worst season of your ${mine.length+1} in charge. That will be remembered.`);
   return out;
 }
 
@@ -2119,13 +2120,18 @@ function weekNews(W){
     .sort((x,y)=>Math.min(x.hrank||999,x.arank||999)-Math.min(y.hrank||999,y.arank||999))[0];
   if(rivG){
     const nm=LEAGUE.rivals.name(rivG.home,rivG.away);
+    // a draw has no winner (round 55: soccer's first named derbies read "null takes The Merseyside derby, 1-1")
+    if(!rivG.winner){ const ser=LEAGUE.rivals.series(U,rivG.home,rivG.away);
+      items.push({p:85,k:"riv",tone:"flag",h:`${rivG.home} and ${rivG.away} draw ${nm}, ${rivG.hp}-${rivG.ap}`,
+        b:ser?`${ser.w}-${ser.l}${ser.d?"-"+ser.d:""} in the series for ${rivG.home} (won, lost, drawn).`:"Honours even."}) }
+    else{
     const ser=LEAGUE.rivals.series(U,rivG.winner,rivG.loser);
     let b=`${rivG.winner} keeps ${nm}.`;
     if(ser&&ser.streak&&ser.streak.n>=2)
       b=`${ser.streak.team} has now won ${ser.streak.n} straight in ${nm}.`;
     else if(ser)b=`${ser.w}-${ser.l}${ser.d?"-"+ser.d:""} in the series${ser.d?" (won, lost, drawn)":""}.`;
     items.push({p:85,k:"riv",tone:"flag",
-      h:`${rivG.winner} takes ${nm}, ${Math.max(rivG.hp,rivG.ap)}-${Math.min(rivG.hp,rivG.ap)}`,b:b});
+      h:`${rivG.winner} takes ${nm}, ${Math.max(rivG.hp,rivG.ap)}-${Math.min(rivG.hp,rivG.ap)}`,b:b}); }
   }
 
   // performance of the week
