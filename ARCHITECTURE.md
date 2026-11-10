@@ -358,6 +358,29 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 55: words from the wrong sport (test/wrong-sport.js, in run-all).
+- The test: a lexicon per sport (touchdown, rebound, Stanley Cup, relegation, home run...) and per league (Super
+  Bowl, March Madness, NBA, NHL, MLB...). Two seasons in each game, every tab several times, live game screens,
+  offseason steps, team pages and season cards: ~4,400 screens, 11.8M characters, searched for any other sport's
+  or league's words. Then every string in each game's own layers (src/<sport>, src/leagues/<league>), shown or
+  not, minus template expressions and bare identifiers. Allowed: the NFL in college football, the NBA in college
+  basketball (the draft); club names (AFC Telford United, Accrington Stanley). Checked by planting "won the Stanley
+  Cup" in baseball: caught on screen and in the source.
+- On screen: clean in all seven after rounds 53-54. In the source:
+  - pro basketball, hockey and baseball passed football's "SUPER BOWL CHAMPIONS" to milestones(), which no other
+    league's isTitle matched: "First championship of your tenure" could never appear in hockey or baseball (and
+    the copy was wrong in pro basketball too). Now last.seasonResult(my); measured: it appears in all three.
+  - college basketball's "NFL pipeline." when a player you built leaves early: now "NBA pipeline.".
+  - soccer's named rivalries were hockey's (none of the clubs exist, so no rivalry was ever named): now eight
+    English derbies. A named rivalry also adds a "beat your rival" objective and a big week in the digest, so
+    soccer gains derby objectives (objectives: rival 1/3 met; stakes and objectives tests pass).
+- Found beside it in core (milestones): "worst season" needed 3 wins or fewer, football's number; seasons of 20+
+  games now use 35% of games. Football's rule unchanged.
+- Exposed by the derbies (regressions.js): the rivalry news had no draw, so a drawn derby read "null takes The
+  Merseyside derby, 1-1". Now "X and Y draw The Merseyside derby, 1-1".
+- Baselines rewritten: college basketball and soccer goldens; hockey, pro basketball and soccer hot seat (text
+  and soccer's derby objectives). The other goldens unchanged.
+
 Round 54: each pro league keeps its own franchise-strength range (26_offseason, the summer's u.program clamp).
 - Hockey and pro basketball carried pro football's 1480-1920. Both start clubs below 1480 (hockey 1372-1628, NBA
   1420-1640), so after one summer every weak club sat at 1480 (11 in each) and expectations had no rebuild or

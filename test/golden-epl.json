@@ -1,5 +1,5 @@
 {
- "fp": "67a22e75f3a08779",
+ "fp": "86791d245e457ce1",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -370,6 +370,11 @@
    "fp": "67a22e75f3a08779",
    "from": "dd954313c938238b",
    "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
+  },
+  {
+   "fp": "86791d245e457ce1",
+   "from": "67a22e75f3a08779",
+   "note": "round 55: wrong-sport fixes (title milestone, worst season, NBA pipeline, English derbies)"
   }
  ],
  "result": {
@@ -384,7 +389,7 @@
     "heis": "debb27f463bb3027",
     "history": "2e2f245f8892117d",
     "universe": "f84115d5e94d852c",
-    "screens": "3cbf85ed75716204"
+    "screens": "1a6bf4c74f928976"
    },
    {
     "year": 2027,
@@ -394,9 +399,9 @@
     "rec": "44cf80b81f3ffd06",
     "poll": "0f308c05cfb56af6",
     "heis": "e1abe8e17e8d2920",
-    "history": "e40ec1d33d6e3c00",
-    "universe": "6564f2cf9f90204d",
-    "screens": "5b0b61ac6ae6cd45"
+    "history": "5936f24e58b3ada4",
+    "universe": "3f5acb9a23ad7fd3",
+    "screens": "bbf05886446d76a3"
    }
   ],
   "Wrexham#777": [

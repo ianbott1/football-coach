@@ -184,7 +184,8 @@ function offseasonScreen(){
   const exp=S.expNow||expectations();
   const gr=seasonGrade(last.rec[my][0],last.rec[my][1],last.seasonResult(my),exp);
   const miles=milestones(last.rec[my][0],last.rec[my][1],
-    last.champion===my?"SUPER BOWL CHAMPIONS":"",last.poll.rankMap()[my]);
+    last.champion===my?last.seasonResult(my):"",   /* round 55: was football's "SUPER BOWL CHAMPIONS", which this league's isTitle never matched */
+   last.poll.rankMap()[my]);
   h+=`<div class="banner"><div class="bkick">${last.year} final</div>
     <div class="gradebox"><span class="grade">${gr.g}</span>
       <div><div class="btitle" style="margin:0">${recStr(my)}</div>

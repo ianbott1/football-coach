@@ -1,5 +1,5 @@
 {
- "fp": "7aa0d73f65b3fca2",
+ "fp": "ddc57dd1f1d89c42",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -270,6 +270,11 @@
    "fp": "7aa0d73f65b3fca2",
    "from": "4a9101e554755616",
    "note": "round 54: own franchise-strength range"
+  },
+  {
+   "fp": "ddc57dd1f1d89c42",
+   "from": "7aa0d73f65b3fca2",
+   "note": "round 55: wrong-sport fixes (title milestone, worst season, NBA pipeline, English derbies)"
   }
  ],
  "out": [
@@ -306,7 +311,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "0bb7b789f24b1177"
+     "book": "e55c2689ac4a65b9"
     },
     {
      "team": "Montreal",
@@ -329,7 +334,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "0612f6d182e5f080"
+     "book": "03882f003746423f"
     },
     {
      "team": "Montreal",
