@@ -228,6 +228,7 @@ function liveView(){
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   return `<div class="watchwrap">
     ${liveScoreboard()}
+    ${typeof hlBox==="function"?hlBox():""}
     ${statStrip(g,last)}
     <div class="grouphead">Run of play</div>
     <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Kick-off at ${esc(venue)}&hellip;</span></div>`}</div>

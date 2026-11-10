@@ -1,5 +1,5 @@
 {
- "fp": "fdf11419c737f2c2",
+ "fp": "bbfe3dc7f0fcb113",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -350,6 +350,11 @@
    "fp": "fdf11419c737f2c2",
    "from": "6ff1628f99ac002b",
    "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "bbfe3dc7f0fcb113",
+   "from": "fdf11419c737f2c2",
+   "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
   }
  ],
  "result": {
@@ -364,7 +369,7 @@
     "heis": "22f4a9cd8c36b4a4",
     "history": "eec782d6363770d3",
     "universe": "ff25b166ab4bf6ad",
-    "screens": "d2f37851e4ccce54"
+    "screens": "e4335e1a09846933"
    },
    {
     "year": 2027,
@@ -376,7 +381,7 @@
     "heis": "fff1d2fd16d80098",
     "history": "9d9602f9b7029db8",
     "universe": "77538bb534a21f51",
-    "screens": "8d5c6f9284599c0a"
+    "screens": "64b6fbd427f41781"
    }
   ],
   "Detroit#777": [
@@ -390,7 +395,7 @@
     "heis": "4c753ccdcbc17fd0",
     "history": "21a8fcbdcac92950",
     "universe": "d3c3d927248eae1d",
-    "screens": "9277428b7cdc0fd6"
+    "screens": "31974cdd8f4b009b"
    },
    {
     "year": 2027,
@@ -402,7 +407,7 @@
     "heis": "e87db80c477c3ae0",
     "history": "fedceb1f17190bdc",
     "universe": "9d39ace91d7f6a99",
-    "screens": "42766e2270a49f4c"
+    "screens": "d184464767c328f6"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "ab228b1e74335a17",
+ "fp": "d94f89f12245a3a0",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -400,6 +400,11 @@
    "fp": "ab228b1e74335a17",
    "from": "2c24a7f6c83cafa8",
    "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "d94f89f12245a3a0",
+   "from": "ab228b1e74335a17",
+   "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
   }
  ],
  "result": {
@@ -414,7 +419,7 @@
     "heis": "d547b6f92b0dea50",
     "history": "f5f089a355e08575",
     "universe": "ef2435f49fa36eef",
-    "screens": "3f693ee76fc44a34"
+    "screens": "86b3ffbda6e8a918"
    },
    {
     "year": 2027,
@@ -426,7 +431,7 @@
     "heis": "239dd7be84092cd6",
     "history": "f7c10757a6301ab4",
     "universe": "c758569b33118192",
-    "screens": "b847ee892335462e"
+    "screens": "0c57e9f3ce3bfcf4"
    }
   ],
   "Coppin State#2024": [
@@ -440,7 +445,7 @@
     "heis": "ed67545cb919d745",
     "history": "452f39c29f88f1d8",
     "universe": "f6756285e2e5958b",
-    "screens": "30282e2801744fc7"
+    "screens": "49a019402be77cfa"
    },
    {
     "year": 2027,
@@ -452,7 +457,7 @@
     "heis": "719f883500ab76bc",
     "history": "630a9d04dcbbbe30",
     "universe": "822d728ca3fe8df3",
-    "screens": "df62c2a34992ba03"
+    "screens": "bc43a76a5bbddb49"
    }
   ],
   "Gonzaga#777": [
@@ -466,7 +471,7 @@
     "heis": "9def810c51af58df",
     "history": "0f127bf4d46e4c0d",
     "universe": "f62cc56c248300c5",
-    "screens": "9bb45df57448d11c"
+    "screens": "f4bd1368854aa836"
    },
    {
     "year": 2027,
@@ -478,7 +483,7 @@
     "heis": "fe104a4686ebb8ee",
     "history": "b7bae5760538a368",
     "universe": "ee6a51737fd30707",
-    "screens": "99c43773856d62e9"
+    "screens": "a403b5b58e82530c"
    }
   ],
   "schedules#60": [

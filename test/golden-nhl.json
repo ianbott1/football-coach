@@ -1,5 +1,5 @@
 {
- "fp": "52c42b16f4c2ebb6",
+ "fp": "ea448da11fd49b60",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -365,6 +365,11 @@
    "fp": "52c42b16f4c2ebb6",
    "from": "c2d94553f49ebc01",
    "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "ea448da11fd49b60",
+   "from": "52c42b16f4c2ebb6",
+   "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
   }
  ],
  "result": {
@@ -379,7 +384,7 @@
     "heis": "72c4700494f6c62c",
     "history": "56993daae0adafdf",
     "universe": "7d46bb9ee5d4820e",
-    "screens": "fc53c96887d2fdc3"
+    "screens": "622f396c50221c59"
    },
    {
     "year": 2027,
@@ -391,7 +396,7 @@
     "heis": "aa3341e7f2e686d6",
     "history": "8fd8f796b09561a1",
     "universe": "0bb56ed029a135d3",
-    "screens": "2d9eaa1dbaf896c6"
+    "screens": "d78a18d6e70cce77"
    }
   ],
   "Edmonton#777": [
@@ -405,7 +410,7 @@
     "heis": "1506ba3a83c2abeb",
     "history": "d79a2cf38f83ec07",
     "universe": "cbfdb2ef0f599b7f",
-    "screens": "65fd192b4a164ff6"
+    "screens": "59d247303ab7077b"
    },
    {
     "year": 2027,
@@ -417,7 +422,7 @@
     "heis": "da6b66483c98611e",
     "history": "ce638e0708651a87",
     "universe": "37e98c6cf75335c8",
-    "screens": "39ce33cedad898d8"
+    "screens": "ff0036ef7a0402a8"
    }
   ],
   "schedules#60": [

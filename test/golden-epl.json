@@ -1,5 +1,5 @@
 {
- "fp": "dd954313c938238b",
+ "fp": "67a22e75f3a08779",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -365,6 +365,11 @@
    "fp": "dd954313c938238b",
    "from": "60a9bc21fc9c77b7",
    "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "67a22e75f3a08779",
+   "from": "dd954313c938238b",
+   "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
   }
  ],
  "result": {
@@ -379,7 +384,7 @@
     "heis": "debb27f463bb3027",
     "history": "2e2f245f8892117d",
     "universe": "f84115d5e94d852c",
-    "screens": "98ec2c63e69ddc1f"
+    "screens": "3cbf85ed75716204"
    },
    {
     "year": 2027,
@@ -391,7 +396,7 @@
     "heis": "e1abe8e17e8d2920",
     "history": "e40ec1d33d6e3c00",
     "universe": "6564f2cf9f90204d",
-    "screens": "f947f97e79bcfb0a"
+    "screens": "5b0b61ac6ae6cd45"
    }
   ],
   "Wrexham#777": [
@@ -405,7 +410,7 @@
     "heis": "383b90a62a5c3fab",
     "history": "01149d1d7c2d48aa",
     "universe": "6425949c55893f6a",
-    "screens": "9a40297f08b5d27c"
+    "screens": "531675891f96b9ff"
    },
    {
     "year": 2027,
@@ -417,7 +422,7 @@
     "heis": "660f0e098cfc5670",
     "history": "f47dcddc4c4288a3",
     "universe": "cc42a91bcb17c479",
-    "screens": "02606764a93b41d2"
+    "screens": "debbbb09f0f07d60"
    }
   ],
   "schedules#60": [

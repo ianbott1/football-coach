@@ -204,6 +204,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--muted);text-align:center;padding-top:8px}
 @media(max-width:1023px){.whint{display:block}}
 .watchwrap{max-width:640px;margin:0 auto;padding-bottom:96px}
+.hlpitch{margin:8px 0 6px}.hlcv{display:block;border-radius:4px;cursor:pointer;touch-action:manipulation}
 .wtop{margin:16px;padding:18px 16px;border:1px solid var(--vote);
  background:linear-gradient(180deg,rgba(139,159,232,.13),transparent)}
 .wtop.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.14),transparent)}
@@ -212,7 +213,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  color:var(--vote);text-align:center}
 .wtop.win .wlabel{color:var(--turf)}.wtop.loss .wlabel{color:var(--flag)}
 .wscore{display:flex;gap:14px;margin-top:14px}
-.wside{flex:1;text-align:center;padding:10px 4px;border:1px solid var(--line)}
+.wside{flex:1;min-width:0;text-align:center;padding:10px 4px;border:1px solid var(--line)}   /* min-width 0: a long club name ellipsizes instead of widening the page (round 51) */
 .wside.lead{border-color:var(--sodium)}
 .wt{display:block;font-family:var(--cond);font-size:17px;font-weight:600;color:var(--muted);
  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -851,7 +852,12 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  text-transform:uppercase;text-shadow:0 4px 30px rgba(0,0,0,.5),0 0 2px var(--fc);transform:skewX(-6deg)}
 .goalflash.theirs{background:radial-gradient(circle at 50% 40%,rgba(10,12,18,.55),transparent 70%)}
 .goalflash.theirs span{font-size:clamp(26px,7vw,46px);color:var(--muted)}
-@keyframes gflash{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1.04)}24%{transform:scale(1)}72%{opacity:1}100%{opacity:0}}
+/* round 51: the flash grew past the screen's edge (scale 1.04 of a full-screen layer) and, on a phone, widened the page
+   for good: the live screen read 421 or 465px wide at 390 in about one match in three. It grows inside the screen now. */
+@keyframes gflash{0%{opacity:0;transform:scale(.86)}12%{opacity:1;transform:scale(1)}72%{opacity:1}100%{opacity:0}}
+html,body{overflow-x:clip}
+/* the live chance on a phone: the line under the bar when a long club name and W/D/L won't fit beside it */
+@media (max-width:480px){.livewp{flex-wrap:wrap;row-gap:4px}.livewp .lwbar{flex:1 1 120px}.livewp .lwpct{white-space:normal}}
 canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .reset.off{opacity:.45;text-decoration:line-through}
 /* phones: the top bar keeps the team name readable: the year goes, the buttons tighten */
@@ -966,7 +972,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="2c423be";
+<script>const BUILD_ID="fe62b25";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -3421,6 +3427,89 @@ function fieldSVG(g,cur,homeColor,awayColor,venue){
       fill="${i<segs?'var(--sodium)':'var(--line)'}"/>`).join("")}
   </svg>`;
 }
+/* Hockey's highlights (round 51, core 97_highlights): a goal or a big save from the engine's event, played out on a
+   rink by twelve dots and a puck. The commentary's words pick the move where they say how ("tips in a point shot",
+   "finishes a two-on-one", "jams a loose puck home at the crease"); the event's draw picks it otherwise. The scorer
+   is the man the log names. As on the scoreboard's rink, the home side attacks to the left. */
+const HL_SPORT=(function(){
+  const PADX=0.03, PADY=0.06;
+  // attack frame: 0 the side's own goal end, 1 the end it attacks. G, D, D, C, LW, RW
+  const ATT=[[0.08,0.5],[0.63,0.3],[0.63,0.7],[0.8,0.5],[0.84,0.2],[0.84,0.8]];
+  const DEF=[[0.92,0.5],[0.86,0.38],[0.86,0.62],[0.8,0.5],[0.72,0.25],[0.72,0.75]];
+  const UNIT={C:3,LW:4,RW:5,D:1,D2:2}, GOAL=0.91, net=[0.47,0.53];
+  const unitOf=u=>{ const x=u%100; return x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2" };
+  function clips(L,d,mode){
+    const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").sort((a,b)=>a.m-b.m);
+    let rows=[]; try{ rows=rowsOf(L.g,L.drives) }catch(e){}
+    const out=[]; let chance=null; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
+    ev.forEach(e=>{
+      if(e.k==="goal"){ out.push(mk(L,e,"goal",rows)); if(e.side==="home")sh++; else sa++; return }
+      if(mode==="key"&&!chance&&Math.abs(sh-sa)<=1&&((e.u||0)%3===0)){ chance=mk(L,e,"save",rows); out.push(chance) } });
+    return out.slice(0,3);
+  }
+  function mk(L,e,kind,rows){
+    const g=L.g, attSide=kind==="goal"?e.side:(e.side==="home"?"away":"home"), tm=attSide==="home"?g.home:g.away, u=e.u||0;
+    const r=mulberry32(((e.m||0)*7919+u*131+(attSide==="home"?17:29))>>>0);
+    const shooter=kind==="goal"?hkGoalNames(tm,e).n:hkSkater(tm,u), unit=unitOf(u);
+    const row=rows.find(x=>x.m===e.m+"'"&&(kind==="goal"?/GOAL|EMPTY/.test(x.tag):!x.tag&&/save|robs|denied|gloves|stretches/i.test(x.text)));
+    const text=row?row.text:"", T=text.toLowerCase();
+    let plan=e.en?"en":e.pp?"pp":/tips|point/.test(T)?"point":/two-on-one|walks in alone/.test(T)?"rush":/jams|crease|loose puck|bats|skate/.test(T)?"cycle":/one-times|circle/.test(T)?"pp"
+      :["rush","cycle","point","pp"][Math.floor(r()*4)];
+    const s=r()<0.5?0:1, sy=s?0.72:0.28;
+    let W;
+    if(plan==="rush")W=[[0.42,0.5],[0.66,s?0.32:0.68],[0.8,0.5+(s?0.08:-0.08)]];
+    else if(plan==="cycle")W=[[0.7,sy],[0.95,s?0.8:0.2],[0.96,0.4+r()*0.2],[0.86,0.5+(r()-0.5)*0.08]];
+    else if(plan==="point")W=[[0.74,s?0.85:0.15],[0.65,s?0.68:0.32],[0.84,0.5]];
+    else if(plan==="pp")W=[[0.65,0.5],[0.78,s?0.82:0.18],[0.82,s?0.7:0.3]];
+    else W=[[0.35,0.5],[0.55,0.5+(r()-0.5)*0.3]];   // empty net: from anywhere
+    const sIdx=UNIT[unit]||3;
+    const rec=W.map((w,i)=>{ if(i===W.length-1)return sIdx; let b=3,bd=9; for(let k=1;k<6;k++){ if(k===sIdx)continue; const p=ATT[k], dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=k} } return b });
+    const end=kind==="goal"?[GOAL+0.012,net[0]+r()*(net[1]-net[0])]:[GOAL-0.012,0.5+(r()-0.5)*0.05];
+    const inks=hlInks(g.home,g.away); const gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks);
+    const nm=shooter?String(shooter).split(" ").slice(-1)[0]:"";
+    return {kind,e,tm,home:attSide==="home",W,rec,end,nm,text,plan,m:e.m,base:kind==="goal"?3400:2600,inks,gk:gks,en:!!e.en,pp:!!e.pp};
+  }
+  // the home side attacks left: flip the attack frame for it
+  const P=(W,H,c,a,y)=>{ const X=c.home?1-a:a, Y=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
+  function pitch(x,W,H){
+    x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
+    const L=W*PADX, T=H*PADY, w=W*(1-2*PADX), h=H*(1-2*PADY), rr=h*0.28;
+    x.beginPath(); x.moveTo(L+rr,T); x.lineTo(L+w-rr,T); x.quadraticCurveTo(L+w,T,L+w,T+rr); x.lineTo(L+w,T+h-rr); x.quadraticCurveTo(L+w,T+h,L+w-rr,T+h);
+    x.lineTo(L+rr,T+h); x.quadraticCurveTo(L,T+h,L,T+h-rr); x.lineTo(L,T+rr); x.quadraticCurveTo(L,T,L+rr,T); x.closePath();
+    x.fillStyle="#EEF4F8"; x.fill(); x.lineWidth=2; x.strokeStyle="#9FB3C4"; x.stroke();
+    const vl=(fx,col,lw)=>{ x.beginPath(); x.moveTo(L+fx*w,T+2); x.lineTo(L+fx*w,T+h-2); x.strokeStyle=col; x.lineWidth=lw; x.stroke() };
+    vl(0.5,"#D7263D",3); vl(0.35,"#2F6FB5",3); vl(0.65,"#2F6FB5",3); vl(1-GOAL,"#D7263D",1.2); vl(GOAL,"#D7263D",1.2);
+    x.beginPath(); x.arc(L+w/2,T+h/2,h*0.13,0,Math.PI*2); x.strokeStyle="#2F6FB5"; x.lineWidth=1.5; x.stroke();
+    [[1-GOAL,1],[GOAL,-1]].forEach(([gx,s])=>{ x.beginPath(); x.arc(L+gx*w,T+h/2,h*0.07,s>0?-Math.PI/2:Math.PI/2,s>0?Math.PI/2:Math.PI*1.5); x.fillStyle="#9CC9EC"; x.fill();
+      x.fillStyle="#D7263D"; x.fillRect(L+gx*w+(s>0?-w*0.012:0),T+h*net[0],w*0.012,h*(net[1]-net[0])) });
+  }
+  function idle(x,W,H){ hlCaption(x,W,H,"Highlights: goals and big saves play here",null) }
+  function frame(x,W,H,c,t){
+    const n=c.W.length, tb=0.72, ts=0.86;
+    let bx,by;
+    if(t<tb){ const f=t/tb*(n-1); const k=Math.min(n-2,Math.floor(f)), s=hlEase(f-k), a=c.W[k], b=c.W[k+1]; bx=hlLerp(a[0],b[0],s); by=hlLerp(a[1],b[1],s) }
+    else if(t<ts){ const s=(t-tb)/(ts-tb), a=c.W[n-1]; bx=hlLerp(a[0],c.end[0],s); by=hlLerp(a[1],c.end[1],s) }
+    else{ bx=c.end[0]; by=c.end[1] }
+    const prog=Math.min(1,t/tb);
+    const att=ATT.map((p,i)=>{ if(i===0)return c.en?[0.5,0.5]:[0.08,0.5]; let a=hlLerp(p[0]-0.25,p[0],prog), y=p[1]+(by-0.5)*0.15;
+      const j=c.rec.indexOf(i); if(j>=0){ const w=c.W[j], near=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-j)):j===n-1?1:0; a=hlLerp(a,w[0],hlEase(Math.min(1,near*1.4))); y=hlLerp(y,w[1],hlEase(Math.min(1,near*1.4))) }
+      if(i===c.rec[n-1]&&t>=tb){ a=c.W[n-1][0]; y=c.W[n-1][1] }
+      return [a,y] });
+    const def=DEF.map((p,i)=>{ if(i===0){ if(c.en)return null; let y=0.5+(by-0.5)*0.3; if(t>=tb&&c.kind!=="goal")y=hlLerp(y,c.end[1],hlEase((t-tb)/(ts-tb))); return [GOAL-0.015,Math.max(0.45,Math.min(0.55,y))] }
+      if(c.pp&&i===5)return null;   // a man short
+      return [hlLerp(p[0]-0.1,p[0],prog),p[1]+(by-0.5)*0.25] });
+    let nr=[]; def.forEach((p,i)=>{ if(p&&i)nr.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); nr.sort((a,b)=>a[0]-b[0]);
+    nr.slice(0,1).forEach(([d,i])=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.5),hlLerp(p[1],by,0.5)] });
+    const r=Math.max(3.4,W/90), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    def.forEach((p,i)=>{ if(!p)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.6)") });
+    att.forEach((p,i)=>{ if(i===0&&c.en)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=tb-0.12?c.nm:"") });
+    const [qx,qy]=P(W,H,c,bx,by); x.beginPath(); x.arc(qx,qy,r*0.5,0,Math.PI*2); x.fillStyle="#0B0D12"; x.fill();
+    const top=`${c.m}' ${c.tm}${c.pp?" power play":""}${t<ts?" attack":""}`;
+    const end=t>=ts?(c.kind==="goal"?(c.en?`EMPTY NET! ${c.nm}`:`GOAL! ${c.nm}`):"Saved!"):null;
+    hlCaption(x,W,H,t>=ts&&c.text?`${c.m}' ${c.text}`:top,end,c.kind==="goal"?ink:null);
+  }
+  return {aspect:0.5, clips, pitch, idle, frame};
+})();
 /* ============ game screens: hockey ============ */
 /* The scoreboard (visitors first, as on any rink's clock), the run of play in
    five-minute spells with names, the evidence each call is made from, the
@@ -3634,6 +3723,7 @@ function liveView(){
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   return `<div class="watchwrap">
     ${liveScoreboard()}
+    ${typeof hlBox==="function"?hlBox():""}
     <div class="grouphead">Run of play</div>
     <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Puck drop at ${esc(venue)}&hellip;</span></div>`}</div>
     <div class="actionbar">
@@ -6362,6 +6452,91 @@ function musicStop(){
 /* a browser starts sound only after a tap: music that was on last time waits for the first one */
 try{ if(typeof document!=="undefined"&&document.addEventListener)
   document.addEventListener("pointerdown",()=>{ if(musicOn()&&soundOn()&&!musicT)musicStart() },{passive:true}) }catch(e){}
+/* Highlights (round 51): the game's big moments drawn on a pitch, as Football Manager's 2D match does, while you watch.
+   Nothing here decides anything. The engine has already played the stretch: a goal at 23', a save at 27'; a sport's
+   choreographer (HL_SPORT, e.g. soccer 72_highlights) turns each event into a few seconds of movement that ends the
+   way the event did. Shown in the live view's #hlpitch, one clip after another; the next stretch waits for them.
+   Tap the pitch to skip. Off, goals only, or goals and big chances, in the ? panel (S.highlights). Without a canvas
+   (tests, a reduced-motion setting) nothing plays and nothing waits. */
+const HL={cv:null, x:null, clips:[], cur:null, t0:0, raf:0, done:null, idle:null};
+function hlMode(){ return (S&&S.highlights)||"key" }
+function hlCan(){
+  if(typeof HL_SPORT==="undefined"||!HL_SPORT)return false;
+  if(typeof requestAnimationFrame!=="function"||typeof document==="undefined"||!document.createElement)return false;
+  if(typeof prefersReduced==="function"&&prefersReduced())return false;
+  return true }
+/* the pitch box in the live view: a place for the canvas, which moves in after each redraw (the redraw replaces the
+   page; the canvas, and a clip half played, carry on) */
+function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; return `<div id="hlpitch" class="hlpitch" aria-label="Highlights"></div>` }
+function hlMount(){
+  if(!hlCan())return; const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return;
+  if(!HL.cv){ const c=document.createElement("canvas"); if(!c||!c.getContext)return; HL.cv=c; HL.x=c.getContext("2d"); if(!HL.x){ HL.cv=null; return }
+    c.className="hlcv"; c.onclick=()=>hlSkip(); }
+  if(HL.cv.parentNode!==box){ try{ box.appendChild(HL.cv) }catch(e){ return } }
+  // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
+  if(HL_SPORT.collapseIdle){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }
+  const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
+  if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
+  if(!HL.cur)hlDraw(null,0);
+}
+/* this stretch's clips; returns how long they take (ms), for the next stretch to wait */
+function hlPlay(L,drive){
+  if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return 0;
+  const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return 0;
+  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  if(!clips.length)return 0;
+  box.style.display=""; HL.cur={dur:1}; hlMount();
+  const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
+  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)) });
+  HL.clips=clips.slice(1); hlStart(clips[0]);
+  return clips.reduce((t,c)=>t+c.dur+250,0);
+}
+function hlStart(c){ HL.cur=c; HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
+function hlFrame(){
+  const c=HL.cur; if(!c)return; const t=Math.min(1,(Date.now()-HL.t0)/c.dur);
+  hlDraw(c,t);
+  if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
+  // a beat on the last frame, then the next clip
+  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount() } },250);
+}
+function hlSkip(){
+  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount();
+  // the next stretch was waiting for the clips: it comes now
+  if(typeof live!=="undefined"&&live&&!live.done&&!live.paused&&!live.ask&&live.timer){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.min(400,liveGap())) }
+}
+function hlDraw(c,t){
+  const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);
+  x.setTransform(dpr,0,0,dpr,0,0); const W=cv.width/dpr, H=cv.height/dpr;
+  try{ HL_SPORT.pitch(x,W,H); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H) }catch(e){}
+}
+/* shared drawing */
+function hlDot(x,px,py,r,fill,ring,label){
+  x.beginPath(); x.arc(px,py,r,0,Math.PI*2); x.fillStyle=fill; x.fill(); x.lineWidth=1.4; x.strokeStyle=ring; x.stroke();
+  if(label){ x.font=`600 ${Math.round(r*2.1)}px var(--mono),monospace`; x.textAlign="center"; x.textBaseline="bottom";
+    x.lineWidth=3; x.strokeStyle="rgba(0,0,0,.65)"; x.strokeText(label,px,py-r-2); x.fillStyle="#fff"; x.fillText(label,px,py-r-2) } }
+function hlCaption(x,W,H,top,bottom,ink){
+  x.textAlign="left"; x.textBaseline="top";
+  if(top){ x.font=`600 ${Math.max(10,Math.round(W/34))}px var(--mono),monospace`; x.fillStyle="rgba(0,0,0,.55)"; x.fillRect(0,0,W,Math.round(W/34)+10);
+    let tt=top; while(tt.length>8&&x.measureText(tt).width>W-16)tt=tt.slice(0,-2);   // the commentary line, cut to the pitch's width
+    if(tt!==top)tt=tt.replace(/\s*\S*$/,"")+"\u2026";
+    x.fillStyle="#fff"; x.fillText(tt,8,5) }
+  if(bottom){ const fs=Math.max(15,Math.round(W/16)), cy=H*0.84; x.fillStyle="rgba(0,0,0,.6)"; x.fillRect(0,cy-fs*0.8,W,fs*1.6);
+    if(ink){ x.fillStyle=ink; x.fillRect(0,cy-fs*0.8,6,fs*1.6); x.fillRect(W-6,cy-fs*0.8,6,fs*1.6) }
+    x.font=`700 ${fs}px var(--cond),sans-serif`; x.textAlign="center"; x.textBaseline="middle";
+    x.lineWidth=4; x.strokeStyle="rgba(0,0,0,.7)"; x.strokeText(bottom,W/2,cy); x.fillStyle="#fff"; x.fillText(bottom,W/2,cy) } }
+const hlEase=t=>t<0?0:t>1?1:t*t*(3-2*t);
+const hlLerp=(a,b,t)=>a+(b-a)*t;
+/* colours not close to any of these (the keepers', away from both sides') */
+function hlRGB(s){ const m=/^#?([0-9a-f]{6})$/i.exec(String(s||"")); if(!m)return [200,200,200]; const n=parseInt(m[1],16); return [n>>16,(n>>8)&255,n&255] }
+function hlFar(cands,avoid){ const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };
+  return cands.slice().sort((a,b)=>Math.min(...avoid.map(v=>d(b,v)))-Math.min(...avoid.map(v=>d(a,v)))) }
+/* two team colours that can be told apart on grass: the away side goes white when they're close */
+function hlInks(home,away){
+  const hx=s=>{ const m=/^#?([0-9a-f]{6})$/i.exec(String(s||"")); if(!m)return [200,200,200]; const n=parseInt(m[1],16); return [n>>16,(n>>8)&255,n&255] };
+  const a=teamInk(home), b=teamInk(away), A=hx(a), B=hx(b), d=Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]);
+  const green=c=>c[1]>c[0]+30&&c[1]>c[2]+20;
+  return [green(A)?"#F4F1E8":a, d<90||green(B)?(green(A)?"#1A1D26":"#F4F1E8"):b];
+}
 /* ============ views: pro hockey ============ */
 /* Power rankings, the playoff picture (three per division and two wild cards), the
    stakes line, and the playoffs: a drawn series bracket for each conference,
@@ -6935,7 +7110,7 @@ function liveTick(){
     if(!live.paused){live.timer=setTimeout(liveTick,650);return}
     return;
   }
-  let guard=0;
+  let guard=0, fresh=null;
   while(guard++<(live.ff?4000:200)){
     const r=live.eng.next();
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
@@ -6970,15 +7145,17 @@ function liveTick(){
     // the score before this stretch (kept here: drives record it differently by sport,
     // and football's don't carry sh/sa, which made every drive look like a score)
     const pH=live.lastH||0, pA=live.lastA||0;
-    live.drives.push(r.drive);
+    live.drives.push(r.drive); fresh=r.drive;
     if(!live.ff)feelSpell(live,pH,pA);
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
   }
   render();
+  // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
+  const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
   if(!live.paused&&!live.done&&!live.ask){
-    live.timer=setTimeout(liveTick, liveGap());
+    live.timer=setTimeout(liveTick, Math.max(liveGap(),hm));
   }
 }
 function liveGap(){
@@ -9888,6 +10065,7 @@ function render(){
   if(live&&S.myTeam&&!live.done){
     el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
     bindGuide();
+    if(typeof hlMount==="function")hlMount();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the
       // game, took it as an answer, and graded a call the player never made (Grokbot, soccer: five matches)
@@ -9947,6 +10125,7 @@ function render(){
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
     document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide){ Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); GUIDE_SEEN={}; guideMark(null,false) } save(); render() });
+    document.querySelectorAll("[data-hl]").forEach(b=>b.onclick=()=>{ if(!S)return; S.highlights=b.dataset.hl; save(); render() });
     document.querySelectorAll("[data-livewp]").forEach(b=>b.onclick=()=>{ if(!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() });
     document.querySelectorAll("[data-music]").forEach(b=>b.onclick=()=>{ S.music=b.dataset.music==="true"; if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
@@ -10451,6 +10630,10 @@ function helpPanel(){
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
+    ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
+    <div class="setrow">${[["key","Goals and big chances"],["goals","Goals only"],["off","Off"]].map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+      aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
+    <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-livewp="${v}"
       aria-pressed="${(!S||S.liveWP!==false)===v}">${l}</button>`).join("")}</div>

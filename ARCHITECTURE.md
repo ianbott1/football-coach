@@ -358,6 +358,30 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 51: highlights (Football Manager's 2D match, in all six):
+- core 97_highlights: HL state, a canvas that survives redraws (hlMount moves it
+  into #hlpitch after each render), hlPlay(live,drive) returns the clips' length
+  and liveTick waits that long for the next stretch; tap to skip (the next
+  stretch comes at once). S.highlights: "key" (default), "goals", "off", in the
+  ? panel. No canvas or requestAnimationFrame (tests), or reduced motion:
+  nothing plays and nothing waits. Each sport's HL_SPORT {aspect, clips, pitch,
+  idle, frame, collapseIdle}: soccer and hockey 72_highlights (the only pitch on
+  their live screen, idle when nothing plays), basketball and football (shown
+  only while a clip plays: they have their own field or flow).
+- Nothing decided: the event (goal, save, miss; three, and-one, last shot; a
+  touchdown) is the engine's; its draw (e.u, seeded mulberry32) picks the move;
+  the commentary's words pick it where they say how (soccer "from the penalty
+  spot", "heads in at the near post", "blazes over"; hockey "tips in a point
+  shot", "finishes a two-on-one"); the man the commentary names takes the shot.
+  Football's drives have no plays and the chart names no scorer, so its
+  touchdown is drawn by position (QB, WR, RB), never by name.
+- test/highlights.js: each sport's first watched game plays its clips with no
+  page errors and ends the same with highlights on and off; clips 1 to 10 a game.
+- Phones: the goal flash scaled a full-screen layer to 1.04 and widened the
+  live screen to 421-465px in about one soccer match in three; it grows inside
+  the screen now, and html/body clip any overflow. A long club name ellipsizes
+  (.wside min-width 0) and the live W/D/L wraps under its bar.
+
 Round 50: the testers' rounds 46-49 review (Muse, Instinct):
 - Saves: store.get, when the database and localStorage both hold a key and
   differ, asks store.pick (core 99: revisions by number; careers by season,

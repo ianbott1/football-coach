@@ -1,0 +1,108 @@
+/* Soccer's highlights (round 51, core 97_highlights): a goal, a save or a miss from the engine's event, played out on
+   a pitch by twenty-two dots. The event says who attacked, when, and how it ended; its draw (e.u) picks the move
+   (a cross from the wing, a ball through the middle, a shot from distance, a corner) and the man the commentary names
+   takes the shot. The home side attacks to the right all match, as the pitch on the scoreboard has it. */
+const HL_SPORT=(function(){
+  const PAD=0.035;
+  // a 4-4-2, in the attacking side's frame: 0 its own goal line, 1 the goal it attacks; y across the pitch
+  const BASE=[[0.04,0.5],[0.2,0.14],[0.18,0.38],[0.18,0.62],[0.2,0.86],[0.44,0.12],[0.42,0.38],[0.42,0.62],[0.44,0.88],[0.64,0.4],[0.64,0.6]];
+  const UNIT_IDX={ST:[9,10],W:[5,8],CM:[6,7],CB:[2,3],FB:[1,4]};
+  const goalW=0.108, post=[0.5-goalW/2,0.5+goalW/2];
+  function clips(L,d,mode){
+    const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save"||e.k==="miss").sort((a,b)=>a.m-b.m);
+    const out=[]; let chance=null;
+    const sh0=d.sh-(d.h||0), sa0=d.sa-(d.a||0); let sh=sh0, sa=sa0;
+    ev.forEach(e=>{
+      if(e.k==="goal"){ out.push(mk(L,e,"goal",sh,sa)); if(e.side==="home")sh++; else sa++; return }
+      // a big chance: one a stretch at most, in a game still within a goal, when asked for
+      if(mode==="key"&&!chance&&Math.abs(sh-sa)<=1&&((e.u||0)%2===0)){ chance=mk(L,e,e.k,sh,sa); out.push(chance) } });
+    return out.slice(0,3);
+  }
+  function mk(L,e,kind,sh,sa){
+    const g=L.g, tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
+    const r=mulberry32(((e.m||0)*7919+u*131+(e.side==="home"?17:29))>>>0);
+    const shooter=kind==="goal"||kind==="miss"?scScorer(tm,u):scScorer(tm,u);
+    let text=""; try{ text=scEventText(g,e).text }catch(er){}
+    // the move follows the commentary's words where they say how ("heads in at the near post", "from the penalty spot",
+    // "blazes over"), else the event's draw
+    const T=text.toLowerCase();
+    let plan=/penalty/.test(T)?"pen":/corner|set piece/.test(T)?"corner":/distance|deflected/.test(T)?"distance":/head|back post|tip/.test(T)?"wing"
+      :/rounds|first time|slots|cuts inside|drills|overlaps/.test(T)?"through":["wing","through","distance"][Math.floor(r()*3)];
+    const how=kind==="miss"?(/post/.test(T)?"post":/over/.test(T)?"over":/line/.test(T)?"blocked":"wide"):kind;
+    const side=r()<0.5?0:1;   // which flank
+    // the move: waypoints for the ball in the attacking frame, and which attacker receives each
+    let W=[];
+    const start=[0.28+r()*0.12, 0.3+r()*0.4];
+    if(plan==="wing"){ const wy=side?0.9:0.1; W=[start,[0.5+r()*0.08,0.5+(side?0.15:-0.15)],[0.74+r()*0.06,wy],[0.86+r()*0.04,0.42+r()*0.16]] }
+    else if(plan==="through"){ W=[start,[0.52+r()*0.06,0.35+r()*0.3],[0.68+r()*0.05,0.4+r()*0.2],[0.84+r()*0.04,0.44+r()*0.12]] }
+    else if(plan==="distance"){ W=[start,[0.5+r()*0.08,0.25+r()*0.5],[0.66+r()*0.06,0.38+r()*0.24],[0.72+r()*0.04,0.4+r()*0.2]] }
+    else if(plan==="pen"){ W=[[0.84,0.5],[0.895,0.5]] }
+    else { const cy=side?0.995:0.005; W=[[0.995,cy],[0.9+r()*0.04,0.42+r()*0.16]] }
+    // the receivers: the nearest attacker to each spot (the last is the man who shoots: the named one when we know him)
+    const sIdx=(UNIT_IDX[shooter.unit]||[9,10])[Math.floor(r()*2)];
+    const rec=W.map((w,i)=>{ if(i===W.length-1||plan==="pen")return sIdx; let b=1,bd=9; for(let k=1;k<11;k++){ const p=BASE[k], dd=Math.hypot(p[0]+0.18-w[0],p[1]-w[1]); if(dd<bd&&k!==sIdx){bd=dd;b=k} } return b });
+    // the end of the shot
+    let end, kept=false, postHit=false;
+    if(kind==="goal")end=[1.012,0.5+(r()-0.5)*goalW*0.8];
+    else if(kind==="save"){ end=[0.975,0.5+(r()-0.5)*goalW*0.7]; kept=true }
+    else if(how==="post"){ postHit=true; end=[1.0,r()<0.5?post[0]:post[1]] }
+    else if(how==="blocked"){ end=[0.99,0.5+(r()-0.5)*goalW*0.6]; kept=true }
+    else if(how==="over"){ end=[1.03,0.5+(r()-0.5)*goalW*0.9] }
+    else end=[1.03,r()<0.5?post[0]-0.03-r()*0.06:post[1]+0.03+r()*0.06];
+    const nm=shooter.n?String(shooter.n).split(" ").slice(-1)[0]:"";
+    const inks=hlInks(g.home,g.away);
+    // keepers in a colour neither side wears
+    const gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],inks);
+    return {kind,how,e,tm,opp,home:e.side==="home",W,rec,end,kept,postHit,nm,text,plan,sh,sa,m:e.m,base:kind==="goal"?3800:2900,inks,gk:[gks[0],gks[1]]};
+  }
+  // pitch coordinates (attack frame -> screen)
+  const P=(W,H,c,a,y)=>{ const X=c.home?a:1-a, Y=c.home?y:1-y; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
+  function pitch(x,W,H){
+    x.fillStyle="#2F7A3B"; x.fillRect(0,0,W,H);
+    for(let i=0;i<10;i++){ if(i%2)continue; x.fillStyle="#348442"; x.fillRect(W*PAD+i*W*(1-2*PAD)/10,H*PAD,W*(1-2*PAD)/10,H*(1-2*PAD)) }
+    const L=W*PAD, T=H*PAD, R=W*(1-PAD), B=H*(1-PAD), w=R-L, h=B-T;
+    x.strokeStyle="rgba(240,246,236,.85)"; x.lineWidth=1.3; x.strokeRect(L,T,w,h);
+    x.beginPath(); x.moveTo(L+w/2,T); x.lineTo(L+w/2,B); x.stroke();
+    x.beginPath(); x.arc(L+w/2,T+h/2,h*0.135,0,Math.PI*2); x.stroke();
+    [[L,1],[R,-1]].forEach(([gx,s])=>{ x.strokeRect(s>0?gx:gx-w*0.157,T+h*0.2,w*0.157,h*0.6); x.strokeRect(s>0?gx:gx-w*0.052,T+h*0.37,w*0.052,h*0.26);
+      x.fillStyle="rgba(240,246,236,.9)"; x.fillRect(s>0?gx-w*0.012:gx,T+h*post[0],w*0.012,h*goalW) });
+  }
+  function idle(x,W,H){ hlCaption(x,W,H,"Highlights: goals and big chances play here",null,"rgba(255,255,255,.75)") }
+  function frame(x,W,H,c,t){
+    // time: the build-up takes the first 70%, the shot the next 15%, the end the rest
+    const n=c.W.length, tb=0.7, ts=0.85;
+    let bx,by,z=0, carrier=-1, k=0;
+    if(t<tb){ const f=t/tb*(n-1); k=Math.min(n-2,Math.floor(f)); const s=hlEase(f-k); const a=c.W[k], b=c.W[k+1];
+      bx=hlLerp(a[0],b[0],s); by=hlLerp(a[1],b[1],s); z=Math.sin(s*Math.PI)*(c.plan==="wing"&&k===n-2?0.05:0.012); carrier=s<0.15?c.rec[k]:s>0.85?c.rec[k+1]:-1 }
+    else if(t<ts){ const s=(t-tb)/(ts-tb), a=c.W[n-1]; const e=c.postHit?[c.end[0],c.end[1]]:c.end;
+      bx=hlLerp(a[0],e[0],s); by=hlLerp(a[1],e[1],s); z=Math.sin(s*Math.PI)*0.02 }
+    else{ const s=(t-ts)/(1-ts); bx=c.end[0]; by=c.end[1];
+      if(c.postHit){ bx=1-s*0.12; by=c.end[1]+(c.end[1]<0.5?-1:1)*s*0.08 }
+      if(c.kind==="goal"){ bx=Math.min(1.02,c.end[0]+s*0.006) } }
+    const prog=Math.min(1,t/tb);   // how far the attack has come
+    const ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    // the attacking side: pushed up as the move goes on; the receiver of the next ball runs to meet it
+    const att=BASE.map((p,i)=>{ let a=p[0]+(i?0.12+0.18*prog:0.06*prog), y=p[1]+(by-0.5)*0.12*(i?1:0);
+      const j=c.rec.indexOf(i); if(j>=0&&i){ const w=c.W[Math.max(0,j)], near=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-j)):j===n-1?1:0; a=hlLerp(a,w[0],hlEase(Math.min(1,near*1.3))); y=hlLerp(y,w[1],hlEase(Math.min(1,near*1.3))) }
+      if(i===c.rec[n-1]&&t>=tb){ const w=c.W[n-1]; a=w[0]; y=w[1] }
+      return [Math.min(0.97,a),y] });
+    // the defending side: back in shape, squeezing toward the ball; two go to it; the keeper on the line, toward the shot
+    const def=BASE.map((p,i)=>{ let a=1-p[0]*(0.85-0.15*prog), y=0.5+(p[1]-0.5)*(0.85-0.2*prog)+(by-0.5)*0.3;
+      if(i===0){ a=0.985; y=0.5+(by-0.5)*0.25; if(t>=tb){ const s=Math.min(1,(t-tb)/(ts-tb)); const ty=c.kept?c.end[1]:c.kind==="goal"?0.5+(0.5-c.end[1])*0.4:0.5; y=hlLerp(y,ty,hlEase(s)) } }
+      return [Math.max(0.5,a),Math.min(0.97,Math.max(0.03,y))] });
+    let near=[]; def.forEach((p,i)=>{ if(i)near.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); near.sort((a,b)=>a[0]-b[0]);
+    near.slice(0,2).forEach(([d,i],q)=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.55-q*0.2),hlLerp(p[1],by,0.55-q*0.2)] });
+    const r=Math.max(3.2,W/95);
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.55)") });
+    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const sh=i===c.rec[n-1]&&t>=tb-0.12; hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.55)",sh?c.nm:"") });
+    // the ball, its shadow under it when in the air
+    const [qx,qy]=P(W,H,c,Math.min(1.03,bx),by);
+    x.beginPath(); x.arc(qx+z*W*0.4,qy+z*W*0.6,r*0.55,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.35)"; x.fill();
+    x.beginPath(); x.arc(qx,qy-z*W,r*0.6,0,Math.PI*2); x.fillStyle="#fff"; x.fill(); x.lineWidth=1; x.strokeStyle="#111"; x.stroke();
+    // words: the minute and who's attacking; at the end, what happened
+    const top=`${c.m}' ${c.tm}${t<ts?" attack":""}`;
+    const end=t>=ts?({goal:`GOAL! ${c.nm}`,save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
+    hlCaption(x,W,H,t>=ts&&c.text?`${c.m}' ${c.text}`:top,end,c.kind==="goal"&&t>=ts?ink:"#fff");
+  }
+  return {aspect:0.62, clips, pitch, idle, frame};
+})();

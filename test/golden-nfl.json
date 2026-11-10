@@ -1,5 +1,5 @@
 {
- "fp": "86b051114283dc45",
+ "fp": "b1f63fe1119118e3",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -425,6 +425,11 @@
    "fp": "86b051114283dc45",
    "from": "023136bdefb64065",
    "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
+  },
+  {
+   "fp": "b1f63fe1119118e3",
+   "from": "86b051114283dc45",
+   "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
   }
  ],
  "result": {
@@ -439,7 +444,7 @@
     "heis": "c32b41398109f573",
     "history": "9f9492edc3d7306a",
     "universe": "ed6823c3c7ef11ca",
-    "screens": "63f544425c001e47"
+    "screens": "5ee568bc4536b3bd"
    },
    {
     "year": 2027,
@@ -451,7 +456,7 @@
     "heis": "2638510aa5c3965b",
     "history": "bc206c36535292c1",
     "universe": "f92153d59668324c",
-    "screens": "8254b1ae2d392569"
+    "screens": "972386eb3d8c8fce"
    },
    {
     "year": 2028,
@@ -463,7 +468,7 @@
     "heis": "167f68831fa8b52a",
     "history": "fdb1dfd365dca8f9",
     "universe": "4fab5fb7ae58eb9c",
-    "screens": "57d5f351888ec08e"
+    "screens": "d88b6761325d6575"
    },
    {
     "year": 2029,
@@ -475,7 +480,7 @@
     "heis": "fbdc6524e3ed9226",
     "history": "e9718749462ec11c",
     "universe": "87c260a1dd579043",
-    "screens": "364ed7d66bc46765"
+    "screens": "c0365de610707336"
    }
   ],
   "Tennessee#2024": [
@@ -489,7 +494,7 @@
     "heis": "f99e778f079c4455",
     "history": "3a181084e4d09f16",
     "universe": "60309506beefaf2a",
-    "screens": "48d605ed9a401c54"
+    "screens": "eac19aa0d58864ad"
    },
    {
     "year": 2027,
@@ -501,7 +506,7 @@
     "heis": "97db331cb389c064",
     "history": "87f7094592f1964f",
     "universe": "e15e1d6a8b7540f6",
-    "screens": "c6f323c71219677a"
+    "screens": "7d41968cd0d3decd"
    },
    {
     "year": 2028,
@@ -513,7 +518,7 @@
     "heis": "e9d870c69a2684ae",
     "history": "45e29945a11092b9",
     "universe": "9749ace7783186b7",
-    "screens": "951b3abcf17100e0"
+    "screens": "97ea0c9325a786f6"
    },
    {
     "year": 2029,
@@ -525,7 +530,7 @@
     "heis": "1780a699a51a183f",
     "history": "f6401a1d1cdea895",
     "universe": "485b5ccbcaef1c05",
-    "screens": "ab4193b1941b0ef9"
+    "screens": "1edd435e4a9388d6"
    }
   ],
   "Detroit#777": [
@@ -539,7 +544,7 @@
     "heis": "39a85f156c688622",
     "history": "032e3e67c3c3bb9d",
     "universe": "da5a4b75d7ec5bb8",
-    "screens": "cc1cba7732e9b885"
+    "screens": "b73f72d7e9dd1fc6"
    },
    {
     "year": 2027,
@@ -551,7 +556,7 @@
     "heis": "d0e2ee062858d956",
     "history": "ddc73beb1fb8de6f",
     "universe": "2952ceebc8518a58",
-    "screens": "fbc714af83f1a13d"
+    "screens": "21d74205480e18b2"
    },
    {
     "year": 2028,
@@ -563,7 +568,7 @@
     "heis": "78077bd1efe11bc8",
     "history": "bcea174fb84c427f",
     "universe": "cd6af7cd4f54adff",
-    "screens": "12d587dbb6ec94d9"
+    "screens": "ba4b07e5bbe472f7"
    }
   ],
   "NY Giants#31337": [
@@ -577,7 +582,7 @@
     "heis": "f97666b7510d653f",
     "history": "8142c76a2214a119",
     "universe": "d5f4b8c10b66f8bf",
-    "screens": "d822cef59640e9d0"
+    "screens": "bc9d625d462af089"
    },
    {
     "year": 2027,
@@ -589,7 +594,7 @@
     "heis": "d66e5f45e0ff2cb7",
     "history": "d4cf1d27288b65d5",
     "universe": "3911e113a46a17ce",
-    "screens": "9a269d26e20fae64"
+    "screens": "d369e3283ccad4a9"
    },
    {
     "year": 2028,
@@ -601,7 +606,7 @@
     "heis": "40fc3938eed27fa3",
     "history": "846a67106dbda7ca",
     "universe": "6691a4d0a6b70f9f",
-    "screens": "3375fad39cc59b9d"
+    "screens": "6a80984d636386e5"
    }
   ],
   "schedules#60": [

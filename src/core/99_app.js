@@ -114,7 +114,7 @@ function liveTick(){
     if(!live.paused){live.timer=setTimeout(liveTick,650);return}
     return;
   }
-  let guard=0;
+  let guard=0, fresh=null;
   while(guard++<(live.ff?4000:200)){
     const r=live.eng.next();
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
@@ -149,15 +149,17 @@ function liveTick(){
     // the score before this stretch (kept here: drives record it differently by sport,
     // and football's don't carry sh/sa, which made every drive look like a score)
     const pH=live.lastH||0, pA=live.lastA||0;
-    live.drives.push(r.drive);
+    live.drives.push(r.drive); fresh=r.drive;
     if(!live.ff)feelSpell(live,pH,pA);
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
   }
   render();
+  // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
+  const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
   if(!live.paused&&!live.done&&!live.ask){
-    live.timer=setTimeout(liveTick, liveGap());
+    live.timer=setTimeout(liveTick, Math.max(liveGap(),hm));
   }
 }
 function liveGap(){
@@ -3067,6 +3069,7 @@ function render(){
   if(live&&S.myTeam&&!live.done){
     el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
     bindGuide();
+    if(typeof hlMount==="function")hlMount();
     if(live.ask){
       // a call ignores taps for 0.7 s after it appears: at Very fast the 25' call came up under a tap meant for the
       // game, took it as an answer, and graded a call the player never made (Grokbot, soccer: five matches)
@@ -3126,6 +3129,7 @@ function render(){
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
     document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide){ Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); GUIDE_SEEN={}; guideMark(null,false) } save(); render() });
+    document.querySelectorAll("[data-hl]").forEach(b=>b.onclick=()=>{ if(!S)return; S.highlights=b.dataset.hl; save(); render() });
     document.querySelectorAll("[data-livewp]").forEach(b=>b.onclick=()=>{ if(!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() });
     document.querySelectorAll("[data-music]").forEach(b=>b.onclick=()=>{ S.music=b.dataset.music==="true"; if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
@@ -3630,6 +3634,10 @@ function helpPanel(){
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
+    ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
+    <div class="setrow">${[["key","Goals and big chances"],["goals","Goals only"],["off","Off"]].map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+      aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
+    <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-livewp="${v}"
       aria-pressed="${(!S||S.liveWP!==false)===v}">${l}</button>`).join("")}</div>
