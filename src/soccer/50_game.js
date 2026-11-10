@@ -327,21 +327,21 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak, F=dp.flank||[0,0], near=Math.abs(F[0]-F[1])<=Math.max(1,0.12*(F[0]+F[1]));
       st.log.push({side:side,h:dp.h,k:"flank",pick:v,truth:t,right:v===t,unclear:near}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
-    if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v } else assistantRead(side,dp.stage); return }
+    if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v } else { const was=X.ctr; assistantRead(side,dp.stage); st.autoDid=X.ctr!==was&&COUNTERS[X.ctr]?"read them himself and switched to "+COUNTERS[X.ctr].l.split(":")[0].toLowerCase():"read them himself and left the setup as it was" } return }
     if(dp.k==="subs"){
       if(v==="wait"){ st.waitSub=st.waitSub||{}; st.waitSub[side]=true; return }
-      if(v==="normal"){ assistantSub(side); if(dp.stage===2)assistantSub(side); return }
+      if(v==="normal"){ assistantSub(side); if(dp.stage===2)assistantSub(side); st.autoDid="changed the most tired unit"; return }
       const u=v==="att"?2:v==="mid"?1:0; X.E[u]=1; X.subs++; if(u===0||v==="card")X.booked=0;
       if(dp.stage===2)assistantSub(side);
       return }
     // late: "keep" holds your plan; "normal" hands it to your assistant (the computer's rule)
-    if(dp.k==="late"||dp.k==="final"){ st.late[side]=v==="keep"?st.mode[side]:v==="normal"?"auto":(AGGR["u"+v]?"u"+v:v); return }
+    if(dp.k==="late"||dp.k==="final"){ st.late[side]=v==="keep"?st.mode[side]:v==="normal"?"auto":(AGGR["u"+v]?"u"+v:v); if(v==="normal")st.autoDid="played the score: on the attack when behind, deep on a lead, going for the win when level at home"; return }
     st.late[side]=v==="normal"?null:v;
   };
   st.next=function(){
     const fin=()=>({done:true,h:st.h,a:st.a,drives:st.drives,pens:st.pens||null});
     if(st.done)return fin();
-    if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; apply(P.side,P.dp,v) }
+    if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; st.autoDid=null; apply(P.side,P.dp,v) }
     if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q;
       const r={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,theirs:Q.side==="home"?st.a:st.h,q:st.seg,side:Q.side};
       st.waiting=r; return r}

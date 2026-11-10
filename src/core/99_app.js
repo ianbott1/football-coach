@@ -127,7 +127,10 @@ function liveTick(){
         continue;
       }
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
-      if(typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
+      // the floor (round 50): in a one-score game the crunch-time read is the player's, never gated: "the gate should filter
+      // the trivial; it must not confiscate the climax" (Muse). A read is judged on the evidence, not the replays.
+      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR;
+      if(!floorCall&&typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
         if(p<GATE_LO||p>GATE_HI||neverAsk(r.ask.k)||(SPREAD_ON&&(SPREAD_KINDS[r.ask.k]||r.ask.spread)&&callSpread(live.args,liveSeed(live.step),live.replay,meH,j,r.ask.opts,r.ask)<SPREAD_MIN)){ const v=impactDefault(r.ask), k=live.ckey||callKey(live.step);
@@ -461,6 +464,16 @@ let savePending=null;
    on reload. Now the older tab stops saving and says so. */
 let saveRev=null, staleTab=false, saveFail=false;
 const REVKEY=n=>KEYFOR(n)+"-rev";
+/* which of two copies of a save is further along (round 50; store.get asks when the database and localStorage
+   disagree): revisions by number; careers by season, then by steps played. Anything unreadable: the database's. */
+const savePos=v=>{ const d=JSON.parse(lzwUnpack(v)); if(!d||!d.myTeam)return null;
+  return [(d.seasonNow&&d.seasonNow.year)||0, (d.history||[]).length, +d.steps||0] };
+const pickMemo=new Map();
+store.pick=function(dv,lv,k){
+  if(/-rev/.test(k)||/^\d+$/.test(dv)&&/^\d+$/.test(lv))return (+lv||0)>(+dv||0)?1:0;
+  const mk=k+"|"+dv.length+"|"+lv.length; if(pickMemo.has(mk))return pickMemo.get(mk);
+  let w=0; try{ const a=savePos(dv), b=savePos(lv); if(a&&b){ for(let i=0;i<3;i++){ if(b[i]!==a[i]){ w=b[i]>a[i]?1:0; break } } } }catch(e){ w=0 }
+  pickMemo.set(mk,w); return w };
 async function readRev(n){ try{ const r=await store.get(REVKEY(n)); return r?(+r.value||0):0 }catch(e){ return null } }
 async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
@@ -491,7 +504,7 @@ function save(){
       if(cur!==null&&cur!==saveRev){ staleTab=true; render(); return false } }
     S.league=LEAGUE.id;                                   // every save says which game it's from
     if(SEA&&S.myTeam&&SEA.rec&&SEA.rec[S.myTeam])S.seasonNow={year:SEA.year,rec:recStr(S.myTeam),played:SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1]+((SEA.drw&&SEA.drw[S.myTeam])||0),done:SEA.phase==="done",
-      w:SEA.rec[S.myTeam][0],l:SEA.rec[S.myTeam][1],d:(SEA.drw&&SEA.drw[S.myTeam])||0,banked:!!(S.off&&S.off.year===SEA.year)};
+      w:SEA.rec[S.myTeam][0],l:SEA.rec[S.myTeam][1],d:(SEA.drw&&SEA.drw[S.myTeam])||0,banked:!!(S.off&&S.off.year===SEA.year),champ:SEA.phase==="done"&&SEA.champion===S.myTeam};
   try{saveOK=!!(await store.set(KEYFOR(slot),lzwPack(saveText(S))))}catch(e){saveOK=false}
     if(saveOK&&S.myTeam)saveRev=await bumpRev(slot);
     if(saveFail!==!saveOK){ saveFail=!saveOK; render() }
@@ -610,7 +623,9 @@ async function allSlots(){
     const N=d&&d.seasonNow, bk=N&&N.banked&&N.w!==undefined, C=d&&d.career&&(bk?{w:d.career.w-N.w,l:d.career.l-N.l,d:(d.career.d||0)-(N.d||0)}:d.career);
     out.push(d&&d.myTeam?{n:n,team:d.myTeam,year:(d.uStart&&d.uStart.year)||2026,
       coach:(d.career&&d.career.name)||"",seasons:(d.history||[]).length,
-      rec:C?(LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:C.w+"-"+C.l):"",titles:d.career?d.career.titles:0,
+      rec:C?(LEAGUE.draws?`${C.w}-${C.d||0}-${C.l}`:C.w+"-"+C.l):"",
+      // a title just won counts before the offseason banks it (round 50: "1x champion" after the second title: Muse)
+      titles:(d.career?d.career.titles:0)+(N&&N.done&&N.champ&&!N.banked?1:0),
       now:d.seasonNow&&d.seasonNow.played?d.seasonNow:null}:{n:n,empty:true});
   }
   // the copy of the last career opened, offered back when its slot is empty or unreadable
@@ -652,6 +667,9 @@ function newDynasty(team,seed,coachName,roster){
 /* the season's unit in words: a week in college and pro football; a night (and
    game days) in the long pro seasons */
 function WK(){ return LEAGUE.text.week||"week" }
+/* "for the season" only when it is: the rest of the regular season (14 was a football season's weeks, and in basketball
+   "out for the season" sat beside "out 10 more game days" on one screen: Muse, round 50) */
+function injSeason(w){ const left=(SEA&&LEAGUE.weeks)?Math.max(1,LEAGUE.weeks-SEA.step):14; return w>=Math.min(left,LEAGUE.weeks||14) }
 /* an injury's length on a badge: games where a step is a game day (Ian: "Out 10w" in basketball) */
 function outFor(n){ return LEAGUE.daily?`${n} ${n===1?"game":"games"}`:`${n}w` }
 function stepWord(n){ const w=LEAGUE.text.week?"game day":"week"; return n===1?w:w+"s" }
@@ -1637,9 +1655,14 @@ function changedHTML(my){
   if(!SEA||SEA.step>0||!S.history.length)return "";
   const h=S.history[S.history.length-1], X=h&&h.league; if(!X||(h.team&&h.team!==my))return "";
   const top=(L,n)=>(L||[]).filter(p=>p&&p.r).sort((a,b)=>b.r-a.r).slice(0,n);
-  const out=top([].concat(X.released||[],X.retired||[]),3), inn=top([].concat(X.signed||[],(X.draft||[]).filter(d=>d.team===my)),3);
+  // a player who arrived and left in one summer (drafted, then cut) is in neither list as such: Instinct read a rookie as
+  // both gone and in (round 50). He's named once, among those gone, for what happened.
+  const arr=[].concat(X.signed||[],(X.draft||[]).filter(d=>d.team===my)), arrN=new Set(arr.map(p=>p&&p.n));
+  const gone=[].concat(X.released||[],X.retired||[]), goneN=new Set(gone.map(p=>p&&p.n));
+  const drN=new Set((X.draft||[]).filter(d=>d.team===my).map(d=>d.n));
+  const out=top(gone.map(p=>arrN.has(p.n)?Object.assign({},p,{brief:drN.has(p.n)?"drafted":"signed"}):p),3), inn=top(arr.filter(p=>!goneN.has(p.n)),3);
   if(!out.length&&!inn.length)return "";
-  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r})`;
+  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r}${p.brief?`, ${p.brief} and let go this summer`:""})`;
   return `<div class="note"><b>Since last season:</b> ${out.length?`gone, ${out.map(nm).join(", ")}`:"nobody important left"}${inn.length?`; in, ${inn.map(nm).join(", ")}`:""}. Players also age and develop over the summer: the roster tab shows where you stand now.</div>`;
 }
 function myTeamView(){
@@ -1691,7 +1714,10 @@ function teamCardHTML(my,rk,co){
       // after the regular season, only a team still playing can add wins (it said "it will take a
       // postseason run" to a 36-46 team that had missed the playoffs)
       const alive=SEA.phase==="week"||(SEA.phase!=="done"&&LEAGUE.postRecord&&((SEA.seeds&&SEA.seeds[my])||(SEA.field&&SEA.field.indexOf(my)>=0)
-        ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)));
+        ||(SEA.bowlPairs||[]).some(p=>p.a===my||p.b===my)
+        // before Selection Sunday everyone can still be picked: "Target of 21 wins missed: 19" came during the conference
+        // tournament, three wins before Butler reached 22 (Muse, round 50)
+        ||(LEAGUE.post&&LEAGUE.post.phases&&LEAGUE.post.phases.indexOf("selection")>=0&&LEAGUE.post.phases.indexOf(SEA.phase)>=0&&LEAGUE.post.phases.indexOf(SEA.phase)<=LEAGUE.post.phases.indexOf("selection"))));
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
         <span class="eline">${w+l===0?esc(e.l)
           :e.pos?posGoalLine(e,my)
@@ -2143,7 +2169,7 @@ function weekNews(W){
     if(hurt.length){const x=hurt[0];
       items.push({p:70,k:"inj",tone:"flag",
         h:`${rankTxt(x.rk)}${x.t} loses ${x.who} (${x.p})`,
-        b:`Out ${x.w>=14?"for the season":"about "+x.w+" "+stepWord(x.w)}.`+
+        b:`Out ${injSeason(x.w)?"for the season":"about "+x.w+" "+stepWord(x.w)}.`+
           (hurt.length>1?` ${hurt.length-1} other ranked team${hurt.length>2?"s":""} took a hit too.`:"")});
     }
   }
@@ -2560,7 +2586,11 @@ function teamCard(t){
   h+=`<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(t);
   if(!rows.length)return h+`<div class="note">No completed seasons yet.</div>`;
   const book=(LEAGUE.records&&U)?LEAGUE.records.book(U,t):[];
-  const leaders=(LEAGUE.records&&U)?LEAGUE.records.leaders(U,t):[];
+  // the franchise's leaders, the players still here included: from the departed alone, a backup who left with 108 passing
+  // yards led pro football's list (Muse, round 50)
+  const curL=((SEA&&SEA.roster&&SEA.roster[t])||[]).filter(p=>p&&p.car).map(p=>({n:p.n,p:p.p,to:SEA.year,now:true,car:p.car,
+    line:LEAGUE.records.alumniLine?LEAGUE.records.alumniLine({p:p.p,car:p.car,yrs:p.yrsHere||1}):""}));
+  const leaders=(LEAGUE.records&&U)?LEAGUE.records.leaders(Object.assign({},U,{alumni:Object.assign({},U.alumni||{},{[t]:((U.alumni&&U.alumni[t])||[]).concat(curL)})}),t):[];
   if(leaders.length){
     h+=`<div class="grouphead">Career leaders</div>`;
     h+=`<div class="ldwrap">`+leaders.map(L=>`<div class="ldcat">
@@ -2568,7 +2598,7 @@ function teamCard(t){
       ${L.top.map((x,i)=>`<div class="ldrow ${i===0?'first':''}">
         <span class="ldn">${i+1}</span>
         <span class="ldname">${esc(x.a.n)}</span>
-        <span class="ldyr">${x.a.to}</span>
+        <span class="ldyr">${x.a.now?"now":x.a.to}</span>
         <span class="ldv">${x.v.toLocaleString()}</span></div>`).join("")}
     </div>`).join("")+`</div>`;
   }
@@ -2898,7 +2928,7 @@ function digestIncidents(){
   const my=S.myTeam, F=flash, out=[];
   // your injuries
   (SEA.talent.log[my]||[]).filter(x=>x.kind==="injury"&&x.who&&x.wk>F.from&&x.wk<=F.to).forEach(x=>
-    out.push(`<b>${esc(x.who)}</b> (${esc(x.what)}) got hurt: out ${x.weeks>=14?"for the season":"about "+x.weeks+" "+stepWord(x.weeks)}.`));
+    out.push(`<b>${esc(x.who)}</b> (${esc(x.what)}) got hurt: out ${injSeason(x.weeks)?"for the season":"about "+x.weeks+" "+stepWord(x.weeks)}.`));
   // the games that stood out: the biggest win, the worst defeat, a rival met
   const G=[]; for(let i=F.from;i<Math.min(SEA.weeks.length,F.to+1);i++)(SEA.weeks[i]&&SEA.weeks[i].games||[]).forEach(g=>{ if(g.home===my||g.away===my)G.push(g) });
   const mg=g=>(g.home===my?g.hp-g.ap:g.ap-g.hp), opp=g=>g.home===my?g.away:g.home, sc=g=>g.home===my?`${g.hp}-${g.ap}`:`${g.ap}-${g.hp}`;
@@ -3096,6 +3126,7 @@ function render(){
     document.querySelectorAll("[data-speed]").forEach(b=>b.onclick=()=>{
       S.watchSpeed=b.dataset.speed; save(); render();});
     document.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{ S.guide=b.dataset.guide==="true"; if(S.guide){ Object.keys(S.seen||{}).forEach(k=>{ if(k.indexOf("g_")===0)delete S.seen[k] }); GUIDE_SEEN={}; guideMark(null,false) } save(); render() });
+    document.querySelectorAll("[data-livewp]").forEach(b=>b.onclick=()=>{ if(!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() });
     document.querySelectorAll("[data-music]").forEach(b=>b.onclick=()=>{ S.music=b.dataset.music==="true"; if(S.music&&!soundOn())S.sound=true; save(); if(musicOn())musicStart(); else musicStop(); render() });
     document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>{
       S.sound=b.dataset.sound==="true"; save(); if(soundOn())sfx("tap"); render();});
@@ -3452,8 +3483,8 @@ function renderTitle(){
       : `<div class="slotwrap"><button class="slot" data-slot="${s.n}">
            <span class="slotn">Slot ${s.n}</span>
            <span class="slotmain" style="color:${teamInk(s.team)}">${esc(s.team)}</span>
-           <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} ${s.now.done?"finished":"so far"}: ${esc(s.now.rec)} &middot; `:""}${s.seasons}
-             ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
+           <span class="slotsub">${esc(s.coach)} &middot; ${s.now?`${s.now.year} ${s.now.done?"finished":"so far"}: ${esc(s.now.rec)}`:""}${s.now&&!s.seasons?"":`${s.now?" &middot; ":""}${s.seasons}
+             ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}`}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            </button>${replaceAsk
              ?`<button class="slotdel repl" data-repl="${s.n}" aria-label="Replace the career in slot ${s.n} with a new one">Replace</button>`
              :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}</div>`).join("")}</div>
@@ -3599,6 +3630,10 @@ function helpPanel(){
       aria-pressed="${soundOn()===v}">${l}</button>`).join("")}</div>
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
+    <div class="grouphead">Live win chance</div>
+    <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-livewp="${v}"
+      aria-pressed="${(!S||S.liveWP!==false)===v}">${l}</button>`).join("")}</div>
+    <div class="note">The bar above the score in a game you watch. It reads this game's odds, from replays of games like it: in these leagues the better side wins more often than in real life, so early leads can read high.</div>
     <div class="grouphead">Music</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-music="${v}"
       aria-pressed="${musicOn()===v}">${l}</button>`).join("")}</div>

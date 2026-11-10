@@ -946,6 +946,14 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 .selcard.in .selhead{color:var(--turf)}.selcard.out .selhead{color:var(--flag)}
 .selbig{font-family:var(--cond);font-size:30px;font-weight:700;text-transform:uppercase;margin:4px 0}
 .selsub{font-size:13.5px;color:var(--bone)}
+/* phones upright (round 50): the bar's three stacked buttons took 160px and sat over the end of the result card, its
+   Rewatch and the costliest call (Instinct). The two sims share a row: one row less. */
+@media (max-width:480px) and (min-height:641px){
+  .actionbar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 12px}
+  .actionbar .skip{flex:1 1 40%;width:auto;margin:0;padding:10px 6px;font-size:12px;letter-spacing:.06em}
+  .actionbar .advance{flex:1 1 100%;width:auto;margin:0;padding:13px}
+  .actionbar>*:not(.skip):not(.advance){flex:1 1 100%}
+}
 /* short screens (a phone on its side, a desktop zoomed to 200-300%): the full bar took a third to half
    of the view (Grokbot), and unpinned it ended up below the whole schedule, Play last (Grokbot, twice).
    Pinned, as one compact row: Play takes the width, the others shrink beside it. The header scrolls away. */

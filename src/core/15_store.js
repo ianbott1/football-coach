@@ -45,6 +45,7 @@ const store=(function(){
   let usingIdb=null;   // known once the database has opened (or failed to)
   idb.open().then(db=>{ usingIdb=!!db });
   return {
+    pick:null,   // (databaseCopy, localStorageCopy, key) => 1 when the localStorage copy is further along (set by the game)
     kind(){ return claude()?"claude":usingIdb?"database":local()?"browser":"none" },
     // can it take a write right now? (full or blocked storage says no; the database is checked on the write itself)
     writable(){ if(claude()||usingIdb)return true; const L=local(); if(!L)return false; try{ L.setItem("__fc_probe","1"); L.removeItem("__fc_probe"); return true }catch(e){ return false } },
@@ -52,7 +53,15 @@ const store=(function(){
       const W=claude(); if(W){try{return await W.get(k,shared)}catch(e){return null}}
       if(shared)return null;
       const L=local(), D=await idb.get(k);
-      if(D.ok&&D.val!==undefined&&D.val!==null)return {key:k,value:D.val};
+      if(D.ok&&D.val!==undefined&&D.val!==null){
+        // round 50: both stores hold a copy, and they differ. An old copy of the game (a cached tab, a bookmark to an
+        // older build) writes localStorage only; the database copy can then be the older one. Muse lost three pro football
+        // games and the end of a pro basketball season this way. The copy further along wins (the game says which).
+        let lv=null; try{ lv=L?L.getItem(k):null }catch(e){}
+        if(lv!==null&&lv!==D.val&&typeof this.pick==="function"){ let w=0; try{ w=this.pick(D.val,lv,k) }catch(e){ w=0 }
+          if(w===1){ await idb.set(k,lv); return {key:k,value:lv} } }
+        return {key:k,value:D.val};
+      }
       const v=L?L.getItem(k):null; if(v===null)return null;
       if(D.ok)await idb.set(k,v);   // copied across on first read; the localStorage copy stays
       return {key:k,value:v};

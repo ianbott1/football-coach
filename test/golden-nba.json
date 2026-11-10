@@ -1,5 +1,5 @@
 {
- "fp": "6ff1628f99ac002b",
+ "fp": "fdf11419c737f2c2",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -345,59 +345,64 @@
    "fp": "6ff1628f99ac002b",
    "from": "022b9c6ed94db81b",
    "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
+  },
+  {
+   "fp": "fdf11419c737f2c2",
+   "from": "6ff1628f99ac002b",
+   "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "65c7ddc722a12fae",
-    "post": "124db602fc4bb036",
-    "champion": "Detroit",
-    "rec": "711583784640e672",
-    "poll": "e0308534827bafd6",
-    "heis": "82e8560f2b3969c4",
-    "history": "910f41fdc7ac7ba4",
-    "universe": "a8a0c69b2e32273b",
-    "screens": "fd63b10dbe98fa56"
+    "games": "12c39956bc50a0a6",
+    "post": "e858ed0fc4ff8fd2",
+    "champion": "Boston",
+    "rec": "7d9029053a6d7eb7",
+    "poll": "a605fa2c4fcbcec4",
+    "heis": "22f4a9cd8c36b4a4",
+    "history": "eec782d6363770d3",
+    "universe": "ff25b166ab4bf6ad",
+    "screens": "d2f37851e4ccce54"
    },
    {
     "year": 2027,
-    "games": "22aa23b6637dcb26",
-    "post": "10f9d654ada09835",
-    "champion": "Oklahoma City",
-    "rec": "960e8a15d97f36fc",
-    "poll": "df94163a2deff7cc",
-    "heis": "23cb0c3e5ec7913a",
-    "history": "84c2ca1fda0f2200",
-    "universe": "a478111c0e6b4d88",
-    "screens": "a7bd2bf48ec85fc8"
+    "games": "914c39fac2680cb8",
+    "post": "4c160992c75f6a59",
+    "champion": "Detroit",
+    "rec": "183c8e4d0197eac5",
+    "poll": "d127e8728f22ecdd",
+    "heis": "fff1d2fd16d80098",
+    "history": "9d9602f9b7029db8",
+    "universe": "77538bb534a21f51",
+    "screens": "8d5c6f9284599c0a"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "a200bd72dafec3a4",
-    "post": "9fe82233d3d99114",
-    "champion": "Philadelphia",
-    "rec": "2191bfbcf0f5c844",
-    "poll": "03c3c1841d4aedea",
+    "games": "b303275d22d7d066",
+    "post": "9dc4d35ec8af2685",
+    "champion": "Toronto",
+    "rec": "28abc24d34b2f3de",
+    "poll": "ec5c13550423e99b",
     "heis": "4c753ccdcbc17fd0",
-    "history": "60179675becaf7cd",
-    "universe": "95fa93b7c67cb36c",
-    "screens": "c0876f50b3a74b27"
+    "history": "21a8fcbdcac92950",
+    "universe": "d3c3d927248eae1d",
+    "screens": "9277428b7cdc0fd6"
    },
    {
     "year": 2027,
-    "games": "605ba78379bf422e",
-    "post": "0b5a1dbc22e04706",
-    "champion": "Oklahoma City",
-    "rec": "e6b3097198279806",
-    "poll": "ecf40270d9336ee9",
-    "heis": "fe6e9e81b07b9716",
-    "history": "102e81e3b4948f30",
-    "universe": "132ecb3380489ee6",
-    "screens": "5fd1522bbb3bfca6"
+    "games": "c51bed54ed029003",
+    "post": "466b91c318a6b284",
+    "champion": "Houston",
+    "rec": "eaf9581b96b600aa",
+    "poll": "dd7f16694b68fb10",
+    "heis": "e87db80c477c3ae0",
+    "history": "fedceb1f17190bdc",
+    "universe": "9d39ace91d7f6a99",
+    "screens": "42766e2270a49f4c"
    }
   ],
   "schedules#60": [

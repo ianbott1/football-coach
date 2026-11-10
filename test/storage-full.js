@@ -45,6 +45,22 @@ const slotText=async p=>p.evaluate(()=>{ const e=document.querySelector('[data-s
    await p.reload(); await p.waitForTimeout(900); const gone=await p.evaluate(async()=>!(await store.get(KEYFOR(1)))&&!localStorage.getItem(KEYFOR(1)));
    ok(gone,`${f}: an erased career came back`);
    console.log(`${f}: old career found with localStorage full, played, saved, reloaded at step ${st}; erased stays erased: ${gone}`); await ctx.close() }
+ // 5. round 50: an old copy of the game (a cached tab) played on after the new one: its localStorage save is further
+ //    along than the database's. Muse lost three pro football games and a season's ending. The further copy loads;
+ //    and the other way round, an old localStorage copy never pulls a newer database save back.
+ for(const f of ['football-coach-pro.html','basketball-coach-pro.html']){ const ctx=await b.newContext(); const p=await ctx.newPage();
+   await p.goto(url(f)); await p.waitForTimeout(400); await p.click('#qstart'); await p.waitForTimeout(900);
+   const r=await p.evaluate(async()=>{ for(let k=0;k<3;k++){ SEA.userTeam=S.myTeam; SEA.advance(); S.steps++ } await save(); const early=SEA.step, A=(await idb.get(KEYFOR(1))).val, rA=(await idb.get(REVKEY(1))).val;
+     for(let k=0;k<4;k++){ SEA.userTeam=S.myTeam; SEA.advance(); S.steps++ } S.league=LEAGUE.id; const B=lzwPack(saveText(S)), late=SEA.step;
+     localStorage.setItem(KEYFOR(1),B); localStorage.setItem(REVKEY(1),String(+rA+3)); await idb.set(KEYFOR(1),A); return {early,late} });
+   await p.reload(); await p.waitForTimeout(900); await p.click('[data-slot]'); await p.waitForTimeout(900);
+   const st=await p.evaluate(()=>SEA.step); ok(st===r.late,`${f}: the old tab's further save (step ${r.late}) loads, not the database's (step ${r.early}): got ${st}`);
+   const r2=await p.evaluate(async()=>{ SEA.userTeam=S.myTeam; SEA.advance(); S.steps++; const x=await save(); return {x,step:SEA.step,stale:staleTab} });
+   ok(r2.x===true&&!r2.stale,`${f}: plays on and saves after the old tab's copy won: ${JSON.stringify(r2)}`);
+   // now localStorage holds the older copy (step late), the database the newer: reload keeps the newer
+   await p.reload(); await p.waitForTimeout(900); await p.click('[data-slot]'); await p.waitForTimeout(900);
+   const st2=await p.evaluate(()=>SEA.step); ok(st2===r2.step,`${f}: an older localStorage copy never pulls a newer database save back: step ${st2}, saved ${r2.step}`);
+   console.log(`${f}: old tab further along: loads step ${st} (database had ${r.early}); newer database kept: ${st2===r2.step}`); await ctx.close() }
  // 4. no database: the localStorage path
  for(const f of ['hockey-coach-pro.html']){ const ctx=await b.newContext(); await ctx.addInitScript(()=>{ try{ Object.defineProperty(window,'indexedDB',{value:undefined}) }catch(e){} });
    const p=await ctx.newPage(); await p.goto(url(f)); await p.waitForTimeout(400); await p.click('#qstart'); await p.waitForTimeout(900);

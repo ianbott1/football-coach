@@ -1,5 +1,5 @@
 {
- "fp": "6abf80895b8e7277",
+ "fp": "f8a804e1aca0406a",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -235,6 +235,11 @@
    "fp": "6abf80895b8e7277",
    "from": "0e5a3c7e45512f04",
    "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
+  },
+  {
+   "fp": "f8a804e1aca0406a",
+   "from": "6abf80895b8e7277",
+   "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
   }
  ],
  "out": [
@@ -244,20 +249,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "49-33",
+      "rec": "47-35",
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "29529213a322c5a1"
+     "book": "640c8ced4e4303ba"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "43-39",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "rec": "41-41",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "976e8613e5806a6e"
+     "book": "e630276a3f7e9efd"
     }
    ]
   },
@@ -267,20 +272,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "19-63",
+      "rec": "16-66",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "b2ed317367ec2a84"
+     "book": "bd9b05850fd055cc"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "27-55",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "39-43",
+      "result": "Lost in the conference finals",
+      "grade": "B-"
      },
-     "book": "effed0f93413b0ef"
+     "book": "391299a1b7110247"
     }
    ]
   },
@@ -291,19 +296,19 @@
      "team": "Boston",
      "last": {
       "rec": "38-44",
-      "result": "Lost in the first round",
+      "result": "Losing season",
       "grade": "D"
      },
-     "book": "fdd95c295bd2aaa4"
+     "book": "f8d37c900c6afefd"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "52-30",
-      "result": "Lost in the conference finals",
-      "grade": "A-"
+      "rec": "44-38",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "9700f6e021b0fc69"
+     "book": "a8895fe5ccfadda3"
     }
    ]
   }

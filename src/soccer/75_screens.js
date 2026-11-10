@@ -41,6 +41,21 @@ const CUE={
 const MISS=["drags it wide from close range","heads over from a corner","hits the post","blazes over with only the keeper to beat","sees a shot blocked on the line"];
 const SAVE=["saves well from","tips over a header from","gets down to keep out","spreads himself to deny"];
 function pickOf(a,u){return a[u%a.length]}
+/* who is booked: once per player per match. The engine books a unit (a centre-back on a yellow can see red; any other
+   booking is someone else's), and the names were drawn per event, so one man was booked at 7' and 11' and stayed on
+   (Muse, round 50). Each booking is named once and remembered; a second yellow goes to someone not yet booked, and
+   the red to the booked centre-back. */
+const CARD_NAMES=typeof WeakMap!=="undefined"?new WeakMap():null;
+function cardName(g,e,tm,u){
+  if(CARD_NAMES&&CARD_NAMES.has(e))return CARD_NAMES.get(e);
+  const B=(g.__bk=g.__bk||{}), bk=(B[tm]=B[tm]||{names:[],cb:null});
+  let n;
+  if(e.k==="red")n=bk.cb||scPlayer(tm,"CB",1);
+  else{ const order=e.def?["CB","FB","CM","W","ST"]:[pickOf(["CM","FB","W","ST"],u),"CM","FB","W","ST","CB"];
+    for(const unit of order){ const c=scPlayer(tm,unit,u); if(c&&bk.names.indexOf(c)<0){ n=c; break } }
+    if(!n)n=scPlayer(tm,"CM",u);
+    if(n){ bk.names.push(n); if(e.def&&!bk.cb&&n===scPlayer(tm,"CB",u))bk.cb=n } }
+  if(CARD_NAMES)CARD_NAMES.set(e,n); return n }
 /* one event as a line of commentary */
 function scEventText(g,e){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
@@ -49,9 +64,9 @@ function scEventText(g,e){
   if(e.k==="save"){ const s=scScorer(tm,u), gk=scPlayer(opp,"GK",u)||"the keeper";
     return {team:tm,tag:"",text:`${surname(gk)} ${pickOf(SAVE,u>>3)} ${surname(s.n)}`} }
   if(e.k==="miss"){ const s=scScorer(tm,u); return {team:tm,tag:"",text:`${s.n} ${pickOf(MISS,u>>3)}`} }
-  if(e.k==="yellow"){ const n=e.def?scPlayer(tm,"CB",u):scPlayer(tm,pickOf(["CM","FB","W","ST"],u),u);
-    return {team:tm,tag:"YELLOW",text:`${n||"a defender"} booked${e.def?" (centre-back)":""}`} }
-  if(e.k==="red"){ const n=scPlayer(tm,"CB",1); return {team:tm,tag:"RED",text:`${n||"The centre-back"} sees a second yellow. Down to ten.`} }
+  if(e.k==="yellow"){ const n=cardName(g,e,tm,u);
+    return {team:tm,tag:"YELLOW",text:`${n||"a defender"} booked${e.def&&n===scPlayer(tm,"CB",u)?" (centre-back)":""}`} }
+  if(e.k==="red"){ const n=cardName(g,e,tm,u); return {team:tm,tag:"RED",text:`${n||"The centre-back"} sees a second yellow. Down to ten.`} }
   if(e.k==="cue"){ const line=pickOf(CUE[e.cue],u).replace("{t}",tm).replace("{o}",opp).replace("{s}",u%2?"left":"right");
     return {team:tm,tag:"",text:line,cue:true} }
   return {team:tm,tag:"",text:""};

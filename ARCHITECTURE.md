@@ -358,6 +358,53 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 50: the testers' rounds 46-49 review (Muse, Instinct):
+- Saves: store.get, when the database and localStorage both hold a key and
+  differ, asks store.pick (core 99: revisions by number; careers by season,
+  seasons banked, steps) and loads the copy further along, copying it into the
+  database. Muse's rollbacks (pro football 3-2 to 1-1; a finished pro basketball
+  season back to Game 7) fit an old cached tab writing localStorage after the
+  new build had made a database copy: reproduced on round 49's build (loads the
+  older database copy), fixed here (storage-full case 5, both directions).
+- One ledger for calls: engines record what "leave it to your assistant" did on
+  the night (st.autoDid: his own read and what he switched to, the score rule,
+  his goalie call); callImpact keeps it from the same-dice replay (c.dd).
+  assistantSaid() names it on the What if, the Film Room and the season's big
+  calls. The Film Room keeps only calls the match graded (4+ points), and its
+  rule line now says so in the card's words; entries carry the match verdict.
+  What if: a flipped result or a graded call only (a close call that moved
+  only the score is out); the night and the replays are told apart ("graded
+  close either way... this night the dice decided it"); an empty state says why.
+- Bugs: a player drafted or signed and let go in one summer is named once, in
+  "gone", and is never an alumnus (all four pro leagues: leave() skips
+  joined>year). Soccer bookings name a man once per match, the red goes to the
+  booked centre-back (1,500 matches: 101 repeat bookings -> 0). College: no
+  target "missed" before Selection Sunday (10 premature lines -> 0). Hockey:
+  the goalie who started (backup on a back-to-back) is the one named (first
+  drive carries bk). The career count and its worth from one ledger (callLedger
+  keeps two seasons; lifeCalls the career): never a count from one and a worth
+  from the other. The slot counts a title just won before the offseason banks
+  it; "0 earlier seasons" dropped. "Out for the season" only past the season's
+  remaining steps (it was 14, football's weeks). Career leaders include current
+  players (a 108-yard passer led pro football's list of departed players).
+  Not reproduced: hockey's 2034 record in two versions; the counters reads vs
+  differing calls (they count different things).
+- Live win chance: early states measured (300 games a game, more than half to
+  play): shown 90%+ won 91-99%, shown under 10% won 1-11%: the extremes are this
+  engine's honest odds (favourites win more than in real sport). W/D/L now adds
+  to 100 (largest remainder). On/off in the ? panel (S.liveWP), with a line on
+  why early leads can read high.
+- Phones: upright, the two sims share a row; the result card and Rewatch clear
+  the bar on the first view (390x844, three games).
+- The late-call floor: basketball's crunch-time read (close) now comes down 1-3
+  as well as up 0-9, and in a one-score game it is never gated (CLOSE_FLOOR,
+  core 99 floorCall): a read, judged on the evidence. College: close calls 8 ->
+  23 in 116 watched games; close finishes with a late call 4/18 -> 10/18. The
+  rebalance of soccer's late attitude call was not done: AGGR push/sit were
+  already widened once (Nov 2026) and the call still moves under 3 points in 9
+  of 10; soccer and hockey already give the player a graded read after half-
+  time (55' read; hockey's third-period read and overtime).
+
 Round 49: phones, the call gate measured, playoff strength, names:
 - Phones (390px, Playwright, every main screen in all six): nothing ran past the
   edge. The top bar's five 24px buttons cut "WREXHAM" to "WREXH..."; on phones

@@ -36,7 +36,10 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       const coachList=x=>x.replace(/<span class="trec">[^<]*<\/span>/g,'').replace(/((?:<div class="frow cpick[^"]*"[\s\S]*?<\/div><\/div>\s*)+)/g,m=>m.split(/(?=<div class="frow cpick)/).map(r=>r.replace(/class="frow cpick[^"]*"/,'class="frow cpick"').trim()).sort().join(''));
       // in a hot seat the people's rows were double-counted, so who makes the shortlist changes too: that list isn't compared there
       // the under-fire card says why now (Nov 2026: "under fire" with no reason, Grokbot)
-      const noWhy=x=>x.replace(/ (One of the weakest at the job in the league\.|You're \d+-\d+, and he isn't good enough to be spared it\.)\n?\s*/g,' ');
+      // career leaders now include the players still here (round 50: a 108-yard passer led pro football's departed-only
+      // list): changed on purpose, not compared
+      const noLead=x=>x.replace(/<div class="grouphead">Career leaders<\/div>[\s\S]*?(?=<div class="grouphead">|$)/g,'');
+      const noWhy=x=>noLead(x).replace(/ (One of the weakest at the job in the league\.|You're \d+-\d+, and he isn't good enough to be spared it\.)\n?\s*/g,' ');
       want.forEach((w,i)=>{checks++;if(roster&&/youtag/.test(w)&&/class="trec"/.test(w))return; if(coachList(noSeat(noWhy(w)))!==coachList(noSeat(noWhy(got[i])))){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`); if(process.env.DEBUG){ const A=coachList(noSeat(noWhy(w))),B=coachList(noSeat(noWhy(got[i]))); let k=0; while(k<A.length&&A[k]===B[k])k++; console.log('    old: '+A.slice(k-100,k+150)+'\n    new: '+B.slice(k-100,k+150)) }}});
       // the game's name on the card changed on purpose ("College Football Coach"),
       // and the owl's markup gained a (college: empty) helmet slot

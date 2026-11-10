@@ -1,5 +1,5 @@
 {
- "fp": "c2d94553f49ebc01",
+ "fp": "52c42b16f4c2ebb6",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -360,6 +360,11 @@
    "fp": "c2d94553f49ebc01",
    "from": "5bae230ba72cd7bb",
    "note": "round 49: call gate at 120 replays and 4 points with never-asked kinds (different calls asked, so different answers); NBA playoffs at full strength; wider surnames (names only, except college basketball's commit dice, seeded by the recruit's name); What if reel (screens)"
+  },
+  {
+   "fp": "52c42b16f4c2ebb6",
+   "from": "c2d94553f49ebc01",
+   "note": "round 50: basketball's crunch-time read is the player's in a one-score game (different calls, different answers); alumni skip a player let go before a game; screens (What if, Film Room rule, slot line, leaders with current players, live-chance switch, soccer cards)"
   }
  ],
  "result": {
@@ -373,8 +378,8 @@
     "poll": "3787511717940927",
     "heis": "72c4700494f6c62c",
     "history": "56993daae0adafdf",
-    "universe": "9feff56029ebd3ef",
-    "screens": "bcc21067d64509ac"
+    "universe": "7d46bb9ee5d4820e",
+    "screens": "fc53c96887d2fdc3"
    },
    {
     "year": 2027,
@@ -385,8 +390,8 @@
     "poll": "e0ea9182e1e13cdb",
     "heis": "aa3341e7f2e686d6",
     "history": "8fd8f796b09561a1",
-    "universe": "7e3f70853bf025f4",
-    "screens": "ea3b67837a6d90ff"
+    "universe": "0bb56ed029a135d3",
+    "screens": "2d9eaa1dbaf896c6"
    }
   ],
   "Edmonton#777": [
@@ -400,7 +405,7 @@
     "heis": "1506ba3a83c2abeb",
     "history": "d79a2cf38f83ec07",
     "universe": "cbfdb2ef0f599b7f",
-    "screens": "b0286c56adcc5ecf"
+    "screens": "65fd192b4a164ff6"
    },
    {
     "year": 2027,
@@ -411,8 +416,8 @@
     "poll": "b1bd44c884e3b079",
     "heis": "da6b66483c98611e",
     "history": "ce638e0708651a87",
-    "universe": "2b7cc58ab97030ba",
-    "screens": "1f7943cc2113246b"
+    "universe": "37e98c6cf75335c8",
+    "screens": "39ce33cedad898d8"
    }
   ],
   "schedules#60": [
