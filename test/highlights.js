@@ -3,7 +3,7 @@
    on as with them off (they draw what the engine decided; they decide nothing).
    node test/highlights.js   last line: MATCH or MISMATCH */
 const {chromium}=require('playwright'), path=require('path'); let bad=0; const ok=(c,m)=>{ console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++ };
-const GAMES=[['soccer-coach.html','Wrexham'],['hockey-coach-pro.html','Winnipeg'],['basketball-coach-pro.html','Boston'],['football-coach-pro.html','Green Bay'],['basketball-coach.html','Duke'],['football-coach.html','Alabama']];
+const GAMES=[['soccer-coach.html','Wrexham'],['hockey-coach-pro.html','Winnipeg'],['basketball-coach-pro.html','Boston'],['football-coach-pro.html','Green Bay'],['basketball-coach.html','Duke'],['football-coach.html','Alabama'],['baseball-coach-pro.html','NY Yankees']];
 (async()=>{ const b=await chromium.launch();
  const only=process.argv[2]; for(const [f,team] of GAMES.filter(x=>!only||x[0].indexOf(only)===0)){ const res={};
   for(const mode of ['key','off']){ const p=await (await b.newContext({viewport:{width:390,height:844}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));

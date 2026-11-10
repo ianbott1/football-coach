@@ -8,7 +8,7 @@
 const path=require('path');const {load}=require('./harness.js');
 const D=f=>path.join(__dirname,'..','dist',f);
 const CASES=[['football-coach.html','Alabama'],['football-coach-pro.html','Kansas City'],['basketball-coach.html','Duke'],
-  ['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston'],['soccer-coach.html','Arsenal']];
+  ['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston'],['soccer-coach.html','Arsenal'],['baseball-coach-pro.html','Seattle']];
 let bad=0,checks=0; const ok=(c,m)=>{checks++; if(!c){bad++; if(bad<=12)console.log('  FAIL '+m)}};
 for(const [f,team] of CASES){
   const A=load({file:D(f),expose:['S','SEA','U','POS','NAMES','LEAGUE','newDynasty','doAdvance','live','liveTick','answerLive','view','starsHTML','weekNews','careerOf','formOf','statProd','milestoneSpec','openOffseason','commitOffseason']});

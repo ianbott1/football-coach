@@ -22,7 +22,7 @@ for(const [lg,f] of Object.entries(G)){
   add(`reload ${lg}`,['reload.js',D(f)]);
 }
 // across games
-add('saves (all six)',['saves.js']); add('layouts (all six)',['layouts.js']);
+add('saves (all six)',['saves.js']); add('layouts (all six)',['layouts.js'],{timeout:1200000});   /* round 53: 559s with six games; a seventh passed 600s beside the others */
 add('sim and skip (all six)',['sim-and-skip.js']); add('sim ahead (all six)',['sim-ahead.js']); add('objectives (all six)',['objectives.js','3']); add('goals and seat badge',['goals.js']);
 add('migrate old saves (college football)',['migrate.js']);
 // college football

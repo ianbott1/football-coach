@@ -156,7 +156,7 @@ function offseasonBanner(){
     `<div class="bnews small">${esc(p.name)} leaves ${esc(p.from)} for ${esc(p.to)}.</div>`).join("");
   return `<div class="banner"><div class="bkick">${last.year} in the books</div>
     <div class="btitle">${esc(last.result)}</div>
-    <div class="bsub">${esc(last.champion)} won the Stanley Cup.
+    <div class="bsub">${esc(last.champion)} won the World Series.
       ${nOf((last.coaching.hires||[]).length,"team")} hired a new head coach.</div>
     ${news}${cmn}${ra}${acn}${rec}${hz}${cmo}${bigMoves}
     ${(function(){
@@ -190,7 +190,7 @@ function offseasonScreen(){
       <div><div class="btitle" style="margin:0">${recStr(my)}</div>
       <div class="gradeline">${esc(gr.l)}</div></div></div>
     ${(S.off&&S.off.act&&S.off.act.userOpen?[]:miles).map(m=>`<div class="bnews"><b>Milestone.</b> ${m}</div>`).join("")}
-    <div class="bsub">${esc(last.champion)} won the Stanley Cup.
+    <div class="bsub">${esc(last.champion)} won the World Series.
     ${nOf(A.hires.length,"team")} changed coaches.</div>
     ${A.poached.slice(0,2).map(p=>`<div class="bnews small">${esc(p.name)} leaves
       ${esc(p.from)} for ${esc(p.to)}.</div>`).join("")}</div>`;

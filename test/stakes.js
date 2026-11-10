@@ -5,7 +5,7 @@
    - soccer: a title clinched before the last day is caught on the week it happened (the points can't be caught).
      node test/stakes.js     last line: MATCH or MISMATCH */
 const {load}=require('./harness.js'), path=require('path');
-const GAMES=[['football-coach.html',4],['football-coach-pro.html',5],['basketball-coach.html',5],['basketball-coach-pro.html',3],['hockey-coach-pro.html',5],['soccer-coach.html','Manchester City']];
+const GAMES=[['football-coach.html',4],['football-coach-pro.html',5],['basketball-coach.html',5],['basketball-coach-pro.html',3],['hockey-coach-pro.html',5],['soccer-coach.html','Manchester City'],['baseball-coach-pro.html',5]];
 let bad=0; const ok=(c,m)=>{ if(!c){ bad++; console.log('  FAIL '+m) } };
 for(const [f,team] of GAMES){
   const A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','NAMES','newDynasty','simRun','digestBlock','stakesFor','objectivesHTML','objectivesMet','objectivesAll','seasonObjectives','objStatus','LEAGUE']});

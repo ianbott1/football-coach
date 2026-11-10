@@ -5,7 +5,7 @@
      node test/live-wp.js [games=120] [files...]     last line: MATCH (every band of 40+ states within 10 points at 200 games (the same model reads 2 to 9 by seed)) or MISMATCH */
 const {load}=require('./harness.js'), path=require('path');
 const NG=+(process.argv[2]||200);
-const FILES=process.argv.slice(3).length?process.argv.slice(3):['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html'];
+const FILES=process.argv.slice(3).length?process.argv.slice(3):['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html','baseball-coach-pro.html'];
 let bad=0;
 for(const f of FILES){
   const rows=[]; let games=0, tries=0, A=null;

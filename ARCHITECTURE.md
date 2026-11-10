@@ -358,6 +358,26 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 53: baseball, second pass (measured):
+- The best record over 12 seasons averages 104.8 (98-113; MLB 2015-25 ~104), the worst 56 (MLB ~52), the spread of
+  wins 11.8: the round-52 "107" was five seasons. The engine's edge is unchanged.
+- Hockey left in MLB, fixed: the season grade and objectives (wins over 84 games, "Stanley Cup" as the title, so a
+  World Series counted as no title and grades ran high). Now: bands by franchise strength at its expected wins
+  (a club wins ~81 + 0.157 a point above 1507): CONTEND 89 / par 1.8, WIN A SERIES 86 / 1.1, WILD-CARD RACE 81 / 0
+  (only 12 of 30 go to October), REBUILD 75, START OVER 68; 0.09 a win; results matched to baseball's series names.
+  35% of seasons miss expectations (hockey 36%). Also: "won the World Series", "World Series champions" and
+  "Postseason, No. N seed" in the history, MLB's named rivalries, MLB's lottery (eighteen teams, six picks drawn),
+  and baseball's own franchise-strength range (1380-1680; the copied 1480 floor lifted seven clubs after a year).
+- Found by adding baseball to the cross-game tests: leaving calls to the assistant won 39% to the computer's 49%.
+  Once the pull call had been asked in an inning, nothing took a spent starter out until the inning ended (a run a
+  game). Fixed in cpuTurn; now 49.3 / 49.8. And test/sim-parity.js could not fail: its count sat inside a comment.
+- Live win chance: LIVE_SIG mlb 4.2 (fit 4.0 at 400 games; worst band 5.7 points).
+- Baseball is now in saves, layouts, sim and skip, sim ahead, objectives, people, postseason-gate, regressions,
+  call-impact, late-calls, stakes, live-wp, names, highlights, sim-parity and story. Not in goals.js (college and
+  pro football only, a 60-step loop).
+- Open, not baseball: hockey and pro basketball carry the same 1480-1920 strength clamp, and both start clubs below
+  1480 (eleven and eight).
+
 Round 52: baseball, a seventh game (Pro Baseball Coach, league mlb, game layer baseball):
 - Built from the hockey and NHL layers: the league machinery (contracts, draft,
   offseason, records, views) adapted; the sport replaced. Positions (10_players):

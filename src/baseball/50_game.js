@@ -175,7 +175,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   }
   function cpuTurn(){
     const bat=H.bat, fs=H.fs;
-    if(!humans[fs]||st.S[fs].pen){ cpuPen(fs) } else if(!pullDue(fs))cpuPen(fs);
+    // yours: the computer's rule too, except while the pull call is still to be asked this inning (round 53: once
+    // it had been asked, nothing took a spent starter out until the inning ended; leaving it to the assistant gave
+    // up a run a game more than the computer, and won 39% to its 49%)
+    if(!humans[fs]||st.S[fs].pen||!pullDue(fs)||st.asked["pull"+inn()+fs])cpuPen(fs);
     cpuCloser(fs);
     if(!humans[bat]&&H.b[0]&&!H.b[1]&&H.outs<2&&rng.r()<BS.stealTry)steal(bat);
   }

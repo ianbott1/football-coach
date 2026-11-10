@@ -2,7 +2,7 @@
    on 55-61 surnames a sport), and a pure computer season is the same game for game whatever the names: names are read
    through a wider list by hash, never by a draw.  node test/names.js   last line: MATCH or MISMATCH */
 const {load}=require('./harness.js'), path=require('path'); let bad=0; const ok=(c,m)=>{ console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++ };
-for(const f of ['football-coach','football-coach-pro','basketball-coach','basketball-coach-pro','hockey-coach-pro','soccer-coach']){
+for(const f of ['football-coach','football-coach-pro','basketball-coach','basketball-coach-pro','hockey-coach-pro','soccer-coach','baseball-coach-pro']){
   const A=load({file:path.join(__dirname,'..','dist',f+'.html'),expose:['SEA','NAMES','newDynasty','WIDE_LAST']});
   let rosters=0,shared=0,pool=new Set();
   for(const seed of [1,2]){ A.newDynasty(A.NAMES[seed],seed,'T');
