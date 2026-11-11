@@ -486,6 +486,15 @@ async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(RE
 function liveLabel(g){ const l=g&&g.label||""; return live&&live.done?l.split(" \u00b7 ")[0]:l }
 /* the offseason's season (round 56: baseball's is the winter, "the start of summer" read wrong: Instinct) */
 function OFFW(){ return (LEAGUE.text&&LEAGUE.text.offWord)||"summer" }
+/* a regular-season series (round 57, baseball): "Game 2 of 3 · you took the first", from the games already played in it */
+function serLine(ng,my){
+  const done=SEA.sched.filter(x=>x.ser===ng.ser&&x.week<ngWeek(ng)), res=[];
+  done.forEach(x=>{ const W=SEA.weeks[x.week]; const g=W&&(W.games||[]).find(y=>y.home===x.home&&y.away===x.away); if(g&&g.winner)res.push(g.winner===my) });
+  const w=res.filter(Boolean).length, l=res.length-w, where=ng.home===my?"at home":"on the road";
+  const so=!res.length?"the series opens":w===l?`series level ${w}-${l}`:w>l?`you lead ${w}-${l}`:`you trail ${l}-${w}`;
+  return `Game ${ng.sg} of ${ng.sn} ${where} &middot; ${so}`;
+}
+function ngWeek(ng){ return ng.week!==undefined?ng.week:SEA.step }
 /* the postseason's last round (round 56: "beaten in the final" asked whether the team that beat you went on to win it all, so a
    Division Series loss to the eventual champion read as a final: Instinct) */
 function finalRound(){ const P=LEAGUE.post&&LEAGUE.post.phases; return P&&P.length?String(P[P.length-1]).replace(/g\d+$/,""):null }
@@ -1901,6 +1910,8 @@ function nextUpHTML(my,rk){
     }
     return h;
   }
+  // the race, late in the season (round 57, baseball: magic numbers and the scoreboard; both testers lost interest by September)
+  if(LEAGUE.ui.raceCard&&SEA.phase==="week")try{ h+=LEAGUE.ui.raceCard(my)||"" }catch(e){}
   let ng=SEA.nextGame(my), ngStep=SEA.step;
   // a league with a game most days (LEAGUE.skipIdle): the button plays through
   // the days you're off, so the card shows your next game, not an open date
@@ -1927,7 +1938,7 @@ function nextUpHTML(my,rk){
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
       <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
-      <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
+      <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>${ng.sn>1?`<div class="nrec serline">${serLine(ng,my)}</div>`:""}
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
         ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa,SEA.hfa?NAMES.map(t=>SEA.hfa[t]):null))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}${ser.d?"-"+ser.d:""}</b> in the series${

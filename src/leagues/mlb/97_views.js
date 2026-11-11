@@ -113,6 +113,7 @@ function simSeries(){
   }
 }
 LEAGUE.ui={
+  raceCard:bsRaceCard,
   standingsCols:STAND_TOTALS("RS","RA"),   // points for and against (Grokbot: a team stats page)
   rankingTab:"Rankings",
   rankingView:nflRankingView,
@@ -128,3 +129,45 @@ LEAGUE.ui={
   clinchTag:t=>nflClinchTag(t),
   standingsQualify:1
 };
+
+/* September (round 57): the race, from mid-August (the last 45 days). Your division, games behind and the magic number (wins of
+   yours plus losses of the second club that clinch it: 163 less your wins less their losses) or the elimination
+   number; the wild-card race the same way against the fourth (or third) place; last night's scores for every club
+   in it; and the day you clinch, said once. */
+const RACE_FROM=45;   // from mid-August
+function bsRaceCard(my){
+  const sea=SEA; if(sea.step<LEAGUE.weeks-RACE_FROM||sea.step>=LEAGUE.weeks)return "";
+  const R=sea.rec, W=t=>R[t][0], L=t=>R[t][1], G=LEAGUE.tuning.schedule&&LEAGUE.tuning.schedule.games||162, M=G+1;
+  const gb=(a,b)=>((W(a)-W(b))+(L(b)-L(a)))/2, gbs=x=>x<=0?"&mdash;":(x%1?x.toFixed(1):x);
+  const sd=sea.sideOf(my), teams=NAMES.filter(t=>sea.sideOf(t)===sd), ck=sea.clinch?sea.clinch():{};
+  const div=teams.filter(t=>CONF[t]===CONF[my]).sort((a,b)=>sea._tb(a,b));
+  const leaders={}; LEAGUE.conf.sides[sd].forEach(d=>{ leaders[teams.filter(t=>CONF[t]===d).sort((a,b)=>sea._tb(a,b))[0]]=true });
+  const wc=teams.filter(t=>!leaders[t]).sort((a,b)=>sea._tb(a,b));
+  // the number, said plainly
+  let divNum="", wcNum="";
+  if(ck[my]==="y")divNum="Division clinched.";
+  else if(div[0]===my){ const m=Math.max(0,M-W(my)-L(div[1])); divNum=`Magic number <b>${m}</b>: any mix of your wins and ${esc(div[1])} losses adding to ${m} wins the division.` }
+  else { const e=Math.max(0,M-W(div[0])-L(my)); divNum=e?`Elimination number <b>${e}</b> in the division: ${esc(div[0])} wins and your losses adding to ${e} end it.`:"Out of the division race." }
+  if(!leaders[my]&&ck[my]!=="y"&&ck[my]!=="x"){ const i=wc.indexOf(my);
+    if(i<3){ const m=Math.max(0,M-W(my)-L(wc[3])); wcNum=`Wild card: magic number <b>${m}</b> against ${esc(wc[3])}.` }
+    else { const e=Math.max(0,M-W(wc[2])-L(my)); wcNum=e?`Wild card: ${gbs(gb(wc[2],my))} games out; elimination number <b>${e}</b> against ${esc(wc[2])}.`:"Out of the wild-card race." } }
+  else if(ck[my]==="x")wcNum="A postseason place clinched.";
+  // the day it happened, once
+  const C=S.bsClinch&&S.bsClinch.year===sea.year?S.bsClinch:(S.bsClinch={year:sea.year});
+  ["y","x"].forEach(k=>{ if((ck[my]===k||(k==="x"&&ck[my]==="y"))&&C[k]===undefined)C[k]=sea.step });
+  const today=C.y===sea.step?`${esc(LEAGUE.conf.names[CONF[my]])} champions: clinched today.`:C.x===sea.step?"Into the postseason: clinched today.":"";
+  const row=(t,ref,cut)=>`<tr class="${t===my?"me":""}${cut?" cut":""}"><td>${TL(t)}</td><td>${W(t)}-${L(t)}</td><td>${ref?gbs(gb(ref,t)):""}</td><td>${ck[t]?`<span class="ck">${ck[t]}</span>`:""}</td></tr>`;
+  const divT=div.map(t=>row(t,div[0])).join("");
+  const showWC=wc.slice(0,Math.max(5,wc.indexOf(my)+1)), wcT=showWC.map((t,i)=>row(t,i<3?null:wc[2],i===3)).join("");
+  // last night, for every club in either race
+  const inRace=new Set(div.concat(showWC)), lastW=sea.weeks[sea.step-1], sc=[];
+  ((lastW&&lastW.games)||[]).forEach(g=>{ if(!inRace.has(g.home)&&!inRace.has(g.away))return; const hw=g.hp>g.ap;
+    sc.push(`<span class="${g.home===my||g.away===my?"me":""}">${esc(hw?g.home:g.away)} ${Math.max(g.hp,g.ap)}, ${esc(hw?g.away:g.home)} ${Math.min(g.hp,g.ap)}</span>`) });
+  const left=sea.sched.filter(g=>g.week>=sea.step&&(g.home===my||g.away===my)).length;
+  return `<div class="grouphead">The race &mdash; ${left} game${left===1?"":"s"} left</div>
+    <div class="racecard">${today?`<div class="clinched">${today}</div>`:""}
+      <div class="rnum">${divNum}${wcNum?"<br>"+wcNum:""}</div>
+      <div class="rtabs"><table class="rt"><tr><th>${esc(LEAGUE.conf.names[CONF[my]])}</th><th>W-L</th><th>GB</th><th></th></tr>${divT}</table>
+      <table class="rt"><tr><th>${esc(sd)} wild card</th><th>W-L</th><th>GB</th><th></th></tr>${wcT}</table></div>
+      ${sc.length?`<div class="rscore"><b>Last night:</b> ${sc.join(" &middot; ")}</div>`:""}</div>`;
+}

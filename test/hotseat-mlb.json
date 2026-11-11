@@ -1,5 +1,5 @@
 {
- "fp": "cab4c82442ea3927",
+ "fp": "ff4f9db7036233b1",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -15,6 +15,16 @@
    "fp": "cab4c82442ea3927",
    "from": "565c167d5c9b5f03",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "ff4f9db7036233b1",
+   "from": "cab4c82442ea3927",
+   "note": "round 57: series schedule, run level, race card"
+  },
+  {
+   "fp": "ff4f9db7036233b1",
+   "from": "ff4f9db7036233b1",
+   "note": "round 57: series schedule, run level, race card"
   }
  ],
  "out": [
@@ -24,20 +34,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "97-65",
-      "result": "Lost in the division series",
-      "grade": "B+"
+      "rec": "93-69",
+      "result": "Lost in the championship series",
+      "grade": "A-"
      },
-     "book": "7b727789a62c7af1"
+     "book": "9375f400a58522de"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "88-74",
+      "rec": "93-69",
       "result": "Lost in the wild-card series",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "53b7a4ea4f322869"
+     "book": "3b2d76e22bb87903"
     }
    ]
   },
@@ -47,20 +57,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "76-86",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "84-78",
+      "result": "Missed the postseason",
+      "grade": "C"
      },
-     "book": "1eef23e4c3d6b397"
+     "book": "9ac627c7bc5e2098"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "70-92",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "87-75",
+      "result": "Lost in the wild-card series",
+      "grade": "B+"
      },
-     "book": "fa618b3f936bf056"
+     "book": "97f42a1f97d437ae"
     }
    ]
   },
@@ -70,20 +80,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "92-70",
+      "rec": "94-68",
       "result": "Lost in the wild-card series",
       "grade": "B"
      },
-     "book": "c607c99da05f3a75"
+     "book": "0265f6cf63bfb439"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "101-61",
+      "rec": "96-66",
       "result": "Lost in the division series",
       "grade": "A"
      },
-     "book": "e3833b2926459775"
+     "book": "6ef6fa320554bbdf"
     }
    ]
   }
