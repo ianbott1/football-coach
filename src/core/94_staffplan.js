@@ -336,7 +336,7 @@ function seasonCallsHTML(){
    each league's, fitted to its own engine (LIVE_SIG, measured: test/live-wp.js), and the line is checked for honesty
    there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
    (a shoot-out, extra time) at the pre-game edge, halved. */
-const LIVE_WP_ON=true, LIVE_MU={};   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+const LIVE_WP_ON=true, LIVE_MU={}, LIVE_TAUP={mlb:1}, LIVE_MUP={mlb:1.5};   // LIVE_TAUP: how the spread shrinks with the game left (0.5, a random walk; baseball 1: round 56, a one-run lead after seven showed 69% and won 82%); LIVE_MUP: how the pre-game edge fades (1, linear; baseball 1.5: a tie after seven against a far stronger club showed 29% and won 38%)   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
 const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9,mlb:4.2}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
 function liveTau(d){
   if(!d)return 1;
@@ -350,14 +350,21 @@ function normInv(p){ p=Math.min(0.9999,Math.max(0.0001,p)); let lo=-6,hi=6; for(
 /* [win, draw, loss] for the side with margin m (theirs subtracted), tau of the game to play, pre-game [w,d,l] */
 function liveChance(m,tau,pre,sig,poss){
   const [w0,d0]=pre, s=sig, mu=s*normInv(Math.min(0.995,Math.max(0.005,w0+d0/2)));
-  const E=m+mu*(LIVE_MU[LEAGUE.id]||1)*tau+(poss&&tau>0?poss*LIVE_POSS:0), S=Math.max(0.05,s*Math.sqrt(Math.max(tau,0.0001)));
+  const E=m+mu*(LIVE_MU[LEAGUE.id]||1)*Math.pow(Math.max(tau,0),LIVE_MUP[LEAGUE.id]||1)+(poss&&tau>0?poss*LIVE_POSS:0), S=Math.max(0.05,s*Math.pow(Math.max(tau,0.0001),LIVE_TAUP[LEAGUE.id]||0.5));
   const pw=1-normCdf((0.5-E)/S), pl=normCdf((-0.5-E)/S), pt=Math.max(0,1-pw-pl);
   if(LEAGUE.draws&&!(typeof live!=="undefined"&&live&&live.g&&(live.g.cup||live.g.title||SEA.phase!=="week")))return [pw,pt,pl];   // a cup tie or a play-off goes on to a winner
   const q=0.5+((w0+d0/2)-0.5)*0.5; return [pw+pt*q,0,pl+pt*(1-q)];
 }
+// the bar's own toggle, wherever it's drawn (the ? panel binds its buttons when it opens; this catches the live screen's)
+try{ if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest(".lwtog[data-livewp]");
+  if(!b||!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() }) }catch(e){}
+const LWHIDE=`<button class="lwtog" data-livewp="false" aria-label="Hide the win chance">Hide</button>`;
 function liveWPHTML(){
-  if(!LIVE_WP_ON||(S&&S.liveWP===false)||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";   // S.liveWP: off in the ? panel (round 50: Instinct)
+  if(!LIVE_WP_ON||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";
+  // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
+  if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
+  if(liveTau(d)<=0&&sc[0]!==sc[1])return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
   const meH=live.g.home===S.myTeam, m=meH?sc[0]-sc[1]:sc[1]-sc[0];
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
@@ -367,7 +374,7 @@ function liveWPHTML(){
   if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
     v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });
     const Q=f.map(x=>Math.max(1,Math.min(98,x)));
-    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span></div>` }
-  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
-    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span></div>`;
+    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span>${LWHIDE}</div>` }
+  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span>${LWHIDE}</div>`
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${LWHIDE}</div>`;
 }

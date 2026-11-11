@@ -1,5 +1,5 @@
 {
- "fp": "cb4e5cf257794697",
+ "fp": "9efc33e0562b84b6",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -429,6 +429,11 @@
    "fp": "cb4e5cf257794697",
    "from": "22fddd0e39f8ed0b",
    "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
+  },
+  {
+   "fp": "9efc33e0562b84b6",
+   "from": "cb4e5cf257794697",
+   "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
   }
  ],
  "result": {
@@ -593,7 +598,7 @@
     "heis": "e843968e50a39c83",
     "history": "786e3f4bd4989913",
     "universe": "6d5c50ea09b53278",
-    "screens": "35dcf9704a677185"
+    "screens": "0e0c6a3af47266bb"
    },
    {
     "year": 2028,
@@ -603,9 +608,9 @@
     "rec": "8e130fe2f223d7b2",
     "poll": "4bec52da5162954f",
     "heis": "7c7f7a287a4fa13e",
-    "history": "34a2362e0b767f21",
-    "universe": "423205150316f555",
-    "screens": "b15d5fd8ef3be640"
+    "history": "46661ccd0f262fa4",
+    "universe": "68c8414be2801b87",
+    "screens": "8c8dfb344a2c527c"
    }
   ],
   "schedules#60": [

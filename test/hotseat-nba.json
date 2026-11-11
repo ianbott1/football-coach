@@ -1,5 +1,5 @@
 {
- "fp": "936c44d1e51b34e1",
+ "fp": "e01f1ad8c524bb44",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -250,6 +250,11 @@
    "fp": "936c44d1e51b34e1",
    "from": "5702b572cfbd52eb",
    "note": "round 55: wrong-sport fixes (title milestone, worst season, NBA pipeline, English derbies)"
+  },
+  {
+   "fp": "e01f1ad8c524bb44",
+   "from": "936c44d1e51b34e1",
+   "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
   }
  ],
  "out": [
@@ -318,7 +323,7 @@
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "25e9f232eb33e99b"
+     "book": "7d0144c3d3a166e0"
     }
    ]
   }

@@ -375,6 +375,11 @@
    "fp": "86791d245e457ce1",
    "from": "67a22e75f3a08779",
    "note": "round 55: wrong-sport fixes (title milestone, worst season, NBA pipeline, English derbies)"
+  },
+  {
+   "fp": "86791d245e457ce1",
+   "from": "86791d245e457ce1",
+   "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
   }
  ],
  "result": {

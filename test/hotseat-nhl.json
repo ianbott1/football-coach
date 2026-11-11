@@ -1,5 +1,5 @@
 {
- "fp": "ddc57dd1f1d89c42",
+ "fp": "83ed0e8985d47dc1",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -275,6 +275,11 @@
    "fp": "ddc57dd1f1d89c42",
    "from": "7aa0d73f65b3fca2",
    "note": "round 55: wrong-sport fixes (title milestone, worst season, NBA pipeline, English derbies)"
+  },
+  {
+   "fp": "83ed0e8985d47dc1",
+   "from": "ddc57dd1f1d89c42",
+   "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
   }
  ],
  "out": [
@@ -320,7 +325,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "3b4ba103c529db3c"
+     "book": "4711756de270bdf5"
     }
    ]
   },
@@ -343,7 +348,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "9170527b02f4750d"
+     "book": "f670e5bf3ff615d0"
     }
    ]
   }

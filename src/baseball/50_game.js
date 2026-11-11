@@ -124,27 +124,34 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const cpuPen=fs=>{ const X=st.S[fs], P=X.sp; if(X.pen)return; if(P.bf>=P.stam||P.ra>=5||(P.bf>=18&&P.ra>=4))X.pen=true };
   const cpuCloser=fs=>{ const X=st.S[fs], L=lead(fs); if(inn()>=9&&L>=1&&L<=3&&!X.closer){ X.closer=true; X.pen=true } };
   const pullDue=fs=>{ const X=st.S[fs], P=X.sp; return !X.pen&&P.bf>=Math.max(18,P.stam-3)&&inn()>=5&&inn()<=8&&Math.abs(lead(fs))<=3 };
+  // round 56: every event names its man, from the day's lineup, and a pinch hitter stays in the slot for the rest of the
+  // game (the log named a slot's starter or his backup at random, play by play: "three Devontes", Muse)
+  const LU=side=>(ctx&&ctx.lineup&&ctx.lineup[side])||[], sub=st.sub={home:{},away:{}}, onFirst={home:null,away:null};
+  const who=(side,slot)=>sub[side][slot]||LU(side)[slot]||null;
   const doAB=()=>{
     const bat=H.bat, fs=H.fs, X=st.S[bat];
     const slot=X.bat%9; X.bat++;
-    let extra=0; if(st.late[bat+"pinch"]){ extra=BS.pinch; st.late[bat+"pinch"]=false; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn()}) }
+    let extra=0; if(st.late[bat+"pinch"]){ extra=BS.pinch; st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
+      if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
+    const nm=who(bat,slot);
     const o=pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
     const b=H.b;
-    if(o==="k"){ H.outs++; L.k++; if(b[0]+b[1]+b[2]>=2&&rng.r()<0.6)H.ev.push({k:"kk",side:fs,u:rng.int(100),inn:inn(),on:b[0]+b[1]+b[2]}) }
-    else if(o==="bb"||o==="hbp"){ L.bb++; if(b[0]){ if(b[1]){ if(b[2])score(1); b[2]=1 } b[1]=1 } b[0]=1 }
-    else if(o==="s1"){ L.h++; H.hits++; let n=b[2]; b[2]=0; if(b[1]){ if(rng.r()<BS.adv2)n++; else b[2]=1 } b[1]=0; if(b[0]){ if(!b[2]&&rng.r()<0.3)b[2]=1; else b[1]=1 } b[0]=1;
-      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:1,u:rng.int(100),inn:inn()}) } }
+    // the strikeout that strands a rally: once a half-inning (round 56: four times in one inning, Muse)
+    if(o==="k"){ H.outs++; L.k++; if(b[0]+b[1]+b[2]>=2&&rng.r()<0.6){ const u=rng.int(100); if(!H.kkSaid){ H.kkSaid=true; H.ev.push({k:"kk",side:fs,u:u,inn:inn(),on:b[0]+b[1]+b[2]}) } } }   // the same draws as before
+    else if(o==="bb"||o==="hbp"){ L.bb++; if(b[0]){ if(b[1]){ if(b[2]){ score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:o==="hbp"?-2:-1,u:(st.h*7+st.a*13+slot*3)%100,inn:inn(),slot:slot,nm:nm}) } b[2]=1 } b[1]=1 } b[0]=1; onFirst[bat]=nm }
+    else if(o==="s1"){ L.h++; H.hits++; let n=b[2]; b[2]=0; if(b[1]){ if(rng.r()<BS.adv2)n++; else b[2]=1 } b[1]=0; if(b[0]){ if(!b[2]&&rng.r()<0.3)b[2]=1; else b[1]=1 } b[0]=1; onFirst[bat]=nm;
+      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:1,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) } }
     else if(o==="s2"){ L.h++; H.hits++; let n=b[2]+b[1]; b[2]=0; b[1]=0; if(b[0]){ if(rng.r()<BS.adv2*0.7)n++; else b[2]=1 } b[0]=0; b[1]=1;
-      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:2,u:rng.int(100),inn:inn()}) } }
-    else if(o==="s3"){ L.h++; H.hits++; const n=b[0]+b[1]+b[2]; b[0]=b[1]=0; b[2]=1; if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:3,u:rng.int(100),inn:inn()}) } }
-    else if(o==="hr"){ L.h++; L.hr++; H.hits++; const n=1+b[0]+b[1]+b[2]; b[0]=b[1]=b[2]=0; score(n); H.ev.push({k:"hr",side:bat,n:n,u:rng.int(100),inn:inn(),slot:slot}) }
+      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:2,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) } }
+    else if(o==="s3"){ L.h++; H.hits++; const n=b[0]+b[1]+b[2]; b[0]=b[1]=0; b[2]=1; if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:3,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) } }
+    else if(o==="hr"){ L.h++; L.hr++; H.hits++; const n=1+b[0]+b[1]+b[2]; b[0]=b[1]=b[2]=0; score(n); H.ev.push({k:"hr",side:bat,n:n,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) }
     else{ // an out in play
       if(b[0]&&H.outs<2&&rng.r()<BS.dp){ H.outs+=2; b[0]=0; if(H.outs<3&&b[2]&&rng.r()<0.4){ score(1); b[2]=0 } H.ev.push({k:"dp",side:fs,u:rng.int(100),inn:inn()}) }
-      else if(b[2]&&H.outs<2&&rng.r()<BS.sf){ H.outs++; b[2]=0; score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,u:rng.int(100),inn:inn()}) }
+      else if(b[2]&&H.outs<2&&rng.r()<BS.sf){ H.outs++; b[2]=0; score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) }
       else{ H.outs++; if(H.outs<3&&b[1]&&!b[2]&&rng.r()<0.3){ b[2]=1; b[1]=0 } } }
     if(H.outs>=3)L.lob+=b[0]+b[1]+b[2];
   };
-  const steal=(side)=>{ const ok=rng.r()<BS.steal; const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn()}) };
+  const steal=(side)=>{ const ok=rng.r()<BS.steal; const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
   st.log=[];
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -167,7 +174,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(humans[fs]&&pullDue(fs)&&!st.asked["pull"+inn()+fs]){ st.asked["pull"+inn()+fs]=true; const X=st.S[fs];
       if(queueCall(fs,pullCall(inn(),lead(fs),X.sp,H.b.some(Boolean)?onDesc()+".":"")))return true }
     if(humans[bat]&&inn()>=7&&Math.abs(lead(bat))<=2){ const X=st.S[bat], slot=X.bat%9;
-      if((H.b[1]||H.b[2])&&slot>=6&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+      // tied or behind only (round 56: the help says "when you're chasing", and a third of the calls came with a lead: Instinct)
+      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
         if(queueCall(bat,pinchCall(inn(),lead(bat),ctx.lineup&&ctx.lineup[bat]?ctx.lineup[bat][slot]:null,ctx.bench&&ctx.bench[bat]||null,onDesc())))return true }
       if(H.b[0]&&!H.b[1]&&H.outs<2&&Math.abs(lead(bat))<=1&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         if(queueCall(bat,stealCall(inn(),lead(bat),null,H.outs)))return true } }
@@ -232,8 +240,11 @@ function spCtx(t,step){
     return {n:p.n, q:(p.r-mean)*0.012} }catch(e){ return null } }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
   lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
-function lineupOf(t){ try{ const R=SEA.roster[t]; return BS_HIT.map(i=>R[i]?R[i].n:null) }catch(e){ return null } }
-function benchBat(t){ try{ const R=SEA.roster[t]; let b=null; BS_HIT.forEach(i=>{ const p=R[BK(i)]; if(p&&(!b||p.r>b.r))b=p }); return b?b.n:null }catch(e){ return null } }
+/* the day's nine: an injured regular's backup plays (round 56: the season's stats give his at-bats to the backup, and now
+   the log does too); the bench bat is the best backup not already in it */
+function hurtSet(t){ try{ return new Set(SEA.talent?SEA.talent.active(t).map(x=>x.idx):[]) }catch(e){ return new Set() } }
+function lineupOf(t){ try{ const R=SEA.roster[t], H=hurtSet(t); return BS_HIT.map(i=>{ const p=H.has(i)?R[BK(i)]:R[i]; return p?p.n:(R[i]?R[i].n:null) }) }catch(e){ return null } }
+function benchBat(t){ try{ const R=SEA.roster[t], H=hurtSet(t); let b=null; BS_HIT.forEach(i=>{ if(H.has(i))return; const p=R[BK(i)]; if(p&&!H.has(BK(i))&&(!b||p.r>b.r))b=p }); return b?b.n:null }catch(e){ return null } }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

@@ -32,7 +32,7 @@ function seasonObjectives(my){
   // a home record a little better than you'd expect
   const H=games.filter(g=>g.home===my&&!g.neutral);
   if(H.length>=3){ const hfa=LEAGUE.tuning.hfa||0;
-    const p=H.reduce((s,g)=>s+1/(1+Math.pow(10,-(preElo(my)+hfa-preElo(g.away))/400)),0)/H.length;
+    const p=H.reduce((s,g)=>s+1/(1+Math.pow(10,-(preElo(my)+hfa-preElo(g.away))/wpScale("balanced"))),0)/H.length;   // round 56: the engine's own scale (was 400 everywhere: baseball's 680 set 61% home targets for an 87-win club)
     // what you'd expect to win (a draw isn't a win: about a quarter of soccer games are drawn)
     const pw=LEAGUE.draws?p*0.74:p;
     const t=Math.max(1,Math.min(H.length,Math.round(H.length*Math.min(0.88,pw))));
@@ -106,7 +106,7 @@ function reaimObjectives(my){
     const above=NAMES.filter(t=>CONF[t]===CONF[my]&&t!==my&&pos(t)===mine-1)[0];
     if(above&&!used.some(x=>(x.k==="above"&&x.opp===above)||x.k==="top"))O.extra.push({k:"above",opp:above,l:`Finish above ${above}`,re0:SEA.step});
     else if(!used.some(x=>x.k==="last")){ const hfa=LEAGUE.tuning.hfa||0, e=t=>SEA.elo[t]||1500;
-      const p=left.reduce((s,g)=>{ const opp=g.home===my?g.away:g.home, h=g.home===my&&!g.neutral?hfa:g.away===my&&!g.neutral?-hfa:0; return s+1/(1+Math.pow(10,-(e(my)+h-e(opp))/400)) },0)/left.length;
+      const p=left.reduce((s,g)=>{ const opp=g.home===my?g.away:g.home, h=g.home===my&&!g.neutral?hfa:g.away===my&&!g.neutral?-hfa:0; return s+1/(1+Math.pow(10,-(e(my)+h-e(opp))/wpScale("balanced"))) },0)/left.length;   // round 56: the engine's scale ("93 of your last 135")
       const pw=LEAGUE.draws?p*0.74:p, n=Math.max(1,Math.min(left.length,Math.round(left.length*Math.min(0.88,pw)+0.5)));
       O.extra.push({k:"last",from:SEA.step,n:n,of:left.length,l:`Win ${n} of your last ${left.length}`,re0:SEA.step}) } });
 }

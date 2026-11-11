@@ -64,7 +64,7 @@ const LEAGUE={
   myGameLabel:n=>`Game ${n}`,
   bigTop:5,
   rankTop:10,
-  text:{unit:"team",bye:"No game today",
+  text:{groupWord:"DIVISION",unit:"team",bye:"No game today",lostFinal:"beaten in the World Series",offWord:"winter",outOf:"out of the postseason",
     rankedWin:["A win over one of the league's best. That tells you something.","Took one from a contender. That's a statement.","A real team, and you beat them."],
     badLoss:["The kind of loss that decides the last wild card.","Beaten by a club going nowhere. It will cost you in September.","Games like this one decide divisions."],
     champions:"World Series champions",

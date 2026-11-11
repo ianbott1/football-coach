@@ -1,5 +1,5 @@
 {
- "fp": "b1f63fe1119118e3",
+ "fp": "eaabc41e3ac8f3a0",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -430,6 +430,11 @@
    "fp": "b1f63fe1119118e3",
    "from": "86b051114283dc45",
    "note": "round 51: highlights (screens only: the ? panel's Highlights row; nothing played or decided changes)"
+  },
+  {
+   "fp": "eaabc41e3ac8f3a0",
+   "from": "b1f63fe1119118e3",
+   "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
   }
  ],
  "result": {
@@ -456,7 +461,7 @@
     "heis": "2638510aa5c3965b",
     "history": "bc206c36535292c1",
     "universe": "f92153d59668324c",
-    "screens": "972386eb3d8c8fce"
+    "screens": "3c784f4282c4baf3"
    },
    {
     "year": 2028,
@@ -468,7 +473,7 @@
     "heis": "167f68831fa8b52a",
     "history": "fdb1dfd365dca8f9",
     "universe": "4fab5fb7ae58eb9c",
-    "screens": "d88b6761325d6575"
+    "screens": "79cf5ed70cf43087"
    },
    {
     "year": 2029,
@@ -494,7 +499,7 @@
     "heis": "f99e778f079c4455",
     "history": "3a181084e4d09f16",
     "universe": "60309506beefaf2a",
-    "screens": "eac19aa0d58864ad"
+    "screens": "bffd3debb12b3004"
    },
    {
     "year": 2027,
@@ -506,7 +511,7 @@
     "heis": "97db331cb389c064",
     "history": "87f7094592f1964f",
     "universe": "e15e1d6a8b7540f6",
-    "screens": "7d41968cd0d3decd"
+    "screens": "b3524f014e6803f9"
    },
    {
     "year": 2028,
@@ -518,7 +523,7 @@
     "heis": "e9d870c69a2684ae",
     "history": "45e29945a11092b9",
     "universe": "9749ace7783186b7",
-    "screens": "97ea0c9325a786f6"
+    "screens": "ac13917c55639d25"
    },
    {
     "year": 2029,
@@ -530,7 +535,7 @@
     "heis": "1780a699a51a183f",
     "history": "f6401a1d1cdea895",
     "universe": "485b5ccbcaef1c05",
-    "screens": "1edd435e4a9388d6"
+    "screens": "126588f0cf360401"
    }
   ],
   "Detroit#777": [
@@ -544,7 +549,7 @@
     "heis": "39a85f156c688622",
     "history": "032e3e67c3c3bb9d",
     "universe": "da5a4b75d7ec5bb8",
-    "screens": "b73f72d7e9dd1fc6"
+    "screens": "791017a4c4050331"
    },
    {
     "year": 2027,

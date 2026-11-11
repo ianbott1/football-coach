@@ -18,14 +18,15 @@ function pickOf(a,u){return a[u%a.length]}
 /* one event as a line of commentary */
 function bsEventText(g,e){
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
-  const who=bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"their hitter";
+  const who=e.nm||bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"their hitter";   // round 56: the engine names him
   if(e.k==="hr")return {team:tm,tag:e.n===4?"SLAM":"HR",text:`${who}: ${HR_WORD[Math.min(3,(e.n||1)-1)]} ${pickOf(HR_HOW,u>>2)}`};
-  if(e.k==="rbi")return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?"drives in two with":"brings one home with"} a ${HIT_WORD[e.hit]}`:`${who} lifts a sacrifice fly: a run scores`};
+  if(e.k==="rbi"){ if(e.hit<0)return {team:tm,tag:"RUN",text:e.hit===-2?`${who} is hit by a pitch with the bases loaded: a run scores`:`${who} draws a bases-loaded walk: a run scores`};
+    return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?`drives in ${["","one","two","three"][e.n]||e.n} with`:"brings one home with"} a ${HIT_WORD[e.hit]}`:`${who} lifts a sacrifice fly: a run scores`} }
   if(e.k==="kk")return {team:tm,tag:"",text:`strike out the side's best chance: ${e.on>=3?"bases loaded":"two on"}, nothing across`};
   if(e.k==="dp")return {team:tm,tag:"",text:`turn the double play to end the threat`};
   if(e.k==="sb")return {team:tm,tag:"SB",text:`${who} steals second`};
   if(e.k==="cs")return {team:tm,tag:"CS",text:`${who} is thrown out stealing`};
-  if(e.k==="ph")return {team:tm,tag:"",text:`send up a pinch hitter`};
+  if(e.k==="ph")return {team:tm,tag:"",text:e.nm?`${e.nm} pinch-hits${e.was?" for "+e.was:""}`:`send up a pinch hitter`};
   return {team:tm,tag:"",text:""};
 }
 const shown=e=>true;
@@ -75,17 +76,22 @@ function scoreTop(g,H,A,label,cls,extra){
       <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span><span class="wn">${H}</span></div>
     </div>${extra||""}</div>`;
 }
-function lineScore(g,drives){
-  const n=Math.max(SEGS,drives.length), cell=(v,b)=>`<td${b?' class="b"':''}>${v===null||v===undefined?"":v}</td>`;
-  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(side==="h"?(drives.length?drives[drives.length-1].sh:0):(drives.length?drives[drives.length-1].sa:0),true)}${cell(drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;
+/* now: the live score (round 56: at a call in the middle of an inning the big score had the inning's runs and the
+   line score didn't, "5TH INNING, DOWN 2" over a line reading 1-0: Instinct, Muse). The inning under way gets its
+   runs so far, and R is the score itself. */
+function lineScore(g,drives,now){
+  const ls=drives.length?drives[drives.length-1]:null, done={h:ls?ls.sh:0,a:ls?ls.sa:0};
+  const part=now&&(now.h>done.h||now.a>done.a)?{h:now.h-done.h,a:now.a-done.a}:null;
+  const n=Math.max(SEGS,drives.length+(part?1:0)), cell=(v,b)=>`<td${b?' class="b"':''}>${v===null||v===undefined?"":v}</td>`;
+  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell(drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;
   return `<div class="linescore"><table><tr><th></th>${Array.from({length:n},(_,i)=>`<td>${i+1}</td>`).join("")}<td class="b">R</td><td>H</td></tr>${row("a",g.away)}${row("h",g.home)}</table></div>`;
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
   const lab=`<span class="live"></span>${!live.drives.length?"FIRST PITCH":"After the "+esc(segLabel(last))}
-      ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
-  return scoreTop(g,H,A,lab,"",lineScore(g,live.drives));
+      ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
+  return scoreTop(g,H,A,lab,"",lineScore(g,live.drives,{h:H,a:A}));
 }
 /* ---- the evidence ---- */
 function firstReadTip(){ return "" }

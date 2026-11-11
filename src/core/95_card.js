@@ -60,7 +60,7 @@ function seasonCardSVG(h, team){
       font-family="Impact,'Arial Black','Helvetica Neue',sans-serif"
       letter-spacing="3">${esc(big)}</text>
 
-    ${stat(210,"CONFERENCE",c.confRec||"—")}
+    ${stat(210,((LEAGUE.text&&LEAGUE.text.groupWord)||"CONFERENCE"),c.confRec||"—")}
     ${stat(540,(LEAGUE.text.rank||"Poll").toUpperCase(), h.pos?ordinal(h.pos):h.rank?("#"+h.rank):"NR")}
     ${stat(870,"TITLES", String(c.titles||0))}
 
