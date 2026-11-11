@@ -13,7 +13,7 @@
 const SEGS=9;
 const BS={
   // a plate appearance between average sides: strikeout, walk, hit by pitch, single, double, triple, home run (the rest an out in play)
-  k:0.224, bb:0.080, hbp:0.011, s1:0.136, s2:0.043, s3:0.004, hr:0.029,
+  k:0.224, bb:0.080, hbp:0.011, s1:0.134, s2:0.043, s3:0.004, hr:0.028,   // round 57: 0.136 and 0.029 ran 4.52-4.57 a side in the real app
   edge:+((typeof process!=="undefined"&&process.env&&process.env.BS_E)||0.00031),   // per Elo point of gap: the log-odds a hit or walk shifts
   dp:0.12,            // an out in play with a man on first and fewer than two out: a double play this often
   sf:0.32,            // with a man on third and fewer than two out: a fly ball deep enough this often

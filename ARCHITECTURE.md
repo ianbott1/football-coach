@@ -358,6 +358,25 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 57: baseball's schedule as series, the run level, and September.
+- Schedule (mlb 25_schedule): MLB's pairings (13 / 6-7 / 3 / 4) as series: division 7+6 as 4+3 and 3+3, the rest of
+  the league 3+3 (the seventh game makes a 4), one 3-game series against each of fourteen in the other league, 2+2
+  with the natural rival. Exactly 81 at home for every club: each league's odd pairings, and the interleague
+  series, are oriented along Euler circuits (every club has an even number of each). packSeries lays them into
+  the days: no games over a 4-day All-Star break or two league-wide off days, both clubs free on the first day,
+  least room first, a day off after 12-17 straight (MLB's cap is 20). Measured: 2,430 games, 630 three-game,
+  120 four-game and 30 two-game series, 24 days off a club, longest stretch 19-20, the season to day 184-186 of 186
+  (with no league-wide days off it ended on 176-178). bs-calibrate.js checks all of it on three seeds.
+- The hub's next game: "Game 2 of 3 at home · you trail 1-0" (serLine, from sched entries' ser/sg/sn).
+- Run level: singles 0.136 to 0.134 and home runs 0.029 to 0.028 (the real app ran 4.52-4.57 a side). Real app
+  now: 4.43 a side, one-run 26.7%, home 52.6%, wins spread 11.7, best 105. bs-calibrate: 4.38, 28.1%, 9.2% extras.
+  The starter's form (0.12) barely moves the one-run share (0.06: 26.9%), so it stays.
+- The race (mlb 97_views bsRaceCard, LEAGUE.ui.raceCard, drawn above Next up from the last 45 days): your division
+  and the wild card with games behind and clinch marks, the magic number (163 less your wins less the second's
+  losses) or elimination number, the same for the wild card against fourth or third, last night's scores for
+  every club in either race, and "clinched today" once (S.bsClinch).
+- A newline added to the next-game card's template changed every game's hub HTML (and goldens): kept inline.
+
 Round 56: baseball testers' first reports (Instinct, Muse), the bugs.
 - Saving (all games): a refused database write is tried twice more; if it still fails, the banner gives the
   browser's own words and the storage in use (store.lastFail, saveWhy). Muse's main browser refused a new career's
