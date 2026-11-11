@@ -39,9 +39,19 @@ const ANSWERS={
   zone:{beats:"patient",l:"Attack the zone: strike one, every hitter",     d:"Get ahead early; no free passes to hitters who wait"},
   spin:{beats:"contact",l:"Change speeds: spin and offspeed",              d:"Breaking balls and changeups to miss barrels and get weak contact"}
 };
-const BS_TELL={pull:[0.62,3.7,0.18],patient:[0.45,4.3,0.21],contact:[0.44,3.6,0.15]};   // pulled share of balls in play, pitches an at-bat, strikeout rate
-function bsRead(T){ if(!T||!T.n)return null; const pl=T.bip?T.pull/T.bip:0, pp=T.pa?T.pit/T.pa:0, kr=T.pa?T.k/T.pa:0;
-  const sc={pull:(pl-0.5)*8, patient:(pp-3.9)*4, contact:(0.19-kr)*30}; return APPROACH_KEYS.reduce((a,k)=>sc[k]>sc[a]?k:a,"pull") }
+/* the evidence each approach leaves: the pulled share of balls in play, pitches an at-bat, swings and misses an
+   at-bat (round 58: the third was the strikeout rate, which the approach never moved, so only two tells carried
+   anything and the read after three innings was right 53% of the time, below the scouting report's 69%: "a coin
+   flip", Muse). The plate appearance itself is unchanged; these are what your hitting coach counts. */
+const BS_TELL={pull:[0.66,3.7,1.0],patient:[0.44,4.5,0.85],contact:[0.42,3.6,0.45]}, BS_TELL_SD={pit:1.1,wh:0.9};
+const BS_TELL_AVG=[0,1,2].map(i=>APPROACH_KEYS.reduce((s,k)=>s+BS_TELL[k][i],0)/3);
+/* the likeliest approach given the evidence (each approach's chance of producing exactly this) */
+function bsRead(T){ if(!T||!T.n||!T.pa)return null; const L={};
+  APPROACH_KEYS.forEach(k=>{ const t=BS_TELL[k], q=t[0];
+    let ll=T.pull*Math.log(q)+(T.bip-T.pull)*Math.log(1-q);
+    ll-=Math.pow(T.pit-T.pa*t[1],2)/(2*T.pa*BS_TELL_SD.pit*BS_TELL_SD.pit);
+    ll-=Math.pow((T.wh||0)-T.pa*t[2],2)/(2*T.pa*BS_TELL_SD.wh*BS_TELL_SD.wh); L[k]=ll });
+  return APPROACH_KEYS.reduce((a,k)=>L[k]>L[a]?k:a,"pull") }
 const ASSIST=["normal","Leave it to your assistant"];
 function scoutReport(fav,seed){
   const r=mulberry32(seed>>>0), rep={pull:0,patient:0,contact:0};
@@ -80,7 +90,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const SPc=(ctx.sp)||{};
   const side0=sd=>({app:null, ans:null, prepd:false, sp:{n:(SPc[sd]&&SPc[sd].n)||null, q:(SPc[sd]&&SPc[sd].q)||0, form:rng.gauss(0,BS.form), bf:0, ra:0,
       stam:BS.stamina[0]+rng.int(BS.stamina[1]-BS.stamina[0]+1)}, pen:false, closer:false, bat:0,
-    tell:{pull:0,bip:0,pit:0,pa:0,k:0,n:0}});
+    tell:{pull:0,bip:0,pit:0,pa:0,k:0,wh:0,n:0}});
   const st={h:0,a:0,drives:[],seg:0,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
     mode:{home:planH,away:planA}, late:{}, asked:{}, queue:[], ask:null, ot:0, done:false, playoff:!!playoff, S:{home:side0("home"),away:side0("away")}};
   st.gap=gap;
@@ -103,7 +113,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     let u=rng.r(), o="out"; for(const k of ["k","bb","hbp","s1","s2","s3","hr"]){ if(u<p[k]){ o=k; break } u-=p[k] }
     // the evidence their approach leaves (for your read): pitches seen, pulled balls in play, strikeouts
-    const T=st.S[bat].tell, tl=BS_TELL[st.S[bat].app]; T.pa++; T.pit+=Math.max(1,Math.round(rng.gauss(tl[1],1.4)));
+    const T=st.S[bat].tell, tl=BS_TELL[st.S[bat].app]; T.pa++; T.pit+=Math.max(1,Math.round(rng.gauss(tl[1],BS_TELL_SD.pit)));
+    T.wh=(T.wh||0)+Math.max(0,Math.round(rng.gauss(tl[2],BS_TELL_SD.wh)));
     if(o==="k")T.k++; else if(o!=="bb"&&o!=="hbp"){ T.bip++; if(rng.r()<tl[0])T.pull++ }
     st.S[fs].sp.bf+=st.S[fs].pen||st.S[fs].closer?0:1;
     return o;
@@ -123,15 +134,23 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   // the computer's manager: the bullpen when the starter is spent or hit hard; the closer for a save
   const cpuPen=fs=>{ const X=st.S[fs], P=X.sp; if(X.pen)return; if(P.bf>=P.stam||P.ra>=5||(P.bf>=18&&P.ra>=4))X.pen=true };
   const cpuCloser=fs=>{ const X=st.S[fs], L=lead(fs); if(inn()>=9&&L>=1&&L<=3&&!X.closer){ X.closer=true; X.pen=true } };
-  const pullDue=fs=>{ const X=st.S[fs], P=X.sp; return !X.pen&&P.bf>=Math.max(18,P.stam-3)&&inn()>=5&&inn()<=8&&Math.abs(lead(fs))<=3 };
+  // the bullpen call: three batters before he's spent from the 5th (within three runs), and in a close game from the 6th
+  // six batters before (round 58: it came in 18% of live games; Muse's first was game 114, "the best call in the game")
+  const pullDue=fs=>{ const X=st.S[fs], P=X.sp; if(X.pen||inn()<5||inn()>8)return false; const L=Math.abs(lead(fs));
+    return (L<=3&&P.bf>=Math.max(18,P.stam-3))||(L<=2&&inn()>=6&&P.bf>=Math.max(15,P.stam-6)) };
   // round 56: every event names its man, from the day's lineup, and a pinch hitter stays in the slot for the rest of the
   // game (the log named a slot's starter or his backup at random, play by play: "three Devontes", Muse)
   const LU=side=>(ctx&&ctx.lineup&&ctx.lineup[side])||[], sub=st.sub={home:{},away:{}}, onFirst={home:null,away:null};
   const who=(side,slot)=>sub[side][slot]||LU(side)[slot]||null;
+  const rateOf=(side,nm)=>ctx&&ctx.rate&&ctx.rate[side]&&nm?ctx.rate[side][nm]:null;
+  const catcherOf=side=>who(side,0);
+  // the pinch hitter is worth it: he's the better hitter, and you're not ahead (the computer's rule, and your assistant's)
+  const pinchWorth=(bat,slot)=>{ const ph=ctx&&ctx.bench&&ctx.bench[bat], b=rateOf(bat,who(bat,slot)), r=rateOf(bat,ph); return !!ph&&lead(bat)<=0&&(b==null||r==null||r>b) };
   const doAB=()=>{
     const bat=H.bat, fs=H.fs, X=st.S[bat];
     const slot=X.bat%9; X.bat++;
-    let extra=0; if(st.late[bat+"pinch"]){ extra=BS.pinch; st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
+    let extra=0; if(st.late[bat+"pinch"]){ st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
+      extra=bsPinchEdge(rateOf(bat,was),rateOf(bat,ph));
       if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
     const nm=who(bat,slot);
     const o=pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
@@ -151,7 +170,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       else{ H.outs++; if(H.outs<3&&b[1]&&!b[2]&&rng.r()<0.3){ b[2]=1; b[1]=0 } } }
     if(H.outs>=3)L.lob+=b[0]+b[1]+b[2];
   };
-  const steal=(side)=>{ const ok=rng.r()<BS.steal; const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
+  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
   st.log=[];
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -164,8 +183,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the plan as it was" }
       return }
     if(dp.k==="pull"){ if(v==="pen")X.pen=true; else if(v==="stay"){ X.sp.stam=Math.max(X.sp.stam,X.sp.bf+3) } else { cpuPen(side); st.autoDid=X.pen?"went to the bullpen":"left him in, by the computer's rule" } return }
-    if(dp.k==="pinch"){ if(v==="pinch"||(v==="normal"&&lead(side)<=0))st.late[side+"pinch"]=true; if(v==="normal")st.autoDid=st.late[side+"pinch"]?"sent up the pinch hitter (the computer does when not ahead)":"let him hit"; return }
-    if(dp.k==="steal"){ const go=v==="send"||(v==="normal"&&rng.r()<0.25); if(v==="normal")st.autoDid=go?"sent him":"held him"; if(go&&H&&H.b[0]&&!H.b[1])steal(side); return }
+    if(dp.k==="pinch"){ if(v==="pinch"||(v==="normal"&&dp.worth))st.late[side+"pinch"]=true; if(v==="normal")st.autoDid=st.late[side+"pinch"]?"sent up the pinch hitter (he's the better bat)":"let him hit"; return }
+    if(dp.k==="steal"){ const go=v==="send"||(v==="normal"&&dp.p>=BS_SEND); if(v==="normal")st.autoDid=go?"sent him (a good jump to be had)":"held him"; if(go&&H&&H.b[0]&&!H.b[1])steal(side); return }
   };
   /* the calls due before the next at-bat (people only; the computer manages as above) */
   function callsDue(){
@@ -175,10 +194,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(queueCall(fs,pullCall(inn(),lead(fs),X.sp,H.b.some(Boolean)?onDesc()+".":"")))return true }
     if(humans[bat]&&inn()>=7&&Math.abs(lead(bat))<=2){ const X=st.S[bat], slot=X.bat%9;
       // tied or behind only (round 56: the help says "when you're chasing", and a third of the calls came with a lead: Instinct)
-      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
-        if(queueCall(bat,pinchCall(inn(),lead(bat),ctx.lineup&&ctx.lineup[bat]?ctx.lineup[bat][slot]:null,ctx.bench&&ctx.bench[bat]||null,onDesc())))return true }
-      if(H.b[0]&&!H.b[1]&&H.outs<2&&Math.abs(lead(bat))<=1&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
-        if(queueCall(bat,stealCall(inn(),lead(bat),null,H.outs)))return true } }
+      // round 58, measured on replays: a pinch hitter is worth asking you about tied or down one from the 8th (about 4
+      // points on your assistant); in the 7th, or down two, about 2: those go to him
+      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&lead(bat)>=-1&&inn()>=8&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+        const dp=pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench&&ctx.bench[bat]||null,onDesc()); dp.worth=pinchWorth(bat,slot); dp.team=ctx.team&&ctx.team[bat];
+        if(queueCall(bat,dp))return true }
+      // the steal: asked tied from the 8th (3 to 4 points on your assistant, measured); elsewhere he decides (1 to 2)
+      if(H.b[0]&&!H.b[1]&&H.outs<2&&lead(bat)===0&&inn()>=8&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
+        const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
+        dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
+        if(queueCall(bat,dp))return true } }
     return false;
   }
   function cpuTurn(){
@@ -188,7 +213,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // up a run a game more than the computer, and won 39% to its 49%)
     if(!humans[fs]||st.S[fs].pen||!pullDue(fs)||st.asked["pull"+inn()+fs])cpuPen(fs);
     cpuCloser(fs);
-    if(!humans[bat]&&H.b[0]&&!H.b[1]&&H.outs<2&&rng.r()<BS.stealTry)steal(bat);
+    // the computer's steal: a chance like any other, taken only when the runner should make it (round 58)
+    // (yours too, wherever you weren't asked: your assistant plays the computer's rule)
+    if((!humans[bat]||!st.asked["steal"+inn()+bat])&&H.b[0]&&!H.b[1]&&H.outs<2&&rng.r()<BS.stealTry&&bsStealP(onFirst[bat],catcherOf(fs))>=BS_SEND)steal(bat);
+    // and its pinch hitter, in the spots you're asked about (round 58: it never pinch-hit, while your assistant did)
+    if(inn()>=7&&Math.abs(lead(bat))<=2&&(H.b[1]||H.b[2])&&(st.S[bat].bat%9)>=6&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+      if(pinchWorth(bat,st.S[bat].bat%9))st.late[bat+"pinch"]=true }
   }
   function finishHalf(){
     st.lines[H.bat==="home"?"h":"a"];
@@ -239,12 +269,27 @@ function spCtx(t,step){
     const mean=(R[BS_SP[0]].r+R[BS_SP[1]].r+R[BS_SP[2]].r+(R[BK(BS_SP[0])]||R[BS_SP[0]]).r+(R[BK(BS_SP[1])]||R[BS_SP[1]]).r)/5;
     return {n:p.n, q:(p.r-mean)*0.012} }catch(e){ return null } }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
-  lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+  lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, team:{home:h,away:a},
+  rate:{home:ratesOf(h),away:ratesOf(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+/* hitters' ratings by name, for the pinch hitter's edge */
+function ratesOf(t){ try{ const o={}; (SEA.roster[t]||[]).forEach(p=>{ if(p&&p.n)o[p.n]=p.r }); return o }catch(e){ return {} } }
 /* the day's nine: an injured regular's backup plays (round 56: the season's stats give his at-bats to the backup, and now
    the log does too); the bench bat is the best backup not already in it */
 function hurtSet(t){ try{ return new Set(SEA.talent?SEA.talent.active(t).map(x=>x.idx):[]) }catch(e){ return new Set() } }
 function lineupOf(t){ try{ const R=SEA.roster[t], H=hurtSet(t); return BS_HIT.map(i=>{ const p=H.has(i)?R[BK(i)]:R[i]; return p?p.n:(R[i]?R[i].n:null) }) }catch(e){ return null } }
 function benchBat(t){ try{ const R=SEA.roster[t], H=hurtSet(t); let b=null; BS_HIT.forEach(i=>{ if(H.has(i))return; const p=R[BK(i)]; if(p&&!H.has(BK(i))&&(!b||p.r>b.r))b=p }); return b?b.n:null }catch(e){ return null } }
+/* the steal and the pinch hitter (round 58: neither call showed anything to decide on: "no runner speed, no catcher
+   arm, no hitters' numbers", Muse). A runner's speed and a catcher's arm are his own (from his name: the same all
+   career), and move the steal's odds; a pinch hitter helps by how much better a hitter he is than the man he bats
+   for (or hurts, if he isn't). The computer, your assistant and the evidence you see all use the same numbers. */
+const BS_SPEED=[["fast",0.08],["fast",0.08],["fast",0.08],["average",0],["average",0],["average",0],["average",0],["average",0],["slow",-0.12],["slow",-0.12]];
+const BS_ARM=[["a strong arm",-0.08],["a strong arm",-0.08],["a strong arm",-0.08],["an average arm",0],["an average arm",0],["an average arm",0],["an average arm",0],["an average arm",0],["a weak arm",0.06],["a weak arm",0.06]];
+function bsSpeed(nm){ return BS_SPEED[strHash("spd|"+(nm||""))%10] }
+function bsArm(nm){ return BS_ARM[strHash("arm|"+(nm||""))%10] }
+function bsStealP(runner,catcher){ return BS.steal+bsSpeed(runner)[1]+bsArm(catcher)[1] }
+const BS_SEND=0.80;   // the computer (and your assistant) send a runner only this likely to make it
+function bsPlayer(t,nm){ try{ return (SEA.roster[t]||[]).find(p=>p&&p.n===nm)||null }catch(e){ return null } }
+function bsPinchEdge(batR,benchR){ if(batR==null||benchR==null)return BS.pinch; return Math.max(-0.12,Math.min(0.15,(benchR-batR)*0.012)) }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

@@ -62,7 +62,8 @@ function nflBoardHTML(P){
         <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${dnRead(p.pid).sr}, ceiling ~${dnRead(p.pid).spot}${dnRead(p.pid).wk?" &middot; worked out":dnRead(p.pid).unsure?" &middot; scouts unsure":""}</div></div>
       ${dnOn()&&!dnRead(p.pid).wk&&(S.off.picks.workouts||[]).length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
       <button class="skip small" ${on?`data-bdrm="${p.pid}"`:`data-bdadd="${p.pid}"`}>${on?"Remove":"Add"}</button></div>`;
-  let h=`<div class="grouphead">Your draft board</div>`;
+  let h=lotteryHTML(dnTeam());
+  h+=`<div class="grouphead">Your draft board</div>`;
   h+=board.length?board.map((id,i)=>row(byId[id],i,true)).join("")
      :`<div class="note">Empty: your draft style will choose. Add players below and you'll take the highest one still there at each of your picks.</div>`;
   // worked-out players stay listed wherever their sharper read puts them (Instinct: one vanished from the 30)
@@ -326,3 +327,15 @@ Object.assign(LEAGUE.ui,{
       const P=S.off.picks, id=+b.dataset.bdrm; P.board=(P.board||[]).filter(x=>x!==id); save(); render();});
   }
 });
+
+/* the lottery, shown (round 58: "the draft lottery shows no odds": Instinct): the eighteen teams outside the
+   postseason by record, each one's chance at the first pick, and where it landed */
+function lotteryHTML(my){
+  try{ const S2=SEA, pts=t=>S2.pts?S2.pts(t):S2.rec[t][0], worst=(a,b)=>pts(a)-pts(b)||S2.elo[a]-S2.elo[b];
+    const lot=NAMES.filter(t=>!(S2.field&&S2.field.indexOf(t)>=0)).sort(worst); if(lot.length!==LOTTERY_ODDS.length)return "";
+    const order=dnOrder(), pct=i=>(LOTTERY_ODDS[i]/10).toFixed(LOTTERY_ODDS[i]%10?1:0);
+    const mi=lot.indexOf(my), mp=order.indexOf(my)+1;
+    const mine=mi<0?"You made the postseason: your picks come after the lottery's eighteen.":
+      `You had the ${mi?ordinal(mi+1)+"-worst":"worst"} record: a ${pct(mi)}% chance at the first pick. You drew No. ${mp}${mp-1<mi?`, up ${mi-(mp-1)}`:mp-1>mi?`, down ${(mp-1)-mi}`:""} from where your record put you.`;
+    return `<div class="grouphead">The draft lottery</div><div class="note">${mine} The teams outside the postseason draw for the top six picks; the rest follow worst record first.</div>
+      <div class="lotto">${lot.map((t,i)=>`<div class="lrow ${t===my?"me":""}"><span class="lseed">${ordinal(i+1)}</span><span class="lteam">${esc(t)}</span><span class="lodds">${pct(i)}%</span><span class="lpick">No. ${order.indexOf(t)+1}</span></div>`).join("")}</div>` }catch(e){ return "" } }

@@ -358,6 +358,27 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 58: baseball's calls, October, the lottery.
+- The read: the strikeout-rate tell was never moved by the approach (only two tells carried anything); the best
+  reader of the tells after three innings was right 53% of the time, under the scouting report's 69%. Now a third
+  real tell, swings and misses an at-bat (BS_TELL[k][2], drawn like pitches seen; the plate appearance unchanged),
+  noise pit 1.1 / wh 0.9, and bsRead by likelihood: the best reader right 84% (3,000 games). The panel marks each
+  tell above (&#9650;) or below (&#9660;) the league average. Worth 6.2 points on the assistant (replays, 300 each).
+- Steal: a runner's speed and a catcher's arm (from their names: fast/average/slow, strong/average/weak) set the
+  odds (0.74 base, +0.08/-0.12, -0.08/+0.06); the computer and your assistant send only at 80%+ (BS_SEND); the panel
+  shows both and the runner's steals. Pinch: the edge is how much better the bench bat is than the man he hits for
+  (0.012 a rating point, -0.12 to +0.15); the computer pinch-hits by the same rule (it never did); the panel shows
+  both men's season lines. Measured worth on the assistant: steal 1.6 points (tied 8th-9th 2.5-3.9), pinch 2.9
+  (tied or down one from the 8th about 4): asked only there, his rule elsewhere (and for your side, the computer's).
+  Close finishes now often carry no late call (8 of 12 one-run games in 30): the bullpen call is the late decision.
+- Bullpen call: also in close games (within two) from the 6th, six batters before he's spent: in 16 of 56 live games
+  (10 before). Worth 14.9 points on the assistant.
+- October (mlb 97_views nflBracket): one screen, your road (each series, every game's score from your side), then
+  both leagues and the World Series, each series with its games (G1 Seattle 8-1...).
+- The draft lottery (98_offseason_views lotteryHTML): the eighteen outside the postseason by record, each one's
+  odds at No. 1, and where each landed; your line says where your record put you and where you drew.
+- Sim parity 49.7 / 48.9; calibration 4.39 runs, one-run 27.2%.
+
 Round 57: baseball's schedule as series, the run level, and September.
 - Schedule (mlb 25_schedule): MLB's pairings (13 / 6-7 / 3 / 4) as series: division 7+6 as 4+3 and 3+3, the rest of
   the league 3+3 (the seventh game makes a 4), one 3-game series against each of fourteen in the other league, 2+2
