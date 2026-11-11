@@ -894,6 +894,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .objmark{flex:none;width:16px;color:var(--muted)}.obj.met .objmark{color:var(--turf)}.obj.miss .objmark{color:var(--flag)}
 .objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
 details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 0;list-style:none}details.audit>summary::before{content:"\25B8  "}details.audit[open]>summary::before{content:"\25BE  "}
+.livewp .lwtog{background:none;border:1px solid var(--line,#333);color:var(--mute,#9aa);font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;cursor:pointer;min-height:28px}.livewp.off{justify-content:flex-end}
 .livewp{display:flex;align-items:center;gap:10px;margin:8px auto;padding:0 16px;max-width:760px;box-sizing:border-box;font-size:12px}.livewp .lwlab{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}.livewp .lwbar{flex:1;min-width:60px;height:6px;background:var(--line);display:flex;overflow:hidden;border-radius:3px}.livewp .lwbar i{background:var(--sodium);display:block;height:100%}.livewp .lwbar b{background:var(--muted);opacity:.5;display:block;height:100%}.livewp .lwpct{color:var(--bone);white-space:nowrap;font-family:var(--mono);font-size:11px}
 .filmmem{font-size:12.5px;line-height:1.45;border-left:2px solid var(--bone);padding:4px 10px;margin:8px 0;color:var(--dim,#9aa)}.filmmem b{color:var(--bone);font-weight:600}
 .autonote{font-size:12.5px;color:var(--dim,#9aa);border-left:2px solid var(--sodium);padding:4px 8px;margin:6px 0}
@@ -975,7 +976,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="c46631f";
+<script>const BUILD_ID="9d0c8af";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -1042,7 +1043,7 @@ const LEAGUE={
   myGameLabel:n=>`Game ${n}`,
   bigTop:5,
   rankTop:10,
-  text:{unit:"team",bye:"No game today",
+  text:{groupWord:"DIVISION",unit:"team",bye:"No game today",lostFinal:"beaten in the World Series",offWord:"winter",outOf:"out of the postseason",
     rankedWin:["A win over one of the league's best. That tells you something.","Took one from a contender. That's a statement.","A real team, and you beat them."],
     badLoss:["The kind of loss that decides the last wild card.","Beaten by a club going nowhere. It will cost you in September.","Games like this one decide divisions."],
     champions:"World Series champions",
@@ -1095,7 +1096,17 @@ const LEAGUE={
 };
 /* ============ sport: baseball ============ */
 const SPORT={
-  scoreWord:"RUN",                  // the flash when you score
+  scoreWord:"RUN",
+  closeMargin:1, closeLabel:"One run",   // the scores page chip (round 56)                  // the flash when you score
+  /* which runs get the flash (round 56: an enormous "RUN!" on every run hid the log at the moment you wanted to read it,
+     and a homer felt the same as a bases-loaded walk: Muse): a home run, or a run from the 7th on that ties the game or
+     takes the lead; anything else just plays its sound */
+  flashWord(L,who){
+    try{ const D=L.drives||[], d=D[D.length-1]; if(!d)return null; const my=S.myTeam, side=who==="mine"?(L.g.home===my?"home":"away"):(L.g.home===my?"away":"home");
+      L._fl=L._fl||{}; const hr=(d.ev||[]).find((e,i)=>e.k==="hr"&&e.side===side&&!L._fl[d.seg+":"+i]&&(L._fl[d.seg+":"+i]=true));
+      if(hr)return hr.n===4?"GRAND SLAM":"HOME RUN";
+      const us=side==="home"?L.eng.h:L.eng.a, them=side==="home"?L.eng.a:L.eng.h;
+      return d.seg>=6&&us>=them&&us-them<=1?"RUN":null }catch(e){ return null } },
   id:"baseball",
   word:"Baseball",
   /* what the owl perches on in the logo: a bat, laid across, and a ball */
@@ -1227,6 +1238,14 @@ function statProd(pos,s){
   if(isPitcher(pos)){ if(!s.ip)return 0; const era=s.er*27/s.ip; return Math.max(0,(5-era))*s.ip/27*6+(s.w||0)*2+(s.k||0)*0.08 }
   const avg=s.ab?s.h/s.ab:0; return (s.hr||0)*2.2+(s.rbi||0)*0.5+(s.r||0)*0.4+Math.max(0,avg-0.22)*s.ab*0.9;
 }
+
+/* a watched game's log, by hitter (round 56): home runs, RBI and hits for the men it named (core 80_season credits them) */
+function bsLogCredit(team,side,drives){
+  const out={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==side||!e.nm)return;
+    if(e.k!=="hr"&&e.k!=="rbi")return; const c=out[e.nm]=out[e.nm]||{hr:0,rbi:0,h:0};
+    if(e.k==="hr"){ c.hr++; c.h++; c.rbi+=e.n||1 } else { c.rbi+=e.n||1; if(e.hit>0)c.h++ } }));
+  return out;
+}
 /* ============ storage ============ */
 /* Where saves live. Inside Claude's artifact viewer that is window.storage;
    anywhere else (the published site, a file opened locally) it is the
@@ -1256,11 +1275,13 @@ const idb=(function(){
     return P };
   const req=(db,mode,fn)=>new Promise(res=>{ try{ const tx=db.transaction(IDB_STORE,mode), os=tx.objectStore(IDB_STORE), r=fn(os);
       let val; if(r)r.onsuccess=()=>{ val=r.result };
-      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false}); tx.onabort=()=>res({ok:false}) }catch(e){ res({ok:false}) } });
+      // round 56: say why a write failed (Muse's main browser refused a new career's first save; we couldn't tell why)
+      const why=()=>{ try{ return (tx.error&&(tx.error.name||tx.error.message))||(r&&r.error&&r.error.name)||"refused" }catch(e){ return "refused" } };
+      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false,why:why()}); tx.onabort=()=>res({ok:false,why:why()}) }catch(e){ res({ok:false,why:e&&e.name||"error"}) } });
   return {
     open:open,
     async get(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.get(k)) },
-    async set(k,v){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.put(v,k)) },
+    async set(k,v){ const db=await open(); if(!db)return {ok:false,why:"the database didn't open"}; return req(db,"readwrite",os=>os.put(v,k)) },
     async del(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.delete(k)) },
     async keys(){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.getAllKeys?os.getAllKeys():null) },
   };
@@ -1274,6 +1295,7 @@ const store=(function(){
   let usingIdb=null;   // known once the database has opened (or failed to)
   idb.open().then(db=>{ usingIdb=!!db });
   return {
+    lastFail:null,   // round 56: why the last write failed, for the banner
     pick:null,   // (databaseCopy, localStorageCopy, key) => 1 when the localStorage copy is further along (set by the game)
     kind(){ return claude()?"claude":usingIdb?"database":local()?"browser":"none" },
     // can it take a write right now? (full or blocked storage says no; the database is checked on the write itself)
@@ -1298,7 +1320,14 @@ const store=(function(){
     async set(k,v,shared){
       const W=claude(); if(W){try{return await W.set(k,v,shared)}catch(e){return null}}
       if(shared)return null;
-      const D=await idb.set(k,v); if(D.ok)return {key:k,value:v};
+      // round 56: a refused write is tried twice more (a slow first open, a busy disk) before the banner; the reason and
+      // the storage in use are kept for the banner, so a player can tell us what the browser said
+      let D=await idb.set(k,v);
+      const hasDb=IDB_ON&&typeof indexedDB!=="undefined"&&!!indexedDB;   // no database at all: straight to the old path, no wait
+      for(let i=0;i<2&&!D.ok&&hasDb;i++){ await new Promise(r=>setTimeout(r,400*(i+1))); D=await idb.set(k,v) }
+      if(D.ok){ this.lastFail=null; return {key:k,value:v} }
+      if(hasDb)this.lastFail={why:D.why||"refused",at:Date.now()};
+      try{ if(navigator.storage&&navigator.storage.estimate){ const e=await navigator.storage.estimate(); this.lastFail.used=e.usage; this.lastFail.quota=e.quota } }catch(e){}
       // the database refused it, or was slow to open: a failure (the banner says so), never a save into localStorage, which
       // the next load would read under the database's newer copy (round 48: a first load showed empty slots until a reload)
       if(usingIdb||(IDB_ON&&typeof indexedDB!=="undefined"&&indexedDB))return null;
@@ -2519,6 +2548,24 @@ LEAGUE.goals={
     return {w:68,par:0,l:"The bottom of the league. Seventy-five wins would be real movement.",t:"START OVER"};
   },
   isTitle(result){ return /WORLD SERIES CHAMPIONS/i.test(result) },
+  /* the postseason part, as it stands (round 56: "Still to do: stay in the wild-card race into September" after the
+     division was clinched: Muse) */
+  clauseLine(e,my){
+    const sea=SEA; if(!sea)return null; const ck=(sea.clinch?sea.clinch():{})[my]||"";
+    const all=[].concat(...Object.values(sea.series||{})).filter(x=>x&&x.w&&x.w[my]!==undefined);
+    const won=all.filter(x=>x.winner===my).length, out=all.some(x=>x.winner&&x.winner!==my);
+    const want=e.par>=1.8?2:e.par>=1.1?1:0, what=want===2?"reach the championship series":want===1?"win a series":"";
+    const reachedCS=(sea.series&&sea.series.cs||[]).some(x=>x.hi===my||x.lo===my), done=want===2?reachedCS:won>=want;
+    if(sea.phase==="week"){
+      if(ck==="y")return `Division clinched.${want?" Still to do: "+what+".":""}`;
+      if(ck==="x")return `A postseason place clinched.${want?" Still to do: "+what+".":""}`;
+      if(ck==="e")return "Out of the postseason race.";
+      const r=wcRace(my); return want?`Still to do: make the postseason and ${what}.${r?" "+r:""}`:(r||"Still in the race.") }
+    if(!(sea.seeds&&sea.seeds[my])&&!all.length)return "Missed the postseason.";
+    if(!want)return "Into the postseason: done.";
+    if(done)return want===2?"Into the championship series: done.":`${won} series won: done.`;
+    return out?`In the postseason, but out before you could ${what}.`:`In the postseason. Still to do: ${what}.`;
+  },
   firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
     // no result yet (a season in progress, as the seat badge asks): the postseason at par
@@ -2556,6 +2603,15 @@ LEAGUE.seasonLine=function(h,t,r,seed){
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;
+
+/* where you stand for the last wild card (round 56): the three best in your league who aren't leading a division */
+function wcRace(my){
+  try{ const sea=SEA, sd=sea.sideOf(my), R=sea.rec, pct=t=>{ const [w,l]=R[t]; return w+l?w/(w+l):0 };
+    const teams=NAMES.filter(t=>sea.sideOf(t)===sd), lead={}; LEAGUE.conf.sides[sd].forEach(d=>{ const D=teams.filter(t=>CONF[t]===d).sort((a,b)=>sea._tb(a,b)); lead[D[0]]=true });
+    if(lead[my])return "Leading the division.";
+    const wc=teams.filter(t=>!lead[t]).sort((a,b)=>sea._tb(a,b)), i=wc.indexOf(my), gb=(a,b)=>((R[a][0]-R[b][0])+(R[b][1]-R[a][1]))/2;
+    if(i<3){ const g=gb(my,wc[3]); return `In a wild-card place${g>0?`, ${g} game${g===1?"":"s"} clear`:""}.` }
+    const g=gb(wc[2],my); return `${g} game${g===1?"":"s"} out of the last wild card.` }catch(e){ return null } }
 /* ============ rivalries: pro baseball ============ */
 /* Every division rival is a rivalry and the series is kept across seasons;
    a few of the oldest have names. */
@@ -2712,27 +2768,34 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const cpuPen=fs=>{ const X=st.S[fs], P=X.sp; if(X.pen)return; if(P.bf>=P.stam||P.ra>=5||(P.bf>=18&&P.ra>=4))X.pen=true };
   const cpuCloser=fs=>{ const X=st.S[fs], L=lead(fs); if(inn()>=9&&L>=1&&L<=3&&!X.closer){ X.closer=true; X.pen=true } };
   const pullDue=fs=>{ const X=st.S[fs], P=X.sp; return !X.pen&&P.bf>=Math.max(18,P.stam-3)&&inn()>=5&&inn()<=8&&Math.abs(lead(fs))<=3 };
+  // round 56: every event names its man, from the day's lineup, and a pinch hitter stays in the slot for the rest of the
+  // game (the log named a slot's starter or his backup at random, play by play: "three Devontes", Muse)
+  const LU=side=>(ctx&&ctx.lineup&&ctx.lineup[side])||[], sub=st.sub={home:{},away:{}}, onFirst={home:null,away:null};
+  const who=(side,slot)=>sub[side][slot]||LU(side)[slot]||null;
   const doAB=()=>{
     const bat=H.bat, fs=H.fs, X=st.S[bat];
     const slot=X.bat%9; X.bat++;
-    let extra=0; if(st.late[bat+"pinch"]){ extra=BS.pinch; st.late[bat+"pinch"]=false; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn()}) }
+    let extra=0; if(st.late[bat+"pinch"]){ extra=BS.pinch; st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
+      if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
+    const nm=who(bat,slot);
     const o=pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
     const b=H.b;
-    if(o==="k"){ H.outs++; L.k++; if(b[0]+b[1]+b[2]>=2&&rng.r()<0.6)H.ev.push({k:"kk",side:fs,u:rng.int(100),inn:inn(),on:b[0]+b[1]+b[2]}) }
-    else if(o==="bb"||o==="hbp"){ L.bb++; if(b[0]){ if(b[1]){ if(b[2])score(1); b[2]=1 } b[1]=1 } b[0]=1 }
-    else if(o==="s1"){ L.h++; H.hits++; let n=b[2]; b[2]=0; if(b[1]){ if(rng.r()<BS.adv2)n++; else b[2]=1 } b[1]=0; if(b[0]){ if(!b[2]&&rng.r()<0.3)b[2]=1; else b[1]=1 } b[0]=1;
-      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:1,u:rng.int(100),inn:inn()}) } }
+    // the strikeout that strands a rally: once a half-inning (round 56: four times in one inning, Muse)
+    if(o==="k"){ H.outs++; L.k++; if(b[0]+b[1]+b[2]>=2&&rng.r()<0.6){ const u=rng.int(100); if(!H.kkSaid){ H.kkSaid=true; H.ev.push({k:"kk",side:fs,u:u,inn:inn(),on:b[0]+b[1]+b[2]}) } } }   // the same draws as before
+    else if(o==="bb"||o==="hbp"){ L.bb++; if(b[0]){ if(b[1]){ if(b[2]){ score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:o==="hbp"?-2:-1,u:(st.h*7+st.a*13+slot*3)%100,inn:inn(),slot:slot,nm:nm}) } b[2]=1 } b[1]=1 } b[0]=1; onFirst[bat]=nm }
+    else if(o==="s1"){ L.h++; H.hits++; let n=b[2]; b[2]=0; if(b[1]){ if(rng.r()<BS.adv2)n++; else b[2]=1 } b[1]=0; if(b[0]){ if(!b[2]&&rng.r()<0.3)b[2]=1; else b[1]=1 } b[0]=1; onFirst[bat]=nm;
+      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:1,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) } }
     else if(o==="s2"){ L.h++; H.hits++; let n=b[2]+b[1]; b[2]=0; b[1]=0; if(b[0]){ if(rng.r()<BS.adv2*0.7)n++; else b[2]=1 } b[0]=0; b[1]=1;
-      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:2,u:rng.int(100),inn:inn()}) } }
-    else if(o==="s3"){ L.h++; H.hits++; const n=b[0]+b[1]+b[2]; b[0]=b[1]=0; b[2]=1; if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:3,u:rng.int(100),inn:inn()}) } }
-    else if(o==="hr"){ L.h++; L.hr++; H.hits++; const n=1+b[0]+b[1]+b[2]; b[0]=b[1]=b[2]=0; score(n); H.ev.push({k:"hr",side:bat,n:n,u:rng.int(100),inn:inn(),slot:slot}) }
+      if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:2,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) } }
+    else if(o==="s3"){ L.h++; H.hits++; const n=b[0]+b[1]+b[2]; b[0]=b[1]=0; b[2]=1; if(n){ score(n); H.ev.push({k:"rbi",side:bat,n:n,hit:3,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) } }
+    else if(o==="hr"){ L.h++; L.hr++; H.hits++; const n=1+b[0]+b[1]+b[2]; b[0]=b[1]=b[2]=0; score(n); H.ev.push({k:"hr",side:bat,n:n,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) }
     else{ // an out in play
       if(b[0]&&H.outs<2&&rng.r()<BS.dp){ H.outs+=2; b[0]=0; if(H.outs<3&&b[2]&&rng.r()<0.4){ score(1); b[2]=0 } H.ev.push({k:"dp",side:fs,u:rng.int(100),inn:inn()}) }
-      else if(b[2]&&H.outs<2&&rng.r()<BS.sf){ H.outs++; b[2]=0; score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,u:rng.int(100),inn:inn()}) }
+      else if(b[2]&&H.outs<2&&rng.r()<BS.sf){ H.outs++; b[2]=0; score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) }
       else{ H.outs++; if(H.outs<3&&b[1]&&!b[2]&&rng.r()<0.3){ b[2]=1; b[1]=0 } } }
     if(H.outs>=3)L.lob+=b[0]+b[1]+b[2];
   };
-  const steal=(side)=>{ const ok=rng.r()<BS.steal; const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn()}) };
+  const steal=(side)=>{ const ok=rng.r()<BS.steal; const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
   st.log=[];
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -2755,7 +2818,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(humans[fs]&&pullDue(fs)&&!st.asked["pull"+inn()+fs]){ st.asked["pull"+inn()+fs]=true; const X=st.S[fs];
       if(queueCall(fs,pullCall(inn(),lead(fs),X.sp,H.b.some(Boolean)?onDesc()+".":"")))return true }
     if(humans[bat]&&inn()>=7&&Math.abs(lead(bat))<=2){ const X=st.S[bat], slot=X.bat%9;
-      if((H.b[1]||H.b[2])&&slot>=6&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+      // tied or behind only (round 56: the help says "when you're chasing", and a third of the calls came with a lead: Instinct)
+      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
         if(queueCall(bat,pinchCall(inn(),lead(bat),ctx.lineup&&ctx.lineup[bat]?ctx.lineup[bat][slot]:null,ctx.bench&&ctx.bench[bat]||null,onDesc())))return true }
       if(H.b[0]&&!H.b[1]&&H.outs<2&&Math.abs(lead(bat))<=1&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         if(queueCall(bat,stealCall(inn(),lead(bat),null,H.outs)))return true } }
@@ -2820,8 +2884,11 @@ function spCtx(t,step){
     return {n:p.n, q:(p.r-mean)*0.012} }catch(e){ return null } }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
   lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
-function lineupOf(t){ try{ const R=SEA.roster[t]; return BS_HIT.map(i=>R[i]?R[i].n:null) }catch(e){ return null } }
-function benchBat(t){ try{ const R=SEA.roster[t]; let b=null; BS_HIT.forEach(i=>{ const p=R[BK(i)]; if(p&&(!b||p.r>b.r))b=p }); return b?b.n:null }catch(e){ return null } }
+/* the day's nine: an injured regular's backup plays (round 56: the season's stats give his at-bats to the backup, and now
+   the log does too); the bench bat is the best backup not already in it */
+function hurtSet(t){ try{ return new Set(SEA.talent?SEA.talent.active(t).map(x=>x.idx):[]) }catch(e){ return new Set() } }
+function lineupOf(t){ try{ const R=SEA.roster[t], H=hurtSet(t); return BS_HIT.map(i=>{ const p=H.has(i)?R[BK(i)]:R[i]; return p?p.n:(R[i]?R[i].n:null) }) }catch(e){ return null } }
+function benchBat(t){ try{ const R=SEA.roster[t], H=hurtSet(t); let b=null; BS_HIT.forEach(i=>{ if(H.has(i))return; const p=R[BK(i)]; if(p&&!H.has(BK(i))&&(!b||p.r>b.r))b=p }); return b?b.n:null }catch(e){ return null } }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};
@@ -3061,7 +3128,7 @@ const HL_SPORT=(function(){
   function mk(L,e,d){
     const g=L.g, tm=e.side==="home"?g.home:g.away, u=e.u||0;
     const r=mulberry32((u*7919+(d.seg||0)*131+(e.side==="home"?17:29))>>>0);
-    let nm=""; try{ nm=bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"" }catch(er){}
+    let nm=e.nm||""; if(!nm)try{ nm=bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"" }catch(er){}
     const ang=(-0.75+r()*1.5)*0.72, hr=e.k==="hr";
     const dist=hr?1.08+r()*0.15:e.hit===3?0.92:e.hit===2?0.82:0.55;
     const land=[HOME[0]+Math.sin(ang)*dist*0.62, HOME[1]-Math.cos(ang)*dist*0.78];
@@ -3126,14 +3193,15 @@ function pickOf(a,u){return a[u%a.length]}
 /* one event as a line of commentary */
 function bsEventText(g,e){
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
-  const who=bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"their hitter";
+  const who=e.nm||bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"their hitter";   // round 56: the engine names him
   if(e.k==="hr")return {team:tm,tag:e.n===4?"SLAM":"HR",text:`${who}: ${HR_WORD[Math.min(3,(e.n||1)-1)]} ${pickOf(HR_HOW,u>>2)}`};
-  if(e.k==="rbi")return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?"drives in two with":"brings one home with"} a ${HIT_WORD[e.hit]}`:`${who} lifts a sacrifice fly: a run scores`};
+  if(e.k==="rbi"){ if(e.hit<0)return {team:tm,tag:"RUN",text:e.hit===-2?`${who} is hit by a pitch with the bases loaded: a run scores`:`${who} draws a bases-loaded walk: a run scores`};
+    return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?`drives in ${["","one","two","three"][e.n]||e.n} with`:"brings one home with"} a ${HIT_WORD[e.hit]}`:`${who} lifts a sacrifice fly: a run scores`} }
   if(e.k==="kk")return {team:tm,tag:"",text:`strike out the side's best chance: ${e.on>=3?"bases loaded":"two on"}, nothing across`};
   if(e.k==="dp")return {team:tm,tag:"",text:`turn the double play to end the threat`};
   if(e.k==="sb")return {team:tm,tag:"SB",text:`${who} steals second`};
   if(e.k==="cs")return {team:tm,tag:"CS",text:`${who} is thrown out stealing`};
-  if(e.k==="ph")return {team:tm,tag:"",text:`send up a pinch hitter`};
+  if(e.k==="ph")return {team:tm,tag:"",text:e.nm?`${e.nm} pinch-hits${e.was?" for "+e.was:""}`:`send up a pinch hitter`};
   return {team:tm,tag:"",text:""};
 }
 const shown=e=>true;
@@ -3183,17 +3251,22 @@ function scoreTop(g,H,A,label,cls,extra){
       <div class="wside ${H>A?'lead':''}"><span class="wt">${esc(g.home)}</span><span class="wn">${H}</span></div>
     </div>${extra||""}</div>`;
 }
-function lineScore(g,drives){
-  const n=Math.max(SEGS,drives.length), cell=(v,b)=>`<td${b?' class="b"':''}>${v===null||v===undefined?"":v}</td>`;
-  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(side==="h"?(drives.length?drives[drives.length-1].sh:0):(drives.length?drives[drives.length-1].sa:0),true)}${cell(drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;
+/* now: the live score (round 56: at a call in the middle of an inning the big score had the inning's runs and the
+   line score didn't, "5TH INNING, DOWN 2" over a line reading 1-0: Instinct, Muse). The inning under way gets its
+   runs so far, and R is the score itself. */
+function lineScore(g,drives,now){
+  const ls=drives.length?drives[drives.length-1]:null, done={h:ls?ls.sh:0,a:ls?ls.sa:0};
+  const part=now&&(now.h>done.h||now.a>done.a)?{h:now.h-done.h,a:now.a-done.a}:null;
+  const n=Math.max(SEGS,drives.length+(part?1:0)), cell=(v,b)=>`<td${b?' class="b"':''}>${v===null||v===undefined?"":v}</td>`;
+  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell(drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;
   return `<div class="linescore"><table><tr><th></th>${Array.from({length:n},(_,i)=>`<td>${i+1}</td>`).join("")}<td class="b">R</td><td>H</td></tr>${row("a",g.away)}${row("h",g.home)}</table></div>`;
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
   const lab=`<span class="live"></span>${!live.drives.length?"FIRST PITCH":"After the "+esc(segLabel(last))}
-      ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
-  return scoreTop(g,H,A,lab,"",lineScore(g,live.drives));
+      ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
+  return scoreTop(g,H,A,lab,"",lineScore(g,live.drives,{h:H,a:A}));
 }
 /* ---- the evidence ---- */
 function firstReadTip(){ return "" }
@@ -3485,6 +3558,8 @@ class Season{
           // soccer too (round 46: Muse, three scorers credited with no goals): the log's scorers get the goals
           const LCf=typeof hkLogCredit==="function"?hkLogCredit:typeof scLogCredit==="function"?scLogCredit:null, HKC=typeof hkLogCredit==="function"&&LCf===hkLogCredit;
           const LC=F.drives&&LCf?LCf(tm,tm===a?"home":"away",F.drives):null, done=new Set();
+          // baseball (round 56): the hitters the log named get its home runs, RBI and hits ("0 HOME RUNS" after a three-run homer: Muse)
+          const BL=F.drives&&typeof bsLogCredit==="function"?bsLogCredit(tm,tm===a?"home":"away",F.drives):null;
           POS.forEach((P,i)=>{
             const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
             if(!pl)return;
@@ -3492,10 +3567,15 @@ class Season{
             const line=gameStats(this.rng,pl,i,pf,pa2,pf>pa2);
             if(LC&&P.p!=="G"&&P.p!=="GK"){ const c=LC[pl.n]||{goals:0}; line.goals=c.goals; if(HKC)line.ast=c.ast||0;   // soccer's log names scorers, not assists: those stay
               if("pts" in line)line.pts=line.goals+(line.ast||0); if("sog" in line)line.sog=Math.max(line.sog,c.goals); if("shots" in line)line.shots=Math.max(line.shots,c.goals); done.add(pl.n) }
+            if(BL&&typeof isPitcher==="function"&&!isPitcher(P.p)){ const c=BL[pl.n]; done.add(pl.n);
+              if(c||line.ab){ const C=c||{hr:0,rbi:0,h:0}; line.hr=C.hr; line.rbi=C.rbi; line.h=Math.max(line.h||0,C.h); line.ab=Math.max(line.ab||0,line.h,3); line.r=Math.max(line.r||0,line.hr) } }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
             pl.last={line:line,pos:P.p,week:this.step,team:tm};
           });
+          if(BL)Object.keys(BL).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
+            const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=BL[nm], line={ab:Math.max(1,c.h),h:c.h,hr:c.hr,rbi:c.rbi,r:c.hr};
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
           if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=LC[nm], line=HKC?{goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals}:{goals:c.goals,shots:c.goals};
             if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
@@ -3814,7 +3894,7 @@ function seriesFrom(x,team){
   return a===b?(a?`series tied ${a}-${b}`:"series starts"):a>b?`you lead ${a}-${b}`:`you trail ${a}-${b}`;
 }
 /* ============ awards: pro football ============ */
-/* The MVP race, and one All-Pro team across the whole league. */
+/* The MVP race, and one All-MLB team across the whole league. */
 extendSeason({
   _award(w,games){
     if(!this.roster)return;
@@ -3861,7 +3941,7 @@ extendSeason({
   allConfAll(){return {ALL:this.allConference()}},
   awardTeam(my){return {group:"ALL",list:this.allConference()}}
 });
-LEAGUE.awards.teamLabel=()=>"All-Pro";
+LEAGUE.awards.teamLabel=()=>"All-MLB";
 /* ============ the history book ============ */
 /* One entry per coach per season. Version 2 is league-neutral: everything the
    core reads has a name that means the same thing in any league, and what
@@ -5026,7 +5106,7 @@ function seasonCallsHTML(){
    each league's, fitted to its own engine (LIVE_SIG, measured: test/live-wp.js), and the line is checked for honesty
    there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
    (a shoot-out, extra time) at the pre-game edge, halved. */
-const LIVE_WP_ON=true, LIVE_MU={};   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+const LIVE_WP_ON=true, LIVE_MU={}, LIVE_TAUP={mlb:1}, LIVE_MUP={mlb:1.5};   // LIVE_TAUP: how the spread shrinks with the game left (0.5, a random walk; baseball 1: round 56, a one-run lead after seven showed 69% and won 82%); LIVE_MUP: how the pre-game edge fades (1, linear; baseball 1.5: a tie after seven against a far stronger club showed 29% and won 38%)   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
 const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9,mlb:4.2}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
 function liveTau(d){
   if(!d)return 1;
@@ -5040,14 +5120,21 @@ function normInv(p){ p=Math.min(0.9999,Math.max(0.0001,p)); let lo=-6,hi=6; for(
 /* [win, draw, loss] for the side with margin m (theirs subtracted), tau of the game to play, pre-game [w,d,l] */
 function liveChance(m,tau,pre,sig,poss){
   const [w0,d0]=pre, s=sig, mu=s*normInv(Math.min(0.995,Math.max(0.005,w0+d0/2)));
-  const E=m+mu*(LIVE_MU[LEAGUE.id]||1)*tau+(poss&&tau>0?poss*LIVE_POSS:0), S=Math.max(0.05,s*Math.sqrt(Math.max(tau,0.0001)));
+  const E=m+mu*(LIVE_MU[LEAGUE.id]||1)*Math.pow(Math.max(tau,0),LIVE_MUP[LEAGUE.id]||1)+(poss&&tau>0?poss*LIVE_POSS:0), S=Math.max(0.05,s*Math.pow(Math.max(tau,0.0001),LIVE_TAUP[LEAGUE.id]||0.5));
   const pw=1-normCdf((0.5-E)/S), pl=normCdf((-0.5-E)/S), pt=Math.max(0,1-pw-pl);
   if(LEAGUE.draws&&!(typeof live!=="undefined"&&live&&live.g&&(live.g.cup||live.g.title||SEA.phase!=="week")))return [pw,pt,pl];   // a cup tie or a play-off goes on to a winner
   const q=0.5+((w0+d0/2)-0.5)*0.5; return [pw+pt*q,0,pl+pt*(1-q)];
 }
+// the bar's own toggle, wherever it's drawn (the ? panel binds its buttons when it opens; this catches the live screen's)
+try{ if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest(".lwtog[data-livewp]");
+  if(!b||!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() }) }catch(e){}
+const LWHIDE=`<button class="lwtog" data-livewp="false" aria-label="Hide the win chance">Hide</button>`;
 function liveWPHTML(){
-  if(!LIVE_WP_ON||(S&&S.liveWP===false)||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";   // S.liveWP: off in the ? panel (round 50: Instinct)
+  if(!LIVE_WP_ON||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";
+  // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
+  if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
+  if(liveTau(d)<=0&&sc[0]!==sc[1])return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
   const meH=live.g.home===S.myTeam, m=meH?sc[0]-sc[1]:sc[1]-sc[0];
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
@@ -5057,9 +5144,9 @@ function liveWPHTML(){
   if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
     v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });
     const Q=f.map(x=>Math.max(1,Math.min(98,x)));
-    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span></div>` }
-  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span></div>`
-    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span></div>`;
+    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span>${LWHIDE}</div>` }
+  return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span>${LWHIDE}</div>`
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${LWHIDE}</div>`;
 }
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
@@ -5123,7 +5210,7 @@ function seasonCardSVG(h, team){
       font-family="Impact,'Arial Black','Helvetica Neue',sans-serif"
       letter-spacing="3">${esc(big)}</text>
 
-    ${stat(210,"CONFERENCE",c.confRec||"—")}
+    ${stat(210,((LEAGUE.text&&LEAGUE.text.groupWord)||"CONFERENCE"),c.confRec||"—")}
     ${stat(540,(LEAGUE.text.rank||"Poll").toUpperCase(), h.pos?ordinal(h.pos):h.rank?("#"+h.rank):"NR")}
     ${stat(870,"TITLES", String(c.titles||0))}
 
@@ -5512,7 +5599,7 @@ function seasonObjectives(my){
   // a home record a little better than you'd expect
   const H=games.filter(g=>g.home===my&&!g.neutral);
   if(H.length>=3){ const hfa=LEAGUE.tuning.hfa||0;
-    const p=H.reduce((s,g)=>s+1/(1+Math.pow(10,-(preElo(my)+hfa-preElo(g.away))/400)),0)/H.length;
+    const p=H.reduce((s,g)=>s+1/(1+Math.pow(10,-(preElo(my)+hfa-preElo(g.away))/wpScale("balanced"))),0)/H.length;   // round 56: the engine's own scale (was 400 everywhere: baseball's 680 set 61% home targets for an 87-win club)
     // what you'd expect to win (a draw isn't a win: about a quarter of soccer games are drawn)
     const pw=LEAGUE.draws?p*0.74:p;
     const t=Math.max(1,Math.min(H.length,Math.round(H.length*Math.min(0.88,pw))));
@@ -5586,7 +5673,7 @@ function reaimObjectives(my){
     const above=NAMES.filter(t=>CONF[t]===CONF[my]&&t!==my&&pos(t)===mine-1)[0];
     if(above&&!used.some(x=>(x.k==="above"&&x.opp===above)||x.k==="top"))O.extra.push({k:"above",opp:above,l:`Finish above ${above}`,re0:SEA.step});
     else if(!used.some(x=>x.k==="last")){ const hfa=LEAGUE.tuning.hfa||0, e=t=>SEA.elo[t]||1500;
-      const p=left.reduce((s,g)=>{ const opp=g.home===my?g.away:g.home, h=g.home===my&&!g.neutral?hfa:g.away===my&&!g.neutral?-hfa:0; return s+1/(1+Math.pow(10,-(e(my)+h-e(opp))/400)) },0)/left.length;
+      const p=left.reduce((s,g)=>{ const opp=g.home===my?g.away:g.home, h=g.home===my&&!g.neutral?hfa:g.away===my&&!g.neutral?-hfa:0; return s+1/(1+Math.pow(10,-(e(my)+h-e(opp))/wpScale("balanced"))) },0)/left.length;   // round 56: the engine's scale ("93 of your last 135")
       const pw=LEAGUE.draws?p*0.74:p, n=Math.max(1,Math.min(left.length,Math.round(left.length*Math.min(0.88,pw)+0.5)));
       O.extra.push({k:"last",from:SEA.step,n:n,of:left.length,l:`Win ${n} of your last ${left.length}`,re0:SEA.step}) } });
 }
@@ -5793,7 +5880,9 @@ function showFlash(L,who){
   if(prefersReduced())return;
   try{
     const mine=who==="mine", tm=mine?S.myTeam:(L.g.home===S.myTeam?L.g.away:L.g.home);
-    const word=(typeof SPORT!=="undefined"&&SPORT.scoreWord)||"SCORE";
+    // a sport can choose which scores earn the flash (round 56, baseball: home runs and late lead changes, not every run: Muse)
+    let word=(typeof SPORT!=="undefined"&&SPORT.scoreWord)||"SCORE";
+    if(typeof SPORT!=="undefined"&&typeof SPORT.flashWord==="function"){ const w=SPORT.flashWord(L,who); if(!w)return; word=w }
     const d=document.createElement("div"); if(!d||!document.body||!document.body.appendChild)return;
     d.className="goalflash "+(mine?"mine":"theirs"); d.style.setProperty("--fc",teamInk(tm));
     d.innerHTML=`<span>${mine?esc(word)+"!":esc(tm)}</span>`;
@@ -6228,7 +6317,7 @@ function nflTargetsHTML(P,room){
         <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${fit?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free agents you want</div>`;
-  if(mine.length)h+=`<div class="note">Prices are this summer's asks plus about 10%; a player who improves over the summer can ask more by the time free agency opens.</div>`;
+  if(mine.length)h+=`<div class="note">Prices are this winter's asks plus about 10%; a player who improves over the winter can ask more by the time free agency opens.</div>`;
   h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet: your free-agency style will decide. Players you add get your first look, in your order, if you have the room.</div>`;
   // cheapest first, on a tap (Muse, rounds 18-21: four markets read "nothing under $5M" from the best-25 view, while the
@@ -6261,9 +6350,9 @@ function offseasonBanner(){
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
-  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
+  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the winter:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
-    rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
+    rec+=`<div class="bnews small"><b>Big winters:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
   if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
   if(X.trade)rec+=X.trade.done?`<div class="bnews"><b>Trade:</b> ${esc(X.trade.gave)} (${esc(X.trade.gp)}) to ${esc(X.trade.with)} for ${esc(X.trade.got)} (${esc(X.trade.qp)}).</div>`
@@ -6276,8 +6365,8 @@ function offseasonBanner(){
   const hz=last.awards.mvp[0]?`<div class="bnews small">${esc(last.awards.mvp[0].n)}
     (${esc(last.awards.mvp[0].p)}, ${esc(last.awards.mvp[0].t)}) won the ${LEAGUE.awards.mvp}.</div>`:"";
   const mine=(last.awards.team&&last.awards.team.list||[]).filter(x=>x.team===my);
-  const acn=mine.length?`<div class="bnews"><b>All-Pro.</b> ${
-    mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-Pro team.</div>`:"";
+  const acn=mine.length?`<div class="bnews"><b>All-MLB.</b> ${
+    mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-MLB team.</div>`:"";
   const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
     cm.map(m=>esc(m.name)+" ("+((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
@@ -6941,7 +7030,19 @@ async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
 /* a save that didn't land is said at once, not only on the way out: the browser's storage for these six games is
    full (every career, every game, one allowance) or blocked */
-function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does). Download a backup now so nothing is lost.":store.kind()==="database"?"This browser refused the save (the disk may be nearly full). Download a backup now so nothing is lost.":"This browser's older storage for these games is full: every career in all six games shares one allowance. Download a backup now so nothing is lost, then erase a career you don't need from the title screen."}
+/* a live game's label: once it's over, the series state it carried (where the series stood before the game) goes
+   (round 56: "SERIES TIED 1-1" above "Series 2-1: you lead" on the final card: Muse) */
+function liveLabel(g){ const l=g&&g.label||""; return live&&live.done?l.split(" \u00b7 ")[0]:l }
+/* the offseason's season (round 56: baseball's is the winter, "the start of summer" read wrong: Instinct) */
+function OFFW(){ return (LEAGUE.text&&LEAGUE.text.offWord)||"summer" }
+/* the postseason's last round (round 56: "beaten in the final" asked whether the team that beat you went on to win it all, so a
+   Division Series loss to the eventual champion read as a final: Instinct) */
+function finalRound(){ const P=LEAGUE.post&&LEAGUE.post.phases; return P&&P.length?String(P[P.length-1]).replace(/g\d+$/,""):null }
+/* what the browser said when it refused (round 56): the error's name, and the storage in use against the allowance */
+function saveWhy(){ const F=store.lastFail; if(!F)return " (the disk may be nearly full)";
+  const mb=b=>b>=1e9?(b/1e9).toFixed(1)+" GB":Math.round(b/1e6)+" MB";
+  return ` (it said: ${esc(F.why)}${F.quota?`; storage in use: ${mb(F.used||0)} of ${mb(F.quota)}`:""})` }
+function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does). Download a backup now so nothing is lost.":store.kind()==="database"?`This browser refused the save${saveWhy()}. Download a backup now so nothing is lost, and tell us what it said.`:"This browser's older storage for these games is full: every career in all six games shares one allowance. Download a backup now so nothing is lost, then erase a career you don't need from the title screen."}
   <button class="skip small" id="savefailbk">Download a backup</button></div>`:"" }
 /* once a season, as it's banked: a career lives only in this browser; a file keeps it safe (Muse: "nothing ever
    points at" the backup) */
@@ -7551,7 +7652,7 @@ function gameLine(g,mine){
   if(ups&&best<=RANK_TOP)chips.push(`<span class="chip up">Upset</span>`);
   if(g.neutral&&!g.site&&!g.title)chips.push(`<span class="chip">Neutral</span>`);
   if(LEAGUE.draws){ if(g.draw)chips.push(`<span class="chip">Draw</span>`); else if(g.margin<=1)chips.push(`<span class="chip">One goal</span>`) }
-  else if(g.margin<=3)chips.push(`<span class="chip">One score</span>`);
+  else if(g.margin<=((typeof SPORT!=="undefined"&&SPORT.closeMargin)||3))chips.push(`<span class="chip">${(typeof SPORT!=="undefined"&&SPORT.closeLabel)||"One score"}</span>`);   // baseball: one run (round 56: "ONE SCORE" on 4-1 and 7-4: Instinct)
   const rv=LEAGUE.rivals.name(g.home,g.away);
   if(rv)chips.push(`<span class="chip riv">${esc(rv)}</span>`);
   return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
@@ -7688,7 +7789,7 @@ function heroResult(){
     const X=SEA.series&&g.series&&(SEA.series[g.series]||[]).find(x=>x.games&&x.games.indexOf(g)>=0);
     if(X){ const a=X.w[my]||0, b=X.w[opp]||0;
       move=X.winner===my?(SEA.champion===my?`<div class="hmove up">Champions: won the series ${a}&ndash;${b}</div>`:`<div class="hmove up">Series won ${a}&ndash;${b}: through to the next round</div>`)
-        :X.winner?`<div class="hmove dn">Season over: ${SEA.champion&&SEA.champion===opp?"beaten in the final":"out of the playoffs"}, ${a}&ndash;${b} in the series</div>`   // a Finals defeat isn't "out of the playoffs" (Grokbot)
+        :X.winner?`<div class="hmove dn">Season over: ${g.series===finalRound()?(LEAGUE.text.lostFinal||"beaten in the final"):(LEAGUE.text.outOf||"out of the playoffs")}, ${a}&ndash;${b} in the series</div>`   // a Finals defeat isn't "out of the playoffs" (Grokbot)
         :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
@@ -8125,8 +8226,8 @@ function changedHTML(my){
   const drN=new Set((X.draft||[]).filter(d=>d.team===my).map(d=>d.n));
   const out=top(gone.map(p=>arrN.has(p.n)?Object.assign({},p,{brief:drN.has(p.n)?"drafted":"signed"}):p),3), inn=top(arr.filter(p=>!goneN.has(p.n)),3);
   if(!out.length&&!inn.length)return "";
-  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r}${p.brief?`, ${p.brief} and let go this summer`:""})`;
-  return `<div class="note"><b>Since last season:</b> ${out.length?`gone, ${out.map(nm).join(", ")}`:"nobody important left"}${inn.length?`; in, ${inn.map(nm).join(", ")}`:""}. Players also age and develop over the summer: the roster tab shows where you stand now.</div>`;
+  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r}${p.brief?`, ${p.brief} and let go this ${OFFW()}`:""})`;
+  return `<div class="note"><b>Since last season:</b> ${out.length?`gone, ${out.map(nm).join(", ")}`:"nobody important left"}${inn.length?`; in, ${inn.map(nm).join(", ")}`:""}. Players also age and develop over the ${OFFW()}: the roster tab shows where you stand now.</div>`;
 }
 function myTeamView(){
   const my=S.myTeam, rk=SEA.poll.rankMap();
