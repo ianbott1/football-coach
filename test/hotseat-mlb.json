@@ -1,5 +1,5 @@
 {
- "fp": "ff4f9db7036233b1",
+ "fp": "da9bc197b62ee472",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -25,6 +25,11 @@
    "fp": "ff4f9db7036233b1",
    "from": "ff4f9db7036233b1",
    "note": "round 57: series schedule, run level, race card"
+  },
+  {
+   "fp": "da9bc197b62ee472",
+   "from": "ff4f9db7036233b1",
+   "note": "round 58: real read tells, steal and pinch evidence and gating, bullpen window"
   }
  ],
  "out": [
@@ -34,20 +39,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "93-69",
-      "result": "Lost in the championship series",
-      "grade": "A-"
+      "rec": "96-66",
+      "result": "WORLD SERIES CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "9375f400a58522de"
+     "book": "dce140bd8ba5c3f1"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "93-69",
-      "result": "Lost in the wild-card series",
-      "grade": "B"
+      "rec": "97-65",
+      "result": "Lost in the division series",
+      "grade": "B+"
      },
-     "book": "3b2d76e22bb87903"
+     "book": "c97e639f89d30628"
     }
    ]
   },
@@ -57,20 +62,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "84-78",
-      "result": "Missed the postseason",
-      "grade": "C"
+      "rec": "78-84",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "9ac627c7bc5e2098"
+     "book": "f7005e98a40ee5be"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "87-75",
+      "rec": "90-72",
       "result": "Lost in the wild-card series",
-      "grade": "B+"
+      "grade": "A-"
      },
-     "book": "97f42a1f97d437ae"
+     "book": "00a0698dae8508de"
     }
    ]
   },
@@ -80,20 +85,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "94-68",
+      "rec": "82-80",
       "result": "Lost in the wild-card series",
-      "grade": "B"
+      "grade": "C"
      },
-     "book": "0265f6cf63bfb439"
+     "book": "93e6ecfe5b944ff8"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "96-66",
-      "result": "Lost in the division series",
-      "grade": "A"
+      "rec": "95-67",
+      "result": "Lost the World Series",
+      "grade": "A+"
      },
-     "book": "6ef6fa320554bbdf"
+     "book": "a20a9f2a9ac98524"
     }
    ]
   }

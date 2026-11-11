@@ -1,5 +1,5 @@
 {
- "fp": "2ab63f2ecbe00efa",
+ "fp": "bbbce2133a64ac19",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -25,59 +25,64 @@
    "fp": "2ab63f2ecbe00efa",
    "from": "9175cbbada6adf78",
    "note": "round 57: series schedule, run level, race card"
+  },
+  {
+   "fp": "bbbce2133a64ac19",
+   "from": "2ab63f2ecbe00efa",
+   "note": "round 58: real read tells, steal and pinch evidence and gating, bullpen window"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "6048ad1c40885442",
-    "post": "a84277c5662d27e1",
-    "champion": "Boston",
-    "rec": "0db73f54c7373f47",
-    "poll": "9ede48ef6ea40c20",
-    "heis": "d5ed23470451f7c4",
-    "history": "15ff95a907461389",
-    "universe": "f852e87549826e76",
-    "screens": "ac55968cb0890906"
+    "games": "27fb13da8f75d4fa",
+    "post": "9fa10e5ef1373536",
+    "champion": "LA Dodgers",
+    "rec": "c5a3c638aee6f407",
+    "poll": "0b519338ade42541",
+    "heis": "31e105bafbba6cb9",
+    "history": "2f0b41655b6a210b",
+    "universe": "29766d42f230d542",
+    "screens": "f3fffa66d2ebfd43"
    },
    {
     "year": 2027,
-    "games": "9f6ed8b41ccc2b8f",
-    "post": "6a3c2205c99dd4b0",
-    "champion": "St. Louis",
-    "rec": "bd669060786e3e80",
-    "poll": "f4f4bca11cb6a39a",
-    "heis": "c9939f7bdc7eccc4",
-    "history": "76bb7a4704ac9917",
-    "universe": "0fc35ef9a14ad85d",
-    "screens": "f328f2b742d3dd3f"
+    "games": "b5a4ef07534d6565",
+    "post": "5f2be4143edc60e2",
+    "champion": "Houston",
+    "rec": "223cf45b2858cd33",
+    "poll": "e30219290ec099df",
+    "heis": "4ef25660708b73ac",
+    "history": "d6ed2f217db9fe75",
+    "universe": "f33a63b6f599133c",
+    "screens": "7390f6bedc887baa"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "49818207d56a25da",
-    "post": "51f132fdf782e3f3",
+    "games": "af2f978c10c39cdc",
+    "post": "79f684c012cc2677",
     "champion": "LA Dodgers",
-    "rec": "56eb27e8122a0f3d",
-    "poll": "9fc9c41edc569b93",
-    "heis": "f55963c129dc7c55",
-    "history": "a92c24adb83fed34",
-    "universe": "874952a9e46e1858",
-    "screens": "18b81c5b932a0ca5"
+    "rec": "3e4cc3d3bbd174a6",
+    "poll": "f53f964efbb24486",
+    "heis": "3152e8c7628f37f1",
+    "history": "2f4e0807cc3eda66",
+    "universe": "4df0a813fdfbe8e1",
+    "screens": "03f2f1585dd35c09"
    },
    {
     "year": 2027,
-    "games": "14008a42f4937d5c",
-    "post": "e1c0185cce89e5fc",
-    "champion": "Colorado",
-    "rec": "deb6e6864df82d17",
-    "poll": "7bbcb905ac91e320",
-    "heis": "d806dbc8fc3dc08a",
-    "history": "d2554c6f04798786",
-    "universe": "b444e8efbab4ddfe",
-    "screens": "ff8e747030ec2beb"
+    "games": "ad0012cdf7c0d954",
+    "post": "81b84eacf6523fee",
+    "champion": "NY Mets",
+    "rec": "4f04d4e0456bebaa",
+    "poll": "5073400313e313a2",
+    "heis": "671f07e8093e6c9e",
+    "history": "4d78c9cb5513648c",
+    "universe": "f56c74bcfdfebaf5",
+    "screens": "5ca988fa120f2f60"
    }
   ],
   "schedules#60": [

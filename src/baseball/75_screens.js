@@ -101,17 +101,32 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games at the plate</div>
       ${APPROACH_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(APPROACH[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Most lineups have a usual approach, but not every day. Get the plan right and your pitchers take something off their bats; get it wrong and they're a step ahead until you change it.</div></div>`; }
-  if(dp.k==="read"&&dp.tell){ const T=dp.tell, pl=T.bip?Math.round(100*T.pull/T.bip):0, pp=T.pa?(T.pit/T.pa).toFixed(1):"-", kr=T.pa?Math.round(100*T.k/T.pa):0;
-    const rows=[["Balls in play pulled",pl+"%",pl>=56],["Pitches an at-bat",pp,T.pa&&T.pit/T.pa>=4.1],["Strikeout rate",kr+"%",T.pa&&T.k/T.pa<=0.16]];
+  if(dp.k==="read"&&dp.tell){ const T=dp.tell, A=BS_TELL_AVG;
+    // each against the league average, marked either way when it's well off it (round 58: only highs were marked: Muse)
+    const mark=(v,avg,band)=>v===null?"":v>avg+band?"&#9650;":v<avg-band?"&#9660;":"";
+    const plv=T.bip?T.pull/T.bip:null, ppv=T.pa?T.pit/T.pa:null, whv=T.pa?(T.wh||0)/T.pa:null;
+    const rows=[["Balls in play pulled",plv===null?"-":Math.round(100*plv)+"%",mark(plv,A[0],0.08)],["Pitches an at-bat",ppv===null?"-":ppv.toFixed(1),mark(ppv,A[1],0.25)],
+      ["Swings and misses an at-bat",whv===null?"-":whv.toFixed(2),mark(whv,A[2],0.15)]];
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are hitting <span>three innings</span></div>
-      ${rows.map(r=>`<div class="evr ${r[2]?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${r[1]}</span></div>`).join("")}
-      <div class="evn">League average: about half of balls in play pulled, 3.9 pitches an at-bat, a strikeout in a little over one at-bat in five. The approach they're using leaves one of these well off it. Three innings is a small sample.</div></div>`; }
+      ${rows.map(r=>`<div class="evr ${r[2]?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${r[2]?r[2]+" ":""}${r[1]}</span></div>`).join("")}
+      <div class="evn">League average: ${Math.round(100*A[0])}% of balls in play pulled, ${A[1].toFixed(1)} pitches an at-bat, ${A[2].toFixed(2)} swings and misses. &#9650; well above it, &#9660; well below. Pull hitters pull it; patient hitters see pitches; contact hitters don't miss. Three innings is a small sample.</div></div>`; }
   if(dp.k==="pull")return `<div class="evid"><div class="evh">Your starter today</div>
       <div class="evr ${dp.bf>=24?'hi':''}"><span class="evk">Batters faced</span><span class="evv">${dp.bf}</span></div>
       <div class="evr ${dp.ra>=3?'hi':''}"><span class="evk">Runs allowed</span><span class="evv">${dp.ra}</span></div>
       <div class="evn">Past about eighteen batters a starter gets a little worse with every one he faces; the bullpen is fresh, and a shade below a good starter. Your assistant goes to the pen when he's spent or hit hard.</div></div>`;
-  if(dp.k==="pinch")return `<div class="evid"><div class="evh">The pinch hitter</div><div class="evn">The bottom of the order against a fresh bat off the bench: a little better in this spot. Your assistant sends one up when you're not ahead.</div></div>`;
-  if(dp.k==="steal")return `<div class="evid"><div class="evh">Sending the runner</div><div class="evn">Steals succeed about three times in four. Made, he's in scoring position; caught, the inning may be over. Your assistant sends him about one time in four.</div></div>`;
+  // round 58: the evidence for both (their season lines; the runner's speed, the catcher's arm)
+  if(dp.k==="pinch"){ const line=nm=>{ const P=dp.team?bsPlayer(dp.team,nm):null, L=P&&P.st2; if(!L||!L.ab)return "no at-bats yet";
+      return `${(L.h/L.ab).toFixed(3).replace(/^0/,"")}, ${L.hr||0} HR in ${L.ab} at-bats` };
+    const due=dp.q.match(/\. (.+?) is up/), who=due?due[1]:null, bench=dp.opts[0][1].replace(/^Pinch-hit:?\s*/,"");
+    return `<div class="evid"><div class="evh">The pinch hitter</div>
+      ${who?`<div class="evr"><span class="evk">Up: ${esc(who)}</span><span class="evv">${line(who)}</span></div>`:""}
+      ${dp.opts[0][1]!=="Pinch-hit"?`<div class="evr"><span class="evk">Bench: ${esc(benchName(dp))}</span><span class="evv">${line(benchName(dp))}</span></div>`:""}
+      <div class="evn">A pinch hitter helps by how much better a hitter he is than the man he bats for, and costs you that man for the rest of the game. Your assistant sends one up when the bench bat is the better hitter and you're not ahead.</div></div>` }
+  if(dp.k==="steal"){ const P=dp.team&&dp.runner?bsPlayer(dp.team,dp.runner):null, sb=P&&P.st2?P.st2.sb||0:0;
+    return `<div class="evid"><div class="evh">Sending the runner</div>
+      <div class="evr"><span class="evk">${esc(dp.runner||"The runner")}</span><span class="evv">${esc(dp.speed||"average")}${P?`, ${sb} steal${sb===1?"":"s"} this season`:""}</span></div>
+      <div class="evr"><span class="evk">Their catcher${dp.catcher?": "+esc(dp.catcher):""}</span><span class="evv">${esc(dp.arm||"an average arm")}</span></div>
+      <div class="evn">An average runner against an average arm makes it about three times in four; speed helps, a strong arm hurts. Made, he's in scoring position; caught, the inning may be over. Your assistant sends him only when he should make it comfortably.</div></div>` }
   return "";
 }
 /* ---- the run of play ---- */
@@ -209,6 +224,8 @@ function watchView(){
 }
 
 /* ---- after the game: were your reads right? ---- */
+/* the bench bat named in the call */
+function benchName(dp){ const m=dp.q.match(/Pinch-hit with (.+?)\?/); return m?m[1]:"" }
 function readNote(e){
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&APPROACH[e.evid])
     return e.right?` The numbers pointed to ${APPROACH[e.evid].l.toLowerCase()}; your read was better than they were.`

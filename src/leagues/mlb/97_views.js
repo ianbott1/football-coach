@@ -69,8 +69,11 @@ function nflStakes(x){
 function seriesBox(x){
   if(!x)return `<div class="bgame">${bslot(null)}${bslot(null)}</div>`;
   const row=t=>bslot(t,SEA.seeds[t],x.w[t],x.winner===t);
-  return `<div class="bgame">${row(x.hi)}${row(x.lo)}</div>`;
+  // the games, each by its winner and score (round 58: "no game scores, no dates": Muse)
+  const G=(x.games||[]).filter(g=>g.winner).map((g,i)=>`<span>G${i+1} ${esc(shortT(g.winner))} ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}</span>`).join("");
+  return `<div class="bgame">${row(x.hi)}${row(x.lo)}${G?`<div class="bscores">${G}</div>`:""}</div>`;
 }
+function shortT(t){ return String(t) }
 function bslot(t,seed,wins,win){
   const my=t&&t===S.myTeam;
   return `<div class="bslot ${win?'bwin':''} ${my?'bmine':''}" style="--tc:${t?teamInk(t):'transparent'}">
@@ -87,17 +90,27 @@ function confBracket(sd){
   return `<div class="bracket">${col("Wild Card",pad(wc,2).map(seriesBox))}${col("Division Series",pad(ser("ds"),2).map(seriesBox))}${col("Championship",pad(ser("cs"),1).map(seriesBox))}</div>`+
     (byes.length&&!ser("ds").length?`<div class="note">A bye to the Division Series: ${byes.map(t=>esc(t)).join(" and ")}.</div>`:"");
 }
+/* October on one screen (round 58: three tabs of series tallies read as "no bracket": Muse; Instinct called the same
+   screen the best in the game): your road through it, then both leagues and the World Series together, every
+   series with its games' scores. */
 function nflBracket(){
   const my=S.myTeam, mine=SEA.mySeries(my), live=mine&&!mine.winner&&SEA.phase!=="done";
-  const tabs=["AL","NL","Series"];
-  if(!nbaPostTab)nbaPostTab=mine&&mine.side?mine.side:SEA.sideOf(my);
-  let h=`<div class="subtabs">${tabs.map(k=>`<button class="subtab" data-np="${k}" aria-pressed="${nbaPostTab===k}">${k==="Series"?"World Series":k}</button>`).join("")}</div>`;
+  let h="";
   if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> win the World Series.</div>`;
   if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${(o=>`${esc(my)} ${mine.w[my]||0}, ${esc(o)} ${mine.w[o]||0}`)(mine.hi===my?mine.lo:mine.hi)}.
     <button class="subtab" data-simseries="1">Sim the series</button> <span class="fnote">It stops before a game that could end your season.</span></div>`;
-  if(nbaPostTab==="Series"){
-    h+=`<div class="bracket"><div class="bcol"><div class="bhead">World Series</div><div class="bgames">${seriesBox((SEA.series.ws||[])[0])}</div></div></div>`;
-  } else h+=confBracket(nbaPostTab);
+  // your road
+  const road=NBA_ROUNDS.map(r=>(SEA.series[r]||[]).find(x=>x.hi===my||x.lo===my)).filter(Boolean);
+  if(SEA.seeds&&SEA.seeds[my]){ const bye=SEA.bracket&&SEA.bracket[SEA.sideOf(my)]&&SEA.bracket[SEA.sideOf(my)].bye.indexOf(my)>=0;
+    h+=`<div class="grouphead">Your road &mdash; No. ${SEA.seeds[my]} seed</div><div class="oroad">${bye?`<div class="orow"><b>Wild Card</b> A bye: one of the two best division winners.</div>`:""}${road.map(x=>{
+      const o=x.hi===my?x.lo:x.hi, a=x.w[my]||0, b=x.w[o]||0, st=x.winner?(x.winner===my?`won ${a}-${b}`:`lost ${b}-${a}`):a===b?`level ${a}-${b}`:a>b?`lead ${a}-${b}`:`trail ${b}-${a}`;
+      const G=(x.games||[]).filter(g=>g.winner).map(g=>{ const w=g.winner===my, us=g.home===my?g.hp:g.ap, th=g.home===my?g.ap:g.hp; return `<span class="${w?"w":"l"}">${w?"W":"L"} ${us}-${th}</span>` }).join(" ");
+      return `<div class="orow"><b>${esc(ROUND_NAME[x.round||NBA_ROUNDS.find(r=>(SEA.series[r]||[]).indexOf(x)>=0)])}</b> vs ${TL(o)}: ${st}${G?`<div class="og">${G}</div>`:""}</div>` }).join("")}</div>` }
+  else if(SEA.phase!=="week")h+=`<div class="note">You missed the postseason. The bracket as it goes:</div>`;
+  const sides=Object.keys(LEAGUE.conf.sides), full=n=>n==="AL"?"American League":n==="NL"?"National League":n;
+  h+=`<div class="grouphead">${full(sides[0])}</div>${confBracket(sides[0])}
+    <div class="grouphead">World Series</div><div class="bracket"><div class="bcol"><div class="bgames">${seriesBox((SEA.series.ws||[])[0])}</div></div></div>
+    <div class="grouphead">${full(sides[1])}</div>${confBracket(sides[1])}`;
   return h;
 }
 /* play out your series without watching, until it's decided (or it needs you) */
