@@ -84,7 +84,9 @@ function showFlash(L,who){
   if(prefersReduced())return;
   try{
     const mine=who==="mine", tm=mine?S.myTeam:(L.g.home===S.myTeam?L.g.away:L.g.home);
-    const word=(typeof SPORT!=="undefined"&&SPORT.scoreWord)||"SCORE";
+    // a sport can choose which scores earn the flash (round 56, baseball: home runs and late lead changes, not every run: Muse)
+    let word=(typeof SPORT!=="undefined"&&SPORT.scoreWord)||"SCORE";
+    if(typeof SPORT!=="undefined"&&typeof SPORT.flashWord==="function"){ const w=SPORT.flashWord(L,who); if(!w)return; word=w }
     const d=document.createElement("div"); if(!d||!document.body||!document.body.appendChild)return;
     d.className="goalflash "+(mine?"mine":"theirs"); d.style.setProperty("--fc",teamInk(tm));
     d.innerHTML=`<span>${mine?esc(word)+"!":esc(tm)}</span>`;

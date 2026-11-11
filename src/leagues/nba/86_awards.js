@@ -1,5 +1,5 @@
 /* ============ awards: pro football ============ */
-/* The MVP race, and one All-Pro team across the whole league. */
+/* The MVP race, and one All-NBA team across the whole league. */
 extendSeason({
   _award(w,games){
     if(!this.roster)return;
@@ -37,4 +37,4 @@ extendSeason({
   allConfAll(){return {ALL:this.allConference()}},
   awardTeam(my){return {group:"ALL",list:this.allConference()}}
 });
-LEAGUE.awards.teamLabel=()=>"All-Pro";
+LEAGUE.awards.teamLabel=()=>"All-NBA";

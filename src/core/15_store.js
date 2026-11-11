@@ -27,11 +27,13 @@ const idb=(function(){
     return P };
   const req=(db,mode,fn)=>new Promise(res=>{ try{ const tx=db.transaction(IDB_STORE,mode), os=tx.objectStore(IDB_STORE), r=fn(os);
       let val; if(r)r.onsuccess=()=>{ val=r.result };
-      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false}); tx.onabort=()=>res({ok:false}) }catch(e){ res({ok:false}) } });
+      // round 56: say why a write failed (Muse's main browser refused a new career's first save; we couldn't tell why)
+      const why=()=>{ try{ return (tx.error&&(tx.error.name||tx.error.message))||(r&&r.error&&r.error.name)||"refused" }catch(e){ return "refused" } };
+      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false,why:why()}); tx.onabort=()=>res({ok:false,why:why()}) }catch(e){ res({ok:false,why:e&&e.name||"error"}) } });
   return {
     open:open,
     async get(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.get(k)) },
-    async set(k,v){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.put(v,k)) },
+    async set(k,v){ const db=await open(); if(!db)return {ok:false,why:"the database didn't open"}; return req(db,"readwrite",os=>os.put(v,k)) },
     async del(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.delete(k)) },
     async keys(){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.getAllKeys?os.getAllKeys():null) },
   };
@@ -45,6 +47,7 @@ const store=(function(){
   let usingIdb=null;   // known once the database has opened (or failed to)
   idb.open().then(db=>{ usingIdb=!!db });
   return {
+    lastFail:null,   // round 56: why the last write failed, for the banner
     pick:null,   // (databaseCopy, localStorageCopy, key) => 1 when the localStorage copy is further along (set by the game)
     kind(){ return claude()?"claude":usingIdb?"database":local()?"browser":"none" },
     // can it take a write right now? (full or blocked storage says no; the database is checked on the write itself)
@@ -69,7 +72,14 @@ const store=(function(){
     async set(k,v,shared){
       const W=claude(); if(W){try{return await W.set(k,v,shared)}catch(e){return null}}
       if(shared)return null;
-      const D=await idb.set(k,v); if(D.ok)return {key:k,value:v};
+      // round 56: a refused write is tried twice more (a slow first open, a busy disk) before the banner; the reason and
+      // the storage in use are kept for the banner, so a player can tell us what the browser said
+      let D=await idb.set(k,v);
+      const hasDb=IDB_ON&&typeof indexedDB!=="undefined"&&!!indexedDB;   // no database at all: straight to the old path, no wait
+      for(let i=0;i<2&&!D.ok&&hasDb;i++){ await new Promise(r=>setTimeout(r,400*(i+1))); D=await idb.set(k,v) }
+      if(D.ok){ this.lastFail=null; return {key:k,value:v} }
+      if(hasDb)this.lastFail={why:D.why||"refused",at:Date.now()};
+      try{ if(navigator.storage&&navigator.storage.estimate){ const e=await navigator.storage.estimate(); this.lastFail.used=e.usage; this.lastFail.quota=e.quota } }catch(e){}
       // the database refused it, or was slow to open: a failure (the banner says so), never a save into localStorage, which
       // the next load would read under the database's newer copy (round 48: a first load showed empty slots until a reload)
       if(usingIdb||(IDB_ON&&typeof indexedDB!=="undefined"&&indexedDB))return null;

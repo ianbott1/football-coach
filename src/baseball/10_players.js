@@ -98,3 +98,11 @@ function statProd(pos,s){
   if(isPitcher(pos)){ if(!s.ip)return 0; const era=s.er*27/s.ip; return Math.max(0,(5-era))*s.ip/27*6+(s.w||0)*2+(s.k||0)*0.08 }
   const avg=s.ab?s.h/s.ab:0; return (s.hr||0)*2.2+(s.rbi||0)*0.5+(s.r||0)*0.4+Math.max(0,avg-0.22)*s.ab*0.9;
 }
+
+/* a watched game's log, by hitter (round 56): home runs, RBI and hits for the men it named (core 80_season credits them) */
+function bsLogCredit(team,side,drives){
+  const out={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==side||!e.nm)return;
+    if(e.k!=="hr"&&e.k!=="rbi")return; const c=out[e.nm]=out[e.nm]||{hr:0,rbi:0,h:0};
+    if(e.k==="hr"){ c.hr++; c.h++; c.rbi+=e.n||1 } else { c.rbi+=e.n||1; if(e.hit>0)c.h++ } }));
+  return out;
+}

@@ -91,7 +91,7 @@ const LEAGUE={
       <path d="M24 44.5 C30 47 42 47 48 44.5 L48.5 48 C42 50.5 30 50.5 23.5 48 Z" fill="#D7263D"/>
       <path d="M42 47.5 L45 58 L41.5 58.6 L39.5 48.2 Z" fill="#D7263D"/>`},
 
-  text:{unit:"club",bye:"No game this week",
+  text:{groupWord:"LEAGUE",unit:"club",bye:"No game this week",
     rankedWin:["A win over one of the league's best. That tells you something.","Beat a big club. That's the kind of result that changes a season.","Three points off a real side."],
     badLoss:["Points you can't afford to drop.","Beaten by a side you should beat. It'll be remembered in May.","Dropped points against a side you'd expect to beat."],
     // by the occasion (Instinct, round 16: "the kind of result that decides who goes down" after matchday 1)

@@ -10,7 +10,7 @@ const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,s
 const D=f=>path.join(__dirname,'..','dist',f);
 // words that belong to one sport only
 const SPORT_WORDS={
-  football:["touchdowns?","quarterbacks?","field goals?","end zone","two-point","fourth downs?","first downs?","interceptions?","yards?","punts?","punter","kickoffs?","gridiron","linebackers?","wide receivers?"],
+  football:["touchdowns?","quarterbacks?","field goals?","end zone","two-point","fourth downs?","first downs?","interceptions?","yards?","punts?","punter","kickoffs?","gridiron","linebackers?","wide receivers?","All-Pro"],
   basketball:["three-pointers?","free throws?","rebounds?","dunks?","tip-off","shot clock","buzzer-beater","point guards?","paint"],
   hockey:["Stanley Cup","goalies?","power plays?","pucks?","face-?offs?","penalty kill","ice time","on the ice","blue line","Zamboni","skaters?","defencem[ae]n","defensem[ae]n"],
   soccer:["Premier League","FA Cup","relegat\\w*","clean sheets?","Champions League","strikers?","goalkeepers?","kick-off","stoppage time","Football League"],
@@ -24,6 +24,8 @@ const LEAGUE_WORDS={
   nba:["\\bNBA\\b","play-in","NBA Finals"],
   nhl:["\\bNHL\\b"], epl:[], mlb:["\\bMLB\\b"]
 };
+// words wrong in one league only (round 56: baseball's offseason is the winter, "the start of summer": Instinct)
+const OWN_WRONG={mlb:["summers?"]};
 // where a word is right in another league: the pros draft college players, so college talks of the pros
 const ALLOW={cfb:["\\bNFL\\b"],ncaab:["\\bNBA\\b"]};
 // club names that happen to hold another sport's word (AFC Wimbledon, Accrington Stanley + "Cup third round")
@@ -37,7 +39,7 @@ const strip=h=>String(h||'').replace(/<style[\s\S]*?<\/style>/g,' ').replace(/<s
 let bad=0;
 for(const [file,[sport,lg,team]] of Object.entries(GAMES)){ if(pick.length&&pick.indexOf(file)<0)continue;
   const words=[].concat(...Object.keys(SPORT_WORDS).filter(s=>s!==sport).map(s=>SPORT_WORDS[s].map(w=>[w,s])),
-    ...Object.keys(LEAGUE_WORDS).filter(l=>l!==lg).map(l=>LEAGUE_WORDS[l].map(w=>[w,l])));
+    ...Object.keys(LEAGUE_WORDS).filter(l=>l!==lg).map(l=>LEAGUE_WORDS[l].map(w=>[w,l])),(OWN_WRONG[lg]||[]).map(w=>[w,lg+' (wrong here)']));
   const allow=(ALLOW[lg]||[]).map(w=>new RegExp(w,'i'));
   const RX=words.filter(([w])=>!allow.some(a=>a.source===new RegExp(w,'i').source)).map(([w,s])=>[new RegExp('\\b'+w.replace(/^\\b|\\b$/g,'')+'\\b','i'),w,s]);
   // first the source: every string in this game's own layers (its sport's and its league's), shown this run or not.

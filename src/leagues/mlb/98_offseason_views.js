@@ -96,7 +96,7 @@ function nflTargetsHTML(P,room){
         <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${fit?" &middot; "+fit:""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free agents you want</div>`;
-  if(mine.length)h+=`<div class="note">Prices are this summer's asks plus about 10%; a player who improves over the summer can ask more by the time free agency opens.</div>`;
+  if(mine.length)h+=`<div class="note">Prices are this winter's asks plus about 10%; a player who improves over the winter can ask more by the time free agency opens.</div>`;
   h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
     :`<div class="note">None yet: your free-agency style will decide. Players you add get your first look, in your order, if you have the room.</div>`;
   // cheapest first, on a tap (Muse, rounds 18-21: four markets read "nothing under $5M" from the best-25 view, while the
@@ -129,9 +129,9 @@ function offseasonBanner(){
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
-  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
+  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the winter:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
-    rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
+    rec+=`<div class="bnews small"><b>Big winters:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
   if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
   if(X.trade)rec+=X.trade.done?`<div class="bnews"><b>Trade:</b> ${esc(X.trade.gave)} (${esc(X.trade.gp)}) to ${esc(X.trade.with)} for ${esc(X.trade.got)} (${esc(X.trade.qp)}).</div>`
@@ -144,8 +144,8 @@ function offseasonBanner(){
   const hz=last.awards.mvp[0]?`<div class="bnews small">${esc(last.awards.mvp[0].n)}
     (${esc(last.awards.mvp[0].p)}, ${esc(last.awards.mvp[0].t)}) won the ${LEAGUE.awards.mvp}.</div>`:"";
   const mine=(last.awards.team&&last.awards.team.list||[]).filter(x=>x.team===my);
-  const acn=mine.length?`<div class="bnews"><b>All-Pro.</b> ${
-    mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-Pro team.</div>`:"";
+  const acn=mine.length?`<div class="bnews"><b>All-MLB.</b> ${
+    mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-MLB team.</div>`:"";
   const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
     cm.map(m=>esc(m.name)+" ("+((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";

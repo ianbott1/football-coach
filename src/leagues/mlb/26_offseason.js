@@ -472,6 +472,24 @@ LEAGUE.goals={
     return {w:68,par:0,l:"The bottom of the league. Seventy-five wins would be real movement.",t:"START OVER"};
   },
   isTitle(result){ return /WORLD SERIES CHAMPIONS/i.test(result) },
+  /* the postseason part, as it stands (round 56: "Still to do: stay in the wild-card race into September" after the
+     division was clinched: Muse) */
+  clauseLine(e,my){
+    const sea=SEA; if(!sea)return null; const ck=(sea.clinch?sea.clinch():{})[my]||"";
+    const all=[].concat(...Object.values(sea.series||{})).filter(x=>x&&x.w&&x.w[my]!==undefined);
+    const won=all.filter(x=>x.winner===my).length, out=all.some(x=>x.winner&&x.winner!==my);
+    const want=e.par>=1.8?2:e.par>=1.1?1:0, what=want===2?"reach the championship series":want===1?"win a series":"";
+    const reachedCS=(sea.series&&sea.series.cs||[]).some(x=>x.hi===my||x.lo===my), done=want===2?reachedCS:won>=want;
+    if(sea.phase==="week"){
+      if(ck==="y")return `Division clinched.${want?" Still to do: "+what+".":""}`;
+      if(ck==="x")return `A postseason place clinched.${want?" Still to do: "+what+".":""}`;
+      if(ck==="e")return "Out of the postseason race.";
+      const r=wcRace(my); return want?`Still to do: make the postseason and ${what}.${r?" "+r:""}`:(r||"Still in the race.") }
+    if(!(sea.seeds&&sea.seeds[my])&&!all.length)return "Missed the postseason.";
+    if(!want)return "Into the postseason: done.";
+    if(done)return want===2?"Into the championship series: done.":`${won} series won: done.`;
+    return out?`In the postseason, but out before you could ${what}.`:`In the postseason. Still to do: ${what}.`;
+  },
   firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
     // no result yet (a season in progress, as the seat badge asks): the postseason at par
@@ -509,3 +527,12 @@ LEAGUE.seasonLine=function(h,t,r,seed){
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;
+
+/* where you stand for the last wild card (round 56): the three best in your league who aren't leading a division */
+function wcRace(my){
+  try{ const sea=SEA, sd=sea.sideOf(my), R=sea.rec, pct=t=>{ const [w,l]=R[t]; return w+l?w/(w+l):0 };
+    const teams=NAMES.filter(t=>sea.sideOf(t)===sd), lead={}; LEAGUE.conf.sides[sd].forEach(d=>{ const D=teams.filter(t=>CONF[t]===d).sort((a,b)=>sea._tb(a,b)); lead[D[0]]=true });
+    if(lead[my])return "Leading the division.";
+    const wc=teams.filter(t=>!lead[t]).sort((a,b)=>sea._tb(a,b)), i=wc.indexOf(my), gb=(a,b)=>((R[a][0]-R[b][0])+(R[b][1]-R[a][1]))/2;
+    if(i<3){ const g=gb(my,wc[3]); return `In a wild-card place${g>0?`, ${g} game${g===1?"":"s"} clear`:""}.` }
+    const g=gb(wc[2],my); return `${g} game${g===1?"":"s"} out of the last wild card.` }catch(e){ return null } }

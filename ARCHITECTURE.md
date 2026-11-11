@@ -358,6 +358,35 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 56: baseball testers' first reports (Instinct, Muse), the bugs.
+- Saving (all games): a refused database write is tried twice more; if it still fails, the banner gives the
+  browser's own words and the storage in use (store.lastFail, saveWhy). Muse's main browser refused a new career's
+  first save; a new career is ~10 KB in every game, so it isn't size. storage-full.js: refused twice then taken
+  (no banner), refused every time (banner with the reason), taken again (banner goes). Retries only where a
+  database exists (storage.js caught the wait on the old localStorage path).
+- "Beaten in the final" asked whether the team that beat you won it all: now the series' own round
+  (finalRound()). Baseball: "out of the postseason", "beaten in the World Series" (LEAGUE.text.outOf/lostFinal).
+- Baseball live: the line score takes the live score for the inning under way (it ran a play behind at a call);
+  every event names its man from the day's lineup (injured regulars' backups), a pinch hitter stays in his slot,
+  and a watched game's log credits home runs, RBI and hits (bsLogCredit, core 80_season): 41 of 41 homers
+  credited over 35 live games, no slot named two ways. Bases-loaded walks score with a line. The stranded-rally
+  line once a half-inning (same random draws as before). The final card drops the pre-game series state
+  (liveLabel, all three series sports). The flash: home runs, and runs from the 7th that tie or take the lead
+  (SPORT.flashWord). Pinch calls tied or behind only (the help said so; a third came with a lead).
+- Live win chance (baseball): the spread shrinks linearly with innings left and the pre-game edge as tau^1.5
+  (LIVE_TAUP, LIVE_MUP). Measured on 15,000 games: a one-run lead after seven showed 69% and won 82%, now 83/82;
+  a tie after seven against a far stronger club showed 29% (40% before the fade) and won 38%, now 37/38. Hidden
+  once the game is decided. A Hide / Show button on the bar itself (it was only in the ? panel).
+- Objectives (all games): the home and re-aimed targets used Elo/400; each engine has its own scale (wpK: NBA 280,
+  baseball 680), so baseball's targets were 61% at home for an 87-win club and "93 of your last 135". Now
+  wpScale("balanced"). Met overall 50% (49% before). Baseball's clauseLine: division or place clinched, out of
+  the race, or where you stand for the last wild card (wcRace), not "stay in the wild-card race" after clinching.
+- Words: All-Pro was football's (baseball All-MLB, hockey All-Star, pro basketball All-NBA); baseball's offseason
+  is the winter (LEAGUE.text.offWord); soccer's All-Pro is the Team of the Year; the season card's group stat says DIVISION in the pros, LEAGUE in soccer;
+  baseball's close-game chip is "One run" at one run. wrong-sport.js knows All-Pro and summer-in-baseball.
+- Measured in the real app (9,720 games): home 52.6%, one-run 25.1% (MLB ~28%), 4.57 runs a side (MLB ~4.4),
+  home games per club 77-85: the schedule and the run level go with round 57's series schedule.
+
 Round 55: words from the wrong sport (test/wrong-sport.js, in run-all).
 - The test: a lexicon per sport (touchdown, rebound, Stanley Cup, relegation, home run...) and per league (Super
   Bowl, March Madness, NBA, NHL, MLB...). Two seasons in each game, every tab several times, live game screens,

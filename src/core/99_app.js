@@ -481,7 +481,19 @@ async function claimSlot(n){ saveRev=await readRev(n); staleTab=false }
 async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(REVKEY(n),String(v)) }catch(e){} return v }
 /* a save that didn't land is said at once, not only on the way out: the browser's storage for these six games is
    full (every career, every game, one allowance) or blocked */
-function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does). Download a backup now so nothing is lost.":store.kind()==="database"?"This browser refused the save (the disk may be nearly full). Download a backup now so nothing is lost.":"This browser's older storage for these games is full: every career in all six games shares one allowance. Download a backup now so nothing is lost, then erase a career you don't need from the title screen."}
+/* a live game's label: once it's over, the series state it carried (where the series stood before the game) goes
+   (round 56: "SERIES TIED 1-1" above "Series 2-1: you lead" on the final card: Muse) */
+function liveLabel(g){ const l=g&&g.label||""; return live&&live.done?l.split(" \u00b7 ")[0]:l }
+/* the offseason's season (round 56: baseball's is the winter, "the start of summer" read wrong: Instinct) */
+function OFFW(){ return (LEAGUE.text&&LEAGUE.text.offWord)||"summer" }
+/* the postseason's last round (round 56: "beaten in the final" asked whether the team that beat you went on to win it all, so a
+   Division Series loss to the eventual champion read as a final: Instinct) */
+function finalRound(){ const P=LEAGUE.post&&LEAGUE.post.phases; return P&&P.length?String(P[P.length-1]).replace(/g\d+$/,""):null }
+/* what the browser said when it refused (round 56): the error's name, and the storage in use against the allowance */
+function saveWhy(){ const F=store.lastFail; if(!F)return " (the disk may be nearly full)";
+  const mb=b=>b>=1e9?(b/1e9).toFixed(1)+" GB":Math.round(b/1e6)+" MB";
+  return ` (it said: ${esc(F.why)}${F.quota?`; storage in use: ${mb(F.used||0)} of ${mb(F.quota)}`:""})` }
+function saveFailHTML(){ return saveFail&&!staleTab?`<div class="staletab" id="savefail" role="alert"><b>This career isn't saving.</b> ${store.kind()==="none"?"This browser is blocking storage (private browsing often does). Download a backup now so nothing is lost.":store.kind()==="database"?`This browser refused the save${saveWhy()}. Download a backup now so nothing is lost, and tell us what it said.`:"This browser's older storage for these games is full: every career in all six games shares one allowance. Download a backup now so nothing is lost, then erase a career you don't need from the title screen."}
   <button class="skip small" id="savefailbk">Download a backup</button></div>`:"" }
 /* once a season, as it's banked: a career lives only in this browser; a file keeps it safe (Muse: "nothing ever
    points at" the backup) */
@@ -1091,7 +1103,7 @@ function gameLine(g,mine){
   if(ups&&best<=RANK_TOP)chips.push(`<span class="chip up">Upset</span>`);
   if(g.neutral&&!g.site&&!g.title)chips.push(`<span class="chip">Neutral</span>`);
   if(LEAGUE.draws){ if(g.draw)chips.push(`<span class="chip">Draw</span>`); else if(g.margin<=1)chips.push(`<span class="chip">One goal</span>`) }
-  else if(g.margin<=3)chips.push(`<span class="chip">One score</span>`);
+  else if(g.margin<=((typeof SPORT!=="undefined"&&SPORT.closeMargin)||3))chips.push(`<span class="chip">${(typeof SPORT!=="undefined"&&SPORT.closeLabel)||"One score"}</span>`);   // baseball: one run (round 56: "ONE SCORE" on 4-1 and 7-4: Instinct)
   const rv=LEAGUE.rivals.name(g.home,g.away);
   if(rv)chips.push(`<span class="chip riv">${esc(rv)}</span>`);
   return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
@@ -1228,7 +1240,7 @@ function heroResult(){
     const X=SEA.series&&g.series&&(SEA.series[g.series]||[]).find(x=>x.games&&x.games.indexOf(g)>=0);
     if(X){ const a=X.w[my]||0, b=X.w[opp]||0;
       move=X.winner===my?(SEA.champion===my?`<div class="hmove up">Champions: won the series ${a}&ndash;${b}</div>`:`<div class="hmove up">Series won ${a}&ndash;${b}: through to the next round</div>`)
-        :X.winner?`<div class="hmove dn">Season over: ${SEA.champion&&SEA.champion===opp?"beaten in the final":"out of the playoffs"}, ${a}&ndash;${b} in the series</div>`   // a Finals defeat isn't "out of the playoffs" (Grokbot)
+        :X.winner?`<div class="hmove dn">Season over: ${g.series===finalRound()?(LEAGUE.text.lostFinal||"beaten in the final"):(LEAGUE.text.outOf||"out of the playoffs")}, ${a}&ndash;${b} in the series</div>`   // a Finals defeat isn't "out of the playoffs" (Grokbot)
         :`<div class="hmove flat">Series ${a}&ndash;${b}${a>b?": you lead":a<b?": they lead":": level"}</div>` }
     // a one-game knockout (football's playoffs and bowls) has no next game to look for: a defeat ends it there and then,
     // and says where (Grokbot, Instinct: the Wild Card loss read "Down 2 to #13" until the playoffs were simmed)
@@ -1665,8 +1677,8 @@ function changedHTML(my){
   const drN=new Set((X.draft||[]).filter(d=>d.team===my).map(d=>d.n));
   const out=top(gone.map(p=>arrN.has(p.n)?Object.assign({},p,{brief:drN.has(p.n)?"drafted":"signed"}):p),3), inn=top(arr.filter(p=>!goneN.has(p.n)),3);
   if(!out.length&&!inn.length)return "";
-  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r}${p.brief?`, ${p.brief} and let go this summer`:""})`;
-  return `<div class="note"><b>Since last season:</b> ${out.length?`gone, ${out.map(nm).join(", ")}`:"nobody important left"}${inn.length?`; in, ${inn.map(nm).join(", ")}`:""}. Players also age and develop over the summer: the roster tab shows where you stand now.</div>`;
+  const nm=p=>`${esc(p.n)} (${esc(p.p)}, ${p.r}${p.brief?`, ${p.brief} and let go this ${OFFW()}`:""})`;
+  return `<div class="note"><b>Since last season:</b> ${out.length?`gone, ${out.map(nm).join(", ")}`:"nobody important left"}${inn.length?`; in, ${inn.map(nm).join(", ")}`:""}. Players also age and develop over the ${OFFW()}: the roster tab shows where you stand now.</div>`;
 }
 function myTeamView(){
   const my=S.myTeam, rk=SEA.poll.rankMap();

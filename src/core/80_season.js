@@ -153,6 +153,8 @@ class Season{
           // soccer too (round 46: Muse, three scorers credited with no goals): the log's scorers get the goals
           const LCf=typeof hkLogCredit==="function"?hkLogCredit:typeof scLogCredit==="function"?scLogCredit:null, HKC=typeof hkLogCredit==="function"&&LCf===hkLogCredit;
           const LC=F.drives&&LCf?LCf(tm,tm===a?"home":"away",F.drives):null, done=new Set();
+          // baseball (round 56): the hitters the log named get its home runs, RBI and hits ("0 HOME RUNS" after a three-run homer: Muse)
+          const BL=F.drives&&typeof bsLogCredit==="function"?bsLogCredit(tm,tm===a?"home":"away",F.drives):null;
           POS.forEach((P,i)=>{
             const pl=hurt.has(i)?this.roster[tm][BK(i)]:this.roster[tm][i];
             if(!pl)return;
@@ -160,10 +162,15 @@ class Season{
             const line=gameStats(this.rng,pl,i,pf,pa2,pf>pa2);
             if(LC&&P.p!=="G"&&P.p!=="GK"){ const c=LC[pl.n]||{goals:0}; line.goals=c.goals; if(HKC)line.ast=c.ast||0;   // soccer's log names scorers, not assists: those stay
               if("pts" in line)line.pts=line.goals+(line.ast||0); if("sog" in line)line.sog=Math.max(line.sog,c.goals); if("shots" in line)line.shots=Math.max(line.shots,c.goals); done.add(pl.n) }
+            if(BL&&typeof isPitcher==="function"&&!isPitcher(P.p)){ const c=BL[pl.n]; done.add(pl.n);
+              if(c||line.ab){ const C=c||{hr:0,rbi:0,h:0}; line.hr=C.hr; line.rbi=C.rbi; line.h=Math.max(line.h||0,C.h); line.ab=Math.max(line.ab||0,line.h,3); line.r=Math.max(line.r||0,line.hr) } }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
             pl.last={line:line,pos:P.p,week:this.step,team:tm};
           });
+          if(BL)Object.keys(BL).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
+            const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=BL[nm], line={ab:Math.max(1,c.h),h:c.h,hr:c.hr,rbi:c.rbi,r:c.hr};
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
           if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=LC[nm], line=HKC?{goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals}:{goals:c.goals,shots:c.goals};
             if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });

@@ -1,5 +1,5 @@
 {
- "fp": "f715c12887241588",
+ "fp": "52cfe498e0074e95",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -375,6 +375,11 @@
    "fp": "f715c12887241588",
    "from": "ea448da11fd49b60",
    "note": "round 54: own franchise-strength range (was 1480-1920)"
+  },
+  {
+   "fp": "52cfe498e0074e95",
+   "from": "f715c12887241588",
+   "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
   }
  ],
  "result": {
@@ -389,7 +394,7 @@
     "heis": "72c4700494f6c62c",
     "history": "56993daae0adafdf",
     "universe": "011afc36d59045e5",
-    "screens": "622f396c50221c59"
+    "screens": "c11fecc426633e27"
    },
    {
     "year": 2027,
@@ -401,7 +406,7 @@
     "heis": "620b9b05ed91f4c9",
     "history": "d180492a39d64d8c",
     "universe": "bf973d93472b5ab0",
-    "screens": "756e7164a7f0c2c3"
+    "screens": "116dd875a20289db"
    }
   ],
   "Edmonton#777": [
@@ -413,9 +418,9 @@
     "rec": "a60e8281e314a8fd",
     "poll": "bc021833c20d4158",
     "heis": "1506ba3a83c2abeb",
-    "history": "d79a2cf38f83ec07",
-    "universe": "a34c5f1a2935aa35",
-    "screens": "c3e6d056c77c53d3"
+    "history": "6ac092409980b3f3",
+    "universe": "bcdb1ea5dc5f8b06",
+    "screens": "f2844c6656cf5769"
    },
    {
     "year": 2027,
@@ -425,9 +430,9 @@
     "rec": "b99fb68944509824",
     "poll": "83a4d6a1bef10936",
     "heis": "6f6f8535d9d82902",
-    "history": "20742a1a381c47ee",
-    "universe": "15e8d329b6479632",
-    "screens": "f706b1d553b45a5e"
+    "history": "0f4b35c39504f5e0",
+    "universe": "7a569b2d2fc0a888",
+    "screens": "2f180773909daecb"
    }
   ],
   "schedules#60": [

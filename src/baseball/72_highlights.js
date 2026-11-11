@@ -14,7 +14,7 @@ const HL_SPORT=(function(){
   function mk(L,e,d){
     const g=L.g, tm=e.side==="home"?g.home:g.away, u=e.u||0;
     const r=mulberry32((u*7919+(d.seg||0)*131+(e.side==="home"?17:29))>>>0);
-    let nm=""; try{ nm=bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"" }catch(er){}
+    let nm=e.nm||""; if(!nm)try{ nm=bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"" }catch(er){}
     const ang=(-0.75+r()*1.5)*0.72, hr=e.k==="hr";
     const dist=hr?1.08+r()*0.15:e.hit===3?0.92:e.hit===2?0.82:0.55;
     const land=[HOME[0]+Math.sin(ang)*dist*0.62, HOME[1]-Math.cos(ang)*dist*0.78];

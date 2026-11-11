@@ -9,7 +9,7 @@
       save that fits lands, one that can't says so, and the last good save survives a reload.
    node test/storage-full.js   last line: MATCH or MISMATCH */
 const {chromium}=require('playwright'), path=require('path'); let bad=0, n=0; const ok=(c,m)=>{n++; if(!c){bad++; console.log('  FAIL '+m)}};
-const GAMES=['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html'];
+const GAMES=['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html','baseball-coach-pro.html'];
 const url=f=>'file://'+path.join(__dirname,'..','dist',f);
 const pad=`(()=>{ let q=7, t=""; for(let i=0;i<1600000;i++){ q=(q*1103515245+12345)&0x7fffffff; t+=String.fromCharCode(33+(q>>16)%90) } return t })()`;
 const fillLS=async p=>p.evaluate(()=>{ for(const s of [50000,5000,500,50,5,1]){ const blk='y'.repeat(s); for(let i=0;i<4000;i++){ try{ localStorage.setItem('__o'+s+'_'+i,blk) }catch(e){ break } } } });
@@ -74,4 +74,17 @@ const slotText=async p=>p.evaluate(()=>{ const e=document.querySelector('[data-s
    await p.reload(); await p.waitForTimeout(900); const sl=await slotText(p);
    ok(sl.toUpperCase().indexOf(team.toUpperCase())>=0,`${f} (no database): after a reload slot 1 reads "${sl}"`);
    console.log(`${f} without a database: storage full, save that fits ${r1.x?'lands':'FAILS'}; too big ${r2.fail?'warned':'SILENT'}`); await ctx.close() }
+ // 5. (round 56) the database refuses a write: twice then takes it (no banner), or every time (the banner says what the
+ //    browser said and the storage in use). Muse's main browser refused a new baseball career's first save.
+ for(const f of ['baseball-coach-pro.html']){ const ctx=await b.newContext();
+   await ctx.addInitScript(()=>{ window.__refuse=0; const put=IDBObjectStore.prototype.put;
+     IDBObjectStore.prototype.put=function(v,k){ if(window.__refuse>0&&String(k).indexOf('rev')<0){ window.__refuse--; const tx=this.transaction; setTimeout(()=>{ try{ tx.abort() }catch(e){} },0); return put.call(this,v,k) } return put.call(this,v,k) } });
+   const p=await ctx.newPage(); await p.goto(url(f)); await p.waitForTimeout(400); await p.click('#qstart'); await p.waitForTimeout(1200);
+   const r1=await p.evaluate(async()=>{ window.__refuse=2; SEA.userTeam=S.myTeam; SEA.advance(); S.steps++; const x=await save(); render(); return {x, fail:!!document.querySelector('#savefail')} });
+   ok(r1.x===true&&!r1.fail,`${f}: refused twice, then taken: saved, no banner: ${JSON.stringify(r1)}`);
+   const r2=await p.evaluate(async()=>{ window.__refuse=99; SEA.userTeam=S.myTeam; SEA.advance(); S.steps++; const x=await save(); render(); const e=document.querySelector('#savefail'); return {x, txt:e?e.innerText.replace(/\s+/g,' '):''} });
+   ok(r2.x===false&&/it said: \w+/.test(r2.txt)&&/storage in use/.test(r2.txt),`${f}: refused every time: the banner says why: ${JSON.stringify(r2)}`);
+   const r3=await p.evaluate(async()=>{ window.__refuse=0; SEA.userTeam=S.myTeam; SEA.advance(); S.steps++; const x=await save(); render(); return {x, fail:!!document.querySelector('#savefail')} });
+   ok(r3.x===true&&!r3.fail,`${f}: and once it takes saves again, the banner goes: ${JSON.stringify(r3)}`);
+   console.log(`${f}: database refusing: retried ${r1.x?'and saved':'BUT FAILED'}; banner: "${r2.txt.slice(0,150)}"`); await ctx.close() }
  await b.close(); console.log(bad?`MISMATCH ${bad} of ${n}`:`MATCH ${n} checks: saves survive, in the database and without it`); process.exit(bad?1:0) })();

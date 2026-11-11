@@ -17,7 +17,7 @@ const add=(name,args,opt={})=>{ if(!done0.has(name))T.push(Object.assign({name,a
 // in every game
 for(const [lg,f] of Object.entries(G)){
   add(`golden ${lg}`,['golden.js',D(f)]);
-  add(`hotseat ${lg}`,['hotseat.js',D(f)]);
+  add(`hotseat ${lg}`,['hotseat.js',D(f)],{timeout:1200000});   // round 56: baseball's is 4 min alone, past 600s beside the browser tests
   add(`storage ${lg}`,['storage.js',D(f)]);
   add(`reload ${lg}`,['reload.js',D(f)]);
 }

@@ -1,6 +1,16 @@
 /* ============ sport: baseball ============ */
 const SPORT={
-  scoreWord:"RUN",                  // the flash when you score
+  scoreWord:"RUN",
+  closeMargin:1, closeLabel:"One run",   // the scores page chip (round 56)                  // the flash when you score
+  /* which runs get the flash (round 56: an enormous "RUN!" on every run hid the log at the moment you wanted to read it,
+     and a homer felt the same as a bases-loaded walk: Muse): a home run, or a run from the 7th on that ties the game or
+     takes the lead; anything else just plays its sound */
+  flashWord(L,who){
+    try{ const D=L.drives||[], d=D[D.length-1]; if(!d)return null; const my=S.myTeam, side=who==="mine"?(L.g.home===my?"home":"away"):(L.g.home===my?"away":"home");
+      L._fl=L._fl||{}; const hr=(d.ev||[]).find((e,i)=>e.k==="hr"&&e.side===side&&!L._fl[d.seg+":"+i]&&(L._fl[d.seg+":"+i]=true));
+      if(hr)return hr.n===4?"GRAND SLAM":"HOME RUN";
+      const us=side==="home"?L.eng.h:L.eng.a, them=side==="home"?L.eng.a:L.eng.h;
+      return d.seg>=6&&us>=them&&us-them<=1?"RUN":null }catch(e){ return null } },
   id:"baseball",
   word:"Baseball",
   /* what the owl perches on in the logo: a bat, laid across, and a ball */

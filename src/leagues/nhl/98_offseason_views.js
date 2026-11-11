@@ -144,8 +144,8 @@ function offseasonBanner(){
   const hz=last.awards.mvp[0]?`<div class="bnews small">${esc(last.awards.mvp[0].n)}
     (${esc(last.awards.mvp[0].p)}, ${esc(last.awards.mvp[0].t)}) won the ${LEAGUE.awards.mvp}.</div>`:"";
   const mine=(last.awards.team&&last.awards.team.list||[]).filter(x=>x.team===my);
-  const acn=mine.length?`<div class="bnews"><b>All-Pro.</b> ${
-    mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-Pro team.</div>`:"";
+  const acn=mine.length?`<div class="bnews"><b>All-Star team.</b> ${
+    mine.map(x=>esc(x.n)+" ("+esc(x.pos)+")").join(", ")} made the All-Star team.</div>`:"";
   const cm=(last.coaching.coordMoves||[]).filter(m=>m.from===my);
   const cmn=cm.length?`<div class="bnews flag"><b>Staff loss.</b> ${
     cm.map(m=>esc(m.name)+" ("+((typeof SPORT!=="undefined"&&SPORT.staff&&SPORT.staff[m.side])?SPORT.staff[m.side].short:m.side.toUpperCase())+") takes the head job at "+esc(m.to)).join("; ")}.</div>`:"";
