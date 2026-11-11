@@ -894,6 +894,12 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .objmark{flex:none;width:16px;color:var(--muted)}.obj.met .objmark{color:var(--turf)}.obj.miss .objmark{color:var(--flag)}
 .objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
 details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 0;list-style:none}details.audit>summary::before{content:"\25B8  "}details.audit[open]>summary::before{content:"\25BE  "}
+.racecard{border:1px solid var(--line,#333);border-radius:6px;padding:10px 12px;margin:6px 0 14px}
+.racecard .clinched{font:700 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--good,#4caf50);margin-bottom:6px}
+.racecard .rnum{font-size:13px;line-height:1.5;margin-bottom:8px}.racecard .rtabs{display:flex;gap:14px;flex-wrap:wrap}
+.racecard .rt{border-collapse:collapse;font-size:12px;min-width:0;flex:1 1 220px}.racecard .rt th{text-align:left;font:10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mute,#9aa);padding:2px 6px 4px 0}
+.racecard .rt td{padding:2px 6px 2px 0;white-space:nowrap}.racecard .rt tr.me td{font-weight:700}.racecard .rt tr.cut td{border-top:1px dashed var(--line,#444)}
+.racecard .ck{font:10px var(--mono);color:var(--mute,#9aa)}.racecard .rscore{font-size:12px;color:var(--mute,#9aa);margin-top:8px;line-height:1.5}.racecard .rscore .me{color:var(--ink,#eee);font-weight:600}
 .livewp .lwtog{background:none;border:1px solid var(--line,#333);color:var(--mute,#9aa);font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;cursor:pointer;min-height:28px}.livewp.off{justify-content:flex-end}
 .livewp{display:flex;align-items:center;gap:10px;margin:8px auto;padding:0 16px;max-width:760px;box-sizing:border-box;font-size:12px}.livewp .lwlab{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}.livewp .lwbar{flex:1;min-width:60px;height:6px;background:var(--line);display:flex;overflow:hidden;border-radius:3px}.livewp .lwbar i{background:var(--sodium);display:block;height:100%}.livewp .lwbar b{background:var(--muted);opacity:.5;display:block;height:100%}.livewp .lwpct{color:var(--bone);white-space:nowrap;font-family:var(--mono);font-size:11px}
 .filmmem{font-size:12.5px;line-height:1.45;border-left:2px solid var(--bone);padding:4px 10px;margin:8px 0;color:var(--dim,#9aa)}.filmmem b{color:var(--bone);font-weight:600}
@@ -976,7 +982,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="9d0c8af";
+<script>const BUILD_ID="6f47815";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -2025,54 +2031,88 @@ class PowerRank{
 }
 LEAGUE.Ranking=PowerRank;
 /* ============ schedule: pro baseball ============ */
-/* The balanced schedule MLB has played since 2023, 162 games, 81 at home: thirteen against each division rival (seven at
-   home one year, six the next, by pairing), six or seven against each of the other ten in the league (three each way;
-   the seventh rotates), three against each of the fifteen in the other league (two at home, by pairing and year) and
-   four against the natural rival across the leagues (two each way). Fitted into the season's days, most teams playing
-   most days, no team twice on a day. */
+/* The balanced schedule MLB has played since 2023, 162 games, played as series (round 57: it was a different opponent
+   every day with no days off, and home games ran 77 to 85 a club: Instinct, Muse):
+   - thirteen against each division rival: seven at home one year, six the next (a 4 and a 3, or two 3s);
+   - six or seven against each of the other ten in the league (two 3-game series; the seventh makes one a 4);
+   - one 3-game series against each of fourteen in the other league, home or away, and four against the natural
+     rival (a 2-game series each way).
+   Where the odd games go is chosen so that every club has exactly 81 at home: each league's odd pairings, and the
+   interleague series, are oriented along Euler circuits (every club has an even number of each, so a circuit gives
+   it as many home as away). Then the series are laid into the season's days (no games over the All-Star break or two league-wide days
+   off): both clubs free on the first day, the
+   clubs with least room first, and a day off for a club that has played two to three weeks straight. */
 function mlbSchedule(rng,R,year){
   const byDiv={}, bySide={};
   NAMES.forEach(t=>{(byDiv[CONF[t]]=byDiv[CONF[t]]||[]).push(t)});
   Object.keys(LEAGUE.conf.sides).forEach(sd=>bySide[sd]=[].concat(...LEAGUE.conf.sides[sd].map(d=>byDiv[d])));
-  const sideOf=t=>Object.keys(bySide).find(sd=>bySide[sd].indexOf(t)>=0);
-  const games=[], add=(h,a,n)=>{for(let i=0;i<n;i++)games.push({home:h,away:a})};
-  const flip=(a,b)=>(strHash(a<b?a+"|"+b:b+"|"+a)+year)%2===0;     // which side hosts the odd game this year
-  // the division: thirteen, seven and six
-  Object.values(byDiv).forEach(D=>D.forEach((a,i)=>D.forEach((b,j)=>{ if(i<j){ const x=flip(a,b); add(a,b,x?7:6); add(b,a,x?6:7) } })));
-  // the rest of the league: six each, and a seventh against four of the ten (rotating), its host by pairing
+  const n={}, key=(a,b)=>a<b?a+"|"+b:b+"|"+a, addN=(a,b,k)=>{n[key(a,b)]=(n[key(a,b)]||0)+k};
+  Object.values(byDiv).forEach(D=>D.forEach((a,i)=>D.forEach((b,j)=>{ if(i<j)addN(a,b,13) })));
   Object.keys(bySide).forEach(sd=>{ const L=bySide[sd];
-    L.forEach((a,i)=>L.forEach((b,j)=>{ if(i>=j||CONF[a]===CONF[b])return; add(a,b,3); add(b,a,3) }));
-    // the seventh games: each team gets four, by a rotation through the other two divisions
+    L.forEach((a,i)=>L.forEach((b,j)=>{ if(i<j&&CONF[a]!==CONF[b])addN(a,b,6) }));
     const divs=LEAGUE.conf.sides[sd];
     divs.forEach((d1,x)=>divs.forEach((d2,y)=>{ if(x>=y)return; const A=byDiv[d1], B=byDiv[d2], k=(year+x+y)%5;
-      A.forEach((a,i)=>[0,1].forEach(m=>{ const b=B[(i+k+m)%5]; if(flip(a,b))add(a,b,1); else add(b,a,1) })) }));
-  });
-  // the other league: three each (two at home by pairing and year), four against the natural rival
-  const [S1,S2]=Object.keys(bySide);
-  bySide[S1].forEach((a,i)=>bySide[S2].forEach((b,j)=>{ if(i===j){ add(a,b,2); add(b,a,2); return } const x=flip(a,b); add(a,b,x?2:1); add(b,a,x?1:2) }));
-  // fit into days: each day a matching, the teams with the most games left first, paced to the last day
+      A.forEach((a,i)=>[0,1].forEach(m=>addN(a,B[(i+k+m)%5],1))) })) });
+  const [S1,S2]=Object.keys(bySide), rival={};
+  bySide[S1].forEach((a,i)=>{ const b=bySide[S2][i]; rival[a]=b; rival[b]=a });
+  // orient the edges of a graph whose every vertex has even degree: walk Euler circuits (Hierholzer), each edge
+  // pointing the way it is walked; returns [from,to] pairs
+  const orient=(edges)=>{ const adj={}; edges.forEach((e,i)=>{ (adj[e[0]]=adj[e[0]]||[]).push(i); (adj[e[1]]=adj[e[1]]||[]).push(i) });
+    Object.values(adj).forEach(l=>rng.shuffle(l)); const used=new Array(edges.length).fill(false), out=[];
+    Object.keys(adj).forEach(v0=>{ const stack=[v0];
+      while(stack.length){ const v=stack[stack.length-1], l=adj[v]; while(l.length&&used[l[l.length-1]])l.pop();
+        if(!l.length){ stack.pop(); continue } const i=l.pop(); used[i]=true; const e=edges[i], w=e[0]===v?e[1]:e[0]; out.push([v,w]); stack.push(w) } });
+    return out };
+  // the odd games within each league: the one extra goes to the host the circuit points to
+  const odd=Object.keys(n).filter(k=>n[k]%2).map(k=>k.split("|")), extra={};
+  orient(odd).forEach(([h,a])=>extra[h+"|"+a]=true);
+  const series=[], ser=(h,a,len)=>series.push({home:h,away:a,len:len});
+  const split=g=>g===7?[4,3]:g===6?[3,3]:g===5?[3,2]:g===4?[4]:g===3?[3]:g===2?[2]:g===1?[1]:[3,3,3].slice(0,Math.floor(g/3)).concat(g%3?[g%3]:[]);
+  Object.keys(n).forEach(k=>{ const [a,b]=k.split("|"), t=n[k], half=Math.floor(t/2), ha=half+(extra[a+"|"+b]?1:0), hb=t-ha;
+    split(ha).forEach(L=>ser(a,b,L)); split(hb).forEach(L=>ser(b,a,L)) });
+  // the other league: a 3-game series against each but the rival, its site along an Euler circuit (14 each: 7 home)
+  const inter=[]; bySide[S1].forEach(a=>bySide[S2].forEach(b=>{ if(rival[a]!==b)inter.push([a,b]) }));
+  orient(inter).forEach(([h,a])=>ser(h,a,3));
+  NAMES.forEach(a=>{ if(bySide[S1].indexOf(a)>=0){ ser(a,rival[a],2); ser(rival[a],a,2) } });
+  return packSeries(rng,series);
+}
+/* lay the series into the season's days (also used by the tests): returns the games, one entry a game, with the
+   series it belongs to (ser, its game sg of sn) */
+function packSeries(rng,series){
   const DAYS=LEAGUE.weeks;
-  for(let attempt=0;attempt<80;attempt++){
-    const left={}; NAMES.forEach(t=>left[t]=0); games.forEach(g=>{left[g.home]++;left[g.away]++});
-    const pool=rng.shuffle(games.slice()), out=[]; let ok=true;
-    for(let d=0;d<DAYS;d++){
-      const busy=new Set(), daysLeft=DAYS-d;
-      schedOrder(pool,left,rng); const cap=paceCap(pool.length,daysLeft,rng);
-      for(let i=0;i<pool.length;i++){ const g=pool[i];
-        if(busy.has(g.home)||busy.has(g.away))continue;
-        // paced, except for a team running out of days (it plays whenever it can)
-        if(busy.size>=2*cap&&!(left[g.home]>=daysLeft-3||left[g.away]>=daysLeft-3))continue;
-        busy.add(g.home); busy.add(g.away); left[g.home]--; left[g.away]--;
-        out.push({week:d,home:g.home,away:g.away,conf:CONF[g.home]===CONF[g.away],neutral:false});
-        pool.splice(i,1); i--; }
-      if(NAMES.some(t=>left[t]>daysLeft-1)){ok=false;break}
+  // days nobody plays (a series never spans one): the All-Star break, four days past the middle, and two league-wide
+  // days off (measured: the season ends on day 184-185 of 186; with none it ended on 176-178), so the season runs to its last day instead of ending a week early
+  const dead=new Set(), mid=Math.round(DAYS*0.56), DD=[4,[0.3,0.8]]; for(let k=0;k<DD[0];k++)dead.add(mid+k);
+  DD[1].forEach(f=>dead.add(Math.round(DAYS*f)));
+  const clear=(d,L)=>{ for(let k=0;k<L;k++)if(dead.has(d+k))return false; return true };
+  for(let attempt=0;attempt<200;attempt++){
+    const rem={}, free={}, run={}, pool=rng.shuffle(series.map((x,i)=>Object.assign({id:i},x))), out=[];
+    NAMES.forEach(t=>{rem[t]=0;free[t]=0;run[t]=0}); pool.forEach(x=>{rem[x.home]+=x.len;rem[x.away]+=x.len});
+    let ok=true;
+    for(let d=0;d<DAYS&&ok;d++){
+      let left=0; for(let k=d;k<DAYS;k++)if(!dead.has(k))left++;
+      const slack=t=>left-rem[t];
+      if(dead.has(d)){ NAMES.forEach(t=>{ if(free[t]<=d)run[t]=0 }); continue }
+      const avail=NAMES.filter(t=>free[t]<=d&&rem[t]>0).sort((x,y)=>slack(x)-slack(y)||rng.r()-0.5);
+      const taken=new Set(), rest=new Set();
+      // a day off after a long stretch, while there's room for it
+      // a day off after a long stretch, while there's room for it
+      avail.forEach(t=>{ if(slack(t)>0&&run[t]>=12+rng.int(6))rest.add(t) });   // MLB caps a stretch at 20 days
+      for(const t of avail){ if(taken.has(t)||rest.has(t))continue;
+        let best=-1, bs=1e9;
+        for(let i=0;i<pool.length;i++){ const x=pool[i]; if(x.home!==t&&x.away!==t)continue; const o=x.home===t?x.away:x.home;
+          if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue; const sc=slack(o)+rng.r()*2; if(sc<bs){bs=sc;best=i} }
+        if(best<0)continue;
+        const x=pool.splice(best,1)[0]; taken.add(x.home); taken.add(x.away);
+        for(let k=0;k<x.len;k++)out.push({week:d+k,home:x.home,away:x.away,conf:CONF[x.home]===CONF[x.away],neutral:false,ser:x.id,sg:k+1,sn:x.len});
+        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len }) }
+      NAMES.forEach(t=>{ if(free[t]<=d&&!taken.has(t))run[t]=0 });   // idle today: the stretch ends
+      if(NAMES.some(t=>rem[t]>left-1+(free[t]>d?1:0)))ok=false;
     }
-    if(ok&&!pool.length)return out;
+    if(ok&&!pool.length)return out.sort((a,b)=>a.week-b.week);
   }
   throw new Error("could not fit the baseball schedule");
 }
-/* a day's share of the games left: about the average, give or take, so the season runs to its last day */
-function paceCap(left,daysLeft,rng){ return Math.max(1,Math.round(left/Math.max(1,daysLeft)*(0.9+0.25*rng.r()))) }
 LEAGUE.buildSchedule=mlbSchedule;
 /* ============ offseason: pro football ============ */
 /* Players have ages and contracts. Each offseason, in order:
@@ -2657,7 +2697,7 @@ LEAGUE.rivals={name:nflRivalName, series:nflSeriesFor, record:nflRecordSeries, o
 const SEGS=9;
 const BS={
   // a plate appearance between average sides: strikeout, walk, hit by pitch, single, double, triple, home run (the rest an out in play)
-  k:0.224, bb:0.080, hbp:0.011, s1:0.136, s2:0.043, s3:0.004, hr:0.029,
+  k:0.224, bb:0.080, hbp:0.011, s1:0.134, s2:0.043, s3:0.004, hr:0.028,   // round 57: 0.136 and 0.029 ran 4.52-4.57 a side in the real app
   edge:+((typeof process!=="undefined"&&process.env&&process.env.BS_E)||0.00031),   // per Elo point of gap: the log-odds a hit or walk shifts
   dp:0.12,            // an out in play with a man on first and fewer than two out: a double play this often
   sf:0.32,            // with a man on third and fewer than two out: a fly ball deep enough this often
@@ -6204,6 +6244,7 @@ function simSeries(){
   }
 }
 LEAGUE.ui={
+  raceCard:bsRaceCard,
   standingsCols:STAND_TOTALS("RS","RA"),   // points for and against (Grokbot: a team stats page)
   rankingTab:"Rankings",
   rankingView:nflRankingView,
@@ -6219,6 +6260,48 @@ LEAGUE.ui={
   clinchTag:t=>nflClinchTag(t),
   standingsQualify:1
 };
+
+/* September (round 57): the race, from mid-August (the last 45 days). Your division, games behind and the magic number (wins of
+   yours plus losses of the second club that clinch it: 163 less your wins less their losses) or the elimination
+   number; the wild-card race the same way against the fourth (or third) place; last night's scores for every club
+   in it; and the day you clinch, said once. */
+const RACE_FROM=45;   // from mid-August
+function bsRaceCard(my){
+  const sea=SEA; if(sea.step<LEAGUE.weeks-RACE_FROM||sea.step>=LEAGUE.weeks)return "";
+  const R=sea.rec, W=t=>R[t][0], L=t=>R[t][1], G=LEAGUE.tuning.schedule&&LEAGUE.tuning.schedule.games||162, M=G+1;
+  const gb=(a,b)=>((W(a)-W(b))+(L(b)-L(a)))/2, gbs=x=>x<=0?"&mdash;":(x%1?x.toFixed(1):x);
+  const sd=sea.sideOf(my), teams=NAMES.filter(t=>sea.sideOf(t)===sd), ck=sea.clinch?sea.clinch():{};
+  const div=teams.filter(t=>CONF[t]===CONF[my]).sort((a,b)=>sea._tb(a,b));
+  const leaders={}; LEAGUE.conf.sides[sd].forEach(d=>{ leaders[teams.filter(t=>CONF[t]===d).sort((a,b)=>sea._tb(a,b))[0]]=true });
+  const wc=teams.filter(t=>!leaders[t]).sort((a,b)=>sea._tb(a,b));
+  // the number, said plainly
+  let divNum="", wcNum="";
+  if(ck[my]==="y")divNum="Division clinched.";
+  else if(div[0]===my){ const m=Math.max(0,M-W(my)-L(div[1])); divNum=`Magic number <b>${m}</b>: any mix of your wins and ${esc(div[1])} losses adding to ${m} wins the division.` }
+  else { const e=Math.max(0,M-W(div[0])-L(my)); divNum=e?`Elimination number <b>${e}</b> in the division: ${esc(div[0])} wins and your losses adding to ${e} end it.`:"Out of the division race." }
+  if(!leaders[my]&&ck[my]!=="y"&&ck[my]!=="x"){ const i=wc.indexOf(my);
+    if(i<3){ const m=Math.max(0,M-W(my)-L(wc[3])); wcNum=`Wild card: magic number <b>${m}</b> against ${esc(wc[3])}.` }
+    else { const e=Math.max(0,M-W(wc[2])-L(my)); wcNum=e?`Wild card: ${gbs(gb(wc[2],my))} games out; elimination number <b>${e}</b> against ${esc(wc[2])}.`:"Out of the wild-card race." } }
+  else if(ck[my]==="x")wcNum="A postseason place clinched.";
+  // the day it happened, once
+  const C=S.bsClinch&&S.bsClinch.year===sea.year?S.bsClinch:(S.bsClinch={year:sea.year});
+  ["y","x"].forEach(k=>{ if((ck[my]===k||(k==="x"&&ck[my]==="y"))&&C[k]===undefined)C[k]=sea.step });
+  const today=C.y===sea.step?`${esc(LEAGUE.conf.names[CONF[my]])} champions: clinched today.`:C.x===sea.step?"Into the postseason: clinched today.":"";
+  const row=(t,ref,cut)=>`<tr class="${t===my?"me":""}${cut?" cut":""}"><td>${TL(t)}</td><td>${W(t)}-${L(t)}</td><td>${ref?gbs(gb(ref,t)):""}</td><td>${ck[t]?`<span class="ck">${ck[t]}</span>`:""}</td></tr>`;
+  const divT=div.map(t=>row(t,div[0])).join("");
+  const showWC=wc.slice(0,Math.max(5,wc.indexOf(my)+1)), wcT=showWC.map((t,i)=>row(t,i<3?null:wc[2],i===3)).join("");
+  // last night, for every club in either race
+  const inRace=new Set(div.concat(showWC)), lastW=sea.weeks[sea.step-1], sc=[];
+  ((lastW&&lastW.games)||[]).forEach(g=>{ if(!inRace.has(g.home)&&!inRace.has(g.away))return; const hw=g.hp>g.ap;
+    sc.push(`<span class="${g.home===my||g.away===my?"me":""}">${esc(hw?g.home:g.away)} ${Math.max(g.hp,g.ap)}, ${esc(hw?g.away:g.home)} ${Math.min(g.hp,g.ap)}</span>`) });
+  const left=sea.sched.filter(g=>g.week>=sea.step&&(g.home===my||g.away===my)).length;
+  return `<div class="grouphead">The race &mdash; ${left} game${left===1?"":"s"} left</div>
+    <div class="racecard">${today?`<div class="clinched">${today}</div>`:""}
+      <div class="rnum">${divNum}${wcNum?"<br>"+wcNum:""}</div>
+      <div class="rtabs"><table class="rt"><tr><th>${esc(LEAGUE.conf.names[CONF[my]])}</th><th>W-L</th><th>GB</th><th></th></tr>${divT}</table>
+      <table class="rt"><tr><th>${esc(sd)} wild card</th><th>W-L</th><th>GB</th><th></th></tr>${wcT}</table></div>
+      ${sc.length?`<div class="rscore"><b>Last night:</b> ${sc.join(" &middot; ")}</div>`:""}</div>`;
+}
 /* ============ offseason screens: pro football ============ */
 /* The offseason screen (job offers, staff, contracts, free agency, the
    draft, philosophy) and the banner that closes a season. */
@@ -7035,6 +7118,15 @@ async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(RE
 function liveLabel(g){ const l=g&&g.label||""; return live&&live.done?l.split(" \u00b7 ")[0]:l }
 /* the offseason's season (round 56: baseball's is the winter, "the start of summer" read wrong: Instinct) */
 function OFFW(){ return (LEAGUE.text&&LEAGUE.text.offWord)||"summer" }
+/* a regular-season series (round 57, baseball): "Game 2 of 3 · you took the first", from the games already played in it */
+function serLine(ng,my){
+  const done=SEA.sched.filter(x=>x.ser===ng.ser&&x.week<ngWeek(ng)), res=[];
+  done.forEach(x=>{ const W=SEA.weeks[x.week]; const g=W&&(W.games||[]).find(y=>y.home===x.home&&y.away===x.away); if(g&&g.winner)res.push(g.winner===my) });
+  const w=res.filter(Boolean).length, l=res.length-w, where=ng.home===my?"at home":"on the road";
+  const so=!res.length?"the series opens":w===l?`series level ${w}-${l}`:w>l?`you lead ${w}-${l}`:`you trail ${l}-${w}`;
+  return `Game ${ng.sg} of ${ng.sn} ${where} &middot; ${so}`;
+}
+function ngWeek(ng){ return ng.week!==undefined?ng.week:SEA.step }
 /* the postseason's last round (round 56: "beaten in the final" asked whether the team that beat you went on to win it all, so a
    Division Series loss to the eventual champion read as a final: Instinct) */
 function finalRound(){ const P=LEAGUE.post&&LEAGUE.post.phases; return P&&P.length?String(P[P.length-1]).replace(/g\d+$/,""):null }
@@ -8450,6 +8542,8 @@ function nextUpHTML(my,rk){
     }
     return h;
   }
+  // the race, late in the season (round 57, baseball: magic numbers and the scoreboard; both testers lost interest by September)
+  if(LEAGUE.ui.raceCard&&SEA.phase==="week")try{ h+=LEAGUE.ui.raceCard(my)||"" }catch(e){}
   let ng=SEA.nextGame(my), ngStep=SEA.step;
   // a league with a game most days (LEAGUE.skipIdle): the button plays through
   // the days you're off, so the card shows your next game, not an open date
@@ -8476,7 +8570,7 @@ function nextUpHTML(my,rk){
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
       <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
-      <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
+      <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>${ng.sn>1?`<div class="nrec serline">${serLine(ng,my)}</div>`:""}
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
         ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa,SEA.hfa?NAMES.map(t=>SEA.hfa[t]):null))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}${ser.d?"-"+ser.d:""}</b> in the series${

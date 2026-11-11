@@ -894,6 +894,12 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .objmark{flex:none;width:16px;color:var(--muted)}.obj.met .objmark{color:var(--turf)}.obj.miss .objmark{color:var(--flag)}
 .objl{flex:1;color:var(--bone)}.clinch.dn{border:1px solid var(--flag);border-radius:10px;padding:10px 12px;margin:10px 0}
 details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 0;list-style:none}details.audit>summary::before{content:"\25B8  "}details.audit[open]>summary::before{content:"\25BE  "}
+.racecard{border:1px solid var(--line,#333);border-radius:6px;padding:10px 12px;margin:6px 0 14px}
+.racecard .clinched{font:700 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--good,#4caf50);margin-bottom:6px}
+.racecard .rnum{font-size:13px;line-height:1.5;margin-bottom:8px}.racecard .rtabs{display:flex;gap:14px;flex-wrap:wrap}
+.racecard .rt{border-collapse:collapse;font-size:12px;min-width:0;flex:1 1 220px}.racecard .rt th{text-align:left;font:10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mute,#9aa);padding:2px 6px 4px 0}
+.racecard .rt td{padding:2px 6px 2px 0;white-space:nowrap}.racecard .rt tr.me td{font-weight:700}.racecard .rt tr.cut td{border-top:1px dashed var(--line,#444)}
+.racecard .ck{font:10px var(--mono);color:var(--mute,#9aa)}.racecard .rscore{font-size:12px;color:var(--mute,#9aa);margin-top:8px;line-height:1.5}.racecard .rscore .me{color:var(--ink,#eee);font-weight:600}
 .livewp .lwtog{background:none;border:1px solid var(--line,#333);color:var(--mute,#9aa);font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;cursor:pointer;min-height:28px}.livewp.off{justify-content:flex-end}
 .livewp{display:flex;align-items:center;gap:10px;margin:8px auto;padding:0 16px;max-width:760px;box-sizing:border-box;font-size:12px}.livewp .lwlab{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}.livewp .lwbar{flex:1;min-width:60px;height:6px;background:var(--line);display:flex;overflow:hidden;border-radius:3px}.livewp .lwbar i{background:var(--sodium);display:block;height:100%}.livewp .lwbar b{background:var(--muted);opacity:.5;display:block;height:100%}.livewp .lwpct{color:var(--bone);white-space:nowrap;font-family:var(--mono);font-size:11px}
 .filmmem{font-size:12.5px;line-height:1.45;border-left:2px solid var(--bone);padding:4px 10px;margin:8px 0;color:var(--dim,#9aa)}.filmmem b{color:var(--bone);font-weight:600}
@@ -976,7 +982,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="b09a200";
+<script>const BUILD_ID="8103ddd";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -9665,6 +9671,15 @@ async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(RE
 function liveLabel(g){ const l=g&&g.label||""; return live&&live.done?l.split(" \u00b7 ")[0]:l }
 /* the offseason's season (round 56: baseball's is the winter, "the start of summer" read wrong: Instinct) */
 function OFFW(){ return (LEAGUE.text&&LEAGUE.text.offWord)||"summer" }
+/* a regular-season series (round 57, baseball): "Game 2 of 3 · you took the first", from the games already played in it */
+function serLine(ng,my){
+  const done=SEA.sched.filter(x=>x.ser===ng.ser&&x.week<ngWeek(ng)), res=[];
+  done.forEach(x=>{ const W=SEA.weeks[x.week]; const g=W&&(W.games||[]).find(y=>y.home===x.home&&y.away===x.away); if(g&&g.winner)res.push(g.winner===my) });
+  const w=res.filter(Boolean).length, l=res.length-w, where=ng.home===my?"at home":"on the road";
+  const so=!res.length?"the series opens":w===l?`series level ${w}-${l}`:w>l?`you lead ${w}-${l}`:`you trail ${l}-${w}`;
+  return `Game ${ng.sg} of ${ng.sn} ${where} &middot; ${so}`;
+}
+function ngWeek(ng){ return ng.week!==undefined?ng.week:SEA.step }
 /* the postseason's last round (round 56: "beaten in the final" asked whether the team that beat you went on to win it all, so a
    Division Series loss to the eventual champion read as a final: Instinct) */
 function finalRound(){ const P=LEAGUE.post&&LEAGUE.post.phases; return P&&P.length?String(P[P.length-1]).replace(/g\d+$/,""):null }
@@ -11080,6 +11095,8 @@ function nextUpHTML(my,rk){
     }
     return h;
   }
+  // the race, late in the season (round 57, baseball: magic numbers and the scoreboard; both testers lost interest by September)
+  if(LEAGUE.ui.raceCard&&SEA.phase==="week")try{ h+=LEAGUE.ui.raceCard(my)||"" }catch(e){}
   let ng=SEA.nextGame(my), ngStep=SEA.step;
   // a league with a game most days (LEAGUE.skipIdle): the button plays through
   // the days you're off, so the card shows your next game, not an open date
@@ -11106,7 +11123,7 @@ function nextUpHTML(my,rk){
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
       <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
-      <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>
+      <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>${ng.sn>1?`<div class="nrec serline">${serLine(ng,my)}</div>`:""}
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
         ${esc(venueLabel((SEA.hfa&&SEA.hfa[opp])||LEAGUE.tuning.hfa,SEA.hfa?NAMES.map(t=>SEA.hfa[t]):null))}.</div>`:""}
       ${ser?`<div class="series"><b>${ser.w}-${ser.l}${ser.d?"-"+ser.d:""}</b> in the series${
