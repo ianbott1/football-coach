@@ -358,6 +358,15 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 59 (not shipped): the closer an inning early, measured and dropped.
+- The call: up one or two going to the 8th, bring in the closer for six outs (at his best for the 8th, BS.closer
+  less 0.10 for the 9th) or save him (a setup man for the 8th). Replays (250 each option, 50 calls): worth 2.8
+  points on the assistant, median 0; most of it was the setup man replacing a tired starter, not the closer's
+  timing. With a realistic batting order (slot edges +0.09 for the 3-hole to -0.14 for the 9-hole, zero-mean) it
+  was 1.8, median 0, even with the heart of the order due in the 8th; and the order moved calibration (one-run
+  26.1%, 4.48 runs). One inning of a better reliever is worth too little in win chance for the call to pass the
+  3-point rule. Reverted; the engine is round 58's.
+
 Round 58: baseball's calls, October, the lottery.
 - The read: the strikeout-rate tell was never moved by the approach (only two tells carried anything); the best
   reader of the tells after three innings was right 53% of the time, under the scouting report's 69%. Now a third
