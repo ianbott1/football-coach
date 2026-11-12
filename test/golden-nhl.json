@@ -1,5 +1,5 @@
 {
- "fp": "bef285b77787caf3",
+ "fp": "fc37591b0c9b6a45",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -400,6 +400,11 @@
    "fp": "bef285b77787caf3",
    "from": "09ec6e894da7e213",
    "note": "round 61: reads by month on the team pagehockey-coach-pro"
+  },
+  {
+   "fp": "fc37591b0c9b6a45",
+   "from": "bef285b77787caf3",
+   "note": "round 62: hockey limit 90, re-sign bars 59/54"
   }
  ],
  "result": {
@@ -412,21 +417,21 @@
     "rec": "5cea1105f92124ea",
     "poll": "3787511717940927",
     "heis": "72c4700494f6c62c",
-    "history": "56993daae0adafdf",
-    "universe": "011afc36d59045e5",
-    "screens": "91ee0c60e1ab8593"
+    "history": "facd410e18de7185",
+    "universe": "ee39a27b745ed2ee",
+    "screens": "d58b3c6e1520c82d"
    },
    {
     "year": 2027,
-    "games": "36e35599c0722528",
-    "post": "be5755ed33f53ea0",
-    "champion": "Vegas",
-    "rec": "c7273f9d4a99b12c",
-    "poll": "1083d15ea9ce0491",
-    "heis": "620b9b05ed91f4c9",
-    "history": "d180492a39d64d8c",
-    "universe": "bf973d93472b5ab0",
-    "screens": "809835a206386517"
+    "games": "9d55cf1798ff325a",
+    "post": "a2b33364b42b82be",
+    "champion": "Washington",
+    "rec": "9420545b7674ad19",
+    "poll": "605e30ddb9f643fb",
+    "heis": "f82be9a3062d7409",
+    "history": "7927e7a014b8b772",
+    "universe": "499b9cc344d3441c",
+    "screens": "142777958d795d5b"
    }
   ],
   "Edmonton#777": [
@@ -438,21 +443,21 @@
     "rec": "a60e8281e314a8fd",
     "poll": "bc021833c20d4158",
     "heis": "1506ba3a83c2abeb",
-    "history": "6ac092409980b3f3",
-    "universe": "bcdb1ea5dc5f8b06",
-    "screens": "ff2844ead75e94b4"
+    "history": "6040562deb58d6cd",
+    "universe": "e49d1386a5159109",
+    "screens": "21688967ff79f43c"
    },
    {
     "year": 2027,
-    "games": "ae54ebf119c24c7d",
-    "post": "f9962443e61b3012",
+    "games": "59dc9877a9deee30",
+    "post": "fff1aaa2db5ba650",
     "champion": "New Jersey",
-    "rec": "b99fb68944509824",
-    "poll": "83a4d6a1bef10936",
-    "heis": "6f6f8535d9d82902",
-    "history": "0f4b35c39504f5e0",
-    "universe": "7a569b2d2fc0a888",
-    "screens": "05b62c95f0b29d04"
+    "rec": "8de54c16e8b98245",
+    "poll": "86a9b505ab1e2c0e",
+    "heis": "b1a15ea50c3590c9",
+    "history": "6fef6d1e3084129a",
+    "universe": "7177c3214b1ec93d",
+    "screens": "345b1f3f1ece7d1b"
    }
   ],
   "schedules#60": [

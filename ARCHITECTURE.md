@@ -358,6 +358,20 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 62: round 61's two open items.
+- Hockey's payroll had the same problem as baseball's: the median club used 61% of the $104M cap (10th percentile
+  33%), and the staff's re-sign bar (62 a starter, 60 a backup, copied with the code) sat at the league's top
+  quartile (median starter 60, backup 52): it let go 0-2 of 3-8 expiring deals. Now a $90M limit with contracts
+  still priced from $104M (PAY_SCALE: the maximum stays $20.8M), bars 59/54. Over 12 seasons x 2 seeds
+  (test/hk-economy.js, which now counts max deals against $20.8M, not a fifth of the limit): median payroll 73-77% of
+  the limit (61%), top-six kept 83-84% (75%), points sd 14.0-14.2 (13.7-14.4). nhl-history over 74 seasons: mean
+  94.2, spread 13.3, best 122, worst 66, home ice 62% of first-round series. The glossary no longer calls the
+  figure the real NHL cap. Clubs on their first contracts still sit well under it in the early seasons (Boston
+  $27M with everyone kept): the starting rosters' deals run at their numbers, as before.
+- Baseball's higher retention (top six kept 95%, was 90%) was flagged as a dynasty risk; measured, it isn't: year-to-
+  year win correlation 0.36 before and after round 61 (3 seeds x 12 seasons), 7-9 different champions in 12 either
+  way. Real MLB runs stickier (~0.5). Left alone.
+
 Round 61: the baseball leftovers (Muse, Instinct, second looks).
 - Pause on a phone did nothing (all seven games, measured in Chromium's iPhone 13 emulation): the press paused, the
   redraw put a new button under the finger, and the click that followed unpaused it. The press time is now kept by

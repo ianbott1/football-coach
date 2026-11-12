@@ -123,8 +123,8 @@ const LEAGUE={
       ["Rating (player)","0\u201399 scale. The goalie matters most; the depth lines play about "+
        "a third of the time, and the backup goalie starts about a fifth of games."],
       ["Points","Two for a win, one for an overtime or shootout loss. Standings go by points."],
-      ["Salary cap","A hard limit, at the real 2026-27 figure of $104 million, with no exceptions. "+
-       "A max contract is 20% of it. Entry-level deals are the cheapest good players in the league."],
+      ["Salary cap","A hard limit of $90 million on the players the game tracks, with no exceptions. "+
+       "A max contract is about $21 million. Entry-level deals are the cheapest good players in the league."],
       ["Wild card","After the top three in each division, the two best remaining teams in each "+
        "conference get in. Ties go to regulation wins."],
       ["Draft lottery","The sixteen teams that miss the playoffs draw for the top two picks; "+

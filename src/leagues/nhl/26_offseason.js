@@ -8,7 +8,13 @@
      5. free agency, under a hard salary cap
      6. empty spots are filled with replacement-level players
    Salaries are in millions and cover the twenty players the sim tracks. */
-const NFL_CAP=104;                          // the NHL's 2026-27 cap, $104M: a true hard cap
+/* Round 62: the limit is $90M, contracts still priced from the real $104M (PAY_SCALE, so the maximum stays $20.8M).
+   At 104 the median club used 61% of the cap and money decided nothing; the staff's re-sign bar (62 a starter, 60
+   a backup) sat at the top quartile and let go 0-2 of 3-8 expiring deals. Bars now at the league's medians (59, 54).
+   Measured over 12 seasons x 2 seeds (test/hk-economy.js): median payroll 73-77% of the limit, top-six kept 83-84%
+   (75%), points sd 14.0-14.2 (NHL ~14). */
+const PAY_SCALE=104;                         // the NHL's 2026-27 cap, $104M: what contracts are scaled from
+const NFL_CAP=+((typeof process!=="undefined"&&process.env&&process.env.HK_CAP)||90);    // the hard limit
 /* no exceptions in hockey: re-signing your own players fits under the cap too */
 const TAX_LINE=NFL_CAP;
 /* How well run a franchise is, from its slow-moving strength: good
@@ -19,13 +25,13 @@ const TAX_LINE=NFL_CAP;
 const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1500)/(+((typeof process!=="undefined"&&process.env&&process.env.NBA_OE)||100))));
 const AGE_SHIFT={};                           // every position ages alike
 const POS_PAY={};                             // and is paid alike
-const MAX_DEAL=Math.round(NFL_CAP*0.20*10)/10; // a max contract: 20% of the cap ($20.8M)
+const MAX_DEAL=Math.round(PAY_SCALE*0.20*10)/10; // a max contract: 20% of the cap ($20.8M)
 
 /* What the market pays veterans, scaled so payrolls of the players the sim
    tracks sit near the cap (Nov 2026: hockey payrolls were ~25 against 104,
    so the cap never bit). Rookie scales and minimums are real and stay. */
 const PAY=+((typeof process!=="undefined"&&process.env&&process.env.PAY_NHL)||4.3);
-const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of the cap
+const MAX_SAL=0.2*PAY_SCALE;     // the league's maximum contract, as a share of the cap
 /* hockey's own curve (Nov 2026; Instinct: at PAY 4.3 the football-shaped
    curve put every 63+ at the maximum, ~12% of the league, so the hard cap
    made no tradeoffs). In dollars, a straight line: a median player (~55)
@@ -60,6 +66,7 @@ const fillReserve=R=>Math.max(0,R.filter(x=>!x).length-1)*0.9;
 const ROOKIE_ROOM=2;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
+const RS_BAR=+((typeof process!=="undefined"&&process.env&&process.env.HK_RS)||59), RB_BAR=+((typeof process!=="undefined"&&process.env&&process.env.HK_RB)||54);
 function nflResignPlan(R){
   const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
@@ -67,13 +74,13 @@ function nflResignPlan(R){
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players (the pros' bar was 66 for a starter)
-    const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12*PAY)&&p.age<=33;
+    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=12*PAY)&&p.age<=33;
     keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :p.age>33?`his age: ${p.age+1} next season`
-      :i<POS.length&&p.r<62?`rated ${p.r}: below what the staff want in a starter`
-      :i>=POS.length&&p.r<60?`rated ${p.r}: not enough to keep as a backup`
+      :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
+      :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
       :i>=POS.length&&ask>12*PAY?`asking ${money2(ask)}: too much for a backup`
       :`no room under the cap for his ${money2(ask)} ask`;      // your own players: up to the tax line
     if(keep[i])pay+=ask;

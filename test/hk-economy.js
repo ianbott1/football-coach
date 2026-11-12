@@ -13,7 +13,7 @@ for(let y=0;y<Y;y++){ let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance
   A.openOffseason(); for(let c=0;c<4;c++){ if(!A.S.off)break; if(A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
   if(y<2)continue;   // the first seasons still run on the starting league's contracts
   A.NAMES.forEach(t=>{ const R=(A.U.roster[t]||[]).filter(p=>p&&p.k); const tot=R.reduce((s,p)=>s+p.k.sal,0); pay.push(tot/CAP);
-    maxed.push(R.filter(p=>p.k.sal>=0.2*CAP-0.05).length);
+    maxed.push(R.filter(p=>p.k.sal>=20.8-0.05).length);
     R.forEach(p=>{ const b=p.r>=70?'70+':p.r>=65?'65-69':p.r>=60?'60-64':p.r>=55?'55-59':p.r>=50?'50-54':'<50'; (tiers[b]=tiers[b]||[]).push(p.k.sal) });
     const now=new Set(R.map(p=>p.n)); keep.push(before[t].filter(n=>now.has(n)).length/Math.max(1,before[t].length)) }) }
 const avg=a=>a.reduce((s,x)=>s+x,0)/a.length, q=(a,p)=>{const b=a.slice().sort((x,y)=>x-y);return b[Math.floor(p*(b.length-1))]};
