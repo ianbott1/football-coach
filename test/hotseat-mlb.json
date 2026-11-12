@@ -1,5 +1,5 @@
 {
- "fp": "da9bc197b62ee472",
+ "fp": "79d44237614c5929",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -30,6 +30,16 @@
    "fp": "da9bc197b62ee472",
    "from": "ff4f9db7036233b1",
    "note": "round 58: real read tells, steal and pinch evidence and gating, bullpen window"
+  },
+  {
+   "fp": "cbeacb21d5df3f10",
+   "from": "da9bc197b62ee472",
+   "note": "round 59: deterministic baseball schedule, standings group word, quiet bullpen call after leave him in"
+  },
+  {
+   "fp": "79d44237614c5929",
+   "from": "cbeacb21d5df3f10",
+   "note": "round 59: one late decision in one-run games; hockey hire text"
   }
  ],
  "out": [
@@ -39,20 +49,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "96-66",
-      "result": "WORLD SERIES CHAMPIONS",
-      "grade": "A+"
+      "rec": "86-76",
+      "result": "Missed the postseason",
+      "grade": "C"
      },
-     "book": "dce140bd8ba5c3f1"
+     "book": "56f9bdcd1cccfe8b"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "97-65",
+      "rec": "86-76",
       "result": "Lost in the division series",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "c97e639f89d30628"
+     "book": "b4257f2050350521"
     }
    ]
   },
@@ -62,20 +72,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "78-84",
+      "rec": "75-87",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "f7005e98a40ee5be"
+     "book": "62812ecde56a9868"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "90-72",
-      "result": "Lost in the wild-card series",
-      "grade": "A-"
+      "rec": "83-79",
+      "result": "Missed the postseason",
+      "grade": "B-"
      },
-     "book": "00a0698dae8508de"
+     "book": "5eb2836228b0fdf3"
     }
    ]
   },
@@ -85,20 +95,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "82-80",
-      "result": "Lost in the wild-card series",
-      "grade": "C"
+      "rec": "76-86",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "93e6ecfe5b944ff8"
+     "book": "a89c8a0fa1f47bb2"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "95-67",
+      "rec": "93-69",
       "result": "Lost the World Series",
       "grade": "A+"
      },
-     "book": "a20a9f2a9ac98524"
+     "book": "7abd0a0282c489be"
     }
    ]
   }

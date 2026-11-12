@@ -132,7 +132,7 @@ function offseasonBanner(){
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
   if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the winter:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
-    rec+=`<div class="bnews small"><b>Big winters:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
+    rec+=`<div class="bnews small"><b>Big winters:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a winter.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
   if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
   if(X.trade)rec+=X.trade.done?`<div class="bnews"><b>Trade:</b> ${esc(X.trade.gave)} (${esc(X.trade.gp)}) to ${esc(X.trade.with)} for ${esc(X.trade.got)} (${esc(X.trade.qp)}).</div>`
@@ -245,8 +245,7 @@ function offseasonScreen(){
     const cands=SC[side]; if(!cands)return;
     const label=side==="oc"?"offensive":"defensive";
     h+=`<div class="grouphead">Hire a new ${esc(SPORT.staff[side].long)}</div>`;
-    h+=`<div class="note">Your ${esc(SPORT.staff[side].long)} has moved on. He shapes how that end
-      of the floor plays and develops.</div>`;
+    h+=`<div class="note">Your ${esc(SPORT.staff[side].long)} has moved on. He shapes how your ${side==="oc"?"hitters hit":"pitchers pitch"} and develop.</div>`;
     h+=cands.map((c,i)=>`<div class="cand ${(P[side]===i||(P[side]==null&&i===0))?'on':''}"
       data-coord="${side}" data-ci="${i}">
       <div class="candtop"><div><div class="fname">${esc(c.n)}</div>

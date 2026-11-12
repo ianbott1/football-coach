@@ -11,7 +11,7 @@ const D=f=>path.join(__dirname,'..','dist',f);
 // words that belong to one sport only
 const SPORT_WORDS={
   football:["touchdowns?","quarterbacks?","field goals?","end zone","two-point","fourth downs?","first downs?","interceptions?","yards?","punts?","punter","kickoffs?","gridiron","linebackers?","wide receivers?","All-Pro"],
-  basketball:["three-pointers?","free throws?","rebounds?","dunks?","tip-off","shot clock","buzzer-beater","point guards?","paint"],
+  basketball:["three-pointers?","free throws?","rebounds?","dunks?","tip-off","shot clock","buzzer-beater","point guards?","paint","of the floor"],
   hockey:["Stanley Cup","goalies?","power plays?","pucks?","face-?offs?","penalty kill","ice time","on the ice","blue line","Zamboni","skaters?","defencem[ae]n","defensem[ae]n"],
   soccer:["Premier League","FA Cup","relegat\\w*","clean sheets?","Champions League","strikers?","goalkeepers?","kick-off","stoppage time","Football League"],
   baseball:["home runs?","World Series","innings?","strikeouts?","pitchers?","bullpen","RBIs?","at-bats?","grand slam","shortstops?","the pennant","batting"]

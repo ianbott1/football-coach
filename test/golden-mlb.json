@@ -1,5 +1,5 @@
 {
- "fp": "bbbce2133a64ac19",
+ "fp": "040ebabfbec9b12d",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -30,64 +30,74 @@
    "fp": "bbbce2133a64ac19",
    "from": "2ab63f2ecbe00efa",
    "note": "round 58: real read tells, steal and pinch evidence and gating, bullpen window"
+  },
+  {
+   "fp": "f3df4d2c026a9459",
+   "from": "bbbce2133a64ac19",
+   "note": "round 59: deterministic baseball schedule, standings group word, quiet bullpen call after leave him in"
+  },
+  {
+   "fp": "040ebabfbec9b12d",
+   "from": "f3df4d2c026a9459",
+   "note": "round 59: one late decision in one-run games; hockey hire text"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "27fb13da8f75d4fa",
-    "post": "9fa10e5ef1373536",
-    "champion": "LA Dodgers",
-    "rec": "c5a3c638aee6f407",
-    "poll": "0b519338ade42541",
-    "heis": "31e105bafbba6cb9",
-    "history": "2f0b41655b6a210b",
-    "universe": "29766d42f230d542",
-    "screens": "f3fffa66d2ebfd43"
+    "games": "257fbc46e8ea39b6",
+    "post": "891cd14443ecf4fb",
+    "champion": "Detroit",
+    "rec": "40c621ca8198faae",
+    "poll": "b75f5c20fe4344bd",
+    "heis": "a932a8caf31d17f1",
+    "history": "e8f71d9323a469f2",
+    "universe": "52c6650c121fcf89",
+    "screens": "cb586507ff2ffaf1"
    },
    {
     "year": 2027,
-    "games": "b5a4ef07534d6565",
-    "post": "5f2be4143edc60e2",
-    "champion": "Houston",
-    "rec": "223cf45b2858cd33",
-    "poll": "e30219290ec099df",
-    "heis": "4ef25660708b73ac",
-    "history": "d6ed2f217db9fe75",
-    "universe": "f33a63b6f599133c",
-    "screens": "7390f6bedc887baa"
+    "games": "9d6ff4f2ef7fd9b4",
+    "post": "ea248d2628d4e8be",
+    "champion": "Philadelphia",
+    "rec": "08f7df38df90bab5",
+    "poll": "72015778384529ac",
+    "heis": "d4738402a9d30553",
+    "history": "f225520b0c98836f",
+    "universe": "5eda06139ba7090c",
+    "screens": "b0104e513fc1225f"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "af2f978c10c39cdc",
-    "post": "79f684c012cc2677",
-    "champion": "LA Dodgers",
-    "rec": "3e4cc3d3bbd174a6",
-    "poll": "f53f964efbb24486",
-    "heis": "3152e8c7628f37f1",
-    "history": "2f4e0807cc3eda66",
-    "universe": "4df0a813fdfbe8e1",
-    "screens": "03f2f1585dd35c09"
+    "games": "3d895e544878429f",
+    "post": "cd87b67b8f517ea2",
+    "champion": "Tampa Bay",
+    "rec": "0c2c348c25d108cb",
+    "poll": "19c6582aad747771",
+    "heis": "953206088ea314e9",
+    "history": "ed7fa33de07f6ade",
+    "universe": "bf5a8fbd46fa3fec",
+    "screens": "79b1b59edc34815a"
    },
    {
     "year": 2027,
-    "games": "ad0012cdf7c0d954",
-    "post": "81b84eacf6523fee",
-    "champion": "NY Mets",
-    "rec": "4f04d4e0456bebaa",
-    "poll": "5073400313e313a2",
-    "heis": "671f07e8093e6c9e",
-    "history": "4d78c9cb5513648c",
-    "universe": "f56c74bcfdfebaf5",
-    "screens": "5ca988fa120f2f60"
+    "games": "61d65f29ee22ce98",
+    "post": "09c16cc9f1582dd4",
+    "champion": "Toronto",
+    "rec": "645356f6144bc8ff",
+    "poll": "1a3e19c3414df657",
+    "heis": "6e9ad98335309fb6",
+    "history": "59928e311dedf8d3",
+    "universe": "c0441cc9c76f19de",
+    "screens": "b1a32c99994560b2"
    }
   ],
   "schedules#60": [
    {
-    "all": "e0af4ca216400ece"
+    "all": "581da46062a56386"
    }
   ]
  }

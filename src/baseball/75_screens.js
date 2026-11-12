@@ -108,7 +108,7 @@ function evidenceHTML(g,my,d,dp){
     const rows=[["Balls in play pulled",plv===null?"-":Math.round(100*plv)+"%",mark(plv,A[0],0.08)],["Pitches an at-bat",ppv===null?"-":ppv.toFixed(1),mark(ppv,A[1],0.25)],
       ["Swings and misses an at-bat",whv===null?"-":whv.toFixed(2),mark(whv,A[2],0.15)]];
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are hitting <span>three innings</span></div>
-      ${rows.map(r=>`<div class="evr ${r[2]?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${r[2]?r[2]+" ":""}${r[1]}</span></div>`).join("")}
+      ${rows.map(r=>`<div class="evr ${r[2]?'lo':''}"><span class="evk">${r[0]}</span><span class="evv">${r[2]?r[2]+" ":""}${r[1]}</span></div>`).join("")}
       <div class="evn">League average: ${Math.round(100*A[0])}% of balls in play pulled, ${A[1].toFixed(1)} pitches an at-bat, ${A[2].toFixed(2)} swings and misses. &#9650; well above it, &#9660; well below. Pull hitters pull it; patient hitters see pitches; contact hitters don't miss. Three innings is a small sample.</div></div>`; }
   if(dp.k==="pull")return `<div class="evid"><div class="evh">Your starter today</div>
       <div class="evr ${dp.bf>=24?'hi':''}"><span class="evk">Batters faced</span><span class="evv">${dp.bf}</span></div>

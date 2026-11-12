@@ -96,7 +96,7 @@ function confBracket(sd){
 function nflBracket(){
   const my=S.myTeam, mine=SEA.mySeries(my), live=mine&&!mine.winner&&SEA.phase!=="done";
   let h="";
-  if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> win the World Series.</div>`;
+  if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> wins the World Series.</div>`;
   if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${(o=>`${esc(my)} ${mine.w[my]||0}, ${esc(o)} ${mine.w[o]||0}`)(mine.hi===my?mine.lo:mine.hi)}.
     <button class="subtab" data-simseries="1">Sim the series</button> <span class="fnote">It stops before a game that could end your season.</span></div>`;
   // your road

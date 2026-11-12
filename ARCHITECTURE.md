@@ -358,6 +358,41 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 59: reloads re-rolled baseball's season (Muse, Instinct, second looks).
+- Cause: round 57's packSeries sorted the free clubs with a random comparator (slack, then rng.r()-0.5) inside
+  sort(). In a browser that came out differently on each load, so a reload built another schedule and replayed the
+  season onto it (53-40 came back 41-51, then 52-41; Tampa Bay and Houston "80-80, 160 games"). The node reload
+  test passed throughout. Now each club's tie-break is drawn before sorting. Reproduced in Chromium (a 110-day
+  career, every run different from day 0); after: three runs identical. Older baseball careers can't be put back
+  (their schedules were never stored); they re-roll once more on the first load and hold from then on.
+- test/reload-browser.js (run-all): each game played in Chromium through the page's own functions (days,
+  watched games with calls answered, sims ahead, plan and featured-player changes), saved, the page reloaded, the
+  slot opened from the title screen, every game compared. Checked by putting the random comparator back: day 1.
+- The schedule: no back-to-back series against the same club unless nothing else fits (a 6-game set, ten straight
+  against Cleveland: Muse): ~70 such pairs a season to 21-27 (bs-calibrate checks at most 30).
+- The read panel: the highlighted row's class drew a fixed &#9650; beside the name, against a &#9660; value in 9 of 20
+  reads (Muse); the row now uses the plain highlight. The bullpen call, after "leave him in", waits three batters
+  or a run (it asked in back-to-back innings: Instinct). Words: "a big step in a winter", the hire text (no "end of
+  the floor"), "San Diego wins the World Series", the standings picker named by the league's groups (Division in
+  the pros: it said Conference). wrong-sport.js knows "of the floor".
+- A guaranteed late decision (Ian): in a game within one run from the 8th, if nothing worth asking has come, the
+  first pinch-hit or steal chance is yours (st.lateGot). 30 games: one-run finishes with no late call 67% to 13%
+  (the one left had nobody on for you in the 8th or 9th); sim parity 49.7 / 48.9; calibration unchanged.
+- Soccer, found by reload-browser.js (1 run in 9, then Bristol City seed 4 every time): a cup week plays its league
+  game and its tie as two halves of one step, and the gameplan was kept once a step; the league half on "safe" then
+  the tie simmed on "balanced" overwrote it, and a reload replayed the tie another way (3-1 came back 0-0). Now
+  planKey/planFor keep the second half's plan as "step#1" (older saves: one plan a step, as before).
+  Hockey's staff-hire text said "that end of the floor" too: now how your team attacks or defends.
+
+Round 59 (not shipped): the closer an inning early, measured and dropped.
+- The call: up one or two going to the 8th, bring in the closer for six outs (at his best for the 8th, BS.closer
+  less 0.10 for the 9th) or save him (a setup man for the 8th). Replays (250 each option, 50 calls): worth 2.8
+  points on the assistant, median 0; most of it was the setup man replacing a tired starter, not the closer's
+  timing. With a realistic batting order (slot edges +0.09 for the 3-hole to -0.14 for the 9-hole, zero-mean) it
+  was 1.8, median 0, even with the heart of the order due in the 8th; and the order moved calibration (one-run
+  26.1%, 4.48 runs). One inning of a better reliever is worth too little in win chance for the call to pass the
+  3-point rule. Reverted; the engine is round 58's.
+
 Round 58: baseball's calls, October, the lottery.
 - The read: the strikeout-rate tell was never moved by the approach (only two tells carried anything); the best
   reader of the tells after three innings was right 53% of the time, under the scouting report's 69%. Now a third
