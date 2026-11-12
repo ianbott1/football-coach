@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="b7f621a";
+<script>const BUILD_ID="17afe6b";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -5372,6 +5372,8 @@ const VOICE_ALT={
     "Start from their habit. Then ask: are we good enough to just play our game?",
     "Their most common way is the first clue. The strength of the two sides is the second."],
 };
+// a sport's own lines and their alternates (round 61: baseball's Capybara said the same two sentences every game)
+if(typeof SPORT!=="undefined"&&SPORT.voiceAlt)Object.assign(VOICE_ALT,SPORT.voiceAlt);
 function voiceGameKey(){ try{ return typeof live!=="undefined"&&live?`${SEA.year}-${live.step}${live.g&&live.g.cup?"c":""}`:`${SEA&&SEA.year}-${SEA&&SEA.step}` }catch(e){ return "" } }
 function voiceVary(line){
   if(!VOICE_ON||!line||typeof line!=="string")return line;
@@ -5483,8 +5485,9 @@ function gagSeason(x,lab){
   if(prev===g)return x;                       // said earlier in this game: staffFresh handles that
   if(x.who==="pearl"&&typeof PEARL_AFTER!=="undefined"){ let l=x.line;
     (PEARL_BEFORE||[]).concat(PEARL_AFTER||[]).forEach(f=>{ if(f&&l.indexOf(f)>=0)l=l.replace(f,"") }); return Object.assign({},x,{line:l.trim()}) }
-  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER."], i=Object.keys(G.said).length%sh.length;
-    return Object.assign({},x,{line:`${lab.toUpperCase()}! ${sh[i]}`}) }
+  // the shout is the pick's short name ("Attack the zone", not "Attack the zone: strike one, every hitter")
+  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER.","SAME AS ALWAYS.","WE VOTED. IT WAS UNANIMOUS.","DON'T OVERTHINK IT."], i=Object.keys(G.said).length%sh.length;
+    return Object.assign({},x,{line:`${lab.split(":")[0].toUpperCase()}! ${sh[i]}`}) }
   return x;
 }
 function staffFresh(R,dp,L){
@@ -5496,7 +5499,7 @@ function staffFresh(R,dp,L){
     // "as I said before" only when this voice really gave this advice before: Pearl said "Same as I said before:
     // leave it to your assistant!" having said "see this out" and "go right" (Instinct)
     const again=lab&&G.indexOf(lab.toLowerCase())>=0, l=lab||"the same";
-    const line=x.who==="bears"?(again?`${l.toUpperCase()}! We said it before. We'll say it louder.`:`${l.toUpperCase()}! LOUDER THIS TIME.`)
+    const line=x.who==="bears"?(again?`${l.split(":")[0].toUpperCase()}! We said it before. We'll say it louder.`:`${l.split(":")[0].toUpperCase()}! LOUDER THIS TIME.`)
       :x.who==="pearl"?pearlSay(again?`Same as I said before: ${l.toLowerCase()}!`:`I'll keep it simple: ${l.toLowerCase()}!`,dp.opts.length+S0.length)
       :again?`As I said earlier, I'm afraid: ${l.toLowerCase()}.`:`Briefly, then: ${l.toLowerCase()}.`;
     S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });
@@ -8413,6 +8416,7 @@ function stepWatch(){
   if(watch.i<watch.script.length){watch.i++;}
   tickWatch();
 }
+const PRESS_AT={};
 function togglePause(){
   if(!watch)return;
   watch.paused=!watch.paused;
@@ -8562,9 +8566,23 @@ function tallyHTML(){
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded reads only</div>
-    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
+    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}${readsByMonthHTML()}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
+}
+/* your reads month by month this season (round 61, Instinct: a long season needs a way to see whether you're getting
+   better). Daily leagues only, from the games you watched; shown once two months have graded reads. */
+function readsByMonthHTML(){
+  if(!LEAGUE.daily||!LEAGUE.dates||!S.played)return "";
+  const pre=SEA.year+":", M={}, order=[];
+  Object.keys(S.played).forEach(k=>{ if(k.indexOf(pre)!==0)return; const st=+k.slice(pre.length), d=LEAGUE.dates[st]; if(!d)return;
+    const m=String(d).split(" ")[0];
+    S.played[k].forEach(p=>{ if(p.team!==S.myTeam||!p.reads)return; p.reads.forEach(x=>{ if(x.unclear||x.k==="call")return;
+      if(!M[m]){ M[m]={n:0,r:0,st:st}; order.push(m) } M[m].n++; if(x.right)M[m].r++ }) }) });
+  const ms=order.sort((a,b)=>M[a].st-M[b].st); if(ms.length<2)return "";
+  return `<div class="fnote tallynote">By month: ${ms.map(m=>`${esc(m)} ${M[m].r}/${M[m].n}`).join(" &middot; ")}</div>
+    <div style="display:flex;gap:4px;align-items:flex-end;height:28px;margin-top:4px" aria-hidden="true">${ms.map(m=>{ const f=M[m].r/M[m].n;
+      return `<div title="${esc(m)}" style="flex:1;max-width:36px;height:${Math.max(3,Math.round(28*f))}px;background:var(--sodium);opacity:${M[m].n>=5?1:0.5};border-radius:2px"></div>` }).join("")}</div>`;
 }
 /* this season's games of yours: watched live (they can hold calls) or simmed (they can't) */
 function simmedThisSeason(){
@@ -10376,9 +10394,12 @@ function render(){
     }else{
       // the game redraws several times a second at Very fast, so a tap's press and release can land on two
       // different buttons and the click never fires: these act on the press (Grokbot: Normal didn't switch it off)
-      const onPress=(b,fn)=>{ if(!b)return; let at=0;
-        b.onpointerdown=e=>{ if(e.button>0)return; at=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-at>600)fn() } };
-      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();liveTick()});
+      // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
+      // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
+      const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
+        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
+      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
+        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{

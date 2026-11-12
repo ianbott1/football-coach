@@ -2,8 +2,8 @@
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
    and three wild cards a league; the top two division winners sit out a best-of-three wild-card round, then a
-   best-of-five, a best-of-seven pennant and the World Series), a draft with a lottery, and payrolls (a soft limit: the
-   real luxury-tax line for 2026, $244 million). */
+   best-of-five, a best-of-seven pennant and the World Series), a draft with a lottery, and payrolls (a hard limit of $165 million on
+   the players the game tracks; contracts are scaled from the real 2026 luxury-tax line, $244 million). */
 const MLB_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,2,26));       // March 26 to September 27
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   for(let i=0;i<186;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+1)}
@@ -108,7 +108,7 @@ const LEAGUE={
        "reputation. It moves over years and sets what's expected of you."],
       ["Rating (player)","0\u201399 scale. The rotation matters most: three starters, with the fourth and fifth behind them "+
        "taking about two starts in five. Bench players start about one game in eight."],
-      ["Payroll","A soft limit at the 2026 luxury-tax line. A max contract is about a fifth of it."],
+      ["Payroll","A hard limit of $165M, on the players the game tracks. A max contract is about $49M."],
       ["Wild card","After the three division winners, the three best remaining records in each league get in."],
       ["Draft lottery","The teams that miss the postseason draw for the top picks; the worst records have the best odds."],
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."]

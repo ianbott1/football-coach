@@ -8,7 +8,12 @@
      5. free agency, under a hard salary cap
      6. empty spots are filled with replacement-level players
    Salaries are in millions and cover the twenty players the sim tracks. */
-const NFL_CAP=244;                          // MLB's 2026 luxury-tax line, $244M, kept as a hard limit here (the game has no tax bills)
+/* Round 61: the limit is $165M, pay still runs on the $244M scale. At 244 the median club had $111M of room (45%:
+   football's is 24%), so money never decided a winter (Muse: $127.5M of room, nothing to choose). With five draft rounds
+   (cheap rookies), measured over 10 seasons, 3 seeds: median payroll 78% of the limit (football's 76%), 90th
+   percentile 97%, top-six players kept 87-89%, the spread of wins 12.8-13.8. */
+const PAY_SCALE=244;                         // MLB's 2026 luxury-tax line: what contracts are scaled from
+const NFL_CAP=+((typeof process!=="undefined"&&process.env&&process.env.MLB_CAP)||165);   // the hard limit
 /* no exceptions in hockey: re-signing your own players fits under the cap too */
 const TAX_LINE=NFL_CAP;
 /* How well run a franchise is, from its slow-moving strength: good
@@ -19,13 +24,13 @@ const TAX_LINE=NFL_CAP;
 const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1500)/(+((typeof process!=="undefined"&&process.env&&process.env.NBA_OE)||100))));
 const AGE_SHIFT={};                           // every position ages alike
 const POS_PAY={};                             // and is paid alike
-const MAX_DEAL=Math.round(NFL_CAP*0.20*10)/10; // a max contract: 20% of the cap ($20.8M)
+const MAX_DEAL=Math.round(PAY_SCALE*0.20*10)/10; // a max contract: 20% of the pay scale ($48.8M)
 
 /* What the market pays veterans, scaled so payrolls of the players the sim
    tracks sit near the cap (Nov 2026: hockey payrolls were ~25 against 104,
    so the cap never bit). Rookie scales and minimums are real and stay. */
 const PAY=+((typeof process!=="undefined"&&process.env&&process.env.PAY_NHL)||4.3);
-const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of the cap
+const MAX_SAL=0.2*PAY_SCALE;     // the maximum contract, from the pay scale (not the limit)
 /* hockey's own curve (Nov 2026; Instinct: at PAY 4.3 the football-shaped
    curve put every 63+ at the maximum, ~12% of the league, so the hard cap
    made no tradeoffs). In dollars, a straight line: a median player (~55)
@@ -60,6 +65,7 @@ const fillReserve=R=>Math.max(0,R.filter(x=>!x).length-1)*0.9;
 const ROOKIE_ROOM=2;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
+const RS_BAR=+((typeof process!=="undefined"&&process.env&&process.env.MLB_RS)||58), RB_BAR=+((typeof process!=="undefined"&&process.env&&process.env.MLB_RB)||53);
 function nflResignPlan(R){
   const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
@@ -67,13 +73,13 @@ function nflResignPlan(R){
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players (the pros' bar was 66 for a starter)
-    const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12*PAY)&&p.age<=33;
+    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=12*PAY)&&p.age<=33;
     keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :p.age>33?`his age: ${p.age+1} next season`
-      :i<POS.length&&p.r<62?`rated ${p.r}: below what the staff want in a starter`
-      :i>=POS.length&&p.r<60?`rated ${p.r}: not enough to keep as a backup`
+      :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
+      :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
       :i>=POS.length&&ask>12*PAY?`asking ${money2(ask)}: too much for a backup`
       :`no room under the cap for his ${money2(ask)} ask`;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
@@ -126,10 +132,20 @@ function nflDraftOrder(rec,elo,rng){
   return drawn.concat(pool.map(p=>p.t),po);
 }
 
-function nflProspects(rng,n,sh){
-  const out=[];
+/* Round 61: five rounds (Instinct: two rounds was over before it started). The class's top two rounds' worth is
+   drawn first, on the same dice as before (base), so who's at the top is unchanged; the later rounds are a tail
+   behind it: lower now and wider ceilings, the kind a team takes a flyer on. */
+const MLB_ROUNDS=+((typeof process!=="undefined"&&process.env&&process.env.MLB_DR)||5);
+function nflProspects(rng,n,sh,base){
+  const out=[]; base=base||n;
   for(let i=0;i<n;i++){
-    const q=i/n;
+    if(i>=base){ const t=(i-base)/Math.max(1,n-base), posIdx=rng.int(POS.length), age=18+rng.int(2);
+      const r0=Math.round(Math.max(40,Math.min(60,rng.gauss(45-2*t,3*DRAFT_K.sd))));
+      const pot0=Math.round(Math.min(95,r0+Math.max(3,rng.gauss(11-2*t,7))));
+      const {r,pot}=sh?draftShape(sh,r0,pot0,40,84):{r:r0,pot:pot0};
+      out.push({n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:age,age:age,r:r,pot:pot,hz:0,prod:0,st:0,from:rng.pick(LEAGUE.draftTeams)});
+      continue }
+    const q=i/base;
     const posIdx=rng.int(POS.length);
     const age=18+rng.int(2);                    // drafted at 18 or 19
     // draftees: well below NHL level at 18, with ceilings
@@ -149,7 +165,7 @@ function nflProspects(rng,n,sh){
 function nflDraftClass(u,team){
   if(!u.draftClass||u.draftClass.year!==u.year){
     const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
-    const list=nflProspects(rng,Math.round(2*32*DRAFT_K.deep),new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x7ab1)>>>0)); list.forEach((p,i)=>p.pid=i);
+    const list=nflProspects(rng,Math.round(Math.max(2,MLB_ROUNDS)*32*DRAFT_K.deep),new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x7ab1)>>>0),Math.round(2*32*DRAFT_K.deep)); list.forEach((p,i)=>p.pid=i);
     // no two prospects in one class share a name (two "Tanner Mbeki"s: Grokbot); renamed by hash, so no draw moves
     { const seen=new Set(); list.forEach(p=>{ let n=p.n, k=0; while(seen.has(n)&&k<LAST.length){ n=n.split(" ")[0]+" "+LAST[(strHash(p.n+"|"+p.pid)+k)%LAST.length]; k++ } p.n=n; seen.add(n) }) }
     u.draftClass={year:u.year,list:list};
@@ -260,7 +276,7 @@ function nflPlace(roster,p){
 function nflRun(u,rng,healthy,elo,rec,choices){
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
   // draft night: its own dice, on the rosters as the season ended (core/91_draftnight)
-  const DN=draftNight(u,rec,elo,U_CH,2);
+  const DN=draftNight(u,rec,elo,U_CH,MLB_ROUNDS);
   const chFor=t=>U_CH[t]||null, ut=choices.userTeam;
   if(ut&&choices.coach){const c=choices.coach;
     u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0}}
@@ -453,7 +469,7 @@ LEAGUE.offseason={
             balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
   workouts:0,
-  draftRounds:2,
+  draftRounds:MLB_ROUNDS,
   draftStyles:{bpa:{l:"Best available",d:"Take the best player on the board, whatever the position."},
                need:{l:"Draft for need",d:"Fill the weakest spots on the roster, even if it means reaching."},
                upside:{l:"Swing for upside",d:"Raw prospects with the highest ceilings. Slower to pay off."}}

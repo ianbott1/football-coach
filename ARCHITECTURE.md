@@ -358,6 +358,31 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 61: the baseball leftovers (Muse, Instinct, second looks).
+- Pause on a phone did nothing (all seven games, measured in Chromium's iPhone 13 emulation): the press paused, the
+  redraw put a new button under the finger, and the click that followed unpaused it. The press time is now kept by
+  the button's name (PRESS_AT), not on the button. Pausing also stops on the play shown; it used to play one more.
+  A mouse click always worked.
+- Payroll: MLB's limit was $244M with the median club at $133M (45% room; football's 24%), so money decided
+  nothing (Muse: $127.5M of room). The limit is now $165M; contracts are still priced from $244M (PAY_SCALE, so the
+  maximum deal stays ~$49M). The staff's re-sign bar was hockey's (62 for a starter, 60 for a backup) in a league
+  whose median starter is 59 and median backup 50: it let go 0-3 of 8-16 expiring deals (Muse: 9 of 12). Now 58/53
+  (RS_BAR/RB_BAR): 5-6 kept by default, and keeping everyone leaves $5-30M for free agency. Measured over 12
+  seasons x 3 seeds (scratch mlb-econ, hk-economy's method): median payroll 80-84% of the limit (r60: 58%), top-six
+  kept 95% (90%), wins sd 12.3-13.3 (11.5-12.3), best record 108 on average (106; target under 112).
+- Draft: five rounds (MLB_ROUNDS). The class's first two rounds are drawn exactly as before, then a tail: lower now
+  (~45), wider ceilings. Late picks make a roster about half the time; ~1 in 15 reaches 60. A "sleeper" callout in
+  round 4 was measured and not built: the highest scout ceiling left at your round-4 pick (40 drafts) had a true
+  ceiling of 60.6 against the staff pick's 58.2, and was worth less now (50.9 vs 51.5). No edge to point at.
+- Voices: the Capybara said the same two sentences every game (20 of 20); his three baseball lines now have
+  alternates (SPORT.voiceAlt, merged into VOICE_ALT). The Bears' repeated shout uses the pick's short name ("ATTACK
+  THE ZONE!", not the whole label) with more tags; Pearl's read line opens four ways.
+- Filler and highlights: strikeout, double-play and quiet-inning lines vary; a home run says its distance
+  (355-465 ft, by hash) and its arc varies in the highlight.
+- Reads: a wrong read now names the tell for what they were (READ_TELL: balls in play pulled, pitches an at-bat,
+  swings and misses). The team page's tally shows reads by month in daily leagues (NBA, NHL, MLB) once two months
+  have graded reads, with a small bar per month.
+
 Round 60: football's numbers in the shared code, swept.
 - Achievements (96_goals): "Century" was 100 wins (inside one baseball season; nine in football): now about ten
   seasons' wins (LEAGUE.tuning.century: NBA/NHL 500, MLB 1,000, soccer 250, college basketball 200, football 100).

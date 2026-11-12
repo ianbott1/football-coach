@@ -1,5 +1,5 @@
 {
- "fp": "79d44237614c5929",
+ "fp": "38f289b746eadd9c",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -45,6 +45,11 @@
    "fp": "79d44237614c5929",
    "from": "79d44237614c5929",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "38f289b746eadd9c",
+   "from": "79d44237614c5929",
+   "note": "round 61: payroll limit, five-round draft, re-sign bars"
   }
  ],
  "out": [
@@ -58,7 +63,7 @@
       "result": "Missed the postseason",
       "grade": "C"
      },
-     "book": "56f9bdcd1cccfe8b"
+     "book": "a6ab3e02f60f4716"
     },
     {
      "team": "Boston",
@@ -67,7 +72,7 @@
       "result": "Lost in the division series",
       "grade": "B"
      },
-     "book": "b4257f2050350521"
+     "book": "1e1a2db35055d022"
     }
    ]
   },
@@ -77,20 +82,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "75-87",
+      "rec": "81-81",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "62812ecde56a9868"
+     "book": "da4dc98f01d5fd1d"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "83-79",
-      "result": "Missed the postseason",
-      "grade": "B-"
+      "rec": "99-63",
+      "result": "Lost in the wild-card series",
+      "grade": "B+"
      },
-     "book": "5eb2836228b0fdf3"
+     "book": "d6036f23f946a03c"
     }
    ]
   },
@@ -100,20 +105,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "76-86",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "88-74",
+      "result": "Lost in the championship series",
+      "grade": "A"
      },
-     "book": "a89c8a0fa1f47bb2"
+     "book": "a4ed751e3046601d"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "93-69",
+      "rec": "91-71",
       "result": "Lost the World Series",
-      "grade": "A+"
+      "grade": "A"
      },
-     "book": "7abd0a0282c489be"
+     "book": "4d651d1585549835"
     }
    ]
   }

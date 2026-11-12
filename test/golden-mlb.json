@@ -1,5 +1,5 @@
 {
- "fp": "5513127a54d650dd",
+ "fp": "105d665d72647ac2",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -50,6 +50,11 @@
    "fp": "5513127a54d650dd",
    "from": "c42c91797724f149",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "105d665d72647ac2",
+   "from": "5513127a54d650dd",
+   "note": "round 61: reads by month on the team page; baseball payroll, five-round draft, re-sign bars, voices"
   }
  ],
  "result": {
@@ -62,21 +67,21 @@
     "rec": "40c621ca8198faae",
     "poll": "b75f5c20fe4344bd",
     "heis": "a932a8caf31d17f1",
-    "history": "e8f71d9323a469f2",
-    "universe": "52c6650c121fcf89",
-    "screens": "ff491afc0fcc5a84"
+    "history": "cfc3e8869a1aba6c",
+    "universe": "d90aa2ecf8e039a3",
+    "screens": "478fbcfa401fbadc"
    },
    {
     "year": 2027,
-    "games": "9d6ff4f2ef7fd9b4",
-    "post": "ea248d2628d4e8be",
-    "champion": "Philadelphia",
-    "rec": "08f7df38df90bab5",
-    "poll": "72015778384529ac",
-    "heis": "d4738402a9d30553",
-    "history": "f225520b0c98836f",
-    "universe": "5eda06139ba7090c",
-    "screens": "c191bab6f3577623"
+    "games": "c796c9f9d01a314b",
+    "post": "55562aa0a97a4783",
+    "champion": "Boston",
+    "rec": "8e207d2fe9cffbad",
+    "poll": "4279d58757a0f49a",
+    "heis": "8353eb8de82952c0",
+    "history": "cf2ae2f07c96175d",
+    "universe": "4f014a06ebf91268",
+    "screens": "10e470fc7de5058c"
    }
   ],
   "Colorado#777": [
@@ -88,21 +93,21 @@
     "rec": "0c2c348c25d108cb",
     "poll": "19c6582aad747771",
     "heis": "953206088ea314e9",
-    "history": "ed7fa33de07f6ade",
-    "universe": "bf5a8fbd46fa3fec",
-    "screens": "617a4d7c0c502995"
+    "history": "48fe6248ae6613b8",
+    "universe": "5eb6b579c8316877",
+    "screens": "519230c9ce74e5a4"
    },
    {
     "year": 2027,
-    "games": "61d65f29ee22ce98",
-    "post": "09c16cc9f1582dd4",
-    "champion": "Toronto",
-    "rec": "645356f6144bc8ff",
-    "poll": "1a3e19c3414df657",
-    "heis": "6e9ad98335309fb6",
-    "history": "59928e311dedf8d3",
-    "universe": "c0441cc9c76f19de",
-    "screens": "284d2e0b96dd1cfb"
+    "games": "a90eddeb98cd7c52",
+    "post": "1f36b52d43188a35",
+    "champion": "Texas",
+    "rec": "e7374776908b193c",
+    "poll": "d9899f8eb4e67c38",
+    "heis": "d906fc5360d32da8",
+    "history": "632df131f8f93b89",
+    "universe": "9d54a19031a03e6e",
+    "screens": "d163724cd8e1791f"
    }
   ],
   "schedules#60": [

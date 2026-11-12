@@ -1166,6 +1166,7 @@ function stepWatch(){
   if(watch.i<watch.script.length){watch.i++;}
   tickWatch();
 }
+const PRESS_AT={};
 function togglePause(){
   if(!watch)return;
   watch.paused=!watch.paused;
@@ -1315,9 +1316,23 @@ function tallyHTML(){
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded reads only</div>
-    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
+    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}${readsByMonthHTML()}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
+}
+/* your reads month by month this season (round 61, Instinct: a long season needs a way to see whether you're getting
+   better). Daily leagues only, from the games you watched; shown once two months have graded reads. */
+function readsByMonthHTML(){
+  if(!LEAGUE.daily||!LEAGUE.dates||!S.played)return "";
+  const pre=SEA.year+":", M={}, order=[];
+  Object.keys(S.played).forEach(k=>{ if(k.indexOf(pre)!==0)return; const st=+k.slice(pre.length), d=LEAGUE.dates[st]; if(!d)return;
+    const m=String(d).split(" ")[0];
+    S.played[k].forEach(p=>{ if(p.team!==S.myTeam||!p.reads)return; p.reads.forEach(x=>{ if(x.unclear||x.k==="call")return;
+      if(!M[m]){ M[m]={n:0,r:0,st:st}; order.push(m) } M[m].n++; if(x.right)M[m].r++ }) }) });
+  const ms=order.sort((a,b)=>M[a].st-M[b].st); if(ms.length<2)return "";
+  return `<div class="fnote tallynote">By month: ${ms.map(m=>`${esc(m)} ${M[m].r}/${M[m].n}`).join(" &middot; ")}</div>
+    <div style="display:flex;gap:4px;align-items:flex-end;height:28px;margin-top:4px" aria-hidden="true">${ms.map(m=>{ const f=M[m].r/M[m].n;
+      return `<div title="${esc(m)}" style="flex:1;max-width:36px;height:${Math.max(3,Math.round(28*f))}px;background:var(--sodium);opacity:${M[m].n>=5?1:0.5};border-radius:2px"></div>` }).join("")}</div>`;
 }
 /* this season's games of yours: watched live (they can hold calls) or simmed (they can't) */
 function simmedThisSeason(){
@@ -3129,9 +3144,12 @@ function render(){
     }else{
       // the game redraws several times a second at Very fast, so a tap's press and release can land on two
       // different buttons and the click never fires: these act on the press (Grokbot: Normal didn't switch it off)
-      const onPress=(b,fn)=>{ if(!b)return; let at=0;
-        b.onpointerdown=e=>{ if(e.button>0)return; at=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-at>600)fn() } };
-      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();liveTick()});
+      // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
+      // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
+      const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
+        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
+      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
+        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{

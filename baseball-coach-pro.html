@@ -987,13 +987,13 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="40b0089";
+<script>const BUILD_ID="ccb48df";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
    and three wild cards a league; the top two division winners sit out a best-of-three wild-card round, then a
-   best-of-five, a best-of-seven pennant and the World Series), a draft with a lottery, and payrolls (a soft limit: the
-   real luxury-tax line for 2026, $244 million). */
+   best-of-five, a best-of-seven pennant and the World Series), a draft with a lottery, and payrolls (a hard limit of $165 million on
+   the players the game tracks; contracts are scaled from the real 2026 luxury-tax line, $244 million). */
 const MLB_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,2,26));       // March 26 to September 27
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   for(let i=0;i<186;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+1)}
@@ -1098,7 +1098,7 @@ const LEAGUE={
        "reputation. It moves over years and sets what's expected of you."],
       ["Rating (player)","0\u201399 scale. The rotation matters most: three starters, with the fourth and fifth behind them "+
        "taking about two starts in five. Bench players start about one game in eight."],
-      ["Payroll","A soft limit at the 2026 luxury-tax line. A max contract is about a fifth of it."],
+      ["Payroll","A hard limit of $165M, on the players the game tracks. A max contract is about $49M."],
       ["Wild card","After the three division winners, the three best remaining records in each league get in."],
       ["Draft lottery","The teams that miss the postseason draw for the top picks; the worst records have the best odds."],
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."]
@@ -1107,7 +1107,24 @@ const LEAGUE={
 };
 /* ============ sport: baseball ============ */
 const SPORT={
-  margins:{close:1,rout:7,crush:9,blow:11},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
+  margins:{close:1,rout:7,crush:9,blow:11},
+  // the Capybara's fixed lines, said a different way from game to game (round 61: the same two sentences every night)
+  voiceAlt:{
+    "I would rather see an inning or two first. One finds lineups are not always who they were last week.":[
+      "A few innings of looking, I think, before we decide anything. Reports are about other nights.",
+      "I'd pitch our own game early and learn. Six games is a small book.",
+      "Let's meet these hitters before we plan for them. They may have changed their minds.",
+      "I would wait. One rarely regrets an inning spent watching."],
+    "It seems to me changing speeds rarely hurts. I have not, I admit, studied their swings.":[
+      "Slow, then fast, then slow. It unsettles most people. I haven't looked at the swings, mind.",
+      "I'd mix the speeds. A hitter who can't time it can't hit it, one supposes.",
+      "Change of pace, I say. Nobody likes being rushed and then kept waiting.",
+      "Something slow after something quick. That's the whole of my scouting, I'm afraid."],
+    "A tired arm, I find, is mostly a slower one. The bullpen is there to be used.":[
+      "He's done his share, I'd say. There are fresh arms sitting down out there.",
+      "I'd make the change. A tired pitcher is a hopeful one, and hope is not a plan.",
+      "The bullpen, I think. They've been warm for an hour; let's use the warmth.",
+      "Let him have his applause now, while it's still applause."]},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
   scoreWord:"RUN",
   closeMargin:1, closeLabel:"One run",   // the scores page chip (round 56)                  // the flash when you score
   /* which runs get the flash (round 56: an enormous "RUN!" on every run hid the log at the moment you wanted to read it,
@@ -2135,7 +2152,12 @@ LEAGUE.buildSchedule=mlbSchedule;
      5. free agency, under a hard salary cap
      6. empty spots are filled with replacement-level players
    Salaries are in millions and cover the twenty players the sim tracks. */
-const NFL_CAP=244;                          // MLB's 2026 luxury-tax line, $244M, kept as a hard limit here (the game has no tax bills)
+/* Round 61: the limit is $165M, pay still runs on the $244M scale. At 244 the median club had $111M of room (45%:
+   football's is 24%), so money never decided a winter (Muse: $127.5M of room, nothing to choose). With five draft rounds
+   (cheap rookies), measured over 10 seasons, 3 seeds: median payroll 78% of the limit (football's 76%), 90th
+   percentile 97%, top-six players kept 87-89%, the spread of wins 12.8-13.8. */
+const PAY_SCALE=244;                         // MLB's 2026 luxury-tax line: what contracts are scaled from
+const NFL_CAP=+((typeof process!=="undefined"&&process.env&&process.env.MLB_CAP)||165);   // the hard limit
 /* no exceptions in hockey: re-signing your own players fits under the cap too */
 const TAX_LINE=NFL_CAP;
 /* How well run a franchise is, from its slow-moving strength: good
@@ -2146,13 +2168,13 @@ const TAX_LINE=NFL_CAP;
 const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1500)/(+((typeof process!=="undefined"&&process.env&&process.env.NBA_OE)||100))));
 const AGE_SHIFT={};                           // every position ages alike
 const POS_PAY={};                             // and is paid alike
-const MAX_DEAL=Math.round(NFL_CAP*0.20*10)/10; // a max contract: 20% of the cap ($20.8M)
+const MAX_DEAL=Math.round(PAY_SCALE*0.20*10)/10; // a max contract: 20% of the pay scale ($48.8M)
 
 /* What the market pays veterans, scaled so payrolls of the players the sim
    tracks sit near the cap (Nov 2026: hockey payrolls were ~25 against 104,
    so the cap never bit). Rookie scales and minimums are real and stay. */
 const PAY=+((typeof process!=="undefined"&&process.env&&process.env.PAY_NHL)||4.3);
-const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of the cap
+const MAX_SAL=0.2*PAY_SCALE;     // the maximum contract, from the pay scale (not the limit)
 /* hockey's own curve (Nov 2026; Instinct: at PAY 4.3 the football-shaped
    curve put every 63+ at the maximum, ~12% of the league, so the hard cap
    made no tradeoffs). In dollars, a straight line: a median player (~55)
@@ -2187,6 +2209,7 @@ const fillReserve=R=>Math.max(0,R.filter(x=>!x).length-1)*0.9;
 const ROOKIE_ROOM=2;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
+const RS_BAR=+((typeof process!=="undefined"&&process.env&&process.env.MLB_RS)||58), RB_BAR=+((typeof process!=="undefined"&&process.env&&process.env.MLB_RB)||53);
 function nflResignPlan(R){
   const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
@@ -2194,13 +2217,13 @@ function nflResignPlan(R){
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players (the pros' bar was 66 for a starter)
-    const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12*PAY)&&p.age<=33;
+    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=12*PAY)&&p.age<=33;
     keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :p.age>33?`his age: ${p.age+1} next season`
-      :i<POS.length&&p.r<62?`rated ${p.r}: below what the staff want in a starter`
-      :i>=POS.length&&p.r<60?`rated ${p.r}: not enough to keep as a backup`
+      :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
+      :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
       :i>=POS.length&&ask>12*PAY?`asking ${money2(ask)}: too much for a backup`
       :`no room under the cap for his ${money2(ask)} ask`;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
@@ -2253,10 +2276,20 @@ function nflDraftOrder(rec,elo,rng){
   return drawn.concat(pool.map(p=>p.t),po);
 }
 
-function nflProspects(rng,n,sh){
-  const out=[];
+/* Round 61: five rounds (Instinct: two rounds was over before it started). The class's top two rounds' worth is
+   drawn first, on the same dice as before (base), so who's at the top is unchanged; the later rounds are a tail
+   behind it: lower now and wider ceilings, the kind a team takes a flyer on. */
+const MLB_ROUNDS=+((typeof process!=="undefined"&&process.env&&process.env.MLB_DR)||5);
+function nflProspects(rng,n,sh,base){
+  const out=[]; base=base||n;
   for(let i=0;i<n;i++){
-    const q=i/n;
+    if(i>=base){ const t=(i-base)/Math.max(1,n-base), posIdx=rng.int(POS.length), age=18+rng.int(2);
+      const r0=Math.round(Math.max(40,Math.min(60,rng.gauss(45-2*t,3*DRAFT_K.sd))));
+      const pot0=Math.round(Math.min(95,r0+Math.max(3,rng.gauss(11-2*t,7))));
+      const {r,pot}=sh?draftShape(sh,r0,pot0,40,84):{r:r0,pot:pot0};
+      out.push({n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:age,age:age,r:r,pot:pot,hz:0,prod:0,st:0,from:rng.pick(LEAGUE.draftTeams)});
+      continue }
+    const q=i/base;
     const posIdx=rng.int(POS.length);
     const age=18+rng.int(2);                    // drafted at 18 or 19
     // draftees: well below NHL level at 18, with ceilings
@@ -2276,7 +2309,7 @@ function nflProspects(rng,n,sh){
 function nflDraftClass(u,team){
   if(!u.draftClass||u.draftClass.year!==u.year){
     const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
-    const list=nflProspects(rng,Math.round(2*32*DRAFT_K.deep),new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x7ab1)>>>0)); list.forEach((p,i)=>p.pid=i);
+    const list=nflProspects(rng,Math.round(Math.max(2,MLB_ROUNDS)*32*DRAFT_K.deep),new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x7ab1)>>>0),Math.round(2*32*DRAFT_K.deep)); list.forEach((p,i)=>p.pid=i);
     // no two prospects in one class share a name (two "Tanner Mbeki"s: Grokbot); renamed by hash, so no draw moves
     { const seen=new Set(); list.forEach(p=>{ let n=p.n, k=0; while(seen.has(n)&&k<LAST.length){ n=n.split(" ")[0]+" "+LAST[(strHash(p.n+"|"+p.pid)+k)%LAST.length]; k++ } p.n=n; seen.add(n) }) }
     u.draftClass={year:u.year,list:list};
@@ -2387,7 +2420,7 @@ function nflPlace(roster,p){
 function nflRun(u,rng,healthy,elo,rec,choices){
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
   // draft night: its own dice, on the rosters as the season ended (core/91_draftnight)
-  const DN=draftNight(u,rec,elo,U_CH,2);
+  const DN=draftNight(u,rec,elo,U_CH,MLB_ROUNDS);
   const chFor=t=>U_CH[t]||null, ut=choices.userTeam;
   if(ut&&choices.coach){const c=choices.coach;
     u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0}}
@@ -2580,7 +2613,7 @@ LEAGUE.offseason={
             balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
   workouts:0,
-  draftRounds:2,
+  draftRounds:MLB_ROUNDS,
   draftStyles:{bpa:{l:"Best available",d:"Take the best player on the board, whatever the position."},
                need:{l:"Draft for need",d:"Fill the weakest spots on the roster, even if it means reaching."},
                upside:{l:"Swing for upside",d:"Raw prospects with the highest ceilings. Slower to pay off."}}
@@ -3147,7 +3180,7 @@ function staffTake(dp, ctx){
   else if(dp.k==="read"){
     R.push({who:"bears", pick:"zone", line:bearYell("read",seed)});
     const b=dp.best&&APPROACH[dp.best]?dp.best:null;
-    R.push({who:"pearl", pick:b?APPROACH[b].counter:"normal", line:pearlSay(b?"I've been watching every at-bat! "+PEARL_SYS[b]:"I haven't seen enough to say!",seed)});
+    R.push({who:"pearl", pick:b?APPROACH[b].counter:"normal", line:pearlSay(b?["I've been watching every at-bat! ","I counted! ","I've been keeping a chart! ","Okay, okay, I see it now! "][Math.abs(seed|0)%4]+PEARL_SYS[b]:"I haven't seen enough to say!",seed)});
     R.push({who:"capy", pick:"spin", line:`It seems to me changing speeds rarely hurts. I have not, I admit, studied their swings.`});
   }
   else if(dp.k==="pull"){
@@ -3243,7 +3276,9 @@ const HL_SPORT=(function(){
     const dist=hr?1.08+r()*0.15:e.hit===3?0.92:e.hit===2?0.82:0.55;
     const land=[HOME[0]+Math.sin(ang)*dist*0.62, HOME[1]-Math.cos(ang)*dist*0.78];
     const runners=Math.max(0,(e.n||1)-(hr?1:0));
-    return {e,tm,nm:nm?String(nm).split(" ").slice(-1)[0]:"",hr,land,runners,n:e.n||1,inn:d.seg+1,base:hr?3400:2600,inks:hlInks(g.home,g.away),side:e.side,text:""};
+    // round 61: each one its own flight (a high fly or a line drive) and its distance (Instinct)
+    const arc=hr?0.07+r()*0.11:0.03+r()*0.04, ft=hr&&typeof hrFeet==="function"?hrFeet(e):0;
+    return {e,tm,nm:nm?String(nm).split(" ").slice(-1)[0]:"",hr,land,runners,n:e.n||1,inn:d.seg+1,base:hr?3400:2600,inks:hlInks(g.home,g.away),side:e.side,text:"",arc,ft};
   }
   function pitch(x,W,H){
     x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
@@ -3263,7 +3298,7 @@ const HL_SPORT=(function(){
     const tp=0.18, tl=0.72;
     let bx,by,z=0;
     if(t<tp){ const s=t/tp; bx=0.5; by=hlLerp(0.72,0.9,s) }
-    else if(t<tl){ const s=(t-tp)/(tl-tp); bx=hlLerp(HOME[0],c.land[0],s); by=hlLerp(HOME[1],c.land[1],s); z=Math.sin(s*Math.PI)*(c.hr?0.12:0.05) }
+    else if(t<tl){ const s=(t-tp)/(tl-tp); bx=hlLerp(HOME[0],c.land[0],s); by=hlLerp(HOME[1],c.land[1],s); z=Math.sin(s*Math.PI)*(c.arc||(c.hr?0.12:0.05)) }
     else { bx=c.land[0]; by=c.land[1] }
     // an outfielder chases the ball
     const chase=t>tp?Math.min(1,(t-tp)/(tl-tp)):0;
@@ -3278,7 +3313,7 @@ const HL_SPORT=(function(){
     for(let k=0;k<Math.min(3,c.runners);k++){ const start=3-k; const [rx,ry]=P(...along(Math.min(4,start+run))); if(start+run<4)hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)") }
     const [qx,qy]=P(bx,by); x.beginPath(); x.arc(qx,qy-z*H,r*0.55,0,Math.PI*2); x.fillStyle="#fff"; x.fill(); x.lineWidth=1; x.strokeStyle="#C8102E"; x.stroke();
     const top=`${ordw(c.inn)} · ${c.tm}`;
-    const end=t>=tl?(c.hr?(c.n===4?`GRAND SLAM! ${c.nm}`:`HOME RUN! ${c.nm}`):`${c.nm}: ${["","single","double","triple"][c.e.hit||1]}, ${c.n} in`):null;
+    const end=t>=tl?(c.hr?(c.n===4?`GRAND SLAM! ${c.nm}${c.ft?` · ${c.ft} ft`:""}`:`HOME RUN! ${c.nm}${c.ft?` · ${c.ft} ft`:""}`):`${c.nm}: ${["","single","double","triple"][c.e.hit||1]}, ${c.n} in`):null;
     hlCaption(x,W,H,top,end,ink);
   }
   return {collapseIdle:true, aspect:0.62, clips, pitch, idle, frame};
@@ -3300,15 +3335,21 @@ const HIT_WORD=["sacrifice fly","single","double","triple"];
 const HR_WORD=["a solo home run","a two-run homer","a three-run homer","a grand slam"];
 const HR_HOW=["to left","to right","to centre","over the wall in left-centre","into the second deck","just inside the foul pole"];
 function pickOf(a,u){return a[u%a.length]}
+/* round 61: more ways to say the same things (the log's filler "on loop": Muse), and how far a homer went (Instinct) */
+const KK_LINE=[on=>`strike out the side's best chance: ${on}, nothing across`,on=>`leave ${on} stranded with a strikeout`,
+  on=>`get the big strikeout with ${on}`,on=>`escape: ${on}, and the inning ends on a swing and a miss`,on=>`strand ${on}; the threat dies on strike three`];
+const DP_LINE=["turn the double play to end the threat","get two on one ground ball","turn two, and the inning's over","a 6-4-3 double play kills the rally"];
+const QUIET_LINE=["Both sides go quietly","Three up, three down, both ways","The pitchers trade zeroes","A quick inning","Nothing doing"];
+function hrFeet(e){ return 355+(strHash("ft|"+(e.u||0)+"|"+(e.nm||"")+"|"+(e.n||1))%11)*10+(e.n===4?10:0) }
 /* one event as a line of commentary */
 function bsEventText(g,e){
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
   const who=e.nm||bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"their hitter";   // round 56: the engine names him
-  if(e.k==="hr")return {team:tm,tag:e.n===4?"SLAM":"HR",text:`${who}: ${HR_WORD[Math.min(3,(e.n||1)-1)]} ${pickOf(HR_HOW,u>>2)}`};
+  if(e.k==="hr")return {team:tm,tag:e.n===4?"SLAM":"HR",text:`${who}: ${HR_WORD[Math.min(3,(e.n||1)-1)]} ${pickOf(HR_HOW,u>>2)}, ${hrFeet(e)} feet`};
   if(e.k==="rbi"){ if(e.hit<0)return {team:tm,tag:"RUN",text:e.hit===-2?`${who} is hit by a pitch with the bases loaded: a run scores`:`${who} draws a bases-loaded walk: a run scores`};
     return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?`drives in ${["","one","two","three"][e.n]||e.n} with`:"brings one home with"} a ${HIT_WORD[e.hit]}`:`${who} lifts a sacrifice fly: a run scores`} }
-  if(e.k==="kk")return {team:tm,tag:"",text:`strike out the side's best chance: ${e.on>=3?"bases loaded":"two on"}, nothing across`};
-  if(e.k==="dp")return {team:tm,tag:"",text:`turn the double play to end the threat`};
+  if(e.k==="kk")return {team:tm,tag:"",text:pickOf(KK_LINE,u)(e.on>=3?"the bases loaded":"two on")};
+  if(e.k==="dp")return {team:tm,tag:"",text:pickOf(DP_LINE,u)};
   if(e.k==="sb")return {team:tm,tag:"SB",text:`${who} steals second`};
   if(e.k==="cs")return {team:tm,tag:"CS",text:`${who} is thrown out stealing`};
   if(e.k==="ph")return {team:tm,tag:"",text:e.nm?`${e.nm} pinch-hits${e.was?" for "+e.was:""}`:`send up a pinch hitter`};
@@ -3326,7 +3367,7 @@ function rowsOf(g,drives){
       if(e.k==="hr"||e.k==="rbi"){ if(e.side==="home")sh+=e.n||1; else sa+=e.n||1 }
       rows.push({m:lab,team:t.team,tag:t.tag,text:t.text,h:Math.min(sh,d.sh),a:Math.min(sa,d.sa),goal:e.k==="hr"}) });
     // a quiet inning says so now and then
-    if(!(d.ev||[]).length&&(d.seg%3===1))rows.push({m:lab,team:"",tag:"",text:"Both sides go quietly",h:d.sh,a:d.sa,cue:true});
+    if(!(d.ev||[]).length&&(d.seg%3===1))rows.push({m:lab,team:"",tag:"",text:QUIET_LINE[(strHash((g.home||"")+(g.away||""))+d.seg)%QUIET_LINE.length],h:d.sh,a:d.sa,cue:true});
   });
   return rows;
 }
@@ -3511,7 +3552,13 @@ function watchView(){
 /* ---- after the game: were your reads right? ---- */
 /* the bench bat named in the call */
 function benchName(dp){ const m=dp.q.match(/Pinch-hit with (.+?)\?/); return m?m[1]:"" }
-function readNote(e){
+/* which number gives each approach away (round 61, Muse: say which tell predicted the night). From BS_TELL. */
+const READ_TELL={pull:"The tell for pull hitters: balls in play pulled. They pull about two in three.",
+  patient:"The tell for a patient lineup: pitches an at-bat. They see about four and a half.",
+  contact:"The tell for a contact lineup: swings and misses. They miss about half as often as other lineups."};
+function readNote(e){ const t=readNote0(e);
+  return t+(e.k==="read"&&!e.right&&!e.waited&&READ_TELL[e.truth]?" "+READ_TELL[e.truth]:"") }
+function readNote0(e){
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&APPROACH[e.evid])
     return e.right?` The numbers pointed to ${APPROACH[e.evid].l.toLowerCase()}; your read was better than they were.`
       :` The numbers at the time pointed to ${APPROACH[e.evid].l.toLowerCase()}: three innings can mislead.`;
@@ -4885,6 +4932,8 @@ const VOICE_ALT={
     "Start from their habit. Then ask: are we good enough to just play our game?",
     "Their most common way is the first clue. The strength of the two sides is the second."],
 };
+// a sport's own lines and their alternates (round 61: baseball's Capybara said the same two sentences every game)
+if(typeof SPORT!=="undefined"&&SPORT.voiceAlt)Object.assign(VOICE_ALT,SPORT.voiceAlt);
 function voiceGameKey(){ try{ return typeof live!=="undefined"&&live?`${SEA.year}-${live.step}${live.g&&live.g.cup?"c":""}`:`${SEA&&SEA.year}-${SEA&&SEA.step}` }catch(e){ return "" } }
 function voiceVary(line){
   if(!VOICE_ON||!line||typeof line!=="string")return line;
@@ -4996,8 +5045,9 @@ function gagSeason(x,lab){
   if(prev===g)return x;                       // said earlier in this game: staffFresh handles that
   if(x.who==="pearl"&&typeof PEARL_AFTER!=="undefined"){ let l=x.line;
     (PEARL_BEFORE||[]).concat(PEARL_AFTER||[]).forEach(f=>{ if(f&&l.indexOf(f)>=0)l=l.replace(f,"") }); return Object.assign({},x,{line:l.trim()}) }
-  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER."], i=Object.keys(G.said).length%sh.length;
-    return Object.assign({},x,{line:`${lab.toUpperCase()}! ${sh[i]}`}) }
+  // the shout is the pick's short name ("Attack the zone", not "Attack the zone: strike one, every hitter")
+  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER.","SAME AS ALWAYS.","WE VOTED. IT WAS UNANIMOUS.","DON'T OVERTHINK IT."], i=Object.keys(G.said).length%sh.length;
+    return Object.assign({},x,{line:`${lab.split(":")[0].toUpperCase()}! ${sh[i]}`}) }
   return x;
 }
 function staffFresh(R,dp,L){
@@ -5009,7 +5059,7 @@ function staffFresh(R,dp,L){
     // "as I said before" only when this voice really gave this advice before: Pearl said "Same as I said before:
     // leave it to your assistant!" having said "see this out" and "go right" (Instinct)
     const again=lab&&G.indexOf(lab.toLowerCase())>=0, l=lab||"the same";
-    const line=x.who==="bears"?(again?`${l.toUpperCase()}! We said it before. We'll say it louder.`:`${l.toUpperCase()}! LOUDER THIS TIME.`)
+    const line=x.who==="bears"?(again?`${l.split(":")[0].toUpperCase()}! We said it before. We'll say it louder.`:`${l.split(":")[0].toUpperCase()}! LOUDER THIS TIME.`)
       :x.who==="pearl"?pearlSay(again?`Same as I said before: ${l.toLowerCase()}!`:`I'll keep it simple: ${l.toLowerCase()}!`,dp.opts.length+S0.length)
       :again?`As I said earlier, I'm afraid: ${l.toLowerCase()}.`:`Briefly, then: ${l.toLowerCase()}.`;
     S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });
@@ -7917,6 +7967,7 @@ function stepWatch(){
   if(watch.i<watch.script.length){watch.i++;}
   tickWatch();
 }
+const PRESS_AT={};
 function togglePause(){
   if(!watch)return;
   watch.paused=!watch.paused;
@@ -8066,9 +8117,23 @@ function tallyHTML(){
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded reads only</div>
-    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
+    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}${readsByMonthHTML()}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
+}
+/* your reads month by month this season (round 61, Instinct: a long season needs a way to see whether you're getting
+   better). Daily leagues only, from the games you watched; shown once two months have graded reads. */
+function readsByMonthHTML(){
+  if(!LEAGUE.daily||!LEAGUE.dates||!S.played)return "";
+  const pre=SEA.year+":", M={}, order=[];
+  Object.keys(S.played).forEach(k=>{ if(k.indexOf(pre)!==0)return; const st=+k.slice(pre.length), d=LEAGUE.dates[st]; if(!d)return;
+    const m=String(d).split(" ")[0];
+    S.played[k].forEach(p=>{ if(p.team!==S.myTeam||!p.reads)return; p.reads.forEach(x=>{ if(x.unclear||x.k==="call")return;
+      if(!M[m]){ M[m]={n:0,r:0,st:st}; order.push(m) } M[m].n++; if(x.right)M[m].r++ }) }) });
+  const ms=order.sort((a,b)=>M[a].st-M[b].st); if(ms.length<2)return "";
+  return `<div class="fnote tallynote">By month: ${ms.map(m=>`${esc(m)} ${M[m].r}/${M[m].n}`).join(" &middot; ")}</div>
+    <div style="display:flex;gap:4px;align-items:flex-end;height:28px;margin-top:4px" aria-hidden="true">${ms.map(m=>{ const f=M[m].r/M[m].n;
+      return `<div title="${esc(m)}" style="flex:1;max-width:36px;height:${Math.max(3,Math.round(28*f))}px;background:var(--sodium);opacity:${M[m].n>=5?1:0.5};border-radius:2px"></div>` }).join("")}</div>`;
 }
 /* this season's games of yours: watched live (they can hold calls) or simmed (they can't) */
 function simmedThisSeason(){
@@ -9880,9 +9945,12 @@ function render(){
     }else{
       // the game redraws several times a second at Very fast, so a tap's press and release can land on two
       // different buttons and the click never fires: these act on the press (Grokbot: Normal didn't switch it off)
-      const onPress=(b,fn)=>{ if(!b)return; let at=0;
-        b.onpointerdown=e=>{ if(e.button>0)return; at=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-at>600)fn() } };
-      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();liveTick()});
+      // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
+      // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
+      const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
+        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
+      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
+        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{

@@ -15,15 +15,21 @@ const HIT_WORD=["sacrifice fly","single","double","triple"];
 const HR_WORD=["a solo home run","a two-run homer","a three-run homer","a grand slam"];
 const HR_HOW=["to left","to right","to centre","over the wall in left-centre","into the second deck","just inside the foul pole"];
 function pickOf(a,u){return a[u%a.length]}
+/* round 61: more ways to say the same things (the log's filler "on loop": Muse), and how far a homer went (Instinct) */
+const KK_LINE=[on=>`strike out the side's best chance: ${on}, nothing across`,on=>`leave ${on} stranded with a strikeout`,
+  on=>`get the big strikeout with ${on}`,on=>`escape: ${on}, and the inning ends on a swing and a miss`,on=>`strand ${on}; the threat dies on strike three`];
+const DP_LINE=["turn the double play to end the threat","get two on one ground ball","turn two, and the inning's over","a 6-4-3 double play kills the rally"];
+const QUIET_LINE=["Both sides go quietly","Three up, three down, both ways","The pitchers trade zeroes","A quick inning","Nothing doing"];
+function hrFeet(e){ return 355+(strHash("ft|"+(e.u||0)+"|"+(e.nm||"")+"|"+(e.n||1))%11)*10+(e.n===4?10:0) }
 /* one event as a line of commentary */
 function bsEventText(g,e){
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
   const who=e.nm||bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"their hitter";   // round 56: the engine names him
-  if(e.k==="hr")return {team:tm,tag:e.n===4?"SLAM":"HR",text:`${who}: ${HR_WORD[Math.min(3,(e.n||1)-1)]} ${pickOf(HR_HOW,u>>2)}`};
+  if(e.k==="hr")return {team:tm,tag:e.n===4?"SLAM":"HR",text:`${who}: ${HR_WORD[Math.min(3,(e.n||1)-1)]} ${pickOf(HR_HOW,u>>2)}, ${hrFeet(e)} feet`};
   if(e.k==="rbi"){ if(e.hit<0)return {team:tm,tag:"RUN",text:e.hit===-2?`${who} is hit by a pitch with the bases loaded: a run scores`:`${who} draws a bases-loaded walk: a run scores`};
     return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?`drives in ${["","one","two","three"][e.n]||e.n} with`:"brings one home with"} a ${HIT_WORD[e.hit]}`:`${who} lifts a sacrifice fly: a run scores`} }
-  if(e.k==="kk")return {team:tm,tag:"",text:`strike out the side's best chance: ${e.on>=3?"bases loaded":"two on"}, nothing across`};
-  if(e.k==="dp")return {team:tm,tag:"",text:`turn the double play to end the threat`};
+  if(e.k==="kk")return {team:tm,tag:"",text:pickOf(KK_LINE,u)(e.on>=3?"the bases loaded":"two on")};
+  if(e.k==="dp")return {team:tm,tag:"",text:pickOf(DP_LINE,u)};
   if(e.k==="sb")return {team:tm,tag:"SB",text:`${who} steals second`};
   if(e.k==="cs")return {team:tm,tag:"CS",text:`${who} is thrown out stealing`};
   if(e.k==="ph")return {team:tm,tag:"",text:e.nm?`${e.nm} pinch-hits${e.was?" for "+e.was:""}`:`send up a pinch hitter`};
@@ -41,7 +47,7 @@ function rowsOf(g,drives){
       if(e.k==="hr"||e.k==="rbi"){ if(e.side==="home")sh+=e.n||1; else sa+=e.n||1 }
       rows.push({m:lab,team:t.team,tag:t.tag,text:t.text,h:Math.min(sh,d.sh),a:Math.min(sa,d.sa),goal:e.k==="hr"}) });
     // a quiet inning says so now and then
-    if(!(d.ev||[]).length&&(d.seg%3===1))rows.push({m:lab,team:"",tag:"",text:"Both sides go quietly",h:d.sh,a:d.sa,cue:true});
+    if(!(d.ev||[]).length&&(d.seg%3===1))rows.push({m:lab,team:"",tag:"",text:QUIET_LINE[(strHash((g.home||"")+(g.away||""))+d.seg)%QUIET_LINE.length],h:d.sh,a:d.sa,cue:true});
   });
   return rows;
 }
@@ -226,7 +232,13 @@ function watchView(){
 /* ---- after the game: were your reads right? ---- */
 /* the bench bat named in the call */
 function benchName(dp){ const m=dp.q.match(/Pinch-hit with (.+?)\?/); return m?m[1]:"" }
-function readNote(e){
+/* which number gives each approach away (round 61, Muse: say which tell predicted the night). From BS_TELL. */
+const READ_TELL={pull:"The tell for pull hitters: balls in play pulled. They pull about two in three.",
+  patient:"The tell for a patient lineup: pitches an at-bat. They see about four and a half.",
+  contact:"The tell for a contact lineup: swings and misses. They miss about half as often as other lineups."};
+function readNote(e){ const t=readNote0(e);
+  return t+(e.k==="read"&&!e.right&&!e.waited&&READ_TELL[e.truth]?" "+READ_TELL[e.truth]:"") }
+function readNote0(e){
   if(e.k==="read"&&e.evid&&e.evid!==e.truth&&APPROACH[e.evid])
     return e.right?` The numbers pointed to ${APPROACH[e.evid].l.toLowerCase()}; your read was better than they were.`
       :` The numbers at the time pointed to ${APPROACH[e.evid].l.toLowerCase()}: three innings can mislead.`;

@@ -1,5 +1,5 @@
 {
- "fp": "14a60bc87e67e386",
+ "fp": "04a37f3826112cb3",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -380,6 +380,11 @@
    "fp": "14a60bc87e67e386",
    "from": "33ceca2e8f9c618a",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "04a37f3826112cb3",
+   "from": "14a60bc87e67e386",
+   "note": "round 61: reads by month on the team pagebasketball-coach-pro"
   }
  ],
  "result": {
@@ -394,7 +399,7 @@
     "heis": "22f4a9cd8c36b4a4",
     "history": "eec782d6363770d3",
     "universe": "bc77fd9b521a9548",
-    "screens": "2ecc07225037c827"
+    "screens": "ac6b80c209f9fa99"
    },
    {
     "year": 2027,
@@ -406,7 +411,7 @@
     "heis": "ab13cd68b27edce4",
     "history": "9626cee9ed0ee95e",
     "universe": "ba8e1c5dabbe091a",
-    "screens": "43e372375b2be6ed"
+    "screens": "c4f55f5d08075f38"
    }
   ],
   "Detroit#777": [
@@ -420,7 +425,7 @@
     "heis": "4c753ccdcbc17fd0",
     "history": "21a8fcbdcac92950",
     "universe": "02f89186763aa3a9",
-    "screens": "59bbb11bd9f89db4"
+    "screens": "4f8ce4b8b72f96c8"
    },
    {
     "year": 2027,
@@ -432,7 +437,7 @@
     "heis": "f63b6208b8e02068",
     "history": "81fb067eae20d51f",
     "universe": "a1136bbc60b36219",
-    "screens": "35a22de1ad8c9e3b"
+    "screens": "b32fddbbccd2f7a7"
    }
   ],
   "schedules#60": [
