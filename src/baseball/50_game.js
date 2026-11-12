@@ -98,7 +98,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   st.S.home.app=pickApp("home"); st.S.away.app=pickApp("away");
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   const queueCall=(side,dp)=>{ const key=dp.k+(dp.h||"")+side; if(!humans[side]||st.asked[key])return false;
-    st.asked[key]=true; st.queue.push({side:side,dp:dp}); return true };
+    st.asked[key]=true; st.queue.push({side:side,dp:dp}); if(dp.k!=="prep"&&dp.k!=="read"&&inn()>=8)(st.lateGot=st.lateGot||{})[side]=true; return true };
   const readIt=(side,p)=>{ if(rng.r()<p){ st.S[side].ans=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false } };
   // the pitcher's edge for the side in the field: starter (form, fatigue, his place in the rotation) or the bullpen
   const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return BS.pen;
@@ -136,7 +136,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const cpuCloser=fs=>{ const X=st.S[fs], L=lead(fs); if(inn()>=9&&L>=1&&L<=3&&!X.closer){ X.closer=true; X.pen=true } };
   // the bullpen call: three batters before he's spent from the 5th (within three runs), and in a close game from the 6th
   // six batters before (round 58: it came in 18% of live games; Muse's first was game 114, "the best call in the game")
+  // (round 59: after "leave him in", not again until he's faced three more or given up a run: it asked in back-to-back
+  // innings, Instinct)
   const pullDue=fs=>{ const X=st.S[fs], P=X.sp; if(X.pen||inn()<5||inn()>8)return false; const L=Math.abs(lead(fs));
+    if(P.stayBf!==undefined&&P.bf<P.stayBf+3&&P.ra===P.stayRa)return false;
     return (L<=3&&P.bf>=Math.max(18,P.stam-3))||(L<=2&&inn()>=6&&P.bf>=Math.max(15,P.stam-6)) };
   // round 56: every event names its man, from the day's lineup, and a pinch hitter stays in the slot for the rest of the
   // game (the log named a slot's starter or his backup at random, play by play: "three Devontes", Muse)
@@ -182,7 +185,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(pick){ st.log.push({side:side,h:dp.h,k:"read",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
       else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the plan as it was" }
       return }
-    if(dp.k==="pull"){ if(v==="pen")X.pen=true; else if(v==="stay"){ X.sp.stam=Math.max(X.sp.stam,X.sp.bf+3) } else { cpuPen(side); st.autoDid=X.pen?"went to the bullpen":"left him in, by the computer's rule" } return }
+    if(dp.k==="pull"){ if(v==="pen")X.pen=true; else if(v==="stay"){ X.sp.stam=Math.max(X.sp.stam,X.sp.bf+3); X.sp.stayBf=X.sp.bf; X.sp.stayRa=X.sp.ra } else { cpuPen(side); st.autoDid=X.pen?"went to the bullpen":"left him in, by the computer's rule" } return }
     if(dp.k==="pinch"){ if(v==="pinch"||(v==="normal"&&dp.worth))st.late[side+"pinch"]=true; if(v==="normal")st.autoDid=st.late[side+"pinch"]?"sent up the pinch hitter (he's the better bat)":"let him hit"; return }
     if(dp.k==="steal"){ const go=v==="send"||(v==="normal"&&dp.p>=BS_SEND); if(v==="normal")st.autoDid=go?"sent him (a good jump to be had)":"held him"; if(go&&H&&H.b[0]&&!H.b[1])steal(side); return }
   };
@@ -201,6 +204,17 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         if(queueCall(bat,dp))return true }
       // the steal: asked tied from the 8th (3 to 4 points on your assistant, measured); elsewhere he decides (1 to 2)
       if(H.b[0]&&!H.b[1]&&H.outs<2&&lead(bat)===0&&inn()>=8&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
+        const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
+        dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
+        if(queueCall(bat,dp))return true } }
+    // one decision guaranteed in a one-run game from the 8th (round 59, Ian: "in a one-run game the player should never
+    // be a spectator for three innings", Muse). If nothing worth asking has come by then, the first pinch-hit or steal
+    // chance is yours, even where the replays put it under 3 points on your assistant.
+    if(humans[bat]&&inn()>=8&&Math.abs(lead(bat))<=1&&!(st.lateGot&&st.lateGot[bat])){ const X=st.S[bat], slot=X.bat%9;
+      if((H.b[1]||H.b[2])&&slot>=5&&ctx.bench&&ctx.bench[bat]&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+        const dp=pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench[bat],onDesc()); dp.worth=pinchWorth(bat,slot); dp.team=ctx.team&&ctx.team[bat];
+        if(queueCall(bat,dp))return true }
+      if(H.b[0]&&!H.b[1]&&H.outs<2&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
         dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true } }

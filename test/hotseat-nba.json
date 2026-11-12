@@ -255,6 +255,11 @@
    "fp": "e01f1ad8c524bb44",
    "from": "936c44d1e51b34e1",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "e01f1ad8c524bb44",
+   "from": "e01f1ad8c524bb44",
+   "note": "round 59: deterministic baseball schedule, standings group word, quiet bullpen call after leave him in"
   }
  ],
  "out": [

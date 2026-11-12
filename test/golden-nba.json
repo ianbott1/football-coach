@@ -1,5 +1,5 @@
 {
- "fp": "53c72ee45877da13",
+ "fp": "c95d90fdbd654631",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -365,6 +365,11 @@
    "fp": "53c72ee45877da13",
    "from": "b481a1bf74568891",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "c95d90fdbd654631",
+   "from": "53c72ee45877da13",
+   "note": "round 59: deterministic baseball schedule, standings group word, quiet bullpen call after leave him in"
   }
  ],
  "result": {
@@ -379,7 +384,7 @@
     "heis": "22f4a9cd8c36b4a4",
     "history": "eec782d6363770d3",
     "universe": "bc77fd9b521a9548",
-    "screens": "2142a63e6d866cfc"
+    "screens": "b9d412633b255465"
    },
    {
     "year": 2027,
@@ -391,7 +396,7 @@
     "heis": "ab13cd68b27edce4",
     "history": "9626cee9ed0ee95e",
     "universe": "ba8e1c5dabbe091a",
-    "screens": "7a15cc73433b1c35"
+    "screens": "a29dc3b2f9a26344"
    }
   ],
   "Detroit#777": [
@@ -405,7 +410,7 @@
     "heis": "4c753ccdcbc17fd0",
     "history": "21a8fcbdcac92950",
     "universe": "02f89186763aa3a9",
-    "screens": "fa8b48acf0afd088"
+    "screens": "18dfdda40da4a172"
    },
    {
     "year": 2027,
@@ -417,7 +422,7 @@
     "heis": "f63b6208b8e02068",
     "history": "81fb067eae20d51f",
     "universe": "a1136bbc60b36219",
-    "screens": "1b47fa01e2aab267"
+    "screens": "e656262430d840cd"
    }
   ],
   "schedules#60": [

@@ -54,14 +54,17 @@ function packSeries(rng,series){
   DD[1].forEach(f=>dead.add(Math.round(DAYS*f)));
   const clear=(d,L)=>{ for(let k=0;k<L;k++)if(dead.has(d+k))return false; return true };
   for(let attempt=0;attempt<200;attempt++){
-    const rem={}, free={}, run={}, pool=rng.shuffle(series.map((x,i)=>Object.assign({id:i},x))), out=[];
+    const rem={}, free={}, run={}, last={}, pool=rng.shuffle(series.map((x,i)=>Object.assign({id:i},x))), out=[];
     NAMES.forEach(t=>{rem[t]=0;free[t]=0;run[t]=0}); pool.forEach(x=>{rem[x.home]+=x.len;rem[x.away]+=x.len});
     let ok=true;
     for(let d=0;d<DAYS&&ok;d++){
       let left=0; for(let k=d;k<DAYS;k++)if(!dead.has(k))left++;
       const slack=t=>left-rem[t];
       if(dead.has(d)){ NAMES.forEach(t=>{ if(free[t]<=d)run[t]=0 }); continue }
-      const avail=NAMES.filter(t=>free[t]<=d&&rem[t]>0).sort((x,y)=>slack(x)-slack(y)||rng.r()-0.5);
+      // ties broken by a draw made before sorting (round 59: a random comparator inside sort() came out differently on
+      // each load in a browser, so a reload built another schedule and replayed the season onto it: Muse, Instinct)
+      const tie={}; NAMES.forEach(t=>tie[t]=rng.r());
+      const avail=NAMES.filter(t=>free[t]<=d&&rem[t]>0).sort((x,y)=>slack(x)-slack(y)||tie[x]-tie[y]);
       const taken=new Set(), rest=new Set();
       // a day off after a long stretch, while there's room for it
       // a day off after a long stretch, while there's room for it
@@ -69,11 +72,13 @@ function packSeries(rng,series){
       for(const t of avail){ if(taken.has(t)||rest.has(t))continue;
         let best=-1, bs=1e9;
         for(let i=0;i<pool.length;i++){ const x=pool[i]; if(x.home!==t&&x.away!==t)continue; const o=x.home===t?x.away:x.home;
-          if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue; const sc=slack(o)+rng.r()*2; if(sc<bs){bs=sc;best=i} }
+          if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue;
+          // not the club you just played, unless nothing else fits (round 59: a 6-game set, 10 straight against Cleveland: Muse)
+          const sc=slack(o)+rng.r()*2+(last[t]===o?50:0); if(sc<bs){bs=sc;best=i} }
         if(best<0)continue;
         const x=pool.splice(best,1)[0]; taken.add(x.home); taken.add(x.away);
         for(let k=0;k<x.len;k++)out.push({week:d+k,home:x.home,away:x.away,conf:CONF[x.home]===CONF[x.away],neutral:false,ser:x.id,sg:k+1,sn:x.len});
-        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len }) }
+        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len }); last[x.home]=x.away; last[x.away]=x.home }
       NAMES.forEach(t=>{ if(free[t]<=d&&!taken.has(t))run[t]=0 });   // idle today: the stretch ends
       if(NAMES.some(t=>rem[t]>left-1+(free[t]>d?1:0)))ok=false;
     }

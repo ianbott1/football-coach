@@ -1,5 +1,5 @@
 {
- "fp": "52cfe498e0074e95",
+ "fp": "bc6aa383ae857817",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -380,6 +380,11 @@
    "fp": "52cfe498e0074e95",
    "from": "f715c12887241588",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "bc6aa383ae857817",
+   "from": "52cfe498e0074e95",
+   "note": "round 59: one late decision in one-run games; hockey hire text"
   }
  ],
  "result": {
@@ -394,7 +399,7 @@
     "heis": "72c4700494f6c62c",
     "history": "56993daae0adafdf",
     "universe": "011afc36d59045e5",
-    "screens": "c11fecc426633e27"
+    "screens": "03a9f09040caba91"
    },
    {
     "year": 2027,
@@ -406,7 +411,7 @@
     "heis": "620b9b05ed91f4c9",
     "history": "d180492a39d64d8c",
     "universe": "bf973d93472b5ab0",
-    "screens": "116dd875a20289db"
+    "screens": "4fda85cfec871560"
    }
   ],
   "Edmonton#777": [
