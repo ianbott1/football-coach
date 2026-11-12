@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="6184c45";
+<script>const BUILD_ID="3725974";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -2144,21 +2144,23 @@ function nflYears(age,pos){const a=age-(AGE_SHIFT[pos]||0); return a<=26?4:a<=29
 function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
 const ROOKIE_ROOM=14;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
-   keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
+   keeping means a starter at least as good as the league's middle starter, or a useful backup at a fair price,
+   not past 32 (round 63: the bar was 66 and kept about a quarter of expiring deals). */
+const RS_BAR=+((typeof process!=="undefined"&&process.env&&process.env.NB_RS)||61), RB_BAR=+((typeof process!=="undefined"&&process.env&&process.env.NB_RB)||54);
 function nflResignPlan(R){
   const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
-    // teams keep their useful players (the pros' bar was 66 for a starter)
-    const worth=(i<POS.length?p.r>=62:p.r>=60&&ask<=12*PAY)&&p.age<=33;
+    // teams keep their useful players: RS_BAR/RB_BAR sit at the league's median starter and backup
+    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=12*PAY)&&p.age<=33;
     keep[i]=worth&&pay+ask<=TAX_LINE-ROOKIE_ROOM;
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :p.age>33?`his age: ${p.age+1} next season`
-      :i<POS.length&&p.r<62?`rated ${p.r}: below what the staff want in a starter`
-      :i>=POS.length&&p.r<60?`rated ${p.r}: not enough to keep as a backup`
+      :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
+      :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
       :i>=POS.length&&ask>12*PAY?`asking ${money2(ask)}: too much for a backup`
       :`no room under the tax line for his ${money2(ask)} ask`;      // your own players: up to the tax line
     if(keep[i])pay+=ask;
