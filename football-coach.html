@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="c3f3901";
+<script>const BUILD_ID="1559793";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -8652,11 +8652,26 @@ function hlMount(){
   if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
   if(!HL.cur)hlDraw(null,0);
 }
+/* will this stretch play clips? Asked before the page is drawn, so it can keep the result back (round 66); the clips
+   are kept for hlPlay */
+function hlWillPlay(L,drive){
+  HL.pending=null;
+  if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return false;
+  // not the pitch box: the screen before may be a call, with none; the live view drawn next has one (hlPlay checks)
+  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  if(!clips.length)return false;
+  HL.pending={drive:drive,clips:clips}; return true }
+/* the clips are over (or skipped): the score, the run of play, the sound and the flash */
+function hlRelease(quiet){
+  if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a);
+  if(!quiet&&typeof render==="function")render() }
 /* this stretch's clips; returns how long they take (ms), for the next stretch to wait */
 function hlPlay(L,drive){
   if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return 0;
   const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return 0;
-  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  let clips=[]; if(HL.pending&&HL.pending.drive===drive)clips=HL.pending.clips; else { try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] } }
+  HL.pending=null;
   if(!clips.length)return 0;
   box.style.display=""; HL.cur={dur:1}; hlMount();
   const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
@@ -8670,10 +8685,10 @@ function hlFrame(){
   hlDraw(c,t);
   if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
   // a beat on the last frame, then the next clip
-  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount() } },250);
+  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount(); hlRelease() } },250);
 }
 function hlSkip(){
-  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount();
+  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount(); hlRelease();
   // the next stretch was waiting for the clips: it comes now
   if(typeof live!=="undefined"&&live&&!live.done&&!live.paused&&!live.ask&&live.timer){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.min(400,liveGap())) }
 }
@@ -9451,6 +9466,7 @@ function startLive(g,step,slot){
 function syncTail(r){ if(r&&Array.isArray(r.drives)&&r.drives.length>live.drives.length&&r.drives.slice(0,live.drives.length).every((d,i)=>d===live.drives[i]))
   for(let i=live.drives.length;i<r.drives.length;i++)live.drives.push(r.drives[i]) }
 function liveTick(){
+  if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
@@ -9495,7 +9511,10 @@ function liveTick(){
     // and football's don't carry sh/sa, which made every drive look like a score)
     const pH=live.lastH||0, pA=live.lastA||0;
     live.drives.push(r.drive); fresh=r.drive;
-    if(!live.ff)feelSpell(live,pH,pA);
+    // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
+    // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
+    // shows them.
+    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
@@ -9503,6 +9522,7 @@ function liveTick(){
   render();
   // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
   const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
+  if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();   // nothing played after all: show it now
   if(!live.paused&&!live.done&&!live.ask){
     live.timer=setTimeout(liveTick, Math.max(liveGap(),hm));
   }
@@ -12466,7 +12486,12 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
+    // a highlight still playing: the page as it stood before its stretch (round 66)
+    const Hd=live.hold&&!live.ask?live.hold:null, sv=Hd?[live.drives,live.eng.h,live.eng.a]:null;
+    if(Hd){ live.drives=sv[0].slice(0,Hd.n); live.eng.h=Hd.h; live.eng.a=Hd.a }
+    try{
     el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
+    }finally{ if(sv){ live.drives=sv[0]; live.eng.h=sv[1]; live.eng.a=sv[2] } }
     bindGuide();
     if(typeof hlMount==="function")hlMount();
     if(live.ask){

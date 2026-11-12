@@ -358,6 +358,28 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 66: the highlights keep the suspense (Ian: it said "goal" before the ball went in; Football Manager leaves you
+not knowing whether it's a goal, the post, a save or a miss).
+- The leak was mostly the page, not the clip: the stretch was drawn (score, run of play, momentum, live chance) and
+  the goal sound and flash played, then the clip started. Now liveTick asks hlWillPlay first; if a clip will play it
+  sets live.hold (the score and run of play before the stretch) and skips feelSpell; render draws the live view with
+  live.drives and live.eng.h/a swapped to the held values (restored in a finally); hlRelease (clips over, or skipped,
+  or the next tick) clears the hold, plays the sound and flash, and redraws. hlWillPlay must not ask for the pitch
+  box: after a call the screen has none until the live view is drawn (the first browser run leaked there, 50').
+- In the clip: the shot line stays white until the ball arrives; the shooter's ring and name, and the team in the
+  caption, wait for the outcome (soccer, hockey, basketball: "it shouldn't tell you whose chance it is"); every
+  soccer clip is 3.6 s, every hockey clip 3.2 s (goals ran longer than chances).
+- The mix: in 12 Arsenal matches soccer showed 23 goals and 10 chances (70% goals), so a clip meant a goal. Chances now
+  play in any game within two goals, one a stretch: 23 goals, 30 chances (43%). Hockey 57 goals, 17 saves (77%): its
+  engine logs about one big save a game and nothing else, so there are no more real chances to show; none invented.
+  Basketball's clips are made baskets (and the last shot); baseball's and football's are scoring plays.
+- Penalties show the move that won them: the build-up to a foul in the box (the first 42% of the clip, an open-play
+  move), "PENALTY!", everyone back outside the box, then the kick (soccer: c.pre, c.open, c.from).
+- Red cards are highlights (soccer, key mode): the booked centre-back closes the man on the ball and fouls him, the
+  card, and he walks off to the touchline. The engine sends off about one side in twenty games.
+- test/hl-suspense.js (in the suite): a soccer match in Chromium; 50 moments of goal clips before the ball arrived,
+  none showed the new score; the new score showed after each clip. With the hold removed it fails.
+
 Round 65: soccer's highlight movement (the gap left to Football Manager after round 64).
 - The 22 players were placed by a few lerps toward the ball's waypoints. Now (soccer 72_highlights: attAt, defAt,
   keeperDive): the attacking 4-4-2 pushes up with the ball, back line least, and shifts to its side; each receiver

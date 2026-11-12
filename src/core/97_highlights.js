@@ -25,11 +25,26 @@ function hlMount(){
   if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
   if(!HL.cur)hlDraw(null,0);
 }
+/* will this stretch play clips? Asked before the page is drawn, so it can keep the result back (round 66); the clips
+   are kept for hlPlay */
+function hlWillPlay(L,drive){
+  HL.pending=null;
+  if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return false;
+  // not the pitch box: the screen before may be a call, with none; the live view drawn next has one (hlPlay checks)
+  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  if(!clips.length)return false;
+  HL.pending={drive:drive,clips:clips}; return true }
+/* the clips are over (or skipped): the score, the run of play, the sound and the flash */
+function hlRelease(quiet){
+  if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a);
+  if(!quiet&&typeof render==="function")render() }
 /* this stretch's clips; returns how long they take (ms), for the next stretch to wait */
 function hlPlay(L,drive){
   if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return 0;
   const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return 0;
-  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  let clips=[]; if(HL.pending&&HL.pending.drive===drive)clips=HL.pending.clips; else { try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] } }
+  HL.pending=null;
   if(!clips.length)return 0;
   box.style.display=""; HL.cur={dur:1}; hlMount();
   const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
@@ -43,10 +58,10 @@ function hlFrame(){
   hlDraw(c,t);
   if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
   // a beat on the last frame, then the next clip
-  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount() } },250);
+  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount(); hlRelease() } },250);
 }
 function hlSkip(){
-  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount();
+  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount(); hlRelease();
   // the next stretch was waiting for the clips: it comes now
   if(typeof live!=="undefined"&&live&&!live.done&&!live.paused&&!live.ask&&live.timer){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.min(400,liveGap())) }
 }

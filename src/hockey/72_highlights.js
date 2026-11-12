@@ -9,13 +9,14 @@ const HL_SPORT=(function(){
   const DEF=[[0.92,0.5],[0.86,0.38],[0.86,0.62],[0.8,0.5],[0.72,0.25],[0.72,0.75]];
   const UNIT={C:3,LW:4,RW:5,D:1,D2:2}, GOAL=0.91, net=[0.47,0.53];
   const unitOf=u=>{ const x=u%100; return x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2" };
+  const HL_CM=(typeof window!=="undefined"&&window.HLCM)||1;
   function clips(L,d,mode){
     const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").sort((a,b)=>a.m-b.m);
     let rows=[]; try{ rows=rowsOf(L.g,L.drives) }catch(e){}
-    const out=[]; let chance=null; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
+    const out=[]; let chance=0; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
     ev.forEach(e=>{
       if(e.k==="goal"){ out.push(mk(L,e,"goal",rows)); if(e.side==="home")sh++; else sa++; return }
-      if(mode==="key"&&!chance&&Math.abs(sh-sa)<=1&&((e.u||0)%3===0)){ chance=mk(L,e,"save",rows); out.push(chance) } });
+      if(mode==="key"&&chance<2&&Math.abs(sh-sa)<=2&&((e.u||0)%HL_CM===0)){ chance++; out.push(mk(L,e,"save",rows)) } });
     return out.slice(0,3);
   }
   function mk(L,e,kind,rows){
@@ -38,7 +39,7 @@ const HL_SPORT=(function(){
     const end=kind==="goal"?[GOAL+0.012,net[0]+r()*(net[1]-net[0])]:[GOAL-0.012,0.5+(r()-0.5)*0.05];
     const inks=hlKits(g.home,g.away).map(k=>k.fill); const gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks);
     const nm=shooter?String(shooter).split(" ").slice(-1)[0]:"";
-    return {kind,e,tm,home:attSide==="home",W,rec,end,nm,text,plan,m:e.m,base:kind==="goal"?3400:2600,inks,gk:gks,en:!!e.en,pp:!!e.pp};
+    return {kind,e,tm,home:attSide==="home",W,rec,end,nm,text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it
   const P=(W,H,c,a,y)=>{ const X=c.home?1-a:a, Y=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
@@ -97,13 +98,13 @@ const HL_SPORT=(function(){
     nr.slice(0,1).forEach(([d,i])=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.5),hlLerp(p[1],by,0.5)] });
     const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     def.forEach((p,i)=>{ if(!p)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.6)") });
-    att.forEach((p,i)=>{ if(i===0&&c.en)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=tb-0.12?c.nm:"") });
+    att.forEach((p,i)=>{ if(i===0&&c.en)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=ts?c.nm:"") });
     const [qx,qy]=P(W,H,c,bx,by);
     const pos=tt=>{ tt=Math.max(0,tt); if(tt<tb){ const f=tt/tb*(n-1), k=Math.min(n-2,Math.floor(f)), s=hlEase(f-k), a=c.W[k], b=c.W[k+1]; return P(W,H,c,hlLerp(a[0],b[0],s),hlLerp(a[1],b[1],s)) }
       if(tt<ts){ const s=(tt-tb)/(ts-tb), a=c.W[n-1]; return P(W,H,c,hlLerp(a[0],c.end[0],s),hlLerp(a[1],c.end[1],s)) } return P(W,H,c,c.end[0],c.end[1]) };
     const tr=[]; for(let q=8;q>=1;q--)tr.push(pos(t-q*0.012));
     hlBall(x,qx,qy,r*0.55,0,t>0.1?tr:null,{kind:"puck"});
-    const top=`${c.m}' ${c.tm}${c.pp?" power play":""}${t<ts?" attack":""}`;
+    const top=`${c.m}'${c.pp?" power play":""}`;   // round 66: whose chance it is waits for the outcome
     const end=t>=ts?(c.kind==="goal"?(c.en?`EMPTY NET! ${c.nm}`:`GOAL! ${c.nm}`):"Saved!"):null;
     hlCaption(x,W,H,t>=ts&&c.text?`${c.m}' ${c.text}`:top,end,c.kind==="goal"?ink:null);
   }
