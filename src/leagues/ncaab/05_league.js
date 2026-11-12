@@ -33,7 +33,7 @@ const LEAGUE={
     "New Orleans","New York","Oklahoma City","Orlando","Philadelphia","Phoenix","Portland","Sacramento",
     "San Antonio","Toronto","Utah","Washington"],
   awards:{mvp:"Player of the Year", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},   // awards compare each player with his position (86_awards)
-  tuning:{wpK:{safe:406,balanced:420,aggressive:434},   /* round 32: pace held to ±8%; safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+  tuning:{century:200, /* round 60: achievements */ wpK:{safe:406,balanced:420,aggressive:434},   /* round 32: pace held to ±8%; safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
     hfa:105, pFloor:950, pCeil:2500},   // program strength spans more than in football
   /* arenas that are genuinely hard to visit (added to a prestige-based base) */
   venues:{"Kansas":30,"Duke":30,"Kentucky":24,"Gonzaga":22,"Purdue":22,"Michigan State":20,"Syracuse":16,

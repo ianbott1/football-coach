@@ -270,6 +270,11 @@
    "fp": "a0d9cf35ff6ca4c9",
    "from": "a0d9cf35ff6ca4c9",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "a0d9cf35ff6ca4c9",
+   "from": "a0d9cf35ff6ca4c9",
+   "note": "round 60: achievements, margins and runs scaled by sport"
   }
  ],
  "out": [

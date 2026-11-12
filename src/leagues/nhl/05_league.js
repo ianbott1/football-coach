@@ -52,7 +52,7 @@ const LEAGUE={
   awards:{mvp:"Hart Trophy", weights:{C:1,LW:1,RW:1,D:1,D2:1,G:1},
     /* the race compares each player with his position; this is the voters' premium on top */
     premium:{C:1.06,LW:1.02,RW:1.02,D:0.93,D2:0.9,G:0.97}},
-  tuning:{wpK:{safe:635,balanced:655,aggressive:685},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+  tuning:{century:500, unbeaten:0.72, /* round 60: achievements (unbeaten: ~0.6% of team-seasons) */ wpK:{safe:635,balanced:655,aggressive:685},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
     hfa:20, gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12,
     /* how much an edge is worth on the ice (the engine's are calibrated on
        their own; the league's spread is set against NHL history) */
@@ -123,8 +123,8 @@ const LEAGUE={
       ["Rating (player)","0\u201399 scale. The goalie matters most; the depth lines play about "+
        "a third of the time, and the backup goalie starts about a fifth of games."],
       ["Points","Two for a win, one for an overtime or shootout loss. Standings go by points."],
-      ["Salary cap","A hard limit, at the real 2026-27 figure of $104 million, with no exceptions. "+
-       "A max contract is 20% of it. Entry-level deals are the cheapest good players in the league."],
+      ["Salary cap","A hard limit of $90 million on the players the game tracks, with no exceptions. "+
+       "A max contract is about $21 million. Entry-level deals are the cheapest good players in the league."],
       ["Wild card","After the top three in each division, the two best remaining teams in each "+
        "conference get in. Ties go to regulation wins."],
       ["Draft lottery","The sixteen teams that miss the playoffs draw for the top two picks; "+

@@ -99,8 +99,9 @@ function gagSeason(x,lab){
   if(prev===g)return x;                       // said earlier in this game: staffFresh handles that
   if(x.who==="pearl"&&typeof PEARL_AFTER!=="undefined"){ let l=x.line;
     (PEARL_BEFORE||[]).concat(PEARL_AFTER||[]).forEach(f=>{ if(f&&l.indexOf(f)>=0)l=l.replace(f,"") }); return Object.assign({},x,{line:l.trim()}) }
-  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER."], i=Object.keys(G.said).length%sh.length;
-    return Object.assign({},x,{line:`${lab.toUpperCase()}! ${sh[i]}`}) }
+  // the shout is the pick's short name ("Attack the zone", not "Attack the zone: strike one, every hitter")
+  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER.","SAME AS ALWAYS.","WE VOTED. IT WAS UNANIMOUS.","DON'T OVERTHINK IT."], i=Object.keys(G.said).length%sh.length;
+    return Object.assign({},x,{line:`${lab.split(":")[0].toUpperCase()}! ${sh[i]}`}) }
   return x;
 }
 function staffFresh(R,dp,L){
@@ -112,7 +113,7 @@ function staffFresh(R,dp,L){
     // "as I said before" only when this voice really gave this advice before: Pearl said "Same as I said before:
     // leave it to your assistant!" having said "see this out" and "go right" (Instinct)
     const again=lab&&G.indexOf(lab.toLowerCase())>=0, l=lab||"the same";
-    const line=x.who==="bears"?(again?`${l.toUpperCase()}! We said it before. We'll say it louder.`:`${l.toUpperCase()}! LOUDER THIS TIME.`)
+    const line=x.who==="bears"?(again?`${l.split(":")[0].toUpperCase()}! We said it before. We'll say it louder.`:`${l.split(":")[0].toUpperCase()}! LOUDER THIS TIME.`)
       :x.who==="pearl"?pearlSay(again?`Same as I said before: ${l.toLowerCase()}!`:`I'll keep it simple: ${l.toLowerCase()}!`,dp.opts.length+S0.length)
       :again?`As I said earlier, I'm afraid: ${l.toLowerCase()}.`:`Briefly, then: ${l.toLowerCase()}.`;
     S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });

@@ -19,7 +19,9 @@ const HL_SPORT=(function(){
     const dist=hr?1.08+r()*0.15:e.hit===3?0.92:e.hit===2?0.82:0.55;
     const land=[HOME[0]+Math.sin(ang)*dist*0.62, HOME[1]-Math.cos(ang)*dist*0.78];
     const runners=Math.max(0,(e.n||1)-(hr?1:0));
-    return {e,tm,nm:nm?String(nm).split(" ").slice(-1)[0]:"",hr,land,runners,n:e.n||1,inn:d.seg+1,base:hr?3400:2600,inks:hlInks(g.home,g.away),side:e.side,text:""};
+    // round 61: each one its own flight (a high fly or a line drive) and its distance (Instinct)
+    const arc=hr?0.07+r()*0.11:0.03+r()*0.04, ft=hr&&typeof hrFeet==="function"?hrFeet(e):0;
+    return {e,tm,nm:nm?String(nm).split(" ").slice(-1)[0]:"",hr,land,runners,n:e.n||1,inn:d.seg+1,base:hr?3400:2600,inks:hlInks(g.home,g.away),side:e.side,text:"",arc,ft};
   }
   function pitch(x,W,H){
     x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
@@ -39,7 +41,7 @@ const HL_SPORT=(function(){
     const tp=0.18, tl=0.72;
     let bx,by,z=0;
     if(t<tp){ const s=t/tp; bx=0.5; by=hlLerp(0.72,0.9,s) }
-    else if(t<tl){ const s=(t-tp)/(tl-tp); bx=hlLerp(HOME[0],c.land[0],s); by=hlLerp(HOME[1],c.land[1],s); z=Math.sin(s*Math.PI)*(c.hr?0.12:0.05) }
+    else if(t<tl){ const s=(t-tp)/(tl-tp); bx=hlLerp(HOME[0],c.land[0],s); by=hlLerp(HOME[1],c.land[1],s); z=Math.sin(s*Math.PI)*(c.arc||(c.hr?0.12:0.05)) }
     else { bx=c.land[0]; by=c.land[1] }
     // an outfielder chases the ball
     const chase=t>tp?Math.min(1,(t-tp)/(tl-tp)):0;
@@ -54,7 +56,7 @@ const HL_SPORT=(function(){
     for(let k=0;k<Math.min(3,c.runners);k++){ const start=3-k; const [rx,ry]=P(...along(Math.min(4,start+run))); if(start+run<4)hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)") }
     const [qx,qy]=P(bx,by); x.beginPath(); x.arc(qx,qy-z*H,r*0.55,0,Math.PI*2); x.fillStyle="#fff"; x.fill(); x.lineWidth=1; x.strokeStyle="#C8102E"; x.stroke();
     const top=`${ordw(c.inn)} · ${c.tm}`;
-    const end=t>=tl?(c.hr?(c.n===4?`GRAND SLAM! ${c.nm}`:`HOME RUN! ${c.nm}`):`${c.nm}: ${["","single","double","triple"][c.e.hit||1]}, ${c.n} in`):null;
+    const end=t>=tl?(c.hr?(c.n===4?`GRAND SLAM! ${c.nm}${c.ft?` · ${c.ft} ft`:""}`:`HOME RUN! ${c.nm}${c.ft?` · ${c.ft} ft`:""}`):`${c.nm}: ${["","single","double","triple"][c.e.hit||1]}, ${c.n} in`):null;
     hlCaption(x,W,H,top,end,ink);
   }
   return {collapseIdle:true, aspect:0.62, clips, pitch, idle, frame};

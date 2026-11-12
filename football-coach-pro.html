@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="a552895";
+<script>const BUILD_ID="033dbf8";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -5487,10 +5487,10 @@ function moodOf(pl,i,team){
   const st=backup?R[i-POS.length]:null, f=formOf(pl,P), ly=lastYear(pl), run=streakOf(team);
   if(backup&&st&&pl.r>=st.r-2)return {t:"wants to start",tone:"no"};
   if(f==="hot")return {t:"flying",tone:"ok"};
-  if(ly==="contract"&&run.n>=3&&!run.won)return {t:"weighing his future",tone:"no"};
-  if(!backup&&run.n>=3&&!run.won)return {t:"frustrated",tone:"no"};
+  if(ly==="contract"&&run.n>=RUN(3)&&!run.won)return {t:"weighing his future",tone:"no"};
+  if(!backup&&run.n>=RUN(3)&&!run.won)return {t:"frustrated",tone:"no"};
   if(f==="cold")return {t:"searching for form",tone:"no"};
-  if(run.n>=3&&run.won)return {t:"enjoying it",tone:"ok"};
+  if(run.n>=RUN(3)&&run.won)return {t:"enjoying it",tone:"ok"};
   return {t:"settled",tone:""};
 }
 /* the team page: your three best players, and anyone unhappy about his minutes */
@@ -5696,6 +5696,8 @@ const VOICE_ALT={
     "Start from their habit. Then ask: are we good enough to just play our game?",
     "Their most common way is the first clue. The strength of the two sides is the second."],
 };
+// a sport's own lines and their alternates (round 61: baseball's Capybara said the same two sentences every game)
+if(typeof SPORT!=="undefined"&&SPORT.voiceAlt)Object.assign(VOICE_ALT,SPORT.voiceAlt);
 function voiceGameKey(){ try{ return typeof live!=="undefined"&&live?`${SEA.year}-${live.step}${live.g&&live.g.cup?"c":""}`:`${SEA&&SEA.year}-${SEA&&SEA.step}` }catch(e){ return "" } }
 function voiceVary(line){
   if(!VOICE_ON||!line||typeof line!=="string")return line;
@@ -5807,8 +5809,9 @@ function gagSeason(x,lab){
   if(prev===g)return x;                       // said earlier in this game: staffFresh handles that
   if(x.who==="pearl"&&typeof PEARL_AFTER!=="undefined"){ let l=x.line;
     (PEARL_BEFORE||[]).concat(PEARL_AFTER||[]).forEach(f=>{ if(f&&l.indexOf(f)>=0)l=l.replace(f,"") }); return Object.assign({},x,{line:l.trim()}) }
-  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER."], i=Object.keys(G.said).length%sh.length;
-    return Object.assign({},x,{line:`${lab.toUpperCase()}! ${sh[i]}`}) }
+  // the shout is the pick's short name ("Attack the zone", not "Attack the zone: strike one, every hitter")
+  if(x.who==="bears"&&lab){ const sh=["NO NOTES.","WE'VE DECIDED.","TRUST US.","FINAL ANSWER.","SAME AS ALWAYS.","WE VOTED. IT WAS UNANIMOUS.","DON'T OVERTHINK IT."], i=Object.keys(G.said).length%sh.length;
+    return Object.assign({},x,{line:`${lab.split(":")[0].toUpperCase()}! ${sh[i]}`}) }
   return x;
 }
 function staffFresh(R,dp,L){
@@ -5820,7 +5823,7 @@ function staffFresh(R,dp,L){
     // "as I said before" only when this voice really gave this advice before: Pearl said "Same as I said before:
     // leave it to your assistant!" having said "see this out" and "go right" (Instinct)
     const again=lab&&G.indexOf(lab.toLowerCase())>=0, l=lab||"the same";
-    const line=x.who==="bears"?(again?`${l.toUpperCase()}! We said it before. We'll say it louder.`:`${l.toUpperCase()}! LOUDER THIS TIME.`)
+    const line=x.who==="bears"?(again?`${l.split(":")[0].toUpperCase()}! We said it before. We'll say it louder.`:`${l.split(":")[0].toUpperCase()}! LOUDER THIS TIME.`)
       :x.who==="pearl"?pearlSay(again?`Same as I said before: ${l.toLowerCase()}!`:`I'll keep it simple: ${l.toLowerCase()}!`,dp.opts.length+S0.length)
       :again?`As I said earlier, I'm afraid: ${l.toLowerCase()}.`:`Briefly, then: ${l.toLowerCase()}.`;
     S0.push(line); if(lab)G.push(lab.toLowerCase()); return Object.assign({},x,{line:line}) });
@@ -6674,20 +6677,27 @@ function objectivesMet(my,orig){ const L=seasonObjectives(my), n=(orig?L:objecti
 /* ---- achievements ---- */
 const ACH=[
   {id:"firstwin", l:"Off the mark",         d:"Win your first game"},
-  {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours"},
+  {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours (a one-in-four shot)"},
   {id:"perfect",  l:"Every read right",      d:"Get every read right in a game with three or more (reads, not calls)", reads:true},
   {id:"reader",   l:"Reads the game",        d:"Get 70% of your reads right over a season (12 or more)", reads:true},
   {id:"board",    l:"The board's favourite", d:"Meet all three objectives in a season"},
-  {id:"unbeaten", l:"Unbeaten",              d:"Go a whole regular season without losing"},
+  {id:"unbeaten", l:"Unbeaten",              d:"Go a whole regular season without losing", dyn:()=>ACH_UNB()?`Win ${Math.round(100*ACH_UNB())}% of a regular season's games`:null},
   {id:"champ",    l:"Champions",             d:"Win the title"},
   {id:"b2b",      l:"Back to back",          d:"Win the title two seasons running"},
   {id:"dynasty",  l:"Dynasty",               d:"Three titles in five seasons"},
   {id:"rebuild",  l:"From the ground up",    d:"Win the title with a side that started in the bottom half"},
   {id:"promoted", l:"Going up",              d:"Win promotion", soccer:true},
   {id:"cup",      l:"Cup winners",           d:"Win the FA Cup", soccer:true},
-  {id:"century",  l:"Century",               d:"Win 100 games"},
+  {id:"century",  l:"Century",               d:"Win 100 games", dyn:()=>ACH_CENT()!==100?`Win ${ACH_CENT().toLocaleString("en-US")} games`:null},
   {id:"furniture",l:"Part of the furniture", d:"Ten seasons at one club"}
 ];
+/* (round 60) the numbers were football's: 100 wins came inside one baseball season and took football nine; "unbeaten"
+   can't happen over 82 or 162 games; a giant was 150 rating points, which each engine's own scale makes a long shot
+   in pro basketball and a coin flip and a half in baseball. Now: about ten seasons' wins, a season as rare as
+   unbeaten is in football, and a win you had a one-in-four chance of. */
+const ACH_CENT=()=>(LEAGUE.tuning&&LEAGUE.tuning.century)||100;
+const ACH_UNB=()=>(LEAGUE.tuning&&LEAGUE.tuning.unbeaten)||0;       // 0: no losses at all
+const achD=a=>(a.dyn&&a.dyn())||a.d;
 let newAch=[];                     // unlocked since the last screen: shown once
 function achList(){ return ACH.filter(a=>(!a.soccer||!!LEAGUE.draws)&&(!a.reads||typeof readText==="function")) }
 function unlock(id){ const C=S.career; C.ach=C.ach||{}; if(C.ach[id])return; C.ach[id]=SEA.year; newAch.push(id); if(typeof sfx==="function")sfx("ach") }
@@ -6696,15 +6706,15 @@ function checkAchievements(){
   const my=S.myTeam, C=S.career, have=C.ach||{};
   const games=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
   if(!have.firstwin&&(C.w>0||games.some(g=>g.winner===my)))unlock("firstwin");
-  if(!have.giant&&games.some(g=>g.winner===my&&preElo(g.winner===g.home?g.away:g.home)-preElo(my)>=150))unlock("giant");
+  if(!have.giant&&games.some(g=>g.winner===my&&preElo(g.winner===g.home?g.away:g.home)-preElo(my)>=wpScale("balanced")*Math.log10(3)))unlock("giant");
   if(!have.perfect&&S.played){ const P=S.played; for(const k in P){ (P[k]||[]).forEach(p=>{ if(p.team===my&&p.reads&&p.reads.length>=3&&p.reads.every(x=>x.right))unlock("perfect") }) } }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   if(!have.reader&&Y&&Y.n>=12&&Y.right/Y.n>=0.7)unlock("reader");
-  if(careerNow(C).w>=100)unlock("century");     // the career once: in the offseason the season is already banked (it unlocked at 62 wins: Muse)
+  if(careerNow(C).w>=ACH_CENT())unlock("century");     // the career once: in the offseason the season is already banked (it unlocked at 62 wins: Muse)
   if(LEAGUE.draws&&LEAGUE.cup&&SEA.cup&&SEA.cup.winner===my)unlock("cup");
   if(SEA.phase==="done"){
     const rec=(SEA.regRec||SEA.rec)[my];
-    if(rec&&rec[1]===0)unlock("unbeaten");
+    if(rec&&(ACH_UNB()?rec[0]>=ACH_UNB()*(rec[0]+rec[1]):rec[1]===0))unlock("unbeaten");
     if(objectivesMet(my,true)>=3)unlock("board");
     const res=SEA.seasonResult(my)||"";
     if(LEAGUE.draws&&/[Pp]romoted/.test(res))unlock("promoted");
@@ -6723,14 +6733,14 @@ function achToastHTML(){
   if(!newAch.length)return "";
   const L=newAch.map(id=>ACH.find(a=>a.id===id)).filter(Boolean); newAch=[];
   try{ sfx("win") }catch(e){}
-  return `<div class="achtoast">${L.map(a=>`<div><span>&#9733;</span><b>${esc(a.l)}</b> ${esc(a.d)}</div>`).join("")}</div>`;
+  return `<div class="achtoast">${L.map(a=>`<div><span>&#9733;</span><b>${esc(a.l)}</b> ${esc(achD(a))}</div>`).join("")}</div>`;
 }
 function cabinetHTML(){
   const have=(S.career&&S.career.ach)||{}, L=achList();
   const got=L.filter(a=>have[a.id]), not=L.filter(a=>!have[a.id]);
   return `<div class="grouphead">Trophy cabinet &middot; ${got.length} of ${L.length}</div><div class="cabinet">${
     got.concat(not).map(a=>`<div class="ach ${have[a.id]?'got':''}"><span class="achstar">${have[a.id]?"&#9733;":"&#9734;"}</span>
-      <div><b>${esc(a.l)}</b><span>${esc(a.d)}${have[a.id]?" &middot; "+have[a.id]:""}</span></div></div>`).join("")}</div>`;
+      <div><b>${esc(a.l)}</b><span>${esc(achD(a))}${have[a.id]?" &middot; "+have[a.id]:""}</span></div></div>`).join("")}</div>`;
 }
 /* ============ feel: sound, touch, motion ============ */
 /* Everything here is a flourish on top of the game: nothing in it changes a
@@ -7896,7 +7906,7 @@ function replayCarousel(){
    decides outright: the rest were earned in a moment the save doesn't keep. */
 function auditTrophies(){
   const C=S.career; if(!C||!C.ach||!SEA||!S.myTeam)return;
-  if(C.ach.century&&careerNow(C).w<100)delete C.ach.century;
+  if(C.ach.century&&careerNow(C).w<ACH_CENT())delete C.ach.century;   // (round 60: per league; an earned one from the old 100 goes too)
 }
 
 let replaceAsk=false;        // the title screen asking which career a new one replaces (all slots full)
@@ -7934,6 +7944,13 @@ async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(RE
    (round 56: "SERIES TIED 1-1" above "Series 2-1: you lead" on the final card: Muse) */
 function liveLabel(g){ const l=g&&g.label||""; return live&&live.done?l.split(" \u00b7 ")[0]:l }
 /* the offseason's season (round 56: baseball's is the winter, "the start of summer" read wrong: Instinct) */
+/* what a margin means in this sport (round 60: the words were football's, 3 points close, 21 a rout, 28 never in doubt,
+   38 the week's blowout; a hockey or soccer side "lost a heartbreaker" by three, and nothing was ever routed) */
+/* how long a run must be to be news (round 60: three straight losses was a slide and four a story in a 12-game season,
+   and in 162 games that's most weeks): two more over 50+ games a season, one more over 20+ */
+function gamesPerTeam(){ try{ return SEA.sched.length*2/NAMES.length }catch(e){ return 12 } }
+function RUN(n){ const G=gamesPerTeam(); return n+(G>50?2:G>20?1:0) }
+function MG(k){ const D={close:3,rout:21,crush:28,blow:38}; const M=(typeof SPORT!=="undefined"&&SPORT.margins)||{}; return M[k]!==undefined?M[k]:D[k] }
 function OFFW(){ return (LEAGUE.text&&LEAGUE.text.offWord)||"summer" }
 /* a regular-season series (round 57, baseball): "Game 2 of 3 · you took the first", from the games already played in it */
 function serLine(ng,my){
@@ -8602,6 +8619,7 @@ function stepWatch(){
   if(watch.i<watch.script.length){watch.i++;}
   tickWatch();
 }
+const PRESS_AT={};
 function togglePause(){
   if(!watch)return;
   watch.paused=!watch.paused;
@@ -8751,9 +8769,23 @@ function tallyHTML(){
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
     <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded reads only</div>
-    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}
+    ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}${readsByMonthHTML()}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
+}
+/* your reads month by month this season (round 61, Instinct: a long season needs a way to see whether you're getting
+   better). Daily leagues only, from the games you watched; shown once two months have graded reads. */
+function readsByMonthHTML(){
+  if(!LEAGUE.daily||!LEAGUE.dates||!S.played)return "";
+  const pre=SEA.year+":", M={}, order=[];
+  Object.keys(S.played).forEach(k=>{ if(k.indexOf(pre)!==0)return; const st=+k.slice(pre.length), d=LEAGUE.dates[st]; if(!d)return;
+    const m=String(d).split(" ")[0];
+    S.played[k].forEach(p=>{ if(p.team!==S.myTeam||!p.reads)return; p.reads.forEach(x=>{ if(x.unclear||x.k==="call")return;
+      if(!M[m]){ M[m]={n:0,r:0,st:st}; order.push(m) } M[m].n++; if(x.right)M[m].r++ }) }) });
+  const ms=order.sort((a,b)=>M[a].st-M[b].st); if(ms.length<2)return "";
+  return `<div class="fnote tallynote">By month: ${ms.map(m=>`${esc(m)} ${M[m].r}/${M[m].n}`).join(" &middot; ")}</div>
+    <div style="display:flex;gap:4px;align-items:flex-end;height:28px;margin-top:4px" aria-hidden="true">${ms.map(m=>{ const f=M[m].r/M[m].n;
+      return `<div title="${esc(m)}" style="flex:1;max-width:36px;height:${Math.max(3,Math.round(28*f))}px;background:var(--sodium);opacity:${M[m].n>=5?1:0.5};border-radius:2px"></div>` }).join("")}</div>`;
 }
 /* this season's games of yours: watched live (they can hold calls) or simmed (they can't) */
 function simmedThisSeason(){
@@ -8948,9 +8980,9 @@ function stakesFor(ng){
   out.push(...LEAGUE.ui.stakes({my:my,opp:opp,rk:rk,wk:wk,left:left,w:w,l:l,cp:cp}));
   if(typeof meansStakes==="function")out.push(...meansStakes(ng,my));   // round 45: what this game means (an objective, the table)
   const st=streakOf(my);
-  if(!st.won&&st.n>=3)out.push({p:74,tag:"SLIDE",
+  if(!st.won&&st.n>=RUN(3))out.push({p:74,tag:"SLIDE",
     l:`${st.n} straight losses. The seat under your coach is getting warm.`});
-  else if(st.won&&st.n>=5)out.push({p:58,tag:"STREAK",
+  else if(st.won&&st.n>=RUN(5))out.push({p:58,tag:"STREAK",
     l:`${st.n} in a row. Nobody wants to be the one who ends it.`});
 
   // out of it: a winning season no longer possible (it was six losses, a college football season,
@@ -9530,8 +9562,8 @@ function weekNews(W){
   if(ups.length){
     const g=ups[0], L=g.loser, Wn=g.winner;
     const lr=loserRank(g), wr=winnerRank(g);
-    const verb=g.margin>=21?vary(["routed","ran over","blew out"],"uv"+Wn)
-              :g.margin<=3?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
+    const verb=g.margin>=MG("rout")?vary(["routed","ran over","blew out"],"uv"+Wn)
+              :g.margin<=MG("close")?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
     items.push({p:90,k:"upset",tone:"flag",
       h:g.pens?`${rankTxt(wr)}${Wn} beat ${rankTxt(lr)}${L} on penalties after a ${g.hp}-${g.ap} draw`   // a shoot-out isn't "edged, 3-3"
         :`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
@@ -9560,16 +9592,16 @@ function weekNews(W){
     let b;
     if(mg.draw)b=v([`A point. Take it and move on.`,`Shared spoils.`,`Honours even.`,`A point gained, or two dropped: depends who you ask.`]);
     else if(won&&oppR<=25)b=v(LEAGUE.text.rankedWin);
-    else if(won&&mg.margin>=28)b=v([`Never in doubt.`,`Over by halftime.`,`A statement, if anyone was listening.`]);
-    else if(won&&mg.margin<=3)b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
+    else if(won&&mg.margin>=MG("crush"))b=v([`Never in doubt.`,`Decided early.`,`A statement, if anyone was listening.`]);
+    else if(won&&mg.margin<=MG("close"))b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
     else if(won)b=v([`Business handled.`,`A solid day's work.`,`No drama. Next.`]);
     else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
     else if(oppR>25){ const T=LEAGUE.text, played=(SEA.rec[my]||[0,0]).slice(0,2).reduce((x,y)=>x+y,0)+((SEA.drw&&SEA.drw[my])||0);
       const grp=NAMES.filter(t=>CONF[t]===CONF[my]).length, pos=LEAGUE.position?LEAGUE.position(my):0;
       b=v(T.badLossEarly&&played<=Math.ceil(LEAGUE.weeks/6)?T.badLossEarly:T.badLossLow&&pos&&pos>grp-6?T.badLossLow:T.badLoss) }
     else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
-    const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
-                  :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
+    const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=MG("crush")?v(["routed","ran away from","buried"]):mg.margin<=MG("close")?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
+                  :(mg.margin>=MG("crush")?v(["was run over by","was blown out by"]):mg.margin<=MG("close")?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
     items.push({p:100,k:"you",tone:"gold",
       h:`${my} ${verb} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
   }else{
@@ -9625,13 +9657,13 @@ function weekNews(W){
 
   // a team on a run
   const st=streakOf(my);
-  if(st.n>=4)items.push({p:80,k:"run",tone:st.won?"gold":"flag",
+  if(st.n>=RUN(4))items.push({p:80,k:"run",tone:st.won?"gold":"flag",
     h:st.won?`${my} has won ${st.n} in a row`:`${my} has lost ${st.n} straight`,
     b:st.won?`Nobody wants to see you right now.`:`Something has to change.`});
 
   // biggest beating
   const blow=gs.slice().sort((a,b)=>b.margin-a.margin)[0];
-  if(blow&&blow.margin>=38)items.push({p:30,k:"blowout",tone:"muted",
+  if(blow&&blow.margin>=MG("blow"))items.push({p:30,k:"blowout",tone:"muted",
     h:`${blow.winner} ${Math.max(blow.hp,blow.ap)}, ${blow.loser} ${Math.min(blow.hp,blow.ap)}`,
     b:`The ${WK()}'s worst mismatch.`});
 
@@ -10565,9 +10597,12 @@ function render(){
     }else{
       // the game redraws several times a second at Very fast, so a tap's press and release can land on two
       // different buttons and the click never fires: these act on the press (Grokbot: Normal didn't switch it off)
-      const onPress=(b,fn)=>{ if(!b)return; let at=0;
-        b.onpointerdown=e=>{ if(e.button>0)return; at=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-at>600)fn() } };
-      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();liveTick()});
+      // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
+      // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
+      const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
+        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
+      onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
+        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{

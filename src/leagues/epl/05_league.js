@@ -60,7 +60,7 @@ const LEAGUE={
   draftTeams:["the academy"],
   awards:{mvp:"Player of the Season", weights:{GK:1,CB:1,FB:1,CM:1,W:1,ST:1},
     premium:{GK:0.88,CB:0.9,FB:0.88,CM:1.02,W:1.04,ST:1.08}},
-  tuning:{hfa:120, gapScale:1, pFloor:700, pCeil:2300, talentSteps:12, sc:{}},
+  tuning:{century:250, /* round 60: achievements */ hfa:120, gapScale:1, pFloor:700, pCeil:2300, talentSteps:12, sc:{}},
   venues:{},
   schedule:{games:38},
   playoff:{size:6, perSide:6, byes:0},

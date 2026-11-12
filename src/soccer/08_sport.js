@@ -1,5 +1,6 @@
 /* ============ sport: hockey ============ */
 const SPORT={
+  margins:{close:1,rout:3,crush:4,blow:5},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
   scoreWord:"GOAL",                 // the flash when you score
   id:"soccer",
   word:"Soccer",

@@ -358,6 +358,63 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 62: round 61's two open items.
+- Hockey's payroll had the same problem as baseball's: the median club used 61% of the $104M cap (10th percentile
+  33%), and the staff's re-sign bar (62 a starter, 60 a backup, copied with the code) sat at the league's top
+  quartile (median starter 60, backup 52): it let go 0-2 of 3-8 expiring deals. Now a $90M limit with contracts
+  still priced from $104M (PAY_SCALE: the maximum stays $20.8M), bars 59/54. Over 12 seasons x 2 seeds
+  (test/hk-economy.js, which now counts max deals against $20.8M, not a fifth of the limit): median payroll 73-77% of
+  the limit (61%), top-six kept 83-84% (75%), points sd 14.0-14.2 (13.7-14.4). nhl-history over 74 seasons: mean
+  94.2, spread 13.3, best 122, worst 66, home ice 62% of first-round series. The glossary no longer calls the
+  figure the real NHL cap. Clubs on their first contracts still sit well under it in the early seasons (Boston
+  $27M with everyone kept): the starting rosters' deals run at their numbers, as before.
+- Baseball's higher retention (top six kept 95%, was 90%) was flagged as a dynasty risk; measured, it isn't: year-to-
+  year win correlation 0.36 before and after round 61 (3 seeds x 12 seasons), 7-9 different champions in 12 either
+  way. Real MLB runs stickier (~0.5). Left alone.
+
+Round 61: the baseball leftovers (Muse, Instinct, second looks).
+- Pause on a phone did nothing (all seven games, measured in Chromium's iPhone 13 emulation): the press paused, the
+  redraw put a new button under the finger, and the click that followed unpaused it. The press time is now kept by
+  the button's name (PRESS_AT), not on the button. Pausing also stops on the play shown; it used to play one more.
+  A mouse click always worked.
+- Payroll: MLB's limit was $244M with the median club at $133M (45% room; football's 24%), so money decided
+  nothing (Muse: $127.5M of room). The limit is now $165M; contracts are still priced from $244M (PAY_SCALE, so the
+  maximum deal stays ~$49M). The staff's re-sign bar was hockey's (62 for a starter, 60 for a backup) in a league
+  whose median starter is 59 and median backup 50: it let go 0-3 of 8-16 expiring deals (Muse: 9 of 12). Now 58/53
+  (RS_BAR/RB_BAR): 5-6 kept by default, and keeping everyone leaves $5-30M for free agency. Measured over 12
+  seasons x 3 seeds (scratch mlb-econ, hk-economy's method): median payroll 80-84% of the limit (r60: 58%), top-six
+  kept 95% (90%), wins sd 12.3-13.3 (11.5-12.3), best record 108 on average (106; target under 112).
+- Draft: five rounds (MLB_ROUNDS). The class's first two rounds are drawn exactly as before, then a tail: lower now
+  (~45), wider ceilings. Late picks make a roster about half the time; ~1 in 15 reaches 60. A "sleeper" callout in
+  round 4 was measured and not built: the highest scout ceiling left at your round-4 pick (40 drafts) had a true
+  ceiling of 60.6 against the staff pick's 58.2, and was worth less now (50.9 vs 51.5). No edge to point at.
+- Voices: the Capybara said the same two sentences every game (20 of 20); his three baseball lines now have
+  alternates (SPORT.voiceAlt, merged into VOICE_ALT). The Bears' repeated shout uses the pick's short name ("ATTACK
+  THE ZONE!", not the whole label) with more tags; Pearl's read line opens four ways.
+- Filler and highlights: strikeout, double-play and quiet-inning lines vary; a home run says its distance
+  (355-465 ft, by hash) and its arc varies in the highlight.
+- Reads: a wrong read now names the tell for what they were (READ_TELL: balls in play pulled, pitches an at-bat,
+  swings and misses). The team page's tally shows reads by month in daily leagues (NBA, NHL, MLB) once two months
+  have graded reads, with a small bar per month.
+
+Round 60: football's numbers in the shared code, swept.
+- Achievements (96_goals): "Century" was 100 wins (inside one baseball season; nine in football): now about ten
+  seasons' wins (LEAGUE.tuning.century: NBA/NHL 500, MLB 1,000, soccer 250, college basketball 200, football 100).
+  "Unbeaten" can't happen over 82 or 162 games: a win share as rare as a perfect college football season (~0.6% of
+  team-seasons, measured: NBA 85%, NHL 72%, MLB 67% = 109 wins; tuning.unbeaten; football and soccer: no losses).
+  "Giant-killer" was 150 rating points, which each engine's own scale made a long shot in pro basketball (280) and
+  a mild upset in baseball (680): now a win you had a one-in-four chance of (wpScale x log10 3).
+- Margins (core MG, SPORT.margins): the words were football's, 3 close, 21 a rout, 28 never in doubt, 38 the week's
+  blowout; a hockey or soccer side "lost a heartbreaker" by three and nothing was ever routed. Basketball 3/20/25/32,
+  hockey 1/4/5/6, soccer 1/3/4/5, baseball 1/7/9/11. "Over by halftime" is "Decided early" (no halves in two sports).
+- Runs (RUN): a slide was three straight losses, a streak five, a story four. The share of days on such a run is
+  the same in every sport (13-15% on 3+ losses, measured) but 162 games made it ~22 days a season in baseball (1.6
+  in football): two more over 50+ games, one more over 20+. The board's streak objective already scaled.
+- Goldens were first written on a build without RUN (my mistake); the suite caught four, rewritten on the build.
+- Left alone: the in-season rating update is /400 with football's margin multiplier in every game; each game was
+  calibrated with it in place (every calibration check measures the real app), so rescaling it would mean
+  recalibrating all seven for nothing a player sees.
+
 Round 59: reloads re-rolled baseball's season (Muse, Instinct, second looks).
 - Cause: round 57's packSeries sorted the free clubs with a random comparator (slack, then rng.r()-0.5) inside
   sort(). In a browser that came out differently on each load, so a reload built another schedule and replayed the

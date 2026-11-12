@@ -172,6 +172,8 @@ const VOICE_ALT={
     "Start from their habit. Then ask: are we good enough to just play our game?",
     "Their most common way is the first clue. The strength of the two sides is the second."],
 };
+// a sport's own lines and their alternates (round 61: baseball's Capybara said the same two sentences every game)
+if(typeof SPORT!=="undefined"&&SPORT.voiceAlt)Object.assign(VOICE_ALT,SPORT.voiceAlt);
 function voiceGameKey(){ try{ return typeof live!=="undefined"&&live?`${SEA.year}-${live.step}${live.g&&live.g.cup?"c":""}`:`${SEA&&SEA.year}-${SEA&&SEA.step}` }catch(e){ return "" } }
 function voiceVary(line){
   if(!VOICE_ON||!line||typeof line!=="string")return line;

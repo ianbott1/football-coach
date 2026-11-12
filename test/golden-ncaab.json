@@ -1,5 +1,5 @@
 {
- "fp": "fb3aa0c1fcd0e0e9",
+ "fp": "0d9a3ec8e71fa52b",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -415,6 +415,16 @@
    "fp": "fb3aa0c1fcd0e0e9",
    "from": "fb3aa0c1fcd0e0e9",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "e5ab9b59f3e711e8",
+   "from": "fb3aa0c1fcd0e0e9",
+   "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "0d9a3ec8e71fa52b",
+   "from": "e5ab9b59f3e711e8",
+   "note": "round 60: achievements, margins and runs scaled by sport"
   }
  ],
  "result": {
@@ -429,7 +439,7 @@
     "heis": "d547b6f92b0dea50",
     "history": "f5f089a355e08575",
     "universe": "ef2435f49fa36eef",
-    "screens": "86b3ffbda6e8a918"
+    "screens": "1313df00cc89a6f4"
    },
    {
     "year": 2027,
@@ -441,7 +451,7 @@
     "heis": "239dd7be84092cd6",
     "history": "f7c10757a6301ab4",
     "universe": "c758569b33118192",
-    "screens": "0c57e9f3ce3bfcf4"
+    "screens": "fa3d6b872a1f64cc"
    }
   ],
   "Coppin State#2024": [
@@ -455,7 +465,7 @@
     "heis": "ed67545cb919d745",
     "history": "452f39c29f88f1d8",
     "universe": "f6756285e2e5958b",
-    "screens": "49a019402be77cfa"
+    "screens": "218566812466e359"
    },
    {
     "year": 2027,
@@ -467,7 +477,7 @@
     "heis": "719f883500ab76bc",
     "history": "4337a7119fd2e1c2",
     "universe": "822d728ca3fe8df3",
-    "screens": "9daceea66aeb52a3"
+    "screens": "8cdd093d2662782a"
    }
   ],
   "Gonzaga#777": [
@@ -481,7 +491,7 @@
     "heis": "9def810c51af58df",
     "history": "0f127bf4d46e4c0d",
     "universe": "f62cc56c248300c5",
-    "screens": "f4bd1368854aa836"
+    "screens": "18cf560d0cdcee44"
    },
    {
     "year": 2027,
@@ -493,7 +503,7 @@
     "heis": "fe104a4686ebb8ee",
     "history": "b7bae5760538a368",
     "universe": "ee6a51737fd30707",
-    "screens": "a403b5b58e82530c"
+    "screens": "b784dbebafbb23a0"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "83ed0e8985d47dc1",
+ "fp": "715b28356ab4c905",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -280,6 +280,16 @@
    "fp": "83ed0e8985d47dc1",
    "from": "ddc57dd1f1d89c42",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "83ed0e8985d47dc1",
+   "from": "83ed0e8985d47dc1",
+   "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "715b28356ab4c905",
+   "from": "83ed0e8985d47dc1",
+   "note": "round 62: hockey limit 90, re-sign bars 59/54"
   }
  ],
  "out": [
@@ -293,7 +303,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "12db09b640b9a117"
+     "book": "19091498835e6b50"
     },
     {
      "team": "Montreal",
@@ -302,7 +312,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "9e5c7da790f5e770"
+     "book": "e23c3b65d9637c8c"
     }
    ]
   },
@@ -312,20 +322,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "25-41-18",
+      "rec": "41-35-8",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C"
      },
-     "book": "e55c2689ac4a65b9"
+     "book": "4416049e1d33f0ce"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "41-37-6",
+      "rec": "42-36-6",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "4711756de270bdf5"
+     "book": "ac79a8262278dc7b"
     }
    ]
   },
@@ -335,20 +345,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "39-31-14",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "46-27-11",
+      "result": "Lost in the first round",
+      "grade": "B-"
      },
-     "book": "03882f003746423f"
+     "book": "50f1415786793622"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "48-29-7",
-      "result": "Lost in the first round",
-      "grade": "B+"
+      "rec": "43-31-10",
+      "result": "Lost in the second round",
+      "grade": "A"
      },
-     "book": "f670e5bf3ff615d0"
+     "book": "5f8b17db276131ff"
     }
    ]
   }

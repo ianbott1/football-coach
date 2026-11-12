@@ -134,7 +134,7 @@ function staffTake(dp, ctx){
   else if(dp.k==="read"){
     R.push({who:"bears", pick:"zone", line:bearYell("read",seed)});
     const b=dp.best&&APPROACH[dp.best]?dp.best:null;
-    R.push({who:"pearl", pick:b?APPROACH[b].counter:"normal", line:pearlSay(b?"I've been watching every at-bat! "+PEARL_SYS[b]:"I haven't seen enough to say!",seed)});
+    R.push({who:"pearl", pick:b?APPROACH[b].counter:"normal", line:pearlSay(b?["I've been watching every at-bat! ","I counted! ","I've been keeping a chart! ","Okay, okay, I see it now! "][Math.abs(seed|0)%4]+PEARL_SYS[b]:"I haven't seen enough to say!",seed)});
     R.push({who:"capy", pick:"spin", line:`It seems to me changing speeds rarely hurts. I have not, I admit, studied their swings.`});
   }
   else if(dp.k==="pull"){

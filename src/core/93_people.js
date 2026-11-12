@@ -42,10 +42,10 @@ function moodOf(pl,i,team){
   const st=backup?R[i-POS.length]:null, f=formOf(pl,P), ly=lastYear(pl), run=streakOf(team);
   if(backup&&st&&pl.r>=st.r-2)return {t:"wants to start",tone:"no"};
   if(f==="hot")return {t:"flying",tone:"ok"};
-  if(ly==="contract"&&run.n>=3&&!run.won)return {t:"weighing his future",tone:"no"};
-  if(!backup&&run.n>=3&&!run.won)return {t:"frustrated",tone:"no"};
+  if(ly==="contract"&&run.n>=RUN(3)&&!run.won)return {t:"weighing his future",tone:"no"};
+  if(!backup&&run.n>=RUN(3)&&!run.won)return {t:"frustrated",tone:"no"};
   if(f==="cold")return {t:"searching for form",tone:"no"};
-  if(run.n>=3&&run.won)return {t:"enjoying it",tone:"ok"};
+  if(run.n>=RUN(3)&&run.won)return {t:"enjoying it",tone:"ok"};
   return {t:"settled",tone:""};
 }
 /* the team page: your three best players, and anyone unhappy about his minutes */

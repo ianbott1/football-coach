@@ -1,5 +1,23 @@
 /* ============ sport: baseball ============ */
 const SPORT={
+  margins:{close:1,rout:7,crush:9,blow:11},
+  // the Capybara's fixed lines, said a different way from game to game (round 61: the same two sentences every night)
+  voiceAlt:{
+    "I would rather see an inning or two first. One finds lineups are not always who they were last week.":[
+      "A few innings of looking, I think, before we decide anything. Reports are about other nights.",
+      "I'd pitch our own game early and learn. Six games is a small book.",
+      "Let's meet these hitters before we plan for them. They may have changed their minds.",
+      "I would wait. One rarely regrets an inning spent watching."],
+    "It seems to me changing speeds rarely hurts. I have not, I admit, studied their swings.":[
+      "Slow, then fast, then slow. It unsettles most people. I haven't looked at the swings, mind.",
+      "I'd mix the speeds. A hitter who can't time it can't hit it, one supposes.",
+      "Change of pace, I say. Nobody likes being rushed and then kept waiting.",
+      "Something slow after something quick. That's the whole of my scouting, I'm afraid."],
+    "A tired arm, I find, is mostly a slower one. The bullpen is there to be used.":[
+      "He's done his share, I'd say. There are fresh arms sitting down out there.",
+      "I'd make the change. A tired pitcher is a hopeful one, and hope is not a plan.",
+      "The bullpen, I think. They've been warm for an hour; let's use the warmth.",
+      "Let him have his applause now, while it's still applause."]},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
   scoreWord:"RUN",
   closeMargin:1, closeLabel:"One run",   // the scores page chip (round 56)                  // the flash when you score
   /* which runs get the flash (round 56: an enormous "RUN!" on every run hid the log at the moment you wanted to read it,
