@@ -358,6 +358,23 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 65: soccer's highlight movement (the gap left to Football Manager after round 64).
+- The 22 players were placed by a few lerps toward the ball's waypoints. Now (soccer 72_highlights: attAt, defAt,
+  keeperDive): the attacking 4-4-2 pushes up with the ball, back line least, and shifts to its side; each receiver
+  starts his run before the pass and curves into the space; on a wing move the full back overlaps outside the
+  winger; as the final ball comes the forwards attack the near post, far post and spot, a midfielder arrives late at
+  the edge. Defending: a flat back four holding a line (ball + 0.12, between 0.62 and 0.9 of the pitch) and sliding
+  across, a midfield four in front, two strikers loitering; the nearest man presses, the next covers; in the box each
+  defender takes the nearest attacker, goal side. The keeper comes off his line on the angle and dives at the shot
+  (hlPlayer's dive: laid out along it, with a blur); a goal is dived at late, or the wrong way one time in three.
+  After a goal the scorer wheels away to the corner flag with three team-mates after him.
+- Players accelerate and settle rather than snap: each position is a weighted average of where he's heading over the
+  last moments (four samples back to t-0.06). Stateless, so any frame is the same however it's reached.
+- Set pieces start set: on a corner the box is already full and marked, two centre backs at halfway, the taker at
+  the flag; on a penalty everyone stands outside the box along the arc and nobody presses.
+- Seen frame by frame over twelve clips (goals, saves, a corner, a wing move, both kinds of penalty). Drawing only:
+  the soccer golden matched.
+
 Round 64: the highlight pitches, redrawn (Ian: Football Manager's 2D at least).
 - Core drawing kit (97_highlights): the surface is painted once per size into an offscreen canvas (hlPitch) and copied
   each frame, so textures cost nothing in play. Mown grass in bands with a sheen and speckle (hlGrass), lines with a
