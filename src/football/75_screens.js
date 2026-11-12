@@ -125,10 +125,10 @@ function liveView(){
     return d.home?100-end:end};
   return `<div class="watchwrap">
     ${liveScoreboard()}
+    ${typeof hlBox==="function"?hlBox():""}
     ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
     ${last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started own ${last.start}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
-    ${typeof hlBox==="function"?hlBox():""}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${live.drives.slice().reverse().map(d=>{
       const tm=d.home?g.home:g.away;

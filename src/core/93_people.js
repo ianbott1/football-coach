@@ -52,11 +52,14 @@ function moodOf(pl,i,team){
 function starsHTML(team){
   if(!SEA||!SEA.roster||!SEA.roster[team]||typeof statLine!=="function")return "";
   const R=SEA.roster[team], hurt={}; SEA.talent.active(team).forEach(e=>hurt[e.idx]=e);
-  const idx=R.map((p,i)=>i).filter(i=>R[i]&&i<POS.length).sort((a,b)=>R[b].r-R[a].r).slice(0,3);
-  R.forEach((p,i)=>{ if(p&&i>=POS.length&&!hurt[i]&&idx.length<5&&moodOf(p,i,team).t==="wants to start")idx.push(i) });
+  // round 67: the three best players are on the roster tab already (Ian: "redundant"); only the news stays here
+  // players with something to say: form either way, a mood that isn't "settled", a last year, a milestone close
+  const news=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P);
+    return formOf(p,P)||moodOf(p,i,team).t!=="settled"||lastYear(p)||(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
+  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).slice(0,4);
   if(!idx.length)return "";
   const tag=(t,c)=>`<span class="ptag ${c||""}">${esc(t)}</span>`;
-  return `<div class="grouphead">Your players</div>`+idx.map(i=>{
+  return `<div class="grouphead">Squad news</div>`+idx.map(i=>{
     const p=R[i], P=POS[i%POS.length].p, f=formOf(p,P), ly=lastYear(p), m=moodOf(p,i,team), nm=nextMilestone(p,P);
     const line=statLine(P,p.st2);
     const tags=[f==="hot"?tag("in form","ok"):f==="cold"?tag("out of form","no"):"",
@@ -77,3 +80,28 @@ function milestoneNews(my){
     h:`${other[0].n} of ${other[0].team} reaches ${other[0].at} career ${other[0].label}`,b:""});
   return out;
 }
+
+/* ---- shirt numbers (round 67: Ian, "not easy to identify the players"; Football Manager numbers its dots) ----
+   Each player's number is fixed by his name and team and kept unique on the roster: starters choose first, in roster
+   order, from the numbers their position wears (a keeper 1, a lineman in the 50s-70s); the rest by a hash of the name
+   in that range. Nothing is drawn from the game's dice and nothing is saved: the same roster numbers the same way. */
+const SHIRT_RANGE={
+  soccer:{GK:{l:[1,13,31]},CB:{l:[5,4,6,15,23]},FB:{l:[2,3,12,22,24]},CM:{l:[8,14,16,25,26]},W:{l:[7,11,17,19,21]},ST:{l:[9,10,18,20,27]}},
+  football:{QB:[1,19],RB:[20,49],WR:[10,19,80,89],WR2:[10,19,80,89],OT:[50,79],EDGE:[90,99,50,59],DT:[90,99,60,79],LB:[40,59],CB:[20,49],S:[20,49]},
+  hockey:{G:{l:[30,31,35,1,29,40,33]}}
+};
+const _SHIRT={};
+function shirtNo(team,idx){
+  const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R||!R[idx])return null;
+  const key=team+"|"+R.map(p=>p?p.n:"").join(","); let M=_SHIRT[team];
+  if(!M||M.key!==key){ M=_SHIRT[team]={key:key,no:{}}; const used={}, sp=(typeof SPORT!=="undefined"&&SHIRT_RANGE[SPORT.id])||{};
+    const order=R.map((p,i)=>i).filter(i=>R[i]).sort((a,b)=>(a<POS.length?0:1)-(b<POS.length?0:1)||a-b);
+    order.forEach(i=>{ const pos=POS[i%POS.length].p, rg=sp[pos], h=strHash(team+"|"+R[i].n); let n=null;
+      if(rg&&rg.l){ n=rg.l.find(v=>!used[v]); if(n===undefined)n=null }   // a list of numbers: the first free
+      if(n==null&&!(rg&&rg.l)){ const lo=rg?rg[0]:(SPORT.id==="basketball"?0:1), hi=rg?rg[1]:(SPORT.id==="hockey"?98:99), span=hi-lo+1;
+        for(let k=0;k<100&&n==null;k++){ const v=lo+((h+k*7)%span); if(!used[v])n=v }
+        if(n==null&&rg&&rg.length>=4){ const lo2=rg[2], sp2=rg[3]-rg[2]+1; for(let k=0;k<100&&n==null;k++){ const v=lo2+((h+k*7)%sp2); if(!used[v])n=v } }
+        }
+      for(let v=1;n==null&&v<100;v++)if(!used[v])n=v;
+      used[n]=1; M.no[i]=n }) }
+  return M.no[idx] }

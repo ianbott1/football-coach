@@ -112,6 +112,7 @@ function startLive(g,step,slot){
 function syncTail(r){ if(r&&Array.isArray(r.drives)&&r.drives.length>live.drives.length&&r.drives.slice(0,live.drives.length).every((d,i)=>d===live.drives[i]))
   for(let i=live.drives.length;i<r.drives.length;i++)live.drives.push(r.drives[i]) }
 function liveTick(){
+  if(live&&live.finishing){ if(live.timer)clearTimeout(live.timer); live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive(); return }
   if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
@@ -127,7 +128,15 @@ function liveTick(){
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
     // was never handed back one stretch at a time: a played 3-4 overtime loss was recorded and replayed as
     // 3-3 at 54 minutes (Instinct)
-    if(r.done){ syncTail(r); live.done=true; finishLive(); return }
+    if(r.done){ const k0=live.drives.length; syncTail(r);
+      // round 67: overtime and a shoot-out are in the tail the engine hands back at the end; their highlights play
+      // before the final whistle (Ian: a 5-4 shoot-out win he never saw)
+      // the screen may still be the overtime call, with no pitch: the live view is drawn first, the score held
+      const tail=live.drives.slice(k0); let hm=0;
+      if(!live.ff&&tail.length&&typeof hlPlayTail==="function"&&typeof hlCan==="function"&&hlCan()){
+        live.hold={n:k0,h:live.lastH||0,a:live.lastA||0}; live.ask=null; render(); hm=hlPlayTail(live,tail); if(!hm)live.hold=null }
+      if(hm){ live.finishing=true; live.timer=setTimeout(()=>{ live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive() },hm); return }
+      live.done=true; finishLive(); return }
     if(r.ask){
       if(live.ri<live.replay.length){          // answered before, keep going
         live.eng.reply(live.replay[live.ri++]);
@@ -1113,7 +1122,10 @@ function endSeason(rng,choices,act,seasonTeam){
 }
 
 /* ============ rendering ============ */
-function rkTag(r){return r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
+/* a rank beside a name: college's poll and soccer's table position mean something; the pro leagues' 1-25 ranking
+   didn't (round 67, Ian: "relevant in college football, not in other sports"), so they show records instead */
+function ranksMean(){ return !!LEAGUE.position||LEAGUE.id==="cfb"||LEAGUE.id==="ncaab" }
+function rkTag(r){return ranksMean()&&r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
 
 function gameLine(g,mine){
   const hw=g.winner===g.home;
@@ -1681,7 +1693,7 @@ function rosterView(){
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
-          <div class="pmain"><div class="pname">${esc(s.n)}
+          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${esc(s.n)}
             ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
@@ -1689,7 +1701,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm">${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
+          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -2034,7 +2046,7 @@ function scheduleHTML(team,compact){
         <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
-        <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${
+        <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${ranksMean()||!SEA.rec[opp]?"":` <span class="srec" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:4px">${recStr(opp)}</span>`}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^(FA|NBA) Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sall">${esc(g.cup&&LEAGUE.cup?LEAGUE.cup.date(w):LEAGUE.dates[w]||"")}</span></div>`);
     }

@@ -19,7 +19,11 @@ function hlMount(){
   if(!HL.cv){ const c=document.createElement("canvas"); if(!c||!c.getContext)return; HL.cv=c; HL.x=c.getContext("2d"); if(!HL.x){ HL.cv=null; return }
     c.className="hlcv"; c.onclick=()=>hlSkip(); }
   if(HL.cv.parentNode!==box){ try{ box.appendChild(HL.cv) }catch(e){ return } }
+  if(!HL.leg&&document.createElement){ HL.leg=document.createElement("div"); HL.leg.className="hlleg"; HL.leg.setAttribute("style","font:500 11px/1.5 'Barlow',system-ui,sans-serif;color:#C9CEDA;padding:4px 2px 0") }
+  if(HL.leg){ if(HL.leg.parentNode!==box){ try{ box.appendChild(HL.leg) }catch(e){} } HL.leg.innerHTML=HL.cur&&HL.cur.legend?hlLegendHTML(HL.cur.legend):""; HL.leg.style.display=HL.cur&&HL.cur.legend?"":"none" }
   // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
+  // football's replay plays on its own field: the drive chart steps aside while a clip runs (round 67)
+  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
   if(HL_SPORT.collapseIdle){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }
   const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
   if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
@@ -39,6 +43,12 @@ function hlRelease(quiet){
   if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
   if(typeof feelSpell==="function")feelSpell(live,h.h,h.a);
   if(!quiet&&typeof render==="function")render() }
+/* the clips of the drives the engine adds at the end (overtime, a shoot-out), one after another; ms they take */
+function hlPlayTail(L,drives){
+  if(!hlCan()||hlMode()==="off"||!L)return 0;
+  let clips=[]; drives.forEach(d=>{ try{ clips=clips.concat(HL_SPORT.clips(L,d,hlMode())||[]) }catch(e){} });
+  if(!clips.length)return 0;
+  HL.pending={drive:drives[0],clips:clips}; return hlPlay(L,drives[0]) }
 /* this stretch's clips; returns how long they take (ms), for the next stretch to wait */
 function hlPlay(L,drive){
   if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return 0;
@@ -52,10 +62,13 @@ function hlPlay(L,drive){
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
-function hlStart(c){ HL.cur=c; HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
+function hlStart(c){ HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
 function hlFrame(){
   const c=HL.cur; if(!c)return; const t=Math.min(1,(Date.now()-HL.t0)/c.dur);
   hlDraw(c,t);
+  // the score on the page changes as the ball goes in, in the last clip of the stretch (round 67: Ian, "see the score
+  // change as you cross the touchdown line"); earlier clips' goals show in the clip's own score bug
+  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal; if(rv!=null&&t>=rv&&!HL.clips.length&&typeof live!=="undefined"&&live&&live.hold&&!live.finishing)hlRelease();
   if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
   // a beat on the last frame, then the next clip
   setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount(); hlRelease() } },250);
@@ -143,6 +156,8 @@ function hlPlayer(x,px,py,r,kit,o){
   x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
   x.beginPath(); x.arc(px,py,r+x.lineWidth/2,0,Math.PI*2); x.lineWidth=0.8; x.strokeStyle="rgba(0,0,0,.45)"; x.stroke();
   if(o.num!=null&&r>=4.5){ x.font=`700 ${Math.round(r*(String(o.num).length>1?0.95:1.15))}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle"; x.fillStyle=kit.num; x.fillText(String(o.num),px,py+r*0.06) }
+  if(o.sub&&!o.label){ const fs=Math.max(8,Math.round(r*1.05)); x.font=`600 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="top";
+    x.lineWidth=3; x.strokeStyle="rgba(0,0,0,.7)"; x.strokeText(o.sub,px,py+r+2); x.fillStyle="#fff"; x.fillText(o.sub,px,py+r+2) }
   if(o.label){ const fs=Math.max(10,Math.round(r*1.5)); x.font=`700 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle";
     const tw=x.measureText(o.label).width, ty=py-r-fs*0.9; x.fillStyle="rgba(10,12,18,.78)";
     hlRound(x,px-tw/2-6,ty-fs*0.62,tw+12,fs*1.24,fs*0.4); x.fill(); x.fillStyle=kit.fill; x.fillRect(px-tw/2-6,ty+fs*0.62-2,tw+12,2);
@@ -185,6 +200,10 @@ function hlBanner(x,W,H,text,kit,s){
   x.fillStyle="rgba(10,12,18,.86)"; hlRound(x,l,y,tw,bh,6); x.fill();
   if(kit){ x.fillStyle=kit.fill; x.fillRect(l,y,6,bh); x.fillRect(l+tw-6,y,6,bh) }
   x.textAlign="center"; x.textBaseline="middle"; x.fillStyle="#fff"; x.fillText(text,W/2,y+bh/2+1,tw-fs); x.restore() }
+/* the key: each side's named players by number. L: [{team, kit:{fill}, list:[[no,name],...]}] */
+function hlLegendHTML(L){ return L.filter(x=>x&&x.list&&x.list.length).map(x=>`<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${x.kit.fill};margin-right:5px;vertical-align:0"></span><b style="color:#fff">${esc(x.team)}</b> ${x.list.map(([n,nm])=>`<span style="white-space:nowrap;margin-left:4px"><b style="font-family:'IBM Plex Mono',monospace;color:#F4C95D">${n}</b> ${esc(nm)}</span>`).join(" ")}</div>`).join("") }
+/* a side's players by roster slots: [[shirt no, surname]] for the given roster indices */
+function hlNamed(team,idxs){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R)return []; return idxs.map(i=>R[i]?[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]]:null) }
 /* the two sides' kits, told apart on grass: a clash (or a green shirt) sends the away side to its change kit */
 function hlKits(home,away){
   const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };

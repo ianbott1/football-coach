@@ -1,5 +1,5 @@
 {
- "fp": "105d665d72647ac2",
+ "fp": "104e066a19f0b450",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -55,6 +55,11 @@
    "fp": "105d665d72647ac2",
    "from": "5513127a54d650dd",
    "note": "round 61: reads by month on the team page; baseball payroll, five-round draft, re-sign bars, voices"
+  },
+  {
+   "fp": "104e066a19f0b450",
+   "from": "105d665d72647ac2",
+   "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
   }
  ],
  "result": {
@@ -69,7 +74,7 @@
     "heis": "a932a8caf31d17f1",
     "history": "cfc3e8869a1aba6c",
     "universe": "d90aa2ecf8e039a3",
-    "screens": "478fbcfa401fbadc"
+    "screens": "a4d5f225dd2678b2"
    },
    {
     "year": 2027,
@@ -81,7 +86,7 @@
     "heis": "8353eb8de82952c0",
     "history": "cf2ae2f07c96175d",
     "universe": "4f014a06ebf91268",
-    "screens": "10e470fc7de5058c"
+    "screens": "b51932b9dbff894e"
    }
   ],
   "Colorado#777": [
@@ -95,7 +100,7 @@
     "heis": "953206088ea314e9",
     "history": "48fe6248ae6613b8",
     "universe": "5eb6b579c8316877",
-    "screens": "519230c9ce74e5a4"
+    "screens": "d36b6ad276ab016f"
    },
    {
     "year": 2027,
@@ -107,7 +112,7 @@
     "heis": "d906fc5360d32da8",
     "history": "632df131f8f93b89",
     "universe": "9d54a19031a03e6e",
-    "screens": "d163724cd8e1791f"
+    "screens": "46403ab1bca1eab6"
    }
   ],
   "schedules#60": [

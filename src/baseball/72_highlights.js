@@ -4,24 +4,41 @@
    live screen's own picture). */
 const HL_SPORT=(function(){
   const HOME=[0.5,0.9];
+  /* round 67: not only home runs (Ian: "it shouldn't say home run first"; show doubles, triples, balls caught at the
+     wall, double plays, the big moments). From what the engine logs: home runs; hits that score runs (singles,
+     doubles, triples); sacrifice flies, drawn as the deep fly caught at the wall with the runner tagging; double plays;
+     strikeouts with two or more on; runners caught stealing. Two at most an inning, the biggest first. */
   function clips(L,d,mode){
-    const out=[]; const close=Math.abs(d.sh-d.sa)<=4;
+    const close=Math.abs(d.sh-d.sa)<=3, late=(d.seg||0)>=5, C=[];
     (d.ev||[]).forEach(e=>{
-      if(e.k==="hr"&&(mode!=="goals"||close||e.n>=3))out.push(mk(L,e,d));
-      else if(mode==="key"&&e.k==="rbi"&&e.hit>=2&&close&&out.length<1)out.push(mk(L,e,d)) });
-    return out.slice(0,2);
+      if(e.k==="hr"){ if(mode!=="goals"||close||e.n>=3)C.push([9+e.n,e]); return }
+      if(mode!=="key")return;
+      if(e.k==="rbi"&&e.hit>=1&&close)C.push([e.hit+e.n+(late?1:0),e]);
+      else if(e.k==="rbi"&&e.hit===0&&close)C.push([3+(late?1:0),e]);          // a sacrifice fly
+      else if(e.k==="dp"&&close&&late)C.push([4,e]);
+      else if(e.k==="kk"&&close&&(e.on||0)>=2)C.push([3+(late?1:0),e]);
+      else if(e.k==="cs"&&close&&late)C.push([2,e]); });
+    C.sort((a,b)=>b[0]-a[0]); const pick=C.slice(0,2).map(x=>x[1]);
+    return (d.ev||[]).filter(e=>pick.indexOf(e)>=0).map(e=>mk(L,e,d));
   }
   function mk(L,e,d){
-    const g=L.g, tm=e.side==="home"?g.home:g.away, u=e.u||0;
+    const g=L.g, fieldEv=e.k==="dp"||e.k==="kk"||e.k==="cs", bat=fieldEv?(e.side==="home"?"away":"home"):e.side, tm=bat==="home"?g.home:g.away, u=e.u||0;
+    const kind=e.k==="hr"?"hr":e.k==="rbi"&&e.hit===0?"sf":e.k==="rbi"?"hit":e.k;
     const r=mulberry32((u*7919+(d.seg||0)*131+(e.side==="home"?17:29))>>>0);
     let nm=e.nm||""; if(!nm)try{ nm=bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"" }catch(er){}
     const ang=(-0.75+r()*1.5)*0.72, hr=e.k==="hr";
-    const dist=hr?1.08+r()*0.15:e.hit===3?0.92:e.hit===2?0.82:0.55;
+    const dist=hr?1.08+r()*0.15:kind==="sf"?0.93+r()*0.04:e.hit===3?0.92:e.hit===2?0.82:0.55;
     const land=[HOME[0]+Math.sin(ang)*dist*0.62, HOME[1]-Math.cos(ang)*dist*0.78];
-    const runners=Math.max(0,(e.n||1)-(hr?1:0));
-    // round 61: each one its own flight (a high fly or a line drive) and its distance (Instinct)
-    const arc=hr?0.07+r()*0.11:0.03+r()*0.04, ft=hr&&typeof hrFeet==="function"?hrFeet(e):0;
-    return {e,tm,nm:nm?String(nm).split(" ").slice(-1)[0]:"",hr,land,runners,n:e.n||1,inn:d.seg+1,base:hr?3400:2600,inks:hlKits(g.home,g.away).map(k=>k.fill),side:e.side,text:"",arc,ft};
+    const runners=kind==="sf"?1:kind==="kk"?Math.min(3,e.on||2):kind==="dp"||kind==="cs"?1:Math.max(0,(e.n||1)-(hr?1:0));
+    // round 61: each one its own flight (a high fly or a line drive) and its distance (Instinct). A deep fly that's
+    // caught climbs like a home run: you find out at the wall (round 67)
+    const arc=hr||kind==="sf"?0.07+r()*0.11:0.03+r()*0.04, ft=hr&&typeof hrFeet==="function"?hrFeet(e):0;
+    // round 67: the fielders by number (P, C, 1B, 2B, SS, 3B, LF, CF, RF are roster places 9, 0, 1, 2, 4, 3, 5, 6, 7), the batter
+    // by his; a key under the diamond
+    const fld=bat==="home"?g.away:g.home, K=hlKits(g.home,g.away), fn=hlNamed(fld,[9,0,1,2,4,3,5,6,7]);
+    const BR=(SEA.roster&&SEA.roster[tm])||[], bi=BR.findIndex(p=>p&&nm&&p.n===nm), bno=bi>=0?shirtNo(tm,bi):null;
+    const legend=[{team:fld,kit:K[bat==="home"?1:0],list:fn.filter(Boolean)},{team:tm,kit:K[bat==="home"?0:1],list:bno!=null?[[bno,String(nm).split(" ").slice(-1)[0]]]:[]}];
+    return {kind,reveal:kind==="kk"?0.62:kind==="dp"?0.7:kind==="cs"?0.56:0.72,dpTo:r()<0.5?4:3,fn,bno,legend,e,tm,nm:nm?String(nm).split(" ").slice(-1)[0]:"",hr,land,runners,n:e.n||1,inn:d.seg+1,base:3200,inks:hlKits(g.home,g.away).map(k=>k.fill),side:bat,text:"",arc,ft};
   }
   function pitch(x,W,H){
     const bg=x.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#121722"); bg.addColorStop(1,"#0D1118"); x.fillStyle=bg; x.fillRect(0,0,W,H);
@@ -55,33 +72,55 @@ const HL_SPORT=(function(){
     // the dugouts along the lines
     [[0.2,0.94],[0.8,0.94]].forEach(([a,b])=>{ const [px,py]=P(a,b); x.fillStyle="#1C2733"; x.fillRect(px-W*0.06,py-H*0.015,W*0.12,H*0.03) });
   }
-  function idle(x,W,H){ hlCaption(x,W,H,"Highlights: home runs and big hits play here",null) }
+  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
   function frame(x,W,H,c,t){
     const P=(a,b)=>[a*W,b*H], ink=c.inks[c.side==="home"?0:1], dink=c.inks[c.side==="home"?1:0], r=Math.max(5,W/85);
     // the fielders: nine of them in their places, the pitcher on the mound
     const F=[[0.5,0.72],[0.5,0.95],[0.6,0.66],[0.56,0.6],[0.44,0.6],[0.4,0.66],[0.25,0.38],[0.5,0.25],[0.75,0.38]];
-    const tp=0.18, tl=0.72;
-    let bx,by,z=0;
-    if(t<tp){ const s=t/tp; bx=0.5; by=hlLerp(0.72,0.9,s) }
-    else if(t<tl){ const s=(t-tp)/(tl-tp); bx=hlLerp(HOME[0],c.land[0],s); by=hlLerp(HOME[1],c.land[1],s); z=Math.sin(s*Math.PI)*(c.arc||(c.hr?0.12:0.05)) }
-    else { bx=c.land[0]; by=c.land[1] }
-    // an outfielder chases the ball
-    const chase=t>tp?Math.min(1,(t-tp)/(tl-tp)):0;
-    const fi=c.land[0]<0.4?6:c.land[0]>0.6?8:7;
-    F.forEach((p,i)=>{ let q=p; if(i===fi){ q=[hlLerp(p[0],Math.max(0.08,Math.min(0.92,c.land[0])),chase*0.8),hlLerp(p[1],Math.max(0.06,c.land[1]),chase*0.8)] }
-      const [px,py]=P(q[0],q[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
-    // the batter, then running; runners coming round
     const bases=[[0.5,0.9],[0.62,0.72],[0.5,0.54],[0.38,0.72],[0.5,0.9]];
     const along=(k)=>{ const f=Math.max(0,Math.min(4,k)), i=Math.min(3,Math.floor(f)), s=f-i; return [hlLerp(bases[i][0],bases[i+1][0],s),hlLerp(bases[i][1],bases[i+1][1],s)] };
-    const run=Math.max(0,(t-tp)/(1-tp))*(c.hr?4:Math.min(3,c.e.hit||1));
-    const [bxp,byp]=P(...along(run)); hlDot(x,bxp,byp,r,ink,"rgba(0,0,0,.6)",c.nm);
-    for(let k=0;k<Math.min(3,c.runners);k++){ const start=3-k; const [rx,ry]=P(...along(Math.min(4,start+run))); if(start+run<4)hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)") }
-    const bpos=tt=>{ if(tt<tp){ const s=Math.max(0,tt)/tp; return [0.5,hlLerp(0.72,0.9,s),0] } if(tt<tl){ const s=(tt-tp)/(tl-tp); return [hlLerp(HOME[0],c.land[0],s),hlLerp(HOME[1],c.land[1],s),Math.sin(s*Math.PI)*(c.arc||(c.hr?0.12:0.05))] } return [c.land[0],c.land[1],0] };
-    const tr=[]; for(let q=8;q>=1;q--){ const b=bpos(t-q*0.012); const pp=P(b[0],b[1]); tr.push([pp[0],pp[1]-b[2]*H]) }
+    const tp=0.18, K=c.kind, tl=c.reveal;
+    const flight=K==="hr"||K==="hit"||K==="sf";
+    // where the ball is at a moment, by the kind of play
+    const ballAt=tt=>{ tt=Math.max(0,tt); const mound=[0.5,0.72], plate=[0.5,0.905], mitt=[0.5,0.93];
+      if(tt<tp)return [mound[0],hlLerp(mound[1],plate[1],tt/tp),0];
+      if(flight){ if(tt<tl){ const s=(tt-tp)/(tl-tp); return [hlLerp(HOME[0],c.land[0],s),hlLerp(HOME[1],c.land[1],s),Math.sin(s*Math.PI)*(c.arc||0.05)] }
+        if(K==="sf"){ const s=Math.min(1,(tt-tl)/0.2); return [hlLerp(c.land[0],0.5,s*0.5),hlLerp(c.land[1],0.62,s*0.5),0] } return [c.land[0],c.land[1],0] }
+      if(K==="kk"){ const s=Math.min(1,(tt-tp)/(tl-tp)); return [0.5,hlLerp(plate[1],mitt[1],s),0] }
+      if(K==="cs"){ if(tt<tp+0.08)return [0.5,hlLerp(plate[1],mitt[1],(tt-tp)/0.08),0]; const s=Math.min(1,(tt-tp-0.08)/(tl-tp-0.08)); return [hlLerp(0.5,bases[2][0],s),hlLerp(mitt[1],bases[2][1],s),Math.sin(s*Math.PI)*0.02] }
+      // a double play: the grounder, the flip to second, the throw to first
+      const fd=F[c.dpTo], g1=0.4, g2=0.53;
+      if(tt<g1){ const s=(tt-tp)/(g1-tp); return [hlLerp(HOME[0],fd[0],s),hlLerp(HOME[1],fd[1],s),0] }
+      if(tt<g2){ const s=(tt-g1)/(g2-g1); return [hlLerp(fd[0],bases[2][0],s),hlLerp(fd[1],bases[2][1],s),0] }
+      const s=Math.min(1,(tt-g2)/(tl-g2)); return [hlLerp(bases[2][0],bases[1][0],s),hlLerp(bases[2][1],bases[1][1],s),Math.sin(s*Math.PI)*0.015] };
+    const [bx,by,z]=ballAt(t);
+    // the fielders: an outfielder chases a ball in the air (and catches the deep fly); the middle infielders cover second
+    const chase=flight&&t>tp?Math.min(1,(t-tp)/(tl-tp)):0, fi=c.land[0]<0.4?6:c.land[0]>0.6?8:7;
+    F.forEach((p,i)=>{ let q=p;
+      if(flight&&i===fi){ const k=K==="sf"?1:0.8; q=[hlLerp(p[0],Math.max(0.08,Math.min(0.92,c.land[0])),chase*k),hlLerp(p[1],Math.max(0.06,c.land[1]),chase*k)] }
+      if((K==="dp"&&i===(c.dpTo===4?3:4))||(K==="cs"&&i===4)){ const s=Math.min(1,Math.max(0,(t-tp)/0.25)); q=[hlLerp(p[0],bases[2][0],s),hlLerp(p[1],bases[2][1]+0.01,s)] }
+      if(K==="dp"&&i===2){ const s=Math.min(1,Math.max(0,(t-tp)/0.3)); q=[hlLerp(p[0],bases[1][0]-0.01,s),hlLerp(p[1],bases[1][1],s)] }
+      const [px,py]=P(q[0],q[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.fn&&c.fn[i]?{num:c.fn[i][0]}:null) });
+    // the batter and the runners
+    const after=Math.max(0,(t-tp)/(1-tp));
+    let bRun=K==="hr"?after*4:K==="hit"?after*Math.min(3,c.e.hit||1):K==="sf"?Math.min(0.7,after*1.4):K==="dp"?Math.min(0.95,after*1.3):0;
+    const [bxp,byp]=P(...along(bRun)); hlDot(x,bxp,byp,r,ink,"rgba(0,0,0,.6)",t>=tl?c.nm:"",c.bno!=null?{num:c.bno}:null);
+    const run=(start,k)=>{ const [rx,ry]=P(...along(Math.min(4,start+k))); if(start+k<4)hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)") };
+    if(K==="hr"||K==="hit")for(let k=0;k<Math.min(3,c.runners);k++)run(3-k,bRun);
+    else if(K==="sf")run(3,t<tl?0.08:Math.min(1,(t-tl)/(1-tl)*1.1));         // tags up, then goes
+    else if(K==="kk")for(let k=0;k<c.runners;k++)run(1+k,0.06);
+    else if(K==="dp")run(1,Math.min(0.95,after*1.2));
+    else if(K==="cs")run(1,Math.min(1,Math.max(0,(t-tp+0.05)/(tl-tp+0.03))));
+    const tr=[]; for(let q=8;q>=1;q--){ const b=ballAt(t-q*0.012); const pp=P(b[0],b[1]); tr.push([pp[0],pp[1]-b[2]*H]) }
     const [qx,qy]=P(bx,by); hlBall(x,qx,qy,r*0.55,z*H,t>tp?tr:null,{ring:"#C8102E"});
-    const top=`${ordw(c.inn)} · ${c.tm}`;
-    const end=t>=tl?(c.hr?(c.n===4?`GRAND SLAM! ${c.nm}${c.ft?` · ${c.ft} ft`:""}`:`HOME RUN! ${c.nm}${c.ft?` · ${c.ft} ft`:""}`):`${c.nm}: ${["","single","double","triple"][c.e.hit||1]}, ${c.n} in`):null;
-    hlCaption(x,W,H,top,end,ink);
+    // the inning only, until it's done: the result waits for the ball (round 67)
+    const top=`${ordw(c.inn)}${K==="kk"?" \u00b7 runners on":""}`;
+    const HITS=["","single","double","triple"];
+    const end=t<tl?null:K==="hr"?(c.n===4?`GRAND SLAM! ${c.nm}${c.ft?` \u00b7 ${c.ft} ft`:""}`:`HOME RUN! ${c.nm}${c.ft?` \u00b7 ${c.ft} ft`:""}`)
+      :K==="hit"?`${c.nm}: ${HITS[c.e.hit||1]}, ${c.n} in`:K==="sf"?"Caught at the wall! The run scores"
+      :K==="kk"?`STRIKE THREE! ${c.runners} left on`:K==="dp"?"DOUBLE PLAY!":K==="cs"?"CAUGHT STEALING!":null;
+    hlCaption(x,W,H,top,end,K==="dp"||K==="kk"||K==="cs"?dink:ink);
   }
-  return {collapseIdle:true, aspect:0.62, clips, pitch, idle, frame};
+
+  return {reveal:0.72, collapseIdle:true, aspect:0.62, clips, pitch, idle, frame};
 })();

@@ -358,6 +358,36 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 67: following the highlights, and Ian's list from playing round 65.
+- Who's who: every player has a shirt number (core 93_people shirtNo: fixed by name and team, unique on the roster,
+  starters first from their position's numbers: a keeper 1, a lineman 50-79, a goalie 30s; nothing drawn from the
+  dice, nothing saved). The roster shows them. Highlights number every dot and put a key under the pitch (hlLegendHTML,
+  HL.leg) with each side's tracked players. What a sport tracks decides what's real: basketball's five and hockey's six
+  are the men on the floor and ice; baseball's nine fielders and pitcher; football one man a position (the other dots
+  take free numbers in their position's range); soccer one man per unit, wearing his number on one dot (the scorer's
+  dot carries the scorer). Basketball also names all ten under their dots, except where two stand close.
+- Football: the replay plays where the drive chart is (HL_SPORT.replaces: the chart steps aside while a clip runs),
+  end zones in the two sides' colours with their names, and the page's score changes as the ball crosses the line
+  (clip.reveal / HL_SPORT.reveal: the hold is released at the moment of the outcome in a stretch's last clip, every
+  sport). Field goals, made and missed (from the drive's own spot, no kick over 55 yards), and interceptions in the
+  red half are clips too; before the outcome the caption says only whose ball it is.
+- Hockey overtime and shoot-outs played inside the engine's finish and were added at the final whistle without a
+  clip (Ian: a 5-4 shoot-out win he never saw). liveTick now draws the live view with the score held, plays the tail's
+  clips (hlPlayTail) and finishes after them; a tap finishes at once (live.finishing). The screen before was the
+  overtime call, with no pitch: the live view must be drawn before the clips are asked to play. A shoot-out keeps only
+  its winner, so its clip is the deciding attempt: one skater, one goalie. Two and three goals in one stretch were
+  each shown (two segments, three clips each, in a browser at fast speed): not reproduced.
+- Baseball's highlights aren't only home runs: run-scoring hits, sacrifice flies drawn as the deep fly caught at the
+  wall (it climbs like a home run: you find out at the wall), double plays (the grounder, the flip, the throw),
+  strikeouts with two or more on, runners caught stealing; two at most an inning, the biggest first. Over 38 games:
+  62 home runs, 50 hits, 8 deep catches, 15 strikeouts, 1 double play. The caption shows the inning only until the end.
+- Smaller: the overview's "Your players" (the three best, on the roster already) is "Squad news": up to four players
+  with something to say (form, a mood, a last year, a milestone close), hidden when there's none. The pro leagues show
+  records beside opponents instead of a 1-25 rank (ranksMean: college's poll and soccer's table position stay). The
+  idle "Highlights: ... play here" lines are gone.
+- Goldens and hot seats rewritten: every change traced to the display changes (a build with them undone matched the
+  old fingerprints; football's was the replay box moving above the field, which moves whitespace).
+
 Round 66: the highlights keep the suspense (Ian: it said "goal" before the ball went in; Football Manager leaves you
 not knowing whether it's a goal, the post, a save or a miss).
 - The leak was mostly the page, not the clip: the stretch was drawn (score, run of play, momentum, live chance) and

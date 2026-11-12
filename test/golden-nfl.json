@@ -1,5 +1,5 @@
 {
- "fp": "d1ae956238addf09",
+ "fp": "ea9cdb66e8fda5b9",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -455,6 +455,11 @@
    "fp": "d1ae956238addf09",
    "from": "dc9ae73eeb313ac2",
    "note": "round 63: re-sign bars at the league medians"
+  },
+  {
+   "fp": "ea9cdb66e8fda5b9",
+   "from": "d1ae956238addf09",
+   "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
   }
  ],
  "result": {
@@ -469,7 +474,7 @@
     "heis": "c32b41398109f573",
     "history": "671bed9c808916a1",
     "universe": "279679229cf5192a",
-    "screens": "e561558c7236b280"
+    "screens": "9eb3172b25e8b21d"
    },
    {
     "year": 2027,
@@ -481,7 +486,7 @@
     "heis": "e8db479aec20a1e0",
     "history": "ab6278bc4c4f2aa9",
     "universe": "5bd517b7ad02a04c",
-    "screens": "1cdf78385cad3dae"
+    "screens": "c405d13ffecb1508"
    },
    {
     "year": 2028,
@@ -493,7 +498,7 @@
     "heis": "f63b8f2a2b77f1dc",
     "history": "208dd808d30db8d2",
     "universe": "e45d94a6e00f142d",
-    "screens": "aa7221f69939cb63"
+    "screens": "5a6aa568f8945755"
    },
    {
     "year": 2029,
@@ -505,7 +510,7 @@
     "heis": "148776f505270826",
     "history": "6763c111e4729c70",
     "universe": "8d2d9ed563267ec8",
-    "screens": "ddb939aae00a77bd"
+    "screens": "cd76214925cc3d7d"
    }
   ],
   "Tennessee#2024": [
@@ -519,7 +524,7 @@
     "heis": "f99e778f079c4455",
     "history": "da1a1a2f849e6825",
     "universe": "d15b53e4c80a7b3d",
-    "screens": "5a7e66c54afaa129"
+    "screens": "8f3448d158288925"
    },
    {
     "year": 2027,
@@ -531,7 +536,7 @@
     "heis": "3c3280e8d56ac139",
     "history": "70f1a53c396314b8",
     "universe": "148dac391190628a",
-    "screens": "a8eb55ad5899d165"
+    "screens": "a125c1a9a4ed43a5"
    },
    {
     "year": 2028,
@@ -543,7 +548,7 @@
     "heis": "a0604626334dca6c",
     "history": "948ae920602bc96b",
     "universe": "544bd626abdaef08",
-    "screens": "8863123e75dcaac3"
+    "screens": "26c7be88e2bbfde0"
    },
    {
     "year": 2029,
@@ -555,7 +560,7 @@
     "heis": "e8fa1f137b0825b6",
     "history": "a4b3f005b8f0310c",
     "universe": "a6d06f133bce456a",
-    "screens": "6a9d79e3c6d04294"
+    "screens": "89370dfd58bbaa5f"
    }
   ],
   "Detroit#777": [
@@ -569,7 +574,7 @@
     "heis": "39a85f156c688622",
     "history": "8ac07d001c5714d5",
     "universe": "e9b9ce76a8d1a77b",
-    "screens": "e9c2f1056a6beef6"
+    "screens": "2b04c63a4b86f8dc"
    },
    {
     "year": 2027,
@@ -581,7 +586,7 @@
     "heis": "d01fb05949f5f79c",
     "history": "4fc2dac83cedad77",
     "universe": "a4800c4ad8f86022",
-    "screens": "99f358799730f9b5"
+    "screens": "cebf7e79859450e7"
    },
    {
     "year": 2028,
@@ -593,7 +598,7 @@
     "heis": "0c9f2b2c31c5171d",
     "history": "cda896a06d15c513",
     "universe": "bb3a53c26e7c79ee",
-    "screens": "4a003de35dca24e6"
+    "screens": "255e1e2298c76585"
    }
   ],
   "NY Giants#31337": [
@@ -607,7 +612,7 @@
     "heis": "f97666b7510d653f",
     "history": "8cc86c9a1e5f86c3",
     "universe": "624c8a34a1fed35a",
-    "screens": "2ea7fcc6c49f2650"
+    "screens": "353e1001bc5fd87d"
    },
    {
     "year": 2027,
@@ -619,7 +624,7 @@
     "heis": "63cdfa8093406d9d",
     "history": "e8f03f9c4c247326",
     "universe": "da4431c418ec6dd4",
-    "screens": "af12064ab666f146"
+    "screens": "ce72ef3fb794e509"
    },
    {
     "year": 2028,
@@ -631,7 +636,7 @@
     "heis": "0ef8a523ff6b95de",
     "history": "4bcc4911a4a9c29f",
     "universe": "c0b10e7830123aaa",
-    "screens": "2cd1d499357e98f9"
+    "screens": "d220e135b51d81fc"
    }
   ],
   "schedules#60": [

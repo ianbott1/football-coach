@@ -59,7 +59,17 @@ const HL_SPORT=(function(){
     if(red){ W=[start,[0.5+r()*0.06,0.3+r()*0.4],[0.64+r()*0.08,0.3+r()*0.4]]; for(let i=0;i<W.length;i++){ let b=1,bd=9; for(let k=1;k<11;k++){ const p=BASE[k], dd=Math.hypot(p[0]+0.18-W[i][0],p[1]-W[i][1]); if(dd<bd){bd=dd;b=k} } rec[i]=b } rec.length=W.length }
     let off=""; if(red){ const m2=/^(.*?) sees/.exec(text); off=m2?String(m2[1]).split(" ").slice(-1)[0]:"" }
     const from=plan==="pen"?[0.895,0.5]:W[W.length-1], pre=plan==="pen"?0.42:red?0.6:0;
-    const cl={kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
+    // round 67: shirt numbers. Each unit's named player wears his own on one dot (the scorer's dot carries the scorer);
+    // the other dots take free numbers. A key under the pitch says who's who.
+    const SLOT={GK:0,FB:1,CB:2,CM:6,W:5,ST:9};
+    const sideNums=(team,isAtt)=>{ const R=(SEA.roster&&SEA.roster[team])||[], nums=[1,2,5,6,3,7,4,8,11,9,10], used={}, list=[];
+      Object.keys(SLOT).forEach(u=>{ let slot=SLOT[u], i=typeof SC_UNIT!=="undefined"?SC_UNIT[u]:-1;
+        if(isAtt&&!red&&u===shooter.unit){ slot=sIdx; const j=R.findIndex(p=>p&&p.n===shooter.n); if(j>=0)i=j }
+        if(i<0||!R[i])return; const no=shirtNo(team,i); nums[slot]=no; used[no]=slot; list.push([no,String(R[i].n).split(" ").slice(-1)[0]]) });
+      let f=2; nums.forEach((v,k)=>{ if(used[v]!==undefined&&used[v]!==k){ while(used[f]!==undefined||nums.indexOf(f)>=0)f++; nums[k]=f; used[f]=k } else used[v]=k });
+      return {nums,list} };
+    const SA=sideNums(tm,true), SD=sideNums(opp,false);
+    const cl={numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
     return cl;
   }
@@ -88,7 +98,7 @@ const HL_SPORT=(function(){
     // corner flags
     [[L,T],[R,T],[R,B],[L,B]].forEach(([cx,cy])=>{ x.fillStyle="#F2C14E"; x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+(cx<W/2?-1:1)*5,cy-3); x.lineTo(cx,cy-6); x.closePath(); x.fill() });
   }
-  function idle(x,W,H){ hlTicker(x,W,H,"Highlights: goals and big chances play here",8) }
+  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
   const NUM=[1,2,5,6,3,7,4,8,11,9,10];
   /* penalties and red cards: an open-play move first, played in the first part of the clip (pre), then the set piece */
   const openT=(c,t)=>Math.min(0.699,Math.max(0,t)*0.7/c.pre);
@@ -215,9 +225,9 @@ const HL_SPORT=(function(){
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]);
       if(i===0&&dv){ const ang=(c.home?1:-1)*(dv.dir>0?Math.PI/2:-Math.PI/2); hlPlayer(x,px,py,r,hlKit("",c.gk[1]),{dive:{ang:ang,k:dv.k}}); return }
       const sent=c.red&&i===2&&t>=c.pre, fade=sent&&t>c.pre+0.1?Math.max(0.25,1-(t-c.pre-0.1)*1.8):null;
-      hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:NUM[i],dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
+      hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:c.numsD?c.numsD[i]:NUM[i],dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
       if(sent){ x.save(); x.translate(px+r*1.3,py-r*1.6); x.rotate(0.2); x.fillStyle="#E3262F"; x.fillRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=0.8; x.strokeRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.restore() } });
-    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:NUM[i],dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
+    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:c.numsA?c.numsA[i]:NUM[i],dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
     // the ball and the last few moments of its path
     const tr=[]; for(let q=8;q>=1;q--){ const b=ballAt(c,t-q*0.012); const pp=P(W,H,c,Math.min(1.03,b.bx),b.by); tr.push([pp[0],pp[1]-b.z*W]) }
     hlBall(x,qx,qy,r*0.55,z*W,t>0.1?tr:null);
@@ -231,5 +241,5 @@ const HL_SPORT=(function(){
     const end=t>=ts?({goal:`GOAL! ${c.nm}`,save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
     if(end)hlBanner(x,W,H,end,c.kind==="goal"?kA:null,(t-ts)/(1-ts));
   }
-  return {aspect:0.62, clips, pitch, idle, frame};
+  return {reveal:0.85, aspect:0.62, clips, pitch, idle, frame};
 })();

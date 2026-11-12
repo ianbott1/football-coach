@@ -26,7 +26,7 @@ for(const [f,team] of CASES){
       if(M.some(x=>x.team===my)&&E.weeks.length){ const N=A.weekNews(E.weeks[E.weeks.length-1]);
         M.filter(x=>x.team===my).forEach(x=>{ newsHit++; ok(N.some(i=>i.k==='mile'&&i.h.indexOf(x.n)>=0),`${f}: ${x.n}'s ${x.at} ${x.label} isn't in your news`) }) }
       if(E.phase==='week'&&E.step%6===3){ const h=A.starsHTML(my); pages++;
-        ok(/Your players/.test(h)&&(h.match(/prow2 feat/g)||[]).length>=3,`${f}: the team page shows fewer than three of your players`);
+        ok(h===""||(/Squad news/.test(h)&&(h.match(/prow2 feat/g)||[]).length<=4),`${f}: squad news holds at most four players (round 67: news, not the best three)`);
         const R=E.roster[my];
         R.forEach((p,i)=>{ if(!p||i>=A.POS.length)return; const P=A.POS[i].p, fm=A.formOf(p,P);
           if(fm==='hot'){ hot++; const avg=A.statProd(P,p.st2)/p.st2.g, rec=p.fm.slice(-3).reduce((a,b)=>a+b,0)/3; ok(rec>=avg*1.35,`${f}: ${p.n} hot at ${rec.toFixed(1)} against ${avg.toFixed(1)}`) } });
