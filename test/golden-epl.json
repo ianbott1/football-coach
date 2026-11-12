@@ -1,5 +1,5 @@
 {
- "fp": "86791d245e457ce1",
+ "fp": "ec383f94419028ce",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -380,6 +380,16 @@
    "fp": "86791d245e457ce1",
    "from": "86791d245e457ce1",
    "note": "round 56: objectives on the engine's own scale, card group word, All-NBA/All-Star/All-MLB, baseball tester fixes"
+  },
+  {
+   "fp": "88076e7c8c15950c",
+   "from": "86791d245e457ce1",
+   "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "ec383f94419028ce",
+   "from": "88076e7c8c15950c",
+   "note": "round 60: achievements, margins and runs scaled by sport"
   }
  ],
  "result": {
@@ -394,7 +404,7 @@
     "heis": "debb27f463bb3027",
     "history": "2e2f245f8892117d",
     "universe": "f84115d5e94d852c",
-    "screens": "1a6bf4c74f928976"
+    "screens": "b47e8f5f95132b4a"
    },
    {
     "year": 2027,
@@ -406,7 +416,7 @@
     "heis": "e1abe8e17e8d2920",
     "history": "5936f24e58b3ada4",
     "universe": "3f5acb9a23ad7fd3",
-    "screens": "bbf05886446d76a3"
+    "screens": "792a5008651812fa"
    }
   ],
   "Wrexham#777": [
@@ -420,7 +430,7 @@
     "heis": "383b90a62a5c3fab",
     "history": "01149d1d7c2d48aa",
     "universe": "6425949c55893f6a",
-    "screens": "531675891f96b9ff"
+    "screens": "126c08312307b79e"
    },
    {
     "year": 2027,
@@ -432,7 +442,7 @@
     "heis": "660f0e098cfc5670",
     "history": "f47dcddc4c4288a3",
     "universe": "cc42a91bcb17c479",
-    "screens": "debbbb09f0f07d60"
+    "screens": "8efa67bee0207955"
    }
   ],
   "schedules#60": [

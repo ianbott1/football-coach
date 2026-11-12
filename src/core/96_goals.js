@@ -169,20 +169,27 @@ function objectivesMet(my,orig){ const L=seasonObjectives(my), n=(orig?L:objecti
 /* ---- achievements ---- */
 const ACH=[
   {id:"firstwin", l:"Off the mark",         d:"Win your first game"},
-  {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours"},
+  {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours (a one-in-four shot)"},
   {id:"perfect",  l:"Every read right",      d:"Get every read right in a game with three or more (reads, not calls)", reads:true},
   {id:"reader",   l:"Reads the game",        d:"Get 70% of your reads right over a season (12 or more)", reads:true},
   {id:"board",    l:"The board's favourite", d:"Meet all three objectives in a season"},
-  {id:"unbeaten", l:"Unbeaten",              d:"Go a whole regular season without losing"},
+  {id:"unbeaten", l:"Unbeaten",              d:"Go a whole regular season without losing", dyn:()=>ACH_UNB()?`Win ${Math.round(100*ACH_UNB())}% of a regular season's games`:null},
   {id:"champ",    l:"Champions",             d:"Win the title"},
   {id:"b2b",      l:"Back to back",          d:"Win the title two seasons running"},
   {id:"dynasty",  l:"Dynasty",               d:"Three titles in five seasons"},
   {id:"rebuild",  l:"From the ground up",    d:"Win the title with a side that started in the bottom half"},
   {id:"promoted", l:"Going up",              d:"Win promotion", soccer:true},
   {id:"cup",      l:"Cup winners",           d:"Win the FA Cup", soccer:true},
-  {id:"century",  l:"Century",               d:"Win 100 games"},
+  {id:"century",  l:"Century",               d:"Win 100 games", dyn:()=>ACH_CENT()!==100?`Win ${ACH_CENT().toLocaleString("en-US")} games`:null},
   {id:"furniture",l:"Part of the furniture", d:"Ten seasons at one club"}
 ];
+/* (round 60) the numbers were football's: 100 wins came inside one baseball season and took football nine; "unbeaten"
+   can't happen over 82 or 162 games; a giant was 150 rating points, which each engine's own scale makes a long shot
+   in pro basketball and a coin flip and a half in baseball. Now: about ten seasons' wins, a season as rare as
+   unbeaten is in football, and a win you had a one-in-four chance of. */
+const ACH_CENT=()=>(LEAGUE.tuning&&LEAGUE.tuning.century)||100;
+const ACH_UNB=()=>(LEAGUE.tuning&&LEAGUE.tuning.unbeaten)||0;       // 0: no losses at all
+const achD=a=>(a.dyn&&a.dyn())||a.d;
 let newAch=[];                     // unlocked since the last screen: shown once
 function achList(){ return ACH.filter(a=>(!a.soccer||!!LEAGUE.draws)&&(!a.reads||typeof readText==="function")) }
 function unlock(id){ const C=S.career; C.ach=C.ach||{}; if(C.ach[id])return; C.ach[id]=SEA.year; newAch.push(id); if(typeof sfx==="function")sfx("ach") }
@@ -191,15 +198,15 @@ function checkAchievements(){
   const my=S.myTeam, C=S.career, have=C.ach||{};
   const games=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
   if(!have.firstwin&&(C.w>0||games.some(g=>g.winner===my)))unlock("firstwin");
-  if(!have.giant&&games.some(g=>g.winner===my&&preElo(g.winner===g.home?g.away:g.home)-preElo(my)>=150))unlock("giant");
+  if(!have.giant&&games.some(g=>g.winner===my&&preElo(g.winner===g.home?g.away:g.home)-preElo(my)>=wpScale("balanced")*Math.log10(3)))unlock("giant");
   if(!have.perfect&&S.played){ const P=S.played; for(const k in P){ (P[k]||[]).forEach(p=>{ if(p.team===my&&p.reads&&p.reads.length>=3&&p.reads.every(x=>x.right))unlock("perfect") }) } }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   if(!have.reader&&Y&&Y.n>=12&&Y.right/Y.n>=0.7)unlock("reader");
-  if(careerNow(C).w>=100)unlock("century");     // the career once: in the offseason the season is already banked (it unlocked at 62 wins: Muse)
+  if(careerNow(C).w>=ACH_CENT())unlock("century");     // the career once: in the offseason the season is already banked (it unlocked at 62 wins: Muse)
   if(LEAGUE.draws&&LEAGUE.cup&&SEA.cup&&SEA.cup.winner===my)unlock("cup");
   if(SEA.phase==="done"){
     const rec=(SEA.regRec||SEA.rec)[my];
-    if(rec&&rec[1]===0)unlock("unbeaten");
+    if(rec&&(ACH_UNB()?rec[0]>=ACH_UNB()*(rec[0]+rec[1]):rec[1]===0))unlock("unbeaten");
     if(objectivesMet(my,true)>=3)unlock("board");
     const res=SEA.seasonResult(my)||"";
     if(LEAGUE.draws&&/[Pp]romoted/.test(res))unlock("promoted");
@@ -218,12 +225,12 @@ function achToastHTML(){
   if(!newAch.length)return "";
   const L=newAch.map(id=>ACH.find(a=>a.id===id)).filter(Boolean); newAch=[];
   try{ sfx("win") }catch(e){}
-  return `<div class="achtoast">${L.map(a=>`<div><span>&#9733;</span><b>${esc(a.l)}</b> ${esc(a.d)}</div>`).join("")}</div>`;
+  return `<div class="achtoast">${L.map(a=>`<div><span>&#9733;</span><b>${esc(a.l)}</b> ${esc(achD(a))}</div>`).join("")}</div>`;
 }
 function cabinetHTML(){
   const have=(S.career&&S.career.ach)||{}, L=achList();
   const got=L.filter(a=>have[a.id]), not=L.filter(a=>!have[a.id]);
   return `<div class="grouphead">Trophy cabinet &middot; ${got.length} of ${L.length}</div><div class="cabinet">${
     got.concat(not).map(a=>`<div class="ach ${have[a.id]?'got':''}"><span class="achstar">${have[a.id]?"&#9733;":"&#9734;"}</span>
-      <div><b>${esc(a.l)}</b><span>${esc(a.d)}${have[a.id]?" &middot; "+have[a.id]:""}</span></div></div>`).join("")}</div>`;
+      <div><b>${esc(a.l)}</b><span>${esc(achD(a))}${have[a.id]?" &middot; "+have[a.id]:""}</span></div></div>`).join("")}</div>`;
 }

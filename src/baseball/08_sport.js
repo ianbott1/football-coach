@@ -1,5 +1,6 @@
 /* ============ sport: baseball ============ */
 const SPORT={
+  margins:{close:1,rout:7,crush:9,blow:11},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
   scoreWord:"RUN",
   closeMargin:1, closeLabel:"One run",   // the scores page chip (round 56)                  // the flash when you score
   /* which runs get the flash (round 56: an enormous "RUN!" on every run hid the log at the moment you wanted to read it,

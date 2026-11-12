@@ -453,7 +453,7 @@ function replayCarousel(){
    decides outright: the rest were earned in a moment the save doesn't keep. */
 function auditTrophies(){
   const C=S.career; if(!C||!C.ach||!SEA||!S.myTeam)return;
-  if(C.ach.century&&careerNow(C).w<100)delete C.ach.century;
+  if(C.ach.century&&careerNow(C).w<ACH_CENT())delete C.ach.century;   // (round 60: per league; an earned one from the old 100 goes too)
 }
 
 let replaceAsk=false;        // the title screen asking which career a new one replaces (all slots full)
@@ -491,6 +491,13 @@ async function bumpRev(n){ const v=(await readRev(n))+1; try{ await store.set(RE
    (round 56: "SERIES TIED 1-1" above "Series 2-1: you lead" on the final card: Muse) */
 function liveLabel(g){ const l=g&&g.label||""; return live&&live.done?l.split(" \u00b7 ")[0]:l }
 /* the offseason's season (round 56: baseball's is the winter, "the start of summer" read wrong: Instinct) */
+/* what a margin means in this sport (round 60: the words were football's, 3 points close, 21 a rout, 28 never in doubt,
+   38 the week's blowout; a hockey or soccer side "lost a heartbreaker" by three, and nothing was ever routed) */
+/* how long a run must be to be news (round 60: three straight losses was a slide and four a story in a 12-game season,
+   and in 162 games that's most weeks): two more over 50+ games a season, one more over 20+ */
+function gamesPerTeam(){ try{ return SEA.sched.length*2/NAMES.length }catch(e){ return 12 } }
+function RUN(n){ const G=gamesPerTeam(); return n+(G>50?2:G>20?1:0) }
+function MG(k){ const D={close:3,rout:21,crush:28,blow:38}; const M=(typeof SPORT!=="undefined"&&SPORT.margins)||{}; return M[k]!==undefined?M[k]:D[k] }
 function OFFW(){ return (LEAGUE.text&&LEAGUE.text.offWord)||"summer" }
 /* a regular-season series (round 57, baseball): "Game 2 of 3 · you took the first", from the games already played in it */
 function serLine(ng,my){
@@ -1505,9 +1512,9 @@ function stakesFor(ng){
   out.push(...LEAGUE.ui.stakes({my:my,opp:opp,rk:rk,wk:wk,left:left,w:w,l:l,cp:cp}));
   if(typeof meansStakes==="function")out.push(...meansStakes(ng,my));   // round 45: what this game means (an objective, the table)
   const st=streakOf(my);
-  if(!st.won&&st.n>=3)out.push({p:74,tag:"SLIDE",
+  if(!st.won&&st.n>=RUN(3))out.push({p:74,tag:"SLIDE",
     l:`${st.n} straight losses. The seat under your coach is getting warm.`});
-  else if(st.won&&st.n>=5)out.push({p:58,tag:"STREAK",
+  else if(st.won&&st.n>=RUN(5))out.push({p:58,tag:"STREAK",
     l:`${st.n} in a row. Nobody wants to be the one who ends it.`});
 
   // out of it: a winning season no longer possible (it was six losses, a college football season,
@@ -2087,8 +2094,8 @@ function weekNews(W){
   if(ups.length){
     const g=ups[0], L=g.loser, Wn=g.winner;
     const lr=loserRank(g), wr=winnerRank(g);
-    const verb=g.margin>=21?vary(["routed","ran over","blew out"],"uv"+Wn)
-              :g.margin<=3?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
+    const verb=g.margin>=MG("rout")?vary(["routed","ran over","blew out"],"uv"+Wn)
+              :g.margin<=MG("close")?vary(["edged","held off","slipped past"],"uv"+Wn):vary(["beat","knocked off","took down"],"uv"+Wn);
     items.push({p:90,k:"upset",tone:"flag",
       h:g.pens?`${rankTxt(wr)}${Wn} beat ${rankTxt(lr)}${L} on penalties after a ${g.hp}-${g.ap} draw`   // a shoot-out isn't "edged, 3-3"
         :`${rankTxt(wr)}${Wn} ${verb} ${rankTxt(lr)}${L}, ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)}`,
@@ -2117,16 +2124,16 @@ function weekNews(W){
     let b;
     if(mg.draw)b=v([`A point. Take it and move on.`,`Shared spoils.`,`Honours even.`,`A point gained, or two dropped: depends who you ask.`]);
     else if(won&&oppR<=25)b=v(LEAGUE.text.rankedWin);
-    else if(won&&mg.margin>=28)b=v([`Never in doubt.`,`Over by halftime.`,`A statement, if anyone was listening.`]);
-    else if(won&&mg.margin<=3)b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
+    else if(won&&mg.margin>=MG("crush"))b=v([`Never in doubt.`,`Decided early.`,`A statement, if anyone was listening.`]);
+    else if(won&&mg.margin<=MG("close"))b=v([`Survived. They won't all look like that.`,`Ugly, but it counts.`,`Closer than anyone wanted.`]);
     else if(won)b=v([`Business handled.`,`A solid day's work.`,`No drama. Next.`]);
     else if(oppR<=10)b=v([`No shame in it, but the résumé takes a hit.`,`Beaten by one of the best. It still counts as one.`]);
     else if(oppR>25){ const T=LEAGUE.text, played=(SEA.rec[my]||[0,0]).slice(0,2).reduce((x,y)=>x+y,0)+((SEA.drw&&SEA.drw[my])||0);
       const grp=NAMES.filter(t=>CONF[t]===CONF[my]).length, pos=LEAGUE.position?LEAGUE.position(my):0;
       b=v(T.badLossEarly&&played<=Math.ceil(LEAGUE.weeks/6)?T.badLossEarly:T.badLossLow&&pos&&pos>grp-6?T.badLossLow:T.badLoss) }
     else b=v([`A setback.`,`Not good enough, and they know it.`,`One to learn from, and quickly.`]);
-    const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=28?v(["routed","ran away from","buried"]):mg.margin<=3?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
-                  :(mg.margin>=28?v(["was run over by","was blown out by"]):mg.margin<=3?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
+    const verb=mg.pens?(won?"won on penalties against":"lost on penalties to"):mg.draw?v(["drew with","shared the points with","were held by"]):won?(mg.margin>=MG("crush")?v(["routed","ran away from","buried"]):mg.margin<=MG("close")?v(["edged","held off","survived"]):v(["beat","handled","got past"]))
+                  :(mg.margin>=MG("crush")?v(["was run over by","was blown out by"]):mg.margin<=MG("close")?v(["fell just short against","lost a heartbreaker to","came up short against"]):v(["lost to","fell to","was beaten by"]));
     items.push({p:100,k:"you",tone:"gold",
       h:`${my} ${verb} ${rankTxt(oppR)}${opp}, ${ms}-${os}`,b:b});
   }else{
@@ -2182,13 +2189,13 @@ function weekNews(W){
 
   // a team on a run
   const st=streakOf(my);
-  if(st.n>=4)items.push({p:80,k:"run",tone:st.won?"gold":"flag",
+  if(st.n>=RUN(4))items.push({p:80,k:"run",tone:st.won?"gold":"flag",
     h:st.won?`${my} has won ${st.n} in a row`:`${my} has lost ${st.n} straight`,
     b:st.won?`Nobody wants to see you right now.`:`Something has to change.`});
 
   // biggest beating
   const blow=gs.slice().sort((a,b)=>b.margin-a.margin)[0];
-  if(blow&&blow.margin>=38)items.push({p:30,k:"blowout",tone:"muted",
+  if(blow&&blow.margin>=MG("blow"))items.push({p:30,k:"blowout",tone:"muted",
     h:`${blow.winner} ${Math.max(blow.hp,blow.ap)}, ${blow.loser} ${Math.min(blow.hp,blow.ap)}`,
     b:`The ${WK()}'s worst mismatch.`});
 

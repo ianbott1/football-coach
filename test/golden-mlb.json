@@ -1,5 +1,5 @@
 {
- "fp": "040ebabfbec9b12d",
+ "fp": "5513127a54d650dd",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -40,6 +40,16 @@
    "fp": "040ebabfbec9b12d",
    "from": "f3df4d2c026a9459",
    "note": "round 59: one late decision in one-run games; hockey hire text"
+  },
+  {
+   "fp": "c42c91797724f149",
+   "from": "040ebabfbec9b12d",
+   "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "5513127a54d650dd",
+   "from": "c42c91797724f149",
+   "note": "round 60: achievements, margins and runs scaled by sport"
   }
  ],
  "result": {
@@ -54,7 +64,7 @@
     "heis": "a932a8caf31d17f1",
     "history": "e8f71d9323a469f2",
     "universe": "52c6650c121fcf89",
-    "screens": "cb586507ff2ffaf1"
+    "screens": "ff491afc0fcc5a84"
    },
    {
     "year": 2027,
@@ -66,7 +76,7 @@
     "heis": "d4738402a9d30553",
     "history": "f225520b0c98836f",
     "universe": "5eda06139ba7090c",
-    "screens": "b0104e513fc1225f"
+    "screens": "c191bab6f3577623"
    }
   ],
   "Colorado#777": [
@@ -80,7 +90,7 @@
     "heis": "953206088ea314e9",
     "history": "ed7fa33de07f6ade",
     "universe": "bf5a8fbd46fa3fec",
-    "screens": "79b1b59edc34815a"
+    "screens": "617a4d7c0c502995"
    },
    {
     "year": 2027,
@@ -92,7 +102,7 @@
     "heis": "6e9ad98335309fb6",
     "history": "59928e311dedf8d3",
     "universe": "c0441cc9c76f19de",
-    "screens": "b1a32c99994560b2"
+    "screens": "284d2e0b96dd1cfb"
    }
   ],
   "schedules#60": [

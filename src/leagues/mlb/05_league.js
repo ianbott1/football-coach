@@ -47,7 +47,7 @@ const LEAGUE={
     "Corona HS","Mater Dei","Georgia Tech","UCLA","Tennessee","Clemson","Virginia"],
   awards:{mvp:"Most Valuable Player", weights:{C:1,"1B":1,"2B":1,"3B":1,SS:1,LF:1,CF:1,RF:1,DH:1,SP:1,SP2:1,SP3:1,CL:1},
     premium:{C:1.04,"1B":0.98,"2B":1.02,"3B":1.02,SS:1.05,LF:0.98,CF:1.04,RF:1,DH:0.9,SP:0.85,SP2:0.8,SP3:0.78,CL:0.55}},
-  tuning:{wpK:{safe:650,balanced:680,aggressive:720},   /* the engine's own win chance per rating gap (p=1/(1+10^(-gap/k))): gap 50 wins 53.9%, 100 wins 59.1% */
+  tuning:{century:1000, unbeaten:0.67, /* round 60: achievements (unbeaten: 109 wins, ~0.6% of team-seasons) */ wpK:{safe:650,balanced:680,aggressive:720},   /* the engine's own win chance per rating gap (p=1/(1+10^(-gap/k))): gap 50 wins 53.9%, 100 wins 59.1% */
     hfa:40, gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12},
   venues:{"Colorado":6,"Boston":2,"Cincinnati":1,"Sacramento":1,"San Francisco":-2,"Seattle":-2,"San Diego":-1},
   schedule:{games:162},

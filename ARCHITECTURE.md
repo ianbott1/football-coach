@@ -358,6 +358,24 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 60: football's numbers in the shared code, swept.
+- Achievements (96_goals): "Century" was 100 wins (inside one baseball season; nine in football): now about ten
+  seasons' wins (LEAGUE.tuning.century: NBA/NHL 500, MLB 1,000, soccer 250, college basketball 200, football 100).
+  "Unbeaten" can't happen over 82 or 162 games: a win share as rare as a perfect college football season (~0.6% of
+  team-seasons, measured: NBA 85%, NHL 72%, MLB 67% = 109 wins; tuning.unbeaten; football and soccer: no losses).
+  "Giant-killer" was 150 rating points, which each engine's own scale made a long shot in pro basketball (280) and
+  a mild upset in baseball (680): now a win you had a one-in-four chance of (wpScale x log10 3).
+- Margins (core MG, SPORT.margins): the words were football's, 3 close, 21 a rout, 28 never in doubt, 38 the week's
+  blowout; a hockey or soccer side "lost a heartbreaker" by three and nothing was ever routed. Basketball 3/20/25/32,
+  hockey 1/4/5/6, soccer 1/3/4/5, baseball 1/7/9/11. "Over by halftime" is "Decided early" (no halves in two sports).
+- Runs (RUN): a slide was three straight losses, a streak five, a story four. The share of days on such a run is
+  the same in every sport (13-15% on 3+ losses, measured) but 162 games made it ~22 days a season in baseball (1.6
+  in football): two more over 50+ games, one more over 20+. The board's streak objective already scaled.
+- Goldens were first written on a build without RUN (my mistake); the suite caught four, rewritten on the build.
+- Left alone: the in-season rating update is /400 with football's margin multiplier in every game; each game was
+  calibrated with it in place (every calibration check measures the real app), so rescaling it would mean
+  recalibrating all seven for nothing a player sees.
+
 Round 59: reloads re-rolled baseball's season (Muse, Instinct, second looks).
 - Cause: round 57's packSeries sorted the free clubs with a random comparator (slack, then rng.r()-0.5) inside
   sort(). In a browser that came out differently on each load, so a reload built another schedule and replayed the
