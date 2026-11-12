@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="88faee2";
+<script>const BUILD_ID="1ba0b33";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -3573,33 +3573,96 @@ const HL_SPORT=(function(){
       if(c.kind==="goal"){ bx=Math.min(1.02,c.end[0]+s*0.006) }
       if(c.kept&&c.kind==="save"){ bx=c.end[0]-s*0.01 } }
     return {bx,by,z,carrier,k} }
+  /* ---- how they move (round 65) ----
+     Attack: the side keeps its 4-4-2 shape, pushed up the pitch with the ball and shifted toward its side. The man who
+     takes each pass starts his run before it's played and curves into space; on a move down the wing the full back
+     overlaps outside the winger; as the cross or shot comes, the forwards attack the near post, the far post and the
+     penalty spot, a midfielder arrives late at the edge of the box. After a goal the scorer wheels away to the corner
+     and the nearest team-mates chase him. Defence: a flat back four that holds a line and slides across with the
+     ball, a midfield four a step in front, two strikers loitering; the nearest man presses the ball, the next covers;
+     in the box each defender picks up the nearest attacker, goal side. The keeper narrows the angle off his line and
+     dives at the shot. */
+  const BOX=[[0.94,0.43],[0.93,0.6],[0.89,0.5],[0.83,0.46],[0.81,0.32]];   // near post, far post, spot, edge, late
+  function attAt(c,t){
+    const n=c.W.length, tb=0.7, ts=0.85, b=ballAt(c,t), bx=b.bx, by=b.by, prog=c.plan==="corner"?1:Math.min(1,t/tb), fin=c.plan==="corner"?1:Math.max(0,Math.min(1,(t-tb*0.75)/(tb*0.3)));
+    const wingSide=c.plan==="wing"?(c.W[2]&&c.W[2][1]>0.5?1:0):-1;
+    const push=Math.min(0.42,Math.max(0,bx-0.35))*0.9+0.1*prog;
+    const pos=BASE.map((p,i)=>{ if(i===0)return [0.05+0.1*prog,0.5+(by-0.5)*0.1];
+      const depth=i<5?0.55:i<9?0.8:0.9, a=p[0]+push*depth+0.04*prog, y=0.5+(p[1]-0.5)*(i<5?0.9:1.0)+(by-0.5)*(i<5?0.12:0.22);
+      return [a,y] });
+    // the full back's overlap down the wing being used
+    if(wingSide>=0){ const fb=wingSide?4:1, wg=wingSide?8:5, o=Math.max(0,Math.min(1,(prog-0.2)/0.6));
+      pos[fb]=[hlLerp(pos[fb][0],Math.min(0.86,bx+0.12),hlEase(o)),hlLerp(pos[fb][1],wingSide?0.93:0.07,hlEase(o))];
+      pos[wg]=[pos[wg][0],hlLerp(pos[wg][1],wingSide?0.78:0.22,hlEase(o))] }
+    // the box: forwards and a late midfielder attack it as the final ball comes
+    if(c.plan==="corner"){ [2,3].forEach((i,q)=>{ pos[i]=[0.52,0.38+q*0.24] }); [1,4].forEach((i,q)=>{ pos[i]=[0.7,0.2+q*0.6] }) }
+    if(c.plan!=="pen"){ const crash=[9,10,6,7,c.plan==="wing"?(wingSide?5:8):5].filter(i=>i!==c.rec[n-1]);
+      crash.forEach((i,q)=>{ const tg=BOX[q%BOX.length]; const y=c.plan==="wing"&&wingSide===0?1-tg[1]:tg[1]; pos[i]=[hlLerp(pos[i][0],tg[0],hlEase(fin)*(q<3?1:0.7)),hlLerp(pos[i][1],y,hlEase(fin)*(q<3?1:0.7))] }) }
+    else pos.forEach((p,i)=>{ if(i&&i!==c.rec[n-1])pos[i]=i<5?[0.55+((i*7)%3)*0.03,0.25+((i*3)%4)*0.17]:[0.79-((i*7)%3)*0.012,0.2+((i*7)%10)*0.064] });   // a penalty: everyone back outside the box
+    // each receiver: starts his run a beat before the pass, curving into the space it's played to
+    c.rec.forEach((ri,j)=>{ if(!ri)return; const w=c.W[j], f=t<tb?t/tb*(n-1):n-1, lead=j-f;
+      if(lead<=-0.15&&j<n-1){ return }
+      const s=Math.max(0,Math.min(1,1-(lead-0.05)/1.1)), e=hlEase(s), from=pos[ri], bend=(j%2?1:-1)*0.05*Math.sin(e*Math.PI);
+      pos[ri]=[hlLerp(from[0],w[0],e)+bend*0.3,hlLerp(from[1],w[1],e)+bend] });
+    if(t>=tb){ const w=c.W[n-1]; pos[c.rec[n-1]]=[w[0],w[1]] }
+    // the celebration: the scorer to the corner flag, team-mates after him
+    if(c.kind==="goal"&&t>ts){ const s=hlEase((t-ts)/(1-ts)), cy=by<0.5?0.03:0.97, sc=c.rec[n-1];
+      pos[sc]=[hlLerp(c.W[n-1][0],0.96,s),hlLerp(c.W[n-1][1],cy,s)];
+      pos.map((p,i)=>[Math.hypot(p[0]-pos[sc][0],p[1]-pos[sc][1]),i]).filter(([d,i])=>i&&i!==sc).sort((a,b2)=>a[0]-b2[0]).slice(0,3)
+        .forEach(([d,i],q)=>{ pos[i]=[hlLerp(pos[i][0],0.93-q*0.02,s*0.8),hlLerp(pos[i][1],cy+(cy<0.5?1:-1)*(0.04+q*0.03),s*0.8)] }) }
+    return pos.map(p=>[Math.max(0.02,Math.min(0.97,p[0])),Math.max(0.02,Math.min(0.98,p[1]))]) }
+  function defAt(c,t,att){
+    const n=c.W.length, tb=0.7, ts=0.85, b=ballAt(c,t), bx=b.bx, by=b.by, fin=c.plan==="corner"?1:Math.max(0,Math.min(1,(t-tb*0.75)/(tb*0.3)));
+    const line=Math.min(0.9,Math.max(0.62,bx+0.12)), mid=line-0.15, top=line-0.3, sy=0.5+(by-0.5)*0.42, wid=0.36;
+    const pos=[null,
+      [line,sy-wid*0.82],[line+0.005,sy-wid*0.27],[line+0.005,sy+wid*0.27],[line,sy+wid*0.82],
+      [mid,sy-wid*0.9],[mid-0.01,sy-wid*0.3],[mid-0.01,sy+wid*0.3],[mid,sy+wid*0.9],
+      [top,sy-0.12],[top,sy+0.12]];
+    // in the box at the end: each defender goes goal side of the nearest attacker in it
+    if(fin>0){ const inBox=(att||[]).map((p,i)=>p&&i&&p[0]>0.8?i:-1).filter(i=>i>=0), used={};
+      [2,3,1,4,6,7].forEach(d=>{ let best=-1,bd=9; inBox.forEach(a=>{ if(used[a])return; const dd=Math.hypot(att[a][0]-pos[d][0],att[a][1]-pos[d][1]); if(dd<bd){bd=dd;best=a} });
+        if(best<0)return; used[best]=1; const m=att[best]; pos[d]=[hlLerp(pos[d][0],Math.min(0.97,m[0]+0.025),hlEase(fin)),hlLerp(pos[d][1],hlLerp(m[1],0.5,0.2),hlEase(fin))] }) }
+    if(c.plan==="pen"){ for(let i=1;i<11;i++)pos[i]=i<9?[0.805+((i*5)%3)*0.01,0.23+((i*3)%10)*0.064]:[0.6,0.4+(i-9)*0.2]; pos[0]=[0.99,0.5]; const dv=keeperDive(c,t); if(dv)pos[0]=[0.99,hlLerp(0.5,dv.y,dv.k)];
+      return pos.map(p=>p&&[Math.max(0.03,Math.min(0.99,p[0])),Math.max(0.02,Math.min(0.98,p[1]))]) }
+    // the press: the nearest outfield man to the ball closes it, the next drops in behind him
+    const nr=pos.map((p,i)=>p&&i?[Math.hypot(p[0]-bx,p[1]-by),i]:null).filter(Boolean).sort((a,b2)=>a[0]-b2[0]);
+    if(nr[0]){ const i=nr[0][1]; pos[i]=[hlLerp(pos[i][0],bx+0.02,0.7),hlLerp(pos[i][1],by,0.7)] }
+    if(nr[1]){ const i=nr[1][1]; pos[i]=[hlLerp(pos[i][0],Math.min(0.95,bx+0.07),0.4),hlLerp(pos[i][1],hlLerp(by,0.5,0.4),0.4)] }
+    // the keeper: off his line on the angle between ball and goal
+    const ang=Math.atan2(by-0.5,1-bx), off=Math.min(0.03,Math.max(0.008,0.03*(1-Math.hypot(1-bx,by-0.5)/0.6)));
+    let gx=0.99-off*Math.cos(ang), gy=0.5+Math.max(-0.045,Math.min(0.045,(by-0.5)*0.25));
+    const dv=keeperDive(c,t); if(dv){ gy=hlLerp(gy,dv.y,dv.k); gx=Math.min(0.99,gx+0.004*dv.k) }
+    pos[0]=[gx,gy];
+    return pos.map(p=>p&&[Math.max(0.03,Math.min(0.99,p[0])),Math.max(0.02,Math.min(0.98,p[1]))]) }
+  /* the dive: from the moment the shot is struck. Saves are reached; goals are dived at a beat late, or the wrong way
+     when it goes in the other half of the goal from where he started */
+  function keeperDive(c,t){
+    const tb=0.7, ts=0.85; if(t<tb+0.04||c.plan==="pen"&&t<tb)return null;
+    if(c.how==="over"||c.how==="wide")return null;
+    const s=Math.min(1,(t-tb-0.04)/(ts-tb)), k=hlEase(s);
+    let y=c.end[1]; if(c.kind==="goal"){ const wrong=((c.e&&c.e.u)||0)%3===0; y=wrong?0.5-(c.end[1]-0.5)*0.9:hlLerp(0.5,c.end[1],0.7) }
+    const dir=y>0.5?1:-1; return {y:Math.max(0.44,Math.min(0.56,y)),k:k*(c.kind==="goal"?0.9:1),dir:dir} }
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.7, ts=0.85;
     const {bx,by,z}=ballAt(c,t);
     const prog=Math.min(1,t/tb);   // how far the attack has come
     const kA=c.kits[c.home?0:1], kD=c.kits[c.home?1:0];
-    // the attacking side: pushed up as the move goes on, the back line holding a little deeper; the receiver of the
-    // next ball runs to meet it; the others drift with the ball's side of the pitch
-    const att=BASE.map((p,i)=>{ const line=i===0?0:i<5?0.10:i<9?0.18:0.2;
-      let a=p[0]+(i?line+line*prog:0.06*prog), y=p[1]+(by-0.5)*(i<5?0.08:0.16)*(i?1:0);
-      const j=c.rec.indexOf(i); if(j>=0&&i){ const w=c.W[Math.max(0,j)], near=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-j)):j===n-1?1:0; a=hlLerp(a,w[0],hlEase(Math.min(1,near*1.3))); y=hlLerp(y,w[1],hlEase(Math.min(1,near*1.3))) }
-      if(i===c.rec[n-1]&&t>=tb){ const w=c.W[n-1]; a=w[0]; y=w[1] }
-      return [Math.min(0.97,a),y] });
-    // the defending side: a compact block between ball and goal, squeezing toward the ball; two go to it; the keeper
-    // on his line, toward the shot
-    const def=BASE.map((p,i)=>{ let a=1-p[0]*(0.78-0.18*prog), y=0.5+(p[1]-0.5)*(0.8-0.22*prog)+(by-0.5)*0.32;
-      if(i===0){ a=0.985; y=0.5+(by-0.5)*0.25; if(t>=tb){ const s=Math.min(1,(t-tb)/(ts-tb)); const ty=c.kept?c.end[1]:c.kind==="goal"?0.5+(0.5-c.end[1])*0.4:0.5; y=hlLerp(y,ty,hlEase(s)) } }
-      return [Math.max(0.5,a),Math.min(0.97,Math.max(0.03,y))] });
-    let near=[]; def.forEach((p,i)=>{ if(i)near.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); near.sort((a,b)=>a[0]-b[0]);
-    near.slice(0,2).forEach(([d,i],q)=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.55-q*0.2),hlLerp(p[1],by,0.55-q*0.2)] });
+    // positions are where each player is heading, averaged over the last moments: players accelerate and settle
+    // rather than snap (a stateless lag, so a frame is the same however it's reached)
+    const lag=(fn)=>{ const S=[0,0.02,0.04,0.06], out=[]; S.forEach((dt,q)=>{ const P2=fn(Math.max(0,t-dt)); P2.forEach((p,i)=>{ if(!out[i])out[i]=[0,0,0]; if(!p)return; const wgt=4-q; out[i][0]+=p[0]*wgt; out[i][1]+=p[1]*wgt; out[i][2]+=wgt }) });
+      return out.map(o=>o[2]?[o[0]/o[2],o[1]/o[2]]:null) };
+    const att=lag(tt=>attAt(c,tt)), def=lag(tt=>defAt(c,tt,att));
+    const kick=t>=tb&&t<ts+0.02, sIdx=c.rec[n-1];
     const r=Math.max(5,W/80), [qx,qy]=P(W,H,c,Math.min(1.03,bx),by);
     // the move so far, faint, and the shot once it's struck
     const done=[]; for(let q=0;q<=Math.min(n-1,Math.floor(prog*(n-1)));q++)done.push(P(W,H,c,c.W[q][0],c.W[q][1]));
     if(done.length){ done.push(t<tb?[qx,qy]:P(W,H,c,c.W[n-1][0],c.W[n-1][1])); hlPath(x,done,"rgba(255,255,255,.35)",[4,5],1.3) }
     if(t>=tb){ const a=P(W,H,c,c.W[n-1][0],c.W[n-1][1]); hlPath(x,[a,[qx,qy]],c.kind==="goal"?"rgba(255,226,92,.85)":"rgba(255,255,255,.6)",null,1.8) }
     const face=(px,py)=>Math.atan2(qy-py,qx-px);
-    const sIdx=c.rec[n-1];
-    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:NUM[i],dir:face(px,py)}) });
+    const dv=keeperDive(c,t);
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]);
+      if(i===0&&dv){ const ang=(c.home?1:-1)*(dv.dir>0?Math.PI/2:-Math.PI/2); hlPlayer(x,px,py,r,hlKit("",c.gk[1]),{dive:{ang:ang,k:dv.k}}); return }
+      hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:NUM[i],dir:face(px,py)}) });
     att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const hot=i===sIdx&&t>=tb-0.12; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:NUM[i],dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
     // the ball and the last few moments of its path
     const tr=[]; for(let q=8;q>=1;q--){ const b=ballAt(c,t-q*0.012); const pp=P(W,H,c,Math.min(1.03,b.bx),b.by); tr.push([pp[0],pp[1]-b.z*W]) }
@@ -6767,6 +6830,13 @@ function hlKit(team,alt){
    a ring and his name. o: {num, label, hot, dir (radians: which way he faces), alpha} */
 function hlPlayer(x,px,py,r,kit,o){
   o=o||{}; x.save(); if(o.alpha!=null)x.globalAlpha=o.alpha;
+  // a keeper's dive: the body laid out along the dive, a blur behind it
+  if(o.dive){ const a=o.dive.ang, k=1+o.dive.k*0.9; x.translate(px,py); x.rotate(a);
+    x.beginPath(); x.ellipse(r*0.3,r*0.4,r*k*1.05,r*0.8,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
+    for(let q=2;q>=1;q--){ x.globalAlpha=(o.alpha!=null?o.alpha:1)*0.18*q; x.beginPath(); x.ellipse(-q*r*0.7*o.dive.k,0,r*k,r*0.85,0,0,Math.PI*2); x.fillStyle=kit.fill; x.fill() }
+    x.globalAlpha=o.alpha!=null?o.alpha:1; const g=x.createLinearGradient(0,-r,0,r); g.addColorStop(0,hlShade(kit.fill,0.25)); g.addColorStop(1,hlShade(kit.fill,-0.3));
+    x.beginPath(); x.ellipse(0,0,r*k,r*0.85,0,0,Math.PI*2); x.fillStyle=g; x.fill(); x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
+    x.restore(); return }
   x.beginPath(); x.ellipse(px+r*0.28,py+r*0.38,r*1.02,r*0.82,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
   if(o.hot){ const ph=(HLK.now%900)/900, rr=r*(1.55+0.35*Math.sin(ph*Math.PI*2));
     x.beginPath(); x.arc(px,py,rr,0,Math.PI*2); x.strokeStyle="rgba(255,226,92,.9)"; x.lineWidth=Math.max(1.5,r*0.22); x.stroke() }
