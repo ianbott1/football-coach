@@ -50,59 +50,86 @@ const HL_SPORT=(function(){
     else if(how==="over"){ end=[1.03,0.5+(r()-0.5)*goalW*0.9] }
     else end=[1.03,r()<0.5?post[0]-0.03-r()*0.06:post[1]+0.03+r()*0.06];
     const nm=shooter.n?String(shooter.n).split(" ").slice(-1)[0]:"";
-    const inks=hlInks(g.home,g.away);
+    const inks=hlInks(g.home,g.away), kits=hlKits(g.home,g.away);
     // keepers in a colour neither side wears
-    const gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],inks);
-    return {kind,how,e,tm,opp,home:e.side==="home",W,rec,end,kept,postHit,nm,text,plan,sh,sa,m:e.m,base:kind==="goal"?3800:2900,inks,gk:[gks[0],gks[1]]};
+    const gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],[kits[0].fill,kits[1].fill]);
+    return {kind,how,e,tm,opp,home:e.side==="home",W,rec,end,kept,postHit,nm,text,plan,sh,sa,m:e.m,base:kind==="goal"?3800:2900,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
   }
   // pitch coordinates (attack frame -> screen)
   const P=(W,H,c,a,y)=>{ const X=c.home?a:1-a, Y=c.home?y:1-y; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
   function pitch(x,W,H){
-    x.fillStyle="#2F7A3B"; x.fillRect(0,0,W,H);
-    for(let i=0;i<10;i++){ if(i%2)continue; x.fillStyle="#348442"; x.fillRect(W*PAD+i*W*(1-2*PAD)/10,H*PAD,W*(1-2*PAD)/10,H*(1-2*PAD)) }
+    x.fillStyle="#1E5E2A"; x.fillRect(0,0,W,H);
     const L=W*PAD, T=H*PAD, R=W*(1-PAD), B=H*(1-PAD), w=R-L, h=B-T;
-    x.strokeStyle="rgba(240,246,236,.85)"; x.lineWidth=1.3; x.strokeRect(L,T,w,h);
-    x.beginPath(); x.moveTo(L+w/2,T); x.lineTo(L+w/2,B); x.stroke();
-    x.beginPath(); x.arc(L+w/2,T+h/2,h*0.135,0,Math.PI*2); x.stroke();
-    [[L,1],[R,-1]].forEach(([gx,s])=>{ x.strokeRect(s>0?gx:gx-w*0.157,T+h*0.2,w*0.157,h*0.6); x.strokeRect(s>0?gx:gx-w*0.052,T+h*0.37,w*0.052,h*0.26);
-      x.fillStyle="rgba(240,246,236,.9)"; x.fillRect(s>0?gx-w*0.012:gx,T+h*post[0],w*0.012,h*goalW) });
+    hlGrass(x,0,0,W,H,{bands:14,base:"#2C7A37",alt:"#33873F",seed:11});
+    const lw=Math.max(1.2,W/520), pa=w*0.157, ga=w*0.052, cr=h*0.135;
+    hlLines(x,lw,()=>{
+      x.strokeRect(L,T,w,h);
+      x.beginPath(); x.moveTo(L+w/2,T); x.lineTo(L+w/2,B); x.stroke();
+      x.beginPath(); x.arc(L+w/2,T+h/2,cr,0,Math.PI*2); x.stroke();
+      [[L,1],[R,-1]].forEach(([gx,sd])=>{
+        x.strokeRect(sd>0?gx:gx-pa,T+h*0.2,pa,h*0.6); x.strokeRect(sd>0?gx:gx-ga,T+h*0.37,ga,h*0.26);
+        // the penalty arc ("the D"): the part of a 9.15m circle round the spot outside the box
+        const spx=gx+sd*w*0.105, a=Math.acos(Math.min(1,(pa-w*0.105)/cr)); x.beginPath();
+        x.arc(spx,T+h/2,cr,sd>0?-a:Math.PI-a,sd>0?a:Math.PI+a); x.stroke() });
+      // corner arcs
+      [[L,T,0],[R,T,Math.PI/2],[R,B,Math.PI],[L,B,Math.PI*1.5]].forEach(([cx,cy,a0])=>{ x.beginPath(); x.arc(cx,cy,w*0.009,a0,a0+Math.PI/2); x.stroke() });
+    });
+    x.fillStyle="rgba(246,250,242,.92)";
+    [[L+w/2,T+h/2],[L+w*0.105,T+h/2],[R-w*0.105,T+h/2]].forEach(([px,py])=>{ x.beginPath(); x.arc(px,py,lw*1.4,0,Math.PI*2); x.fill() });
+    [[L,-1],[R,1]].forEach(([gx,sd])=>hlNet(x,gx,T+h*post[0],T+h*post[1],w*0.022,sd));
+    // corner flags
+    [[L,T],[R,T],[R,B],[L,B]].forEach(([cx,cy])=>{ x.fillStyle="#F2C14E"; x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+(cx<W/2?-1:1)*5,cy-3); x.lineTo(cx,cy-6); x.closePath(); x.fill() });
   }
-  function idle(x,W,H){ hlCaption(x,W,H,"Highlights: goals and big chances play here",null,"rgba(255,255,255,.75)") }
-  function frame(x,W,H,c,t){
-    // time: the build-up takes the first 70%, the shot the next 15%, the end the rest
-    const n=c.W.length, tb=0.7, ts=0.85;
-    let bx,by,z=0, carrier=-1, k=0;
-    if(t<tb){ const f=t/tb*(n-1); k=Math.min(n-2,Math.floor(f)); const s=hlEase(f-k); const a=c.W[k], b=c.W[k+1];
-      bx=hlLerp(a[0],b[0],s); by=hlLerp(a[1],b[1],s); z=Math.sin(s*Math.PI)*(c.plan==="wing"&&k===n-2?0.05:0.012); carrier=s<0.15?c.rec[k]:s>0.85?c.rec[k+1]:-1 }
-    else if(t<ts){ const s=(t-tb)/(ts-tb), a=c.W[n-1]; const e=c.postHit?[c.end[0],c.end[1]]:c.end;
-      bx=hlLerp(a[0],e[0],s); by=hlLerp(a[1],e[1],s); z=Math.sin(s*Math.PI)*0.02 }
+  function idle(x,W,H){ hlTicker(x,W,H,"Highlights: goals and big chances play here",8) }
+  const NUM=[1,2,5,6,3,7,4,8,11,9,10];
+  function ballAt(c,t){
+    const n=c.W.length, tb=0.7, ts=0.85; let bx,by,z=0, carrier=-1, k=0;
+    if(t<tb){ const f=Math.max(0,t)/tb*(n-1); k=Math.min(n-2,Math.floor(f)); const s=hlEase(f-k); const a=c.W[k], b=c.W[k+1];
+      bx=hlLerp(a[0],b[0],s); by=hlLerp(a[1],b[1],s); z=Math.sin(s*Math.PI)*(c.plan==="wing"&&k===n-2?0.05:c.plan==="corner"?0.06:0.012); carrier=s<0.15?c.rec[k]:s>0.85?c.rec[k+1]:-1 }
+    else if(t<ts){ const s=(t-tb)/(ts-tb), a=c.W[n-1]; const e=c.end;
+      bx=hlLerp(a[0],e[0],s); by=hlLerp(a[1],e[1],s); z=Math.sin(s*Math.PI)*(c.how==="over"?0.05:0.02) }
     else{ const s=(t-ts)/(1-ts); bx=c.end[0]; by=c.end[1];
       if(c.postHit){ bx=1-s*0.12; by=c.end[1]+(c.end[1]<0.5?-1:1)*s*0.08 }
-      if(c.kind==="goal"){ bx=Math.min(1.02,c.end[0]+s*0.006) } }
+      if(c.kind==="goal"){ bx=Math.min(1.02,c.end[0]+s*0.006) }
+      if(c.kept&&c.kind==="save"){ bx=c.end[0]-s*0.01 } }
+    return {bx,by,z,carrier,k} }
+  function frame(x,W,H,c,t){
+    const n=c.W.length, tb=0.7, ts=0.85;
+    const {bx,by,z}=ballAt(c,t);
     const prog=Math.min(1,t/tb);   // how far the attack has come
-    const ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    // the attacking side: pushed up as the move goes on; the receiver of the next ball runs to meet it
-    const att=BASE.map((p,i)=>{ let a=p[0]+(i?0.12+0.18*prog:0.06*prog), y=p[1]+(by-0.5)*0.12*(i?1:0);
+    const kA=c.kits[c.home?0:1], kD=c.kits[c.home?1:0];
+    // the attacking side: pushed up as the move goes on, the back line holding a little deeper; the receiver of the
+    // next ball runs to meet it; the others drift with the ball's side of the pitch
+    const att=BASE.map((p,i)=>{ const line=i===0?0:i<5?0.10:i<9?0.18:0.2;
+      let a=p[0]+(i?line+line*prog:0.06*prog), y=p[1]+(by-0.5)*(i<5?0.08:0.16)*(i?1:0);
       const j=c.rec.indexOf(i); if(j>=0&&i){ const w=c.W[Math.max(0,j)], near=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-j)):j===n-1?1:0; a=hlLerp(a,w[0],hlEase(Math.min(1,near*1.3))); y=hlLerp(y,w[1],hlEase(Math.min(1,near*1.3))) }
       if(i===c.rec[n-1]&&t>=tb){ const w=c.W[n-1]; a=w[0]; y=w[1] }
       return [Math.min(0.97,a),y] });
-    // the defending side: back in shape, squeezing toward the ball; two go to it; the keeper on the line, toward the shot
-    const def=BASE.map((p,i)=>{ let a=1-p[0]*(0.85-0.15*prog), y=0.5+(p[1]-0.5)*(0.85-0.2*prog)+(by-0.5)*0.3;
+    // the defending side: a compact block between ball and goal, squeezing toward the ball; two go to it; the keeper
+    // on his line, toward the shot
+    const def=BASE.map((p,i)=>{ let a=1-p[0]*(0.78-0.18*prog), y=0.5+(p[1]-0.5)*(0.8-0.22*prog)+(by-0.5)*0.32;
       if(i===0){ a=0.985; y=0.5+(by-0.5)*0.25; if(t>=tb){ const s=Math.min(1,(t-tb)/(ts-tb)); const ty=c.kept?c.end[1]:c.kind==="goal"?0.5+(0.5-c.end[1])*0.4:0.5; y=hlLerp(y,ty,hlEase(s)) } }
       return [Math.max(0.5,a),Math.min(0.97,Math.max(0.03,y))] });
     let near=[]; def.forEach((p,i)=>{ if(i)near.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); near.sort((a,b)=>a[0]-b[0]);
     near.slice(0,2).forEach(([d,i],q)=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.55-q*0.2),hlLerp(p[1],by,0.55-q*0.2)] });
-    const r=Math.max(3.2,W/95);
-    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.55)") });
-    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const sh=i===c.rec[n-1]&&t>=tb-0.12; hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.55)",sh?c.nm:"") });
-    // the ball, its shadow under it when in the air
-    const [qx,qy]=P(W,H,c,Math.min(1.03,bx),by);
-    x.beginPath(); x.arc(qx+z*W*0.4,qy+z*W*0.6,r*0.55,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.35)"; x.fill();
-    x.beginPath(); x.arc(qx,qy-z*W,r*0.6,0,Math.PI*2); x.fillStyle="#fff"; x.fill(); x.lineWidth=1; x.strokeStyle="#111"; x.stroke();
-    // words: the minute and who's attacking; at the end, what happened
-    const top=`${c.m}' ${c.tm}${t<ts?" attack":""}`;
+    const r=Math.max(5,W/80), [qx,qy]=P(W,H,c,Math.min(1.03,bx),by);
+    // the move so far, faint, and the shot once it's struck
+    const done=[]; for(let q=0;q<=Math.min(n-1,Math.floor(prog*(n-1)));q++)done.push(P(W,H,c,c.W[q][0],c.W[q][1]));
+    if(done.length){ done.push(t<tb?[qx,qy]:P(W,H,c,c.W[n-1][0],c.W[n-1][1])); hlPath(x,done,"rgba(255,255,255,.35)",[4,5],1.3) }
+    if(t>=tb){ const a=P(W,H,c,c.W[n-1][0],c.W[n-1][1]); hlPath(x,[a,[qx,qy]],c.kind==="goal"?"rgba(255,226,92,.85)":"rgba(255,255,255,.6)",null,1.8) }
+    const face=(px,py)=>Math.atan2(qy-py,qx-px);
+    const sIdx=c.rec[n-1];
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:NUM[i],dir:face(px,py)}) });
+    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const hot=i===sIdx&&t>=tb-0.12; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:NUM[i],dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
+    // the ball and the last few moments of its path
+    const tr=[]; for(let q=8;q>=1;q--){ const b=ballAt(c,t-q*0.012); const pp=P(W,H,c,Math.min(1.03,b.bx),b.by); tr.push([pp[0],pp[1]-b.z*W]) }
+    hlBall(x,qx,qy,r*0.55,z*W,t>0.1?tr:null);
+    // the score bug, the commentary, and what happened
+    const scored=c.kind==="goal"&&t>=ts, hs=c.sh+(scored&&c.home?1:0), as=c.sa+(scored&&!c.home?1:0);
+    hlBug(x,W,H,{home:c.home0,away:c.away0,hs:hs,as:as,hk:c.kits[0],ak:c.kits[1],clock:c.m+"'"});
+    if(t>=ts&&c.text)hlTicker(x,W,H,c.text,8+Math.max(10,Math.round(W/44))*1.7+6);
     const end=t>=ts?({goal:`GOAL! ${c.nm}`,save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
-    hlCaption(x,W,H,t>=ts&&c.text?`${c.m}' ${c.text}`:top,end,c.kind==="goal"&&t>=ts?ink:"#fff");
+    if(end)hlBanner(x,W,H,end,c.kind==="goal"?kA:null,(t-ts)/(1-ts));
   }
   return {aspect:0.62, clips, pitch, idle, frame};
 })();

@@ -36,23 +36,47 @@ const HL_SPORT=(function(){
     const sIdx=UNIT[unit]||3;
     const rec=W.map((w,i)=>{ if(i===W.length-1)return sIdx; let b=3,bd=9; for(let k=1;k<6;k++){ if(k===sIdx)continue; const p=ATT[k], dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=k} } return b });
     const end=kind==="goal"?[GOAL+0.012,net[0]+r()*(net[1]-net[0])]:[GOAL-0.012,0.5+(r()-0.5)*0.05];
-    const inks=hlInks(g.home,g.away); const gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks);
+    const inks=hlKits(g.home,g.away).map(k=>k.fill); const gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks);
     const nm=shooter?String(shooter).split(" ").slice(-1)[0]:"";
     return {kind,e,tm,home:attSide==="home",W,rec,end,nm,text,plan,m:e.m,base:kind==="goal"?3400:2600,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it
   const P=(W,H,c,a,y)=>{ const X=c.home?1-a:a, Y=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
   function pitch(x,W,H){
-    x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
+    // the arena in the dark, the boards, then the ice: a cold sheen, skate marks, the lines and circles under it
+    const bg=x.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#151A24"); bg.addColorStop(1,"#0D1118"); x.fillStyle=bg; x.fillRect(0,0,W,H);
     const L=W*PADX, T=H*PADY, w=W*(1-2*PADX), h=H*(1-2*PADY), rr=h*0.28;
-    x.beginPath(); x.moveTo(L+rr,T); x.lineTo(L+w-rr,T); x.quadraticCurveTo(L+w,T,L+w,T+rr); x.lineTo(L+w,T+h-rr); x.quadraticCurveTo(L+w,T+h,L+w-rr,T+h);
-    x.lineTo(L+rr,T+h); x.quadraticCurveTo(L,T+h,L,T+h-rr); x.lineTo(L,T+rr); x.quadraticCurveTo(L,T,L+rr,T); x.closePath();
-    x.fillStyle="#EEF4F8"; x.fill(); x.lineWidth=2; x.strokeStyle="#9FB3C4"; x.stroke();
-    const vl=(fx,col,lw)=>{ x.beginPath(); x.moveTo(L+fx*w,T+2); x.lineTo(L+fx*w,T+h-2); x.strokeStyle=col; x.lineWidth=lw; x.stroke() };
-    vl(0.5,"#D7263D",3); vl(0.35,"#2F6FB5",3); vl(0.65,"#2F6FB5",3); vl(1-GOAL,"#D7263D",1.2); vl(GOAL,"#D7263D",1.2);
-    x.beginPath(); x.arc(L+w/2,T+h/2,h*0.13,0,Math.PI*2); x.strokeStyle="#2F6FB5"; x.lineWidth=1.5; x.stroke();
-    [[1-GOAL,1],[GOAL,-1]].forEach(([gx,s])=>{ x.beginPath(); x.arc(L+gx*w,T+h/2,h*0.07,s>0?-Math.PI/2:Math.PI/2,s>0?Math.PI/2:Math.PI*1.5); x.fillStyle="#9CC9EC"; x.fill();
-      x.fillStyle="#D7263D"; x.fillRect(L+gx*w+(s>0?-w*0.012:0),T+h*net[0],w*0.012,h*(net[1]-net[0])) });
+    const rink=(o)=>{ const l=L-o, t=T-o, ww=w+2*o, hh=h+2*o, r=rr+o; x.beginPath(); x.moveTo(l+r,t); x.lineTo(l+ww-r,t); x.quadraticCurveTo(l+ww,t,l+ww,t+r); x.lineTo(l+ww,t+hh-r);
+      x.quadraticCurveTo(l+ww,t+hh,l+ww-r,t+hh); x.lineTo(l+r,t+hh); x.quadraticCurveTo(l,t+hh,l,t+hh-r); x.lineTo(l,t+r); x.quadraticCurveTo(l,t,l+r,t); x.closePath() };
+    rink(Math.max(3,W/160)); x.fillStyle="#D9E1E8"; x.fill(); x.strokeStyle="#5F6B78"; x.lineWidth=1; x.stroke();
+    x.save(); rink(0); x.clip();
+    const ice=x.createRadialGradient(L+w/2,T+h/2,h*0.1,L+w/2,T+h/2,w*0.62); ice.addColorStop(0,"#F7FBFE"); ice.addColorStop(1,"#DCE8F1"); x.fillStyle=ice; x.fillRect(L,T,w,h);
+    // skate marks: long faint arcs, from a seed
+    { const r=mulberry32(5); x.lineWidth=0.5; for(let k=0;k<70;k++){ const cx=L+r()*w, cy=T+r()*h, R=h*(0.2+r()*0.8), a=r()*Math.PI*2;
+      x.beginPath(); x.arc(cx,cy,R,a,a+0.25+r()*0.5); x.strokeStyle=`rgba(120,140,160,${0.05+r()*0.08})`; x.stroke() } }
+    hlSpeckle(x,L,T,w,h,Math.round(w*h/60),9,0.04);
+    const vl=(fx,col,lw)=>{ x.fillStyle=col; x.fillRect(L+fx*w-lw/2,T,lw,h) };
+    const lw=Math.max(2.5,w/110);
+    vl(0.35,"rgba(36,92,170,.88)",lw); vl(0.65,"rgba(36,92,170,.88)",lw); vl(0.5,"rgba(200,30,45,.85)",lw);
+    // the centre line's notches, as the NHL paints it
+    x.fillStyle="rgba(255,255,255,.7)"; for(let yy=T;yy<T+h;yy+=lw*2.4)x.fillRect(L+w/2-lw*0.12,yy,lw*0.24,lw*1.1);
+    vl(GOAL,"rgba(200,30,45,.8)",Math.max(1,lw*0.35)); vl(1-GOAL,"rgba(200,30,45,.8)",Math.max(1,lw*0.35));
+    const ring=(cx,cy,R,col)=>{ x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.strokeStyle=col; x.lineWidth=Math.max(1,lw*0.35); x.stroke() };
+    const dot=(cx,cy,R,col)=>{ x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.fillStyle=col; x.fill() };
+    ring(L+w/2,T+h/2,h*0.13,"rgba(36,92,170,.85)"); dot(L+w/2,T+h/2,lw*0.5,"rgba(36,92,170,.9)");
+    // the end-zone circles with their hash marks, and the neutral-zone dots
+    [0.19,0.81].forEach(fx=>[0.24,0.76].forEach(fy=>{ const cx=L+fx*w, cy=T+fy*h, R=h*0.17; ring(cx,cy,R,"rgba(200,30,45,.75)"); dot(cx,cy,lw*0.7,"rgba(200,30,45,.85)");
+      x.strokeStyle="rgba(200,30,45,.75)"; [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sy])=>{ x.beginPath(); x.moveTo(cx+sx*R*0.28,cy+sy*R*0.92); x.lineTo(cx+sx*R*0.28,cy+sy*R*1.15); x.stroke() }) }));
+    [0.39,0.61].forEach(fx=>[0.24,0.76].forEach(fy=>dot(L+fx*w,T+fy*h,lw*0.6,"rgba(200,30,45,.85)")));
+    // the creases and the nets
+    [[GOAL,1],[1-GOAL,-1]].forEach(([gx,sd])=>{ const cx=L+gx*w, cy=T+h/2;
+      x.beginPath(); x.moveTo(cx,cy-h*0.07); x.arc(cx,cy,h*0.07,sd>0?-Math.PI/2:Math.PI/2,sd>0?Math.PI/2:Math.PI*1.5,true); x.closePath();
+      x.fillStyle="rgba(110,175,230,.55)"; x.fill(); x.strokeStyle="rgba(200,30,45,.8)"; x.lineWidth=1; x.stroke();
+      hlNet(x,cx,T+h*net[0],T+h*net[1],w*0.018,sd); x.strokeStyle="#D7263D"; x.lineWidth=2; x.beginPath(); x.moveTo(cx,T+h*net[0]); x.lineTo(cx+w*0.018*sd,T+h*net[0]); x.lineTo(cx+w*0.018*sd,T+h*net[1]); x.lineTo(cx,T+h*net[1]); x.stroke() });
+    // the glass's shadow on the ice along the boards
+    const sg=x.createLinearGradient(0,T,0,T+h*0.06); sg.addColorStop(0,"rgba(30,40,55,.18)"); sg.addColorStop(1,"rgba(30,40,55,0)"); x.fillStyle=sg; x.fillRect(L,T,w,h*0.06);
+    x.restore();
+    rink(0); x.strokeStyle="#F5C342"; x.lineWidth=Math.max(1.5,W/400); x.stroke();   // the kick plate
   }
   function idle(x,W,H){ hlCaption(x,W,H,"Highlights: goals and big saves play here",null) }
   function frame(x,W,H,c,t){
@@ -71,10 +95,14 @@ const HL_SPORT=(function(){
       return [hlLerp(p[0]-0.1,p[0],prog),p[1]+(by-0.5)*0.25] });
     let nr=[]; def.forEach((p,i)=>{ if(p&&i)nr.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); nr.sort((a,b)=>a[0]-b[0]);
     nr.slice(0,1).forEach(([d,i])=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.5),hlLerp(p[1],by,0.5)] });
-    const r=Math.max(3.4,W/90), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     def.forEach((p,i)=>{ if(!p)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.6)") });
     att.forEach((p,i)=>{ if(i===0&&c.en)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=tb-0.12?c.nm:"") });
-    const [qx,qy]=P(W,H,c,bx,by); x.beginPath(); x.arc(qx,qy,r*0.5,0,Math.PI*2); x.fillStyle="#0B0D12"; x.fill();
+    const [qx,qy]=P(W,H,c,bx,by);
+    const pos=tt=>{ tt=Math.max(0,tt); if(tt<tb){ const f=tt/tb*(n-1), k=Math.min(n-2,Math.floor(f)), s=hlEase(f-k), a=c.W[k], b=c.W[k+1]; return P(W,H,c,hlLerp(a[0],b[0],s),hlLerp(a[1],b[1],s)) }
+      if(tt<ts){ const s=(tt-tb)/(ts-tb), a=c.W[n-1]; return P(W,H,c,hlLerp(a[0],c.end[0],s),hlLerp(a[1],c.end[1],s)) } return P(W,H,c,c.end[0],c.end[1]) };
+    const tr=[]; for(let q=8;q>=1;q--)tr.push(pos(t-q*0.012));
+    hlBall(x,qx,qy,r*0.55,0,t>0.1?tr:null,{kind:"puck"});
     const top=`${c.m}' ${c.tm}${c.pp?" power play":""}${t<ts?" attack":""}`;
     const end=t>=ts?(c.kind==="goal"?(c.en?`EMPTY NET! ${c.nm}`:`GOAL! ${c.nm}`):"Saved!"):null;
     hlCaption(x,W,H,t>=ts&&c.text?`${c.m}' ${c.text}`:top,end,c.kind==="goal"?ink:null);

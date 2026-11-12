@@ -20,19 +20,37 @@ const HL_SPORT=(function(){
     const pass=r()<0.56, len=pass?Math.round(4+r()*45):Math.round(1+r()*30);
     const los=100-len, rcv=pass?(r()<0.62?2:3):1;
     const catchY=pass?Math.min(104,100+Math.round(r()*6)):104, lane=pass?(rcv===2?0.15:0.85)+(r()-0.5)*0.1:0.4+r()*0.2;
-    const inks=hlInks(g.home,g.away);
+    const inks=hlKits(g.home,g.away).map(k=>k.fill);
     return {d,tm,home:!!d.home,pass,len,los,rcv,catchY,lane,q:d.q,inks,base:3400,ot:d.q>=5};
   }
   const P=(W,H,c,yd,y)=>{ const f=Y(yd), X=c.home?1-f:f, YY=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+YY*H*(1-2*PADY)] };
   function pitch(x,W,H){
-    x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
+    const bg=x.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#161B26"); bg.addColorStop(1,"#0E121A"); x.fillStyle=bg; x.fillRect(0,0,W,H);
     const L=W*PADX, T=H*PADY, w=W*(1-2*PADX), h=H*(1-2*PADY);
-    x.fillStyle="#2F7A3B"; x.fillRect(L,T,w,h);
-    x.fillStyle="rgba(0,0,0,.18)"; x.fillRect(L,T,w*10/120,h); x.fillRect(L+w*110/120,T,w*10/120,h);
-    x.strokeStyle="rgba(240,246,236,.8)"; x.lineWidth=1; x.strokeRect(L,T,w,h);
-    for(let yd=0;yd<=100;yd+=10){ const px=L+w*Y(yd); x.beginPath(); x.moveTo(px,T); x.lineTo(px,T+h); x.lineWidth=yd===0||yd===100?2:1; x.stroke() }
-    x.fillStyle="rgba(240,246,236,.35)"; x.font=`600 ${Math.max(8,Math.round(w/50))}px var(--mono),monospace`; x.textAlign="center"; x.textBaseline="middle";
-    [10,20,30,40,50,60,70,80,90].forEach(yd=>{ x.fillText(String(Math.min(yd,100-yd)),L+w*Y(yd),T+h*0.12); x.fillText(String(Math.min(yd,100-yd)),L+w*Y(yd),T+h*0.88) });
+    // the sideline apron, then turf mown in five-yard bands
+    x.fillStyle="#24602E"; x.fillRect(L-W*0.008,T-H*0.03,w+W*0.016,h+H*0.06);
+    hlGrass(x,L,T,w,h,{bands:24,base:"#2B7536",alt:"#32823E",seed:21});
+    // the end zones: painted, with the diagonal stripes
+    [0,110].forEach(y0=>{ const ex=L+w*y0/120, ew=w*10/120; x.fillStyle="rgba(20,40,90,.55)"; x.fillRect(ex,T,ew,h);
+      x.save(); x.beginPath(); x.rect(ex,T,ew,h); x.clip(); x.strokeStyle="rgba(255,255,255,.08)"; x.lineWidth=ew*0.12;
+      for(let k=-h;k<ew+h;k+=ew*0.35){ x.beginPath(); x.moveTo(ex+k,T); x.lineTo(ex+k-h,T+h); x.stroke() } x.restore() });
+    const lw=Math.max(1,W/700);
+    hlLines(x,lw,()=>{
+      x.strokeRect(L,T,w,h);
+      for(let yd=0;yd<=100;yd+=5){ const px=L+w*Y(yd); x.lineWidth=yd===0||yd===100?lw*2.2:yd%10?lw*0.8:lw; x.beginPath(); x.moveTo(px,T); x.lineTo(px,T+h); x.stroke() }
+      // the hash marks, every yard, at the sidelines and between the hashes
+      x.lineWidth=lw*0.7; for(let yd=1;yd<100;yd++){ if(yd%5===0)continue; const px=L+w*Y(yd);
+        [[T,T+h*0.025],[T+h-h*0.025,T+h],[T+h*0.4,T+h*0.415],[T+h*0.585,T+h*0.6]].forEach(([a,b])=>{ x.beginPath(); x.moveTo(px,a); x.lineTo(px,b); x.stroke() }) }
+    });
+    // the numbers, with their direction arrows, as painted on the field
+    const fs=Math.max(8,Math.round(h/13)); x.font=`700 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle";
+    [10,20,30,40,50,60,70,80,90].forEach(yd=>{ const v=Math.min(yd,100-yd), px=L+w*Y(yd);
+      [[T+h*0.15,0],[T+h*0.85,Math.PI]].forEach(([py,rot])=>{ x.save(); x.translate(px,py); x.rotate(rot); x.fillStyle="rgba(246,250,242,.8)"; x.fillText(String(v),0,0);
+        if(yd!==50){ const sd=yd<50?-1:1, ax=sd*(x.measureText(String(v)).width/2+fs*0.3)*(rot?-1:1); x.beginPath(); x.moveTo(ax+sd*fs*0.22*(rot?-1:1),-fs*0.3); x.lineTo(ax,-fs*0.42); x.lineTo(ax,-fs*0.18); x.closePath(); x.fill() }
+        x.restore() }) });
+    // the goalposts, seen from above
+    [L,L+w].forEach((gx,k)=>{ const sd=k?1:-1; x.strokeStyle="#F2D24B"; x.lineWidth=2.4; x.beginPath(); x.moveTo(gx+sd*w*0.006,T+h*0.45); x.lineTo(gx+sd*w*0.006,T+h*0.55); x.stroke();
+      x.beginPath(); x.moveTo(gx,T+h*0.5); x.lineTo(gx+sd*w*0.006,T+h*0.5); x.stroke() });
   }
   function idle(x,W,H){ hlCaption(x,W,H,"Highlights: touchdowns play here",null) }
   function frame(x,W,H,c,t){
@@ -52,11 +70,11 @@ const HL_SPORT=(function(){
         if(i>=6){ yd+=runS*1.5 } else if(i>=2){ yd+=runS*Math.min(18,c.len*0.7); y=hlLerp(y,0.5,runS*0.2) } }
       return [yd,y] });
     const def=DEF.map((p,i)=>{ let yd=c.los+p[0], y=p[1]; if(t>snap){ const k=i<4?0.15:0.45*runS; yd=hlLerp(yd,bx,k*0.6); y=hlLerp(y,by,k) } return [yd,y] });
-    const r=Math.max(2.8,W/120), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     const tag=i=>t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
     def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
     off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i)) });
-    const [qx,qy]=P(W,H,c,bx,by); x.beginPath(); x.ellipse(qx,qy-z*W,r*0.75,r*0.48,0,0,Math.PI*2); x.fillStyle="#7A4A22"; x.fill(); x.lineWidth=1; x.strokeStyle="#fff"; x.stroke();
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm}, ${c.len} yard${c.len===1?"":"s"} out`;
     const end=t>=tEnd?`TOUCHDOWN! ${c.len}-yard ${c.pass?"pass":"run"}`:null;
     hlCaption(x,W,H,top,end,ink);

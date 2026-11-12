@@ -358,6 +358,26 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 64: the highlight pitches, redrawn (Ian: Football Manager's 2D at least).
+- Core drawing kit (97_highlights): the surface is painted once per size into an offscreen canvas (hlPitch) and copied
+  each frame, so textures cost nothing in play. Mown grass in bands with a sheen and speckle (hlGrass), lines with a
+  faint shadow (hlLines), goal nets with mesh (hlNet), a vignette (hlFinish). Players (hlPlayer): drop shadow, shaded
+  disc in the club's real colour (hlKit/hlKits: a clash or a green shirt sends the away side to a change kit), trim
+  ring, shirt number, a notch for which way he faces, a pulsing ring and name tag for the man the moment is about.
+  The ball (hlBall): shadow that drifts and softens with height, a trail of its last moments; a puck and an oval
+  football too. A broadcast score bug (hlBug), a commentary ticker (hlTicker) and a sliding banner in the scoring
+  side's colour (hlBanner). hlDot and hlCaption now draw through these, so every sport changed at once.
+- Canvas text can't read CSS variables: "var(--cond)" in a canvas font was ignored and every highlight caption drew
+  at the 10px default since round 51. The kit names the families ('Barlow Condensed', 'Barlow', 'IBM Plex Mono').
+- Surfaces: soccer (penalty arcs, spots, corner arcs and flags, nets), hockey (ice sheen and skate marks, boards and
+  kick plate, end-zone circles with hash marks, neutral-zone dots, creases, notched centre line), basketball (maple
+  boards with grain and varnish, painted lanes and centre circle, restricted arcs, backboards and nets), football
+  (five-yard bands, painted end zones, hash marks every yard, numbers with arrows, goalposts), baseball (checkerboard
+  outfield, warning track, padded wall with distances, textured dirt, mound, plate boxes, dugouts).
+- Soccer also shows the move so far as a dashed line and the shot as a solid one, shirt numbers 1-11 by position,
+  players facing the ball, and the score bug with the minute. Nothing here decides anything: every golden matched.
+- Seen at 640 and 360 wide (scratch hlshot.js renders clip frames from a live game to PNG).
+
 Round 63: the staff's re-sign bar, in every pro game.
 - Swept with a scratch measure (6 seasons each, every club's staff plan at each offseason): the bar was a fixed rating
   copied between games and sat above the league's median, so the staff let most expiring deals go. Kept share before:

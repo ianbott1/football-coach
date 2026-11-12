@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="3725974";
+<script>const BUILD_ID="30f938e";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -3436,24 +3436,48 @@ const HL_SPORT=(function(){
     if(kind==="inside")W.push([0.82,0.5+(r()-0.5)*0.4]);
     W.push(spot);
     const rec=W.map((w,i)=>{ if(i===W.length-1)return idx; let b=0,bd=9; ATT.forEach((p,j)=>{ if(j===idx)return; const dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=j} }); return b });
-    const inks=hlInks(g.home,g.away), last=e.k==="last"||e.k==="lastmiss";
+    const inks=hlKits(g.home,g.away).map(k=>k.fill), last=e.k==="last"||e.k==="lastmiss";
     return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,
       andOne:kind==="inside",text:""};
   }
   const P=(W,H,c,a,y)=>{ const X=c.home?a:1-a, Y=c.home?y:1-y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
   function pitch(x,W,H){
-    x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
+    const bg=x.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#161B26"); bg.addColorStop(1,"#0E121A"); x.fillStyle=bg; x.fillRect(0,0,W,H);
     const L=W*PADX, T=H*PADY, w=W*(1-2*PADX), h=H*(1-2*PADY);
-    x.fillStyle="#C99A5B"; x.fillRect(L,T,w,h);
-    x.strokeStyle="rgba(255,255,255,.9)"; x.lineWidth=1.4; x.strokeRect(L,T,w,h);
-    x.beginPath(); x.moveTo(L+w/2,T); x.lineTo(L+w/2,T+h); x.stroke(); x.beginPath(); x.arc(L+w/2,T+h/2,h*0.12,0,Math.PI*2); x.stroke();
-    [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,s])=>{ const cx=L+rx*w, cy=T+h/2, R=w*0.24;
-      x.fillStyle="rgba(150,40,40,.35)"; x.fillRect(s>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32); x.strokeRect(s>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32);
-      // the three-point line: straight from the baseline in the corners, then the arc round the rim
-      const Rr=h*0.45, th=Math.asin(Math.min(0.999,0.44/0.45)), a0=s>0?Math.PI-th:-th, a1=s>0?Math.PI+th:th;
-      x.beginPath(); x.moveTo(s>0?L+w:L,cy-h*0.44); x.lineTo(cx+Rr*Math.cos(s>0?a1:a0),cy-h*0.44);
-      x.arc(cx,cy,Rr,s>0?Math.PI+th:-th,s>0?Math.PI-th:th,s>0); x.lineTo(s>0?L+w:L,cy+h*0.44); x.stroke();
-      x.beginPath(); x.arc(cx,cy,Math.max(2.5,w*0.012),0,Math.PI*2); x.strokeStyle="#E8553D"; x.lineWidth=2; x.stroke(); x.strokeStyle="rgba(255,255,255,.9)"; x.lineWidth=1.4 });
+    // the apron, then maple boards running the length of the floor, each its own shade, with grain
+    x.fillStyle="#7A4E2A"; x.fillRect(L-W*0.012,T-H*0.02,w+W*0.024,h+H*0.04);
+    { const r=mulberry32(3), bh=Math.max(3,h/34); for(let yy=T,row=0;yy<T+h;yy+=bh,row++){ let xx=L-r()*w*0.2;
+        while(xx<L+w){ const bl=w*(0.12+r()*0.18), tone=r(); x.fillStyle=`rgb(${Math.round(206+tone*22)},${Math.round(160+tone*18)},${Math.round(104+tone*14)})`;
+          x.fillRect(Math.max(L,xx),yy,Math.min(bl,L+w-Math.max(L,xx)),Math.min(bh,T+h-yy)); x.fillStyle="rgba(90,55,25,.18)"; x.fillRect(Math.max(L,xx),yy,0.7,Math.min(bh,T+h-yy)); xx+=bl }
+        x.fillStyle="rgba(90,55,25,.12)"; x.fillRect(L,yy,w,0.6) }
+      for(let k=0;k<260;k++){ const gx=L+r()*w, gy=T+r()*h; x.fillStyle=`rgba(120,75,35,${0.05+r()*0.08})`; x.fillRect(gx,gy,4+r()*18,0.6) } }
+    // varnish: the arena lights reflected down the middle
+    const gl=x.createLinearGradient(0,T,0,T+h); gl.addColorStop(0,"rgba(255,255,255,0)"); gl.addColorStop(0.5,"rgba(255,248,230,.16)"); gl.addColorStop(1,"rgba(255,255,255,0)"); x.fillStyle=gl; x.fillRect(L,T,w,h);
+    const lw=Math.max(1.3,W/480);
+    // the painted lanes and the centre circle
+    [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,sd])=>{ x.fillStyle="rgba(28,58,120,.78)"; x.fillRect(sd>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32) });
+    x.beginPath(); x.arc(L+w/2,T+h/2,h*0.12,0,Math.PI*2); x.fillStyle="rgba(28,58,120,.55)"; x.fill();
+    hlLines(x,lw,()=>{
+      x.strokeRect(L,T,w,h);
+      x.beginPath(); x.moveTo(L+w/2,T); x.lineTo(L+w/2,T+h); x.stroke(); x.beginPath(); x.arc(L+w/2,T+h/2,h*0.12,0,Math.PI*2); x.stroke();
+      x.beginPath(); x.arc(L+w/2,T+h/2,h*0.04,0,Math.PI*2); x.stroke();
+      [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,sd])=>{ const cx=L+rx*w, cy=T+h/2;
+        x.strokeRect(sd>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32);
+        const fx=sd>0?L+w*0.81:L+w*0.19; x.beginPath(); x.arc(fx,cy,h*0.12,sd>0?Math.PI/2:-Math.PI/2,sd>0?Math.PI*1.5:Math.PI/2); x.stroke();
+        // the three-point line: straight from the baseline in the corners, then the arc round the rim
+        const Rr=h*0.45, th=Math.asin(Math.min(0.999,0.44/0.45));
+        x.beginPath(); x.moveTo(sd>0?L+w:L,cy-h*0.44); x.lineTo(cx-sd*Rr*Math.cos(th),cy-h*0.44);
+        x.arc(cx,cy,Rr,sd>0?Math.PI+th:-th,sd>0?Math.PI-th:th,sd>0); x.lineTo(sd>0?L+w:L,cy+h*0.44); x.stroke();
+        // the restricted-area arc and lane hash marks
+        x.beginPath(); x.arc(cx,cy,h*0.08,sd>0?Math.PI/2:-Math.PI/2,sd>0?Math.PI*1.5:Math.PI/2); x.stroke();
+        [0.86,0.9].forEach(fz=>{ const hx=sd>0?L+w*fz:L+w*(1-fz); x.beginPath(); x.moveTo(hx,T+h*0.34); x.lineTo(hx,T+h*0.32); x.moveTo(hx,T+h*0.66); x.lineTo(hx,T+h*0.68); x.stroke() }) });
+    });
+    // the baskets: backboard, rim, net
+    [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,sd])=>{ const cx=L+rx*w, cy=T+h/2, rr=Math.max(3,w*0.012);
+      x.fillStyle="rgba(240,244,248,.9)"; x.fillRect(cx+sd*rr*1.6-(sd>0?0:2),cy-h*0.09,2.2,h*0.18);
+      x.beginPath(); x.arc(cx,cy,rr,0,Math.PI*2); x.fillStyle="rgba(255,255,255,.35)"; x.fill();
+      x.strokeStyle="rgba(255,255,255,.6)"; x.lineWidth=0.6; for(let a=0;a<6;a++){ x.beginPath(); x.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr); x.lineTo(cx+Math.cos(a+1.2)*rr*0.4,cy+Math.sin(a+1.2)*rr*0.4); x.stroke() }
+      x.beginPath(); x.arc(cx,cy,rr,0,Math.PI*2); x.strokeStyle="#E8553D"; x.lineWidth=2; x.stroke() });
   }
   function idle(x,W,H){ hlCaption(x,W,H,"Highlights: the big baskets and last shots play here",null) }
   function frame(x,W,H,c,t){
@@ -3466,10 +3490,10 @@ const HL_SPORT=(function(){
       if(i===c.rec[n-1]&&t>=tb){ a=c.W[n-1][0]; y=c.W[n-1][1] } return [a,y] });
     // man to man: each defender between his man and the rim, closer on the ball
     const def=att.map(([a,y])=>{ const d=Math.hypot(a-bx,y-by)<0.04?0.35:0.25; return [hlLerp(a,RIM[0],d),hlLerp(y,RIM[1],d)] });
-    const r=Math.max(3.4,W/90), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
     att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=tb-0.12?c.nm:"") });
-    const [qx,qy]=P(W,H,c,bx,by); x.beginPath(); x.arc(qx,qy-z*W,r*0.62,0,Math.PI*2); x.fillStyle=hlFar(["#E8702A","#F2F2F2","#111318"],c.inks)[0]; x.fill(); x.lineWidth=1; x.strokeStyle="#2a1406"; x.stroke();
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.62,z*W,null,{fill:"#E8702A",ring:"#2a1406"});
     const top=c.last?`Last shot: ${c.tm}`:`${c.m} \u00b7 ${c.tm}`;
     const end=t>=ts?(c.last?(c.made?(c.kind==="three"?`${c.nm} hits it! Game over`:`${c.nm} ties it!`):"No good!"):c.kind==="three"?`${c.nm} from three!`:`${c.nm}, and one!`):null;
     hlCaption(x,W,H,top,end,c.made?ink:null);
@@ -6614,23 +6638,137 @@ function hlSkip(){
 function hlDraw(c,t){
   const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);
   x.setTransform(dpr,0,0,dpr,0,0); const W=cv.width/dpr, H=cv.height/dpr;
-  try{ HL_SPORT.pitch(x,W,H); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H) }catch(e){}
+  HLK.t=t; HLK.now=Date.now();
+  try{ hlPitch(x,W,H,dpr); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H); hlFinish(x,W,H) }catch(e){}
 }
+/* ---- the drawing kit (round 64: the pitches and players drawn to Football Manager's standard) ----
+   The surface (grass, wood, ice, dirt, lines, nets) is painted once per size into an offscreen canvas and copied
+   each frame; textures come from a seeded generator, never Math.random, so a frame is the same every time. */
+const HLK={surf:null, key:"", t:0, now:0};
+function hlPitch(x,W,H,dpr){
+  const k=W+"x"+H+"@"+dpr;
+  if(HLK.key!==k||!HLK.surf){ let c=null; try{ c=document.createElement("canvas") }catch(e){}
+    if(c&&c.getContext){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); const g=c.getContext("2d");
+      if(g){ g.setTransform(dpr,0,0,dpr,0,0); HL_SPORT.pitch(g,W,H); HLK.surf=c; HLK.key=k } } }
+  if(HLK.surf&&HLK.key===k){ x.save(); x.setTransform(1,0,0,1,0,0); x.drawImage(HLK.surf,0,0); x.restore() } else HL_SPORT.pitch(x,W,H);
+}
+/* a soft dark edge, as a broadcast camera sees a pitch under lights */
+function hlFinish(x,W,H){
+  const g=x.createRadialGradient(W/2,H/2,Math.min(W,H)*0.35,W/2,H/2,Math.hypot(W,H)*0.62);
+  g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,.28)"); x.fillStyle=g; x.fillRect(0,0,W,H) }
+function hlHex(c){ return "#"+c.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("") }
+function hlShade(hex,a){ const c=hlRGB(hex); return hlHex(a>=0?c.map(v=>v+(255-v)*a):c.map(v=>v*(1+a))) }
+function hlLum(hex){ const c=hlRGB(hex).map(v=>{ v/=255; return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4) }); return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2] }
+/* speckle: n flecks of light and dark over a box, from a seed */
+function hlSpeckle(x,L,T,w,h,n,seed,a){
+  const r=mulberry32(seed>>>0);
+  for(let i=0;i<n;i++){ const px=L+r()*w, py=T+r()*h, s=0.6+r()*1.4, d=r()<0.5;
+    x.fillStyle=d?`rgba(0,0,0,${a*(0.4+r()*0.6)})`:`rgba(255,255,255,${a*(0.3+r()*0.5)})`; x.fillRect(px,py,s,s) } }
+/* mown grass: bands (vertical or horizontal), each with a soft sheen across it, then fine speckle */
+function hlGrass(x,L,T,w,h,o){
+  o=o||{}; const n=o.bands||12, vert=o.vertical!==false, base=o.base||"#2E7D3A", alt=o.alt||"#358A42";
+  x.fillStyle=base; x.fillRect(L,T,w,h);
+  for(let i=0;i<n;i++){ const a=vert?[L+i*w/n,T,w/n,h]:[L,T+i*h/n,w,h/n];
+    const g=vert?x.createLinearGradient(a[0],0,a[0]+a[2],0):x.createLinearGradient(0,a[1],0,a[1]+a[3]);
+    const c=i%2?alt:base; g.addColorStop(0,hlShade(c,-0.04)); g.addColorStop(0.5,hlShade(c,0.03)); g.addColorStop(1,hlShade(c,-0.04));
+    x.fillStyle=g; x.fillRect(a[0],a[1],a[2]+0.5,a[3]+0.5) }
+  hlSpeckle(x,L,T,w,h,Math.round(w*h/40),o.seed||7,0.07);
+  // light from above the main stand: a little brighter at the top
+  const lg=x.createLinearGradient(0,T,0,T+h); lg.addColorStop(0,"rgba(255,255,230,.06)"); lg.addColorStop(1,"rgba(0,0,0,.08)"); x.fillStyle=lg; x.fillRect(L,T,w,h) }
+/* painted lines: slightly translucent, with a faint shadow so they sit on the grass */
+function hlLines(x,lw,fn){ x.save(); x.lineCap="round"; x.lineJoin="round";
+  x.strokeStyle="rgba(0,0,0,.18)"; x.lineWidth=lw+1.2; x.translate(0.6,0.8); fn(); x.translate(-0.6,-0.8);
+  x.strokeStyle="rgba(246,250,242,.92)"; x.lineWidth=lw; fn(); x.restore() }
+/* a goal net seen from above: a frame and a mesh */
+function hlNet(x,gx,y0,y1,depth,dir){
+  const x1=gx+depth*dir; x.save(); x.fillStyle="rgba(255,255,255,.10)"; x.fillRect(Math.min(gx,x1),y0,Math.abs(depth),y1-y0);
+  x.strokeStyle="rgba(255,255,255,.35)"; x.lineWidth=0.6; const st=Math.max(2,Math.abs(depth)/4);
+  for(let yy=y0;yy<=y1+0.1;yy+=st){ x.beginPath(); x.moveTo(gx,yy); x.lineTo(x1,yy); x.stroke() }
+  for(let k=0;k<=Math.abs(depth)+0.1;k+=st){ x.beginPath(); x.moveTo(gx+k*dir,y0); x.lineTo(gx+k*dir,y1); x.stroke() }
+  x.strokeStyle="#F7F7F2"; x.lineWidth=2; x.beginPath(); x.moveTo(gx,y0); x.lineTo(x1,y0); x.lineTo(x1,y1); x.lineTo(gx,y1); x.stroke(); x.restore() }
+/* a team's kit on the pitch: the shirt is the club's own colour (not the text colour lightened for a dark page), the
+   trim and number contrast with it */
+function hlKit(team,alt){
+  const raw=(LEAGUE.colors&&LEAGUE.colors[team])||alt||"#888888", fill=alt||raw, L=hlLum(fill);
+  return {fill:fill, trim:L>0.45?"#14161C":"#F6F4EE", num:L>0.45?"#14161C":"#FFFFFF"} }
+/* a player from above: a shadow, a shaded disc in the kit, a trim ring, the number; the one the moment is about gets
+   a ring and his name. o: {num, label, hot, dir (radians: which way he faces), alpha} */
+function hlPlayer(x,px,py,r,kit,o){
+  o=o||{}; x.save(); if(o.alpha!=null)x.globalAlpha=o.alpha;
+  x.beginPath(); x.ellipse(px+r*0.28,py+r*0.38,r*1.02,r*0.82,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
+  if(o.hot){ const ph=(HLK.now%900)/900, rr=r*(1.55+0.35*Math.sin(ph*Math.PI*2));
+    x.beginPath(); x.arc(px,py,rr,0,Math.PI*2); x.strokeStyle="rgba(255,226,92,.9)"; x.lineWidth=Math.max(1.5,r*0.22); x.stroke() }
+  if(o.dir!=null){ x.beginPath(); const a=o.dir; x.moveTo(px+Math.cos(a)*r*1.45,py+Math.sin(a)*r*1.45);
+    x.lineTo(px+Math.cos(a+0.55)*r*0.95,py+Math.sin(a+0.55)*r*0.95); x.lineTo(px+Math.cos(a-0.55)*r*0.95,py+Math.sin(a-0.55)*r*0.95); x.closePath();
+    x.fillStyle=kit.trim; x.globalAlpha=(o.alpha!=null?o.alpha:1)*0.85; x.fill(); x.globalAlpha=o.alpha!=null?o.alpha:1 }
+  const g=x.createRadialGradient(px-r*0.35,py-r*0.4,r*0.1,px,py,r*1.05); g.addColorStop(0,hlShade(kit.fill,0.28)); g.addColorStop(0.7,kit.fill); g.addColorStop(1,hlShade(kit.fill,-0.3));
+  x.beginPath(); x.arc(px,py,r,0,Math.PI*2); x.fillStyle=g; x.fill();
+  x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
+  x.beginPath(); x.arc(px,py,r+x.lineWidth/2,0,Math.PI*2); x.lineWidth=0.8; x.strokeStyle="rgba(0,0,0,.45)"; x.stroke();
+  if(o.num!=null&&r>=4.5){ x.font=`700 ${Math.round(r*(String(o.num).length>1?0.95:1.15))}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle"; x.fillStyle=kit.num; x.fillText(String(o.num),px,py+r*0.06) }
+  if(o.label){ const fs=Math.max(10,Math.round(r*1.5)); x.font=`700 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle";
+    const tw=x.measureText(o.label).width, ty=py-r-fs*0.9; x.fillStyle="rgba(10,12,18,.78)";
+    hlRound(x,px-tw/2-6,ty-fs*0.62,tw+12,fs*1.24,fs*0.4); x.fill(); x.fillStyle=kit.fill; x.fillRect(px-tw/2-6,ty+fs*0.62-2,tw+12,2);
+    x.fillStyle="#fff"; x.fillText(o.label,px,ty+1) }
+  x.restore() }
+function hlRound(x,l,t,w,h,r){ x.beginPath(); x.moveTo(l+r,t); x.lineTo(l+w-r,t); x.quadraticCurveTo(l+w,t,l+w,t+r); x.lineTo(l+w,t+h-r); x.quadraticCurveTo(l+w,t+h,l+w-r,t+h);
+  x.lineTo(l+r,t+h); x.quadraticCurveTo(l,t+h,l,t+h-r); x.lineTo(l,t+r); x.quadraticCurveTo(l,t,l+r,t); x.closePath() }
+/* the ball: its shadow on the ground (further and softer the higher it is), a trail behind it, the ball shaded.
+   trail: screen points, oldest first. o: {fill, ring, kind:"ball"|"puck"|"oval"} */
+function hlBall(x,px,py,r,lift,trail,o){
+  o=o||{}; const fill=o.fill||"#FFFFFF";
+  if(trail&&trail.length>1){ for(let i=1;i<trail.length;i++){ const a=i/trail.length; x.beginPath(); x.moveTo(trail[i-1][0],trail[i-1][1]); x.lineTo(trail[i][0],trail[i][1]);
+    x.strokeStyle=`rgba(255,255,255,${0.42*a})`; x.lineWidth=r*1.3*a; x.lineCap="round"; x.stroke() } }
+  const sh=1+lift*0.06; x.beginPath(); x.ellipse(px+lift*0.5,py+lift*0.75,r*sh,r*0.8*sh,0,0,Math.PI*2); x.fillStyle=`rgba(0,0,0,${Math.max(0.12,0.38-lift*0.012)})`; x.fill();
+  const by=py-lift, R=r*(1+Math.min(0.5,lift*0.02));
+  if(o.kind==="puck"){ x.beginPath(); x.ellipse(px,by,R*1.15,R*0.85,0,0,Math.PI*2); x.fillStyle="#0E0F12"; x.fill(); x.strokeStyle="#3A3D45"; x.lineWidth=1; x.stroke(); return }
+  const g=x.createRadialGradient(px-R*0.35,by-R*0.35,R*0.1,px,by,R); g.addColorStop(0,hlShade(fill,0.5)); g.addColorStop(1,hlShade(fill,-0.35));
+  x.beginPath(); if(o.kind==="oval")x.ellipse(px,by,R*1.35,R*0.85,o.rot||0,0,Math.PI*2); else x.arc(px,by,R,0,Math.PI*2); x.fillStyle=g; x.fill();
+  x.lineWidth=0.9; x.strokeStyle=o.ring||"rgba(0,0,0,.6)"; x.stroke() }
+/* a line the ball travelled or will travel: dashed for a pass, solid for a shot */
+function hlPath(x,pts,col,dash,w){ if(!pts||pts.length<2)return; x.save(); x.setLineDash(dash||[]); x.lineWidth=w||1.6; x.strokeStyle=col; x.lineCap="round";
+  x.beginPath(); pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.stroke(); x.restore() }
+/* the score bug, top left, as a broadcast has it: two colour chips, the abbreviations, the score, the clock */
+function hlBug(x,W,H,o){
+  const fs=Math.max(10,Math.round(W/44)), pad=fs*0.5, ab=t=>(LEAGUE.abbr&&LEAGUE.abbr[t])||String(t||"").replace(/[^A-Za-z ]/g,"").split(" ").filter(Boolean).map((w,i,a)=>a.length>1?w[0]:w.slice(0,3)).join("").slice(0,3).toUpperCase();
+  x.save(); x.font=`700 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textBaseline="middle";
+  const cells=[[ab(o.home),o.hk],[String(o.hs),null],[ab(o.away),o.ak],[String(o.as),null]];
+  const cw=cells.map(([s])=>x.measureText(s).width+pad*2), clk=o.clock?x.measureText(o.clock).width+pad*2:0;
+  const tw=cw.reduce((a,b)=>a+b,0)+clk+6, h=fs*1.7, l=8, t=8;
+  x.fillStyle="rgba(10,12,18,.82)"; hlRound(x,l,t,tw,h,4); x.fill();
+  let cx=l; cells.forEach(([s,k],i)=>{ if(k){ x.fillStyle=k.fill; x.fillRect(cx,t+3,3,h-6) }
+    if(i%2===1){ x.fillStyle="rgba(255,255,255,.1)"; x.fillRect(cx,t,cw[i],h) }
+    x.fillStyle="#fff"; x.textAlign="center"; x.fillText(s,cx+cw[i]/2+(k?1.5:0),t+h/2+1); cx+=cw[i]+(i===1?6:0) });
+  if(o.clock){ x.fillStyle="rgba(255,226,92,.95)"; x.fillText(o.clock,cx+clk/2,t+h/2+1) }
+  x.restore() }
+/* the moment's headline, bottom centre: slides up in the team's colour and holds. s: 0..1 of its own time */
+function hlBanner(x,W,H,text,kit,s){
+  if(!text)return; const e=hlEase(Math.min(1,s*4)), fs=Math.max(15,Math.round(W/27)), bh=fs*1.6, y=H-bh-10+(1-e)*(bh+14);
+  x.save(); x.globalAlpha=e; x.font=`800 ${fs}px 'Barlow Condensed',Impact,sans-serif`; const tw=Math.min(W-24,x.measureText(text).width+fs*1.6), l=(W-tw)/2;
+  x.fillStyle="rgba(10,12,18,.86)"; hlRound(x,l,y,tw,bh,6); x.fill();
+  if(kit){ x.fillStyle=kit.fill; x.fillRect(l,y,6,bh); x.fillRect(l+tw-6,y,6,bh) }
+  x.textAlign="center"; x.textBaseline="middle"; x.fillStyle="#fff"; x.fillText(text,W/2,y+bh/2+1,tw-fs); x.restore() }
+/* the two sides' kits, told apart on grass: a clash (or a green shirt) sends the away side to its change kit */
+function hlKits(home,away){
+  const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };
+  const green=h=>{ const c=hlRGB(h); return c[1]>c[0]+25&&c[1]>c[2]+15 };
+  const hc=(LEAGUE.colors&&LEAGUE.colors[home])||"#C8102E", ac=(LEAGUE.colors&&LEAGUE.colors[away])||"#1D428A";
+  const H=hlKit(home,green(hc)?"#F4F1E8":hc);
+  let A=hlKit(away,ac); if(green(ac)||d(ac,H.fill)<110)A=hlKit(away,hlLum(H.fill)>0.35?"#1A1D26":"#F4F1E8");
+  return [H,A] }
+/* the line of commentary across the top, under the bug's height when there is one */
+function hlTicker(x,W,H,text,top){
+  if(!text)return; const fs=Math.max(10,Math.round(W/52)); x.save(); x.font=`500 ${fs}px 'Barlow',system-ui,sans-serif`; x.textBaseline="middle"; x.textAlign="left";
+  let tt=text; while(tt.length>8&&x.measureText(tt).width>W-24)tt=tt.slice(0,-2); if(tt!==text)tt=tt.replace(/\s*\S*$/,"")+"\u2026";
+  const y=top||8, h=fs*1.7, tw=x.measureText(tt).width+16, l=top>8?W-tw-8:8; x.fillStyle="rgba(10,12,18,.7)"; hlRound(x,l,y,tw,h,4); x.fill(); x.fillStyle="#E9ECF2"; x.fillText(tt,l+8,y+h/2+1); x.restore() }
 /* shared drawing */
-function hlDot(x,px,py,r,fill,ring,label){
-  x.beginPath(); x.arc(px,py,r,0,Math.PI*2); x.fillStyle=fill; x.fill(); x.lineWidth=1.4; x.strokeStyle=ring; x.stroke();
-  if(label){ x.font=`600 ${Math.round(r*2.1)}px var(--mono),monospace`; x.textAlign="center"; x.textBaseline="bottom";
-    x.lineWidth=3; x.strokeStyle="rgba(0,0,0,.65)"; x.strokeText(label,px,py-r-2); x.fillStyle="#fff"; x.fillText(label,px,py-r-2) } }
+function hlDot(x,px,py,r,fill,ring,label,o){
+  const L=hlLum(fill); hlPlayer(x,px,py,r,{fill:fill,trim:L>0.45?"#14161C":"#F6F4EE",num:L>0.45?"#14161C":"#FFFFFF"},Object.assign({label:label,hot:!!label},o||{})) }
+/* the older sports' words: the top line becomes the ticker, the bottom the sliding banner in the side's colour */
 function hlCaption(x,W,H,top,bottom,ink){
-  x.textAlign="left"; x.textBaseline="top";
-  if(top){ x.font=`600 ${Math.max(10,Math.round(W/34))}px var(--mono),monospace`; x.fillStyle="rgba(0,0,0,.55)"; x.fillRect(0,0,W,Math.round(W/34)+10);
-    let tt=top; while(tt.length>8&&x.measureText(tt).width>W-16)tt=tt.slice(0,-2);   // the commentary line, cut to the pitch's width
-    if(tt!==top)tt=tt.replace(/\s*\S*$/,"")+"\u2026";
-    x.fillStyle="#fff"; x.fillText(tt,8,5) }
-  if(bottom){ const fs=Math.max(15,Math.round(W/16)), cy=H*0.84; x.fillStyle="rgba(0,0,0,.6)"; x.fillRect(0,cy-fs*0.8,W,fs*1.6);
-    if(ink){ x.fillStyle=ink; x.fillRect(0,cy-fs*0.8,6,fs*1.6); x.fillRect(W-6,cy-fs*0.8,6,fs*1.6) }
-    x.font=`700 ${fs}px var(--cond),sans-serif`; x.textAlign="center"; x.textBaseline="middle";
-    x.lineWidth=4; x.strokeStyle="rgba(0,0,0,.7)"; x.strokeText(bottom,W/2,cy); x.fillStyle="#fff"; x.fillText(bottom,W/2,cy) } }
+  if(top)hlTicker(x,W,H,top,8);
+  if(bottom){ if(HLK.bText!==bottom){ HLK.bText=bottom; HLK.b0=HLK.now } const s=Math.max(0,(HLK.now-(HLK.b0||HLK.now))/1200);
+    hlBanner(x,W,H,bottom,ink&&ink!=="#fff"?{fill:ink}:null,s) } else HLK.bText=null }
 const hlEase=t=>t<0?0:t>1?1:t*t*(3-2*t);
 const hlLerp=(a,b,t)=>a+(b-a)*t;
 /* colours not close to any of these (the keepers', away from both sides') */
