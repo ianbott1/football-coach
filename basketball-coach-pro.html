@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="ee5158d";
+<script>const BUILD_ID="a61c3bd";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -7156,6 +7156,12 @@ function h2hElo(g,step,oj){
 /* Answers belong to a season as well as a week. Keyed by step alone, season
    three replays season one's decisions and silently answers everything. */
 function callKey(step,year){ return (year||SEA.year)+":"+step; }
+/* The gameplan, by step and by half: a cup week plays its league game and its tie as two halves of one step, and each
+   can be played with a different plan (round 59: a league game played on "safe", then the cup tie simmed on
+   "balanced", overwrote the step's one plan, and a reload replayed the tie another way: 3-1 came back 0-0, and the
+   season went its own way from there). Saves from before keep one plan a step. */
+function planKey(step,half){ return half?step+"#1":step }
+function planFor(step,half){ const P=S.plans||{}; return (half&&P[step+"#1"]!==undefined?P[step+"#1"]:P[step])||"balanced" }
 
 function liveSeed(step){
   return ((S.seasonSeed^0x9E37)+step*7919)>>>0;
@@ -7497,7 +7503,7 @@ function rebuild(){
     // results; where results are kept, any other game of yours that step
     // (a cup tie simulated in a hot seat) was played without them
     SEA.decideHook=(ans.length&&!(pl&&pl.length))?(()=>ans[ai++]||"normal"):null;
-    SEA.plan=(S.plans&&S.plans[i])||"balanced";
+    SEA.plan=planFor(i,SEA.half);
     SEA.forcedList=pl?JSON.parse(JSON.stringify(pl)):[];
     SEA.advance();
     SEA.forcedList=[]; SEA.forced=null;
@@ -7900,7 +7906,7 @@ function doAdvance(){
   if(SEA.phase==="done"){ openOffseason(); return; }
   const before=SEA.step;
   const ph=SEA.phase;
-  S.plans=S.plans||{}; S.plans[before]=plan;
+  S.plans=S.plans||{}; S.plans[planKey(before,SEA.half)]=plan;
   if(live&&live.done)live=null;               // last game is over; don't block the next
   ensureCoaches();
   SEA.userTeam=S.myTeam;
@@ -9412,8 +9418,10 @@ function standingsView(){
   // the college games' 30-odd conferences: pick one (Muse: "no conference filter")
   else if(LEAGUE.conf.order.length>4){
     if(stConf&&order.indexOf(stConf)<0)stConf=null;
-    h+=`<div class="confpick"><label for="stconf">Conference</label> <select id="stconf">
-      <option value="">All conferences</option>${order.map(c=>`<option value="${esc(c)}"${stConf===c?" selected":""}>${esc(LEAGUE.conf.names[c])}${c===mine?" (yours)":""}</option>`).join("")}</select></div>`;
+    // what the groups are called (round 59: "Conference" over MLB's divisions: Instinct)
+    const GW=((LEAGUE.text&&LEAGUE.text.groupWord)||"CONFERENCE").toLowerCase(), GW1=GW[0].toUpperCase()+GW.slice(1);
+    h+=`<div class="confpick"><label for="stconf">${GW1}</label> <select id="stconf">
+      <option value="">All ${GW==="league"?"leagues":GW.replace(/y$/,"ie")+"s"}</option>${order.map(c=>`<option value="${esc(c)}"${stConf===c?" selected":""}>${esc(LEAGUE.conf.names[c])}${c===mine?" (yours)":""}</option>`).join("")}</select></div>`;
     if(stConf)order=[stConf] }
   if(wide)h+=`<div class="standgrid">`;
   const XC=LEAGUE.ui.standingsCols||[];
@@ -9959,7 +9967,7 @@ function simAhead(){
   const from=SEA.step, snap=digestSnap();
   S.plans=S.plans||{};
   while(SEA.step<sk.to&&SEA.phase==="week"){
-    S.plans[SEA.step]="balanced"; SEA.plan="balanced";
+    S.plans[planKey(SEA.step,SEA.half)]="balanced"; SEA.plan="balanced";
     SEA.advance(); clinchAfter(); S.steps++;
   }
   flash={type:"digest",from:from,to:SEA.step,snap:snap};
@@ -10008,7 +10016,7 @@ function simRun(to){
     // before your game: is it one you'd want to play yourself?
     if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
     const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
-    S.plans[SEA.step]="balanced"; SEA.plan="balanced";
+    S.plans[planKey(SEA.step,SEA.half)]="balanced"; SEA.plan="balanced";
     SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); clinchAfter(); S.steps++;
     if(SEA.phase!=="week")break;

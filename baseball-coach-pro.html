@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="0e85150";
+<script>const BUILD_ID="9d13faf";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -2091,14 +2091,17 @@ function packSeries(rng,series){
   DD[1].forEach(f=>dead.add(Math.round(DAYS*f)));
   const clear=(d,L)=>{ for(let k=0;k<L;k++)if(dead.has(d+k))return false; return true };
   for(let attempt=0;attempt<200;attempt++){
-    const rem={}, free={}, run={}, pool=rng.shuffle(series.map((x,i)=>Object.assign({id:i},x))), out=[];
+    const rem={}, free={}, run={}, last={}, pool=rng.shuffle(series.map((x,i)=>Object.assign({id:i},x))), out=[];
     NAMES.forEach(t=>{rem[t]=0;free[t]=0;run[t]=0}); pool.forEach(x=>{rem[x.home]+=x.len;rem[x.away]+=x.len});
     let ok=true;
     for(let d=0;d<DAYS&&ok;d++){
       let left=0; for(let k=d;k<DAYS;k++)if(!dead.has(k))left++;
       const slack=t=>left-rem[t];
       if(dead.has(d)){ NAMES.forEach(t=>{ if(free[t]<=d)run[t]=0 }); continue }
-      const avail=NAMES.filter(t=>free[t]<=d&&rem[t]>0).sort((x,y)=>slack(x)-slack(y)||rng.r()-0.5);
+      // ties broken by a draw made before sorting (round 59: a random comparator inside sort() came out differently on
+      // each load in a browser, so a reload built another schedule and replayed the season onto it: Muse, Instinct)
+      const tie={}; NAMES.forEach(t=>tie[t]=rng.r());
+      const avail=NAMES.filter(t=>free[t]<=d&&rem[t]>0).sort((x,y)=>slack(x)-slack(y)||tie[x]-tie[y]);
       const taken=new Set(), rest=new Set();
       // a day off after a long stretch, while there's room for it
       // a day off after a long stretch, while there's room for it
@@ -2106,11 +2109,13 @@ function packSeries(rng,series){
       for(const t of avail){ if(taken.has(t)||rest.has(t))continue;
         let best=-1, bs=1e9;
         for(let i=0;i<pool.length;i++){ const x=pool[i]; if(x.home!==t&&x.away!==t)continue; const o=x.home===t?x.away:x.home;
-          if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue; const sc=slack(o)+rng.r()*2; if(sc<bs){bs=sc;best=i} }
+          if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue;
+          // not the club you just played, unless nothing else fits (round 59: a 6-game set, 10 straight against Cleveland: Muse)
+          const sc=slack(o)+rng.r()*2+(last[t]===o?50:0); if(sc<bs){bs=sc;best=i} }
         if(best<0)continue;
         const x=pool.splice(best,1)[0]; taken.add(x.home); taken.add(x.away);
         for(let k=0;k<x.len;k++)out.push({week:d+k,home:x.home,away:x.away,conf:CONF[x.home]===CONF[x.away],neutral:false,ser:x.id,sg:k+1,sn:x.len});
-        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len }) }
+        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len }); last[x.home]=x.away; last[x.away]=x.home }
       NAMES.forEach(t=>{ if(free[t]<=d&&!taken.has(t))run[t]=0 });   // idle today: the stretch ends
       if(NAMES.some(t=>rem[t]>left-1+(free[t]>d?1:0)))ok=false;
     }
@@ -2787,7 +2792,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   st.S.home.app=pickApp("home"); st.S.away.app=pickApp("away");
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   const queueCall=(side,dp)=>{ const key=dp.k+(dp.h||"")+side; if(!humans[side]||st.asked[key])return false;
-    st.asked[key]=true; st.queue.push({side:side,dp:dp}); return true };
+    st.asked[key]=true; st.queue.push({side:side,dp:dp}); if(dp.k!=="prep"&&dp.k!=="read"&&inn()>=8)(st.lateGot=st.lateGot||{})[side]=true; return true };
   const readIt=(side,p)=>{ if(rng.r()<p){ st.S[side].ans=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false } };
   // the pitcher's edge for the side in the field: starter (form, fatigue, his place in the rotation) or the bullpen
   const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return BS.pen;
@@ -2825,7 +2830,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const cpuCloser=fs=>{ const X=st.S[fs], L=lead(fs); if(inn()>=9&&L>=1&&L<=3&&!X.closer){ X.closer=true; X.pen=true } };
   // the bullpen call: three batters before he's spent from the 5th (within three runs), and in a close game from the 6th
   // six batters before (round 58: it came in 18% of live games; Muse's first was game 114, "the best call in the game")
+  // (round 59: after "leave him in", not again until he's faced three more or given up a run: it asked in back-to-back
+  // innings, Instinct)
   const pullDue=fs=>{ const X=st.S[fs], P=X.sp; if(X.pen||inn()<5||inn()>8)return false; const L=Math.abs(lead(fs));
+    if(P.stayBf!==undefined&&P.bf<P.stayBf+3&&P.ra===P.stayRa)return false;
     return (L<=3&&P.bf>=Math.max(18,P.stam-3))||(L<=2&&inn()>=6&&P.bf>=Math.max(15,P.stam-6)) };
   // round 56: every event names its man, from the day's lineup, and a pinch hitter stays in the slot for the rest of the
   // game (the log named a slot's starter or his backup at random, play by play: "three Devontes", Muse)
@@ -2871,7 +2879,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(pick){ st.log.push({side:side,h:dp.h,k:"read",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
       else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the plan as it was" }
       return }
-    if(dp.k==="pull"){ if(v==="pen")X.pen=true; else if(v==="stay"){ X.sp.stam=Math.max(X.sp.stam,X.sp.bf+3) } else { cpuPen(side); st.autoDid=X.pen?"went to the bullpen":"left him in, by the computer's rule" } return }
+    if(dp.k==="pull"){ if(v==="pen")X.pen=true; else if(v==="stay"){ X.sp.stam=Math.max(X.sp.stam,X.sp.bf+3); X.sp.stayBf=X.sp.bf; X.sp.stayRa=X.sp.ra } else { cpuPen(side); st.autoDid=X.pen?"went to the bullpen":"left him in, by the computer's rule" } return }
     if(dp.k==="pinch"){ if(v==="pinch"||(v==="normal"&&dp.worth))st.late[side+"pinch"]=true; if(v==="normal")st.autoDid=st.late[side+"pinch"]?"sent up the pinch hitter (he's the better bat)":"let him hit"; return }
     if(dp.k==="steal"){ const go=v==="send"||(v==="normal"&&dp.p>=BS_SEND); if(v==="normal")st.autoDid=go?"sent him (a good jump to be had)":"held him"; if(go&&H&&H.b[0]&&!H.b[1])steal(side); return }
   };
@@ -2890,6 +2898,17 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         if(queueCall(bat,dp))return true }
       // the steal: asked tied from the 8th (3 to 4 points on your assistant, measured); elsewhere he decides (1 to 2)
       if(H.b[0]&&!H.b[1]&&H.outs<2&&lead(bat)===0&&inn()>=8&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
+        const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
+        dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
+        if(queueCall(bat,dp))return true } }
+    // one decision guaranteed in a one-run game from the 8th (round 59, Ian: "in a one-run game the player should never
+    // be a spectator for three innings", Muse). If nothing worth asking has come by then, the first pinch-hit or steal
+    // chance is yours, even where the replays put it under 3 points on your assistant.
+    if(humans[bat]&&inn()>=8&&Math.abs(lead(bat))<=1&&!(st.lateGot&&st.lateGot[bat])){ const X=st.S[bat], slot=X.bat%9;
+      if((H.b[1]||H.b[2])&&slot>=5&&ctx.bench&&ctx.bench[bat]&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+        const dp=pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench[bat],onDesc()); dp.worth=pinchWorth(bat,slot); dp.team=ctx.team&&ctx.team[bat];
+        if(queueCall(bat,dp))return true }
+      if(H.b[0]&&!H.b[1]&&H.outs<2&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
         dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true } }
@@ -3373,7 +3392,7 @@ function evidenceHTML(g,my,d,dp){
     const rows=[["Balls in play pulled",plv===null?"-":Math.round(100*plv)+"%",mark(plv,A[0],0.08)],["Pitches an at-bat",ppv===null?"-":ppv.toFixed(1),mark(ppv,A[1],0.25)],
       ["Swings and misses an at-bat",whv===null?"-":whv.toFixed(2),mark(whv,A[2],0.15)]];
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are hitting <span>three innings</span></div>
-      ${rows.map(r=>`<div class="evr ${r[2]?'hi':''}"><span class="evk">${r[0]}</span><span class="evv">${r[2]?r[2]+" ":""}${r[1]}</span></div>`).join("")}
+      ${rows.map(r=>`<div class="evr ${r[2]?'lo':''}"><span class="evk">${r[0]}</span><span class="evv">${r[2]?r[2]+" ":""}${r[1]}</span></div>`).join("")}
       <div class="evn">League average: ${Math.round(100*A[0])}% of balls in play pulled, ${A[1].toFixed(1)} pitches an at-bat, ${A[2].toFixed(2)} swings and misses. &#9650; well above it, &#9660; well below. Pull hitters pull it; patient hitters see pitches; contact hitters don't miss. Three innings is a small sample.</div></div>`; }
   if(dp.k==="pull")return `<div class="evid"><div class="evh">Your starter today</div>
       <div class="evr ${dp.bf>=24?'hi':''}"><span class="evk">Batters faced</span><span class="evv">${dp.bf}</span></div>
@@ -6294,7 +6313,7 @@ function confBracket(sd){
 function nflBracket(){
   const my=S.myTeam, mine=SEA.mySeries(my), live=mine&&!mine.winner&&SEA.phase!=="done";
   let h="";
-  if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> win the World Series.</div>`;
+  if(SEA.champion)h+=`<div class="note"><b>${esc(SEA.champion)}</b> wins the World Series.</div>`;
   if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${(o=>`${esc(my)} ${mine.w[my]||0}, ${esc(o)} ${mine.w[o]||0}`)(mine.hi===my?mine.lo:mine.hi)}.
     <button class="subtab" data-simseries="1">Sim the series</button> <span class="fnote">It stops before a game that could end your season.</span></div>`;
   // your road
@@ -6516,7 +6535,7 @@ function offseasonBanner(){
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
   if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the winter:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
-    rec+=`<div class="bnews small"><b>Big winters:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
+    rec+=`<div class="bnews small"><b>Big winters:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a winter.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
   if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
   if(X.trade)rec+=X.trade.done?`<div class="bnews"><b>Trade:</b> ${esc(X.trade.gave)} (${esc(X.trade.gp)}) to ${esc(X.trade.with)} for ${esc(X.trade.got)} (${esc(X.trade.qp)}).</div>`
@@ -6629,8 +6648,7 @@ function offseasonScreen(){
     const cands=SC[side]; if(!cands)return;
     const label=side==="oc"?"offensive":"defensive";
     h+=`<div class="grouphead">Hire a new ${esc(SPORT.staff[side].long)}</div>`;
-    h+=`<div class="note">Your ${esc(SPORT.staff[side].long)} has moved on. He shapes how that end
-      of the floor plays and develops.</div>`;
+    h+=`<div class="note">Your ${esc(SPORT.staff[side].long)} has moved on. He shapes how your ${side==="oc"?"hitters hit":"pitchers pitch"} and develop.</div>`;
     h+=cands.map((c,i)=>`<div class="cand ${(P[side]===i||(P[side]==null&&i===0))?'on':''}"
       data-coord="${side}" data-ci="${i}">
       <div class="candtop"><div><div class="fname">${esc(c.n)}</div>
@@ -6796,6 +6814,12 @@ function h2hElo(g,step,oj){
 /* Answers belong to a season as well as a week. Keyed by step alone, season
    three replays season one's decisions and silently answers everything. */
 function callKey(step,year){ return (year||SEA.year)+":"+step; }
+/* The gameplan, by step and by half: a cup week plays its league game and its tie as two halves of one step, and each
+   can be played with a different plan (round 59: a league game played on "safe", then the cup tie simmed on
+   "balanced", overwrote the step's one plan, and a reload replayed the tie another way: 3-1 came back 0-0, and the
+   season went its own way from there). Saves from before keep one plan a step. */
+function planKey(step,half){ return half?step+"#1":step }
+function planFor(step,half){ const P=S.plans||{}; return (half&&P[step+"#1"]!==undefined?P[step+"#1"]:P[step])||"balanced" }
 
 function liveSeed(step){
   return ((S.seasonSeed^0x9E37)+step*7919)>>>0;
@@ -7137,7 +7161,7 @@ function rebuild(){
     // results; where results are kept, any other game of yours that step
     // (a cup tie simulated in a hot seat) was played without them
     SEA.decideHook=(ans.length&&!(pl&&pl.length))?(()=>ans[ai++]||"normal"):null;
-    SEA.plan=(S.plans&&S.plans[i])||"balanced";
+    SEA.plan=planFor(i,SEA.half);
     SEA.forcedList=pl?JSON.parse(JSON.stringify(pl)):[];
     SEA.advance();
     SEA.forcedList=[]; SEA.forced=null;
@@ -7540,7 +7564,7 @@ function doAdvance(){
   if(SEA.phase==="done"){ openOffseason(); return; }
   const before=SEA.step;
   const ph=SEA.phase;
-  S.plans=S.plans||{}; S.plans[before]=plan;
+  S.plans=S.plans||{}; S.plans[planKey(before,SEA.half)]=plan;
   if(live&&live.done)live=null;               // last game is over; don't block the next
   ensureCoaches();
   SEA.userTeam=S.myTeam;
@@ -9052,8 +9076,10 @@ function standingsView(){
   // the college games' 30-odd conferences: pick one (Muse: "no conference filter")
   else if(LEAGUE.conf.order.length>4){
     if(stConf&&order.indexOf(stConf)<0)stConf=null;
-    h+=`<div class="confpick"><label for="stconf">Conference</label> <select id="stconf">
-      <option value="">All conferences</option>${order.map(c=>`<option value="${esc(c)}"${stConf===c?" selected":""}>${esc(LEAGUE.conf.names[c])}${c===mine?" (yours)":""}</option>`).join("")}</select></div>`;
+    // what the groups are called (round 59: "Conference" over MLB's divisions: Instinct)
+    const GW=((LEAGUE.text&&LEAGUE.text.groupWord)||"CONFERENCE").toLowerCase(), GW1=GW[0].toUpperCase()+GW.slice(1);
+    h+=`<div class="confpick"><label for="stconf">${GW1}</label> <select id="stconf">
+      <option value="">All ${GW==="league"?"leagues":GW.replace(/y$/,"ie")+"s"}</option>${order.map(c=>`<option value="${esc(c)}"${stConf===c?" selected":""}>${esc(LEAGUE.conf.names[c])}${c===mine?" (yours)":""}</option>`).join("")}</select></div>`;
     if(stConf)order=[stConf] }
   if(wide)h+=`<div class="standgrid">`;
   const XC=LEAGUE.ui.standingsCols||[];
@@ -9599,7 +9625,7 @@ function simAhead(){
   const from=SEA.step, snap=digestSnap();
   S.plans=S.plans||{};
   while(SEA.step<sk.to&&SEA.phase==="week"){
-    S.plans[SEA.step]="balanced"; SEA.plan="balanced";
+    S.plans[planKey(SEA.step,SEA.half)]="balanced"; SEA.plan="balanced";
     SEA.advance(); clinchAfter(); S.steps++;
   }
   flash={type:"digest",from:from,to:SEA.step,snap:snap};
@@ -9648,7 +9674,7 @@ function simRun(to){
     // before your game: is it one you'd want to play yourself?
     if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
     const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
-    S.plans[SEA.step]="balanced"; SEA.plan="balanced";
+    S.plans[planKey(SEA.step,SEA.half)]="balanced"; SEA.plan="balanced";
     SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); clinchAfter(); S.steps++;
     if(SEA.phase!=="week")break;
