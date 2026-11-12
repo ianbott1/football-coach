@@ -1,5 +1,5 @@
 {
- "fp": "069bc906ce82a5b7",
+ "fp": "3f9246889259eba5",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -310,6 +310,11 @@
    "fp": "069bc906ce82a5b7",
    "from": "069bc906ce82a5b7",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "3f9246889259eba5",
+   "from": "069bc906ce82a5b7",
+   "note": "round 63: re-sign bars at the league medians"
   }
  ],
  "out": [
@@ -323,7 +328,7 @@
       "result": "Lost in the divisional round",
       "grade": "A"
      },
-     "book": "4bbf4f048d905c3a"
+     "book": "159123274007583a"
     },
     {
      "team": "Tennessee",
@@ -332,7 +337,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "40d35af7d51a1110"
+     "book": "9228a3d0d6e4b21f"
     }
    ]
   },
@@ -342,20 +347,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "14-3",
-      "result": "Lost the Super Bowl",
-      "grade": "A"
+      "rec": "9-8",
+      "result": "Lost in the wild card round",
+      "grade": "B-"
      },
-     "book": "b742509c7eeb1d1c"
+     "book": "c082b8e93cf14084"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost the conference championship",
-      "grade": "A"
+      "rec": "13-4",
+      "result": "Lost in the wild card round",
+      "grade": "A+"
      },
-     "book": "c62efa3aa64ba281"
+     "book": "1cfe50bc04355d15"
     }
    ]
   },
@@ -365,20 +370,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the wild card round",
-      "grade": "A-"
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
+      "grade": "B+"
      },
-     "book": "27c5649b71dc2b16"
+     "book": "0a1bb042512389c2"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the wild card round",
+      "rec": "9-8",
+      "result": "Lost in the divisional round",
       "grade": "A-"
      },
-     "book": "ac84860ec7f1a341"
+     "book": "31c3bf518c70b3cc"
     }
    ]
   }

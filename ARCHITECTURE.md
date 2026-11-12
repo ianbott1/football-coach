@@ -358,6 +358,42 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 64: the highlight pitches, redrawn (Ian: Football Manager's 2D at least).
+- Core drawing kit (97_highlights): the surface is painted once per size into an offscreen canvas (hlPitch) and copied
+  each frame, so textures cost nothing in play. Mown grass in bands with a sheen and speckle (hlGrass), lines with a
+  faint shadow (hlLines), goal nets with mesh (hlNet), a vignette (hlFinish). Players (hlPlayer): drop shadow, shaded
+  disc in the club's real colour (hlKit/hlKits: a clash or a green shirt sends the away side to a change kit), trim
+  ring, shirt number, a notch for which way he faces, a pulsing ring and name tag for the man the moment is about.
+  The ball (hlBall): shadow that drifts and softens with height, a trail of its last moments; a puck and an oval
+  football too. A broadcast score bug (hlBug), a commentary ticker (hlTicker) and a sliding banner in the scoring
+  side's colour (hlBanner). hlDot and hlCaption now draw through these, so every sport changed at once.
+- Canvas text can't read CSS variables: "var(--cond)" in a canvas font was ignored and every highlight caption drew
+  at the 10px default since round 51. The kit names the families ('Barlow Condensed', 'Barlow', 'IBM Plex Mono').
+- Surfaces: soccer (penalty arcs, spots, corner arcs and flags, nets), hockey (ice sheen and skate marks, boards and
+  kick plate, end-zone circles with hash marks, neutral-zone dots, creases, notched centre line), basketball (maple
+  boards with grain and varnish, painted lanes and centre circle, restricted arcs, backboards and nets), football
+  (five-yard bands, painted end zones, hash marks every yard, numbers with arrows, goalposts), baseball (checkerboard
+  outfield, warning track, padded wall with distances, textured dirt, mound, plate boxes, dugouts).
+- Soccer also shows the move so far as a dashed line and the shot as a solid one, shirt numbers 1-11 by position,
+  players facing the ball, and the score bug with the minute. Nothing here decides anything: every golden matched.
+- Seen at 640 and 360 wide (scratch hlshot.js renders clip frames from a live game to PNG).
+
+Round 63: the staff's re-sign bar, in every pro game.
+- Swept with a scratch measure (6 seasons each, every club's staff plan at each offseason): the bar was a fixed rating
+  copied between games and sat above the league's median, so the staff let most expiring deals go. Kept share before:
+  pro football 27% (bar 66/64; median starter 65, backup 59), pro basketball 23% (62/60; medians 61/54), soccer 7%
+  (62/60 across a pyramid whose median starter is 44). Hockey and baseball were fixed in rounds 61-62 (now ~48%).
+- Now at the league medians: pro football 65/59 (FB_RS/FB_RB): 43% kept, room at season's end 29% (27%), win%
+  spread .152 (.150). Pro basketball 61/54 (NB_RS/NB_RB): 47% kept, room 26% (20%), spread .133 (.136).
+- Soccer not changed: a bar from each club's own squad (its median starter and backup) only lifted it to 17%; the
+  wage budget is what binds (the 10th-percentile club ends the season ~18% over its budget). Its own round.
+- Long-run checks (skipped by --quick since round 60) all run on round 62's build: NBA history (194 seasons), NHL
+  history (114), draft labels (16 drafts): MATCH. March vs history: one MISMATCH, 3 seeds beat 14 seeds 89.3%
+  of the time (real 85.2, tolerance 3.8). Not new: the Nov 5 run had 89.0, inside by nothing, and 2 v 15 runs high
+  too (94-95 vs 92.9). The top seeds win their first games a little too often; the same seeds every run, so a core
+  change since Nov 5 moved it 0.3. Not fixed this round. bb-march must run from the repo root
+  (bb-longrun reads test/golden.js relative to the working directory).
+
 Round 62: round 61's two open items.
 - Hockey's payroll had the same problem as baseball's: the median club used 61% of the $104M cap (10th percentile
   33%), and the staff's re-sign bar (62 a starter, 60 a backup, copied with the code) sat at the league's top

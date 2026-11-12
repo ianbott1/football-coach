@@ -35,24 +35,48 @@ const HL_SPORT=(function(){
     if(kind==="inside")W.push([0.82,0.5+(r()-0.5)*0.4]);
     W.push(spot);
     const rec=W.map((w,i)=>{ if(i===W.length-1)return idx; let b=0,bd=9; ATT.forEach((p,j)=>{ if(j===idx)return; const dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=j} }); return b });
-    const inks=hlInks(g.home,g.away), last=e.k==="last"||e.k==="lastmiss";
+    const inks=hlKits(g.home,g.away).map(k=>k.fill), last=e.k==="last"||e.k==="lastmiss";
     return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,
       andOne:kind==="inside",text:""};
   }
   const P=(W,H,c,a,y)=>{ const X=c.home?a:1-a, Y=c.home?y:1-y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
   function pitch(x,W,H){
-    x.fillStyle="#1B2230"; x.fillRect(0,0,W,H);
+    const bg=x.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#161B26"); bg.addColorStop(1,"#0E121A"); x.fillStyle=bg; x.fillRect(0,0,W,H);
     const L=W*PADX, T=H*PADY, w=W*(1-2*PADX), h=H*(1-2*PADY);
-    x.fillStyle="#C99A5B"; x.fillRect(L,T,w,h);
-    x.strokeStyle="rgba(255,255,255,.9)"; x.lineWidth=1.4; x.strokeRect(L,T,w,h);
-    x.beginPath(); x.moveTo(L+w/2,T); x.lineTo(L+w/2,T+h); x.stroke(); x.beginPath(); x.arc(L+w/2,T+h/2,h*0.12,0,Math.PI*2); x.stroke();
-    [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,s])=>{ const cx=L+rx*w, cy=T+h/2, R=w*0.24;
-      x.fillStyle="rgba(150,40,40,.35)"; x.fillRect(s>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32); x.strokeRect(s>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32);
-      // the three-point line: straight from the baseline in the corners, then the arc round the rim
-      const Rr=h*0.45, th=Math.asin(Math.min(0.999,0.44/0.45)), a0=s>0?Math.PI-th:-th, a1=s>0?Math.PI+th:th;
-      x.beginPath(); x.moveTo(s>0?L+w:L,cy-h*0.44); x.lineTo(cx+Rr*Math.cos(s>0?a1:a0),cy-h*0.44);
-      x.arc(cx,cy,Rr,s>0?Math.PI+th:-th,s>0?Math.PI-th:th,s>0); x.lineTo(s>0?L+w:L,cy+h*0.44); x.stroke();
-      x.beginPath(); x.arc(cx,cy,Math.max(2.5,w*0.012),0,Math.PI*2); x.strokeStyle="#E8553D"; x.lineWidth=2; x.stroke(); x.strokeStyle="rgba(255,255,255,.9)"; x.lineWidth=1.4 });
+    // the apron, then maple boards running the length of the floor, each its own shade, with grain
+    x.fillStyle="#7A4E2A"; x.fillRect(L-W*0.012,T-H*0.02,w+W*0.024,h+H*0.04);
+    { const r=mulberry32(3), bh=Math.max(3,h/34); for(let yy=T,row=0;yy<T+h;yy+=bh,row++){ let xx=L-r()*w*0.2;
+        while(xx<L+w){ const bl=w*(0.12+r()*0.18), tone=r(); x.fillStyle=`rgb(${Math.round(206+tone*22)},${Math.round(160+tone*18)},${Math.round(104+tone*14)})`;
+          x.fillRect(Math.max(L,xx),yy,Math.min(bl,L+w-Math.max(L,xx)),Math.min(bh,T+h-yy)); x.fillStyle="rgba(90,55,25,.18)"; x.fillRect(Math.max(L,xx),yy,0.7,Math.min(bh,T+h-yy)); xx+=bl }
+        x.fillStyle="rgba(90,55,25,.12)"; x.fillRect(L,yy,w,0.6) }
+      for(let k=0;k<260;k++){ const gx=L+r()*w, gy=T+r()*h; x.fillStyle=`rgba(120,75,35,${0.05+r()*0.08})`; x.fillRect(gx,gy,4+r()*18,0.6) } }
+    // varnish: the arena lights reflected down the middle
+    const gl=x.createLinearGradient(0,T,0,T+h); gl.addColorStop(0,"rgba(255,255,255,0)"); gl.addColorStop(0.5,"rgba(255,248,230,.16)"); gl.addColorStop(1,"rgba(255,255,255,0)"); x.fillStyle=gl; x.fillRect(L,T,w,h);
+    const lw=Math.max(1.3,W/480);
+    // the painted lanes and the centre circle
+    [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,sd])=>{ x.fillStyle="rgba(28,58,120,.78)"; x.fillRect(sd>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32) });
+    x.beginPath(); x.arc(L+w/2,T+h/2,h*0.12,0,Math.PI*2); x.fillStyle="rgba(28,58,120,.55)"; x.fill();
+    hlLines(x,lw,()=>{
+      x.strokeRect(L,T,w,h);
+      x.beginPath(); x.moveTo(L+w/2,T); x.lineTo(L+w/2,T+h); x.stroke(); x.beginPath(); x.arc(L+w/2,T+h/2,h*0.12,0,Math.PI*2); x.stroke();
+      x.beginPath(); x.arc(L+w/2,T+h/2,h*0.04,0,Math.PI*2); x.stroke();
+      [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,sd])=>{ const cx=L+rx*w, cy=T+h/2;
+        x.strokeRect(sd>0?L+w*0.81:L,T+h*0.34,w*0.19,h*0.32);
+        const fx=sd>0?L+w*0.81:L+w*0.19; x.beginPath(); x.arc(fx,cy,h*0.12,sd>0?Math.PI/2:-Math.PI/2,sd>0?Math.PI*1.5:Math.PI/2); x.stroke();
+        // the three-point line: straight from the baseline in the corners, then the arc round the rim
+        const Rr=h*0.45, th=Math.asin(Math.min(0.999,0.44/0.45));
+        x.beginPath(); x.moveTo(sd>0?L+w:L,cy-h*0.44); x.lineTo(cx-sd*Rr*Math.cos(th),cy-h*0.44);
+        x.arc(cx,cy,Rr,sd>0?Math.PI+th:-th,sd>0?Math.PI-th:th,sd>0); x.lineTo(sd>0?L+w:L,cy+h*0.44); x.stroke();
+        // the restricted-area arc and lane hash marks
+        x.beginPath(); x.arc(cx,cy,h*0.08,sd>0?Math.PI/2:-Math.PI/2,sd>0?Math.PI*1.5:Math.PI/2); x.stroke();
+        [0.86,0.9].forEach(fz=>{ const hx=sd>0?L+w*fz:L+w*(1-fz); x.beginPath(); x.moveTo(hx,T+h*0.34); x.lineTo(hx,T+h*0.32); x.moveTo(hx,T+h*0.66); x.lineTo(hx,T+h*0.68); x.stroke() }) });
+    });
+    // the baskets: backboard, rim, net
+    [[RIM[0],1],[1-RIM[0],-1]].forEach(([rx,sd])=>{ const cx=L+rx*w, cy=T+h/2, rr=Math.max(3,w*0.012);
+      x.fillStyle="rgba(240,244,248,.9)"; x.fillRect(cx+sd*rr*1.6-(sd>0?0:2),cy-h*0.09,2.2,h*0.18);
+      x.beginPath(); x.arc(cx,cy,rr,0,Math.PI*2); x.fillStyle="rgba(255,255,255,.35)"; x.fill();
+      x.strokeStyle="rgba(255,255,255,.6)"; x.lineWidth=0.6; for(let a=0;a<6;a++){ x.beginPath(); x.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr); x.lineTo(cx+Math.cos(a+1.2)*rr*0.4,cy+Math.sin(a+1.2)*rr*0.4); x.stroke() }
+      x.beginPath(); x.arc(cx,cy,rr,0,Math.PI*2); x.strokeStyle="#E8553D"; x.lineWidth=2; x.stroke() });
   }
   function idle(x,W,H){ hlCaption(x,W,H,"Highlights: the big baskets and last shots play here",null) }
   function frame(x,W,H,c,t){
@@ -65,10 +89,10 @@ const HL_SPORT=(function(){
       if(i===c.rec[n-1]&&t>=tb){ a=c.W[n-1][0]; y=c.W[n-1][1] } return [a,y] });
     // man to man: each defender between his man and the rim, closer on the ball
     const def=att.map(([a,y])=>{ const d=Math.hypot(a-bx,y-by)<0.04?0.35:0.25; return [hlLerp(a,RIM[0],d),hlLerp(y,RIM[1],d)] });
-    const r=Math.max(3.4,W/90), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
     att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=tb-0.12?c.nm:"") });
-    const [qx,qy]=P(W,H,c,bx,by); x.beginPath(); x.arc(qx,qy-z*W,r*0.62,0,Math.PI*2); x.fillStyle=hlFar(["#E8702A","#F2F2F2","#111318"],c.inks)[0]; x.fill(); x.lineWidth=1; x.strokeStyle="#2a1406"; x.stroke();
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.62,z*W,null,{fill:"#E8702A",ring:"#2a1406"});
     const top=c.last?`Last shot: ${c.tm}`:`${c.m} \u00b7 ${c.tm}`;
     const end=t>=ts?(c.last?(c.made?(c.kind==="three"?`${c.nm} hits it! Game over`:`${c.nm} ties it!`):"No good!"):c.kind==="three"?`${c.nm} from three!`:`${c.nm}, and one!`):null;
     hlCaption(x,W,H,top,end,c.made?ink:null);

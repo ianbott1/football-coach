@@ -36,20 +36,22 @@ function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
 const fillReserve=R=>Math.max(0,R.filter(x=>!x).length-1)*0.9;
 const ROOKIE_ROOM=8;                        // what re-signing leaves free for the draft class
 /* Which expiring players a team keeps: the best first, while they fit. Worth
-   keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
+   keeping means a starter at least as good as the league's middle starter, or a useful backup at a fair price,
+   not past 32 (round 63: the bar was 66 and kept about a quarter of expiring deals). */
+const RS_BAR=+((typeof process!=="undefined"&&process.env&&process.env.FB_RS)||65), RB_BAR=+((typeof process!=="undefined"&&process.env&&process.env.FB_RB)||59);
 function nflResignPlan(R){
   const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
-    const worth=(i<POS.length?p.r>=66:p.r>=64&&ask<=3*PAY)&&p.age<=32;
+    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=3*PAY)&&p.age<=32;
     keep[i]=worth&&pay+ask<=NFL_CAP-ROOKIE_ROOM;
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :p.age>32?`his age: ${p.age+1} next season`
-      :i<POS.length&&p.r<66?`rated ${p.r}: below what the staff want in a starter`
-      :i>=POS.length&&p.r<64?`rated ${p.r}: not enough to keep as a backup`
+      :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
+      :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
       :i>=POS.length&&ask>3*PAY?`asking ${money2(ask)}: too much for a backup`
       :`no room under the cap for his ${money2(ask)} ask`;
     if(keep[i])pay+=ask;

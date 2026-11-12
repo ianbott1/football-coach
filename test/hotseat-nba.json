@@ -1,5 +1,5 @@
 {
- "fp": "e01f1ad8c524bb44",
+ "fp": "e9f86debe12564f0",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -265,6 +265,11 @@
    "fp": "e01f1ad8c524bb44",
    "from": "e01f1ad8c524bb44",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "e9f86debe12564f0",
+   "from": "e01f1ad8c524bb44",
+   "note": "round 63: re-sign bars at the league medians"
   }
  ],
  "out": [
@@ -278,7 +283,7 @@
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "640c8ced4e4303ba"
+     "book": "e4c1028a836722f7"
     },
     {
      "team": "New York",
@@ -287,7 +292,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "e630276a3f7e9efd"
+     "book": "2ecbbe439601cf28"
     }
    ]
   },
@@ -297,20 +302,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "13-69",
+      "rec": "23-59",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "8d353e713fdf78b0"
+     "book": "57b88a5b0a50f5aa"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "35-47",
-      "result": "Lost in the play-in",
-      "grade": "D"
+      "rec": "25-57",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "72200ab977a7ae23"
+     "book": "0222611073054530"
     }
    ]
   },
@@ -320,20 +325,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-38",
-      "result": "Lost in the first round",
-      "grade": "C+"
+      "rec": "24-58",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "67e3651e2ae9bdca"
+     "book": "4820b536313efb6d"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "46-36",
-      "result": "Lost in the first round",
-      "grade": "B-"
+      "rec": "49-33",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "7d0144c3d3a166e0"
+     "book": "4e7205fd44f454ca"
     }
    ]
   }
