@@ -822,7 +822,10 @@ function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } 
 /* A league with a game every calendar day (LEAGUE.skipIdle) plays through
    the days you don't play: the button always takes you to your next game. */
 function skipIdleDays(){
-  if(!LEAGUE.skipIdle||isHotSeat()||live)return;
+  // round 72: and every league's opening week: a season never opens on a week with no game of yours (the Premier League
+  // starts a week after the Football League: Arsenal's first click "did nothing": Instinct; a college team's week 0)
+  const opening=SEA&&SEA.step===0&&SEA.phase==="week";
+  if((!LEAGUE.skipIdle&&!opening)||isHotSeat()||live)return;
   let g=0;
   while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
     // the same bookkeeping as any advance: a reload replays exactly S.steps steps
