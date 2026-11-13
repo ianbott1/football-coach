@@ -1829,8 +1829,12 @@ function teamCardHTML(my,rk,co){
         // before Selection Sunday everyone can still be picked: "Target of 21 wins missed: 19" came during the conference
         // tournament, three wins before Butler reached 22 (Muse, round 50)
         ||(LEAGUE.post&&LEAGUE.post.phases&&LEAGUE.post.phases.indexOf("selection")>=0&&LEAGUE.post.phases.indexOf(SEA.phase)>=0&&LEAGUE.post.phases.indexOf(SEA.phase)<=LEAGUE.post.phases.indexOf("selection"))));
+      // round 72: one goal all season: the board's words and its number together ("Win the division and a playoff game"
+      // in week 1 became "Target: 10 wins" by week 5, and read as two goals: Instinct). Words that already give the
+      // number ("Eight wins and a decent bowl") stand alone
+      const says=/\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen)\b/i.test(e.l||""), lead=says?"Target: ":`${esc(e.l)} Target: `;
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
-        <span class="eline">${w+l===0?esc(e.l)
+        <span class="eline">${w+l===0?(says?esc(e.l):`${esc(e.l)} Target: ${e.w} wins.`)
           :e.pos?posGoalLine(e,my)
           // the pros after game 82: the wins are in; the play-offs are judged on their own (the board weighs both)
           :!LEAGUE.postRecord&&SEA.phase!=="week"&&need>0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;
@@ -1839,8 +1843,8 @@ function teamCardHTML(my,rk,co){
               return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
           // plainly: the target, then what's left of it ("46 more wins from the 47 expected" read oddly: Grokbot, Ian)
-          :need>left?`Target: ${e.w} wins. ${need} to go: it will take a postseason run.`
-          :`Target: ${e.w} wins. ${need} to go.`}</span></div>`})()}
+          :need>left?`${lead}${e.w} wins, ${need} to go: it will take a postseason run.`
+          :`${lead}${e.w} wins, ${need} to go.`}</span></div>`})()}
     </div>`;
   return h;
 }
