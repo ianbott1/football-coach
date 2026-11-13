@@ -11,7 +11,8 @@ const HL_SPORT=(function(){
     if(d.seg==="last"){ out.push(mk(L,{k:d.made?"last":"lastmiss",side:d.side,u:(d.sh*7+d.sa*13)%100,choice:d.choice,m:"0:04"},d)); return out }
     const SG=typeof SEGS!=="undefined"?SEGS:8, late=d.seg>=SG-1, close=Math.abs(d.sh-d.sa)<=(late?5:10);
     if(mode==="goals"&&!(late&&close))return out;
-    if(!close)return out;
+    const all=mode==="all"||mode==="full";   // round 68: every big basket, whatever the score
+    if(!close&&!all)return out;
     const ev=(d.ev||[]).filter(e=>e.k==="three"||e.k==="inside");
     if(!ev.length)return out;
     // the stretch's moment: the last side to score big, its draw picking which

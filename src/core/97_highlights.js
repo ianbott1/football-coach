@@ -28,7 +28,14 @@ function hlMount(){
   const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
   if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
   if(!HL.cur)hlDraw(null,0);
+  hlAmbient();
 }
+/* the full match: while no clip plays and the game runs, the sport's idle picture is redrawn every frame (round 68) */
+function hlAmbient(){
+  if(HL.amb||!HL_SPORT.ambient||hlMode()!=="full"||HL.cur)return;
+  const loop=()=>{ HL.amb=0; if(HL.cur||hlMode()!=="full"||typeof live==="undefined"||!live||live.done||!HL.cv||!HL.cv.isConnected)return;
+    hlDraw(null,0); HL.amb=requestAnimationFrame(loop) };
+  HL.amb=requestAnimationFrame(loop) }
 /* will this stretch play clips? Asked before the page is drawn, so it can keep the result back (round 66); the clips
    are kept for hlPlay */
 function hlWillPlay(L,drive){

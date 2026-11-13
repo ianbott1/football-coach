@@ -1,5 +1,5 @@
 {
- "fp": "104e066a19f0b450",
+ "fp": "b750e3d858a17b8f",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -60,6 +60,11 @@
    "fp": "104e066a19f0b450",
    "from": "105d665d72647ac2",
    "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
+  },
+  {
+   "fp": "b750e3d858a17b8f",
+   "from": "104e066a19f0b450",
+   "note": "round 68: game plan and highlights bar on the live screen"
   }
  ],
  "result": {
@@ -74,7 +79,7 @@
     "heis": "a932a8caf31d17f1",
     "history": "cfc3e8869a1aba6c",
     "universe": "d90aa2ecf8e039a3",
-    "screens": "a4d5f225dd2678b2"
+    "screens": "1206961c1c1d7a75"
    },
    {
     "year": 2027,
@@ -86,7 +91,7 @@
     "heis": "8353eb8de82952c0",
     "history": "cf2ae2f07c96175d",
     "universe": "4f014a06ebf91268",
-    "screens": "b51932b9dbff894e"
+    "screens": "5ccf7e3441f53155"
    }
   ],
   "Colorado#777": [
@@ -100,7 +105,7 @@
     "heis": "953206088ea314e9",
     "history": "48fe6248ae6613b8",
     "universe": "5eb6b579c8316877",
-    "screens": "d36b6ad276ab016f"
+    "screens": "8f81f5d48be56119"
    },
    {
     "year": 2027,
@@ -112,7 +117,7 @@
     "heis": "d906fc5360d32da8",
     "history": "632df131f8f93b89",
     "universe": "9d54a19031a03e6e",
-    "screens": "46403ab1bca1eab6"
+    "screens": "3069cc5415c41c6f"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "617c700938c6f18a",
+ "fp": "aa5efa4a90e5ea9f",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -395,6 +395,11 @@
    "fp": "617c700938c6f18a",
    "from": "ec383f94419028ce",
    "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
+  },
+  {
+   "fp": "aa5efa4a90e5ea9f",
+   "from": "617c700938c6f18a",
+   "note": "round 68: game plan and highlights bar on the live screen"
   }
  ],
  "result": {
@@ -409,7 +414,7 @@
     "heis": "debb27f463bb3027",
     "history": "2e2f245f8892117d",
     "universe": "f84115d5e94d852c",
-    "screens": "6d62922a773f7d55"
+    "screens": "2aaf03aa6daa875d"
    },
    {
     "year": 2027,
@@ -421,7 +426,7 @@
     "heis": "e1abe8e17e8d2920",
     "history": "5936f24e58b3ada4",
     "universe": "3f5acb9a23ad7fd3",
-    "screens": "b93caf813f5651b8"
+    "screens": "b20abb8522d04a04"
    }
   ],
   "Wrexham#777": [
@@ -435,7 +440,7 @@
     "heis": "383b90a62a5c3fab",
     "history": "01149d1d7c2d48aa",
     "universe": "6425949c55893f6a",
-    "screens": "3cc50cf94d256f82"
+    "screens": "3a6234bc57eea049"
    },
    {
     "year": 2027,
@@ -447,7 +452,7 @@
     "heis": "660f0e098cfc5670",
     "history": "f47dcddc4c4288a3",
     "universe": "cc42a91bcb17c479",
-    "screens": "8cc93bed13587dad"
+    "screens": "ac647818572a16ad"
    }
   ],
   "schedules#60": [

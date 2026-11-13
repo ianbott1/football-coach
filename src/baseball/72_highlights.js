@@ -9,16 +9,17 @@ const HL_SPORT=(function(){
      doubles, triples); sacrifice flies, drawn as the deep fly caught at the wall with the runner tagging; double plays;
      strikeouts with two or more on; runners caught stealing. Two at most an inning, the biggest first. */
   function clips(L,d,mode){
-    const close=Math.abs(d.sh-d.sa)<=3, late=(d.seg||0)>=5, C=[];
+    // round 68: "every chance" (all, and the full match) drops the closeness rule and keeps three an inning
+    const all=mode==="all"||mode==="full", close=all||Math.abs(d.sh-d.sa)<=3, late=all||(d.seg||0)>=5, C=[];
     (d.ev||[]).forEach(e=>{
       if(e.k==="hr"){ if(mode!=="goals"||close||e.n>=3)C.push([9+e.n,e]); return }
-      if(mode!=="key")return;
+      if(mode==="goals")return;
       if(e.k==="rbi"&&e.hit>=1&&close)C.push([e.hit+e.n+(late?1:0),e]);
       else if(e.k==="rbi"&&e.hit===0&&close)C.push([3+(late?1:0),e]);          // a sacrifice fly
       else if(e.k==="dp"&&close&&late)C.push([4,e]);
       else if(e.k==="kk"&&close&&(e.on||0)>=2)C.push([3+(late?1:0),e]);
       else if(e.k==="cs"&&close&&late)C.push([2,e]); });
-    C.sort((a,b)=>b[0]-a[0]); const pick=C.slice(0,2).map(x=>x[1]);
+    C.sort((a,b)=>b[0]-a[0]); const pick=C.slice(0,all?3:2).map(x=>x[1]);
     return (d.ev||[]).filter(e=>pick.indexOf(e)>=0).map(e=>mk(L,e,d));
   }
   function mk(L,e,d){

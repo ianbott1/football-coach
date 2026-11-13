@@ -18,8 +18,8 @@ const HL_SPORT=(function(){
     if(d.so){ const win=(d.sh||0)>=(d.sa||0)?"home":"away"; out.push(mk(L,{k:"goal",side:win,m:65,u:((d.sh||0)*7+(d.sa||0)*13+(d.seg||0))%100,so:true},"goal",rows)); return out }
     ev.forEach(e=>{
       if(e.k==="goal"){ out.push(mk(L,e,"goal",rows)); if(e.side==="home")sh++; else sa++; return }
-      if(mode==="key"&&chance<2&&Math.abs(sh-sa)<=2&&((e.u||0)%HL_CM===0)){ chance++; out.push(mk(L,e,"save",rows)) } });
-    return out.slice(0,3);
+      if((mode==="key"&&chance<2&&Math.abs(sh-sa)<=2||(mode==="all"||mode==="full")&&chance<4)&&((e.u||0)%HL_CM===0)){ chance++; out.push(mk(L,e,"save",rows)) } });
+    return out.slice(0,mode==="all"||mode==="full"?5:3);
   }
   function mk(L,e,kind,rows){
     const g=L.g, attSide=kind==="goal"?e.side:(e.side==="home"?"away":"home"), tm=attSide==="home"?g.home:g.away, u=e.u||0;

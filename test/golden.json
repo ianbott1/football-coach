@@ -1,5 +1,5 @@
 {
- "fp": "df99718c4225e46a",
+ "fp": "3cd9b6100618e89a",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -449,6 +449,11 @@
    "fp": "df99718c4225e46a",
    "from": "c5686a3dd0cc6c03",
    "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
+  },
+  {
+   "fp": "3cd9b6100618e89a",
+   "from": "df99718c4225e46a",
+   "note": "round 68: game plan and highlights bar on the live screen"
   }
  ],
  "result": {
@@ -463,7 +468,7 @@
     "heis": "ae87460324b81a20",
     "history": "143fecfaa19ac6e9",
     "universe": "d3435d1bff2caedc",
-    "screens": "6df1c691c67af56f"
+    "screens": "afa98fa1bbbfe78f"
    },
    {
     "year": 2027,
@@ -475,7 +480,7 @@
     "heis": "45db62fcea5789cd",
     "history": "081bd5e70f18ab94",
     "universe": "a24524b60cf92a67",
-    "screens": "542fd483eb53099e"
+    "screens": "d3ead74119bb0a99"
    },
    {
     "year": 2028,
@@ -487,7 +492,7 @@
     "heis": "1d35237a90feef6b",
     "history": "61a802ce858476fe",
     "universe": "d8ded0400360256f",
-    "screens": "1e097ea30fb92af8"
+    "screens": "c3d94d3973ce58ed"
    },
    {
     "year": 2029,
@@ -499,7 +504,7 @@
     "heis": "c5e8de2f8e13afd0",
     "history": "211a2b297d706f7b",
     "universe": "00ec81efbcecf048",
-    "screens": "7ad5dbde056ac4a5"
+    "screens": "d08ae3959e3fdcfd"
    }
   ],
   "Rice#2024": [
@@ -513,7 +518,7 @@
     "heis": "3f9a419fd8e55492",
     "history": "0c696b7960cee72e",
     "universe": "734c33f5d7688424",
-    "screens": "eff1069ecce8bf39"
+    "screens": "91300e7cb6dad318"
    },
    {
     "year": 2027,
@@ -525,7 +530,7 @@
     "heis": "0c1206db50ecb217",
     "history": "8b32aa1090ede7dd",
     "universe": "b1ed05987d0d59db",
-    "screens": "cbd11f01b9d00ece"
+    "screens": "f482ad120eee277d"
    },
    {
     "year": 2028,
@@ -537,7 +542,7 @@
     "heis": "838403cd7916b7d7",
     "history": "539ed12a3c4d490e",
     "universe": "208a7c4fccdd181e",
-    "screens": "13bfbc29abdbea1c"
+    "screens": "dcb111907e067652"
    },
    {
     "year": 2029,
@@ -549,7 +554,7 @@
     "heis": "b2a96303a74ac2bc",
     "history": "66583e3874e9c684",
     "universe": "123904be4b1f74f6",
-    "screens": "103c22029b198e04"
+    "screens": "32c4d58f1f9319fd"
    }
   ],
   "Oregon#777": [
@@ -563,7 +568,7 @@
     "heis": "67ea02385fe4cd06",
     "history": "6c1986ab3c7fac8d",
     "universe": "a4594e1f803b6beb",
-    "screens": "83277327c297f611"
+    "screens": "cd4c1b40b808beb6"
    },
    {
     "year": 2027,
@@ -575,7 +580,7 @@
     "heis": "5e7ef7819a3b4d33",
     "history": "46917ab72ac868c8",
     "universe": "729c38b519b28fbf",
-    "screens": "237b26575cf3fb1e"
+    "screens": "9592bb2fcf41121e"
    },
    {
     "year": 2028,
@@ -587,7 +592,7 @@
     "heis": "9913d359b2ad05cc",
     "history": "a786cbfbfa8788d3",
     "universe": "0c55ef23d9a1d1d1",
-    "screens": "f37c441071a28e79"
+    "screens": "26609e6789f266b0"
    }
   ],
   "Kent State#31337": [
@@ -601,7 +606,7 @@
     "heis": "306241821babe3bf",
     "history": "fd74ecc77fe3dd97",
     "universe": "38ba448434ff9b90",
-    "screens": "0fa47d28204fd4af"
+    "screens": "fe030d421cb6c0b3"
    },
    {
     "year": 2027,
@@ -613,7 +618,7 @@
     "heis": "e843968e50a39c83",
     "history": "786e3f4bd4989913",
     "universe": "6d5c50ea09b53278",
-    "screens": "6926a0142c0bc761"
+    "screens": "ddc1b6c5eb26fec2"
    },
    {
     "year": 2028,
@@ -625,7 +630,7 @@
     "heis": "7c7f7a287a4fa13e",
     "history": "46661ccd0f262fa4",
     "universe": "68c8414be2801b87",
-    "screens": "f71cf666dc359f16"
+    "screens": "c80db2719d133a65"
    }
   ],
   "schedules#60": [

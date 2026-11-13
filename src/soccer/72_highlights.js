@@ -15,10 +15,11 @@ const HL_SPORT=(function(){
     const sh0=d.sh-(d.h||0), sa0=d.sa-(d.a||0); let sh=sh0, sa=sa0;
     ev.forEach(e=>{
       if(e.k==="goal"){ out.push(mk(L,e,"goal",sh,sa)); if(e.side==="home")sh++; else sa++; return }
-      if(e.k==="red"){ if(mode==="key")out.push(mk(L,e,"red",sh,sa)); return }   // round 66: a sending-off is a moment too
+      if(e.k==="red"){ if(mode!=="goals")out.push(mk(L,e,"red",sh,sa)); return }   // round 66: a sending-off is a moment too
       // a big chance: one a stretch at most, in a game still within a goal, when asked for
-      if(mode==="key"&&!chance&&Math.abs(sh-sa)<=2&&((e.u||0)%HL_CM===0)){ chance=mk(L,e,e.k,sh,sa); out.push(chance) } });
-    return out.slice(0,3);
+      if(mode==="key"&&!chance&&Math.abs(sh-sa)<=2&&((e.u||0)%HL_CM===0)){ chance=mk(L,e,e.k,sh,sa); out.push(chance) }
+      else if((mode==="all"||mode==="full")&&out.filter(c=>c.kind!=="goal").length<3)out.push(mk(L,e,e.k,sh,sa)) });   // round 68: every chance
+    return out.slice(0,mode==="all"||mode==="full"?5:3);
   }
   function mk(L,e,kind,sh,sa){
     const g=L.g, red=kind==="red", aside=red?(e.side==="home"?"away":"home"):e.side, tm=aside==="home"?g.home:g.away, opp=aside==="home"?g.away:g.home, u=e.u||((e.m||0)*37)%100;
@@ -98,7 +99,38 @@ const HL_SPORT=(function(){
     // corner flags
     [[L,T],[R,T],[R,B],[L,B]].forEach(([cx,cy])=>{ x.fillStyle="#F2C14E"; x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+(cx<W/2?-1:1)*5,cy-3); x.lineTo(cx,cy-6); x.closePath(); x.fill() });
   }
-  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
+  /* ---- the full match (round 68) ----
+     Between the moments the pitch keeps playing: possession passed about in midfield, never a shot, the ball shared
+     between the sides as the engine's balance of play for the stretch has it (its drive's mom, the home side's share).
+     Every real moment still plays as its own clip. Drawn from the clock, not stored: a frame is the same however it's
+     reached. */
+  function ambient(x,W,H){
+    if(typeof live==="undefined"||!live||live.done||!live.g)return;
+    const g=live.g, last=live.drives[live.drives.length-1], mom=last&&typeof last.mom==="number"?last.mom:0.5;
+    const DT=1150, now=Date.now(), seedB=((live.step||0)*7919+live.drives.length*131)>>>0;
+    const spot=k=>{ const h=strHash(seedB+"|"+k), r1=(h%1000)/1000, r2=((h>>>10)%1000)/1000, r3=((h>>>20)%1000)/1000, home=r1<mom;
+      return {home,a:0.28+r2*0.48,y:0.12+r3*0.76} };      // in the side's own frame: never beyond 0.76 of the way to goal
+    const at=T=>{ const k=Math.floor(T/DT), f=(T-k*DT)/DT, A=spot(k), B=spot(k+1);
+      const ax=A.home?A.a:1-A.a, bx=B.home?B.a:1-B.a, ay=A.home?A.y:1-A.y, by=B.home?B.y:1-B.y, e=hlEase(Math.min(1,f/0.55));
+      return {x:hlLerp(ax,bx,e),y:hlLerp(ay,by,e),home:f<0.55?A.home:B.home} };   // pitch frame: 0 the home goal, 1 the away goal
+    const kits=hlKits(g.home,g.away), r=Math.max(5,W/80);
+    // each side keeps its shape around the ball: the side on it pushed on, the other in a block behind it
+    const shape=(T,home)=>{ const b=at(T), bx=home?b.x:1-b.x, by=home?b.y:1-b.y, has=b.home===home;
+      return BASE.map((p,i)=>{ if(i===0)return [0.04+0.05*bx,0.5+(by-0.5)*0.12];
+        const push=has?Math.max(0,bx-0.3)*0.7:Math.max(0,bx-0.45)*0.45, depth=i<5?0.6:i<9?0.85:1;
+        return [Math.min(0.92,p[0]+push*depth+(has?0.05:-0.02)),0.5+(p[1]-0.5)*(has?1:0.82)+(by-0.5)*(i<5?0.15:0.25)] }) };
+    const lagged=home=>{ const S0=[0,120,240,360], o=BASE.map(()=>[0,0]); S0.forEach((dt,q)=>{ const w=4-q; shape(now-dt,home).forEach((p,i)=>{ o[i][0]+=p[0]*w; o[i][1]+=p[1]*w }) }); return o.map(p=>[p[0]/10,p[1]/10]) };
+    const toS=(home,p)=>{ const X=home?p[0]:1-p[0], Y=home?p[1]:1-p[1]; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
+    const b=at(now), [qx,qy]=toS(true,[b.x,b.y]);
+    [false,true].forEach(home=>{ const k=kits[home?0:1], gk=hlKit("",home?"#E8F56B":"#C9A0FF"), P2=lagged(home);
+      // the man nearest the ball, on the side that has it, is on it
+      let ni=-1,nd=9; if(b.home===home)P2.forEach((p,i)=>{ if(!i)return; const [sx,sy]=toS(home,p), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
+      P2.forEach((p,i)=>{ let [sx,sy]=toS(home,p); if(i===ni){ sx=hlLerp(sx,qx,0.8); sy=hlLerp(sy,qy,0.8) } hlPlayer(x,sx,sy,r,i?k:gk,{num:NUM[i],dir:Math.atan2(qy-sy,qx-sx)}) }) });
+    hlBall(x,qx,qy,r*0.55,0,null);
+    const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a;
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:Math.min(90,live.drives.length*5)+"'"});
+  }
+  function idle(x,W,H){ if(typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }
   const NUM=[1,2,5,6,3,7,4,8,11,9,10];
   /* penalties and red cards: an open-play move first, played in the first part of the clip (pre), then the set piece */
   const openT=(c,t)=>Math.min(0.699,Math.max(0,t)*0.7/c.pre);
@@ -241,5 +273,5 @@ const HL_SPORT=(function(){
     const end=t>=ts?({goal:`GOAL! ${c.nm}`,save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
     if(end)hlBanner(x,W,H,end,c.kind==="goal"?kA:null,(t-ts)/(1-ts));
   }
-  return {reveal:0.85, aspect:0.62, clips, pitch, idle, frame};
+  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame};
 })();

@@ -358,6 +358,24 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 68: how much to watch, and changing the plan during a game (Ian: "like Football Manager").
+- Highlights have five levels, chosen on the live screen (a row above the action bar) or in the ? panel: goals only,
+  key moments (round 66's), every chance (no closeness rule, more a stretch: soccer up to three chances, hockey four
+  saves, baseball three plays an inning, football every kick and pick, basketball every big basket), full match, off.
+- Full match (soccer: HL_SPORT.ambient): between the moments the pitch keeps playing, possession moved about in
+  midfield with each side's shape around the ball, shared as the engine's balance of play for the stretch says (the
+  drive's mom, the home side's share). It never makes a shot: the ball stays inside 0.76 of the way to goal. Drawn
+  from the clock (hlAmbient redraws every frame while no clip plays), so nothing is stored. Each stretch then takes
+  about 4.2 s at normal speed, so a match runs roughly a minute and a half plus its clips.
+- The game plan can be changed at any point (pause first if you like): it takes effect from the next stretch. The
+  change travels with the game's arguments (live.args[7] = live.pm, [[stretch, side, plan]], saved as S.planMid[key]),
+  and a wrapper round makeLiveGame (core 94) counts the stretches each engine hands back and sets the plan before the
+  one named (setLivePlan: st.mode in soccer, hockey, basketball and baseball; aggr/base in football). So a reload
+  mid-game and the replays that weigh your calls play it the same way: a game with a change at the fourth stretch,
+  rebuilt from its calls and changes, matched stretch for stretch. Not in a hot seat. Substitutions aren't modelled
+  outside soccer's calls, so there's no free substitution.
+- Goldens rewritten for the plan bar on the live screen (a build without it matched round 67's fingerprints).
+
 Round 67: following the highlights, and Ian's list from playing round 65.
 - Who's who: every player has a shirt number (core 93_people shirtNo: fixed by name and team, unique on the roster,
   starters first from their position's numbers: a keeper 1, a lineman 50-79, a goalie 30s; nothing drawn from the

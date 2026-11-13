@@ -13,9 +13,10 @@ const HL_SPORT=(function(){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
     const close=Math.abs((d.h||0)-(d.a||0))<=8;
     if(k==="TD"){ if(mode==="goals"&&!(d.q>=4&&close))return []; return [mk(L,d)] }
-    if(mode!=="key")return [];
-    if(k==="FG"||k==="MISS"&&(d.stall||0)>=62)return [mkKick(L,d)];
-    if(k==="INT"&&(d.stall||0)>=50)return [mkPick(L,d)];
+    if(mode==="goals")return [];
+    const all=mode==="all"||mode==="full";   // round 68: every kick and every pick
+    if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return [mkKick(L,d)];
+    if(k==="INT"&&(all||(d.stall||0)>=50))return [mkPick(L,d)];
     return [];
   }
   // round 67: numbers. The tracked man at each position wears his own (QB, RB, both WRs, a lineman; edge, tackle,
