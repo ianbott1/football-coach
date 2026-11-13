@@ -283,10 +283,16 @@ const FB_READ=Object.assign({right:{td:+0.090,fg:0,to:-0.030}, wrong:{td:-0.056,
 // per drive of yours, what their defense leaves in the numbers: blitzes, deep safeties, men in the box
 const FB_TELL={blitz:[FB_READ.tell,FB_READ.base,FB_READ.base],shell:[FB_READ.base,FB_READ.tell,FB_READ.base],box:[FB_READ.base,FB_READ.base,FB_READ.tell]};
 function fbRead(T){ const n=Math.max(1,T.n), v=[T.bl/n,T.sh/n,T.bx/n]; return SCHEME_KEYS[v.indexOf(Math.max(...v))] }
+/* round 72 (engV 3, new seasons): a defense keeps to its usual scheme 5 games in 7 (was 3 in 5). Following the
+   scouting report was right 55% of the time in college, 54% in the pros (measured, 200 games each; the most it could be
+   was 60%, the scheme's own rate), against 60-90% in the other games, and Muse: "the report must predict better than a
+   coin flip, or say it's a guess". At 5 the report followed is right about 69% (computed; measured below in ARCHITECTURE) */
+const FB_FAVW3=5;
+function fbFavW(){ return ENGINE_V>=3?FB_FAVW3:FB_READ.favW }
 function clubScheme(t,year){ return SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
 function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 function fbReport(fav,seed){
-  const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?FB_READ.favW:1), tot=w.reduce((a,b)=>a+b), n={};
+  const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1), tot=w.reduce((a,b)=>a+b), n={};
   SCHEME_KEYS.forEach(k=>n[k]=0);
   for(let g=0;g<FB_READ.scouted;g++){ let x=r.r()*tot, i=0; while(x>w[i]){x-=w[i];i++} n[SCHEME_KEYS[i]]++ }
   return n;
@@ -372,7 +378,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
   st.D={}; st.ans={home:null,away:null}; st.log=[];
   ["home","away"].forEach(sd=>{ const o=sd==="home"?"away":"home"; if(!humans[sd]||humans[o])return;
     const fav=ctx.fav&&ctx.fav[o]; let sch;
-    if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?FB_READ.favW:1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
+    if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
   const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; return FB_ANSWERS[a].beats===D.sch?FB_READ.right:FB_READ.wrong };
