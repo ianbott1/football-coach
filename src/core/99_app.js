@@ -1928,8 +1928,17 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    <div class="pland">${esc(PLANS[plan].d)}</div>
+    <div class="pland">${esc(PLANS[plan].d)}</div>${planFitHTML(wp)}
   </div>`;
+}
+/* round 72: the gameplan you last chose carries over; when it doesn't suit tonight, a line says so (Instinct: a 34%
+   underdog on "Play it safe", whose own words say "best when you're the better team"). From the chance shown above it. */
+function planFitHTML(wp){
+  if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
+  const kept=S.planNow&&S.planNow===plan;
+  if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
+  if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
+  return "";
 }
 
 /* Things worth your attention right now. */
