@@ -403,6 +403,15 @@ Round 71: trust (Muse's and Instinct's 12 November reviews).
 - Measured, not changed: the scouting report's most common pick, followed, was right in about half of football's
   games (8 and 9 samples), 0.6-0.7 in college basketball, soccer and baseball, ~0.9 in pro basketball and hockey
   (small samples; test with the followed flag before tuning).
+- Football grading (found by the suite after the kick change): "too close to grade" compared the rounded raw gap with
+  3 points, while the card shows each option's rate rounded on its own; 15.5 vs 11.5 showed as 15 v 12 and was graded
+  (often as wrong), and the reverse let some 4-point gaps go ungraded. Now the gap the card shows decides. In the
+  college goldens about a dozen calls moved to "close either way" and a few 4-point calls into the Film Room.
+- Floor asks carry live.ask.floor, so the in-reach test (regressions 77) leaves them out; double-finish counts reads as
+  the tally does (waited and followed reports excluded).
+- Releasing: r71-wip grew from r70-wip, not from main's squashed round 70, so git merge --squash conflicts. main's
+  source matched r70-wip exactly, so main took r71-wip's tree (git read-tree -u --reset r71-wip) and the site was
+  rebuilt; the pages were byte-identical to the tested builds. Branch the next round from main.
 
 Round 70: highlights (Ian's round 69 notes, across the sports).
 - Every sport: a stretch's goals all play (hlTrim keeps every goal and cuts only chances; hockey's slice(0,3) dropped
