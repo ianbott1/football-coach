@@ -1,5 +1,5 @@
 {
- "fp": "a6b8989d9e5a347e",
+ "fp": "939059c9a4941002",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -410,6 +410,11 @@
    "fp": "a6b8989d9e5a347e",
    "from": "1614d5d7e84a1f9a",
    "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
+  },
+  {
+   "fp": "939059c9a4941002",
+   "from": "a6b8989d9e5a347e",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "result": {
@@ -423,8 +428,8 @@
     "poll": "6af13d268d521663",
     "heis": "3a7b49abf4084dcc",
     "history": "8b18fe09a62077ce",
-    "universe": "15562f03b5ddb505",
-    "screens": "06a5966e84d4b161"
+    "universe": "eff40ed501d15973",
+    "screens": "9d285451e0853914"
    },
    {
     "year": 2027,
@@ -435,8 +440,8 @@
     "poll": "7738575915d47e47",
     "heis": "d66b1d30effd6687",
     "history": "e8d864fae0209a19",
-    "universe": "d6ae2c57c9feadd9",
-    "screens": "2236365c41d6f69b"
+    "universe": "a0898df77053aabf",
+    "screens": "12074b7491eb3875"
    }
   ],
   "Detroit#777": [
@@ -449,8 +454,8 @@
     "poll": "22557692c1976234",
     "heis": "69bdfbf7d9c30ffc",
     "history": "4986b474384e4625",
-    "universe": "7a58c21d382a5d9f",
-    "screens": "f8aab68d6f69c72f"
+    "universe": "f87b8ae53bc970c3",
+    "screens": "eff5132101220b9a"
    },
    {
     "year": 2027,
@@ -461,8 +466,8 @@
     "poll": "9d452f504472b650",
     "heis": "a8f75591d60ec99b",
     "history": "dcc54f9d7f068900",
-    "universe": "2edd6f2813b6641d",
-    "screens": "1f6ee0dbe010fb8b"
+    "universe": "85338152e67bde04",
+    "screens": "bfe35bcfde8295e8"
    }
   ],
   "schedules#60": [

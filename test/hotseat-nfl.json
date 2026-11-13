@@ -1,5 +1,5 @@
 {
- "fp": "3c450e1c2b6a13dc",
+ "fp": "2a4e08a5d6e36048",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -320,6 +320,11 @@
    "fp": "3c450e1c2b6a13dc",
    "from": "3f9246889259eba5",
    "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
+  },
+  {
+   "fp": "2a4e08a5d6e36048",
+   "from": "3c450e1c2b6a13dc",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "out": [
@@ -356,16 +361,16 @@
       "result": "Lost in the wild card round",
       "grade": "B+"
      },
-     "book": "44978b41d6c66300"
+     "book": "33383417d9f1fac5"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "11-6",
+      "rec": "12-5",
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "246640aeb728af12"
+     "book": "089f7980f5872c69"
     }
    ]
   },
@@ -375,20 +380,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "Lost the conference championship",
-      "grade": "A"
+      "rec": "11-6",
+      "result": "Lost in the divisional round",
+      "grade": "B+"
      },
-     "book": "6204a5be0e312c76"
+     "book": "e37ad95a87b6b6fb"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "14-3",
+      "rec": "13-4",
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "e461b969cc52e828"
+     "book": "6591cc12f20389a0"
     }
    ]
   }

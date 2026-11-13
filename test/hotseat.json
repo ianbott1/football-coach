@@ -1,5 +1,5 @@
 {
- "fp": "9b3cc12590ee605c",
+ "fp": "78e80f48c9dc2aee",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -300,6 +300,11 @@
    "fp": "9b3cc12590ee605c",
    "from": "4e892d5f92ea9fa9",
    "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
+  },
+  {
+   "fp": "78e80f48c9dc2aee",
+   "from": "9b3cc12590ee605c",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "out": [
@@ -332,11 +337,11 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Birmingham Bowl",
-      "grade": "C-"
+      "rec": "8-5",
+      "result": "Won the Texas Bowl",
+      "grade": "B-"
      },
-     "book": "38c8812b3c69770e"
+     "book": "e976f5edc4aa5574"
     },
     {
      "team": "Rice",
@@ -345,7 +350,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "d9cbae4bee063e5a"
+     "book": "9282fcbbf6e524c0"
     }
    ]
   },
@@ -355,20 +360,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-3",
-      "result": "Won the ReliaQuest Bowl",
-      "grade": "A-"
+      "rec": "10-4",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A"
      },
-     "book": "60e2fed20c25dcc3"
+     "book": "60755dacb12b4f61"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "8-5",
-      "result": "Won the LA Bowl",
+      "result": "Lost the Sun Bowl",
       "grade": "A+"
      },
-     "book": "41d4ebf9854ee62e"
+     "book": "abf28172f7aca9ab"
     }
    ]
   }

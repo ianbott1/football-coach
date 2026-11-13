@@ -1,5 +1,5 @@
 {
- "fp": "9720b1e4368b41e7",
+ "fp": "60c8e910359feaa6",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -410,6 +410,11 @@
    "fp": "9720b1e4368b41e7",
    "from": "f18e15b17d7c0d98",
    "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
+  },
+  {
+   "fp": "60c8e910359feaa6",
+   "from": "9720b1e4368b41e7",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "result": {
@@ -423,8 +428,8 @@
     "poll": "a541932b68508e62",
     "heis": "9f18855900e2eaa7",
     "history": "85956eca256717b6",
-    "universe": "1de69ff2ce19d36b",
-    "screens": "d3d880737716be9c"
+    "universe": "4af37b52b192567a",
+    "screens": "4c3f8a6a1f0d7665"
    },
    {
     "year": 2027,
@@ -435,8 +440,8 @@
     "poll": "8086547e53997fee",
     "heis": "2aa684a3991cd844",
     "history": "26805f9af5985f11",
-    "universe": "f862eb29f54d26f9",
-    "screens": "b9c9184c377b3b2b"
+    "universe": "5fa169145fcc171e",
+    "screens": "0178364487709694"
    }
   ],
   "Wrexham#777": [
@@ -449,8 +454,8 @@
     "poll": "8a0a3059f0ed3a71",
     "heis": "383b90a62a5c3fab",
     "history": "01149d1d7c2d48aa",
-    "universe": "14993278688d248a",
-    "screens": "1a824bb48d302bb0"
+    "universe": "4d6bb21dd68b157b",
+    "screens": "b5c6e62d6e84c845"
    },
    {
     "year": 2027,
@@ -461,8 +466,8 @@
     "poll": "95e7ce0f075f9876",
     "heis": "660f0e098cfc5670",
     "history": "f47dcddc4c4288a3",
-    "universe": "bacfba7f4b647cde",
-    "screens": "284a6024e0394cfe"
+    "universe": "5d246d9d4cc5360a",
+    "screens": "f697494be954146c"
    }
   ],
   "schedules#60": [
