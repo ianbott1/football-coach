@@ -48,7 +48,7 @@ const HL_SPORT=(function(){
     const arc=hr||kind==="sf"?0.07+r()*0.11:0.03+r()*0.04, ft=hr&&typeof hrFeet==="function"?hrFeet(e):0;
     // round 67: the fielders by number (P, C, 1B, 2B, SS, 3B, LF, CF, RF are roster places 9, 0, 1, 2, 4, 3, 5, 6, 7), the batter
     // by his; a key under the diamond
-    const fld=bat==="home"?g.away:g.home, K=hlKits(g.home,g.away), fn=hlNamed(fld,[9,0,1,2,4,3,5,6,7]);
+    const fld=bat==="home"?g.away:g.home, K=hlKits(g.home,g.away), fn=hlNamed(fld,(H=>[9,0,1,2,4,3,5,6,7].map(i=>i!==9&&H.has(i)?BK(i):i))((()=>{ try{ return hurtSet(fld) }catch(e){ return new Set() } })()));   // round 71: the man playing, not the one hurt (Muse: injured Haddad at short)
     const BR=(SEA.roster&&SEA.roster[tm])||[], bi=BR.findIndex(p=>p&&nm&&p.n===nm), bno=bi>=0?shirtNo(tm,bi):null;
     const legend=[{team:fld,kit:K[bat==="home"?1:0],list:fn.filter(Boolean)},{team:tm,kit:K[bat==="home"?0:1],list:bno!=null?[[bno,String(nm).split(" ").slice(-1)[0]]]:[]}];
     // the man on the mound is the day's pitcher (the starter, the closer, or a reliever with no name), not the roster's first starter

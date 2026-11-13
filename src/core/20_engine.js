@@ -13,6 +13,9 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
 /* "1 goal", "2 goals": a count and its word ("1 GOALS, 1 ASSISTS": Grokbot) */
 function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s")) }
 let SCHED_V=1;
+/* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
+   on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
+let ENGINE_V=1; const ENGINE_NOW=2;
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -332,7 +335,7 @@ const CARRY=0.45,CHURN_SD=95,RECRUIT=0.16,PROG_NOISE=22,
 function newUniverse(seed){
   const rng=new RNG(seed);
   const u={seed:seed,year:2026,program:{},perceived:{},trueBase:{},
-           tenure:{},bad:{},history:[],rng:seed};
+           tenure:{},bad:{},history:[],rng:seed,engV:ENGINE_NOW};   // round 71: on the current engine
   u.coach={}; u.roster={}; u.oc={}; u.dc={}; u.conf={};
   u.nextRealign=2026+4+rng.int(4);
   LEAGUE.teams.forEach(t=>u.conf[t[0]]=t[2]);

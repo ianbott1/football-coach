@@ -519,14 +519,14 @@ for(const f of ['basketball-coach-pro.html','basketball-coach.html']){ const A=l
     ok((t.match(/class="read (ok|no|na)"/g)||[]).length===R.length,`soccer: ${R.length} reads but ${(t.match(/class="read (ok|no|na)"/g)||[]).length} lines on the card`) }
   ok(lines>0&&chose===lines,`soccer: ${chose} of ${lines} read lines say what you chose`); ok(splitGraded===0,`soccer: ${splitGraded} split reports graded`) }
 
-/* 77. situation calls only in a game in reach: none asked where the chance with the assistant's call is outside
+/* 77. situation calls only in a game in reach (the round 50/71 floors, a close or late game's one call, are exempt): none asked where the chance with the assistant's call is outside
    10-90% (round 33: up 10 late in football, 100% either way), and the assistant's answers there aren't graded */
 for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.html','Southampton'],['hockey-coach-pro.html','Florida'],['football-coach.html','Alabama']]){
   const A=load({settable:SET,file:D(f),expose:EXP.concat(['callInReach','liveSeed','callKey','GATE_KINDS','GATE_LO','GATE_HI'])}); A.newDynasty(team,6,'T');
   let asked=0, outside=0, auto=0, graded=0;
   for(let k=0;k<16;k++){ A.doAdvance(); if(!A.live)continue; const L=A.live; let m=0;
     while(A.live&&!A.live.done&&m++<4000){ const q=A.live.ask;
-      if(q){ if(A.GATE_KINDS[q.dp.k]){ asked++; const p=A.callInReach(L.args,A.liveSeed(L.step),L.replay,(q.team===L.g.home),L.replay.length); if(p<A.GATE_LO||p>A.GATE_HI)outside++ }
+      if(q){ if(A.GATE_KINDS[q.dp.k]&&!A.live.ask.floor){ asked++; const p=A.callInReach(L.args,A.liveSeed(L.step),L.replay,(q.team===L.g.home),L.replay.length); if(p<A.GATE_LO||p>A.GATE_HI)outside++ }
         A.answerLive(q.dp.opts[0][0]) } else A.liveTick() }
     const key=L.ckey||A.callKey(L.step), AU=(A.S.callAuto||{})[key]||[]; auto+=AU.length;
     const P=(A.S.played[key]||[]).filter(p=>p.team===A.S.myTeam); P.forEach(p=>(p.impact||[]).forEach(c=>{ if(AU.length&&p.impact.length>L.replay.length-AU.length)graded++ })) }

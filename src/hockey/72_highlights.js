@@ -19,13 +19,13 @@ const HL_SPORT=(function(){
     let rows=[]; try{ rows=rowsOf(L.g,L.drives) }catch(e){}
     const out=[]; let chance=0; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
     // a shoot-out: the engine keeps only who won it, so the deciding attempt is the clip (round 67)
-    if(d.so){ const win=(d.sh||0)>=(d.sa||0)?"home":"away"; out.push(mk(L,{k:"goal",side:win,m:65,u:((d.sh||0)*7+(d.sa||0)*13+(d.seg||0))%100,so:true},"goal",rows)); return out }
+    if(d.so){ const win=(d.sh||0)>=(d.sa||0)?"home":"away"; out.push(mk(L,{k:"goal",side:win,m:65,u:((d.sh||0)*7+(d.sa||0)*13+(d.seg||0))%100,so:true},"goal",rows,d)); return out }
     ev.forEach(e=>{
-      if(e.k==="goal"){ const c=mk(L,e,"goal",rows); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
-      if((mode==="key"&&chance<2&&Math.abs(sh-sa)<=3||all&&chance<4)&&((e.u||0)%HL_CM===0)){ chance++; out.push(mk(L,e,"save",rows)) } });
+      if(e.k==="goal"){ const c=mk(L,e,"goal",rows,d); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
+      if((mode==="key"&&chance<2&&Math.abs(sh-sa)<=3||all&&chance<4)&&((e.u||0)%HL_CM===0)){ chance++; out.push(mk(L,e,"save",rows,d)) } });
     return hlTrim(out,mode==="all"||mode==="full"?5:3);
   }
-  function mk(L,e,kind,rows){
+  function mk(L,e,kind,rows,d){ d=d||{};
     const g=L.g, attSide=kind==="goal"?e.side:(e.side==="home"?"away":"home"), tm=attSide==="home"?g.home:g.away, u=e.u||0;
     const r=mulberry32(((e.m||0)*7919+u*131+(attSide==="home"?17:29))>>>0);
     const shooter=kind==="goal"?hkGoalNames(tm,e).n:hkSkater(tm,u), unit=unitOf(u);
@@ -48,7 +48,9 @@ const HL_SPORT=(function(){
     const inks=hlKits(g.home,g.away).map(k=>k.fill); const gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks);
     const nm=shooter?String(shooter).split(" ").slice(-1)[0]:"";
     // round 67: numbers on every man and a key under the rink; slots G, D, D, C, LW, RW are roster places 5, 3, 4, 0, 1, 2
-    const opp=attSide==="home"?g.away:g.home, SL=[5,3,4,0,1,2], an=hlNamed(tm,SL), dn=hlNamed(opp,SL), kits=hlKits(g.home,g.away);
+    // the goalie in net is the one playing (round 71: the backup once he's in, or when he started)
+    const gIn=sd=>!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd])), slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
+    const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home, SL=slots(attSide), an=hlNamed(tm,SL), dn=hlNamed(opp,slots(defSide)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
     return {an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }

@@ -271,6 +271,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // who started in goal, for the commentary (round 50: "your assistant's call: start Vann: fresh", and the starter's name
     // made every save: Muse). Data only; no dice.
     if(!st.drives.length&&(st.S.home.startedBk||st.S.away.startedBk))d.bk={home:!!st.S.home.startedBk,away:!!st.S.away.startedBk};
+    // who is in net now, for the highlights' rink (round 71, Muse: the rink showed the starter in all four games the backup played)
+    if(st.S.home.backupIn||st.S.away.backupIn)d.gIn={home:!!st.S.home.backupIn,away:!!st.S.away.backupIn};
     st.drives.push(d); return d;
   };
   const overtime=()=>{
@@ -296,7 +298,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(ANSWERS[v]){ const t=st.S[other(side)].sys; X.ans=v; X.prepd=true;
-      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true }   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
+      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true } { const L=st.log[st.log.length-1], ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]); if(!L.split&&ANSWERS[v]&&ANSWERS[v].beats===ks[0]){ L.followed=true; L.fav=ks[0] } }   /* round 71: set up for what the report said most */   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].sys, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
@@ -307,7 +309,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(pick&&ANSWERS[pick]){ st.log.push({side:side,h:dp.h,k:"third",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
       else { const was=X.ans; readIt(side,0.3); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the system as it was" }
       return }
-    if(dp.k==="goalie"){ if(v==="swap")swapGoalie(side); else if(v==="normal"){ cpuGoalie(side); st.autoDid="made the computer's goalie call" } return }
+    // round 71: once you've kept him in, your assistant doesn't pull him at the next break on his own (Muse: a keep graded
+    // right, then "Cooper Vann comes in for K. Igwe" at the next intermission with no call put to you)
+    if(dp.k==="goalie"){ if(v==="keep")X.kept=true; if(v==="swap")swapGoalie(side); else if(v==="normal"){ if(!(ENGINE_V>=2&&X.kept))cpuGoalie(side); st.autoDid=ENGINE_V>=2&&X.kept?"kept him in, as you had":"made the computer's goalie call" } return }
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; if(st.late[side]==="auto")st.autoDid="managed it by the score, as every computer coach does"; return }
     if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
     if(dp.k==="ot"){ st.late[side+"ot"]=v==="attack"||v==="hold"?v:null; return }

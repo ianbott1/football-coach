@@ -169,6 +169,15 @@ function filmLine(opp){
   const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`;
   return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${filmDef(F.def)?esc(filmDef(F.def)):"his call"}.</div>`;
 }
+/* the career's count of calls made your own way, and their worth (round 71: the Film Room's count fell across an offseason,
+   143 to 129 and 130 to 85, Muse: it took the larger of two ledgers, and the season ledger keeps only two seasons). One
+   count, S.callCareer, added to as each call is graded and never recomputed; an older save starts it from the larger of
+   the two it had, once. */
+function careerCalls(keep){
+  if(S.callCareer)return S.callCareer;
+  const L=S.lifeCalls||{n:0,w:0}, CL=S.callLedger||{}, ys=Object.keys(CL), ln=ys.reduce((t,y)=>t+(CL[y].n||0),0),
+    lw=Math.round(ys.reduce((t,y)=>t+(CL[y].worth||0),0)*1000)/1000, C=ln>=(L.n||0)?{n:ln,w:lw}:{n:L.n||0,w:L.w||0};
+  if(keep)S.callCareer=C; return C }
 /* who you are, in one line, once there's enough to say it (Muse: "a gambler who won his gambles") */
 function identityLine(){
   const L=S.lifeCalls; if(!L||L.n<8)return "";
@@ -177,8 +186,7 @@ function identityLine(){
   // "30" sat under a season's "92" (Muse, round 20). Older seasons kept no ledger; they count from this one.
   // the count and the worth from one source, never one from each: a count from one ledger beside a worth from the other read
   // 123 at +0.7, then 117 at +0.7, then 117 at +0.8, with no game played (Muse, round 50)
-  const CL=S.callLedger||{}, ys=Object.keys(CL), ln=ys.reduce((t,y)=>t+(CL[y].n||0),0), useL=ys.length&&ln>=L.n,
-    n=useL?ln:L.n, w=useL?Math.round(ys.reduce((t,y)=>t+(CL[y].worth||0),0)*1000)/1000:L.w;
+  const C=careerCalls(false), n=C.n, w=C.w;
   const res=x=>x>0.3?"and it's paid":x<-0.3?"and it's cost you":"and it's come out about even";
   const who=bs>=0.6?`A gambler, ${res(L.boldW)}`:bs<=0.4?`A percentages coach, ${res(L.safeW)}`:`Even-handed, bold when it's called for, careful when it isn't, ${res(w)}`;
   const a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?Math.round(a*10)/10:Math.round(a*2)/2} win${a>=0.75&&a<1.25?"":"s"}`;

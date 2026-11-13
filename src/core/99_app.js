@@ -11,12 +11,21 @@ let slot=1;
 const KEYFOR=n=>KEYBASE+"-slot"+n;
 let S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,plans:{}};
 let plan="balanced", reveal=null, revealTimer=null;
+/* round 71: a floor under the finish (Muse, priority 3: college basketball asked nothing after half-time in ten straight
+   games, baseball's World Series Game 7 nothing after the 3rd, football no fourth-quarter call in several). In a close
+   game's late window (SPORT.lateFloor: when it starts, and what close is) the first call that comes up is yours,
+   whatever the gate would have said; it's graded as any call is, and "close either way" when it was. One a game. */
+const LATE_FLOOR_ON=true;
+function lateFloorDue(L,any){
+  try{ if(!LATE_FLOOR_ON||!L||L.h2h||L.lateShown||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
+    const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=F.close }catch(e){ return false } }
 /* ---- hot seat ----
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
-                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals"];   // round 41: the season story
+                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer"];   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -146,7 +155,7 @@ function liveTick(){
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
       // the floor (round 50): in a one-score game the crunch-time read is the player's, never gated: "the gate should filter
       // the trivial; it must not confiscate the climax" (Muse). A read is judged on the evidence, not the replays.
-      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR;
+      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR||lateFloorDue(live);
       if(!floorCall&&typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
@@ -157,9 +166,10 @@ function liveTick(){
           // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
           if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length, rule:r.ask.k==="fouls"&&typeof foulRule==="function"?foulRule():""} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
+      if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
       live.ff=false;                            // skipping stops at your next call
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
-                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now()};
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();
       return;
     }
@@ -251,8 +261,9 @@ function finishLive(){ liveEndedAt=Date.now();
         const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])) }
       else if(played.closes&&played.closes.some(x=>x.h===c.h)){ c.q=0; c.sp=0 } });
     if(I.length){ played.impact=I;
+      const C=careerCalls(true);   // round 71: one career count, kept, only ever added to
       const L=S.callLedger=S.callLedger||{}, Y=L[SEA.year]=L[SEA.year]||{n:0,worth:0};
-      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000});
+      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000; if(Number.isFinite(c.worth)){ C.n++; C.w=Math.round((C.w+c.worth)*1000)/1000 } });
       Object.keys(L).forEach(y=>{ if(+y<SEA.year-1)delete L[y] }) } }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
@@ -260,7 +271,7 @@ function finishLive(){ liveEndedAt=Date.now();
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
       // reads only: a call is priced in wins against your assistant (the ledger), not right or wrong (Instinct: "11 of 11
       // right (100%)" above a call that cost 6 games in 100). A read the screen couldn't show isn't counted.
-      R.forEach(x=>{ if(x.unclear||x.k==="call")return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
+      R.forEach(x=>{ if(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // round 71: not a report left to the assistant
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -423,6 +434,7 @@ function promote(i){
 }
 
 function rebuild(){
+  if(S&&S.myTeam&&typeof careerCalls==="function")careerCalls(true);   // round 71: the career count is fixed as the career opens, then only added to
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
@@ -725,7 +737,8 @@ function newDynasty(team,seed,coachName,roster){
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
   distinctLeague(u);
-  u.schedV=2;                                            // a schedule drawn the same way every time (schedOrder)
+  u.schedV=3;                                            // a schedule drawn the same way every time (schedOrder); 3: round 71's spreads
+  u.engV=ENGINE_NOW;                                     // round 71: new careers on the current engine
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -1122,7 +1135,8 @@ function endSeason(rng,choices,act,seasonTeam){
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
   distinctLeague(U);
-  U.schedV=2;                                            // (schedOrder)
+  U.schedV=3;                                            // (schedOrder; 3: round 71)
+  U.engV=ENGINE_NOW;                                     // a new season on the current engine (round 71)
   delete S.schedLock;                                    // a new season draws its own, the same way every time
   // a promotion or a firing belongs to its season: kept by step, last season's were replayed into this one on every
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
@@ -1414,7 +1428,15 @@ function readsHTML(step){
     return k==="prep"?"Scouting report":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
+  // round 71: a report left to the assistant ("Wait and see: leave it to your assistant") is his, said as his and not
+  // graded as yours (Instinct: "You chose 'Wait and see' ... it cost you" on a call left to him; Ian: never blame me for
+  // an assistant's decision)
   const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
+    if(x.waited){ lines.push({t:"Left to your assistant. "+String(readText(x)).replace(/^\s*You waited/,"He waited"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
+    // round 71 (Muse: "No verdict blames the player for following the shown report"): set up for what the report said most,
+    // it's the better bet over a season (measured: +2.6 to +4.5 points a game), right or wrong on the night. Said so, and
+    // not counted either way.
+    if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
@@ -3889,8 +3911,14 @@ function watchOtherTabs(){
       if(S&&S.myTeam&&saveRev!==null&&e.key===REVKEY(slot)&&(+e.newValue||0)!==saveRev&&!staleTab){ staleTab=true; render() } });
     // a page brought back from the browser's cache shows its old title screen until the saves are read again:
     // blank the list first (Muse: "Winnipeg, 3 seasons" painted, then corrected to Edmonton, 5)
-    window.addEventListener("pageshow",async e=>{ if(e.persisted&&S&&S.title){ S._slots=[]; S._slotsWait=true; render(); S._slots=await allSlots(); S._slotsWait=false; render() } });
-    document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState==="visible"&&S&&S.title&&S._slots&&!S._slotsWait){ S._slots=await allSlots(); render() } });
+    // round 71: a page brought back in a career is as it was when it was left, and the career may have moved on since
+    // (another tab, another visit): load it afresh
+    window.addEventListener("pageshow",async e=>{ if(!e.persisted)return; if(S&&S.myTeam&&!S.title){ try{ location.reload() }catch(x){} return }
+      if(S&&S.title){ S._slots=[]; S._slotsWait=true; render(); S._slots=await allSlots(); S._slotsWait=false; render() } });
+    document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState!=="visible"||!S)return;
+      if(S.title&&S._slots&&!S._slotsWait){ S._slots=await allSlots(); render(); return }
+      // back to a career tab: if it was saved somewhere else meanwhile, this tab stops saving and says so
+      if(S.myTeam&&saveRev!==null&&!staleTab){ const cur=await readRev(slot); if(cur!==null&&cur!==saveRev){ staleTab=true; render() } } });
   }catch(e){}
 }
 (async function(){

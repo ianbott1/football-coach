@@ -1,5 +1,5 @@
 {
- "fp": "1614d5d7e84a1f9a",
+ "fp": "a6b8989d9e5a347e",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -405,59 +405,64 @@
    "fp": "1614d5d7e84a1f9a",
    "from": "4988845886304600",
    "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
+  },
+  {
+   "fp": "a6b8989d9e5a347e",
+   "from": "1614d5d7e84a1f9a",
+   "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "12c39956bc50a0a6",
-    "post": "e858ed0fc4ff8fd2",
-    "champion": "Boston",
-    "rec": "7d9029053a6d7eb7",
-    "poll": "a605fa2c4fcbcec4",
-    "heis": "22f4a9cd8c36b4a4",
-    "history": "eec782d6363770d3",
-    "universe": "734f0e36b280df14",
-    "screens": "527c02a93002a52b"
+    "games": "93f9c91185a16ff5",
+    "post": "34190ea6adb23e64",
+    "champion": "Minnesota",
+    "rec": "ae6fb96806bdfb20",
+    "poll": "6af13d268d521663",
+    "heis": "3a7b49abf4084dcc",
+    "history": "8b18fe09a62077ce",
+    "universe": "15562f03b5ddb505",
+    "screens": "06a5966e84d4b161"
    },
    {
     "year": 2027,
-    "games": "22d0b9a6febb5cb3",
-    "post": "74822c7b207d81d2",
+    "games": "4bee53d542626960",
+    "post": "a25689d0b81d69f2",
     "champion": "Minnesota",
-    "rec": "4521646d64d536aa",
-    "poll": "92cd7132d91a71c0",
-    "heis": "30b2d04c0082ca17",
-    "history": "e57bc46b121d6712",
-    "universe": "220465e0c3548131",
-    "screens": "9f036ed0be851a78"
+    "rec": "ffdecf0db471e68c",
+    "poll": "7738575915d47e47",
+    "heis": "d66b1d30effd6687",
+    "history": "e8d864fae0209a19",
+    "universe": "d6ae2c57c9feadd9",
+    "screens": "2236365c41d6f69b"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "b303275d22d7d066",
-    "post": "9dc4d35ec8af2685",
-    "champion": "Toronto",
-    "rec": "28abc24d34b2f3de",
-    "poll": "ec5c13550423e99b",
-    "heis": "4c753ccdcbc17fd0",
-    "history": "fc559be15d00b604",
-    "universe": "ca5f597683e7d3a7",
-    "screens": "492ab5bf6e4af0e6"
+    "games": "d9e6bbf100b8f5d0",
+    "post": "85ebb303a8581991",
+    "champion": "New York",
+    "rec": "e4a77ccd9053a31a",
+    "poll": "22557692c1976234",
+    "heis": "69bdfbf7d9c30ffc",
+    "history": "4986b474384e4625",
+    "universe": "7a58c21d382a5d9f",
+    "screens": "f8aab68d6f69c72f"
    },
    {
     "year": 2027,
-    "games": "78a330031438fd13",
-    "post": "33a600a819809011",
+    "games": "b0efb95f3bcda9f7",
+    "post": "087115545560066b",
     "champion": "Oklahoma City",
-    "rec": "3f58ecd6286d36c6",
-    "poll": "f1d6323d04064486",
-    "heis": "8840c990251cc9b0",
-    "history": "b33d35ff21bff1e1",
-    "universe": "5682685b15e1d905",
-    "screens": "7fb223b07c114c92"
+    "rec": "77c38e5d1151aa64",
+    "poll": "9d452f504472b650",
+    "heis": "a8f75591d60ec99b",
+    "history": "dcc54f9d7f068900",
+    "universe": "2edd6f2813b6641d",
+    "screens": "1f6ee0dbe010fb8b"
    }
   ],
   "schedules#60": [

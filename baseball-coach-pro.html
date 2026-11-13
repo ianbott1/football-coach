@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="f4c8fcf";
+<script>const BUILD_ID="16b92ed";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -1107,6 +1107,7 @@ const LEAGUE={
 };
 /* ============ sport: baseball ============ */
 const SPORT={
+  lateFloor:{late:(D,d)=>(d.seg||0)>=6, close:1},   // round 71: from the 7th, within a run
   margins:{close:1,rout:7,crush:9,blow:11},
   // the Capybara's fixed lines, said a different way from game to game (round 61: the same two sentences every night)
   voiceAlt:{
@@ -1310,7 +1311,11 @@ const idb=(function(){
         if(!IDB_ON||typeof indexedDB==="undefined"||!indexedDB){ res(null); return }
         const rq=indexedDB.open(IDB_NAME,1); let done=false; const fin=v=>{ if(!done){ done=true; res(v) } };
         rq.onupgradeneeded=()=>{ try{ rq.result.createObjectStore(IDB_STORE) }catch(e){} };
-        rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close() }catch(e){} P=null }; fin(db) };
+        // round 71: a connection the browser closes on its own (a page put away in the back-forward cache and brought
+        // back, storage under pressure) is forgotten, and the next call opens a new one. It was kept, so every save after
+        // it failed with InvalidStateError and every read fell back to an old localStorage copy (Muse: "This career isn't
+        // saving", and careers loading a week or a season behind until a reload)
+        rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close() }catch(e){} P=null }; db.onclose=()=>{ P=null }; fin(db) };
         rq.onerror=()=>fin(null); rq.onblocked=()=>fin(null);
         setTimeout(()=>{ if(!done){ fin(null); P=null } },8000);   // slow to answer: no database this time, and the next call asks again
       }catch(e){ res(null) } });
@@ -1320,13 +1325,18 @@ const idb=(function(){
       let val; if(r)r.onsuccess=()=>{ val=r.result };
       // round 56: say why a write failed (Muse's main browser refused a new career's first save; we couldn't tell why)
       const why=()=>{ try{ return (tx.error&&(tx.error.name||tx.error.message))||(r&&r.error&&r.error.name)||"refused" }catch(e){ return "refused" } };
-      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false,why:why()}); tx.onabort=()=>res({ok:false,why:why()}) }catch(e){ res({ok:false,why:e&&e.name||"error"}) } });
+      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false,why:why()}); tx.onabort=()=>res({ok:false,why:why()}) }catch(e){
+        const n=e&&e.name||"error"; if(n==="InvalidStateError")P=null;   // the connection had closed: open a fresh one next time
+        res({ok:false,why:n,closed:n==="InvalidStateError"}) } });
+  // one more go on a fresh connection when the old one had closed
+  const run=async(mode,fn)=>{ let db=await open(); if(!db)return null; let r=await req(db,mode,fn);
+    if(!r.ok&&(r.closed||r.why==="InvalidStateError")){ P=null; db=await open(); if(db)r=await req(db,mode,fn) } return r };
   return {
     open:open,
-    async get(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.get(k)) },
-    async set(k,v){ const db=await open(); if(!db)return {ok:false,why:"the database didn't open"}; return req(db,"readwrite",os=>os.put(v,k)) },
-    async del(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.delete(k)) },
-    async keys(){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.getAllKeys?os.getAllKeys():null) },
+    async get(k){ return (await run("readonly",os=>os.get(k)))||{ok:false,nodb:true} },
+    async set(k,v){ return (await run("readwrite",os=>os.put(v,k)))||{ok:false,why:"the database didn't open"} },
+    async del(k){ return (await run("readwrite",os=>os.delete(k)))||{ok:false} },
+    async keys(){ return (await run("readonly",os=>os.getAllKeys?os.getAllKeys():null))||{ok:false} },
   };
 })();
 const store=(function(){
@@ -1356,6 +1366,10 @@ const store=(function(){
           if(w===1){ await idb.set(k,lv); return {key:k,value:lv} } }
         return {key:k,value:D.val};
       }
+      // round 71: the database is this browser's store and it didn't answer: say so (the slot reads "couldn't be read",
+      // the save banner shows), never hand back the localStorage copy, which stopped moving the day the career moved to
+      // the database and can be a week or a season behind (Muse: stale first loads in four games)
+      if(!D.ok&&usingIdb)throw new Error("the browser's database didn't answer");
       const v=L?L.getItem(k):null; if(v===null)return null;
       if(D.ok)await idb.set(k,v);   // copied across on first read; the localStorage copy stays
       return {key:k,value:v};
@@ -1456,6 +1470,9 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
 /* "1 goal", "2 goals": a count and its word ("1 GOALS, 1 ASSISTS": Grokbot) */
 function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s")) }
 let SCHED_V=1;
+/* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
+   on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
+let ENGINE_V=1; const ENGINE_NOW=2;
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -1775,7 +1792,7 @@ const CARRY=0.45,CHURN_SD=95,RECRUIT=0.16,PROG_NOISE=22,
 function newUniverse(seed){
   const rng=new RNG(seed);
   const u={seed:seed,year:2026,program:{},perceived:{},trueBase:{},
-           tenure:{},bad:{},history:[],rng:seed};
+           tenure:{},bad:{},history:[],rng:seed,engV:ENGINE_NOW};   // round 71: on the current engine
   u.coach={}; u.roster={}; u.oc={}; u.dc={}; u.conf={};
   u.nextRealign=2026+4+rng.int(4);
   LEAGUE.teams.forEach(t=>u.conf[t[0]]=t[2]);
@@ -2115,6 +2132,7 @@ function mlbSchedule(rng,R,year){
 }
 /* lay the series into the season's days (also used by the tests): returns the games, one entry a game, with the
    series it belongs to (ser, its game sg of sn) */
+const DIV_SPREAD=40;
 function packSeries(rng,series){
   const DAYS=LEAGUE.weeks;
   // days nobody plays (a series never spans one): the All-Star break, four days past the middle, and two league-wide
@@ -2125,6 +2143,11 @@ function packSeries(rng,series){
   for(let attempt=0;attempt<200;attempt++){
     const rem={}, free={}, run={}, last={}, pool=rng.shuffle(series.map((x,i)=>Object.assign({id:i},x))), out=[];
     NAMES.forEach(t=>{rem[t]=0;free[t]=0;run[t]=0}); pool.forEach(x=>{rem[x.home]+=x.len;rem[x.away]+=x.len});
+    // round 71 (schedV 3): the division's games spread through the season. Muse counted 13 and 27 division games by game
+    // 80 (measured over a league: 11 to 38 of 52, where about 26 is even). A club behind on its division games leans to
+    // a division series, one ahead leans away (no draws: the order of every draw is unchanged).
+    const dTot={}, dRem={}; NAMES.forEach(t=>{dTot[t]=0}); pool.forEach(x=>{ if(CONF[x.home]===CONF[x.away]){ dTot[x.home]+=x.len; dTot[x.away]+=x.len } }); NAMES.forEach(t=>dRem[t]=dTot[t]);
+    const lag=(t,d)=>dTot[t]?(d/DAYS)-(dTot[t]-dRem[t])/dTot[t]:0;
     let ok=true;
     for(let d=0;d<DAYS&&ok;d++){
       let left=0; for(let k=d;k<DAYS;k++)if(!dead.has(k))left++;
@@ -2143,11 +2166,13 @@ function packSeries(rng,series){
         for(let i=0;i<pool.length;i++){ const x=pool[i]; if(x.home!==t&&x.away!==t)continue; const o=x.home===t?x.away:x.home;
           if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue;
           // not the club you just played, unless nothing else fits (round 59: a 6-game set, 10 straight against Cleveland: Muse)
-          const sc=slack(o)+rng.r()*2+(last[t]===o?50:0); if(sc<bs){bs=sc;best=i} }
+          let sc=slack(o)+rng.r()*2+(last[t]===o?50:0);
+          if(SCHED_V>=3){ const L=(lag(t,d)+lag(o,d))*DIV_SPREAD; sc+=CONF[x.home]===CONF[x.away]?-L:L }
+          if(sc<bs){bs=sc;best=i} }
         if(best<0)continue;
         const x=pool.splice(best,1)[0]; taken.add(x.home); taken.add(x.away);
         for(let k=0;k<x.len;k++)out.push({week:d+k,home:x.home,away:x.away,conf:CONF[x.home]===CONF[x.away],neutral:false,ser:x.id,sg:k+1,sn:x.len});
-        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len }); last[x.home]=x.away; last[x.away]=x.home }
+        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len; if(CONF[x.home]===CONF[x.away])dRem[t]-=x.len }); last[x.home]=x.away; last[x.away]=x.home }
       NAMES.forEach(t=>{ if(free[t]<=d&&!taken.has(t))run[t]=0 });   // idle today: the stretch ends
       if(NAMES.some(t=>rem[t]>left-1+(free[t]>d?1:0)))ok=false;
     }
@@ -2928,7 +2953,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(ANSWERS[v]){ const t=st.S[other(side)].app; X.ans=v; X.prepd=true;
-      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) }
+      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true } { const L=st.log[st.log.length-1], ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]); if(!L.split&&ANSWERS[v]&&ANSWERS[v].beats===ks[0]){ L.followed=true; L.fav=ks[0] } }   /* round 71: set up for what the report said most */ }   // round 71: a split report isn't graded, so it isn't counted right either (Muse: a 2-2-2 read counted as right)
       else if(v!==undefined&&dp.report){ const t=st.S[other(side)].app, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
     if(dp.k==="read"){ const t=st.S[other(side)].app, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;
@@ -3328,7 +3353,7 @@ const HL_SPORT=(function(){
     const arc=hr||kind==="sf"?0.07+r()*0.11:0.03+r()*0.04, ft=hr&&typeof hrFeet==="function"?hrFeet(e):0;
     // round 67: the fielders by number (P, C, 1B, 2B, SS, 3B, LF, CF, RF are roster places 9, 0, 1, 2, 4, 3, 5, 6, 7), the batter
     // by his; a key under the diamond
-    const fld=bat==="home"?g.away:g.home, K=hlKits(g.home,g.away), fn=hlNamed(fld,[9,0,1,2,4,3,5,6,7]);
+    const fld=bat==="home"?g.away:g.home, K=hlKits(g.home,g.away), fn=hlNamed(fld,(H=>[9,0,1,2,4,3,5,6,7].map(i=>i!==9&&H.has(i)?BK(i):i))((()=>{ try{ return hurtSet(fld) }catch(e){ return new Set() } })()));   // round 71: the man playing, not the one hurt (Muse: injured Haddad at short)
     const BR=(SEA.roster&&SEA.roster[tm])||[], bi=BR.findIndex(p=>p&&nm&&p.n===nm), bno=bi>=0?shirtNo(tm,bi):null;
     const legend=[{team:fld,kit:K[bat==="home"?1:0],list:fn.filter(Boolean)},{team:tm,kit:K[bat==="home"?0:1],list:bno!=null?[[bno,String(nm).split(" ").slice(-1)[0]]]:[]}];
     // the man on the mound is the day's pitcher (the starter, the closer, or a reliever with no name), not the roster's first starter
@@ -3749,6 +3774,7 @@ class Season{
     this.talent=new Talent(this.rng,tb,this.roster);
     this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
     SCHED_V=u.schedV||1;                    // see schedOrder
+    ENGINE_V=u.engV||1;                     // round 71 (core 20_engine)
     this.sched=LEAGUE.buildSchedule(this.rng,u.perceived,u.year);
     // a season begun before the deterministic draw (schedV 1) can come out differently on each load:
     // the first load on this build keeps its schedule and the dice after it (rebuild saves the lock),
@@ -5886,6 +5912,15 @@ function filmLine(opp){
   const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`;
   return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${filmDef(F.def)?esc(filmDef(F.def)):"his call"}.</div>`;
 }
+/* the career's count of calls made your own way, and their worth (round 71: the Film Room's count fell across an offseason,
+   143 to 129 and 130 to 85, Muse: it took the larger of two ledgers, and the season ledger keeps only two seasons). One
+   count, S.callCareer, added to as each call is graded and never recomputed; an older save starts it from the larger of
+   the two it had, once. */
+function careerCalls(keep){
+  if(S.callCareer)return S.callCareer;
+  const L=S.lifeCalls||{n:0,w:0}, CL=S.callLedger||{}, ys=Object.keys(CL), ln=ys.reduce((t,y)=>t+(CL[y].n||0),0),
+    lw=Math.round(ys.reduce((t,y)=>t+(CL[y].worth||0),0)*1000)/1000, C=ln>=(L.n||0)?{n:ln,w:lw}:{n:L.n||0,w:L.w||0};
+  if(keep)S.callCareer=C; return C }
 /* who you are, in one line, once there's enough to say it (Muse: "a gambler who won his gambles") */
 function identityLine(){
   const L=S.lifeCalls; if(!L||L.n<8)return "";
@@ -5894,8 +5929,7 @@ function identityLine(){
   // "30" sat under a season's "92" (Muse, round 20). Older seasons kept no ledger; they count from this one.
   // the count and the worth from one source, never one from each: a count from one ledger beside a worth from the other read
   // 123 at +0.7, then 117 at +0.7, then 117 at +0.8, with no game played (Muse, round 50)
-  const CL=S.callLedger||{}, ys=Object.keys(CL), ln=ys.reduce((t,y)=>t+(CL[y].n||0),0), useL=ys.length&&ln>=L.n,
-    n=useL?ln:L.n, w=useL?Math.round(ys.reduce((t,y)=>t+(CL[y].worth||0),0)*1000)/1000:L.w;
+  const C=careerCalls(false), n=C.n, w=C.w;
   const res=x=>x>0.3?"and it's paid":x<-0.3?"and it's cost you":"and it's come out about even";
   const who=bs>=0.6?`A gambler, ${res(L.boldW)}`:bs<=0.4?`A percentages coach, ${res(L.safeW)}`:`Even-handed, bold when it's called for, careful when it isn't, ${res(w)}`;
   const a=Math.abs(w), say=a<0.25?"about even":`about ${w>0?"+":"−"}${a<1?Math.round(a*10)/10:Math.round(a*2)/2} win${a>=0.75&&a<1.25?"":"s"}`;
@@ -7241,12 +7275,21 @@ let slot=1;
 const KEYFOR=n=>KEYBASE+"-slot"+n;
 let S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,plans:{}};
 let plan="balanced", reveal=null, revealTimer=null;
+/* round 71: a floor under the finish (Muse, priority 3: college basketball asked nothing after half-time in ten straight
+   games, baseball's World Series Game 7 nothing after the 3rd, football no fourth-quarter call in several). In a close
+   game's late window (SPORT.lateFloor: when it starts, and what close is) the first call that comes up is yours,
+   whatever the gate would have said; it's graded as any call is, and "close either way" when it was. One a game. */
+const LATE_FLOOR_ON=true;
+function lateFloorDue(L,any){
+  try{ if(!LATE_FLOOR_ON||!L||L.h2h||L.lateShown||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
+    const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=F.close }catch(e){ return false } }
 /* ---- hot seat ----
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
-                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals"];   // round 41: the season story
+                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer"];   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -7376,7 +7419,7 @@ function liveTick(){
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
       // the floor (round 50): in a one-score game the crunch-time read is the player's, never gated: "the gate should filter
       // the trivial; it must not confiscate the climax" (Muse). A read is judged on the evidence, not the replays.
-      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR;
+      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR||lateFloorDue(live);
       if(!floorCall&&typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
@@ -7387,9 +7430,10 @@ function liveTick(){
           // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
           if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length, rule:r.ask.k==="fouls"&&typeof foulRule==="function"?foulRule():""} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
+      if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
       live.ff=false;                            // skipping stops at your next call
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
-                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now()};
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();
       return;
     }
@@ -7481,8 +7525,9 @@ function finishLive(){ liveEndedAt=Date.now();
         const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])) }
       else if(played.closes&&played.closes.some(x=>x.h===c.h)){ c.q=0; c.sp=0 } });
     if(I.length){ played.impact=I;
+      const C=careerCalls(true);   // round 71: one career count, kept, only ever added to
       const L=S.callLedger=S.callLedger||{}, Y=L[SEA.year]=L[SEA.year]||{n:0,worth:0};
-      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000});
+      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000; if(Number.isFinite(c.worth)){ C.n++; C.w=Math.round((C.w+c.worth)*1000)/1000 } });
       Object.keys(L).forEach(y=>{ if(+y<SEA.year-1)delete L[y] }) } }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
@@ -7490,7 +7535,7 @@ function finishLive(){ liveEndedAt=Date.now();
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
       // reads only: a call is priced in wins against your assistant (the ledger), not right or wrong (Instinct: "11 of 11
       // right (100%)" above a call that cost 6 games in 100). A read the screen couldn't show isn't counted.
-      R.forEach(x=>{ if(x.unclear||x.k==="call")return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
+      R.forEach(x=>{ if(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // round 71: not a report left to the assistant
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -7653,6 +7698,7 @@ function promote(i){
 }
 
 function rebuild(){
+  if(S&&S.myTeam&&typeof careerCalls==="function")careerCalls(true);   // round 71: the career count is fixed as the career opens, then only added to
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
@@ -7955,7 +8001,8 @@ function newDynasty(team,seed,coachName,roster){
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
   distinctLeague(u);
-  u.schedV=2;                                            // a schedule drawn the same way every time (schedOrder)
+  u.schedV=3;                                            // a schedule drawn the same way every time (schedOrder); 3: round 71's spreads
+  u.engV=ENGINE_NOW;                                     // round 71: new careers on the current engine
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -8352,7 +8399,8 @@ function endSeason(rng,choices,act,seasonTeam){
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
   distinctLeague(U);
-  U.schedV=2;                                            // (schedOrder)
+  U.schedV=3;                                            // (schedOrder; 3: round 71)
+  U.engV=ENGINE_NOW;                                     // a new season on the current engine (round 71)
   delete S.schedLock;                                    // a new season draws its own, the same way every time
   // a promotion or a firing belongs to its season: kept by step, last season's were replayed into this one on every
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
@@ -8644,7 +8692,15 @@ function readsHTML(step){
     return k==="prep"?"Scouting report":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
+  // round 71: a report left to the assistant ("Wait and see: leave it to your assistant") is his, said as his and not
+  // graded as yours (Instinct: "You chose 'Wait and see' ... it cost you" on a call left to him; Ian: never blame me for
+  // an assistant's decision)
   const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
+    if(x.waited){ lines.push({t:"Left to your assistant. "+String(readText(x)).replace(/^\s*You waited/,"He waited"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
+    // round 71 (Muse: "No verdict blames the player for following the shown report"): set up for what the report said most,
+    // it's the better bet over a season (measured: +2.6 to +4.5 points a game), right or wrong on the night. Said so, and
+    // not counted either way.
+    if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
     ${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
@@ -11119,8 +11175,14 @@ function watchOtherTabs(){
       if(S&&S.myTeam&&saveRev!==null&&e.key===REVKEY(slot)&&(+e.newValue||0)!==saveRev&&!staleTab){ staleTab=true; render() } });
     // a page brought back from the browser's cache shows its old title screen until the saves are read again:
     // blank the list first (Muse: "Winnipeg, 3 seasons" painted, then corrected to Edmonton, 5)
-    window.addEventListener("pageshow",async e=>{ if(e.persisted&&S&&S.title){ S._slots=[]; S._slotsWait=true; render(); S._slots=await allSlots(); S._slotsWait=false; render() } });
-    document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState==="visible"&&S&&S.title&&S._slots&&!S._slotsWait){ S._slots=await allSlots(); render() } });
+    // round 71: a page brought back in a career is as it was when it was left, and the career may have moved on since
+    // (another tab, another visit): load it afresh
+    window.addEventListener("pageshow",async e=>{ if(!e.persisted)return; if(S&&S.myTeam&&!S.title){ try{ location.reload() }catch(x){} return }
+      if(S&&S.title){ S._slots=[]; S._slotsWait=true; render(); S._slots=await allSlots(); S._slotsWait=false; render() } });
+    document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState!=="visible"||!S)return;
+      if(S.title&&S._slots&&!S._slotsWait){ S._slots=await allSlots(); render(); return }
+      // back to a career tab: if it was saved somewhere else meanwhile, this tab stops saving and says so
+      if(S.myTeam&&saveRev!==null&&!staleTab){ const cur=await readRev(slot); if(cur!==null&&cur!==saveRev){ staleTab=true; render() } } });
   }catch(e){}
 }
 (async function(){

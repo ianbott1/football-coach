@@ -358,6 +358,52 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 71: trust (Muse's and Instinct's 12 November reviews).
+- Saves (Muse's priority 1: "This career isn't saving ... InvalidStateError", and first loads a week or a season
+  behind until a reload, in four games). Cause, reproduced in all seven: the browser can close the page's database
+  connection on its own (a page put away in the back-forward cache and brought back). The game kept the closed
+  connection: every write after it failed (the banner), and every read fell back to the localStorage copy, which
+  stopped moving the day the career moved to the database (round 46). A reload opened a new connection, which is why
+  reloading "fixed" it. Now: a connection that closes is dropped (db.onclose) and a call that meets InvalidStateError
+  opens a fresh one and tries again; when the database is known and still doesn't answer, a read fails (the slot reads
+  "couldn't be read", the banner shows) instead of returning the old copy; a page brought back from the cache in a
+  career reloads; a career tab brought back into view checks the save's revision. test/idb-close.js (in the suite):
+  served over http so the database opens, each game saves, keeps an older localStorage copy, has its connection
+  closed, then must save and load as it is. The published build fails it in all seven; this build passes.
+- One career count of calls made your own way (S.callCareer): the Film Room's figure fell across an offseason (143 to
+  129, 130 to 85) because it took the larger of the season ledger (which keeps two seasons) and the life tally (begun
+  round 41). Now fixed as the career opens (rebuild) and only added to. A count an older build already dropped can't
+  come back; from here it never falls.
+- Reads: a scouting report left to the assistant ("Wait and see") reads "Left to your assistant. He waited..." and
+  isn't counted in your tally; a report set up exactly as it said (followed) says so, right or wrong ("a few games can
+  mislead, and following the report is still the better bet"), and isn't counted either way; baseball's split report
+  (2-2-2) is ungraded like the other games' (it was counted as right).
+- Field goals (Ian: rebalance). engV 2 (u.engV, ENGINE_V: a season begun earlier replays on its own engine): a drive
+  that ends in a kick kicks from real distances (about 38 yards, gauss 38/9, 19-60) and goes in at the kick's odds;
+  a stalled drive in range (a 45-yarder or closer) kicks two times in three in college, half the time in the pros,
+  at its odds. Each level has its own curve (KICK2; the user's fourth-down kick uses it too). 4,000 computer games
+  each (balanced plans): college FG 60% -> 80%, attempts 7.0 -> 5.0 a game, points 54.6 -> 53.2; pro FG 60% -> 86%,
+  attempts 5.8 -> 4.0, points 46.0 -> 45.8. Calibration (150 seasons): college favourites 0.701 -> 0.696, margin
+  15.8 -> 15.5, home 58.0 -> 57.8%, points 54.7 -> 53.8; pro favourites 0.593 -> 0.591, margin 11.9 -> 11.6, home
+  52.9 -> 52.7%, points 46.3 -> 45.9. Turnovers unchanged (college 3.2, pro 2.8 a game; real ~2.6 and ~2.5): left.
+- Schedules (schedV 3, new seasons): pro basketball's Cup nights moved games between pairs and the hosts with them
+  (27 of 30 clubs off 41 home games, up to 45-37); a balancing pass after the group draw passes extra home games along
+  chains of league games (nbaHomeBalance), and a knockout night's stand-in game goes to the club with fewer home
+  games: all 30 at 41 at the start. Baseball's division games by game 80 ran 11 to 38 of 52; packSeries now leans a
+  club behind on its division games toward a division series (DIV_SPREAD 40, no draws): 22 to 29.
+- Who's on the field: the rink shows the goalie in net (d.gIn, the backup once he's in or when he started); baseball's
+  fielders are the day's (a hurt starter's backup). A goalie you kept in isn't pulled by your assistant at the next
+  break on his own (engV 2).
+- The floor under the finish (Muse's priority 3): in a close game's late window (SPORT.lateFloor: football's 4th
+  quarter within 8, basketball's last segment within 6, hockey's last five minutes and overtime within a goal, soccer
+  from 80' within a goal, baseball from the 7th within a run) the first call that comes up is yours, whatever the gate
+  says; graded as any call (close either way when it is). One a game; LATE_FLOOR_ON. Close finishes with no late call
+  (late-calls.js, 40 games each): college basketball (within 6) 33% -> 0%, pro 30% -> 0%, hockey 35% -> 0%, soccer
+  92% -> 0%, pro football 50% -> 10%, college football 33% -> 17%, baseball 9% (no call came up at all in that game).
+- Measured, not changed: the scouting report's most common pick, followed, was right in about half of football's
+  games (8 and 9 samples), 0.6-0.7 in college basketball, soccer and baseball, ~0.9 in pro basketball and hockey
+  (small samples; test with the followed flag before tuning).
+
 Round 70: highlights (Ian's round 69 notes, across the sports).
 - Every sport: a stretch's goals all play (hlTrim keeps every goal and cuts only chances; hockey's slice(0,3) dropped
   a later goal when saves came first), and with more clips to come the held score moves on per goal as it goes in

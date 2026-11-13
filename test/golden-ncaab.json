@@ -1,5 +1,5 @@
 {
- "fp": "8b41bd192bf2694f",
+ "fp": "4093814bc78bb945",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -440,85 +440,90 @@
    "fp": "8b41bd192bf2694f",
    "from": "cbd63c551667627c",
    "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
+  },
+  {
+   "fp": "4093814bc78bb945",
+   "from": "8b41bd192bf2694f",
+   "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "3c19b6cbfe747e9e",
-    "post": "740ec43469e8d20d",
-    "champion": "North Carolina",
-    "rec": "30226131cf40e346",
-    "poll": "785e46abd2762acd",
-    "heis": "d547b6f92b0dea50",
-    "history": "f5f089a355e08575",
-    "universe": "802424b1eced80bc",
-    "screens": "c950d3011e431954"
+    "games": "70426031240a159e",
+    "post": "8fcd92cb725a5e30",
+    "champion": "Ohio State",
+    "rec": "761227daf02a7f29",
+    "poll": "ef295d4f9b68c511",
+    "heis": "f6683d8751e66879",
+    "history": "3ca356b8c56b146e",
+    "universe": "4cac6dbaa3155fae",
+    "screens": "1224c88b7c8c1961"
    },
    {
     "year": 2027,
-    "games": "5049f085376bd71c",
-    "post": "944968749fdc8894",
-    "champion": "Houston",
-    "rec": "b5add4d3fda02ca5",
-    "poll": "dcdc970799f291a6",
-    "heis": "239dd7be84092cd6",
-    "history": "f7c10757a6301ab4",
-    "universe": "1d5820789b9fe0cf",
-    "screens": "57548c29767af5f3"
+    "games": "dc5f8a14015d2a2a",
+    "post": "eff37a9d40284dec",
+    "champion": "Wisconsin",
+    "rec": "5614a06ce032a08c",
+    "poll": "8d0f9e9452825ebe",
+    "heis": "15b314288af6c478",
+    "history": "4c3b2571ecc36021",
+    "universe": "2eb25329bfa732b4",
+    "screens": "d3136554f187cf06"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "08a90907a58ff2a8",
-    "post": "43cd8d847fe5fffb",
+    "games": "fb98a018c6bea9b0",
+    "post": "455cb7f79a746185",
     "champion": "Michigan State",
-    "rec": "82e56698e538c4a8",
-    "poll": "122243bb36b11c0b",
+    "rec": "d2f0996f45cb603c",
+    "poll": "d4baaf37b4c443f2",
     "heis": "ed67545cb919d745",
-    "history": "452f39c29f88f1d8",
-    "universe": "c889ea50e1558f76",
-    "screens": "0b971b335eb2ee35"
+    "history": "b65a10470d99101e",
+    "universe": "33856897429a2cca",
+    "screens": "31aef4d399783533"
    },
    {
     "year": 2027,
-    "games": "6fdc803c19a8d965",
-    "post": "b7a791cce4418f40",
-    "champion": "North Carolina",
-    "rec": "cd770b0da232219e",
-    "poll": "d41d48103a33811c",
-    "heis": "719f883500ab76bc",
-    "history": "4337a7119fd2e1c2",
-    "universe": "19bbadea1d4d47b6",
-    "screens": "113f6b1e45cc3367"
+    "games": "ba0ecf9451568fbe",
+    "post": "4715565721b8495c",
+    "champion": "Michigan",
+    "rec": "e3bc36793b034c0a",
+    "poll": "613f87b273a14fb2",
+    "heis": "0e3fb5deab052d76",
+    "history": "d5e88bef99fc4c68",
+    "universe": "26959a146fa551f3",
+    "screens": "b470450e4dd926a9"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "887cea0a940a7dc4",
+    "games": "0fbd5597f46a2eed",
     "post": "02911b5eb77c39b5",
     "champion": "Baylor",
     "rec": "eac6f8125d6c235d",
-    "poll": "d1af240d97d341ec",
+    "poll": "62280c61e351e488",
     "heis": "9def810c51af58df",
-    "history": "0f127bf4d46e4c0d",
-    "universe": "f62ab6d11305e5b8",
-    "screens": "18e7a0a38828a877"
+    "history": "024169ede8bbcdb9",
+    "universe": "14fbb6d6f92a884b",
+    "screens": "60abc9d4ba1a9557"
    },
    {
     "year": 2027,
-    "games": "c10b37bbd2310e7c",
-    "post": "232e3a1e4eb8e35a",
+    "games": "7e2995bebe0c86b7",
+    "post": "380d901d9321c52d",
     "champion": "North Carolina",
-    "rec": "d75831ce7318627f",
-    "poll": "ad7f83009c6ac7e8",
+    "rec": "0354e9ffdf358c7c",
+    "poll": "ef8994afdc0ee0e9",
     "heis": "fe104a4686ebb8ee",
-    "history": "b7bae5760538a368",
-    "universe": "9081d605f50d4f00",
-    "screens": "25a7c86fe5224fa0"
+    "history": "9b76424d2dd76a29",
+    "universe": "dab88c9824d84f45",
+    "screens": "37e59021031511a0"
    }
   ],
   "schedules#60": [

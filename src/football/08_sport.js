@@ -4,6 +4,7 @@
    of up-and-comer a program hires as head coach. A second sport defines
    its own SPORT. */
 const SPORT={
+  lateFloor:{late:(D,d)=>(d.q||0)>=4, close:8},   // round 71: the fourth quarter, within one score
   scoreWord:"SCORE",                 // the flash when you score
   id:"football",
   word:"Football",                     // the title screen's wordmark: Football / Coach

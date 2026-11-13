@@ -1,5 +1,5 @@
 {
- "fp": "a2ae1fdb6b86fe22",
+ "fp": "692cb809f2892fcf",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -420,59 +420,64 @@
    "fp": "a2ae1fdb6b86fe22",
    "from": "0e17c7aebe4143f9",
    "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
+  },
+  {
+   "fp": "692cb809f2892fcf",
+   "from": "a2ae1fdb6b86fe22",
+   "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "1ba4cbd0fcb6b36a",
-    "post": "858555f1fc2602ae",
-    "champion": "Vegas",
-    "rec": "5cea1105f92124ea",
-    "poll": "3787511717940927",
-    "heis": "72c4700494f6c62c",
-    "history": "facd410e18de7185",
-    "universe": "c1eaf428e720efa6",
-    "screens": "03964da5b0ed6727"
+    "games": "9dd024b4e9951f72",
+    "post": "b7222a5d64b337d8",
+    "champion": "Toronto",
+    "rec": "f9020a56150ef5d5",
+    "poll": "a2a8fd59eb06bc7e",
+    "heis": "f7337173c9ac3cbc",
+    "history": "0f694af7c616cdb6",
+    "universe": "669a7054b20e7121",
+    "screens": "84d40d5fe8a07bfb"
    },
    {
     "year": 2027,
-    "games": "9d55cf1798ff325a",
-    "post": "a2b33364b42b82be",
-    "champion": "Washington",
-    "rec": "9420545b7674ad19",
-    "poll": "605e30ddb9f643fb",
-    "heis": "f82be9a3062d7409",
-    "history": "7927e7a014b8b772",
-    "universe": "e415d4967ec89591",
-    "screens": "d74a774e5f5c17b1"
+    "games": "4c6a478e9907af82",
+    "post": "f606ef3d67808b90",
+    "champion": "Carolina",
+    "rec": "60103394e3e98849",
+    "poll": "c9753790022ba148",
+    "heis": "691a4bb931a90959",
+    "history": "670ba08c2a8eb51e",
+    "universe": "0418cb81b5403ecf",
+    "screens": "01247709762bd91d"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "290b04ec9ca5eb18",
-    "post": "ed9a8b1cde8b7a1b",
-    "champion": "Minnesota",
-    "rec": "a60e8281e314a8fd",
-    "poll": "bc021833c20d4158",
-    "heis": "1506ba3a83c2abeb",
-    "history": "6040562deb58d6cd",
-    "universe": "84af09ab1384153f",
-    "screens": "deaa9bbba09a8170"
+    "games": "a5d98c5fe530c9f5",
+    "post": "60ce9109fd322579",
+    "champion": "Florida",
+    "rec": "06b8fc2d762baf11",
+    "poll": "ca365ee99e40831b",
+    "heis": "7e0393dbb3be6f97",
+    "history": "593bc47098ef93b8",
+    "universe": "5bce55318bb2e6c6",
+    "screens": "8fcda2649520cae3"
    },
    {
     "year": 2027,
-    "games": "59dc9877a9deee30",
-    "post": "fff1aaa2db5ba650",
-    "champion": "New Jersey",
-    "rec": "8de54c16e8b98245",
-    "poll": "86a9b505ab1e2c0e",
-    "heis": "b1a15ea50c3590c9",
-    "history": "6fef6d1e3084129a",
-    "universe": "5fcda3d102ef94fa",
-    "screens": "f2c4e1358d7cc426"
+    "games": "fe3d44f0dcf1e115",
+    "post": "ed8e377756a678d2",
+    "champion": "Colorado",
+    "rec": "325a0d8b78d76b9c",
+    "poll": "033d0a716cd7422d",
+    "heis": "06ef8269a7dcc9d2",
+    "history": "8b13f2127ac9b9a1",
+    "universe": "633e337e289452e4",
+    "screens": "3e0443bc74d962a5"
    }
   ],
   "schedules#60": [

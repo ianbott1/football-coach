@@ -1,5 +1,5 @@
 {
- "fp": "e9f86debe12564f0",
+ "fp": "3e5d4d3dd6a6c9a9",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -270,6 +270,11 @@
    "fp": "e9f86debe12564f0",
    "from": "e01f1ad8c524bb44",
    "note": "round 63: re-sign bars at the league medians"
+  },
+  {
+   "fp": "3e5d4d3dd6a6c9a9",
+   "from": "e9f86debe12564f0",
+   "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
   }
  ],
  "out": [
@@ -279,20 +284,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "47-35",
-      "result": "Lost in the first round",
-      "grade": "B-"
+      "rec": "51-31",
+      "result": "Lost in the conference finals",
+      "grade": "A-"
      },
-     "book": "e4c1028a836722f7"
+     "book": "59babb73e679eda1"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "41-41",
+      "rec": "43-39",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "2ecbbe439601cf28"
+     "book": "595df35ec17a49bb"
     }
    ]
   },
@@ -302,20 +307,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "23-59",
+      "rec": "24-58",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "57b88a5b0a50f5aa"
+     "book": "988eb2cafa9d9cb4"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "25-57",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "47-35",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "0222611073054530"
+     "book": "12758931b56aa330"
     }
    ]
   },
@@ -325,20 +330,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "24-58",
+      "rec": "36-46",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "4820b536313efb6d"
+     "book": "3b0920fb02c27fcf"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "49-33",
-      "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "rec": "45-37",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "4e7205fd44f454ca"
+     "book": "3971d14dde820b2b"
     }
    ]
   }

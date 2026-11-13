@@ -1,5 +1,5 @@
 {
- "fp": "f18e15b17d7c0d98",
+ "fp": "9720b1e4368b41e7",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -405,33 +405,38 @@
    "fp": "f18e15b17d7c0d98",
    "from": "aa5efa4a90e5ea9f",
    "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
+  },
+  {
+   "fp": "9720b1e4368b41e7",
+   "from": "f18e15b17d7c0d98",
+   "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "0c12b72260544e56",
-    "post": "336ae667dd5680bc",
+    "games": "708fe12e26c1b727",
+    "post": "7e8634d12e08549f",
     "champion": "Manchester City",
-    "rec": "5bd100dbebc2dac6",
-    "poll": "e294fb9fca094f90",
-    "heis": "debb27f463bb3027",
-    "history": "2e2f245f8892117d",
-    "universe": "d845bc09f200f735",
-    "screens": "829d52960a10a7ea"
+    "rec": "09b07f545edb7904",
+    "poll": "a541932b68508e62",
+    "heis": "9f18855900e2eaa7",
+    "history": "85956eca256717b6",
+    "universe": "1de69ff2ce19d36b",
+    "screens": "d3d880737716be9c"
    },
    {
     "year": 2027,
-    "games": "a8c931f6f43001d3",
-    "post": "529590ff683882de",
-    "champion": "Manchester City",
-    "rec": "44cf80b81f3ffd06",
-    "poll": "0f308c05cfb56af6",
-    "heis": "e1abe8e17e8d2920",
-    "history": "5936f24e58b3ada4",
-    "universe": "af9482237c57bb71",
-    "screens": "34e988fcb3897043"
+    "games": "293a445448589d7c",
+    "post": "b30249216f342988",
+    "champion": "Liverpool",
+    "rec": "64fa953cff5ed648",
+    "poll": "8086547e53997fee",
+    "heis": "2aa684a3991cd844",
+    "history": "26805f9af5985f11",
+    "universe": "f862eb29f54d26f9",
+    "screens": "b9c9184c377b3b2b"
    }
   ],
   "Wrexham#777": [
@@ -444,8 +449,8 @@
     "poll": "8a0a3059f0ed3a71",
     "heis": "383b90a62a5c3fab",
     "history": "01149d1d7c2d48aa",
-    "universe": "88be189fa27d280d",
-    "screens": "d70029596df5dce1"
+    "universe": "14993278688d248a",
+    "screens": "1a824bb48d302bb0"
    },
    {
     "year": 2027,
@@ -456,8 +461,8 @@
     "poll": "95e7ce0f075f9876",
     "heis": "660f0e098cfc5670",
     "history": "f47dcddc4c4288a3",
-    "universe": "eeddffe92162fa45",
-    "screens": "c5a5f6e83a7b2c1a"
+    "universe": "bacfba7f4b647cde",
+    "screens": "284a6024e0394cfe"
    }
   ],
   "schedules#60": [

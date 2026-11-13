@@ -46,6 +46,7 @@ function mlbSchedule(rng,R,year){
 }
 /* lay the series into the season's days (also used by the tests): returns the games, one entry a game, with the
    series it belongs to (ser, its game sg of sn) */
+const DIV_SPREAD=40;
 function packSeries(rng,series){
   const DAYS=LEAGUE.weeks;
   // days nobody plays (a series never spans one): the All-Star break, four days past the middle, and two league-wide
@@ -56,6 +57,11 @@ function packSeries(rng,series){
   for(let attempt=0;attempt<200;attempt++){
     const rem={}, free={}, run={}, last={}, pool=rng.shuffle(series.map((x,i)=>Object.assign({id:i},x))), out=[];
     NAMES.forEach(t=>{rem[t]=0;free[t]=0;run[t]=0}); pool.forEach(x=>{rem[x.home]+=x.len;rem[x.away]+=x.len});
+    // round 71 (schedV 3): the division's games spread through the season. Muse counted 13 and 27 division games by game
+    // 80 (measured over a league: 11 to 38 of 52, where about 26 is even). A club behind on its division games leans to
+    // a division series, one ahead leans away (no draws: the order of every draw is unchanged).
+    const dTot={}, dRem={}; NAMES.forEach(t=>{dTot[t]=0}); pool.forEach(x=>{ if(CONF[x.home]===CONF[x.away]){ dTot[x.home]+=x.len; dTot[x.away]+=x.len } }); NAMES.forEach(t=>dRem[t]=dTot[t]);
+    const lag=(t,d)=>dTot[t]?(d/DAYS)-(dTot[t]-dRem[t])/dTot[t]:0;
     let ok=true;
     for(let d=0;d<DAYS&&ok;d++){
       let left=0; for(let k=d;k<DAYS;k++)if(!dead.has(k))left++;
@@ -74,11 +80,13 @@ function packSeries(rng,series){
         for(let i=0;i<pool.length;i++){ const x=pool[i]; if(x.home!==t&&x.away!==t)continue; const o=x.home===t?x.away:x.home;
           if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue;
           // not the club you just played, unless nothing else fits (round 59: a 6-game set, 10 straight against Cleveland: Muse)
-          const sc=slack(o)+rng.r()*2+(last[t]===o?50:0); if(sc<bs){bs=sc;best=i} }
+          let sc=slack(o)+rng.r()*2+(last[t]===o?50:0);
+          if(SCHED_V>=3){ const L=(lag(t,d)+lag(o,d))*DIV_SPREAD; sc+=CONF[x.home]===CONF[x.away]?-L:L }
+          if(sc<bs){bs=sc;best=i} }
         if(best<0)continue;
         const x=pool.splice(best,1)[0]; taken.add(x.home); taken.add(x.away);
         for(let k=0;k<x.len;k++)out.push({week:d+k,home:x.home,away:x.away,conf:CONF[x.home]===CONF[x.away],neutral:false,ser:x.id,sg:k+1,sn:x.len});
-        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len }); last[x.home]=x.away; last[x.away]=x.home }
+        [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len; if(CONF[x.home]===CONF[x.away])dRem[t]-=x.len }); last[x.home]=x.away; last[x.away]=x.home }
       NAMES.forEach(t=>{ if(free[t]<=d&&!taken.has(t))run[t]=0 });   // idle today: the stretch ends
       if(NAMES.some(t=>rem[t]>left-1+(free[t]>d?1:0)))ok=false;
     }

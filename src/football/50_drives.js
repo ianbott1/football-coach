@@ -71,6 +71,7 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode){
   const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;
+  if(ENGINE_V>=2)fg*=(KICK2[LEAGUE.id]||KICK2.cfb).fg;   // round 71: kicks now miss at their odds; held to the same points
   let to = 0.135 - x * 0.0339 + A.to;
   td = Math.max(0.02, Math.min(0.62, td));
   fg = Math.max(0.03, Math.min(0.30, fg));
@@ -82,7 +83,11 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
   const o = driveOdds(offElo, defElo, startYd, aggr, dmode);
   const r = rng.r();
   if (r < o.td) return {pts:7, kind:"TD", stall:100};
-  if (r < o.td + o.fg) return {pts:3, kind:"FG", stall:Math.min(92,startYd+Math.round(rng.range(12,40)))};
+  if (r < o.td + o.fg){
+    if(ENGINE_V<2)return {pts:3, kind:"FG", stall:Math.min(92,startYd+Math.round(rng.range(12,40)))};
+    // round 71: a drive that ends in a kick, from where real kicks come (about 36 yards, rarely past 55), made at its odds
+    const dist=Math.round(Math.max(19,Math.min(60,rng.gauss(38,9)))), stall=117-dist;
+    return rng.r()<fgOdds(stall)?{pts:3,kind:"FG",stall:stall}:{pts:0,kind:"MISS",stall:stall} }
   if (r < o.td + o.fg + o.to) {
     return {pts:0, kind: rng.r()<0.55 ? "INT" : "FUM",
             stall:Math.min(96,startYd+Math.round(rng.range(0,42)))};
@@ -96,6 +101,12 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
   const s = rng.r();
   let kind = s<0.70 ? "PUNT" : (s<0.86 ? "DOWNS" : "MISS");
   if (stall>=72 && kind==="PUNT") kind="MISS";       // you don't punt from there
+  // round 71 (KICK2): a kick is a kick. Inside field-goal range a stalled drive kicks, and it goes in at the kick's odds
+  // for its length; out of range the "miss" was a long one. Every miss was a stalled drive before, whatever the length,
+  // and only 59% of kicks went in (NFL ~84%, college ~77%).
+  if(ENGINE_V>=2&&kind==="MISS"){ const K=KICK2[LEAGUE.id]||KICK2.cfb;
+    if(stall>=K.range&&rng.r()<K.kick){ const dist=fgDistance(stall); if(rng.r()<fgOdds(stall))return {pts:3,kind:"FG",stall:stall,togo:togo,att:dist}; return {pts:0,kind:"MISS",stall:stall,togo:togo,att:dist} }
+    kind=rng.r()<0.8?"PUNT":"DOWNS" }
   return {pts:0, kind:kind, stall:stall, togo:togo};
 }
 
@@ -103,8 +114,13 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
 /* a smooth curve through the old steps' middles: every yard counts (it was a staircase: 80% from 33 to
    40 yards, 66% from 41 to 47, so a 41-yarder and a 47-yarder were the same kick: Grokbot, Instinct) */
 const FG_CURVE=[[18,0.97],[25,0.95],[32,0.88],[40,0.78],[47,0.65],[54,0.48],[60,0.32],[70,0.15]];
+/* round 71: each level's own curve (NFL 2015-24 by distance; college lower), with kick2 seasons. The fg rate per drive is
+   raised to hold scoring where it was (KICK2[lg].fg), since the kicks that now miss used to be makes. range: the
+   stall from which a stalled drive kicks (a 45-yarder and closer). */
+const KICK2={nfl:{range:72,fg:1.0,kick:0.5,curve:[[18,0.99],[25,0.97],[32,0.93],[40,0.85],[47,0.76],[54,0.64],[60,0.48],[70,0.2]]},
+             cfb:{range:72,fg:1.0,kick:0.65,curve:[[18,0.98],[25,0.94],[32,0.87],[40,0.77],[47,0.65],[54,0.5],[60,0.32],[70,0.12]]}};
 function fgOdds(stall){
-  const d=(100-stall)+17, C=FG_CURVE;
+  const d=(100-stall)+17, C=ENGINE_V>=2?(KICK2[LEAGUE.id]||KICK2.cfb).curve:FG_CURVE;
   if(d<=C[0][0])return C[0][1];
   for(let i=1;i<C.length;i++){ if(d<=C[i][0]){ const [a,pa]=C[i-1],[b,pb]=C[i]; return pa+(pb-pa)*(d-a)/(b-a) } }
   return C[C.length-1][1];
@@ -448,7 +464,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         const pick=choice==="keep"?st.ans[side]:FB_ANSWERS[choice]?choice:null;
         if(pick&&FB_ANSWERS[pick]){
           const e={side:side,h:dp.h,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
-          if(dp.k==="read")e.evid=dp.best; if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true }
+          if(dp.k==="read")e.evid=dp.best; if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true; const ks=Object.keys(dp.report).sort((x,y)=>dp.report[y]-dp.report[x]); if(!e.unclear&&FB_ANSWERS[pick].beats===ks[0]){ e.followed=true; e.fav=ks[0] } }   // round 71: followed the report
           st.log.push(e); st.ans[side]=pick }
         else if(dp.k==="prep"&&dp.report){   // waiting is graded too: right when the report's favourite was wrong (round 42; the
           const ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);   // other four games had it from round 39)

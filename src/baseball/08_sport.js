@@ -1,5 +1,6 @@
 /* ============ sport: baseball ============ */
 const SPORT={
+  lateFloor:{late:(D,d)=>(d.seg||0)>=6, close:1},   // round 71: from the 7th, within a run
   margins:{close:1,rout:7,crush:9,blow:11},
   // the Capybara's fixed lines, said a different way from game to game (round 61: the same two sentences every night)
   voiceAlt:{

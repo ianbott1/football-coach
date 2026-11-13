@@ -1,5 +1,5 @@
 {
- "fp": "30d2fa9bfb228714",
+ "fp": "504593d9524c676a",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -70,59 +70,64 @@
    "fp": "30d2fa9bfb228714",
    "from": "b750e3d858a17b8f",
    "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
+  },
+  {
+   "fp": "504593d9524c676a",
+   "from": "30d2fa9bfb228714",
+   "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "257fbc46e8ea39b6",
-    "post": "891cd14443ecf4fb",
-    "champion": "Detroit",
-    "rec": "40c621ca8198faae",
-    "poll": "b75f5c20fe4344bd",
-    "heis": "a932a8caf31d17f1",
-    "history": "cfc3e8869a1aba6c",
-    "universe": "021f122327eba2cd",
-    "screens": "22f07b1c976e8f65"
+    "games": "9b766f8fad538857",
+    "post": "8e60a9d924f9eef9",
+    "champion": "Boston",
+    "rec": "c7b7cdc6b221a1a9",
+    "poll": "df0fb3c238e51031",
+    "heis": "b081ab96c56716c1",
+    "history": "cb33a504dba0d688",
+    "universe": "d2b0de34370a55d8",
+    "screens": "ad560d86ca44e540"
    },
    {
     "year": 2027,
-    "games": "c796c9f9d01a314b",
-    "post": "55562aa0a97a4783",
-    "champion": "Boston",
-    "rec": "8e207d2fe9cffbad",
-    "poll": "4279d58757a0f49a",
-    "heis": "8353eb8de82952c0",
-    "history": "cf2ae2f07c96175d",
-    "universe": "593fda9d5bb672dd",
-    "screens": "2e385a483d47e9cb"
+    "games": "8620515a2aeb3d4a",
+    "post": "dca91f6e17174052",
+    "champion": "Cleveland",
+    "rec": "8c052ff9a35bcfa6",
+    "poll": "6585c576cc4af539",
+    "heis": "b47e1c259b467ca3",
+    "history": "67ba4a0372cb1236",
+    "universe": "72fee6918de28b5d",
+    "screens": "4fa36fe4ed6cf4c1"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "3d895e544878429f",
-    "post": "cd87b67b8f517ea2",
-    "champion": "Tampa Bay",
-    "rec": "0c2c348c25d108cb",
-    "poll": "19c6582aad747771",
-    "heis": "953206088ea314e9",
-    "history": "48fe6248ae6613b8",
-    "universe": "92e53a72ab56b31d",
-    "screens": "64bd1cd550226a40"
+    "games": "32e482a7dd2cc0ad",
+    "post": "8a807e766eeba5ab",
+    "champion": "LA Dodgers",
+    "rec": "4eb80eaaf47457f9",
+    "poll": "9b1dcedaf41430d0",
+    "heis": "40ce030366114729",
+    "history": "d5a8a90031b77507",
+    "universe": "c70b7693b60125ef",
+    "screens": "c2d0eb5d50339a48"
    },
    {
     "year": 2027,
-    "games": "a90eddeb98cd7c52",
-    "post": "1f36b52d43188a35",
-    "champion": "Texas",
-    "rec": "e7374776908b193c",
-    "poll": "d9899f8eb4e67c38",
-    "heis": "d906fc5360d32da8",
-    "history": "632df131f8f93b89",
-    "universe": "9f428254c78ab9e6",
-    "screens": "f995d89f9e61a3fb"
+    "games": "81264c0de5f2d6f9",
+    "post": "2d2423765a20ea58",
+    "champion": "NY Mets",
+    "rec": "bc5e6946c2d2e891",
+    "poll": "c3f72d5570492c4b",
+    "heis": "f129a4d4ad14b96d",
+    "history": "6987cd9b41e1d9f1",
+    "universe": "c76299c8eff0cb7f",
+    "screens": "62bd4268de77f6e2"
    }
   ],
   "schedules#60": [
