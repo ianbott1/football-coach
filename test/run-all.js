@@ -30,7 +30,7 @@ add('h2h (cfb)',['h2h.js',D(G.cfb)]); add('moves (cfb)',['moves.js',D(G.cfb)]);
 add('firing (cfb)',['firing.js',D(G.cfb)],{timeout:1500000});   /* ~410s alone; over 900s when it shares the CPU with the browser tests (round 38) */ add('clinch marks (nfl)',['clinch.js',D(G.nfl),'120']);
 add('plans (cfb)',['plans.js',D(G.cfb)]); add('call verdicts (nfl)',['fb-verdicts.js',D(G.nfl),'60']); add('verdicts agree with the post-game line (nfl)',['verdict-agree.js',D(G.nfl)]); add('your players (all six)',['people.js']); add('a game is recorded once (cfb, nfl, epl)',['double-finish.js']);  add('the two-point call (cfb, nfl)',['two-point.js']); add('postseason: only your own games (all six)',['postseason-gate.js']);
 // pro football
-add('rules (nfl)',['nfl.js',D(G.nfl),'3','8']); add('draft board (nfl)',['draftboard.js',D(G.nfl)]);
+add('rules (nfl)',['nfl.js',D(G.nfl),'3','8'],{timeout:1200000});   /* ~190s alone; ran 400-500s beside the browser tests and passed 600s in round 72 */ add('draft board (nfl)',['draftboard.js',D(G.nfl)]);
 add('free-agent targets (nfl)',['fatargets.js',D(G.nfl)]); add('trades (nfl)',['trades.js',D(G.nfl)]);
 // college basketball
 add('bracket (ncaab)',['bb-bracket.js','12']); add('screens (ncaab)',['bb-screens.js']);

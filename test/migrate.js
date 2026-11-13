@@ -40,7 +40,9 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // the under-fire card says why now (Nov 2026: "under fire" with no reason, Grokbot)
       // career leaders now include the players still here (round 50: a 108-yard passer led pro football's departed-only
       // list): changed on purpose, not compared
-      const noLead=x=>x.replace(/<div class="grouphead">Career leaders<\/div>[\s\S]*?(?=<div class="grouphead">|$)/g,'');
+      // round 72, on purpose: the season goal is one line with its target (two goals showed at once, Instinct)
+      const noR72=x=>x.replace(/ Target: \d+ wins?(?:, \d+ to go)?\.(?=<\/span>)/g,'');
+      const noLead=x=>noR72(x).replace(/<div class="grouphead">Career leaders<\/div>[\s\S]*?(?=<div class="grouphead">|$)/g,'');
       const noWhy=x=>noLead(x).replace(/ (One of the weakest at the job in the league\.|You're \d+-\d+, and he isn't good enough to be spared it\.)\n?\s*/g,' ');
       want.forEach((w,i)=>{checks++;if(roster&&/youtag/.test(w)&&/class="trec"/.test(w))return; if(coachList(noSeat(noWhy(w)))!==coachList(noSeat(noWhy(got[i])))){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`); if(process.env.DEBUG){ const A=coachList(noSeat(noWhy(w))),B=coachList(noSeat(noWhy(got[i]))); let k=0; while(k<A.length&&A[k]===B[k])k++; console.log('    old: '+A.slice(k-100,k+150)+'\n    new: '+B.slice(k-100,k+150)) }}});
       // the game's name on the card changed on purpose ("College Football Coach"),
