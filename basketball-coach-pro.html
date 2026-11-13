@@ -203,7 +203,15 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .whint{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
  color:var(--muted);text-align:center;padding-top:8px}
 @media(max-width:1023px){.whint{display:block}}
-.watchwrap{max-width:640px;margin:0 auto;padding-bottom:96px}
+.lwpre{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap}   /* round 72 */
+.minibar{position:fixed;left:0;right:0;top:0;z-index:25;display:none;align-items:center;justify-content:center;gap:10px;
+ padding:6px 12px;background:rgba(16,19,28,.97);border-bottom:1px solid var(--line);font-family:var(--cond);font-size:15px;letter-spacing:.02em}
+.minibar.on{display:flex}
+.minibar .mt{color:#B4BCCB;max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.minibar .mt.lead{color:#fff;font-weight:700}
+.minibar .mn{font-weight:700;color:#fff;font-size:17px}
+.minibar .mc{color:rgba(255,226,92,.95);font-family:var(--mono);font-size:11px;text-transform:uppercase}
+.watchwrap{max-width:640px;margin:0 auto;padding-bottom:calc(var(--barh,96px) + 24px)}   /* round 72: the bar's measured height */
 .linescore{overflow-x:auto;margin:10px 0 2px}.linescore table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12px}
 .linescore th{text-align:left;font-weight:600;color:var(--bone);padding:2px 6px 2px 0;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
 .linescore td{text-align:center;padding:2px 3px;color:var(--muted);min-width:14px}.linescore td.b{color:var(--bone);font-weight:700}
@@ -236,6 +244,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .ptxt{flex:1;font-size:13px;line-height:1.4}
 .ptxt b{font-family:var(--cond);font-size:15px;font-weight:600}
 .pscore{font-family:var(--mono);font-size:12px;color:#B4BCCB;flex:0 0 46px;text-align:right}
+.play.samestretch{border-top:0;padding-top:2px}   /* round 72: rows of one stretch sit under its clock */
 .rewatch{margin-top:11px;background:none;border:1px solid var(--line);color:var(--muted);
  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
  padding:7px 11px;cursor:pointer}
@@ -718,7 +727,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 /* ---------- desktop ---------- */
 @media(min-width:1024px){
   body{padding-bottom:0}
-  body.offseason{padding-bottom:120px}
+  body.offseason{padding-bottom:calc(var(--barh,96px) + 24px)}
   body.offseason .cols{grid-template-columns:minmax(0,1fr)}
   body.offseason #view{max-width:820px;margin:0 auto}
   #app{max-width:1340px}
@@ -739,7 +748,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
     background:linear-gradient(180deg,transparent,var(--ink) 26%);margin-top:6px}
   .sidebtn .advance{font-size:17px;padding:13px}
   .sidebtn .skip{margin-top:8px}
-  #view{min-height:calc(100vh - 96px);padding-bottom:110px}   /* the last card clears a fixed action bar (Instinct: the costliest call hid behind BEGIN 2028 SEASON) */
+  #view{min-height:calc(100vh - 96px);padding-bottom:calc(var(--barh,86px) + 24px)}   /* the last card clears a fixed action bar (Instinct: the costliest call hid behind BEGIN 2028 SEASON) */
   #side{padding-bottom:90px}
   .mast{padding:44px 32px 26px}
   .mast h1{font-size:60px}
@@ -987,7 +996,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="8760b4e";
+<script>const BUILD_ID="e2322f8";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -1443,7 +1452,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=2;
+let ENGINE_V=1; const ENGINE_NOW=3;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -3527,7 +3536,9 @@ const HL_SPORT=(function(){
     const end=t>=ts?(c.last?(c.made?(c.kind==="three"?`${c.nm} hits it! Game over`:`${c.nm} ties it!`):"No good!"):c.kind==="three"?`${c.nm} from three!`:`${c.nm}, and one!`):null;
     hlCaption(x,W,H,top,end,c.made?ink:null);
   }
-  return {reveal:0.86, collapseIdle:true, aspect:0.54, clips, pitch, idle, frame};
+  // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
+  const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
+  return {reveal:0.86, collapseIdle:true, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
 })();
 /* ============ game screens: basketball ============ */
 /* The scoreboard (visitors first, as on any arena's clock), the run of play
@@ -3620,7 +3631,7 @@ function flowSVG(g,drives){
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
-  const lab=`<span class="live"></span>${!live.drives.length?"TIP-OFF":esc(segLabel(last))}
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"TIP-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab,"",flowSVG(g,live.drives));
 }
@@ -3666,10 +3677,13 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
 /* ---- the run of play ---- */
 function playsHTML(drives,my,g,limit){
   let rows=rowsOf(g,drives); if(limit)rows=rows.slice(-limit);
-  return rows.slice().reverse().map(r=>`<div class="play ${r.team===my?'mine':''} ${r.goal||r.run?'goalrow':''} ${r.cue?'cue':''} ${r.seg&&!r.run?'cue':''}">
-      <span class="pq">${esc(r.m)}</span>
+  // round 72: a stretch's rows all ended at its clock, and each said so ("Q1 6:00" three times: Instinct); the clock
+  // heads the stretch once
+  let prev=null;
+  return rows.slice().reverse().map(r=>{ const same=r.m===prev; prev=r.m; return `<div class="play ${r.team===my?'mine':''} ${r.goal||r.run?'goalrow':''} ${r.cue?'cue':''} ${r.seg&&!r.run?'cue':''}${same?' samestretch':''}">
+      <span class="pq">${same?"":esc(r.m)}</span>
       <div class="ptxt">${r.team&&!r.cue?`<b>${esc(r.team)}</b> `:""}${esc(r.text)}${r.tag?` <span class="dtag ${/RUN|GOOD/.test(r.tag)?'sc':/OUT|MISS/.test(r.tag)?'rd':'yl'}">${esc(r.tag)}</span>`:""}</div>
-      <span class="pscore">${r.a}&ndash;${r.h}</span></div>`).join("");
+      <span class="pscore">${r.a}&ndash;${r.h}</span></div>` }).join("");
 }
 function liveView(){
   const g=live.g, my=S.myTeam;
@@ -4954,7 +4968,7 @@ function dnRowHTML(p,t,label,canPick){
     <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${label||""}${x.wk?` <span class="dthere">worked out</span>`:x.unsure?` <span class="dmaybe">scouts unsure</span>`:""}</div>
       <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`} &middot; ${dnFit(p,t)}</div></div>
     ${!x.wk&&wk.length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
-    ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}">Draft</button>`:""}</div>`;
+    ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}" data-dnname="${esc(p.n||"")}">Draft</button>`:""}</div>`;
 }
 function draftNightHTML(){
   const t=dnTeam(), D=dnState(), P=S.off.picks, mine=D.picks.filter(d=>d.team===t), wk=P.workouts||[];
@@ -4999,15 +5013,16 @@ function draftNightHTML(){
   h+=`<button class="skip" data-dnback="1">Back to the offseason</button>`;
   return h;
 }
-let dnArmed=null;
+let dnArmed=null; const DN_ARM=15000;
 function bindDraftNight(){
   const P=S.off.picks, go=()=>{ save(); render(); window.scrollTo({top:0,behavior:"auto"}) };
   // the pick you've tapped once lives in the game, not on the button: the board redraws as picks land, and a redraw
-  // between the two taps quietly reset it (Instinct). Tapped again within five seconds, it's yours.
+  // between the two taps quietly reset it (Instinct). Tapped again within fifteen seconds, it's yours (round 72: five went
+  // back to "Draft" while he read the scouts' notes, Instinct); the button names who.
   document.querySelectorAll("[data-dnpick]").forEach(b=>{ const id=+b.dataset.dnpick;
-    if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<5000){ b.innerHTML="Tap again"; b.classList.add("armed") }
-    b.onclick=()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<5000){ dnArmed=null; P.hand=(P.hand||[]).concat([id]); go(); return }
-      dnArmed={id:id,at:Date.now()}; render(); setTimeout(()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at>=5000){ dnArmed=null; render() } },5050) } });
+    if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<DN_ARM){ const nm=(b.dataset.dnname||"").split(" ").slice(-1)[0]; b.innerHTML=nm?"Tap again: draft "+esc(nm):"Tap again"; b.classList.add("armed") }
+    b.onclick=()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<DN_ARM){ dnArmed=null; P.hand=(P.hand||[]).concat([id]); go(); return }
+      dnArmed={id:id,at:Date.now()}; render(); setTimeout(()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at>=DN_ARM){ dnArmed=null; render() } },DN_ARM+50) } });
   document.querySelectorAll("[data-dnstaff]").forEach(b=>b.onclick=()=>{ const D=dnState(); if(D.stop){ P.hand=(P.hand||[]).concat([D.stop.suggest]); if(!(P.board||[]).length||(P.board||[]).indexOf(D.stop.suggest)<0)P.staffPicked=(P.staffPicked||[]).concat([D.stop.suggest]); go() } });
   document.querySelectorAll("[data-dnrest]").forEach(b=>b.onclick=()=>tapTwice(b,"Tap again: your staff picks the rest",()=>{ P.handDone=true; go() }));
   document.querySelectorAll("[data-dnwork]").forEach(b=>b.onclick=()=>{ P.workouts=P.workouts||[]; if(P.workouts.length<dnWorkouts())P.workouts.push(+b.dataset.dnwork); save(); render() });
@@ -5192,7 +5207,11 @@ function starsHTML(team){
   // players with something to say: form either way, a mood that isn't "settled", a last year, a milestone close
   const news=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P);
     return formOf(p,P)||moodOf(p,i,team).t!=="settled"||lastYear(p)||(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
-  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).slice(0,4);
+  // round 72: one story a contract year, not four (day one listed four stars, each "final year of his contract":
+  // Instinct). A player whose only news is his last year is kept once, the best of them
+  const only=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P); return !!lastYear(p)&&!formOf(p,P)&&moodOf(p,i,team).t==="settled"&&!(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
+  let lyOnly=0;
+  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).filter(i=>!only(i)||lyOnly++<1).slice(0,4);
   if(!idx.length)return "";
   const tag=(t,c)=>`<span class="ptag ${c||""}">${esc(t)}</span>`;
   return `<div class="grouphead">Squad news</div>`+idx.map(i=>{
@@ -5779,7 +5798,9 @@ function impactHTML(P){
   // nothing more when one replay gave the same result: "though tonight's dice gave the same result either way" read as
   // "your win didn't count", and on a one-point loss as if no call mattered (Instinct, Grokbot)
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"")
-                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"");
+                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":res==="win"?"though it didn't cost you this one.":"");
+  // round 72: a wrong call in a game won either way says so, kindly (Instinct: "graded wrong and the team still won
+  // 124-109; the card should say the choice did not cost the game"); the same-luck replay is what knows it
   return `<div class="impact"><div class="imphead">${verdict}${tonight?", "+tonight:"."}</div>
     <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.${repRates(c)}</div>${restHTML}</div>`;
     // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
@@ -5849,8 +5870,13 @@ function liveChance(m,tau,pre,sig,poss){
 try{ if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest(".lwtog[data-livewp]");
   if(!b||!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() }) }catch(e){}
 const LWHIDE=`<button class="lwtog" data-livewp="false" aria-label="Hide the win chance">Hide</button>`;
-function liveWPHTML(){
-  if(!LIVE_WP_ON||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";
+/* round 72 (Ian: yes to Muse's ask): on a call screen too, the chance as it stands, one number, the same one shown
+   between plays, never one per option, so it still can't be a calculator for the choice. Early in a game, the chance
+   before it beside it: Muse read 94% at 9-7 in the second quarter as too high, and measured it is honest (a side shown
+   90%+ before half-time on a lead of ten or fewer won 94% in college football, 92% in the pros, 94% in college
+   basketball); the gap between the teams is what makes it high, so the line says so. */
+function liveWPHTML(onCall){
+  if(!LIVE_WP_ON||!live||(live.ask&&!onCall)||live.done||live.h2h||!live.drives||!live.drives.length)return "";
   // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
   if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
@@ -5860,13 +5886,14 @@ function liveWPHTML(){
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
   const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+  const early=liveTau(d)>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
   // the three add to 100 (round 50: soccer's line read 101 twice: Muse): each rounded down, the leftover points to the largest remainders
   if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
     v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });
     const Q=f.map(x=>Math.max(1,Math.min(98,x)));
-    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span>${LWHIDE}</div>` }
+    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span>${pre}${LWHIDE}</div>` }
   return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span>${LWHIDE}</div>`
-    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${LWHIDE}</div>`;
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${pre}${LWHIDE}</div>`;
 }
 
 /* ---- the game plan, changed during a game (round 68: Ian, "pause to switch strategy at any point") ----
@@ -6618,9 +6645,9 @@ function scoreChange(L,prevH,prevA){
   const mine=mineHome?dh:da, theirs=mineHome?da:dh;
   return mine>0&&mine>=theirs?"mine":theirs>0?"theirs":null;
 }
-function feelSpell(L,prevH,prevA,quiet){
+function feelSpell(L,prevH,prevA,quiet,shown){
   const who=scoreChange(L,prevH,prevA); if(!who)return;
-  showFlash(L,who); if(quiet)return;
+  if(!shown)showFlash(L,who); if(quiet)return;   // shown: a highlight showed the score already (round 72)
   // a sport can pick its sound (round 70, baseball: a home run is a bigger moment than a run)
   const k=typeof SPORT!=="undefined"&&typeof SPORT.scoreSfx==="function"?SPORT.scoreSfx(L,who):"score";
   if(who==="mine"){ sfx(k); buzz([40,60,90]) } else sfx("against");
@@ -6811,7 +6838,7 @@ function hlWillPlay(L,drive){
 /* the clips are over (or skipped): the score, the run of play, the sound and the flash */
 function hlRelease(quiet){
   if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
-  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a,HL.sounded); HL.sounded=false;   // a clip that made its own sound (round 70) leaves the flash only
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a,HL.sounded,HL.scored); HL.sounded=false; HL.scored=false;   // a clip that made its own sound (round 70) leaves the flash only
   if(!quiet&&typeof render==="function")render() }
 /* the clips of the drives the engine adds at the end (overtime, a shoot-out), one after another; ms they take */
 function hlPlayTail(L,drives){
@@ -6832,7 +6859,11 @@ function hlPlay(L,drive){
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
-function hlStart(c){ HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
+/* round 72: one clock (Instinct: the clip said 74' while the header said 70'). While a clip plays, the header shows the
+   clip's own time, as the held score moves on with its goals (round 70); each sport says it in the header's words */
+function hlHeadClock(c){ try{ return c&&HL_SPORT.headClock?HL_SPORT.headClock(c)||null:null }catch(e){ return null } }
+function hlStart(c){ { const k=hlHeadClock(c); if(k&&typeof live!=="undefined"&&live&&live.hold&&live.hold.clock!==k){ const first=!live.hold.clock; live.hold.clock=k; if(!first&&typeof render==="function")render() } }
+  HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
 function hlFrame(){
   const c=HL.cur; if(!c)return; const t=Math.min(1,(Date.now()-HL.t0)/c.dur);
   hlDraw(c,t);
@@ -6840,6 +6871,9 @@ function hlFrame(){
   // change as you cross the touchdown line"); earlier clips' goals show in the clip's own score bug
   // round 70: with clips still to come, a goal moves the held score on by one (c.after), so it ticks up as they go in
   const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal;
+  // round 72: a clip that has shown a score says so, and the full-screen flash after it stays away: it covered the rows
+  // just as they changed, a second "GOAL!" over the one the clip had shown (Instinct: "harder to read")
+  if(rv!=null&&t>=rv&&(c.after||c.scores))HL.scored=true;
   if(rv!=null&&t>=rv&&typeof live!=="undefined"&&live&&live.hold){
     if(!HL.clips.length&&!live.finishing){ if(c.after&&!c._ticked&&HL_SPORT.sound){ c._ticked=1; try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } hlRelease() }
     else if(c.after&&!c._ticked){ c._ticked=1; live.hold.h=c.after[0]; live.hold.a=c.after[1]; if(HL_SPORT.sound){ try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } if(typeof render==="function")render() } }
@@ -7554,6 +7588,9 @@ function callKey(step,year){ return (year||SEA.year)+":"+step; }
    "balanced", overwrote the step's one plan, and a reload replayed the tie another way: 3-1 came back 0-0, and the
    season went its own way from there). Saves from before keep one plan a step. */
 function planKey(step,half){ return half?step+"#1":step }
+/* round 72: the first highlights setting, named for what it shows in each sport ("Goals only" meant little in baseball:
+   Instinct) */
+function hlGoalsLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.goalsLabel)||"Goals only" }
 function planFor(step,half){ const P=S.plans||{}; return (half&&P[step+"#1"]!==undefined?P[step+"#1"]:P[step])||"balanced" }
 
 function liveSeed(step){
@@ -7649,7 +7686,7 @@ function liveTick(){
     // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
     // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
     // shows them.
-    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA}; else feelSpell(live,pH,pA) }
+    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
@@ -7672,8 +7709,8 @@ function setPlanMidGame(p){
 /* the bar under the live game: your plan from here, and how much of the game to watch */
 function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
-  const cur=livePlanNow(), HLM=[["goals","Goals only"],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
-  return `<div class="liveplan" style="margin:8px 0 2px">${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
+  const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
+  return `<div class="liveplan" style="margin:8px 16px 2px">${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
     <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn" data-midplan="${k}" aria-pressed="${cur===k}">${esc(PLANS[k].l)}</button>`).join("")}</div>`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
     <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
@@ -8288,7 +8325,10 @@ function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } 
 /* A league with a game every calendar day (LEAGUE.skipIdle) plays through
    the days you don't play: the button always takes you to your next game. */
 function skipIdleDays(){
-  if(!LEAGUE.skipIdle||isHotSeat()||live)return;
+  // round 72: and every league's opening week: a season never opens on a week with no game of yours (the Premier League
+  // starts a week after the Football League: Arsenal's first click "did nothing": Instinct; a college team's week 0)
+  const opening=SEA&&SEA.step===0&&SEA.phase==="week";
+  if((!LEAGUE.skipIdle&&!opening)||isHotSeat()||live)return;
   let g=0;
   while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
     // the same bookkeeping as any advance: a reload replays exactly S.steps steps
@@ -8907,8 +8947,12 @@ function readsHTML(step){
     // not counted either way.
     if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
+  // round 72: every graded read wrong in a win says so plainly (Instinct: "both calls graded wrong and the team still won
+  // 124-109"); what a wrong read cost isn't measured, so the line claims no more than the result
+  const gr=lines.filter(x=>!x.un), last=P[P.length-1], won=last&&last.mine>last.theirs;
+  const anyway=won&&gr.length&&gr.every(x=>!x.right)?`<div class="readnone">${gr.length===1?"That read was":"Those reads were"} wrong, and you won anyway.</div>`:"";
   return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
-    ${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
+    ${anyway}${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -9067,7 +9111,9 @@ function stakesFor(ng){
   // the quiet line: your game number where steps are days (hockey, basketball) or matchdays
   const gNo=SEA.weeks.filter(W=>W.games.some(x=>!x.cup&&(x.home===my||x.away===my))).length+1;
   if(!out.length)out.push({p:0,tag:LEAGUE.myGameLabel?LEAGUE.myGameLabel(gNo).toUpperCase():(LEAGUE.skipIdle||LEAGUE.stepLabel)?"GAME "+gNo:"WEEK "+(wk+1),
-    l:(wp=>{ const at=`${ng.home===my?"Home":"On the road"} against ${opp}.`;
+    // round 72: a neutral site says so ("AT ATLANTA · vs BAYLOR" beside "Home against Baylor"; "On the road" under
+    // "NEUTRAL SITE": Instinct)
+    l:(wp=>{ const at=ng.neutral?`At a neutral site${ng.site?" in "+ng.site:""}, against ${opp}.`:`${ng.home===my?"Home":"On the road"} against ${opp}.`;
       return wp>=0.65?`${at} You should win this one. Take care of business.`
         :wp>=0.45?`${at} A game you can win.`
         :wp>=0.3?`${at} An uphill one: a win here would count.`
@@ -9296,8 +9342,12 @@ function teamCardHTML(my,rk,co){
         // before Selection Sunday everyone can still be picked: "Target of 21 wins missed: 19" came during the conference
         // tournament, three wins before Butler reached 22 (Muse, round 50)
         ||(LEAGUE.post&&LEAGUE.post.phases&&LEAGUE.post.phases.indexOf("selection")>=0&&LEAGUE.post.phases.indexOf(SEA.phase)>=0&&LEAGUE.post.phases.indexOf(SEA.phase)<=LEAGUE.post.phases.indexOf("selection"))));
+      // round 72: one goal all season: the board's words and its number together ("Win the division and a playoff game"
+      // in week 1 became "Target: 10 wins" by week 5, and read as two goals: Instinct). Words that already give the
+      // number ("Eight wins and a decent bowl") stand alone
+      const says=/\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen)\b/i.test(e.l||""), lead=says?"Target: ":`${esc(e.l)} Target: `;
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
-        <span class="eline">${w+l===0?esc(e.l)
+        <span class="eline">${w+l===0?(says?esc(e.l):`${esc(e.l)} Target: ${e.w} wins.`)
           :e.pos?posGoalLine(e,my)
           // the pros after game 82: the wins are in; the play-offs are judged on their own (the board weighs both)
           :!LEAGUE.postRecord&&SEA.phase!=="week"&&need>0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;
@@ -9306,8 +9356,8 @@ function teamCardHTML(my,rk,co){
               return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
           // plainly: the target, then what's left of it ("46 more wins from the 47 expected" read oddly: Grokbot, Ian)
-          :need>left?`Target: ${e.w} wins. ${need} to go: it will take a postseason run.`
-          :`Target: ${e.w} wins. ${need} to go.`}</span></div>`})()}
+          :need>left?`${lead}${e.w} wins, ${need} to go: it will take a postseason run.`
+          :`${lead}${e.w} wins, ${need} to go.`}</span></div>`})()}
     </div>`;
   return h;
 }
@@ -9395,8 +9445,17 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    <div class="pland">${esc(PLANS[plan].d)}</div>
+    <div class="pland">${esc(PLANS[plan].d)}</div>${planFitHTML(wp)}
   </div>`;
+}
+/* round 72: the gameplan you last chose carries over; when it doesn't suit tonight, a line says so (Instinct: a 34%
+   underdog on "Play it safe", whose own words say "best when you're the better team"). From the chance shown above it. */
+function planFitHTML(wp){
+  if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
+  const kept=S.planNow&&S.planNow===plan;
+  if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
+  if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
+  return "";
 }
 
 /* Things worth your attention right now. */
@@ -9490,7 +9549,7 @@ function nextUpHTML(my,rk){
     const cupNight=ng.cup&&LEAGUE.cup;
     h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(ngStep):LEAGUE.dates[ngStep]||"")}</div>
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
-      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
+      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?"NEUTRAL SITE"+(ng.site?" &middot; "+esc(ng.site.toUpperCase()):"")+" &middot; vs":ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>${ng.sn>1?`<div class="nrec serline">${serLine(ng,my)}</div>`:""}
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
@@ -10630,7 +10689,34 @@ function quitPrompt(){
       <button class="skip" id="quitno">Keep playing</button></div></div>`;
 }
 
-function render(){
+/* round 72: the page leaves room for the fixed bar at the bottom by the bar's own height, measured after each draw: a
+   fixed 96px left the highlights row under a 128px bar on a laptop, in every sport (Instinct, 1265x720), and the last
+   offseason card under "Begin the season" */
+function fitBar(){ try{ if(typeof document==="undefined"||!document.querySelectorAll||!document.documentElement||!document.documentElement.style)return;
+  let h=0; document.querySelectorAll(".actionbar").forEach(b=>{ const r=b.getBoundingClientRect&&b.getBoundingClientRect(); if(r&&r.height&&getComputedStyle(b).position==="fixed")h=Math.max(h,r.height) });
+  document.documentElement.style.setProperty("--barh",Math.round(h)+"px") }catch(e){} }
+if(typeof window!=="undefined"&&window.addEventListener)window.addEventListener("resize",()=>fitBar());
+/* round 72: the score stays in sight (Instinct: "keep the score visible"; a call's options sat below the fold, so reading
+   them put the score off the top, and after answering the game went on with no score in view, on a phone and a laptop).
+   A thin strip copies the scoreboard (held score and clip clock included) and shows once the scoreboard has scrolled
+   away. A game just finished brings its score into view once (it landed with the score card cut off). */
+function miniBar(){ try{ if(typeof document==="undefined"||!document.getElementById||!document.body)return;
+  let m=document.getElementById("minibar"); const top=document.querySelector(".wtop"), on=typeof live!=="undefined"&&live&&!live.done&&S.myTeam&&top;
+  if(!on){ if(m)m.classList.remove("on"); return }
+  if(!m){ m=document.createElement("div"); m.id="minibar"; m.className="minibar"; m.setAttribute("aria-hidden","true"); document.body.appendChild(m); window.addEventListener("scroll",miniBarShow,{passive:true}) }
+  const lab=String((top.querySelector(".wlabel")||{}).innerText||"").split(/\s+\u00b7\s+/)[0].trim();
+  const sd=[...top.querySelectorAll(".wside")].map(s=>[String((s.querySelector(".wt")||{}).innerText||"").trim(),String((s.querySelector(".wn")||{}).innerText||"").trim(),s.classList.contains("lead")]);
+  m.innerHTML=sd.length===2?`<span class="mt ${sd[0][2]?"lead":""}">${esc(sd[0][0])}</span><span class="mn">${esc(sd[0][1])}&ndash;${esc(sd[1][1])}</span><span class="mt ${sd[1][2]?"lead":""}">${esc(sd[1][0])}</span>${lab?`<span class="mc">${esc(lab)}</span>`:""}`:"";
+  miniBarShow() }catch(e){} }
+function miniBarShow(){ try{ const m=document.getElementById("minibar"), top=document.querySelector(".wtop"); if(!m)return;
+  if(!top||typeof live==="undefined"||!live||live.done){ m.classList.remove("on"); return }
+  const st=document.querySelector(".stick"), sb=st?Math.max(0,st.getBoundingClientRect().bottom):0; m.style.top=sb+"px";
+  const sc=top.querySelector(".wscore")||top;   // the numbers, not the box: its momentum bar can still show below them
+  const R=sc.getBoundingClientRect(); m.classList.toggle("on",R.bottom<sb+Math.max(4,R.height*0.6)) }catch(e){} }   // most of it out of sight
+function finalIntoView(){ try{ if(typeof live==="undefined"||!live||!live.done||live._seen)return; live._seen=true;
+  const t=document.querySelector(".wtop"); if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:"start",behavior:"auto"}) }catch(e){} }
+function render(){ try{ return render0() }finally{ fitBar(); miniBar(); finalIntoView() } }
+function render0(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
     const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;delete handoffNotes[S.myTeam];render()};
@@ -10660,7 +10746,7 @@ function render(){
     const Hd=live.hold&&!live.ask?live.hold:null, sv=Hd?[live.drives,live.eng.h,live.eng.a]:null;
     if(Hd){ live.drives=sv[0].slice(0,Hd.n); live.eng.h=Hd.h; live.eng.a=Hd.a }
     try{
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView()).replace('<div class="actionbar">',livePlanBarHTML()+'<div class="actionbar">');
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',(typeof liveWPHTML==="function"?liveWPHTML(true):"")+guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView()).replace('<div class="actionbar">',livePlanBarHTML()+'<div class="actionbar">');
     }finally{ if(sv){ live.drives=sv[0]; live.eng.h=sv[1]; live.eng.a=sv[2] } }
     bindGuide();
     if(typeof hlMount==="function")hlMount();
@@ -11241,7 +11327,7 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
     ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
-    <div class="setrow">${[["goals","Goals only"],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+    <div class="setrow">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
       aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
     <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>
