@@ -70,9 +70,9 @@ function scoreChange(L,prevH,prevA){
   const mine=mineHome?dh:da, theirs=mineHome?da:dh;
   return mine>0&&mine>=theirs?"mine":theirs>0?"theirs":null;
 }
-function feelSpell(L,prevH,prevA,quiet){
+function feelSpell(L,prevH,prevA,quiet,shown){
   const who=scoreChange(L,prevH,prevA); if(!who)return;
-  showFlash(L,who); if(quiet)return;
+  if(!shown)showFlash(L,who); if(quiet)return;   // shown: a highlight showed the score already (round 72)
   // a sport can pick its sound (round 70, baseball: a home run is a bigger moment than a run)
   const k=typeof SPORT!=="undefined"&&typeof SPORT.scoreSfx==="function"?SPORT.scoreSfx(L,who):"score";
   if(who==="mine"){ sfx(k); buzz([40,60,90]) } else sfx("against");

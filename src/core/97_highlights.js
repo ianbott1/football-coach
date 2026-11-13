@@ -48,7 +48,7 @@ function hlWillPlay(L,drive){
 /* the clips are over (or skipped): the score, the run of play, the sound and the flash */
 function hlRelease(quiet){
   if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
-  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a,HL.sounded); HL.sounded=false;   // a clip that made its own sound (round 70) leaves the flash only
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a,HL.sounded,HL.scored); HL.sounded=false; HL.scored=false;   // a clip that made its own sound (round 70) leaves the flash only
   if(!quiet&&typeof render==="function")render() }
 /* the clips of the drives the engine adds at the end (overtime, a shoot-out), one after another; ms they take */
 function hlPlayTail(L,drives){
@@ -81,6 +81,9 @@ function hlFrame(){
   // change as you cross the touchdown line"); earlier clips' goals show in the clip's own score bug
   // round 70: with clips still to come, a goal moves the held score on by one (c.after), so it ticks up as they go in
   const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal;
+  // round 72: a clip that has shown a score says so, and the full-screen flash after it stays away: it covered the rows
+  // just as they changed, a second "GOAL!" over the one the clip had shown (Instinct: "harder to read")
+  if(rv!=null&&t>=rv&&(c.after||c.scores))HL.scored=true;
   if(rv!=null&&t>=rv&&typeof live!=="undefined"&&live&&live.hold){
     if(!HL.clips.length&&!live.finishing){ if(c.after&&!c._ticked&&HL_SPORT.sound){ c._ticked=1; try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } hlRelease() }
     else if(c.after&&!c._ticked){ c._ticked=1; live.hold.h=c.after[0]; live.hold.a=c.after[1]; if(HL_SPORT.sound){ try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } if(typeof render==="function")render() } }

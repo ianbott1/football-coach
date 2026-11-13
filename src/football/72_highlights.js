@@ -11,7 +11,7 @@ const HL_SPORT=(function(){
   /* round 67: field goals (made and missed) and interceptions too, so a clip isn't always a touchdown (Ian) */
   // round 72: the header names the drive a clip shows (it named the drive before it until the clip was over)
   function clips(L,d,mode){ const out=clips0(L,d,mode), n=(L.drives||[]).indexOf(d);
-    out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+(n>=0?n+1:(L.drives||[]).length) }); return out }
+    out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+(n>=0?n+1:(L.drives||[]).length); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
     const close=Math.abs((d.h||0)-(d.a||0))<=8;
