@@ -177,5 +177,5 @@ const HL_SPORT=(function(){
 
   // round 72: the header says the inning a clip shows ("After the 1st" stayed up through the 2nd's home run)
   const headClock=c=>c&&c.inn&&c.half?`${c.half} of the ${ordw(c.inn)}`:null;
-  return {reveal:0.72, collapseIdle:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock};
+  return {reveal:0.72, collapseIdle:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, goalsLabel:"Big home runs"};
 })();

@@ -170,5 +170,5 @@ const HL_SPORT=(function(){
     hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"?dink:ink);
   }
   const headClock=c=>c&&c.hd||null;
-  return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame, headClock};
+  return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns"};
 })();
