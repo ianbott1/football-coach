@@ -3183,7 +3183,15 @@ function quitPrompt(){
       <button class="skip" id="quitno">Keep playing</button></div></div>`;
 }
 
-function render(){
+/* round 72: the page leaves room for the fixed bar at the bottom by the bar's own height, measured after each draw: a
+   fixed 96px left the highlights row under a 128px bar on a laptop, in every sport (Instinct, 1265x720), and the last
+   offseason card under "Begin the season" */
+function fitBar(){ try{ if(typeof document==="undefined"||!document.querySelectorAll||!document.documentElement||!document.documentElement.style)return;
+  let h=0; document.querySelectorAll(".actionbar").forEach(b=>{ const r=b.getBoundingClientRect&&b.getBoundingClientRect(); if(r&&r.height&&getComputedStyle(b).position==="fixed")h=Math.max(h,r.height) });
+  document.documentElement.style.setProperty("--barh",Math.round(h)+"px") }catch(e){} }
+if(typeof window!=="undefined"&&window.addEventListener)window.addEventListener("resize",()=>fitBar());
+function render(){ try{ return render0() }finally{ fitBar() } }
+function render0(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
     const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;delete handoffNotes[S.myTeam];render()};

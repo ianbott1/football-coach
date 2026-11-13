@@ -203,7 +203,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .whint{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
  color:var(--muted);text-align:center;padding-top:8px}
 @media(max-width:1023px){.whint{display:block}}
-.watchwrap{max-width:640px;margin:0 auto;padding-bottom:96px}
+.watchwrap{max-width:640px;margin:0 auto;padding-bottom:calc(var(--barh,96px) + 24px)}   /* round 72: the bar's measured height */
 .linescore{overflow-x:auto;margin:10px 0 2px}.linescore table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12px}
 .linescore th{text-align:left;font-weight:600;color:var(--bone);padding:2px 6px 2px 0;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
 .linescore td{text-align:center;padding:2px 3px;color:var(--muted);min-width:14px}.linescore td.b{color:var(--bone);font-weight:700}
@@ -719,7 +719,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 /* ---------- desktop ---------- */
 @media(min-width:1024px){
   body{padding-bottom:0}
-  body.offseason{padding-bottom:120px}
+  body.offseason{padding-bottom:calc(var(--barh,96px) + 24px)}
   body.offseason .cols{grid-template-columns:minmax(0,1fr)}
   body.offseason #view{max-width:820px;margin:0 auto}
   #app{max-width:1340px}
@@ -740,7 +740,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
     background:linear-gradient(180deg,transparent,var(--ink) 26%);margin-top:6px}
   .sidebtn .advance{font-size:17px;padding:13px}
   .sidebtn .skip{margin-top:8px}
-  #view{min-height:calc(100vh - 96px);padding-bottom:110px}   /* the last card clears a fixed action bar (Instinct: the costliest call hid behind BEGIN 2028 SEASON) */
+  #view{min-height:calc(100vh - 96px);padding-bottom:calc(var(--barh,86px) + 24px)}   /* the last card clears a fixed action bar (Instinct: the costliest call hid behind BEGIN 2028 SEASON) */
   #side{padding-bottom:90px}
   .mast{padding:44px 32px 26px}
   .mast h1{font-size:60px}
