@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="c3f3901";
+<script>const BUILD_ID="e305908";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -5331,12 +5331,31 @@ const HL_SPORT=(function(){
   // offense at the snap, relative to the line of scrimmage (yards back, across 0..1): QB, RB, WR, WR, TE, slot, then five linemen
   const OFF=[[-5,0.5],[-7,0.5],[-0.5,0.08],[-0.5,0.92],[-0.8,0.66],[-1,0.2],[-0.5,0.4],[-0.5,0.45],[-0.5,0.5],[-0.5,0.55],[-0.5,0.6]];
   const DEF=[[1,0.42],[1,0.47],[1,0.53],[1,0.58],[4.5,0.35],[4.5,0.5],[4.5,0.65],[6,0.1],[6,0.9],[12,0.32],[12,0.68]];
+  /* round 67: field goals (made and missed) and interceptions too, so a clip isn't always a touchdown (Ian) */
   function clips(L,d,mode){
-    if(d.kind!=="TD"||d.q===5&&!d.pts)return [];
+    const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
     const close=Math.abs((d.h||0)-(d.a||0))<=8;
-    if(mode==="goals"&&!(d.q>=4&&close))return [];
-    return [mk(L,d)];
+    if(k==="TD"){ if(mode==="goals"&&!(d.q>=4&&close))return []; return [mk(L,d)] }
+    if(mode==="goals")return [];
+    const all=mode==="all"||mode==="full";   // round 68: every kick and every pick
+    if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return [mkKick(L,d)];
+    if(k==="INT"&&(all||(d.stall||0)>=50))return [mkPick(L,d)];
+    return [];
   }
+  // round 67: numbers. The tracked man at each position wears his own (QB, RB, both WRs, a lineman; edge, tackle,
+  // linebacker, corner, safety); the rest of the eleven take free numbers in their position's range. Key below.
+  const OFF_SL={0:0,1:1,2:2,3:3,8:4}, DEF_SL={0:5,1:6,5:7,7:8,9:9};
+  const FILL_O=[null,null,null,null,85,11,72,64,null,61,77], FILL_D=[null,null,97,94,52,null,45,null,24,null,31];
+  function numbers(team,SL,fill){ const R=(SEA.roster&&SEA.roster[team])||[], nums=fill.slice(), list=[], used={};
+    Object.keys(SL).forEach(k=>{ const i=SL[k]; if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
+    nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
+  function base(L,d){ const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
+    return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
+  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(62,Math.min(97,d.stall||75));   // no kick longer than 55 yards
+    return Object.assign(base(L,d),{kind:d.kind==="FG"?"fg":"miss",los,dist:Math.round(100-los+17),wide:r()<0.5?-1:1,base:3200,reveal:0.8}) }
+  function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(50,Math.min(90,d.stall||70));
+    const rcv=r()<0.6?2:3, len=Math.round(8+r()*Math.min(25,100-los-2));
+    return Object.assign(base(L,d),{kind:"int",pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
   function mk(L,d){
     const g=L.g, tm=d.home?g.home:g.away;
     const r=mulberry32(((d.n||1)*7919+(d.h||0)*131+(d.a||0)*37+(d.home?17:29))>>>0);
@@ -5344,7 +5363,7 @@ const HL_SPORT=(function(){
     const los=100-len, rcv=pass?(r()<0.62?2:3):1;
     const catchY=pass?Math.min(104,100+Math.round(r()*6)):104, lane=pass?(rcv===2?0.15:0.85)+(r()-0.5)*0.1:0.4+r()*0.2;
     const inks=hlKits(g.home,g.away).map(k=>k.fill);
-    return {d,tm,home:!!d.home,pass,len,los,rcv,catchY,lane,q:d.q,inks,base:3400,ot:d.q>=5};
+    return Object.assign(base(L,d),{kind:"td",pass,len,los,rcv,catchY,lane,base:3400,reveal:0.86});
   }
   const P=(W,H,c,yd,y)=>{ const f=Y(yd), X=c.home?1-f:f, YY=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+YY*H*(1-2*PADY)] };
   function pitch(x,W,H){
@@ -5375,8 +5394,32 @@ const HL_SPORT=(function(){
     [L,L+w].forEach((gx,k)=>{ const sd=k?1:-1; x.strokeStyle="#F2D24B"; x.lineWidth=2.4; x.beginPath(); x.moveTo(gx+sd*w*0.006,T+h*0.45); x.lineTo(gx+sd*w*0.006,T+h*0.55); x.stroke();
       x.beginPath(); x.moveTo(gx,T+h*0.5); x.lineTo(gx+sd*w*0.006,T+h*0.5); x.stroke() });
   }
-  function idle(x,W,H){ hlCaption(x,W,H,"Highlights: touchdowns play here",null) }
+  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
+  /* the end zones in the two sides' colours with their names, as the drive chart has them */
+  function endZones(x,W,H,c){
+    [[-10,c.home?c.hm:c.aw],[100,c.home?c.aw:c.hm]].forEach(([y0,team])=>{ const a=P(W,H,c,y0,0), b=P(W,H,c,y0+10,1), l=Math.min(a[0],b[0]), w=Math.abs(b[0]-a[0]), tp=Math.min(a[1],b[1]), h=Math.abs(b[1]-a[1]);
+      const k=c.kits[team===c.hm?0:1]; x.save(); x.globalAlpha=0.78; x.fillStyle=k.fill; x.fillRect(l,tp,w,h); x.globalAlpha=1;
+      const nm=String(team).toUpperCase(), fs=Math.max(8,Math.min(w*0.62,h/Math.max(4,nm.length)*1.25)); x.translate(l+w/2,tp+h/2); x.rotate(l<W/2?-Math.PI/2:Math.PI/2);
+      x.font=`800 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle"; x.fillStyle=k.num; x.globalAlpha=0.9; x.fillText(nm,0,1,h*0.92); x.restore() }) }
+  function kickFrame(x,W,H,c,t){
+    const snap=0.15, kick=0.3, tEnd=c.reveal, r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const holder=[c.los-7,0.5], kicker=[c.los-9.5+Math.min(1,Math.max(0,(t-snap)/(kick-snap)))*2.3,0.47];
+    let bx,by,z=0;
+    if(t<snap){ const s=t/snap; bx=c.los; by=0.5 } else if(t<kick){ bx=holder[0]; by=holder[1] }
+    else { const s=Math.min(1,(t-kick)/(tEnd-kick)), ey=c.kind==="fg"?0.5+c.wide*0.012:0.5+c.wide*0.075; bx=hlLerp(holder[0],110,s); by=hlLerp(0.5,ey,s); z=Math.sin(s*Math.PI*0.85)*0.08 }
+    if(t>=snap&&t<kick){ const s=(t-snap)/(kick-snap); if(s<0.4){ bx=hlLerp(c.los,holder[0],s/0.4) } }
+    const line=[0.38,0.42,0.46,0.5,0.54,0.58,0.62,0.34,0.66];
+    line.forEach((y,i)=>{ const [px,py]=P(W,H,c,c.los-1.2,y); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
+    [holder,kicker].forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
+    line.concat([0.3,0.7]).forEach((y,i)=>{ const rush=t>snap?Math.min(1,(t-snap)/0.25)*2.5:0; const [px,py]=P(W,H,c,c.los+1.8-rush*0.6,y+(y-0.5)*-0.1*rush/2.5); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+    const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.dist}-yard field goal try`;
+    const end=t>=tEnd?(c.kind==="fg"?"IT'S GOOD!":"NO GOOD! Wide "+(c.wide*(c.home?-1:1)>0?"left":"right")):null;
+    hlCaption(x,W,H,top,end,c.kind==="fg"?ink:null);
+  }
   function frame(x,W,H,c,t){
+    endZones(x,W,H,c);
+    if(c.kind==="fg"||c.kind==="miss")return kickFrame(x,W,H,c,t);
     const snap=0.18, throwT=0.5, tEnd=0.86;
     // the ball: snapped, then a drop and a throw, or a handoff and a run
     let bx,by,z=0;
@@ -5393,16 +5436,19 @@ const HL_SPORT=(function(){
         if(i>=6){ yd+=runS*1.5 } else if(i>=2){ yd+=runS*Math.min(18,c.len*0.7); y=hlLerp(y,0.5,runS*0.2) } }
       return [yd,y] });
     const def=DEF.map((p,i)=>{ let yd=c.los+p[0], y=p[1]; if(t>snap){ const k=i<4?0.15:0.45*runS; yd=hlLerp(yd,bx,k*0.6); y=hlLerp(y,by,k) } return [yd,y] });
+    // a pick: the nearest defensive back jumps the route and takes it the other way
+    if(c.kind==="int"&&t>throwT){ const tg=carrierAt(Math.min(1,runS+0.05)), j=c.rcv===2?7:8, s=Math.min(1,(t-throwT)/(tEnd-throwT));
+      def[j]=[hlLerp(def[j][0],tg[0]+0.8,hlEase(s)),hlLerp(def[j][1],tg[1],hlEase(s))]; if(t>tEnd){ const u=(t-tEnd)/(1-tEnd); def[j]=[tg[0]+0.8-u*12,tg[1]]; bx=def[j][0]; by=def[j][1]; z=0 } }
     const r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     const tag=i=>t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
-    def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
-    off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i)) });
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[i]}:null) });
+    off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i),c.offN?{num:c.offN[i]}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
-    const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm}, ${c.len} yard${c.len===1?"":"s"} out`;
-    const end=t>=tEnd?`TOUCHDOWN! ${c.len}-yard ${c.pass?"pass":"run"}`:null;
-    hlCaption(x,W,H,top,end,ink);
+    const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} ball`;   // round 67: no "12 yards out" before it's done
+    const end=t>=tEnd?(c.kind==="int"?"INTERCEPTED!":`TOUCHDOWN! ${c.len}-yard ${c.pass?"pass":"run"}`):null;
+    hlCaption(x,W,H,top,end,c.kind==="int"?dink:ink);
   }
-  return {collapseIdle:true, aspect:0.46, clips, pitch, idle, frame};
+  return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame};
 })();
 /* ============ game screens: football ============ */
 /* How a football game looks while you watch it: the scoreboard, the drive
@@ -5531,10 +5577,10 @@ function liveView(){
     return d.home?100-end:end};
   return `<div class="watchwrap">
     ${liveScoreboard()}
+    ${typeof hlBox==="function"?hlBox():""}
     ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
     ${last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started own ${last.start}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
-    ${typeof hlBox==="function"?hlBox():""}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${live.drives.slice().reverse().map(d=>{
       const tm=d.home?g.home:g.away;
@@ -7170,11 +7216,14 @@ function moodOf(pl,i,team){
 function starsHTML(team){
   if(!SEA||!SEA.roster||!SEA.roster[team]||typeof statLine!=="function")return "";
   const R=SEA.roster[team], hurt={}; SEA.talent.active(team).forEach(e=>hurt[e.idx]=e);
-  const idx=R.map((p,i)=>i).filter(i=>R[i]&&i<POS.length).sort((a,b)=>R[b].r-R[a].r).slice(0,3);
-  R.forEach((p,i)=>{ if(p&&i>=POS.length&&!hurt[i]&&idx.length<5&&moodOf(p,i,team).t==="wants to start")idx.push(i) });
+  // round 67: the three best players are on the roster tab already (Ian: "redundant"); only the news stays here
+  // players with something to say: form either way, a mood that isn't "settled", a last year, a milestone close
+  const news=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P);
+    return formOf(p,P)||moodOf(p,i,team).t!=="settled"||lastYear(p)||(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
+  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).slice(0,4);
   if(!idx.length)return "";
   const tag=(t,c)=>`<span class="ptag ${c||""}">${esc(t)}</span>`;
-  return `<div class="grouphead">Your players</div>`+idx.map(i=>{
+  return `<div class="grouphead">Squad news</div>`+idx.map(i=>{
     const p=R[i], P=POS[i%POS.length].p, f=formOf(p,P), ly=lastYear(p), m=moodOf(p,i,team), nm=nextMilestone(p,P);
     const line=statLine(P,p.st2);
     const tags=[f==="hot"?tag("in form","ok"):f==="cold"?tag("out of form","no"):"",
@@ -7195,6 +7244,31 @@ function milestoneNews(my){
     h:`${other[0].n} of ${other[0].team} reaches ${other[0].at} career ${other[0].label}`,b:""});
   return out;
 }
+
+/* ---- shirt numbers (round 67: Ian, "not easy to identify the players"; Football Manager numbers its dots) ----
+   Each player's number is fixed by his name and team and kept unique on the roster: starters choose first, in roster
+   order, from the numbers their position wears (a keeper 1, a lineman in the 50s-70s); the rest by a hash of the name
+   in that range. Nothing is drawn from the game's dice and nothing is saved: the same roster numbers the same way. */
+const SHIRT_RANGE={
+  soccer:{GK:{l:[1,13,31]},CB:{l:[5,4,6,15,23]},FB:{l:[2,3,12,22,24]},CM:{l:[8,14,16,25,26]},W:{l:[7,11,17,19,21]},ST:{l:[9,10,18,20,27]}},
+  football:{QB:[1,19],RB:[20,49],WR:[10,19,80,89],WR2:[10,19,80,89],OT:[50,79],EDGE:[90,99,50,59],DT:[90,99,60,79],LB:[40,59],CB:[20,49],S:[20,49]},
+  hockey:{G:{l:[30,31,35,1,29,40,33]}}
+};
+const _SHIRT={};
+function shirtNo(team,idx){
+  const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R||!R[idx])return null;
+  const key=team+"|"+R.map(p=>p?p.n:"").join(","); let M=_SHIRT[team];
+  if(!M||M.key!==key){ M=_SHIRT[team]={key:key,no:{}}; const used={}, sp=(typeof SPORT!=="undefined"&&SHIRT_RANGE[SPORT.id])||{};
+    const order=R.map((p,i)=>i).filter(i=>R[i]).sort((a,b)=>(a<POS.length?0:1)-(b<POS.length?0:1)||a-b);
+    order.forEach(i=>{ const pos=POS[i%POS.length].p, rg=sp[pos], h=strHash(team+"|"+R[i].n); let n=null;
+      if(rg&&rg.l){ n=rg.l.find(v=>!used[v]); if(n===undefined)n=null }   // a list of numbers: the first free
+      if(n==null&&!(rg&&rg.l)){ const lo=rg?rg[0]:(SPORT.id==="basketball"?0:1), hi=rg?rg[1]:(SPORT.id==="hockey"?98:99), span=hi-lo+1;
+        for(let k=0;k<100&&n==null;k++){ const v=lo+((h+k*7)%span); if(!used[v])n=v }
+        if(n==null&&rg&&rg.length>=4){ const lo2=rg[2], sp2=rg[3]-rg[2]+1; for(let k=0;k<100&&n==null;k++){ const v=lo2+((h+k*7)%sp2); if(!used[v])n=v } }
+        }
+      for(let v=1;n==null&&v<100;v++)if(!used[v])n=v;
+      used[n]=1; M.no[i]=n }) }
+  return M.no[idx] }
 /* ============ the staff's voices, varied across games (round 47) ============ */
 /* Muse (round 20): Pearl's pre-kickoff line and the capybara's half-time line were word for word the same in all
    four matches. Within a game staffFresh (94_staffplan) already stops a voice repeating itself; across games the fixed
@@ -7762,6 +7836,23 @@ function liveWPHTML(){
   return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span>${LWHIDE}</div>`
     :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${LWHIDE}</div>`;
 }
+
+/* ---- the game plan, changed during a game (round 68: Ian, "pause to switch strategy at any point") ----
+   A change takes effect from the next stretch. It travels with the game's own arguments (pm: [[stretch, side, plan]]),
+   so every rebuild of the game (a reload mid-game, the replays that weigh your calls) applies it at the same stretch:
+   this wrapper counts the stretches each engine hands back and sets the side's plan before the one it names. */
+function setLivePlan(e,side,plan){
+  if(!e||!plan)return;
+  if(e.mode&&typeof e.mode==="object")e.mode[side]=plan;
+  if("aggrH" in e){ e[side==="home"?"aggrH":"aggrA"]=plan; e[side==="home"?"baseH":"baseA"]=plan }
+}
+if(typeof makeLiveGame==="function"){ const _mlg=makeLiveGame;
+  makeLiveGame=function(rng,eH,eA,pH,pA,humans,knock,ctx,pm){
+    const e=_mlg(rng,eH,eA,pH,pA,humans,knock,ctx); if(!pm)return e;
+    let n=0; const nx=e.next;
+    e.next=function(){ for(let i=0;i<pm.length;i++)if(pm[i][0]===n)setLivePlan(e,pm[i][1],pm[i][2]);
+      const r=nx.apply(e,arguments); if(r&&!r.done&&!r.ask&&r.drive)n++; return r };
+    return e } }
 /* ============ the season card ============ */
 /* A single square image you can actually send to someone. Drawn as plain SVG
    so it rasterises to PNG without any library, and with fonts that exist
@@ -8646,17 +8737,49 @@ function hlMount(){
   if(!HL.cv){ const c=document.createElement("canvas"); if(!c||!c.getContext)return; HL.cv=c; HL.x=c.getContext("2d"); if(!HL.x){ HL.cv=null; return }
     c.className="hlcv"; c.onclick=()=>hlSkip(); }
   if(HL.cv.parentNode!==box){ try{ box.appendChild(HL.cv) }catch(e){ return } }
+  if(!HL.leg&&document.createElement){ HL.leg=document.createElement("div"); HL.leg.className="hlleg"; HL.leg.setAttribute("style","font:500 11px/1.5 'Barlow',system-ui,sans-serif;color:#C9CEDA;padding:4px 2px 0") }
+  if(HL.leg){ if(HL.leg.parentNode!==box){ try{ box.appendChild(HL.leg) }catch(e){} } HL.leg.innerHTML=HL.cur&&HL.cur.legend?hlLegendHTML(HL.cur.legend):""; HL.leg.style.display=HL.cur&&HL.cur.legend?"":"none" }
   // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
+  // football's replay plays on its own field: the drive chart steps aside while a clip runs (round 67)
+  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
   if(HL_SPORT.collapseIdle){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }
   const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
   if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
   if(!HL.cur)hlDraw(null,0);
+  hlAmbient();
 }
+/* the full match: while no clip plays and the game runs, the sport's idle picture is redrawn every frame (round 68) */
+function hlAmbient(){
+  if(HL.amb||!HL_SPORT.ambient||hlMode()!=="full"||HL.cur)return;
+  const loop=()=>{ HL.amb=0; if(HL.cur||hlMode()!=="full"||typeof live==="undefined"||!live||live.done||!HL.cv||!HL.cv.isConnected)return;
+    hlDraw(null,0); HL.amb=requestAnimationFrame(loop) };
+  HL.amb=requestAnimationFrame(loop) }
+/* will this stretch play clips? Asked before the page is drawn, so it can keep the result back (round 66); the clips
+   are kept for hlPlay */
+function hlWillPlay(L,drive){
+  HL.pending=null;
+  if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return false;
+  // not the pitch box: the screen before may be a call, with none; the live view drawn next has one (hlPlay checks)
+  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  if(!clips.length)return false;
+  HL.pending={drive:drive,clips:clips}; return true }
+/* the clips are over (or skipped): the score, the run of play, the sound and the flash */
+function hlRelease(quiet){
+  if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a);
+  if(!quiet&&typeof render==="function")render() }
+/* the clips of the drives the engine adds at the end (overtime, a shoot-out), one after another; ms they take */
+function hlPlayTail(L,drives){
+  if(!hlCan()||hlMode()==="off"||!L)return 0;
+  let clips=[]; drives.forEach(d=>{ try{ clips=clips.concat(HL_SPORT.clips(L,d,hlMode())||[]) }catch(e){} });
+  if(!clips.length)return 0;
+  HL.pending={drive:drives[0],clips:clips}; return hlPlay(L,drives[0]) }
 /* this stretch's clips; returns how long they take (ms), for the next stretch to wait */
 function hlPlay(L,drive){
   if(!hlCan()||hlMode()==="off"||!L||L.ff||L.ask||!drive)return 0;
   const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return 0;
-  let clips=[]; try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] }
+  let clips=[]; if(HL.pending&&HL.pending.drive===drive)clips=HL.pending.clips; else { try{ clips=HL_SPORT.clips(L,drive,hlMode())||[] }catch(e){ clips=[] } }
+  HL.pending=null;
   if(!clips.length)return 0;
   box.style.display=""; HL.cur={dur:1}; hlMount();
   const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
@@ -8664,16 +8787,19 @@ function hlPlay(L,drive){
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
-function hlStart(c){ HL.cur=c; HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
+function hlStart(c){ HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
 function hlFrame(){
   const c=HL.cur; if(!c)return; const t=Math.min(1,(Date.now()-HL.t0)/c.dur);
   hlDraw(c,t);
+  // the score on the page changes as the ball goes in, in the last clip of the stretch (round 67: Ian, "see the score
+  // change as you cross the touchdown line"); earlier clips' goals show in the clip's own score bug
+  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal; if(rv!=null&&t>=rv&&!HL.clips.length&&typeof live!=="undefined"&&live&&live.hold&&!live.finishing)hlRelease();
   if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
   // a beat on the last frame, then the next clip
-  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount() } },250);
+  setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount(); hlRelease() } },250);
 }
 function hlSkip(){
-  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount();
+  if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount(); hlRelease();
   // the next stretch was waiting for the clips: it comes now
   if(typeof live!=="undefined"&&live&&!live.done&&!live.paused&&!live.ask&&live.timer){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.min(400,liveGap())) }
 }
@@ -8755,6 +8881,8 @@ function hlPlayer(x,px,py,r,kit,o){
   x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
   x.beginPath(); x.arc(px,py,r+x.lineWidth/2,0,Math.PI*2); x.lineWidth=0.8; x.strokeStyle="rgba(0,0,0,.45)"; x.stroke();
   if(o.num!=null&&r>=4.5){ x.font=`700 ${Math.round(r*(String(o.num).length>1?0.95:1.15))}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle"; x.fillStyle=kit.num; x.fillText(String(o.num),px,py+r*0.06) }
+  if(o.sub&&!o.label){ const fs=Math.max(8,Math.round(r*1.05)); x.font=`600 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="top";
+    x.lineWidth=3; x.strokeStyle="rgba(0,0,0,.7)"; x.strokeText(o.sub,px,py+r+2); x.fillStyle="#fff"; x.fillText(o.sub,px,py+r+2) }
   if(o.label){ const fs=Math.max(10,Math.round(r*1.5)); x.font=`700 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle";
     const tw=x.measureText(o.label).width, ty=py-r-fs*0.9; x.fillStyle="rgba(10,12,18,.78)";
     hlRound(x,px-tw/2-6,ty-fs*0.62,tw+12,fs*1.24,fs*0.4); x.fill(); x.fillStyle=kit.fill; x.fillRect(px-tw/2-6,ty+fs*0.62-2,tw+12,2);
@@ -8797,6 +8925,10 @@ function hlBanner(x,W,H,text,kit,s){
   x.fillStyle="rgba(10,12,18,.86)"; hlRound(x,l,y,tw,bh,6); x.fill();
   if(kit){ x.fillStyle=kit.fill; x.fillRect(l,y,6,bh); x.fillRect(l+tw-6,y,6,bh) }
   x.textAlign="center"; x.textBaseline="middle"; x.fillStyle="#fff"; x.fillText(text,W/2,y+bh/2+1,tw-fs); x.restore() }
+/* the key: each side's named players by number. L: [{team, kit:{fill}, list:[[no,name],...]}] */
+function hlLegendHTML(L){ return L.filter(x=>x&&x.list&&x.list.length).map(x=>`<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${x.kit.fill};margin-right:5px;vertical-align:0"></span><b style="color:#fff">${esc(x.team)}</b> ${x.list.map(([n,nm])=>`<span style="white-space:nowrap;margin-left:4px"><b style="font-family:'IBM Plex Mono',monospace;color:#F4C95D">${n}</b> ${esc(nm)}</span>`).join(" ")}</div>`).join("") }
+/* a side's players by roster slots: [[shirt no, surname]] for the given roster indices */
+function hlNamed(team,idxs){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R)return []; return idxs.map(i=>R[i]?[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]]:null) }
 /* the two sides' kits, told apart on grass: a clash (or a green shirt) sends the away side to its change kit */
 function hlKits(home,away){
   const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };
@@ -9429,15 +9561,16 @@ function startLive(g,step,slot){
   const userIsHome=(g.home===S.myTeam);
   const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):"balanced";
   const knock=SEA.phase!=="week"||!!g.cup, ctx=typeof gameCtx==="function"?gameCtx(g.home,g.away,SEA.year,step):undefined;
-  live={g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
+  const ckey0=callKey(step)+(slot?"#"+slot:""), pm=((S.planMid&&S.planMid[ckey0])||[]).map(x=>x.slice());   // round 68: plan changes made in this game
+  live={pm:pm,g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
         eng:makeLiveGame(rng,e.h,e.a,
               userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
               h2h?{home:true,away:true}:userIsHome,
               // a knockout (a postseason game, a cup tie): extra time and
               // penalties in soccer, sudden death in hockey, not a draw or a
               // shootout. Without it a level play-off left no winner.
-              knock, ctx),
-        args:[e.h,e.a,userIsHome?plan:oppPlan,userIsHome?oppPlan:plan,h2h?{home:true,away:true}:userIsHome,knock,ctx],
+              knock, ctx, pm),
+        args:[e.h,e.a,userIsHome?plan:oppPlan,userIsHome?oppPlan:plan,h2h?{home:true,away:true}:userIsHome,knock,ctx,pm],
         drives:[], ask:null, done:false,
         paused:(S.watchStep===true), userIsHome:userIsHome,
         h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
@@ -9451,6 +9584,8 @@ function startLive(g,step,slot){
 function syncTail(r){ if(r&&Array.isArray(r.drives)&&r.drives.length>live.drives.length&&r.drives.slice(0,live.drives.length).every((d,i)=>d===live.drives[i]))
   for(let i=live.drives.length;i<r.drives.length;i++)live.drives.push(r.drives[i]) }
 function liveTick(){
+  if(live&&live.finishing){ if(live.timer)clearTimeout(live.timer); live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive(); return }
+  if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
@@ -9465,7 +9600,15 @@ function liveTick(){
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
     // was never handed back one stretch at a time: a played 3-4 overtime loss was recorded and replayed as
     // 3-3 at 54 minutes (Instinct)
-    if(r.done){ syncTail(r); live.done=true; finishLive(); return }
+    if(r.done){ const k0=live.drives.length; syncTail(r);
+      // round 67: overtime and a shoot-out are in the tail the engine hands back at the end; their highlights play
+      // before the final whistle (Ian: a 5-4 shoot-out win he never saw)
+      // the screen may still be the overtime call, with no pitch: the live view is drawn first, the score held
+      const tail=live.drives.slice(k0); let hm=0;
+      if(!live.ff&&tail.length&&typeof hlPlayTail==="function"&&typeof hlCan==="function"&&hlCan()){
+        live.hold={n:k0,h:live.lastH||0,a:live.lastA||0}; live.ask=null; render(); hm=hlPlayTail(live,tail); if(!hm)live.hold=null }
+      if(hm){ live.finishing=true; live.timer=setTimeout(()=>{ live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive() },hm); return }
+      live.done=true; finishLive(); return }
     if(r.ask){
       if(live.ri<live.replay.length){          // answered before, keep going
         live.eng.reply(live.replay[live.ri++]);
@@ -9495,7 +9638,10 @@ function liveTick(){
     // and football's don't carry sh/sa, which made every drive look like a score)
     const pH=live.lastH||0, pA=live.lastA||0;
     live.drives.push(r.drive); fresh=r.drive;
-    if(!live.ff)feelSpell(live,pH,pA);
+    // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
+    // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
+    // shows them.
+    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
@@ -9503,11 +9649,29 @@ function liveTick(){
   render();
   // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
   const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
+  if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();   // nothing played after all: show it now
   if(!live.paused&&!live.done&&!live.ask){
     live.timer=setTimeout(liveTick, Math.max(liveGap(),hm));
   }
 }
+/* your game plan, changed mid-game: from the next stretch, recorded so a reload or a replay plays it the same */
+function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":"away", c=(live.pm||[]).filter(x=>x[1]===side); return c.length?c[c.length-1][2]:(live.args?live.args[live.userIsHome?2:3]:plan) }
+function setPlanMidGame(p){
+  if(!live||live.done||!PLANS[p]||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
+  const n=live.drives.length; for(let i=live.pm.length-1;i>=0;i--)if(live.pm[i][0]===n&&live.pm[i][1]===side)live.pm.splice(i,1);
+  live.pm.push([n,side,p]); setLivePlan(live.eng,side,p);
+  S.planMid=S.planMid||{}; S.planMid[live.ckey]=live.pm.map(x=>x.slice()); save(); render() }
+/* the bar under the live game: your plan from here, and how much of the game to watch */
+function livePlanBarHTML(){
+  if(!live||live.done||typeof PLANS==="undefined")return "";
+  const cur=livePlanNow(), HLM=[["goals","Goals only"],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
+  return `<div class="liveplan" style="margin:8px 0 2px">${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
+    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn" data-midplan="${k}" aria-pressed="${cur===k}">${esc(PLANS[k].l)}</button>`).join("")}</div>`}
+    ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
+    <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
+  // a full match: the pitch keeps playing between the moments, so each stretch takes long enough to watch (round 68)
+  if(typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&typeof hlCan==="function"&&hlCan())return Math.round(Math.max(1200,4200/Math.sqrt(speedMult())));
   if(typeof liveGapFor==="function")return liveGapFor(live,speedMult());   // the sport paces it (soccer: by what happened)
   const n=DRIVES_PER_TEAM*2;
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
@@ -10447,7 +10611,10 @@ function endSeason(rng,choices,act,seasonTeam){
 }
 
 /* ============ rendering ============ */
-function rkTag(r){return r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
+/* a rank beside a name: college's poll and soccer's table position mean something; the pro leagues' 1-25 ranking
+   didn't (round 67, Ian: "relevant in college football, not in other sports"), so they show records instead */
+function ranksMean(){ return !!LEAGUE.position||LEAGUE.id==="cfb"||LEAGUE.id==="ncaab" }
+function rkTag(r){return ranksMean()&&r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
 
 function gameLine(g,mine){
   const hw=g.winner===g.home;
@@ -11015,7 +11182,7 @@ function rosterView(){
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
-          <div class="pmain"><div class="pname">${esc(s.n)}
+          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${esc(s.n)}
             ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
@@ -11023,7 +11190,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm">${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
+          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -11368,7 +11535,7 @@ function scheduleHTML(team,compact){
         <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
-        <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${
+        <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${ranksMean()||!SEA.rec[opp]?"":` <span class="srec" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:4px">${recStr(opp)}</span>`}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^(FA|NBA) Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sall">${esc(g.cup&&LEAGUE.cup?LEAGUE.cup.date(w):LEAGUE.dates[w]||"")}</span></div>`);
     }
@@ -12466,7 +12633,12 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
+    // a highlight still playing: the page as it stood before its stretch (round 66)
+    const Hd=live.hold&&!live.ask?live.hold:null, sv=Hd?[live.drives,live.eng.h,live.eng.a]:null;
+    if(Hd){ live.drives=sv[0].slice(0,Hd.n); live.eng.h=Hd.h; live.eng.a=Hd.a }
+    try{
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView()).replace('<div class="actionbar">',livePlanBarHTML()+'<div class="actionbar">');
+    }finally{ if(sv){ live.drives=sv[0]; live.eng.h=sv[1]; live.eng.a=sv[2] } }
     bindGuide();
     if(typeof hlMount==="function")hlMount();
     if(live.ask){
@@ -12491,6 +12663,8 @@ function render(){
         if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
+      document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>setPlanMidGame(x.dataset.midplan)));
+      document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
         S.watchSpeed=x.dataset.speed;save();render()}));
     }
@@ -13037,7 +13211,7 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
     ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
-    <div class="setrow">${[["key","Goals and big chances"],["goals","Goals only"],["off","Off"]].map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+    <div class="setrow">${[["goals","Goals only"],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
       aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
     <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>

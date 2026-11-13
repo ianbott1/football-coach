@@ -358,6 +358,76 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 68: how much to watch, and changing the plan during a game (Ian: "like Football Manager").
+- Highlights have five levels, chosen on the live screen (a row above the action bar) or in the ? panel: goals only,
+  key moments (round 66's), every chance (no closeness rule, more a stretch: soccer up to three chances, hockey four
+  saves, baseball three plays an inning, football every kick and pick, basketball every big basket), full match, off.
+- Full match (soccer: HL_SPORT.ambient): between the moments the pitch keeps playing, possession moved about in
+  midfield with each side's shape around the ball, shared as the engine's balance of play for the stretch says (the
+  drive's mom, the home side's share). It never makes a shot: the ball stays inside 0.76 of the way to goal. Drawn
+  from the clock (hlAmbient redraws every frame while no clip plays), so nothing is stored. Each stretch then takes
+  about 4.2 s at normal speed, so a match runs roughly a minute and a half plus its clips.
+- The game plan can be changed at any point (pause first if you like): it takes effect from the next stretch. The
+  change travels with the game's arguments (live.args[7] = live.pm, [[stretch, side, plan]], saved as S.planMid[key]),
+  and a wrapper round makeLiveGame (core 94) counts the stretches each engine hands back and sets the plan before the
+  one named (setLivePlan: st.mode in soccer, hockey, basketball and baseball; aggr/base in football). So a reload
+  mid-game and the replays that weigh your calls play it the same way: a game with a change at the fourth stretch,
+  rebuilt from its calls and changes, matched stretch for stretch. Not in a hot seat. Substitutions aren't modelled
+  outside soccer's calls, so there's no free substitution.
+- Goldens rewritten for the plan bar on the live screen (a build without it matched round 67's fingerprints).
+
+Round 67: following the highlights, and Ian's list from playing round 65.
+- Who's who: every player has a shirt number (core 93_people shirtNo: fixed by name and team, unique on the roster,
+  starters first from their position's numbers: a keeper 1, a lineman 50-79, a goalie 30s; nothing drawn from the
+  dice, nothing saved). The roster shows them. Highlights number every dot and put a key under the pitch (hlLegendHTML,
+  HL.leg) with each side's tracked players. What a sport tracks decides what's real: basketball's five and hockey's six
+  are the men on the floor and ice; baseball's nine fielders and pitcher; football one man a position (the other dots
+  take free numbers in their position's range); soccer one man per unit, wearing his number on one dot (the scorer's
+  dot carries the scorer). Basketball also names all ten under their dots, except where two stand close.
+- Football: the replay plays where the drive chart is (HL_SPORT.replaces: the chart steps aside while a clip runs),
+  end zones in the two sides' colours with their names, and the page's score changes as the ball crosses the line
+  (clip.reveal / HL_SPORT.reveal: the hold is released at the moment of the outcome in a stretch's last clip, every
+  sport). Field goals, made and missed (from the drive's own spot, no kick over 55 yards), and interceptions in the
+  red half are clips too; before the outcome the caption says only whose ball it is.
+- Hockey overtime and shoot-outs played inside the engine's finish and were added at the final whistle without a
+  clip (Ian: a 5-4 shoot-out win he never saw). liveTick now draws the live view with the score held, plays the tail's
+  clips (hlPlayTail) and finishes after them; a tap finishes at once (live.finishing). The screen before was the
+  overtime call, with no pitch: the live view must be drawn before the clips are asked to play. A shoot-out keeps only
+  its winner, so its clip is the deciding attempt: one skater, one goalie. Two and three goals in one stretch were
+  each shown (two segments, three clips each, in a browser at fast speed): not reproduced.
+- Baseball's highlights aren't only home runs: run-scoring hits, sacrifice flies drawn as the deep fly caught at the
+  wall (it climbs like a home run: you find out at the wall), double plays (the grounder, the flip, the throw),
+  strikeouts with two or more on, runners caught stealing; two at most an inning, the biggest first. Over 38 games:
+  62 home runs, 50 hits, 8 deep catches, 15 strikeouts, 1 double play. The caption shows the inning only until the end.
+- Smaller: the overview's "Your players" (the three best, on the roster already) is "Squad news": up to four players
+  with something to say (form, a mood, a last year, a milestone close), hidden when there's none. The pro leagues show
+  records beside opponents instead of a 1-25 rank (ranksMean: college's poll and soccer's table position stay). The
+  idle "Highlights: ... play here" lines are gone.
+- Goldens and hot seats rewritten: every change traced to the display changes (a build with them undone matched the
+  old fingerprints; football's was the replay box moving above the field, which moves whitespace).
+
+Round 66: the highlights keep the suspense (Ian: it said "goal" before the ball went in; Football Manager leaves you
+not knowing whether it's a goal, the post, a save or a miss).
+- The leak was mostly the page, not the clip: the stretch was drawn (score, run of play, momentum, live chance) and
+  the goal sound and flash played, then the clip started. Now liveTick asks hlWillPlay first; if a clip will play it
+  sets live.hold (the score and run of play before the stretch) and skips feelSpell; render draws the live view with
+  live.drives and live.eng.h/a swapped to the held values (restored in a finally); hlRelease (clips over, or skipped,
+  or the next tick) clears the hold, plays the sound and flash, and redraws. hlWillPlay must not ask for the pitch
+  box: after a call the screen has none until the live view is drawn (the first browser run leaked there, 50').
+- In the clip: the shot line stays white until the ball arrives; the shooter's ring and name, and the team in the
+  caption, wait for the outcome (soccer, hockey, basketball: "it shouldn't tell you whose chance it is"); every
+  soccer clip is 3.6 s, every hockey clip 3.2 s (goals ran longer than chances).
+- The mix: in 12 Arsenal matches soccer showed 23 goals and 10 chances (70% goals), so a clip meant a goal. Chances now
+  play in any game within two goals, one a stretch: 23 goals, 30 chances (43%). Hockey 57 goals, 17 saves (77%): its
+  engine logs about one big save a game and nothing else, so there are no more real chances to show; none invented.
+  Basketball's clips are made baskets (and the last shot); baseball's and football's are scoring plays.
+- Penalties show the move that won them: the build-up to a foul in the box (the first 42% of the clip, an open-play
+  move), "PENALTY!", everyone back outside the box, then the kick (soccer: c.pre, c.open, c.from).
+- Red cards are highlights (soccer, key mode): the booked centre-back closes the man on the ball and fouls him, the
+  card, and he walks off to the touchline. The engine sends off about one side in twenty games.
+- test/hl-suspense.js (in the suite): a soccer match in Chromium; 50 moments of goal clips before the ball arrived,
+  none showed the new score; the new score showed after each clip. With the hold removed it fails.
+
 Round 65: soccer's highlight movement (the gap left to Football Manager after round 64).
 - The 22 players were placed by a few lerps toward the ball's waypoints. Now (soccer 72_highlights: attAt, defAt,
   keeperDive): the attacking 4-4-2 pushes up with the ball, back line least, and shifts to its side; each receiver

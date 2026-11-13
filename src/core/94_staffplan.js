@@ -379,3 +379,20 @@ function liveWPHTML(){
   return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span>${LWHIDE}</div>`
     :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${LWHIDE}</div>`;
 }
+
+/* ---- the game plan, changed during a game (round 68: Ian, "pause to switch strategy at any point") ----
+   A change takes effect from the next stretch. It travels with the game's own arguments (pm: [[stretch, side, plan]]),
+   so every rebuild of the game (a reload mid-game, the replays that weigh your calls) applies it at the same stretch:
+   this wrapper counts the stretches each engine hands back and sets the side's plan before the one it names. */
+function setLivePlan(e,side,plan){
+  if(!e||!plan)return;
+  if(e.mode&&typeof e.mode==="object")e.mode[side]=plan;
+  if("aggrH" in e){ e[side==="home"?"aggrH":"aggrA"]=plan; e[side==="home"?"baseH":"baseA"]=plan }
+}
+if(typeof makeLiveGame==="function"){ const _mlg=makeLiveGame;
+  makeLiveGame=function(rng,eH,eA,pH,pA,humans,knock,ctx,pm){
+    const e=_mlg(rng,eH,eA,pH,pA,humans,knock,ctx); if(!pm)return e;
+    let n=0; const nx=e.next;
+    e.next=function(){ for(let i=0;i<pm.length;i++)if(pm[i][0]===n)setLivePlan(e,pm[i][1],pm[i][2]);
+      const r=nx.apply(e,arguments); if(r&&!r.done&&!r.ask&&r.drive)n++; return r };
+    return e } }

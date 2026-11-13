@@ -1,5 +1,5 @@
 {
- "fp": "3739d455de179399",
+ "fp": "4988845886304600",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -390,6 +390,16 @@
    "fp": "3739d455de179399",
    "from": "04a37f3826112cb3",
    "note": "round 63: re-sign bars at the league medians"
+  },
+  {
+   "fp": "22e5b81cda19e80f",
+   "from": "3739d455de179399",
+   "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
+  },
+  {
+   "fp": "4988845886304600",
+   "from": "22e5b81cda19e80f",
+   "note": "round 68: game plan and highlights bar on the live screen"
   }
  ],
  "result": {
@@ -404,7 +414,7 @@
     "heis": "22f4a9cd8c36b4a4",
     "history": "eec782d6363770d3",
     "universe": "042cfd8346192b74",
-    "screens": "3e680e55dcafa66b"
+    "screens": "f890206b9ba1dfe5"
    },
    {
     "year": 2027,
@@ -416,7 +426,7 @@
     "heis": "30b2d04c0082ca17",
     "history": "e57bc46b121d6712",
     "universe": "27f3cc8c6263a86b",
-    "screens": "5e08614f7a3da364"
+    "screens": "f174699662e53645"
    }
   ],
   "Detroit#777": [
@@ -430,7 +440,7 @@
     "heis": "4c753ccdcbc17fd0",
     "history": "fc559be15d00b604",
     "universe": "72934497ac50b919",
-    "screens": "b62fcb390a993c84"
+    "screens": "2a3a90a73f337160"
    },
    {
     "year": 2027,
@@ -442,7 +452,7 @@
     "heis": "8840c990251cc9b0",
     "history": "b33d35ff21bff1e1",
     "universe": "8a3208cddd4a60d7",
-    "screens": "73073c69282efabf"
+    "screens": "6662b34d930b3751"
    }
   ],
   "schedules#60": [

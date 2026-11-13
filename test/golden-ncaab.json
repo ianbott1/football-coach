@@ -1,5 +1,5 @@
 {
- "fp": "0d9a3ec8e71fa52b",
+ "fp": "cbd63c551667627c",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -425,6 +425,16 @@
    "fp": "0d9a3ec8e71fa52b",
    "from": "e5ab9b59f3e711e8",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "6db4d9b511e6d008",
+   "from": "0d9a3ec8e71fa52b",
+   "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
+  },
+  {
+   "fp": "cbd63c551667627c",
+   "from": "6db4d9b511e6d008",
+   "note": "round 68: game plan and highlights bar on the live screen"
   }
  ],
  "result": {
@@ -439,7 +449,7 @@
     "heis": "d547b6f92b0dea50",
     "history": "f5f089a355e08575",
     "universe": "ef2435f49fa36eef",
-    "screens": "1313df00cc89a6f4"
+    "screens": "5219c29a3128a917"
    },
    {
     "year": 2027,
@@ -451,7 +461,7 @@
     "heis": "239dd7be84092cd6",
     "history": "f7c10757a6301ab4",
     "universe": "c758569b33118192",
-    "screens": "fa3d6b872a1f64cc"
+    "screens": "167f1f0ed6ccd360"
    }
   ],
   "Coppin State#2024": [
@@ -465,7 +475,7 @@
     "heis": "ed67545cb919d745",
     "history": "452f39c29f88f1d8",
     "universe": "f6756285e2e5958b",
-    "screens": "218566812466e359"
+    "screens": "e8267b376431a660"
    },
    {
     "year": 2027,
@@ -477,7 +487,7 @@
     "heis": "719f883500ab76bc",
     "history": "4337a7119fd2e1c2",
     "universe": "822d728ca3fe8df3",
-    "screens": "8cdd093d2662782a"
+    "screens": "8db31c0fa652cc1e"
    }
   ],
   "Gonzaga#777": [
@@ -491,7 +501,7 @@
     "heis": "9def810c51af58df",
     "history": "0f127bf4d46e4c0d",
     "universe": "f62cc56c248300c5",
-    "screens": "18cf560d0cdcee44"
+    "screens": "d9a35a7ba50d56ec"
    },
    {
     "year": 2027,
@@ -503,7 +513,7 @@
     "heis": "fe104a4686ebb8ee",
     "history": "b7bae5760538a368",
     "universe": "ee6a51737fd30707",
-    "screens": "b784dbebafbb23a0"
+    "screens": "eebadc3b8996350e"
    }
   ],
   "schedules#60": [

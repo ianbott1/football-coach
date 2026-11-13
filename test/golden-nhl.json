@@ -1,5 +1,5 @@
 {
- "fp": "fc37591b0c9b6a45",
+ "fp": "0e17c7aebe4143f9",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -405,6 +405,16 @@
    "fp": "fc37591b0c9b6a45",
    "from": "bef285b77787caf3",
    "note": "round 62: hockey limit 90, re-sign bars 59/54"
+  },
+  {
+   "fp": "5570b4b53b625afc",
+   "from": "fc37591b0c9b6a45",
+   "note": "round 67: squad news, shirt numbers on the roster, records not ranks on pro schedules, football replay box above the field"
+  },
+  {
+   "fp": "0e17c7aebe4143f9",
+   "from": "5570b4b53b625afc",
+   "note": "round 68: game plan and highlights bar on the live screen"
   }
  ],
  "result": {
@@ -419,7 +429,7 @@
     "heis": "72c4700494f6c62c",
     "history": "facd410e18de7185",
     "universe": "ee39a27b745ed2ee",
-    "screens": "d58b3c6e1520c82d"
+    "screens": "7ed611c179dd941b"
    },
    {
     "year": 2027,
@@ -431,7 +441,7 @@
     "heis": "f82be9a3062d7409",
     "history": "7927e7a014b8b772",
     "universe": "499b9cc344d3441c",
-    "screens": "142777958d795d5b"
+    "screens": "894d8f12df62ea6b"
    }
   ],
   "Edmonton#777": [
@@ -445,7 +455,7 @@
     "heis": "1506ba3a83c2abeb",
     "history": "6040562deb58d6cd",
     "universe": "e49d1386a5159109",
-    "screens": "21688967ff79f43c"
+    "screens": "0f45b878963080bf"
    },
    {
     "year": 2027,
@@ -457,7 +467,7 @@
     "heis": "b1a15ea50c3590c9",
     "history": "6fef6d1e3084129a",
     "universe": "7177c3214b1ec93d",
-    "screens": "345b1f3f1ece7d1b"
+    "screens": "d5b0e44e876527cb"
    }
   ],
   "schedules#60": [

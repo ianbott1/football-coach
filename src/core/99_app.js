@@ -90,15 +90,16 @@ function startLive(g,step,slot){
   const userIsHome=(g.home===S.myTeam);
   const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):"balanced";
   const knock=SEA.phase!=="week"||!!g.cup, ctx=typeof gameCtx==="function"?gameCtx(g.home,g.away,SEA.year,step):undefined;
-  live={g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
+  const ckey0=callKey(step)+(slot?"#"+slot:""), pm=((S.planMid&&S.planMid[ckey0])||[]).map(x=>x.slice());   // round 68: plan changes made in this game
+  live={pm:pm,g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
         eng:makeLiveGame(rng,e.h,e.a,
               userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
               h2h?{home:true,away:true}:userIsHome,
               // a knockout (a postseason game, a cup tie): extra time and
               // penalties in soccer, sudden death in hockey, not a draw or a
               // shootout. Without it a level play-off left no winner.
-              knock, ctx),
-        args:[e.h,e.a,userIsHome?plan:oppPlan,userIsHome?oppPlan:plan,h2h?{home:true,away:true}:userIsHome,knock,ctx],
+              knock, ctx, pm),
+        args:[e.h,e.a,userIsHome?plan:oppPlan,userIsHome?oppPlan:plan,h2h?{home:true,away:true}:userIsHome,knock,ctx,pm],
         drives:[], ask:null, done:false,
         paused:(S.watchStep===true), userIsHome:userIsHome,
         h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
@@ -112,6 +113,8 @@ function startLive(g,step,slot){
 function syncTail(r){ if(r&&Array.isArray(r.drives)&&r.drives.length>live.drives.length&&r.drives.slice(0,live.drives.length).every((d,i)=>d===live.drives[i]))
   for(let i=live.drives.length;i<r.drives.length;i++)live.drives.push(r.drives[i]) }
 function liveTick(){
+  if(live&&live.finishing){ if(live.timer)clearTimeout(live.timer); live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive(); return }
+  if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
@@ -126,7 +129,15 @@ function liveTick(){
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
     // was never handed back one stretch at a time: a played 3-4 overtime loss was recorded and replayed as
     // 3-3 at 54 minutes (Instinct)
-    if(r.done){ syncTail(r); live.done=true; finishLive(); return }
+    if(r.done){ const k0=live.drives.length; syncTail(r);
+      // round 67: overtime and a shoot-out are in the tail the engine hands back at the end; their highlights play
+      // before the final whistle (Ian: a 5-4 shoot-out win he never saw)
+      // the screen may still be the overtime call, with no pitch: the live view is drawn first, the score held
+      const tail=live.drives.slice(k0); let hm=0;
+      if(!live.ff&&tail.length&&typeof hlPlayTail==="function"&&typeof hlCan==="function"&&hlCan()){
+        live.hold={n:k0,h:live.lastH||0,a:live.lastA||0}; live.ask=null; render(); hm=hlPlayTail(live,tail); if(!hm)live.hold=null }
+      if(hm){ live.finishing=true; live.timer=setTimeout(()=>{ live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive() },hm); return }
+      live.done=true; finishLive(); return }
     if(r.ask){
       if(live.ri<live.replay.length){          // answered before, keep going
         live.eng.reply(live.replay[live.ri++]);
@@ -156,7 +167,10 @@ function liveTick(){
     // and football's don't carry sh/sa, which made every drive look like a score)
     const pH=live.lastH||0, pA=live.lastA||0;
     live.drives.push(r.drive); fresh=r.drive;
-    if(!live.ff)feelSpell(live,pH,pA);
+    // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
+    // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
+    // shows them.
+    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
@@ -164,11 +178,29 @@ function liveTick(){
   render();
   // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
   const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
+  if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();   // nothing played after all: show it now
   if(!live.paused&&!live.done&&!live.ask){
     live.timer=setTimeout(liveTick, Math.max(liveGap(),hm));
   }
 }
+/* your game plan, changed mid-game: from the next stretch, recorded so a reload or a replay plays it the same */
+function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":"away", c=(live.pm||[]).filter(x=>x[1]===side); return c.length?c[c.length-1][2]:(live.args?live.args[live.userIsHome?2:3]:plan) }
+function setPlanMidGame(p){
+  if(!live||live.done||!PLANS[p]||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
+  const n=live.drives.length; for(let i=live.pm.length-1;i>=0;i--)if(live.pm[i][0]===n&&live.pm[i][1]===side)live.pm.splice(i,1);
+  live.pm.push([n,side,p]); setLivePlan(live.eng,side,p);
+  S.planMid=S.planMid||{}; S.planMid[live.ckey]=live.pm.map(x=>x.slice()); save(); render() }
+/* the bar under the live game: your plan from here, and how much of the game to watch */
+function livePlanBarHTML(){
+  if(!live||live.done||typeof PLANS==="undefined")return "";
+  const cur=livePlanNow(), HLM=[["goals","Goals only"],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
+  return `<div class="liveplan" style="margin:8px 0 2px">${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
+    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn" data-midplan="${k}" aria-pressed="${cur===k}">${esc(PLANS[k].l)}</button>`).join("")}</div>`}
+    ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
+    <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
+  // a full match: the pitch keeps playing between the moments, so each stretch takes long enough to watch (round 68)
+  if(typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&typeof hlCan==="function"&&hlCan())return Math.round(Math.max(1200,4200/Math.sqrt(speedMult())));
   if(typeof liveGapFor==="function")return liveGapFor(live,speedMult());   // the sport paces it (soccer: by what happened)
   const n=DRIVES_PER_TEAM*2;
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
@@ -1108,7 +1140,10 @@ function endSeason(rng,choices,act,seasonTeam){
 }
 
 /* ============ rendering ============ */
-function rkTag(r){return r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
+/* a rank beside a name: college's poll and soccer's table position mean something; the pro leagues' 1-25 ranking
+   didn't (round 67, Ian: "relevant in college football, not in other sports"), so they show records instead */
+function ranksMean(){ return !!LEAGUE.position||LEAGUE.id==="cfb"||LEAGUE.id==="ncaab" }
+function rkTag(r){return ranksMean()&&r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
 
 function gameLine(g,mine){
   const hw=g.winner===g.home;
@@ -1676,7 +1711,7 @@ function rosterView(){
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
-          <div class="pmain"><div class="pname">${esc(s.n)}
+          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${esc(s.n)}
             ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
@@ -1684,7 +1719,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm">${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
+          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -2029,7 +2064,7 @@ function scheduleHTML(team,compact){
         <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
-        <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${
+        <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${ranksMean()||!SEA.rec[opp]?"":` <span class="srec" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:4px">${recStr(opp)}</span>`}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^(FA|NBA) Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
         <span class="sall">${esc(g.cup&&LEAGUE.cup?LEAGUE.cup.date(w):LEAGUE.dates[w]||"")}</span></div>`);
     }
@@ -3127,7 +3162,12 @@ function render(){
   }
   { const old=document.getElementById("tocall"); if(old&&old.remove)old.remove() }
   if(live&&S.myTeam&&!live.done){
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView());
+    // a highlight still playing: the page as it stood before its stretch (round 66)
+    const Hd=live.hold&&!live.ask?live.hold:null, sv=Hd?[live.drives,live.eng.h,live.eng.a]:null;
+    if(Hd){ live.drives=sv[0].slice(0,Hd.n); live.eng.h=Hd.h; live.eng.a=Hd.a }
+    try{
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView()).replace('<div class="actionbar">',livePlanBarHTML()+'<div class="actionbar">');
+    }finally{ if(sv){ live.drives=sv[0]; live.eng.h=sv[1]; live.eng.a=sv[2] } }
     bindGuide();
     if(typeof hlMount==="function")hlMount();
     if(live.ask){
@@ -3152,6 +3192,8 @@ function render(){
         if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
+      document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>setPlanMidGame(x.dataset.midplan)));
+      document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
         S.watchSpeed=x.dataset.speed;save();render()}));
     }
@@ -3698,7 +3740,7 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
     ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
-    <div class="setrow">${[["key","Goals and big chances"],["goals","Goals only"],["off","Off"]].map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+    <div class="setrow">${[["goals","Goals only"],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
       aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
     <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>

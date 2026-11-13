@@ -11,7 +11,8 @@ const HL_SPORT=(function(){
     if(d.seg==="last"){ out.push(mk(L,{k:d.made?"last":"lastmiss",side:d.side,u:(d.sh*7+d.sa*13)%100,choice:d.choice,m:"0:04"},d)); return out }
     const SG=typeof SEGS!=="undefined"?SEGS:8, late=d.seg>=SG-1, close=Math.abs(d.sh-d.sa)<=(late?5:10);
     if(mode==="goals"&&!(late&&close))return out;
-    if(!close)return out;
+    const all=mode==="all"||mode==="full";   // round 68: every big basket, whatever the score
+    if(!close&&!all)return out;
     const ev=(d.ev||[]).filter(e=>e.k==="three"||e.k==="inside");
     if(!ev.length)return out;
     // the stretch's moment: the last side to score big, its draw picking which
@@ -36,7 +37,10 @@ const HL_SPORT=(function(){
     W.push(spot);
     const rec=W.map((w,i)=>{ if(i===W.length-1)return idx; let b=0,bd=9; ATT.forEach((p,j)=>{ if(j===idx)return; const dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=j} }); return b });
     const inks=hlKits(g.home,g.away).map(k=>k.fill), last=e.k==="last"||e.k==="lastmiss";
-    return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,
+    // round 67: every man on the floor by number and name (Ian: only the ball carrier was named)
+    const opp=e.side==="home"?g.away:g.home, an=hlNamed(tm,[0,1,2,3,4]), dn=hlNamed(opp,[0,1,2,3,4]), kits=hlKits(g.home,g.away);
+    const legend=[{team:tm,kit:kits[e.side==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[e.side==="home"?1:0],list:dn.filter(Boolean)}];
+    return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,an,dn,legend,
       andOne:kind==="inside",text:""};
   }
   const P=(W,H,c,a,y)=>{ const X=c.home?a:1-a, Y=c.home?y:1-y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
@@ -78,7 +82,7 @@ const HL_SPORT=(function(){
       x.strokeStyle="rgba(255,255,255,.6)"; x.lineWidth=0.6; for(let a=0;a<6;a++){ x.beginPath(); x.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr); x.lineTo(cx+Math.cos(a+1.2)*rr*0.4,cy+Math.sin(a+1.2)*rr*0.4); x.stroke() }
       x.beginPath(); x.arc(cx,cy,rr,0,Math.PI*2); x.strokeStyle="#E8553D"; x.lineWidth=2; x.stroke() });
   }
-  function idle(x,W,H){ hlCaption(x,W,H,"Highlights: the big baskets and last shots play here",null) }
+  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.7, ts=0.86;
     let bx,by,z=0;
@@ -90,12 +94,14 @@ const HL_SPORT=(function(){
     // man to man: each defender between his man and the rim, closer on the ball
     const def=att.map(([a,y])=>{ const d=Math.hypot(a-bx,y-by)<0.04?0.35:0.25; return [hlLerp(a,RIM[0],d),hlLerp(y,RIM[1],d)] });
     const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
-    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=tb-0.12?c.nm:"") });
+    // a name under each man, except where two stand close enough for the names to collide: there, only the attacker's
+    const scr=att.map(p=>P(W,H,c,p[0],p[1])), crowd=(px,py)=>scr.some(q=>Math.abs(q[0]-px)<r*5&&Math.abs(q[1]-py)<r*2.6);
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=c.dn&&c.dn[i]; hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:crowd(px,py)?"":q[1]}:null) });
+    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const q=c.an&&c.an[i]; hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=ts?c.nm:"",q?{num:q[0],sub:q[1]}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.62,z*W,null,{fill:"#E8702A",ring:"#2a1406"});
-    const top=c.last?`Last shot: ${c.tm}`:`${c.m} \u00b7 ${c.tm}`;
+    const top=c.last?"Last shot":c.m;
     const end=t>=ts?(c.last?(c.made?(c.kind==="three"?`${c.nm} hits it! Game over`:`${c.nm} ties it!`):"No good!"):c.kind==="three"?`${c.nm} from three!`:`${c.nm}, and one!`):null;
     hlCaption(x,W,H,top,end,c.made?ink:null);
   }
-  return {collapseIdle:true, aspect:0.54, clips, pitch, idle, frame};
+  return {reveal:0.86, collapseIdle:true, aspect:0.54, clips, pitch, idle, frame};
 })();
