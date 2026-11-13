@@ -56,7 +56,11 @@ function starsHTML(team){
   // players with something to say: form either way, a mood that isn't "settled", a last year, a milestone close
   const news=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P);
     return formOf(p,P)||moodOf(p,i,team).t!=="settled"||lastYear(p)||(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
-  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).slice(0,4);
+  // round 72: one story a contract year, not four (day one listed four stars, each "final year of his contract":
+  // Instinct). A player whose only news is his last year is kept once, the best of them
+  const only=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P); return !!lastYear(p)&&!formOf(p,P)&&moodOf(p,i,team).t==="settled"&&!(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
+  let lyOnly=0;
+  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).filter(i=>!only(i)||lyOnly++<1).slice(0,4);
   if(!idx.length)return "";
   const tag=(t,c)=>`<span class="ptag ${c||""}">${esc(t)}</span>`;
   return `<div class="grouphead">Squad news</div>`+idx.map(i=>{
