@@ -219,7 +219,7 @@ function dnRowHTML(p,t,label,canPick){
     <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${label||""}${x.wk?` <span class="dthere">worked out</span>`:x.unsure?` <span class="dmaybe">scouts unsure</span>`:""}</div>
       <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`} &middot; ${dnFit(p,t)}</div></div>
     ${!x.wk&&wk.length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
-    ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}">Draft</button>`:""}</div>`;
+    ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}" data-dnname="${esc(p.n||"")}">Draft</button>`:""}</div>`;
 }
 function draftNightHTML(){
   const t=dnTeam(), D=dnState(), P=S.off.picks, mine=D.picks.filter(d=>d.team===t), wk=P.workouts||[];
@@ -264,15 +264,16 @@ function draftNightHTML(){
   h+=`<button class="skip" data-dnback="1">Back to the offseason</button>`;
   return h;
 }
-let dnArmed=null;
+let dnArmed=null; const DN_ARM=15000;
 function bindDraftNight(){
   const P=S.off.picks, go=()=>{ save(); render(); window.scrollTo({top:0,behavior:"auto"}) };
   // the pick you've tapped once lives in the game, not on the button: the board redraws as picks land, and a redraw
-  // between the two taps quietly reset it (Instinct). Tapped again within five seconds, it's yours.
+  // between the two taps quietly reset it (Instinct). Tapped again within fifteen seconds, it's yours (round 72: five went
+  // back to "Draft" while he read the scouts' notes, Instinct); the button names who.
   document.querySelectorAll("[data-dnpick]").forEach(b=>{ const id=+b.dataset.dnpick;
-    if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<5000){ b.innerHTML="Tap again"; b.classList.add("armed") }
-    b.onclick=()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<5000){ dnArmed=null; P.hand=(P.hand||[]).concat([id]); go(); return }
-      dnArmed={id:id,at:Date.now()}; render(); setTimeout(()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at>=5000){ dnArmed=null; render() } },5050) } });
+    if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<DN_ARM){ const nm=(b.dataset.dnname||"").split(" ").slice(-1)[0]; b.innerHTML=nm?"Tap again: draft "+esc(nm):"Tap again"; b.classList.add("armed") }
+    b.onclick=()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at<DN_ARM){ dnArmed=null; P.hand=(P.hand||[]).concat([id]); go(); return }
+      dnArmed={id:id,at:Date.now()}; render(); setTimeout(()=>{ if(dnArmed&&dnArmed.id===id&&Date.now()-dnArmed.at>=DN_ARM){ dnArmed=null; render() } },DN_ARM+50) } });
   document.querySelectorAll("[data-dnstaff]").forEach(b=>b.onclick=()=>{ const D=dnState(); if(D.stop){ P.hand=(P.hand||[]).concat([D.stop.suggest]); if(!(P.board||[]).length||(P.board||[]).indexOf(D.stop.suggest)<0)P.staffPicked=(P.staffPicked||[]).concat([D.stop.suggest]); go() } });
   document.querySelectorAll("[data-dnrest]").forEach(b=>b.onclick=()=>tapTwice(b,"Tap again: your staff picks the rest",()=>{ P.handDone=true; go() }));
   document.querySelectorAll("[data-dnwork]").forEach(b=>b.onclick=()=>{ P.workouts=P.workouts||[]; if(P.workouts.length<dnWorkouts())P.workouts.push(+b.dataset.dnwork); save(); render() });
