@@ -358,6 +358,54 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 72: one clock, the score in sight, honest numbers (Instinct's and Muse's 12 November reviews, the rest).
+- One clock (Instinct: the clip said 74' while the header said 70', in all three live-highlight sports). While a clip
+  plays, the page is drawn as it stood before its stretch (round 66), header clock included; now the hold carries the
+  clip's own time (live.hold.clock from HL_SPORT.headClock, moved on per clip in hlStart, as round 70's held score is)
+  and every sport's header reads it: soccer the minute, hockey "1st · 14'", basketball the stretch, football "Q2 ·
+  drive 7", baseball "Top of the 2nd". Hockey's header is game minutes now, as its rows and clips are (it said "1ST
+  5:00", time left, beside rows stamped 13'). Basketball's rows of one stretch show its clock once. test/clocks.js
+  (suite): while a clip plays the header equals its time, all seven; with the following switched off (--control) it
+  fails all seven, every redraw.
+- The score in sight (Instinct: "keep the score visible"). A call's options sat below the fold (933px on an 844px
+  phone, 836px on a 720px laptop), so reading them put the score off the top, and after answering the game went on
+  with no score in view. A strip (#minibar) copies the scoreboard (.wtop: label, both sides, held score) and shows once
+  most of the numbers have scrolled away; a finished game scrolls its score into view once. test/score-visible.js.
+- The fixed bar: the page leaves room for it by its measured height (--barh, fitBar after every render); a fixed 96px
+  left the highlights row under a 128px bar at 1265x720 in every sport, and the offseason's last card under "Begin".
+  test/bar-cover.js (the published build fails the five laptop cases). Phone: the plan rows keep 16px off the edges.
+- The win chance on call screens (Ian: yes to Muse; one number, as it stands, never per option): liveWPHTML(true)
+  above the call box. test/callwp.js: every call in play shows it, equal to the screen before; soccer's three add to
+  100. Early 90%+ readings were measured, not capped: a side shown 90%+ before half-time on a lead of ten or fewer won
+  93.9% (college football, shown 93.7%), 91.7% (pros, 92.7%), 93.5% (college basketball, 94.1%); shown 99%, won 100%.
+  The line now adds the chance before the game while more than half is to play, which is what makes those high.
+  Hockey's one-point drifts between screens with no goal are the clock running (a level game drifts to its edge).
+- Football's scouting report (engV 3, new seasons): a defense keeps to its usual scheme 5 games in 7 (FB_FAVW3; was
+  3 in 5). Following the report was right 55.6% (college) and 54.5% (pros) over 200 games each, against a ceiling of
+  60% (the scheme's own rate); now 70.5% and 69.1%. Computer games have no read layer: calibration identical (college
+  0.696 / 15.5 / 57.8% / 53.8; pros 0.591 / 11.6 / 52.7% / 45.9, before and after).
+- Baseball's bullpen call (engV 3): replayed both ways from the same moment, leaving the starter in won more replays in
+  0 of 50 calls (median 13 points behind). A starter now tires 0.03 a batter past his 18th (was 0.06) and the bullpen
+  sits at -0.10 (was -0.02): keeping him wins 30% of calls, 48% for a starter who hasn't allowed a run, 24% for 1-2,
+  18% for 3+. Runs a side 4.38 (was 4.39), one-run games 25.1% (27.2), extra innings 7.8% (9.0), all in target.
+  bs-calibrate's engine block now plays the current engine (it played engine 1 outside a season, and showed 4.39
+  with fatigue at 0.03 when the real figure was 3.86).
+- Wording: soccer save rows under the keeper's team ("Fulham Orozco gets down" was Sunderland's keeper); a scorer's
+  goals in a match each get their own words (scFinish; 7 of 13 two-goal scorers repeated a sentence, now 0; clip and
+  row agree, scEventTextIn); a neutral site says so in the next-game label, its line and the live header; a kept plan
+  that doesn't suit tonight gets a line (planFitHTML); the board's goal reads the same all season (words and number);
+  the first highlights setting is named per sport (Big home runs, Late touchdowns, Crunch time); baseball's closer and
+  rotation are named in the offseason (bsRole); day-one squad news keeps one contract-year story; a wrong call in a
+  game won either way says "though it didn't cost you this one", and wrong reads in a win "you won anyway" (what a
+  wrong read cost isn't measured, so no more is claimed); the college portal says the common reason once and shows
+  five at a time; no full-screen flash after a clip has shown the score (with highlights off it stays).
+- Flow: a season never opens on a week with no game of yours (skipIdleDays at step 0: the Premier League starts a week
+  after the Football League; a college team's week 0); the draft's second tap waits 15 seconds and names the player.
+- Not reproduced: baseball's save card a game behind the loaded save (it matched after every game played).
+- Verification: the control build (ENGINE_NOW 2, opening skip off) matched every golden's simulation; only screens
+  differed. With the skip on, college football's simulation still matched. The new build's simulation differs in
+  football and baseball only (engV 3), and the other five differ in screens and the stored engine version.
+
 Round 71: trust (Muse's and Instinct's 12 November reviews).
 - Saves (Muse's priority 1: "This career isn't saving ... InvalidStateError", and first loads a week or a season
   behind until a reload, in four games). Cause, reproduced in all seven: the browser can close the page's database
