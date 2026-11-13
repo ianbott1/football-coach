@@ -3190,7 +3190,26 @@ function fitBar(){ try{ if(typeof document==="undefined"||!document.querySelecto
   let h=0; document.querySelectorAll(".actionbar").forEach(b=>{ const r=b.getBoundingClientRect&&b.getBoundingClientRect(); if(r&&r.height&&getComputedStyle(b).position==="fixed")h=Math.max(h,r.height) });
   document.documentElement.style.setProperty("--barh",Math.round(h)+"px") }catch(e){} }
 if(typeof window!=="undefined"&&window.addEventListener)window.addEventListener("resize",()=>fitBar());
-function render(){ try{ return render0() }finally{ fitBar() } }
+/* round 72: the score stays in sight (Instinct: "keep the score visible"; a call's options sat below the fold, so reading
+   them put the score off the top, and after answering the game went on with no score in view, on a phone and a laptop).
+   A thin strip copies the scoreboard (held score and clip clock included) and shows once the scoreboard has scrolled
+   away. A game just finished brings its score into view once (it landed with the score card cut off). */
+function miniBar(){ try{ if(typeof document==="undefined"||!document.getElementById||!document.body)return;
+  let m=document.getElementById("minibar"); const top=document.querySelector(".wtop"), on=typeof live!=="undefined"&&live&&!live.done&&S.myTeam&&top;
+  if(!on){ if(m)m.classList.remove("on"); return }
+  if(!m){ m=document.createElement("div"); m.id="minibar"; m.className="minibar"; m.setAttribute("aria-hidden","true"); document.body.appendChild(m); window.addEventListener("scroll",miniBarShow,{passive:true}) }
+  const lab=String((top.querySelector(".wlabel")||{}).innerText||"").split(/\s+\u00b7\s+/)[0].trim();
+  const sd=[...top.querySelectorAll(".wside")].map(s=>[String((s.querySelector(".wt")||{}).innerText||"").trim(),String((s.querySelector(".wn")||{}).innerText||"").trim(),s.classList.contains("lead")]);
+  m.innerHTML=sd.length===2?`<span class="mt ${sd[0][2]?"lead":""}">${esc(sd[0][0])}</span><span class="mn">${esc(sd[0][1])}&ndash;${esc(sd[1][1])}</span><span class="mt ${sd[1][2]?"lead":""}">${esc(sd[1][0])}</span>${lab?`<span class="mc">${esc(lab)}</span>`:""}`:"";
+  miniBarShow() }catch(e){} }
+function miniBarShow(){ try{ const m=document.getElementById("minibar"), top=document.querySelector(".wtop"); if(!m)return;
+  if(!top||typeof live==="undefined"||!live||live.done){ m.classList.remove("on"); return }
+  const st=document.querySelector(".stick"), sb=st?Math.max(0,st.getBoundingClientRect().bottom):0; m.style.top=sb+"px";
+  const sc=top.querySelector(".wscore")||top;   // the numbers, not the box: its momentum bar can still show below them
+  const R=sc.getBoundingClientRect(); m.classList.toggle("on",R.bottom<sb+Math.max(4,R.height*0.6)) }catch(e){} }   // most of it out of sight
+function finalIntoView(){ try{ if(typeof live==="undefined"||!live||!live.done||live._seen)return; live._seen=true;
+  const t=document.querySelector(".wtop"); if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:"start",behavior:"auto"}) }catch(e){} }
+function render(){ try{ return render0() }finally{ fitBar(); miniBar(); finalIntoView() } }
 function render0(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
