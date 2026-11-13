@@ -1598,7 +1598,9 @@ function stakesFor(ng){
   // the quiet line: your game number where steps are days (hockey, basketball) or matchdays
   const gNo=SEA.weeks.filter(W=>W.games.some(x=>!x.cup&&(x.home===my||x.away===my))).length+1;
   if(!out.length)out.push({p:0,tag:LEAGUE.myGameLabel?LEAGUE.myGameLabel(gNo).toUpperCase():(LEAGUE.skipIdle||LEAGUE.stepLabel)?"GAME "+gNo:"WEEK "+(wk+1),
-    l:(wp=>{ const at=`${ng.home===my?"Home":"On the road"} against ${opp}.`;
+    // round 72: a neutral site says so ("AT ATLANTA · vs BAYLOR" beside "Home against Baylor"; "On the road" under
+    // "NEUTRAL SITE": Instinct)
+    l:(wp=>{ const at=ng.neutral?`At a neutral site${ng.site?" in "+ng.site:""}, against ${opp}.`:`${ng.home===my?"Home":"On the road"} against ${opp}.`;
       return wp>=0.65?`${at} You should win this one. Take care of business.`
         :wp>=0.45?`${at} A game you can win.`
         :wp>=0.3?`${at} An uphill one: a win here would count.`
@@ -2021,7 +2023,7 @@ function nextUpHTML(my,rk){
     const cupNight=ng.cup&&LEAGUE.cup;
     h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(ngStep):LEAGUE.dates[ngStep]||"")}</div>
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
-      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
+      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?"NEUTRAL SITE"+(ng.site?" &middot; "+esc(ng.site.toUpperCase()):"")+" &middot; vs":ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>${ng.sn>1?`<div class="nrec serline">${serLine(ng,my)}</div>`:""}
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
