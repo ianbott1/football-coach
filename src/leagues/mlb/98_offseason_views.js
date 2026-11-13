@@ -1,4 +1,6 @@
 /* ============ offseason screens: pro football ============ */
+/* round 72: the role, by slot: a closer is not a "Starter" (Instinct), nor is the rotation the lineup */
+function bsRole(i){ return i===BS_CL?"Closer":BS_SP.indexOf(i)>=0?"Rotation":i<POS.length?"Starter":"Backup" }
 /* The offseason screen (job offers, staff, contracts, free agency, the
    draft, philosophy) and the banner that closes a season. */
 
@@ -39,7 +41,7 @@ function nflTradeHTML(P){
   const can=R.map((p,i)=>({p:p,i:i})).filter(x=>x.p&&x.p.k.yrs>=2);
   h+=`<div class="note">Put one player under contract on the block and see what teams offer: a player at one of your weakest spots, worth about the same.</div>`;
   h+=can.map(x=>`<div class="drow"><div class="fmain"><div class="fname">${esc(x.p.n)} <span class="dpos">${esc(x.p.p)}</span></div>
-      <div class="fnote">${x.i<POS.length?"Starter":"Backup"} &middot; rated ${x.p.r} &middot; age ${x.p.age} &middot; $${x.p.k.sal.toFixed(1)}M</div></div>
+      <div class="fnote">${bsRole(x.i)} &middot; rated ${x.p.r} &middot; age ${x.p.age} &middot; $${x.p.k.sal.toFixed(1)}M</div></div>
       <button class="skip small" data-tblock="${x.i}">Shop him</button></div>`).join("");
   return h;
 }
@@ -267,7 +269,7 @@ function offseasonScreen(){
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];
     return `<div class="cand ${on?'on':''}" data-resign="${i}">
       <div class="candtop"><div><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
-      <div class="fnote">${i<POS.length?"Starter":"Backup"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
+      <div class="fnote">${bsRole(i)} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
       <span class="cgrade">${on?"re-sign":"let go"}</span></div>
       <div class="cdesc">Asking $${a.sal.toFixed(1)}M a year for ${a.yrs} year${a.yrs===1?"":"s"}${
         p.age>=31?" &middot; on the wrong side of thirty":""}.</div>${staffTag(i)}</div>`}).join("");
