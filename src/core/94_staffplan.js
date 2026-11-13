@@ -290,7 +290,9 @@ function impactHTML(P){
   // nothing more when one replay gave the same result: "though tonight's dice gave the same result either way" read as
   // "your win didn't count", and on a one-point loss as if no call mattered (Instinct, Grokbot)
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"")
-                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"");
+                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":res==="win"?"though it didn't cost you this one.":"");
+  // round 72: a wrong call in a game won either way says so, kindly (Instinct: "graded wrong and the team still won
+  // 124-109; the card should say the choice did not cost the game"); the same-luck replay is what knows it
   return `<div class="impact"><div class="imphead">${verdict}${tonight?", "+tonight:"."}</div>
     <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.${repRates(c)}</div>${restHTML}</div>`;
     // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
