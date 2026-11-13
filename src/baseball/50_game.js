@@ -11,6 +11,12 @@
    Calibrated (test/bs-calibrate.js) against MLB 2023-25: about 4.4 runs a side, home sides winning 53%, a game in
    four or five decided by a run, extras about one game in twelve. */
 const SEGS=9;
+/* round 72 (engV 3): a starter tires more gently past his 18th batter, so a dealing starter is sometimes worth keeping
+   (Muse: the bullpen call graded "pull" 14 of 14; measured, leaving him in won more replays in 0 of 50 calls) */
+const BS_TIRED3=+((typeof process!=="undefined"&&process.env&&process.env.BS_T)||0.03);
+const BS_PEN3=+((typeof process!=="undefined"&&process.env&&process.env.BS_P)||-0.10);   // and a bullpen a shade further from a fresh starter, so the runs stay where MLB's are (4.38 a side, was 4.39; one-run 25%, extra innings 8%); measured, keeping him won 30% of the calls, 48% for a starter who hadn't allowed a run
+function bsTired(){ return ENGINE_V>=3?BS_TIRED3:BS.tired }
+function bsPen(){ return ENGINE_V>=3?BS_PEN3:BS.pen }
 const BS={
   // a plate appearance between average sides: strikeout, walk, hit by pitch, single, double, triple, home run (the rest an out in play)
   k:0.224, bb:0.080, hbp:0.011, s1:0.134, s2:0.043, s3:0.004, hr:0.028,   // round 57: 0.136 and 0.029 ran 4.52-4.57 a side in the real app
@@ -101,8 +107,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     st.asked[key]=true; st.queue.push({side:side,dp:dp}); if(dp.k!=="prep"&&dp.k!=="read"&&inn()>=8)(st.lateGot=st.lateGot||{})[side]=true; return true };
   const readIt=(side,p)=>{ if(rng.r()<p){ st.S[side].ans=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false } };
   // the pitcher's edge for the side in the field: starter (form, fatigue, his place in the rotation) or the bullpen
-  const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return BS.pen;
-    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*BS.tired };
+  const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return bsPen();
+    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*bsTired() };
   // the plan's effect on their bats: right read, wrong read
   const readEdge=(bat,fs)=>{ const A=st.S[bat].app, X=st.S[fs]; if(!X.ans)return 0; return ANSWERS[X.ans].beats===A?BS.read.right:(APPROACH[A].counter===X.ans?0:BS.read.wrong) };
   const modeMul=sd=>{ const m=st.mode[sd]; return m==="aggressive"?{hr:1.25,k:1.12,s1:0.94,bb:1}:m==="safe"?{hr:0.82,k:0.88,s1:1.06,bb:1.04}:{hr:1,k:1,s1:1,bb:1} };

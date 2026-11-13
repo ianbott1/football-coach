@@ -4,9 +4,10 @@
      node test/bs-calibrate.js   last line: MATCH or MISMATCH */
 const {load}=require('./harness.js'), path=require('path'); let bad=0; const ok=(c,m)=>{ console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++ };
 const F=path.join(__dirname,'..','dist','baseball-coach-pro.html');
-{ const A=load({file:F,expose:['playGame','RNG']}); let n=6000,rs=0,one=0,ex=0;
+// round 72: the engine new seasons play (engV): left at 1 outside a season, this block measured an engine no new career uses
+{ const A=load({file:F,expose:['playGame','RNG','ENGINE_V','ENGINE_NOW'],settable:['ENGINE_V']}); A.ENGINE_V=A.ENGINE_NOW; let n=6000,rs=0,one=0,ex=0;
   for(let i=0;i<n;i++){ const r=A.playGame(new A.RNG(i*7+3),1500,1500,'balanced','balanced',{}); rs+=r.h+r.a; if(Math.abs(r.h-r.a)===1)one++; if(r.drives.length>9)ex++ }
-  ok(rs/n/2>=4.2&&rs/n/2<=4.8,`runs a side ${(rs/n/2).toFixed(2)}`); ok(one/n>=0.24&&one/n<=0.31,`one-run games ${(100*one/n).toFixed(1)}%`); ok(ex/n>=0.06&&ex/n<=0.11,`extra innings ${(100*ex/n).toFixed(1)}%`) }
+  ok(rs/n/2>=4.2&&rs/n/2<=4.8,`runs a side ${(rs/n/2).toFixed(2)} (engine ${A.ENGINE_V})`); ok(one/n>=0.24&&one/n<=0.31,`one-run games ${(100*one/n).toFixed(1)}%`); ok(ex/n>=0.06&&ex/n<=0.11,`extra innings ${(100*ex/n).toFixed(1)}%`) }
 { let hw=0,gs=0,sds=[],best=[];
   for(const seed of [1,2,3,4,5]){ const A=load({file:F,expose:['SEA','NAMES','newDynasty']}); A.newDynasty('Seattle',seed,'T'); let g=0; while(A.SEA.phase==='week'&&g++<3000){A.SEA.userTeam=null;A.SEA.advance()}
     A.SEA.weeks.forEach(w=>w.games.forEach(x=>{ gs++; if(x.winner===x.home)hw++ }));
