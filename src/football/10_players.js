@@ -164,3 +164,12 @@ function statProd(pos,s){
   return s.ints*7.2 + s.pd*1.7 + s.tkl*0.38;
 }
 
+
+/* ---- stats pages (round 69): column labels and the league's leader boards ---- */
+const STAT_ABBR={cmp:"Cmp",att:"Att",pyd:"Yds",ptd:"TD",int:"Int",car:"Car",ryd:"Yds",rtd:"TD",rec:"Rec",cyd:"Yds",ctd:"TD",pan:"Pancakes",ska:"Sacks allowed",tkl:"Tkl",sck:"Sacks",tfl:"TFL",pd:"PD",ints:"Int"};
+const LEADERS=[
+  {l:"Passing yards",pos:["QB"],v:s=>s.pyd||0},{l:"Passing touchdowns",pos:["QB"],v:s=>s.ptd||0},
+  {l:"Rushing yards",pos:["RB"],v:s=>s.ryd||0},{l:"Rushing touchdowns",pos:["RB"],v:s=>s.rtd||0},
+  {l:"Receiving yards",pos:["WR","WR2"],v:s=>s.cyd||0},{l:"Receptions",pos:["WR","WR2"],v:s=>s.rec||0},{l:"Receiving touchdowns",pos:["WR","WR2"],v:s=>s.ctd||0},
+  {l:"Sacks",pos:["EDGE","DT","LB"],v:s=>s.sck||0,f:v=>v.toFixed(1).replace(/\.0$/,"")},{l:"Tackles",pos:["EDGE","DT","LB","CB","S"],v:s=>s.tkl||0},
+  {l:"Interceptions",pos:["CB","S"],v:s=>s.ints||0}];

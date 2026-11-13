@@ -104,7 +104,7 @@ for(const [f] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); ok(/
   const my=A.S.myTeam, E=A.SEA, R=E.roster[my], i=0, st=R[i], bk=R[A.BK(i)];
   E.talent.inj[my].push({m:-60,w:4,k:st.p,idx:i,who:st.n,rating:st.r});
   const before=E.talent.eff(my,E.step); A.promote(i);
-  const rv=A.rosterView(), outName=(rv.match(/<div class="pname[^"]*">(?:<span[^>]*>#\d+<\/span>)?([^<]+)[\s\S]{0,80}?outtag/)||[])[1]||'';
+  const rv=A.rosterView(), outName=(rv.match(/<div class="pname[^"]*">(?:<span[^>]*>#\d+<\/span>)?(?:<span class="plink"[^>]*>)?([^<]+)[\s\S]{0,120}?outtag/)||[])[1]||'';
   ok(outName.trim()===st.n,`college basketball: after promoting ${bk.n}, the OUT tag is on "${outName.trim()}", not the injured ${st.n}`);
   ok(E.roster[my][i]===bk&&E.talent.active(my).some(e=>e.idx===A.BK(i)),'college basketball: the injury stayed on the starter slot');
   ok(E.talent.eff(my,E.step)>=before-0.01,`college basketball: promoting the healthy backup cost strength (${before.toFixed(0)} to ${E.talent.eff(my,E.step).toFixed(0)})`);

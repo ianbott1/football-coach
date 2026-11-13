@@ -1,5 +1,5 @@
 {
- "fp": "b750e3d858a17b8f",
+ "fp": "30d2fa9bfb228714",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -65,6 +65,11 @@
    "fp": "b750e3d858a17b8f",
    "from": "104e066a19f0b450",
    "note": "round 68: game plan and highlights bar on the live screen"
+  },
+  {
+   "fp": "30d2fa9bfb228714",
+   "from": "b750e3d858a17b8f",
+   "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
   }
  ],
  "result": {
@@ -78,8 +83,8 @@
     "poll": "b75f5c20fe4344bd",
     "heis": "a932a8caf31d17f1",
     "history": "cfc3e8869a1aba6c",
-    "universe": "d90aa2ecf8e039a3",
-    "screens": "1206961c1c1d7a75"
+    "universe": "021f122327eba2cd",
+    "screens": "22f07b1c976e8f65"
    },
    {
     "year": 2027,
@@ -90,8 +95,8 @@
     "poll": "4279d58757a0f49a",
     "heis": "8353eb8de82952c0",
     "history": "cf2ae2f07c96175d",
-    "universe": "4f014a06ebf91268",
-    "screens": "5ccf7e3441f53155"
+    "universe": "593fda9d5bb672dd",
+    "screens": "2e385a483d47e9cb"
    }
   ],
   "Colorado#777": [
@@ -104,8 +109,8 @@
     "poll": "19c6582aad747771",
     "heis": "953206088ea314e9",
     "history": "48fe6248ae6613b8",
-    "universe": "5eb6b579c8316877",
-    "screens": "8f81f5d48be56119"
+    "universe": "92e53a72ab56b31d",
+    "screens": "64bd1cd550226a40"
    },
    {
     "year": 2027,
@@ -116,8 +121,8 @@
     "poll": "d9899f8eb4e67c38",
     "heis": "d906fc5360d32da8",
     "history": "632df131f8f93b89",
-    "universe": "9d54a19031a03e6e",
-    "screens": "3069cc5415c41c6f"
+    "universe": "9f428254c78ab9e6",
+    "screens": "f995d89f9e61a3fb"
    }
   ],
   "schedules#60": [

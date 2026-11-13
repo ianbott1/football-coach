@@ -11,15 +11,19 @@ const HL_SPORT=(function(){
   const unitOf=u=>{ const x=u%100; return x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2" };
   const HL_CM=(typeof window!=="undefined"&&window.HLCM)||1;
   function clips(L,d,mode){
-    const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").sort((a,b)=>a.m-b.m);
+    // round 70: the shots stopped (d.sv, every one the engine played) give the saves; the commentary's big saves first.
+    // Key moments: about one save for each goal over a game (Ian: "too high a share of goals")
+    const all=mode==="all"||mode==="full", logged=(d.ev||[]).filter(e=>e.k==="save");
+    const svPick=(d.sv||[]).filter(e=>all?e.u%3===0:e.u%5===0||(e.pp&&e.u%2===0)).filter(e=>!logged.some(x=>Math.abs(x.m-e.m)<1&&x.side===e.side));
+    const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").concat(svPick.map(e=>Object.assign({},e,{k:"save"}))).sort((a,b)=>a.m-b.m);
     let rows=[]; try{ rows=rowsOf(L.g,L.drives) }catch(e){}
     const out=[]; let chance=0; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
     // a shoot-out: the engine keeps only who won it, so the deciding attempt is the clip (round 67)
     if(d.so){ const win=(d.sh||0)>=(d.sa||0)?"home":"away"; out.push(mk(L,{k:"goal",side:win,m:65,u:((d.sh||0)*7+(d.sa||0)*13+(d.seg||0))%100,so:true},"goal",rows)); return out }
     ev.forEach(e=>{
-      if(e.k==="goal"){ out.push(mk(L,e,"goal",rows)); if(e.side==="home")sh++; else sa++; return }
-      if((mode==="key"&&chance<2&&Math.abs(sh-sa)<=2||(mode==="all"||mode==="full")&&chance<4)&&((e.u||0)%HL_CM===0)){ chance++; out.push(mk(L,e,"save",rows)) } });
-    return out.slice(0,mode==="all"||mode==="full"?5:3);
+      if(e.k==="goal"){ const c=mk(L,e,"goal",rows); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
+      if((mode==="key"&&chance<2&&Math.abs(sh-sa)<=3||all&&chance<4)&&((e.u||0)%HL_CM===0)){ chance++; out.push(mk(L,e,"save",rows)) } });
+    return hlTrim(out,mode==="all"||mode==="full"?5:3);
   }
   function mk(L,e,kind,rows){
     const g=L.g, attSide=kind==="goal"?e.side:(e.side==="home"?"away":"home"), tm=attSide==="home"?g.home:g.away, u=e.u||0;
@@ -104,8 +108,8 @@ const HL_SPORT=(function(){
     let nr=[]; def.forEach((p,i)=>{ if(p&&i)nr.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); nr.sort((a,b)=>a[0]-b[0]);
     nr.slice(0,1).forEach(([d,i])=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.5),hlLerp(p[1],by,0.5)] });
     const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    def.forEach((p,i)=>{ if(!p||c.so&&i)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.6)","",c.dn&&c.dn[i]?{num:c.dn[i][0]}:null) });
-    att.forEach((p,i)=>{ if(i===0&&c.en||c.so&&i!==c.rec[n-1])return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=ts?c.nm:"",c.an&&c.an[i]?{num:c.an[i][0]}:null) });
+    def.forEach((p,i)=>{ if(!p||c.so&&i)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.6)","",c.dn&&c.dn[i]?{num:c.dn[i][0],sub:c.dn[i][1]}:null) });
+    att.forEach((p,i)=>{ if(i===0&&c.en||c.so&&i!==c.rec[n-1])return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=ts?c.nm:"",c.an&&c.an[i]?{num:c.an[i][0],sub:c.an[i][1]}:null) });
     const [qx,qy]=P(W,H,c,bx,by);
     const pos=tt=>{ tt=Math.max(0,tt); if(tt<tb){ const f=tt/tb*(n-1), k=Math.min(n-2,Math.floor(f)), s=hlEase(f-k), a=c.W[k], b=c.W[k+1]; return P(W,H,c,hlLerp(a[0],b[0],s),hlLerp(a[1],b[1],s)) }
       if(tt<ts){ const s=(tt-tb)/(ts-tb), a=c.W[n-1]; return P(W,H,c,hlLerp(a[0],c.end[0],s),hlLerp(a[1],c.end[1],s)) } return P(W,H,c,c.end[0],c.end[1]) };

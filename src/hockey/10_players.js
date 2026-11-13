@@ -93,3 +93,12 @@ function statProd(pos,s){
   if(pos==="G"){ const sa=(s.sv||0)+(s.ga||0); return sa?Math.max(0,((s.sv/sa)-0.880)*1400)*Math.min(1,s.g/40):0 }
   return (s.pts||0)+(s.goals||0)*0.4;
 }
+
+/* ---- stats pages (round 69): column labels and the league's leader boards ---- */
+const STAT_ABBR={goals:"G",ast:"A",pts:"Pts",sog:"SOG",sv:"Saves",ga:"GA",so:"SO"};
+const LEADERS=[
+  {l:"Points",pos:["C","LW","RW","D","D2"],v:s=>s.pts||0},{l:"Goals",pos:["C","LW","RW","D","D2"],v:s=>s.goals||0},{l:"Assists",pos:["C","LW","RW","D","D2"],v:s=>s.ast||0},
+  {l:"Points by a defenceman",pos:["D","D2"],v:s=>s.pts||0},
+  {l:"Save percentage",pos:["G"],v:s=>(s.sv+s.ga)?s.sv/(s.sv+s.ga):0,f:v=>v.toFixed(3).replace(/^0/,""),min:(s,G)=>s.g>=Math.max(1,G/3)},
+  {l:"Goals against average",pos:["G"],v:s=>s.g?s.ga/s.g:0,f:v=>v.toFixed(2),low:true,min:(s,G)=>s.g>=Math.max(1,G/3)},{l:"Shutouts",pos:["G"],v:s=>s.so||0}];
+function STAT_EXTRA(pos){ return pos==="G"?[["SV%",s=>(s.sv+s.ga)?(s.sv/(s.sv+s.ga)).toFixed(3).replace(/^0/,""):"-"]]:[] }

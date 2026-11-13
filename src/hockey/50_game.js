@@ -217,9 +217,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // a shot's chance: the shooter's edge, and the goalie it's against
     const pH=HK.sh*(1+e*HK.finishEdge)+st.S.away.form, pA=HK.sh*(1-e*HK.finishEdge)+st.S.home.form;
     const t0=s*5, minute=()=>t0+rng.r()*5;
+    const sv=[];   // round 70: every shot stopped, for the highlights (Ian: "more saves"); placed by count, no draws
     const shoot=(side,n,p,pp)=>{ const G=st.S[other(side)]; let g=0;
       for(let i=0;i<n;i++){ G.sa++; G.xga+=pp?HK.ppSh:HK.sh;
-        if(rng.r()<Math.max(0.01,p)){ g++; G.ga++;
+        if(!(rng.r()<Math.max(0.01,p))){ sv.push({m:t0+5*(i+0.5)/n,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100}); continue }
+        { g++; G.ga++;
           // was it soft? A goalie on a bad night lets in more that he should stop
           const bad=G.form>HK.offBy/2, soft=rng.r()<(bad?HK.softBad:HK.softOk);
           if(soft){G.soft++; G.lastSoft=true} else G.lastSoft=false;
@@ -260,10 +262,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         }
       }
     }
-    ev.sort((x,y)=>x.m-y.m); ev.forEach(x=>x.m=Math.min(59,Math.floor(x.m)));
+    ev.sort((x,y)=>x.m-y.m); ev.forEach(x=>x.m=Math.min(59,Math.floor(x.m))); sv.forEach(x=>x.m=Math.min(59,Math.floor(x.m)));
     const prev=st.drives.length?st.drives[st.drives.length-1]:{sh:0,sa:0};
     const mom=Math.max(0.12,Math.min(0.88,(sH+ppH+0.5)/(sH+ppH+sA+ppA+1)+rng.gauss(0,0.05)));
-    const d={seg:s,h:st.h-prev.sh,a:st.a-prev.sa,sh:st.h,sa:st.a,shots:[sH+ppH,sA+ppA],pp:[ppH>0,ppA>0],en:en,ot:0,ev:ev,mom:mom,
+    const d={seg:s,h:st.h-prev.sh,a:st.a-prev.sa,sh:st.h,sa:st.a,shots:[sH+ppH,sA+ppA],pp:[ppH>0,ppA>0],en:en,ot:0,ev:ev,sv:sv,mom:mom,
       T:{home:Object.assign({},st.S.home.tell),away:Object.assign({},st.S.away.tell)},
       sog:[Lh.sog,La.sog]};
     // who started in goal, for the commentary (round 50: "your assistant's call: start Vann: fresh", and the starter's name

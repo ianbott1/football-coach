@@ -7,6 +7,15 @@ function featureEdge(sea,team,idx){
   const avg=POS.reduce((t,P,i)=>t+R[i].r,0)/POS.length;
   return FEATURE_EDGE*Math.max(0.5,Math.min(1.3,1+(p.r-avg)/12));
 }
+/* round 69: each game's line for the player's page (the season's copy of the player: rebuilt by the replay, not saved).
+   One flat list of numbers a player, GL_STRIDE a game: step, opponent (its index), home 1/0, for, against, position
+   (its index in POS), then the position's stat keys in order (a list per game took 16 MB over a baseball season) */
+let GL_STRIDE=0;
+function glStride(){ if(!GL_STRIDE)GL_STRIDE=6+Math.max(...Object.keys(STAT_KEYS).map(k=>STAT_KEYS[k].length)); return GL_STRIDE }
+function logGame(pl,pos,line,step,tm,a,b,pa,pb){
+  const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
+  gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
+  for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -166,14 +175,14 @@ class Season{
               if(c||line.ab){ const C=c||{hr:0,rbi:0,h:0}; line.hr=C.hr; line.rbi=C.rbi; line.h=Math.max(line.h||0,C.h); line.ab=Math.max(line.ab||0,line.h,3); line.r=Math.max(line.r||0,line.hr) } }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
-            pl.last={line:line,pos:P.p,week:this.step,team:tm};
+            pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa);
           });
           if(BL)Object.keys(BL).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=BL[nm], line={ab:Math.max(1,c.h),h:c.h,hr:c.hr,rbi:c.rbi,r:c.hr};
-            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa) });
           if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=LC[nm], line=HKC?{goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals}:{goals:c.goals,shots:c.goals};
-            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa) });
         });
       }
       const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+fh+fa)%11)/34))));
@@ -220,7 +229,7 @@ class Season{
           const line=gameStats(this.rng,pl,i,pf,pa,pf>pa);
           if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
           addStats(pl.st2,line);
-          pl.last={line:line,pos:P.p,week:this.step,team:tm};
+          pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,hp,ap);
         });
       });
     }
@@ -324,6 +333,8 @@ class Season{
         if(!pl.car){pl.car=blankStats(POS[i%POS.length].p); pl.car.yrs=0}
         addStats(pl.car,src.st2);
         pl.car.yrs=(pl.car.yrs||0)+1;
+        // round 69: the season kept as its own line, for the player's page (careers before this have only the total)
+        (pl.hist=pl.hist||[]).push({y:this.year,t:t,p:POS[i%POS.length].p,r:src.r,s:Object.assign({},src.st2)});
       });
     });
   }

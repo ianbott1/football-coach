@@ -106,3 +106,14 @@ function bsLogCredit(team,side,drives){
     if(e.k==="hr"){ c.hr++; c.h++; c.rbi+=e.n||1 } else { c.rbi+=e.n||1; if(e.hit>0)c.h++ } }));
   return out;
 }
+
+/* ---- stats pages (round 69): column labels and the league's leader boards (averages need 3.1 at-bats or an inning a game) ---- */
+const STAT_ABBR={ab:"AB",h:"H",hr:"HR",rbi:"RBI",r:"R",bb:"BB",sb:"SB",gs:"GS",ip:"IP",er:"ER",k:"K",w:"W",l:"L",sv:"SV"};
+const HITTERS=["C","1B","2B","3B","SS","LF","CF","RF","DH"], STARTERS=["SP","SP2","SP3"];
+const LEADERS=[
+  {l:"Batting average",pos:HITTERS,v:s=>s.ab?s.h/s.ab:0,f:v=>v.toFixed(3).replace(/^0/,""),min:(s,G)=>s.ab>=3.1*Math.max(1,G)},
+  {l:"Home runs",pos:HITTERS,v:s=>s.hr||0},{l:"Runs batted in",pos:HITTERS,v:s=>s.rbi||0},{l:"Hits",pos:HITTERS,v:s=>s.h||0},{l:"Stolen bases",pos:HITTERS,v:s=>s.sb||0},
+  {l:"Earned run average",pos:STARTERS.concat(["CL"]),v:s=>s.ip?s.er*27/s.ip:99,f:v=>v.toFixed(2),low:true,min:(s,G)=>s.ip>=3*Math.max(1,G)},
+  {l:"Wins",pos:STARTERS,v:s=>s.w||0},{l:"Strikeouts",pos:STARTERS.concat(["CL"]),v:s=>s.k||0},{l:"Saves",pos:["CL"],v:s=>s.sv||0}];
+const STAT_FMT={ip:ipStr};
+function STAT_EXTRA(pos){ return isPitcher(pos)?[["ERA",s=>s.ip?(s.er*27/s.ip).toFixed(2):"-"]]:[["AVG",s=>s.ab?(s.h/s.ab).toFixed(3).replace(/^0/,""):"-"]] }

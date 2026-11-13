@@ -121,8 +121,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   }
   // the half-inning in progress
   let H=null;   // {bat, fs, outs, b:[r1,r2,r3], runs, ev}
-  const startHalf=(bat)=>{ H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0};
-    if(st.seg>=SEGS&&!st.playoff)H.b[1]=1;   // extra innings: a runner on second
+  const startHalf=(bat)=>{ H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], bn:[null,null,null], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0};
+    if(st.seg>=SEGS&&!st.playoff){ H.b[1]=1; H.bn[1]=who(bat,(st.S[bat].bat+8)%9) }   // extra innings: a runner on second (the last man up)
   };
   let D=null;   // the inning's drive
   const inn=()=>st.seg+1;
@@ -155,7 +155,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     let extra=0; if(st.late[bat+"pinch"]){ st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
       extra=bsPinchEdge(rateOf(bat,was),rateOf(bat,ph));
       if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
-    const nm=who(bat,slot);
+    const nm=who(bat,slot), pre=H.bn.slice(), preB=H.b.slice(), ev0=H.ev.length, out0=H.outs;
     const o=pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
     const b=H.b;
     // the strikeout that strands a rally: once a half-inning (round 56: four times in one inning, Muse)
@@ -172,8 +172,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       else if(b[2]&&H.outs<2&&rng.r()<BS.sf){ H.outs++; b[2]=0; score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) }
       else{ H.outs++; if(H.outs<3&&b[1]&&!b[2]&&rng.r()<0.3){ b[2]=1; b[1]=0 } } }
     if(H.outs>=3)L.lob+=b[0]+b[1]+b[2];
+    // round 70, for the highlights only (no draws, nothing the game reads): who was on, who pitched, the game's last out
+    const dp=H.ev.slice(ev0).some(e=>e.k==="dp"), q=[2,1,0].filter(i=>preB[i]).map(i=>pre[i]);
+    if(dp){ const j=q.lastIndexOf(pre[0]); if(preB[0]&&j>=0)q.splice(j,1) }
+    if(o==="bb"||o==="hbp"||o==="s1"||o==="s2"||o==="s3")q.push(nm);
+    const occ=[2,1,0].filter(i=>b[i]); while(q.length>occ.length)q.shift(); H.bn=[null,null,null]; occ.forEach((i,k)=>{ H.bn[i]=q[k]||null });
+    const Xf=st.S[fs], pn=Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n;
+    H.ev.slice(ev0).forEach(e=>{ if(e.k!=="ph"){ e.r=[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null]; e.p=pn } });
+    if(H.outs>out0&&st.seg>=SEGS-1)st.lastOut={k:"end",side:fs,bat:bat,nm:nm,slot:slot,how:o==="k"?"k":dp?"dp":(slot+st.seg)%2?"fly":"gb",r:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],p:pn,outs:out0,u:(slot*37+st.seg*11)%100,inn:inn()};
   };
-  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
+  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
   st.log=[];
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -265,8 +273,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         break }
     }
     D.sh=st.h; D.sa=st.a; D.ev=H.ev; D.hits=[st.lines.h.h,st.lines.a.h];
+    const walked=H.bat==="home"&&H.outs<3&&walkoff(), lo=st.lastOut; st.lastOut=null;
     st.drives.push(D); const out=D; D=null; H=null; st.seg++;
-    if(st.seg>=SEGS&&st.h!==st.a){ st.done=true }
+    if(st.seg>=SEGS&&st.h!==st.a){ st.done=true; if(lo&&!walked)out.last=lo }   // the out that ended it (round 70: the highlights' last moment)
     else if(st.seg>=SEGS){ st.ot=st.seg-SEGS+1 }
     if(st.seg>=30){ st.done=true }   // never, in practice
     return {drive:out,h:st.h,a:st.a};

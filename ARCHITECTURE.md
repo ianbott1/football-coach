@@ -358,6 +358,56 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 70: highlights (Ian's round 69 notes, across the sports).
+- Every sport: a stretch's goals all play (hlTrim keeps every goal and cuts only chances; hockey's slice(0,3) dropped
+  a later goal when saves came first), and with more clips to come the held score moves on per goal as it goes in
+  (c.after) instead of all at once at the end.
+- Soccer: shots fly by their own line (lift and bend from the clip's draw: some driven straight, some curled, some
+  over); the sides change ends at half-time (c.lr), in the full-match animation too.
+- Football: the clip plays what the run of play says (rowText: driveScript's line for that drive, the same words the
+  page shows): the scorer's name, pass or run and its length on the banner ("TOUCHDOWN! Espinoza, 16-yard pass"; QB
+  runs carried by the QB). Every interception and fumble plays in Key moments, naming the man who took it (a new FUM
+  clip: the hit, the ball loose, the defender on it). 70% of passes are contested (the corner on the receiver's
+  hip). Field goals: the kick's real length (fgDistance), some hook or curl in, low by the posts, the uprights drawn
+  bold with the window marked back up the field, and a behind-the-posts view (an H and the ball) at the end away
+  from the line, so it plainly goes through or wide.
+- Baseball: the engine now notes, for the highlights only (no draws, nothing the game reads; goldens unchanged),
+  who was on each base (H.bn: runners never pass, runs come off the front, the double play and caught stealing take
+  the man from first), who was pitching (e.p: his name, "closer" or "bullpen"), and the out that ended the game
+  (d.last: strikeout, fly, grounder or double play). The clip names the runners and fielders, the mound shows the
+  day's pitcher, panels low on either side give the batter's season line and the pitcher's, the fielder runs a hit
+  down and throws it in (a fly to the cutoff, a sacrifice fly home), and a close finish (one run, or the tying run
+  on or at the plate) shows its last out ("Top 9th, 2 out, runners on 1st and 2nd, down 2" / "CAUGHT! Ballgame").
+  Sound: your home run gets the big crowd and an organ run (sfx "hr"), any other run a smaller cheer ("run"), at the
+  moment it crosses in the clip (HL_SPORT.sound; hlRelease then leaves only the flash), and by SPORT.scoreSfx when
+  no clip plays.
+- Hockey: every shot the engine stops is kept on the period's stretch (d.sv: placed by count, no draws), so saves
+  are real ones. Key moments show about 1.4 saves a goal (20 games: 135 saves, 95 goals; save % .898). Posts are
+  not shown: the engine plays only shots on goal, so a post would be made up. Names under every player.
+
+Round 69: stats (Ian: "click on a player and see all of their history and game-by-game stats"; "league leaders").
+- Game logs: every line a player is credited with (core 80_season, both play paths and the log-credit extras) also
+  goes to logGame: one flat list of numbers per player, glStride() a game (step, opponent index, home, for,
+  against, position index, the position's stat keys padded to the sport's longest). On the season's copy of the
+  player, so it's rebuilt by the replay and never saved. A list per game cost 16 MB over a baseball season; flat,
+  about 8 MB (64,000 rows), basketball 1.4 MB; the season sims no slower.
+- Season by season: at the season's end the line is kept as pl.hist [{y, t, p, r, s}] beside the career total (saved
+  in the universe; careers from before this round show their earlier seasons as one "Before" line).
+- The player's page (core 93_people playerView): number, name, team, position, age, rating and ceiling, contract;
+  this season's line; season by season with the career total; this season's games, latest first (60 shown). Any
+  player on any roster: tap a name (plLink) on your roster, another team's roster, or the leaders.
+- Leaders: a sub-tab of Standings in every game (Table | Leaders). Each sport's categories (LEADERS in its
+  10_players: football's yards and touchdowns, sacks, tackles, picks; basketball per game with a third of the games;
+  hockey points, goals, assists, defencemen, save percentage and GAA with a third of the games, shutouts; soccer
+  goals, assists, both, clean sheets, saves, in your division; baseball AVG with 3.1 at-bats a game, HR, RBI, hits,
+  steals, ERA with an inning a game, wins, strikeouts, saves). Top five of each, or one category's top 25.
+- test/stats.js (in the suite): over two seasons in all seven games, 82,000 checks: one log row per game played,
+  the log's columns summing to the season line, the season kept in the history with its games, the leaders and
+  every sampled page drawing.
+- Goldens rewritten: the universe now holds the histories (with them stripped, every old fingerprint matched), names
+  are links and Standings has its sub-tabs. migrate.js and regressions.js read past the links.
+- In-game stats and box scores come next (round 70).
+
 Round 68: how much to watch, and changing the plan during a game (Ian: "like Football Manager").
 - Highlights have five levels, chosen on the live screen (a row above the action bar) or in the ? panel: goals only,
   key moments (round 66's), every chance (no closeness rule, more a stretch: soccer up to three chances, hockey four

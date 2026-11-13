@@ -1,5 +1,5 @@
 {
- "fp": "cbd63c551667627c",
+ "fp": "8b41bd192bf2694f",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -435,6 +435,11 @@
    "fp": "cbd63c551667627c",
    "from": "6db4d9b511e6d008",
    "note": "round 68: game plan and highlights bar on the live screen"
+  },
+  {
+   "fp": "8b41bd192bf2694f",
+   "from": "cbd63c551667627c",
+   "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
   }
  ],
  "result": {
@@ -448,8 +453,8 @@
     "poll": "785e46abd2762acd",
     "heis": "d547b6f92b0dea50",
     "history": "f5f089a355e08575",
-    "universe": "ef2435f49fa36eef",
-    "screens": "5219c29a3128a917"
+    "universe": "802424b1eced80bc",
+    "screens": "c950d3011e431954"
    },
    {
     "year": 2027,
@@ -460,8 +465,8 @@
     "poll": "dcdc970799f291a6",
     "heis": "239dd7be84092cd6",
     "history": "f7c10757a6301ab4",
-    "universe": "c758569b33118192",
-    "screens": "167f1f0ed6ccd360"
+    "universe": "1d5820789b9fe0cf",
+    "screens": "57548c29767af5f3"
    }
   ],
   "Coppin State#2024": [
@@ -474,8 +479,8 @@
     "poll": "122243bb36b11c0b",
     "heis": "ed67545cb919d745",
     "history": "452f39c29f88f1d8",
-    "universe": "f6756285e2e5958b",
-    "screens": "e8267b376431a660"
+    "universe": "c889ea50e1558f76",
+    "screens": "0b971b335eb2ee35"
    },
    {
     "year": 2027,
@@ -486,8 +491,8 @@
     "poll": "d41d48103a33811c",
     "heis": "719f883500ab76bc",
     "history": "4337a7119fd2e1c2",
-    "universe": "822d728ca3fe8df3",
-    "screens": "8db31c0fa652cc1e"
+    "universe": "19bbadea1d4d47b6",
+    "screens": "113f6b1e45cc3367"
    }
   ],
   "Gonzaga#777": [
@@ -500,8 +505,8 @@
     "poll": "d1af240d97d341ec",
     "heis": "9def810c51af58df",
     "history": "0f127bf4d46e4c0d",
-    "universe": "f62cc56c248300c5",
-    "screens": "d9a35a7ba50d56ec"
+    "universe": "f62ab6d11305e5b8",
+    "screens": "18e7a0a38828a877"
    },
    {
     "year": 2027,
@@ -512,8 +517,8 @@
     "poll": "ad7f83009c6ac7e8",
     "heis": "fe104a4686ebb8ee",
     "history": "b7bae5760538a368",
-    "universe": "ee6a51737fd30707",
-    "screens": "eebadc3b8996350e"
+    "universe": "9081d605f50d4f00",
+    "screens": "25a7c86fe5224fa0"
    }
   ],
   "schedules#60": [

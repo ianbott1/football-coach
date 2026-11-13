@@ -1660,7 +1660,7 @@ function rosterOf(t){
   const row=(p,i)=>{ if(!p)return ""; const inj=hurt[i];
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
-        <div class="pmain"><div class="pname">${esc(p.n)}</div>
+        <div class="pmain"><div class="pname">${plLink(t,p.n)}</div>
           <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} ${stepWord(inj.w)}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
@@ -1711,7 +1711,7 @@ function rosterView(){
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
-          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${esc(s.n)}
+          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${plLink(my,s.n)}
             ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
@@ -1719,7 +1719,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
+          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${plLink(my,b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -2384,6 +2384,9 @@ function standingsView(){
   // before its games: Vanderbilt #12 in the poll, #14 here, Grokbot)
   const nowRk=reveal==="half"?null:SEA.poll.rankMap();
   let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
+  // round 69: the league's leaders sit beside the table
+  h+=`<div class="subtabs">${[["table","Table"],["leaders","Leaders"]].map(([k,l])=>`<button class="subtab" data-sttab="${k}" aria-pressed="${standTab===k}">${l}</button>`).join("")}</div>`;
+  if(standTab==="leaders")return h+leadersView();
   const mine=CONF[S.myTeam];
   let order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
   if(LEAGUE.groupFilter){ const g0=grpNow()==="CUP"?mine:grpNow(); h+=grpTabsHTML(false); if(g0!=="ALL")order=[g0] }
@@ -3291,7 +3294,7 @@ function render(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (view==="team"?myTeamView():view==="scores"?scoresView():
+      (playerSel?playerView():view==="team"?myTeamView():view==="scores"?scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?standingsView():dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
@@ -3307,11 +3310,18 @@ function render(){
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
               :"Begin "+(SEA.year+1)+" season"):advLabel()}</button>
     </div>`;
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;render()});
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
+  // round 69: players' pages, the leaders
+  document.querySelectorAll("[data-player]").forEach(x=>x.onclick=e=>{ e.stopPropagation(); const k=x.dataset.player.split("|"); openPlayer(k[0],k.slice(1).join("|")) });
+  document.querySelectorAll("[data-plback]").forEach(x=>x.onclick=()=>{ playerSel=null; render() });
+  document.querySelectorAll("[data-sttab]").forEach(x=>x.onclick=()=>{ standTab=x.dataset.sttab; render() });
+  document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
     if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null; dynCoach=null}
     else if(b.dataset.grp){grpTab=b.dataset.grp}
     else if(b.dataset.m){teamTab=b.dataset.m}
+    else if(b.dataset.sttab){standTab=b.dataset.sttab}   // round 69
+    else if(b.dataset.lead!=null){leadCat=+b.dataset.lead}
     else LEAGUE.ui.subtab(b);
     render()});
   document.querySelectorAll(".tpick").forEach(b=>b.onclick=()=>{dynTeam=b.dataset.t;render()});
@@ -3853,7 +3863,7 @@ window.addEventListener("keydown",e=>{
   if(e.key===" "||e.key==="Enter"){e.preventDefault();
     const b=el("adv2")||el("adv"); if(b&&!b.disabled)b.click();}
   const keys={"1":"team","2":"scores","3":"poll","4":"stand","5":"dyn"};
-  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;render()}
+  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;playerSel=null;render()}
 });
 
 /* the staff room never says the same line twice in one game (Instinct: the

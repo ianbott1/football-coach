@@ -48,7 +48,7 @@ function hlWillPlay(L,drive){
 /* the clips are over (or skipped): the score, the run of play, the sound and the flash */
 function hlRelease(quiet){
   if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
-  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a);
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a,HL.sounded); HL.sounded=false;   // a clip that made its own sound (round 70) leaves the flash only
   if(!quiet&&typeof render==="function")render() }
 /* the clips of the drives the engine adds at the end (overtime, a shoot-out), one after another; ms they take */
 function hlPlayTail(L,drives){
@@ -75,7 +75,11 @@ function hlFrame(){
   hlDraw(c,t);
   // the score on the page changes as the ball goes in, in the last clip of the stretch (round 67: Ian, "see the score
   // change as you cross the touchdown line"); earlier clips' goals show in the clip's own score bug
-  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal; if(rv!=null&&t>=rv&&!HL.clips.length&&typeof live!=="undefined"&&live&&live.hold&&!live.finishing)hlRelease();
+  // round 70: with clips still to come, a goal moves the held score on by one (c.after), so it ticks up as they go in
+  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal;
+  if(rv!=null&&t>=rv&&typeof live!=="undefined"&&live&&live.hold){
+    if(!HL.clips.length&&!live.finishing){ if(c.after&&!c._ticked&&HL_SPORT.sound){ c._ticked=1; try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } hlRelease() }
+    else if(c.after&&!c._ticked){ c._ticked=1; live.hold.h=c.after[0]; live.hold.a=c.after[1]; if(HL_SPORT.sound){ try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } if(typeof render==="function")render() } }
   if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
   // a beat on the last frame, then the next clip
   setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount(); hlRelease() } },250);
@@ -211,6 +215,9 @@ function hlBanner(x,W,H,text,kit,s){
 function hlLegendHTML(L){ return L.filter(x=>x&&x.list&&x.list.length).map(x=>`<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${x.kit.fill};margin-right:5px;vertical-align:0"></span><b style="color:#fff">${esc(x.team)}</b> ${x.list.map(([n,nm])=>`<span style="white-space:nowrap;margin-left:4px"><b style="font-family:'IBM Plex Mono',monospace;color:#F4C95D">${n}</b> ${esc(nm)}</span>`).join(" ")}</div>`).join("") }
 /* a side's players by roster slots: [[shirt no, surname]] for the given roster indices */
 function hlNamed(team,idxs){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R)return []; return idxs.map(i=>R[i]?[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]]:null) }
+/* a stretch's clips cut to n: every goal stays (round 70: a two-goal stretch showed one, the cap took the later goal
+   when saves came first); chances fill what's left, in minute order */
+function hlTrim(out,n){ const goals=out.filter(c=>c.kind==="goal").length; let room=Math.max(0,n-goals); return out.filter(c=>c.kind==="goal"||room-->0) }
 /* the two sides' kits, told apart on grass: a clash (or a green shirt) sends the away side to its change kit */
 function hlKits(home,away){
   const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };

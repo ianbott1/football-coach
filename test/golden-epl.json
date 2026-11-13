@@ -1,5 +1,5 @@
 {
- "fp": "aa5efa4a90e5ea9f",
+ "fp": "f18e15b17d7c0d98",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -400,6 +400,11 @@
    "fp": "aa5efa4a90e5ea9f",
    "from": "617c700938c6f18a",
    "note": "round 68: game plan and highlights bar on the live screen"
+  },
+  {
+   "fp": "f18e15b17d7c0d98",
+   "from": "aa5efa4a90e5ea9f",
+   "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
   }
  ],
  "result": {
@@ -413,8 +418,8 @@
     "poll": "e294fb9fca094f90",
     "heis": "debb27f463bb3027",
     "history": "2e2f245f8892117d",
-    "universe": "f84115d5e94d852c",
-    "screens": "2aaf03aa6daa875d"
+    "universe": "d845bc09f200f735",
+    "screens": "829d52960a10a7ea"
    },
    {
     "year": 2027,
@@ -425,8 +430,8 @@
     "poll": "0f308c05cfb56af6",
     "heis": "e1abe8e17e8d2920",
     "history": "5936f24e58b3ada4",
-    "universe": "3f5acb9a23ad7fd3",
-    "screens": "b20abb8522d04a04"
+    "universe": "af9482237c57bb71",
+    "screens": "34e988fcb3897043"
    }
   ],
   "Wrexham#777": [
@@ -439,8 +444,8 @@
     "poll": "8a0a3059f0ed3a71",
     "heis": "383b90a62a5c3fab",
     "history": "01149d1d7c2d48aa",
-    "universe": "6425949c55893f6a",
-    "screens": "3a6234bc57eea049"
+    "universe": "88be189fa27d280d",
+    "screens": "d70029596df5dce1"
    },
    {
     "year": 2027,
@@ -451,8 +456,8 @@
     "poll": "95e7ce0f075f9876",
     "heis": "660f0e098cfc5670",
     "history": "f47dcddc4c4288a3",
-    "universe": "cc42a91bcb17c479",
-    "screens": "ac647818572a16ad"
+    "universe": "eeddffe92162fa45",
+    "screens": "c5a5f6e83a7b2c1a"
    }
   ],
   "schedules#60": [

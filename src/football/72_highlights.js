@@ -16,7 +16,8 @@ const HL_SPORT=(function(){
     if(mode==="goals")return [];
     const all=mode==="all"||mode==="full";   // round 68: every kick and every pick
     if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return [mkKick(L,d)];
-    if(k==="INT"&&(all||(d.stall||0)>=50))return [mkPick(L,d)];
+    if(k==="INT")return [mkPick(L,d)];   // round 70: every turnover (Ian: "I didn't see any turnovers")
+    if(k==="FUM")return [mkFum(L,d)];
     return [];
   }
   // round 67: numbers. The tracked man at each position wears his own (QB, RB, both WRs, a lineman; edge, tackle,
@@ -28,19 +29,36 @@ const HL_SPORT=(function(){
     nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
   function base(L,d){ const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
     return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
-  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(62,Math.min(97,d.stall||75));   // no kick longer than 55 yards
-    return Object.assign(base(L,d),{kind:d.kind==="FG"?"fg":"miss",los,dist:Math.round(100-los+17),wide:r()<0.5?-1:1,base:3200,reveal:0.8}) }
+  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(97,d.stall||75));
+    // the kick's own length, as the run of play gives it; some hook, some start wide and curl back (round 70: Ian)
+    const good=d.kind==="FG", hook=r()<0.45, wide=r()<0.5?-1:1;
+    return Object.assign(base(L,d),{kind:good?"fg":"miss",los,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
+      endY:good?0.5+wide*(0.005+r()*0.03):0.5+wide*(0.085+r()*0.05),startY:hook?(good?0.5+wide*0.09:0.5-wide*0.02):0.5,base:3400,reveal:0.82}) }
+  function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.stall||50)), len=Math.round(3+r()*8);
+    const m=/recovered by (.*)$/.exec(rowText(L,d));
+    return Object.assign(base(L,d),{kind:"fum",pass:false,los,rcv:1,len,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:m?surname(m[1]):"",base:3200,reveal:0.66}) }
   function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(50,Math.min(90,d.stall||70));
     const rcv=r()<0.6?2:3, len=Math.round(8+r()*Math.min(25,100-los-2));
-    return Object.assign(base(L,d),{kind:"int",pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
+    const m=/intercepted by (.*)$/.exec(rowText(L,d));
+    return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
+  /* the run of play's line for this drive (driveScript draws its words in drive order from the game's seed, so the
+     prefix up to this drive gives the same line the page shows): the clip plays what it says (round 70: Ian, "who
+     scored it"; the clip had picked its own pass or run and length) */
+  function rowText(L,d){ try{ const i=L.drives.indexOf(d); if(i<0||typeof driveScript!=="function")return ""; const sc=driveScript(L.g,L.drives.slice(0,i+1)); return (sc[sc.length-1]||{}).text||"" }catch(e){ return "" } }
+  const surname=n=>String(n||"").split(" ").slice(-1)[0];
   function mk(L,d){
     const g=L.g, tm=d.home?g.home:g.away;
     const r=mulberry32(((d.n||1)*7919+(d.h||0)*131+(d.a||0)*37+(d.home?17:29))>>>0);
-    const pass=r()<0.56, len=pass?Math.round(4+r()*45):Math.round(1+r()*30);
-    const los=100-len, rcv=pass?(r()<0.62?2:3):1;
+    let pass=r()<0.56, len=pass?Math.round(4+r()*45):Math.round(1+r()*30), rcv=pass?(r()<0.62?2:3):1, who="", qbRun=false;
+    const T=rowText(L,d), off=(SEA.roster&&SEA.roster[tm])||[], mp=/^(.*?) (\d+)-yd TD pass to (.*)$/.exec(T), mr=/^(.*?) (\d+)-yd TD run$/.exec(T);
+    if(mp){ pass=true; len=+mp[2]; who=mp[3]; rcv=off[3]&&off[3].n===who?3:2 }
+    else if(mr){ pass=false; len=+mr[2]; who=mr[1]; qbRun=!!(off[0]&&off[0].n===who); rcv=1 }
+    const los=100-len;
+    // most balls are contested: the corner stays with the receiver; now and then he's beaten clean
+    const tight=pass&&r()<0.7;
     const catchY=pass?Math.min(104,100+Math.round(r()*6)):104, lane=pass?(rcv===2?0.15:0.85)+(r()-0.5)*0.1:0.4+r()*0.2;
     const inks=hlKits(g.home,g.away).map(k=>k.fill);
-    return Object.assign(base(L,d),{kind:"td",pass,len,los,rcv,catchY,lane,base:3400,reveal:0.86});
+    return Object.assign(base(L,d),{kind:"td",pass,len,los,rcv,catchY,lane,who:surname(who),qbRun,tight,base:3400,reveal:0.86});
   }
   const P=(W,H,c,yd,y)=>{ const f=Y(yd), X=c.home?1-f:f, YY=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+YY*H*(1-2*PADY)] };
   function pitch(x,W,H){
@@ -83,13 +101,29 @@ const HL_SPORT=(function(){
     const holder=[c.los-7,0.5], kicker=[c.los-9.5+Math.min(1,Math.max(0,(t-snap)/(kick-snap)))*2.3,0.47];
     let bx,by,z=0;
     if(t<snap){ const s=t/snap; bx=c.los; by=0.5 } else if(t<kick){ bx=holder[0]; by=holder[1] }
-    else { const s=Math.min(1,(t-kick)/(tEnd-kick)), ey=c.kind==="fg"?0.5+c.wide*0.012:0.5+c.wide*0.075; bx=hlLerp(holder[0],110,s); by=hlLerp(0.5,ey,s); z=Math.sin(s*Math.PI*0.85)*0.08 }
+    else { const s=Math.min(1.05,(t-kick)/(tEnd-kick)), sy=c.startY!=null?c.startY:0.5, ey=c.endY!=null?c.endY:(c.kind==="fg"?0.5+c.wide*0.012:0.5+c.wide*0.075);
+      // a hook: the line it starts on, bending late to where it ends
+      bx=hlLerp(holder[0],111,s); const k=Math.min(1,s), path=c.hook?hlLerp(hlLerp(0.5,sy,Math.min(1,k*1.6)),ey,Math.pow(k,2.4)):hlLerp(0.5,ey,k); by=path; z=Math.max(0,Math.sin(Math.min(1,s)*Math.PI*0.95))*0.06 }   // low again by the posts, so where it crosses reads plainly
     if(t>=snap&&t<kick){ const s=(t-snap)/(kick-snap); if(s<0.4){ bx=hlLerp(c.los,holder[0],s/0.4) } }
     const line=[0.38,0.42,0.46,0.5,0.54,0.58,0.62,0.34,0.66];
     line.forEach((y,i)=>{ const [px,py]=P(W,H,c,c.los-1.2,y); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
     [holder,kicker].forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
     line.concat([0.3,0.7]).forEach((y,i)=>{ const rush=t>snap?Math.min(1,(t-snap)/0.25)*2.5:0; const [px,py]=P(W,H,c,c.los+1.8-rush*0.6,y+(y-0.5)*-0.1*rush/2.5); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
-    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+    // the uprights, drawn over everything so the ball is plainly inside them or not
+    { const a=P(W,H,c,110,0.45), b=P(W,H,c,110,0.55), a0=P(W,H,c,96,0.45), b0=P(W,H,c,96,0.55); x.save();
+      // the window between the uprights, marked back up the field so the ball's line through it (or not) is plain
+      x.strokeStyle="rgba(242,210,75,.45)"; x.lineWidth=Math.max(1,W/520); x.setLineDash([4,4]); x.beginPath(); x.moveTo(a0[0],a0[1]); x.lineTo(a[0],a[1]); x.moveTo(b0[0],b0[1]); x.lineTo(b[0],b[1]); x.stroke(); x.setLineDash([]);
+      x.strokeStyle="#F2D24B"; x.lineWidth=Math.max(3,W/180); x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke();
+      [a,b].forEach(q=>{ x.beginPath(); x.arc(q[0],q[1],Math.max(3.5,W/150),0,Math.PI*2); x.fillStyle="#F2D24B"; x.fill() }); x.restore() }
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406",rot:t>kick?(t*40)%6.3:0});
+    // the view from behind the kicker as it reaches the posts: an H, and the ball going through it or past it
+    if(t>kick+(tEnd-kick)*0.35){ const u=Math.min(1,(t-kick)/(tEnd-kick)), bw=Math.min(W*0.3,170), bh=bw*0.72, X0=P(W,H,c,110,0.5)[0]>W/2?W*0.035:W*0.965-bw, Y0=H*0.13;   // at the end away from the posts, clear of the line
+      x.save(); x.globalAlpha=Math.min(1,(u-0.35)/0.15); x.fillStyle="rgba(10,16,24,.94)"; x.strokeStyle="rgba(255,255,255,.3)"; x.lineWidth=1;
+      x.beginPath(); x.rect(X0,Y0,bw,bh); x.fill(); x.stroke();
+      const cx=X0+bw/2, gy=Y0+bh*0.88, cb=Y0+bh*0.6, half=bw*0.17, sc=half/0.05;
+      x.strokeStyle="#F2D24B"; x.lineWidth=3; x.beginPath(); x.moveTo(cx,gy); x.lineTo(cx,cb); x.moveTo(cx-half,cb); x.lineTo(cx+half,cb); x.moveTo(cx-half,cb); x.lineTo(cx-half,Y0+bh*0.08); x.moveTo(cx+half,cb); x.lineTo(cx+half,Y0+bh*0.08); x.stroke();
+      const side=(by-0.5)*(c.home?-1:1), bxI=cx-side*sc, far=Math.pow(u,1.3), byI=hlLerp(gy+bh*0.05,cb-bh*(c.kind==="fg"?0.22:0.18),Math.min(1,u*1.15)), br=hlLerp(bw*0.07,bw*0.022,far);
+      x.beginPath(); x.ellipse(Math.max(X0+br,Math.min(X0+bw-br,bxI)),byI,br,br*0.7,0,0,Math.PI*2); x.fillStyle="#8A5428"; x.fill(); x.strokeStyle="#2a1406"; x.lineWidth=1; x.stroke(); x.restore() }
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.dist}-yard field goal try`;
     const end=t>=tEnd?(c.kind==="fg"?"IT'S GOOD!":"NO GOOD! Wide "+(c.wide*(c.home?-1:1)>0?"left":"right")):null;
     hlCaption(x,W,H,top,end,c.kind==="fg"?ink:null);
@@ -108,11 +142,17 @@ const HL_SPORT=(function(){
     else if(c.pass){ if(t<throwT){ bx=qb[0]; by=0.5 } else { const s=Math.min(1,(t-throwT)/(tEnd-throwT-0.08)); const tg=carrierAt(Math.min(1,runS+0.05)); bx=hlLerp(qb[0],tg[0],s); by=hlLerp(0.5,tg[1],s); z=Math.sin(Math.min(1,s)*Math.PI)*0.05 } }
     else{ const p=carrierAt(runS); bx=p[0]; by=p[1] }
     const off=OFF.map((p,i)=>{ let yd=c.los+p[0], y=p[1];
-      if(t>snap){ if(i===0)return qb; if(c.pass&&i===c.rcv){ const q=carrierAt(runS); return q }
-        if(!c.pass&&i===1){ return carrierAt(runS) }
+      if(t>snap){ if(i===0)return c.qbRun?carrierAt(runS):qb; if(c.pass&&i===c.rcv){ const q=carrierAt(runS); return q }
+        if(!c.pass&&i===1){ return c.qbRun?[c.los-6,0.5+0.1]:carrierAt(runS) }
+        if(c.kind==="fum"&&i===1&&t>c.reveal-0.12){ return carrierAt(Math.min(1,(c.reveal-0.12-snap)/(tEnd-snap))) }
         if(i>=6){ yd+=runS*1.5 } else if(i>=2){ yd+=runS*Math.min(18,c.len*0.7); y=hlLerp(y,0.5,runS*0.2) } }
       return [yd,y] });
     const def=DEF.map((p,i)=>{ let yd=c.los+p[0], y=p[1]; if(t>snap){ const k=i<4?0.15:0.45*runS; yd=hlLerp(yd,bx,k*0.6); y=hlLerp(y,by,k) } return [yd,y] });
+    // a contested ball: the corner on the receiver's hip the whole way (round 70: Ian, too many blown coverages)
+    if(c.pass&&c.tight&&t>snap&&c.kind!=="int"){ const j=c.rcv===2?7:8, q=carrierAt(runS), lag=0.9+0.6*Math.sin(runS*5); def[j]=[q[0]-lag,q[1]+(c.rcv===2?0.035:-0.035)] }
+    // a fumble: the carrier is hit, the ball comes loose, a defender falls on it
+    if(c.kind==="fum"&&t>c.reveal-0.12){ const hit=carrierAt(Math.min(1,(c.reveal-0.12-snap)/(tEnd-snap))), u=Math.min(1,(t-c.reveal+0.12)/0.3), j=c.rcv===2?5:6;
+      bx=hit[0]+hlEase(u)*4.5; by=hit[1]+hlEase(u)*(hit[1]<0.5?0.07:-0.07)+Math.sin(u*9)*0.012; z=Math.abs(Math.sin(u*Math.PI*3))*0.012*(1-u); def[j]=[hlLerp(def[j][0],bx,Math.min(1,u*1.4)),hlLerp(def[j][1],by,Math.min(1,u*1.4))] }
     // a pick: the nearest defensive back jumps the route and takes it the other way
     if(c.kind==="int"&&t>throwT){ const tg=carrierAt(Math.min(1,runS+0.05)), j=c.rcv===2?7:8, s=Math.min(1,(t-throwT)/(tEnd-throwT));
       def[j]=[hlLerp(def[j][0],tg[0]+0.8,hlEase(s)),hlLerp(def[j][1],tg[1],hlEase(s))]; if(t>tEnd){ const u=(t-tEnd)/(1-tEnd); def[j]=[tg[0]+0.8-u*12,tg[1]]; bx=def[j][0]; by=def[j][1]; z=0 } }
@@ -122,8 +162,9 @@ const HL_SPORT=(function(){
     off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i),c.offN?{num:c.offN[i]}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} ball`;   // round 67: no "12 yards out" before it's done
-    const end=t>=tEnd?(c.kind==="int"?"INTERCEPTED!":`TOUCHDOWN! ${c.len}-yard ${c.pass?"pass":"run"}`):null;
-    hlCaption(x,W,H,top,end,c.kind==="int"?dink:ink);
+    const te=c.kind==="fum"?c.reveal:tEnd;
+    const end=t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
+    hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"?dink:ink);
   }
   return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame};
 })();

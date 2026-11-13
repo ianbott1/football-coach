@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="71f4d6d";
+<script>const BUILD_ID="14534b0";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -1341,6 +1341,15 @@ function statProd(pos,s){
   return s.ints*7.2 + s.pd*1.7 + s.tkl*0.38;
 }
 
+
+/* ---- stats pages (round 69): column labels and the league's leader boards ---- */
+const STAT_ABBR={cmp:"Cmp",att:"Att",pyd:"Yds",ptd:"TD",int:"Int",car:"Car",ryd:"Yds",rtd:"TD",rec:"Rec",cyd:"Yds",ctd:"TD",pan:"Pancakes",ska:"Sacks allowed",tkl:"Tkl",sck:"Sacks",tfl:"TFL",pd:"PD",ints:"Int"};
+const LEADERS=[
+  {l:"Passing yards",pos:["QB"],v:s=>s.pyd||0},{l:"Passing touchdowns",pos:["QB"],v:s=>s.ptd||0},
+  {l:"Rushing yards",pos:["RB"],v:s=>s.ryd||0},{l:"Rushing touchdowns",pos:["RB"],v:s=>s.rtd||0},
+  {l:"Receiving yards",pos:["WR","WR2"],v:s=>s.cyd||0},{l:"Receptions",pos:["WR","WR2"],v:s=>s.rec||0},{l:"Receiving touchdowns",pos:["WR","WR2"],v:s=>s.ctd||0},
+  {l:"Sacks",pos:["EDGE","DT","LB"],v:s=>s.sck||0,f:v=>v.toFixed(1).replace(/\.0$/,"")},{l:"Tackles",pos:["EDGE","DT","LB","CB","S"],v:s=>s.tkl||0},
+  {l:"Interceptions",pos:["CB","S"],v:s=>s.ints||0}];
 /* ============ storage ============ */
 /* Where saves live. Inside Claude's artifact viewer that is window.storage;
    anywhere else (the published site, a file opened locally) it is the
@@ -3933,7 +3942,8 @@ const HL_SPORT=(function(){
     if(mode==="goals")return [];
     const all=mode==="all"||mode==="full";   // round 68: every kick and every pick
     if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return [mkKick(L,d)];
-    if(k==="INT"&&(all||(d.stall||0)>=50))return [mkPick(L,d)];
+    if(k==="INT")return [mkPick(L,d)];   // round 70: every turnover (Ian: "I didn't see any turnovers")
+    if(k==="FUM")return [mkFum(L,d)];
     return [];
   }
   // round 67: numbers. The tracked man at each position wears his own (QB, RB, both WRs, a lineman; edge, tackle,
@@ -3945,19 +3955,36 @@ const HL_SPORT=(function(){
     nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
   function base(L,d){ const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
     return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
-  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(62,Math.min(97,d.stall||75));   // no kick longer than 55 yards
-    return Object.assign(base(L,d),{kind:d.kind==="FG"?"fg":"miss",los,dist:Math.round(100-los+17),wide:r()<0.5?-1:1,base:3200,reveal:0.8}) }
+  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(97,d.stall||75));
+    // the kick's own length, as the run of play gives it; some hook, some start wide and curl back (round 70: Ian)
+    const good=d.kind==="FG", hook=r()<0.45, wide=r()<0.5?-1:1;
+    return Object.assign(base(L,d),{kind:good?"fg":"miss",los,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
+      endY:good?0.5+wide*(0.005+r()*0.03):0.5+wide*(0.085+r()*0.05),startY:hook?(good?0.5+wide*0.09:0.5-wide*0.02):0.5,base:3400,reveal:0.82}) }
+  function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.stall||50)), len=Math.round(3+r()*8);
+    const m=/recovered by (.*)$/.exec(rowText(L,d));
+    return Object.assign(base(L,d),{kind:"fum",pass:false,los,rcv:1,len,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:m?surname(m[1]):"",base:3200,reveal:0.66}) }
   function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(50,Math.min(90,d.stall||70));
     const rcv=r()<0.6?2:3, len=Math.round(8+r()*Math.min(25,100-los-2));
-    return Object.assign(base(L,d),{kind:"int",pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
+    const m=/intercepted by (.*)$/.exec(rowText(L,d));
+    return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
+  /* the run of play's line for this drive (driveScript draws its words in drive order from the game's seed, so the
+     prefix up to this drive gives the same line the page shows): the clip plays what it says (round 70: Ian, "who
+     scored it"; the clip had picked its own pass or run and length) */
+  function rowText(L,d){ try{ const i=L.drives.indexOf(d); if(i<0||typeof driveScript!=="function")return ""; const sc=driveScript(L.g,L.drives.slice(0,i+1)); return (sc[sc.length-1]||{}).text||"" }catch(e){ return "" } }
+  const surname=n=>String(n||"").split(" ").slice(-1)[0];
   function mk(L,d){
     const g=L.g, tm=d.home?g.home:g.away;
     const r=mulberry32(((d.n||1)*7919+(d.h||0)*131+(d.a||0)*37+(d.home?17:29))>>>0);
-    const pass=r()<0.56, len=pass?Math.round(4+r()*45):Math.round(1+r()*30);
-    const los=100-len, rcv=pass?(r()<0.62?2:3):1;
+    let pass=r()<0.56, len=pass?Math.round(4+r()*45):Math.round(1+r()*30), rcv=pass?(r()<0.62?2:3):1, who="", qbRun=false;
+    const T=rowText(L,d), off=(SEA.roster&&SEA.roster[tm])||[], mp=/^(.*?) (\d+)-yd TD pass to (.*)$/.exec(T), mr=/^(.*?) (\d+)-yd TD run$/.exec(T);
+    if(mp){ pass=true; len=+mp[2]; who=mp[3]; rcv=off[3]&&off[3].n===who?3:2 }
+    else if(mr){ pass=false; len=+mr[2]; who=mr[1]; qbRun=!!(off[0]&&off[0].n===who); rcv=1 }
+    const los=100-len;
+    // most balls are contested: the corner stays with the receiver; now and then he's beaten clean
+    const tight=pass&&r()<0.7;
     const catchY=pass?Math.min(104,100+Math.round(r()*6)):104, lane=pass?(rcv===2?0.15:0.85)+(r()-0.5)*0.1:0.4+r()*0.2;
     const inks=hlKits(g.home,g.away).map(k=>k.fill);
-    return Object.assign(base(L,d),{kind:"td",pass,len,los,rcv,catchY,lane,base:3400,reveal:0.86});
+    return Object.assign(base(L,d),{kind:"td",pass,len,los,rcv,catchY,lane,who:surname(who),qbRun,tight,base:3400,reveal:0.86});
   }
   const P=(W,H,c,yd,y)=>{ const f=Y(yd), X=c.home?1-f:f, YY=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+YY*H*(1-2*PADY)] };
   function pitch(x,W,H){
@@ -4000,13 +4027,29 @@ const HL_SPORT=(function(){
     const holder=[c.los-7,0.5], kicker=[c.los-9.5+Math.min(1,Math.max(0,(t-snap)/(kick-snap)))*2.3,0.47];
     let bx,by,z=0;
     if(t<snap){ const s=t/snap; bx=c.los; by=0.5 } else if(t<kick){ bx=holder[0]; by=holder[1] }
-    else { const s=Math.min(1,(t-kick)/(tEnd-kick)), ey=c.kind==="fg"?0.5+c.wide*0.012:0.5+c.wide*0.075; bx=hlLerp(holder[0],110,s); by=hlLerp(0.5,ey,s); z=Math.sin(s*Math.PI*0.85)*0.08 }
+    else { const s=Math.min(1.05,(t-kick)/(tEnd-kick)), sy=c.startY!=null?c.startY:0.5, ey=c.endY!=null?c.endY:(c.kind==="fg"?0.5+c.wide*0.012:0.5+c.wide*0.075);
+      // a hook: the line it starts on, bending late to where it ends
+      bx=hlLerp(holder[0],111,s); const k=Math.min(1,s), path=c.hook?hlLerp(hlLerp(0.5,sy,Math.min(1,k*1.6)),ey,Math.pow(k,2.4)):hlLerp(0.5,ey,k); by=path; z=Math.max(0,Math.sin(Math.min(1,s)*Math.PI*0.95))*0.06 }   // low again by the posts, so where it crosses reads plainly
     if(t>=snap&&t<kick){ const s=(t-snap)/(kick-snap); if(s<0.4){ bx=hlLerp(c.los,holder[0],s/0.4) } }
     const line=[0.38,0.42,0.46,0.5,0.54,0.58,0.62,0.34,0.66];
     line.forEach((y,i)=>{ const [px,py]=P(W,H,c,c.los-1.2,y); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
     [holder,kicker].forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
     line.concat([0.3,0.7]).forEach((y,i)=>{ const rush=t>snap?Math.min(1,(t-snap)/0.25)*2.5:0; const [px,py]=P(W,H,c,c.los+1.8-rush*0.6,y+(y-0.5)*-0.1*rush/2.5); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
-    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+    // the uprights, drawn over everything so the ball is plainly inside them or not
+    { const a=P(W,H,c,110,0.45), b=P(W,H,c,110,0.55), a0=P(W,H,c,96,0.45), b0=P(W,H,c,96,0.55); x.save();
+      // the window between the uprights, marked back up the field so the ball's line through it (or not) is plain
+      x.strokeStyle="rgba(242,210,75,.45)"; x.lineWidth=Math.max(1,W/520); x.setLineDash([4,4]); x.beginPath(); x.moveTo(a0[0],a0[1]); x.lineTo(a[0],a[1]); x.moveTo(b0[0],b0[1]); x.lineTo(b[0],b[1]); x.stroke(); x.setLineDash([]);
+      x.strokeStyle="#F2D24B"; x.lineWidth=Math.max(3,W/180); x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke();
+      [a,b].forEach(q=>{ x.beginPath(); x.arc(q[0],q[1],Math.max(3.5,W/150),0,Math.PI*2); x.fillStyle="#F2D24B"; x.fill() }); x.restore() }
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406",rot:t>kick?(t*40)%6.3:0});
+    // the view from behind the kicker as it reaches the posts: an H, and the ball going through it or past it
+    if(t>kick+(tEnd-kick)*0.35){ const u=Math.min(1,(t-kick)/(tEnd-kick)), bw=Math.min(W*0.3,170), bh=bw*0.72, X0=P(W,H,c,110,0.5)[0]>W/2?W*0.035:W*0.965-bw, Y0=H*0.13;   // at the end away from the posts, clear of the line
+      x.save(); x.globalAlpha=Math.min(1,(u-0.35)/0.15); x.fillStyle="rgba(10,16,24,.94)"; x.strokeStyle="rgba(255,255,255,.3)"; x.lineWidth=1;
+      x.beginPath(); x.rect(X0,Y0,bw,bh); x.fill(); x.stroke();
+      const cx=X0+bw/2, gy=Y0+bh*0.88, cb=Y0+bh*0.6, half=bw*0.17, sc=half/0.05;
+      x.strokeStyle="#F2D24B"; x.lineWidth=3; x.beginPath(); x.moveTo(cx,gy); x.lineTo(cx,cb); x.moveTo(cx-half,cb); x.lineTo(cx+half,cb); x.moveTo(cx-half,cb); x.lineTo(cx-half,Y0+bh*0.08); x.moveTo(cx+half,cb); x.lineTo(cx+half,Y0+bh*0.08); x.stroke();
+      const side=(by-0.5)*(c.home?-1:1), bxI=cx-side*sc, far=Math.pow(u,1.3), byI=hlLerp(gy+bh*0.05,cb-bh*(c.kind==="fg"?0.22:0.18),Math.min(1,u*1.15)), br=hlLerp(bw*0.07,bw*0.022,far);
+      x.beginPath(); x.ellipse(Math.max(X0+br,Math.min(X0+bw-br,bxI)),byI,br,br*0.7,0,0,Math.PI*2); x.fillStyle="#8A5428"; x.fill(); x.strokeStyle="#2a1406"; x.lineWidth=1; x.stroke(); x.restore() }
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.dist}-yard field goal try`;
     const end=t>=tEnd?(c.kind==="fg"?"IT'S GOOD!":"NO GOOD! Wide "+(c.wide*(c.home?-1:1)>0?"left":"right")):null;
     hlCaption(x,W,H,top,end,c.kind==="fg"?ink:null);
@@ -4025,11 +4068,17 @@ const HL_SPORT=(function(){
     else if(c.pass){ if(t<throwT){ bx=qb[0]; by=0.5 } else { const s=Math.min(1,(t-throwT)/(tEnd-throwT-0.08)); const tg=carrierAt(Math.min(1,runS+0.05)); bx=hlLerp(qb[0],tg[0],s); by=hlLerp(0.5,tg[1],s); z=Math.sin(Math.min(1,s)*Math.PI)*0.05 } }
     else{ const p=carrierAt(runS); bx=p[0]; by=p[1] }
     const off=OFF.map((p,i)=>{ let yd=c.los+p[0], y=p[1];
-      if(t>snap){ if(i===0)return qb; if(c.pass&&i===c.rcv){ const q=carrierAt(runS); return q }
-        if(!c.pass&&i===1){ return carrierAt(runS) }
+      if(t>snap){ if(i===0)return c.qbRun?carrierAt(runS):qb; if(c.pass&&i===c.rcv){ const q=carrierAt(runS); return q }
+        if(!c.pass&&i===1){ return c.qbRun?[c.los-6,0.5+0.1]:carrierAt(runS) }
+        if(c.kind==="fum"&&i===1&&t>c.reveal-0.12){ return carrierAt(Math.min(1,(c.reveal-0.12-snap)/(tEnd-snap))) }
         if(i>=6){ yd+=runS*1.5 } else if(i>=2){ yd+=runS*Math.min(18,c.len*0.7); y=hlLerp(y,0.5,runS*0.2) } }
       return [yd,y] });
     const def=DEF.map((p,i)=>{ let yd=c.los+p[0], y=p[1]; if(t>snap){ const k=i<4?0.15:0.45*runS; yd=hlLerp(yd,bx,k*0.6); y=hlLerp(y,by,k) } return [yd,y] });
+    // a contested ball: the corner on the receiver's hip the whole way (round 70: Ian, too many blown coverages)
+    if(c.pass&&c.tight&&t>snap&&c.kind!=="int"){ const j=c.rcv===2?7:8, q=carrierAt(runS), lag=0.9+0.6*Math.sin(runS*5); def[j]=[q[0]-lag,q[1]+(c.rcv===2?0.035:-0.035)] }
+    // a fumble: the carrier is hit, the ball comes loose, a defender falls on it
+    if(c.kind==="fum"&&t>c.reveal-0.12){ const hit=carrierAt(Math.min(1,(c.reveal-0.12-snap)/(tEnd-snap))), u=Math.min(1,(t-c.reveal+0.12)/0.3), j=c.rcv===2?5:6;
+      bx=hit[0]+hlEase(u)*4.5; by=hit[1]+hlEase(u)*(hit[1]<0.5?0.07:-0.07)+Math.sin(u*9)*0.012; z=Math.abs(Math.sin(u*Math.PI*3))*0.012*(1-u); def[j]=[hlLerp(def[j][0],bx,Math.min(1,u*1.4)),hlLerp(def[j][1],by,Math.min(1,u*1.4))] }
     // a pick: the nearest defensive back jumps the route and takes it the other way
     if(c.kind==="int"&&t>throwT){ const tg=carrierAt(Math.min(1,runS+0.05)), j=c.rcv===2?7:8, s=Math.min(1,(t-throwT)/(tEnd-throwT));
       def[j]=[hlLerp(def[j][0],tg[0]+0.8,hlEase(s)),hlLerp(def[j][1],tg[1],hlEase(s))]; if(t>tEnd){ const u=(t-tEnd)/(1-tEnd); def[j]=[tg[0]+0.8-u*12,tg[1]]; bx=def[j][0]; by=def[j][1]; z=0 } }
@@ -4039,8 +4088,9 @@ const HL_SPORT=(function(){
     off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i),c.offN?{num:c.offN[i]}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} ball`;   // round 67: no "12 yards out" before it's done
-    const end=t>=tEnd?(c.kind==="int"?"INTERCEPTED!":`TOUCHDOWN! ${c.len}-yard ${c.pass?"pass":"run"}`):null;
-    hlCaption(x,W,H,top,end,c.kind==="int"?dink:ink);
+    const te=c.kind==="fum"?c.reveal:tEnd;
+    const end=t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
+    hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"?dink:ink);
   }
   return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame};
 })();
@@ -4367,6 +4417,15 @@ function featureEdge(sea,team,idx){
   const avg=POS.reduce((t,P,i)=>t+R[i].r,0)/POS.length;
   return FEATURE_EDGE*Math.max(0.5,Math.min(1.3,1+(p.r-avg)/12));
 }
+/* round 69: each game's line for the player's page (the season's copy of the player: rebuilt by the replay, not saved).
+   One flat list of numbers a player, GL_STRIDE a game: step, opponent (its index), home 1/0, for, against, position
+   (its index in POS), then the position's stat keys in order (a list per game took 16 MB over a baseball season) */
+let GL_STRIDE=0;
+function glStride(){ if(!GL_STRIDE)GL_STRIDE=6+Math.max(...Object.keys(STAT_KEYS).map(k=>STAT_KEYS[k].length)); return GL_STRIDE }
+function logGame(pl,pos,line,step,tm,a,b,pa,pb){
+  const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
+  gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
+  for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -4526,14 +4585,14 @@ class Season{
               if(c||line.ab){ const C=c||{hr:0,rbi:0,h:0}; line.hr=C.hr; line.rbi=C.rbi; line.h=Math.max(line.h||0,C.h); line.ab=Math.max(line.ab||0,line.h,3); line.r=Math.max(line.r||0,line.hr) } }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
-            pl.last={line:line,pos:P.p,week:this.step,team:tm};
+            pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa);
           });
           if(BL)Object.keys(BL).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=BL[nm], line={ab:Math.max(1,c.h),h:c.h,hr:c.hr,rbi:c.rbi,r:c.hr};
-            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa) });
           if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=LC[nm], line=HKC?{goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals}:{goals:c.goals,shots:c.goals};
-            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa) });
         });
       }
       const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+fh+fa)%11)/34))));
@@ -4580,7 +4639,7 @@ class Season{
           const line=gameStats(this.rng,pl,i,pf,pa,pf>pa);
           if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
           addStats(pl.st2,line);
-          pl.last={line:line,pos:P.p,week:this.step,team:tm};
+          pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,hp,ap);
         });
       });
     }
@@ -4684,6 +4743,8 @@ class Season{
         if(!pl.car){pl.car=blankStats(POS[i%POS.length].p); pl.car.yrs=0}
         addStats(pl.car,src.st2);
         pl.car.yrs=(pl.car.yrs||0)+1;
+        // round 69: the season kept as its own line, for the player's page (careers before this have only the total)
+        (pl.hist=pl.hist||[]).push({y:this.year,t:t,p:POS[i%POS.length].p,r:src.r,s:Object.assign({},src.st2)});
       });
     });
   }
@@ -5616,6 +5677,66 @@ function shirtNo(team,idx){
       for(let v=1;n==null&&v<100;v++)if(!used[v])n=v;
       used[n]=1; M.no[i]=n }) }
   return M.no[idx] }
+
+/* ---- the player's page and the leaders (round 69: Ian, "when you click on a player you can see all of their
+   history and game-by-game stats", "league leaders across the league in categories") ----
+   Any player on any roster: who he is, this season, season by season (the seasons since round 69 one by one, any
+   before as one line), his career, and this season's games one by one. Tap a name to open it. */
+let playerSel=null, standTab="table", leadCat=-1;
+function openPlayer(team,name){ playerSel={team:team,name:name}; render(); try{ window.scrollTo(0,0) }catch(e){} }
+function plLink(team,name,label){ return `<span class="plink" data-player="${esc(team)}|${esc(name)}" style="cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.35);text-underline-offset:3px">${esc(label==null?name:label)}</span>` }
+function findPl(team,name){
+  const at=t=>{ const R=SEA.roster&&SEA.roster[t]; const i=R?R.findIndex(p=>p&&p.n===name):-1; return i>=0?{p:R[i],team:t,i:i}:null };
+  return at(team)||NAMES.map(at).find(Boolean)||null }
+function tAb(t){ return (LEAGUE.abbr&&LEAGUE.abbr[t])||String(t) }
+function statCols(pos){ const keys=STAT_KEYS[pos]||[], ab=typeof STAT_ABBR!=="undefined"?STAT_ABBR:{}, fm=typeof STAT_FMT!=="undefined"?STAT_FMT:{};
+  return keys.map(k=>[ab[k]||k.toUpperCase(),s=>fm[k]?fm[k](s[k]||0):String(Math.round((s[k]||0)*10)/10)]).concat(typeof STAT_EXTRA==="function"?STAT_EXTRA(pos):[]) }
+function statTable(head,rows,left){ left=left||1;
+  const th=`style="text-align:right;padding:4px 6px;color:var(--muted);font-weight:600;white-space:nowrap"`, td=`style="text-align:right;padding:4px 6px;white-space:nowrap"`, tl=`style="text-align:left;padding:4px 6px;white-space:nowrap"`;
+  return `<div style="overflow-x:auto;margin:4px 0 12px"><table style="border-collapse:collapse;font:12px/1.3 var(--mono);width:100%">
+    <tr style="border-bottom:1px solid var(--line)">${head.map((h,i)=>`<th ${i>=left?th:tl.replace("white-space","color:var(--muted);font-weight:600;white-space")}>${esc(h)}</th>`).join("")}</tr>
+    ${rows.map(r=>`<tr style="border-bottom:1px solid rgba(255,255,255,.05)${r.you?";background:rgba(244,201,93,.08)":""}">${r.c.map((c,i)=>`<td ${i>=left?td:tl}>${c}</td>`).join("")}</tr>`).join("")}</table></div>` }
+function playerView(){
+  const back=`<button class="skip" data-plback="1" style="margin-bottom:8px">&larr; Back</button>`;
+  const F=playerSel&&findPl(playerSel.team,playerSel.name);
+  if(!F)return back+`<div class="fnote">${esc(playerSel?playerSel.name:"")} isn't on a roster now.</div>`;
+  const p=F.p, pos=p.p||POS[F.i%POS.length].p, no=shirtNo(F.team,F.i), cols=statCols(pos), heads=["","G"].concat(cols.map(c=>c[0]));
+  const line=(lab,st,you)=>({you:you,c:[lab,String(st.g||0)].concat(cols.map(c=>esc(c[1](st))))});
+  let h=back+`<div class="dateline"><h2>${no!=null?"#"+no+" ":""}${esc(p.n)}</h2><span>${esc(F.team)}</span></div>
+    <div class="fnote" style="margin-bottom:10px">${esc(pos)}${p.c!=null&&typeof classTag==="function"&&classTag(p.c)?" &middot; "+esc(classTag(p.c)):""} &middot; rating ${p.r}${p.pot>p.r?", ceiling "+p.pot:""}${p.k&&p.k.yrs?` &middot; ${p.k.yrs} year${p.k.yrs===1?"":"s"} left${p.k.sal?" at $"+(Math.round(p.k.sal*10)/10)+"M":""}`:""}${F.i>=POS.length?" &middot; backup":""}</div>`;
+  // this season, and per game where a sport counts that way
+  const st=p.st2||blankStats(pos);
+  h+=`<div class="grouphead">${SEA.year}</div>`+(st.g?`<div class="fnote" style="margin:2px 0 4px">${esc(statLine(pos,st))}</div>`:`<div class="fnote">No games yet this season.</div>`);
+  // season by season
+  const rows=[], H=p.hist||[], car=p.car;
+  if(car&&car.yrs>H.length){ const e=Object.assign({},car); H.forEach(x=>Object.keys(x.s).forEach(k=>{ if(typeof e[k]==="number")e[k]-=x.s[k]||0 })); rows.push(line(`Before ${H.length?H[0].y:SEA.year}`,e)) }
+  H.forEach(x=>rows.push(line(`${x.y} ${tAb(x.t)}`,x.s)));
+  if(st.g)rows.push(line(`${SEA.year} ${tAb(F.team)}`,st,true));
+  if(rows.length){ const tot=Object.assign({},car||blankStats(pos)); if(st.g)Object.keys(st).forEach(k=>{ if(typeof st[k]==="number")tot[k]=(tot[k]||0)+st[k] }); rows.push({c:["<b>Career</b>"].concat(line("",tot).c.slice(1).map(v=>"<b>"+v+"</b>"))});
+    h+=`<div class="grouphead">Season by season</div>`+statTable(heads,rows) }
+  // this season's games, the latest first
+  const gl=[], G0=p.gl||[], w=typeof glStride==="function"?glStride():0;
+  for(let j=G0.length-w;j>=0&&w;j-=w){ const P0=POS[G0[j+5]]; gl.push([G0[j],NAMES[G0[j+1]],G0[j+2],G0[j+3],G0[j+4],P0?P0.p:pos].concat(G0.slice(j+6,j+w))) }
+  if(gl.length){ const keys=STAT_KEYS[pos]||[];
+    h+=`<div class="grouphead">Game by game, ${SEA.year}</div>`+statTable(["","Opp","Result","G"].concat(cols.map(c=>c[0])).filter((x,i)=>i!==3),gl.slice(0,60).map(r=>{
+      const o={g:1}; (STAT_KEYS[r[5]]||keys).forEach((k,j)=>o[k]=r[6+j]); const W=SEA.weeks[r[0]], res=r[3]>r[4]?"W":r[3]<r[4]?"L":"D";
+      return {c:[esc(W&&W.label?String(W.label).split(" \u00b7 ")[0].replace(/^Matchday /,"MD ").replace(/^Week /,"Wk "):String(r[0]+1)),(r[2]?"":"@ ")+esc(tAb(r[1])),`${res} ${r[3]}-${r[4]}`].concat(cols.map(c=>esc(c[1](o))))} }),3)
+    + (gl.length>60?`<div class="fnote">The latest 60 of ${gl.length}.</div>`:"") }
+  return `<div style="padding:0 12px">${h}</div>` }
+/* the league's leaders: each category's top five, or one category's top 25 */
+function leadersView(){
+  if(typeof LEADERS==="undefined")return `<div class="fnote">No leaders for this sport yet.</div>`;
+  const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(t=>CONF[t]===CONF[S.myTeam]):NAMES;   // soccer: your division
+  let G=0; teams.forEach(t=>(SEA.roster[t]||[]).forEach(p=>{ if(p&&p.st2&&p.st2.g>G)G=p.st2.g }));
+  if(!G)return `<div class="fnote">The leaders appear once the season starts.</div>`;
+  const board=(L,n)=>{ const E=[]; teams.forEach(t=>(SEA.roster[t]||[]).forEach((p,i)=>{ if(!p||!p.st2||!p.st2.g)return; const pos=p.p||POS[i%POS.length].p;
+      if(L.pos&&L.pos.indexOf(pos)<0)return; if(L.min&&!L.min(p.st2,G))return; E.push({p:p,t:t,v:L.v(p.st2)}) }));
+    E.sort((a,b)=>L.low?a.v-b.v:b.v-a.v); const f=L.f||(v=>String(Math.round(v*10)/10));
+    return E.slice(0,n).map((e,k)=>({you:e.t===S.myTeam,c:[String(k+1),plLink(e.t,e.p.n),esc(tAb(e.t)),"<b>"+esc(f(e.v))+"</b>"]})) };
+  let h=`<div class="subtabs" style="flex-wrap:wrap">${[[-1,"All"]].concat(LEADERS.map((L,i)=>[i,L.l])).map(([i,l])=>`<button class="subtab" data-lead="${i}" aria-pressed="${leadCat===i}">${esc(l)}</button>`).join("")}</div>`;
+  if(leadCat>=0&&LEADERS[leadCat]){ const L=LEADERS[leadCat]; return `<div style="padding:0 12px">`+h+`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,25),3)+`</div>` }
+  LEADERS.forEach(L=>{ h+=`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,5),3) });
+  return `<div style="padding:0 12px">${h}${LEAGUE.groupFilter?`<div class="fnote">Your division.</div>`:""}</div>` }
 /* ============ the staff's voices, varied across games (round 47) ============ */
 /* Muse (round 20): Pearl's pre-kickoff line and the capybara's half-time line were word for word the same in all
    four matches. Within a game staffFresh (94_staffplan) already stops a voice repeating itself; across games the fixed
@@ -6898,6 +7019,9 @@ function sfx(kind){
   const ac=audio(); if(!ac)return;
   try{
     if(kind==="score"){ crowd(ac,{f:1000,peak:0.24,up:0.1,down:1.6}); crowd(ac,{f:2400,q:1.2,peak:0.06,up:0.08,down:0.9}) }
+    else if(kind==="hr"){ crowd(ac,{f:1000,peak:0.28,up:0.1,down:2.4}); crowd(ac,{f:2600,q:1.2,peak:0.08,up:0.08,down:1.4});
+      [392,523,659,784,659,784].forEach((f,i)=>tone(ac,{f:f,type:"square",at:0.25+i*0.12,dur:i===5?0.5:0.11,peak:0.045})) }   // the organ
+    else if(kind==="run"){ crowd(ac,{f:950,peak:0.15,up:0.1,down:1.0}) }
     else if(kind==="against"){ crowd(ac,{f:380,type:"lowpass",peak:0.13,up:0.18,down:0.8}) }
     else if(kind==="start"||kind==="end")signal(ac);
     else if(kind==="win"){ [523,659,784,1047].forEach((f,i)=>tone(ac,{f:f,type:"triangle",at:0.35+i*0.11,dur:i===3?0.5:0.16,peak:0.1})) }
@@ -6922,10 +7046,12 @@ function scoreChange(L,prevH,prevA){
   const mine=mineHome?dh:da, theirs=mineHome?da:dh;
   return mine>0&&mine>=theirs?"mine":theirs>0?"theirs":null;
 }
-function feelSpell(L,prevH,prevA){
+function feelSpell(L,prevH,prevA,quiet){
   const who=scoreChange(L,prevH,prevA); if(!who)return;
-  showFlash(L,who);
-  if(who==="mine"){ sfx("score"); buzz([40,60,90]) } else sfx("against");
+  showFlash(L,who); if(quiet)return;
+  // a sport can pick its sound (round 70, baseball: a home run is a bigger moment than a run)
+  const k=typeof SPORT!=="undefined"&&typeof SPORT.scoreSfx==="function"?SPORT.scoreSfx(L,who):"score";
+  if(who==="mine"){ sfx(k); buzz([40,60,90]) } else sfx("against");
 }
 function feelFinal(L){
   const mine=L.g.home===S.myTeam?L.eng.h:L.eng.a, theirs=L.g.home===S.myTeam?L.eng.a:L.eng.h;
@@ -7113,7 +7239,7 @@ function hlWillPlay(L,drive){
 /* the clips are over (or skipped): the score, the run of play, the sound and the flash */
 function hlRelease(quiet){
   if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
-  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a);
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a,HL.sounded); HL.sounded=false;   // a clip that made its own sound (round 70) leaves the flash only
   if(!quiet&&typeof render==="function")render() }
 /* the clips of the drives the engine adds at the end (overtime, a shoot-out), one after another; ms they take */
 function hlPlayTail(L,drives){
@@ -7140,7 +7266,11 @@ function hlFrame(){
   hlDraw(c,t);
   // the score on the page changes as the ball goes in, in the last clip of the stretch (round 67: Ian, "see the score
   // change as you cross the touchdown line"); earlier clips' goals show in the clip's own score bug
-  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal; if(rv!=null&&t>=rv&&!HL.clips.length&&typeof live!=="undefined"&&live&&live.hold&&!live.finishing)hlRelease();
+  // round 70: with clips still to come, a goal moves the held score on by one (c.after), so it ticks up as they go in
+  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal;
+  if(rv!=null&&t>=rv&&typeof live!=="undefined"&&live&&live.hold){
+    if(!HL.clips.length&&!live.finishing){ if(c.after&&!c._ticked&&HL_SPORT.sound){ c._ticked=1; try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } hlRelease() }
+    else if(c.after&&!c._ticked){ c._ticked=1; live.hold.h=c.after[0]; live.hold.a=c.after[1]; if(HL_SPORT.sound){ try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } if(typeof render==="function")render() } }
   if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
   // a beat on the last frame, then the next clip
   setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount(); hlRelease() } },250);
@@ -7276,6 +7406,9 @@ function hlBanner(x,W,H,text,kit,s){
 function hlLegendHTML(L){ return L.filter(x=>x&&x.list&&x.list.length).map(x=>`<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${x.kit.fill};margin-right:5px;vertical-align:0"></span><b style="color:#fff">${esc(x.team)}</b> ${x.list.map(([n,nm])=>`<span style="white-space:nowrap;margin-left:4px"><b style="font-family:'IBM Plex Mono',monospace;color:#F4C95D">${n}</b> ${esc(nm)}</span>`).join(" ")}</div>`).join("") }
 /* a side's players by roster slots: [[shirt no, surname]] for the given roster indices */
 function hlNamed(team,idxs){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R)return []; return idxs.map(i=>R[i]?[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]]:null) }
+/* a stretch's clips cut to n: every goal stays (round 70: a two-goal stretch showed one, the cap took the later goal
+   when saves came first); chances fill what's left, in minute order */
+function hlTrim(out,n){ const goals=out.filter(c=>c.kind==="goal").length; let room=Math.max(0,n-goals); return out.filter(c=>c.kind==="goal"||room-->0) }
 /* the two sides' kits, told apart on grass: a clash (or a green shirt) sends the away side to its change kit */
 function hlKits(home,away){
   const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };
@@ -9386,7 +9519,7 @@ function rosterOf(t){
   const row=(p,i)=>{ if(!p)return ""; const inj=hurt[i];
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
-        <div class="pmain"><div class="pname">${esc(p.n)}</div>
+        <div class="pmain"><div class="pname">${plLink(t,p.n)}</div>
           <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} ${stepWord(inj.w)}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
@@ -9437,7 +9570,7 @@ function rosterView(){
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
-          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${esc(s.n)}
+          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${plLink(my,s.n)}
             ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
@@ -9445,7 +9578,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
+          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${plLink(my,b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -10110,6 +10243,9 @@ function standingsView(){
   // before its games: Vanderbilt #12 in the poll, #14 here, Grokbot)
   const nowRk=reveal==="half"?null:SEA.poll.rankMap();
   let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
+  // round 69: the league's leaders sit beside the table
+  h+=`<div class="subtabs">${[["table","Table"],["leaders","Leaders"]].map(([k,l])=>`<button class="subtab" data-sttab="${k}" aria-pressed="${standTab===k}">${l}</button>`).join("")}</div>`;
+  if(standTab==="leaders")return h+leadersView();
   const mine=CONF[S.myTeam];
   let order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
   if(LEAGUE.groupFilter){ const g0=grpNow()==="CUP"?mine:grpNow(); h+=grpTabsHTML(false); if(g0!=="ALL")order=[g0] }
@@ -11017,7 +11153,7 @@ function render(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (view==="team"?myTeamView():view==="scores"?scoresView():
+      (playerSel?playerView():view==="team"?myTeamView():view==="scores"?scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?standingsView():dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
@@ -11033,11 +11169,18 @@ function render(){
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
               :"Begin "+(SEA.year+1)+" season"):advLabel()}</button>
     </div>`;
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;render()});
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
+  // round 69: players' pages, the leaders
+  document.querySelectorAll("[data-player]").forEach(x=>x.onclick=e=>{ e.stopPropagation(); const k=x.dataset.player.split("|"); openPlayer(k[0],k.slice(1).join("|")) });
+  document.querySelectorAll("[data-plback]").forEach(x=>x.onclick=()=>{ playerSel=null; render() });
+  document.querySelectorAll("[data-sttab]").forEach(x=>x.onclick=()=>{ standTab=x.dataset.sttab; render() });
+  document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
     if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null; dynCoach=null}
     else if(b.dataset.grp){grpTab=b.dataset.grp}
     else if(b.dataset.m){teamTab=b.dataset.m}
+    else if(b.dataset.sttab){standTab=b.dataset.sttab}   // round 69
+    else if(b.dataset.lead!=null){leadCat=+b.dataset.lead}
     else LEAGUE.ui.subtab(b);
     render()});
   document.querySelectorAll(".tpick").forEach(b=>b.onclick=()=>{dynTeam=b.dataset.t;render()});
@@ -11579,7 +11722,7 @@ window.addEventListener("keydown",e=>{
   if(e.key===" "||e.key==="Enter"){e.preventDefault();
     const b=el("adv2")||el("adv"); if(b&&!b.disabled)b.click();}
   const keys={"1":"team","2":"scores","3":"poll","4":"stand","5":"dyn"};
-  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;render()}
+  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;playerSel=null;render()}
 });
 
 /* the staff room never says the same line twice in one game (Instinct: the

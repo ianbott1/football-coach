@@ -1,5 +1,5 @@
 {
- "fp": "4988845886304600",
+ "fp": "1614d5d7e84a1f9a",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -400,6 +400,11 @@
    "fp": "4988845886304600",
    "from": "22e5b81cda19e80f",
    "note": "round 68: game plan and highlights bar on the live screen"
+  },
+  {
+   "fp": "1614d5d7e84a1f9a",
+   "from": "4988845886304600",
+   "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
   }
  ],
  "result": {
@@ -413,8 +418,8 @@
     "poll": "a605fa2c4fcbcec4",
     "heis": "22f4a9cd8c36b4a4",
     "history": "eec782d6363770d3",
-    "universe": "042cfd8346192b74",
-    "screens": "f890206b9ba1dfe5"
+    "universe": "734f0e36b280df14",
+    "screens": "527c02a93002a52b"
    },
    {
     "year": 2027,
@@ -425,8 +430,8 @@
     "poll": "92cd7132d91a71c0",
     "heis": "30b2d04c0082ca17",
     "history": "e57bc46b121d6712",
-    "universe": "27f3cc8c6263a86b",
-    "screens": "f174699662e53645"
+    "universe": "220465e0c3548131",
+    "screens": "9f036ed0be851a78"
    }
   ],
   "Detroit#777": [
@@ -439,8 +444,8 @@
     "poll": "ec5c13550423e99b",
     "heis": "4c753ccdcbc17fd0",
     "history": "fc559be15d00b604",
-    "universe": "72934497ac50b919",
-    "screens": "2a3a90a73f337160"
+    "universe": "ca5f597683e7d3a7",
+    "screens": "492ab5bf6e4af0e6"
    },
    {
     "year": 2027,
@@ -451,8 +456,8 @@
     "poll": "f1d6323d04064486",
     "heis": "8840c990251cc9b0",
     "history": "b33d35ff21bff1e1",
-    "universe": "8a3208cddd4a60d7",
-    "screens": "6662b34d930b3751"
+    "universe": "5682685b15e1d905",
+    "screens": "7fb223b07c114c92"
    }
   ],
   "schedules#60": [

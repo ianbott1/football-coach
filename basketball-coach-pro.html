@@ -987,7 +987,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="735e13d";
+<script>const BUILD_ID="51f0583";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -1254,6 +1254,12 @@ function statProd(pos,s){
   // a rebound or a block counts nearly as much as an assist: bigs win awards too
   return s.pts*0.9+s.reb*1.05+s.ast*0.95+s.stl*1.8+s.blk*2.0;
 }
+
+/* ---- stats pages (round 69): column labels and the league's leader boards (per game, at least a third of the games) ---- */
+const STAT_ABBR={pts:"Pts",reb:"Reb",ast:"Ast",stl:"Stl",blk:"Blk",tpm:"3PM"};
+const PERG=k=>({v:s=>s.g?(s[k]||0)/s.g:0,f:v=>v.toFixed(1),min:(s,G)=>s.g>=Math.max(1,G/3)});
+const LEADERS=[Object.assign({l:"Points per game"},PERG("pts")),Object.assign({l:"Rebounds per game"},PERG("reb")),Object.assign({l:"Assists per game"},PERG("ast")),
+  Object.assign({l:"Steals per game"},PERG("stl")),Object.assign({l:"Blocks per game"},PERG("blk")),{l:"Three-pointers made",v:s=>s.tpm||0}];
 /* ============ storage ============ */
 /* Where saves live. Inside Claude's artifact viewer that is window.storage;
    anywhere else (the published site, a file opened locally) it is the
@@ -3769,6 +3775,15 @@ function featureEdge(sea,team,idx){
   const avg=POS.reduce((t,P,i)=>t+R[i].r,0)/POS.length;
   return FEATURE_EDGE*Math.max(0.5,Math.min(1.3,1+(p.r-avg)/12));
 }
+/* round 69: each game's line for the player's page (the season's copy of the player: rebuilt by the replay, not saved).
+   One flat list of numbers a player, GL_STRIDE a game: step, opponent (its index), home 1/0, for, against, position
+   (its index in POS), then the position's stat keys in order (a list per game took 16 MB over a baseball season) */
+let GL_STRIDE=0;
+function glStride(){ if(!GL_STRIDE)GL_STRIDE=6+Math.max(...Object.keys(STAT_KEYS).map(k=>STAT_KEYS[k].length)); return GL_STRIDE }
+function logGame(pl,pos,line,step,tm,a,b,pa,pb){
+  const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
+  gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
+  for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -3928,14 +3943,14 @@ class Season{
               if(c||line.ab){ const C=c||{hr:0,rbi:0,h:0}; line.hr=C.hr; line.rbi=C.rbi; line.h=Math.max(line.h||0,C.h); line.ab=Math.max(line.ab||0,line.h,3); line.r=Math.max(line.r||0,line.hr) } }
             if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
             addStats(pl.st2,line);
-            pl.last={line:line,pos:P.p,week:this.step,team:tm};
+            pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa);
           });
           if(BL)Object.keys(BL).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=BL[nm], line={ab:Math.max(1,c.h),h:c.h,hr:c.hr,rbi:c.rbi,r:c.hr};
-            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa) });
           if(LC)Object.keys(LC).filter(nm=>!done.has(nm)).forEach(nm=>{ const i=this.roster[tm].findIndex(p=>p&&p.n===nm); if(i<0)return;
             const pl=this.roster[tm][i], P=POS[i%POS.length]||POS[0], c=LC[nm], line=HKC?{goals:c.goals,ast:c.ast,pts:c.goals+c.ast,sog:c.goals}:{goals:c.goals,shots:c.goals};
-            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm} });
+            if(!pl.st2)pl.st2=blankStats(P.p); addStats(pl.st2,line); pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,fh,fa) });
         });
       }
       const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+fh+fa)%11)/34))));
@@ -3982,7 +3997,7 @@ class Season{
           const line=gameStats(this.rng,pl,i,pf,pa,pf>pa);
           if(typeof noteGame==="function")noteGame(this,pl,P.p,line,tm);
           addStats(pl.st2,line);
-          pl.last={line:line,pos:P.p,week:this.step,team:tm};
+          pl.last={line:line,pos:P.p,week:this.step,team:tm}; logGame(pl,P.p,line,this.step,tm,a,b,hp,ap);
         });
       });
     }
@@ -4086,6 +4101,8 @@ class Season{
         if(!pl.car){pl.car=blankStats(POS[i%POS.length].p); pl.car.yrs=0}
         addStats(pl.car,src.st2);
         pl.car.yrs=(pl.car.yrs||0)+1;
+        // round 69: the season kept as its own line, for the player's page (careers before this have only the total)
+        (pl.hist=pl.hist||[]).push({y:this.year,t:t,p:POS[i%POS.length].p,r:src.r,s:Object.assign({},src.st2)});
       });
     });
   }
@@ -5187,6 +5204,66 @@ function shirtNo(team,idx){
       for(let v=1;n==null&&v<100;v++)if(!used[v])n=v;
       used[n]=1; M.no[i]=n }) }
   return M.no[idx] }
+
+/* ---- the player's page and the leaders (round 69: Ian, "when you click on a player you can see all of their
+   history and game-by-game stats", "league leaders across the league in categories") ----
+   Any player on any roster: who he is, this season, season by season (the seasons since round 69 one by one, any
+   before as one line), his career, and this season's games one by one. Tap a name to open it. */
+let playerSel=null, standTab="table", leadCat=-1;
+function openPlayer(team,name){ playerSel={team:team,name:name}; render(); try{ window.scrollTo(0,0) }catch(e){} }
+function plLink(team,name,label){ return `<span class="plink" data-player="${esc(team)}|${esc(name)}" style="cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.35);text-underline-offset:3px">${esc(label==null?name:label)}</span>` }
+function findPl(team,name){
+  const at=t=>{ const R=SEA.roster&&SEA.roster[t]; const i=R?R.findIndex(p=>p&&p.n===name):-1; return i>=0?{p:R[i],team:t,i:i}:null };
+  return at(team)||NAMES.map(at).find(Boolean)||null }
+function tAb(t){ return (LEAGUE.abbr&&LEAGUE.abbr[t])||String(t) }
+function statCols(pos){ const keys=STAT_KEYS[pos]||[], ab=typeof STAT_ABBR!=="undefined"?STAT_ABBR:{}, fm=typeof STAT_FMT!=="undefined"?STAT_FMT:{};
+  return keys.map(k=>[ab[k]||k.toUpperCase(),s=>fm[k]?fm[k](s[k]||0):String(Math.round((s[k]||0)*10)/10)]).concat(typeof STAT_EXTRA==="function"?STAT_EXTRA(pos):[]) }
+function statTable(head,rows,left){ left=left||1;
+  const th=`style="text-align:right;padding:4px 6px;color:var(--muted);font-weight:600;white-space:nowrap"`, td=`style="text-align:right;padding:4px 6px;white-space:nowrap"`, tl=`style="text-align:left;padding:4px 6px;white-space:nowrap"`;
+  return `<div style="overflow-x:auto;margin:4px 0 12px"><table style="border-collapse:collapse;font:12px/1.3 var(--mono);width:100%">
+    <tr style="border-bottom:1px solid var(--line)">${head.map((h,i)=>`<th ${i>=left?th:tl.replace("white-space","color:var(--muted);font-weight:600;white-space")}>${esc(h)}</th>`).join("")}</tr>
+    ${rows.map(r=>`<tr style="border-bottom:1px solid rgba(255,255,255,.05)${r.you?";background:rgba(244,201,93,.08)":""}">${r.c.map((c,i)=>`<td ${i>=left?td:tl}>${c}</td>`).join("")}</tr>`).join("")}</table></div>` }
+function playerView(){
+  const back=`<button class="skip" data-plback="1" style="margin-bottom:8px">&larr; Back</button>`;
+  const F=playerSel&&findPl(playerSel.team,playerSel.name);
+  if(!F)return back+`<div class="fnote">${esc(playerSel?playerSel.name:"")} isn't on a roster now.</div>`;
+  const p=F.p, pos=p.p||POS[F.i%POS.length].p, no=shirtNo(F.team,F.i), cols=statCols(pos), heads=["","G"].concat(cols.map(c=>c[0]));
+  const line=(lab,st,you)=>({you:you,c:[lab,String(st.g||0)].concat(cols.map(c=>esc(c[1](st))))});
+  let h=back+`<div class="dateline"><h2>${no!=null?"#"+no+" ":""}${esc(p.n)}</h2><span>${esc(F.team)}</span></div>
+    <div class="fnote" style="margin-bottom:10px">${esc(pos)}${p.c!=null&&typeof classTag==="function"&&classTag(p.c)?" &middot; "+esc(classTag(p.c)):""} &middot; rating ${p.r}${p.pot>p.r?", ceiling "+p.pot:""}${p.k&&p.k.yrs?` &middot; ${p.k.yrs} year${p.k.yrs===1?"":"s"} left${p.k.sal?" at $"+(Math.round(p.k.sal*10)/10)+"M":""}`:""}${F.i>=POS.length?" &middot; backup":""}</div>`;
+  // this season, and per game where a sport counts that way
+  const st=p.st2||blankStats(pos);
+  h+=`<div class="grouphead">${SEA.year}</div>`+(st.g?`<div class="fnote" style="margin:2px 0 4px">${esc(statLine(pos,st))}</div>`:`<div class="fnote">No games yet this season.</div>`);
+  // season by season
+  const rows=[], H=p.hist||[], car=p.car;
+  if(car&&car.yrs>H.length){ const e=Object.assign({},car); H.forEach(x=>Object.keys(x.s).forEach(k=>{ if(typeof e[k]==="number")e[k]-=x.s[k]||0 })); rows.push(line(`Before ${H.length?H[0].y:SEA.year}`,e)) }
+  H.forEach(x=>rows.push(line(`${x.y} ${tAb(x.t)}`,x.s)));
+  if(st.g)rows.push(line(`${SEA.year} ${tAb(F.team)}`,st,true));
+  if(rows.length){ const tot=Object.assign({},car||blankStats(pos)); if(st.g)Object.keys(st).forEach(k=>{ if(typeof st[k]==="number")tot[k]=(tot[k]||0)+st[k] }); rows.push({c:["<b>Career</b>"].concat(line("",tot).c.slice(1).map(v=>"<b>"+v+"</b>"))});
+    h+=`<div class="grouphead">Season by season</div>`+statTable(heads,rows) }
+  // this season's games, the latest first
+  const gl=[], G0=p.gl||[], w=typeof glStride==="function"?glStride():0;
+  for(let j=G0.length-w;j>=0&&w;j-=w){ const P0=POS[G0[j+5]]; gl.push([G0[j],NAMES[G0[j+1]],G0[j+2],G0[j+3],G0[j+4],P0?P0.p:pos].concat(G0.slice(j+6,j+w))) }
+  if(gl.length){ const keys=STAT_KEYS[pos]||[];
+    h+=`<div class="grouphead">Game by game, ${SEA.year}</div>`+statTable(["","Opp","Result","G"].concat(cols.map(c=>c[0])).filter((x,i)=>i!==3),gl.slice(0,60).map(r=>{
+      const o={g:1}; (STAT_KEYS[r[5]]||keys).forEach((k,j)=>o[k]=r[6+j]); const W=SEA.weeks[r[0]], res=r[3]>r[4]?"W":r[3]<r[4]?"L":"D";
+      return {c:[esc(W&&W.label?String(W.label).split(" \u00b7 ")[0].replace(/^Matchday /,"MD ").replace(/^Week /,"Wk "):String(r[0]+1)),(r[2]?"":"@ ")+esc(tAb(r[1])),`${res} ${r[3]}-${r[4]}`].concat(cols.map(c=>esc(c[1](o))))} }),3)
+    + (gl.length>60?`<div class="fnote">The latest 60 of ${gl.length}.</div>`:"") }
+  return `<div style="padding:0 12px">${h}</div>` }
+/* the league's leaders: each category's top five, or one category's top 25 */
+function leadersView(){
+  if(typeof LEADERS==="undefined")return `<div class="fnote">No leaders for this sport yet.</div>`;
+  const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(t=>CONF[t]===CONF[S.myTeam]):NAMES;   // soccer: your division
+  let G=0; teams.forEach(t=>(SEA.roster[t]||[]).forEach(p=>{ if(p&&p.st2&&p.st2.g>G)G=p.st2.g }));
+  if(!G)return `<div class="fnote">The leaders appear once the season starts.</div>`;
+  const board=(L,n)=>{ const E=[]; teams.forEach(t=>(SEA.roster[t]||[]).forEach((p,i)=>{ if(!p||!p.st2||!p.st2.g)return; const pos=p.p||POS[i%POS.length].p;
+      if(L.pos&&L.pos.indexOf(pos)<0)return; if(L.min&&!L.min(p.st2,G))return; E.push({p:p,t:t,v:L.v(p.st2)}) }));
+    E.sort((a,b)=>L.low?a.v-b.v:b.v-a.v); const f=L.f||(v=>String(Math.round(v*10)/10));
+    return E.slice(0,n).map((e,k)=>({you:e.t===S.myTeam,c:[String(k+1),plLink(e.t,e.p.n),esc(tAb(e.t)),"<b>"+esc(f(e.v))+"</b>"]})) };
+  let h=`<div class="subtabs" style="flex-wrap:wrap">${[[-1,"All"]].concat(LEADERS.map((L,i)=>[i,L.l])).map(([i,l])=>`<button class="subtab" data-lead="${i}" aria-pressed="${leadCat===i}">${esc(l)}</button>`).join("")}</div>`;
+  if(leadCat>=0&&LEADERS[leadCat]){ const L=LEADERS[leadCat]; return `<div style="padding:0 12px">`+h+`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,25),3)+`</div>` }
+  LEADERS.forEach(L=>{ h+=`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,5),3) });
+  return `<div style="padding:0 12px">${h}${LEAGUE.groupFilter?`<div class="fnote">Your division.</div>`:""}</div>` }
 /* ============ the staff's voices, varied across games (round 47) ============ */
 /* Muse (round 20): Pearl's pre-kickoff line and the capybara's half-time line were word for word the same in all
    four matches. Within a game staffFresh (94_staffplan) already stops a voice repeating itself; across games the fixed
@@ -6469,6 +6546,9 @@ function sfx(kind){
   const ac=audio(); if(!ac)return;
   try{
     if(kind==="score"){ crowd(ac,{f:1000,peak:0.24,up:0.1,down:1.6}); crowd(ac,{f:2400,q:1.2,peak:0.06,up:0.08,down:0.9}) }
+    else if(kind==="hr"){ crowd(ac,{f:1000,peak:0.28,up:0.1,down:2.4}); crowd(ac,{f:2600,q:1.2,peak:0.08,up:0.08,down:1.4});
+      [392,523,659,784,659,784].forEach((f,i)=>tone(ac,{f:f,type:"square",at:0.25+i*0.12,dur:i===5?0.5:0.11,peak:0.045})) }   // the organ
+    else if(kind==="run"){ crowd(ac,{f:950,peak:0.15,up:0.1,down:1.0}) }
     else if(kind==="against"){ crowd(ac,{f:380,type:"lowpass",peak:0.13,up:0.18,down:0.8}) }
     else if(kind==="start"||kind==="end")signal(ac);
     else if(kind==="win"){ [523,659,784,1047].forEach((f,i)=>tone(ac,{f:f,type:"triangle",at:0.35+i*0.11,dur:i===3?0.5:0.16,peak:0.1})) }
@@ -6493,10 +6573,12 @@ function scoreChange(L,prevH,prevA){
   const mine=mineHome?dh:da, theirs=mineHome?da:dh;
   return mine>0&&mine>=theirs?"mine":theirs>0?"theirs":null;
 }
-function feelSpell(L,prevH,prevA){
+function feelSpell(L,prevH,prevA,quiet){
   const who=scoreChange(L,prevH,prevA); if(!who)return;
-  showFlash(L,who);
-  if(who==="mine"){ sfx("score"); buzz([40,60,90]) } else sfx("against");
+  showFlash(L,who); if(quiet)return;
+  // a sport can pick its sound (round 70, baseball: a home run is a bigger moment than a run)
+  const k=typeof SPORT!=="undefined"&&typeof SPORT.scoreSfx==="function"?SPORT.scoreSfx(L,who):"score";
+  if(who==="mine"){ sfx(k); buzz([40,60,90]) } else sfx("against");
 }
 function feelFinal(L){
   const mine=L.g.home===S.myTeam?L.eng.h:L.eng.a, theirs=L.g.home===S.myTeam?L.eng.a:L.eng.h;
@@ -6684,7 +6766,7 @@ function hlWillPlay(L,drive){
 /* the clips are over (or skipped): the score, the run of play, the sound and the flash */
 function hlRelease(quiet){
   if(typeof live==="undefined"||!live||!live.hold)return; const h=live.hold; live.hold=null;
-  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a);
+  if(typeof feelSpell==="function")feelSpell(live,h.h,h.a,HL.sounded); HL.sounded=false;   // a clip that made its own sound (round 70) leaves the flash only
   if(!quiet&&typeof render==="function")render() }
 /* the clips of the drives the engine adds at the end (overtime, a shoot-out), one after another; ms they take */
 function hlPlayTail(L,drives){
@@ -6711,7 +6793,11 @@ function hlFrame(){
   hlDraw(c,t);
   // the score on the page changes as the ball goes in, in the last clip of the stretch (round 67: Ian, "see the score
   // change as you cross the touchdown line"); earlier clips' goals show in the clip's own score bug
-  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal; if(rv!=null&&t>=rv&&!HL.clips.length&&typeof live!=="undefined"&&live&&live.hold&&!live.finishing)hlRelease();
+  // round 70: with clips still to come, a goal moves the held score on by one (c.after), so it ticks up as they go in
+  const rv=c.reveal!=null?c.reveal:HL_SPORT.reveal;
+  if(rv!=null&&t>=rv&&typeof live!=="undefined"&&live&&live.hold){
+    if(!HL.clips.length&&!live.finishing){ if(c.after&&!c._ticked&&HL_SPORT.sound){ c._ticked=1; try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } hlRelease() }
+    else if(c.after&&!c._ticked){ c._ticked=1; live.hold.h=c.after[0]; live.hold.a=c.after[1]; if(HL_SPORT.sound){ try{ if(HL_SPORT.sound(c))HL.sounded=true }catch(e){} } if(typeof render==="function")render() } }
   if(t<1){ HL.raf=requestAnimationFrame(hlFrame); return }
   // a beat on the last frame, then the next clip
   setTimeout(()=>{ if(HL.cur!==c)return; const n=HL.clips.shift(); if(n)hlStart(n); else { HL.cur=null; hlDraw(null,0); hlMount(); hlRelease() } },250);
@@ -6847,6 +6933,9 @@ function hlBanner(x,W,H,text,kit,s){
 function hlLegendHTML(L){ return L.filter(x=>x&&x.list&&x.list.length).map(x=>`<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${x.kit.fill};margin-right:5px;vertical-align:0"></span><b style="color:#fff">${esc(x.team)}</b> ${x.list.map(([n,nm])=>`<span style="white-space:nowrap;margin-left:4px"><b style="font-family:'IBM Plex Mono',monospace;color:#F4C95D">${n}</b> ${esc(nm)}</span>`).join(" ")}</div>`).join("") }
 /* a side's players by roster slots: [[shirt no, surname]] for the given roster indices */
 function hlNamed(team,idxs){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R)return []; return idxs.map(i=>R[i]?[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]]:null) }
+/* a stretch's clips cut to n: every goal stays (round 70: a two-goal stretch showed one, the cap took the later goal
+   when saves came first); chances fill what's left, in minute order */
+function hlTrim(out,n){ const goals=out.filter(c=>c.kind==="goal").length; let room=Math.max(0,n-goals); return out.filter(c=>c.kind==="goal"||room-->0) }
 /* the two sides' kits, told apart on grass: a clash (or a green shirt) sends the away side to its change kit */
 function hlKits(home,away){
   const d=(a,b)=>{ const A=hlRGB(a),B=hlRGB(b); return Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]) };
@@ -8995,7 +9084,7 @@ function rosterOf(t){
   const row=(p,i)=>{ if(!p)return ""; const inj=hurt[i];
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
-        <div class="pmain"><div class="pname">${esc(p.n)}</div>
+        <div class="pmain"><div class="pname">${plLink(t,p.n)}</div>
           <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} ${stepWord(inj.w)}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
@@ -9046,7 +9135,7 @@ function rosterView(){
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
-          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${esc(s.n)}
+          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${plLink(my,s.n)}
             ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
@@ -9054,7 +9143,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
+          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${plLink(my,b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -9719,6 +9808,9 @@ function standingsView(){
   // before its games: Vanderbilt #12 in the poll, #14 here, Grokbot)
   const nowRk=reveal==="half"?null:SEA.poll.rankMap();
   let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
+  // round 69: the league's leaders sit beside the table
+  h+=`<div class="subtabs">${[["table","Table"],["leaders","Leaders"]].map(([k,l])=>`<button class="subtab" data-sttab="${k}" aria-pressed="${standTab===k}">${l}</button>`).join("")}</div>`;
+  if(standTab==="leaders")return h+leadersView();
   const mine=CONF[S.myTeam];
   let order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
   if(LEAGUE.groupFilter){ const g0=grpNow()==="CUP"?mine:grpNow(); h+=grpTabsHTML(false); if(g0!=="ALL")order=[g0] }
@@ -10626,7 +10718,7 @@ function render(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (view==="team"?myTeamView():view==="scores"?scoresView():
+      (playerSel?playerView():view==="team"?myTeamView():view==="scores"?scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?standingsView():dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
@@ -10642,11 +10734,18 @@ function render(){
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
               :"Begin "+(SEA.year+1)+" season"):advLabel()}</button>
     </div>`;
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;render()});
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
+  // round 69: players' pages, the leaders
+  document.querySelectorAll("[data-player]").forEach(x=>x.onclick=e=>{ e.stopPropagation(); const k=x.dataset.player.split("|"); openPlayer(k[0],k.slice(1).join("|")) });
+  document.querySelectorAll("[data-plback]").forEach(x=>x.onclick=()=>{ playerSel=null; render() });
+  document.querySelectorAll("[data-sttab]").forEach(x=>x.onclick=()=>{ standTab=x.dataset.sttab; render() });
+  document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
     if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null; dynCoach=null}
     else if(b.dataset.grp){grpTab=b.dataset.grp}
     else if(b.dataset.m){teamTab=b.dataset.m}
+    else if(b.dataset.sttab){standTab=b.dataset.sttab}   // round 69
+    else if(b.dataset.lead!=null){leadCat=+b.dataset.lead}
     else LEAGUE.ui.subtab(b);
     render()});
   document.querySelectorAll(".tpick").forEach(b=>b.onclick=()=>{dynTeam=b.dataset.t;render()});
@@ -11188,7 +11287,7 @@ window.addEventListener("keydown",e=>{
   if(e.key===" "||e.key==="Enter"){e.preventDefault();
     const b=el("adv2")||el("adv"); if(b&&!b.disabled)b.click();}
   const keys={"1":"team","2":"scores","3":"poll","4":"stand","5":"dyn"};
-  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;render()}
+  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;playerSel=null;render()}
 });
 
 /* the staff room never says the same line twice in one game (Instinct: the
