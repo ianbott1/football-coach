@@ -106,7 +106,7 @@ function liveScoreboard(){
   const q=ask&&live.ask.q?live.ask.q:last?last.q:1;
   const kick=!live.drives.length&&!ask;
   return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${kick?"KICKOFF":"Q"+q+" &middot; drive "+(live.drives.length+(ask?1:0))}
+    <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":"Q"+q+" &middot; drive "+(live.drives.length+(ask?1:0))}
       ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>

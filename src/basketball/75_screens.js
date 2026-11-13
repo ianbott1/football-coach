@@ -89,7 +89,7 @@ function flowSVG(g,drives){
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
-  const lab=`<span class="live"></span>${!live.drives.length?"TIP-OFF":esc(segLabel(last))}
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"TIP-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab,"",flowSVG(g,live.drives));
 }
@@ -135,10 +135,13 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
 /* ---- the run of play ---- */
 function playsHTML(drives,my,g,limit){
   let rows=rowsOf(g,drives); if(limit)rows=rows.slice(-limit);
-  return rows.slice().reverse().map(r=>`<div class="play ${r.team===my?'mine':''} ${r.goal||r.run?'goalrow':''} ${r.cue?'cue':''} ${r.seg&&!r.run?'cue':''}">
-      <span class="pq">${esc(r.m)}</span>
+  // round 72: a stretch's rows all ended at its clock, and each said so ("Q1 6:00" three times: Instinct); the clock
+  // heads the stretch once
+  let prev=null;
+  return rows.slice().reverse().map(r=>{ const same=r.m===prev; prev=r.m; return `<div class="play ${r.team===my?'mine':''} ${r.goal||r.run?'goalrow':''} ${r.cue?'cue':''} ${r.seg&&!r.run?'cue':''}${same?' samestretch':''}">
+      <span class="pq">${same?"":esc(r.m)}</span>
       <div class="ptxt">${r.team&&!r.cue?`<b>${esc(r.team)}</b> `:""}${esc(r.text)}${r.tag?` <span class="dtag ${/RUN|GOOD/.test(r.tag)?'sc':/OUT|MISS/.test(r.tag)?'rd':'yl'}">${esc(r.tag)}</span>`:""}</div>
-      <span class="pscore">${r.a}&ndash;${r.h}</span></div>`).join("");
+      <span class="pscore">${r.a}&ndash;${r.h}</span></div>` }).join("");
 }
 function liveView(){
   const g=live.g, my=S.myTeam;

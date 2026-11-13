@@ -121,5 +121,7 @@ const HL_SPORT=(function(){
     const end=t>=ts?(c.so?`${c.nm} wins the shoot-out!`:c.kind==="goal"?(c.en?`EMPTY NET! ${c.nm}`:`GOAL! ${c.nm}`):"Saved!"):null;
     hlCaption(x,W,H,t>=ts&&c.text?`${c.m}' ${c.text}`:top,end,c.kind==="goal"?ink:null);
   }
-  return {reveal:0.86, aspect:0.5, clips, pitch, idle, frame};
+  // round 72: the header's clock while a clip plays, in its words: the period and the game minute
+  const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
+  return {reveal:0.86, aspect:0.5, clips, pitch, idle, frame, headClock};
 })();

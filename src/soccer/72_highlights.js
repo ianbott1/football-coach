@@ -277,5 +277,7 @@ const HL_SPORT=(function(){
     const end=t>=ts?({goal:`GOAL! ${c.nm}`,save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
     if(end)hlBanner(x,W,H,end,c.kind==="goal"?kA:null,(t-ts)/(1-ts));
   }
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame};
+  // round 72: the header's clock while a clip plays: the clip's minute
+  const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
+  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock};
 })();

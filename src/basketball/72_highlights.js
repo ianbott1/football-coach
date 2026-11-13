@@ -103,5 +103,7 @@ const HL_SPORT=(function(){
     const end=t>=ts?(c.last?(c.made?(c.kind==="three"?`${c.nm} hits it! Game over`:`${c.nm} ties it!`):"No good!"):c.kind==="three"?`${c.nm} from three!`:`${c.nm}, and one!`):null;
     hlCaption(x,W,H,top,end,c.made?ink:null);
   }
-  return {reveal:0.86, collapseIdle:true, aspect:0.54, clips, pitch, idle, frame};
+  // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
+  const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
+  return {reveal:0.86, collapseIdle:true, aspect:0.54, clips, pitch, idle, frame, headClock};
 })();

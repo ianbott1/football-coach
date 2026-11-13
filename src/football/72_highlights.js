@@ -9,7 +9,10 @@ const HL_SPORT=(function(){
   const OFF=[[-5,0.5],[-7,0.5],[-0.5,0.08],[-0.5,0.92],[-0.8,0.66],[-1,0.2],[-0.5,0.4],[-0.5,0.45],[-0.5,0.5],[-0.5,0.55],[-0.5,0.6]];
   const DEF=[[1,0.42],[1,0.47],[1,0.53],[1,0.58],[4.5,0.35],[4.5,0.5],[4.5,0.65],[6,0.1],[6,0.9],[12,0.32],[12,0.68]];
   /* round 67: field goals (made and missed) and interceptions too, so a clip isn't always a touchdown (Ian) */
-  function clips(L,d,mode){
+  // round 72: the header names the drive a clip shows (it named the drive before it until the clip was over)
+  function clips(L,d,mode){ const out=clips0(L,d,mode), n=(L.drives||[]).indexOf(d);
+    out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+(n>=0?n+1:(L.drives||[]).length) }); return out }
+  function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
     const close=Math.abs((d.h||0)-(d.a||0))<=8;
     if(k==="TD"){ if(mode==="goals"&&!(d.q>=4&&close))return []; return [mk(L,d)] }
@@ -166,5 +169,6 @@ const HL_SPORT=(function(){
     const end=t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
     hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"?dink:ink);
   }
-  return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame};
+  const headClock=c=>c&&c.hd||null;
+  return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame, headClock};
 })();

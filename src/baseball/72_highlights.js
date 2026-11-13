@@ -175,5 +175,7 @@ const HL_SPORT=(function(){
   function sound(c){ if(!c.after||typeof sfx!=="function")return false; const mine=(c.side==="home")===(live&&live.g.home===S.myTeam);
     sfx(mine?(c.kind==="hr"?"hr":"run"):"against"); return true }
 
-  return {reveal:0.72, collapseIdle:true, aspect:0.62, clips, pitch, idle, frame, sound};
+  // round 72: the header says the inning a clip shows ("After the 1st" stayed up through the 2nd's home run)
+  const headClock=c=>c&&c.inn&&c.half?`${c.half} of the ${ordw(c.inn)}`:null;
+  return {reveal:0.72, collapseIdle:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock};
 })();
