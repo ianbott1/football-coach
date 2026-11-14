@@ -290,7 +290,9 @@ function impactHTML(P){
   // nothing more when one replay gave the same result: "though tonight's dice gave the same result either way" read as
   // "your win didn't count", and on a one-point loss as if no call mattered (Instinct, Grokbot)
   const tonight=good?(better?(res==="draw"?"and it saved you a point.":"and it won you this game."):worse?"and unlucky tonight: keep making it.":"")
-                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":"");
+                    :(better?"though it worked tonight: the other way wins more often.":worse?"and it cost you this one.":res==="win"?"though it didn't cost you this one.":"");
+  // round 72: a wrong call in a game won either way says so, kindly (Instinct: "graded wrong and the team still won
+  // 124-109; the card should say the choice did not cost the game"); the same-luck replay is what knows it
   return `<div class="impact"><div class="imphead">${verdict}${tonight?", "+tonight:"."}</div>
     <div class="impbody">${esc(c.h)}: ${pickWord(c)}. Over many replays from that moment, your call ${avgOf(c.worth).replace(/ than his$/," than the assistant's (\""+esc(c.def)+"\")")}${c.q!==undefined&&c.q<-7&&c.worth>-0.07?` (and well behind the best option)`:""}.${repRates(c)}</div>${restHTML}</div>`;
     // the one same-luck replay's score is gone from the card: a 117-85 win "became a 103-116 loss" beside "a little less
@@ -360,8 +362,13 @@ function liveChance(m,tau,pre,sig,poss){
 try{ if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest(".lwtog[data-livewp]");
   if(!b||!S)return; S.liveWP=b.dataset.livewp==="true"; save(); render() }) }catch(e){}
 const LWHIDE=`<button class="lwtog" data-livewp="false" aria-label="Hide the win chance">Hide</button>`;
-function liveWPHTML(){
-  if(!LIVE_WP_ON||!live||live.ask||live.done||live.h2h||!live.drives||!live.drives.length)return "";
+/* round 72 (Ian: yes to Muse's ask): on a call screen too, the chance as it stands, one number, the same one shown
+   between plays, never one per option, so it still can't be a calculator for the choice. Early in a game, the chance
+   before it beside it: Muse read 94% at 9-7 in the second quarter as too high, and measured it is honest (a side shown
+   90%+ before half-time on a lead of ten or fewer won 94% in college football, 92% in the pros, 94% in college
+   basketball); the gap between the teams is what makes it high, so the line says so. */
+function liveWPHTML(onCall){
+  if(!LIVE_WP_ON||!live||(live.ask&&!onCall)||live.done||live.h2h||!live.drives||!live.drives.length)return "";
   // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
   if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
@@ -371,13 +378,14 @@ function liveWPHTML(){
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
   const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+  const early=liveTau(d)>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
   // the three add to 100 (round 50: soccer's line read 101 twice: Muse): each rounded down, the leftover points to the largest remainders
   if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
     v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });
     const Q=f.map(x=>Math.max(1,Math.min(98,x)));
-    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span>${LWHIDE}</div>` }
+    return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span>${pre}${LWHIDE}</div>` }
   return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span>${LWHIDE}</div>`
-    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${LWHIDE}</div>`;
+    :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${pre}${LWHIDE}</div>`;
 }
 
 /* ---- the game plan, changed during a game (round 68: Ian, "pause to switch strategy at any point") ----

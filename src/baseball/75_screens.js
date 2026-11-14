@@ -95,7 +95,7 @@ function lineScore(g,drives,now){
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
-  const lab=`<span class="live"></span>${!live.drives.length?"FIRST PITCH":"After the "+esc(segLabel(last))}
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"FIRST PITCH":"After the "+esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab,"",lineScore(g,live.drives,{h:H,a:A}));
 }

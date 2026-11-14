@@ -317,7 +317,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true;
-      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true }   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
+      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true } { const L=st.log[st.log.length-1], ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]); if(!L.split&&COUNTERS[v]&&COUNTERS[v].beats===ks[0]){ L.followed=true; L.fav=ks[0] } }   /* round 71: set up for what the report said most */   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].app, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }

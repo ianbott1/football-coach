@@ -11,6 +11,12 @@
    Calibrated (test/bs-calibrate.js) against MLB 2023-25: about 4.4 runs a side, home sides winning 53%, a game in
    four or five decided by a run, extras about one game in twelve. */
 const SEGS=9;
+/* round 72 (engV 3): a starter tires more gently past his 18th batter, so a dealing starter is sometimes worth keeping
+   (Muse: the bullpen call graded "pull" 14 of 14; measured, leaving him in won more replays in 0 of 50 calls) */
+const BS_TIRED3=+((typeof process!=="undefined"&&process.env&&process.env.BS_T)||0.03);
+const BS_PEN3=+((typeof process!=="undefined"&&process.env&&process.env.BS_P)||-0.10);   // and a bullpen a shade further from a fresh starter, so the runs stay where MLB's are (4.38 a side, was 4.39; one-run 25%, extra innings 8%); measured, keeping him won 30% of the calls, 48% for a starter who hadn't allowed a run
+function bsTired(){ return ENGINE_V>=3?BS_TIRED3:BS.tired }
+function bsPen(){ return ENGINE_V>=3?BS_PEN3:BS.pen }
 const BS={
   // a plate appearance between average sides: strikeout, walk, hit by pitch, single, double, triple, home run (the rest an out in play)
   k:0.224, bb:0.080, hbp:0.011, s1:0.134, s2:0.043, s3:0.004, hr:0.028,   // round 57: 0.136 and 0.029 ran 4.52-4.57 a side in the real app
@@ -101,8 +107,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     st.asked[key]=true; st.queue.push({side:side,dp:dp}); if(dp.k!=="prep"&&dp.k!=="read"&&inn()>=8)(st.lateGot=st.lateGot||{})[side]=true; return true };
   const readIt=(side,p)=>{ if(rng.r()<p){ st.S[side].ans=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false } };
   // the pitcher's edge for the side in the field: starter (form, fatigue, his place in the rotation) or the bullpen
-  const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return BS.pen;
-    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*BS.tired };
+  const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return bsPen();
+    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*bsTired() };
   // the plan's effect on their bats: right read, wrong read
   const readEdge=(bat,fs)=>{ const A=st.S[bat].app, X=st.S[fs]; if(!X.ans)return 0; return ANSWERS[X.ans].beats===A?BS.read.right:(APPROACH[A].counter===X.ans?0:BS.read.wrong) };
   const modeMul=sd=>{ const m=st.mode[sd]; return m==="aggressive"?{hr:1.25,k:1.12,s1:0.94,bb:1}:m==="safe"?{hr:0.82,k:0.88,s1:1.06,bb:1.04}:{hr:1,k:1,s1:1,bb:1} };
@@ -121,8 +127,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   }
   // the half-inning in progress
   let H=null;   // {bat, fs, outs, b:[r1,r2,r3], runs, ev}
-  const startHalf=(bat)=>{ H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0};
-    if(st.seg>=SEGS&&!st.playoff)H.b[1]=1;   // extra innings: a runner on second
+  const startHalf=(bat)=>{ H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], bn:[null,null,null], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0};
+    if(st.seg>=SEGS&&!st.playoff){ H.b[1]=1; H.bn[1]=who(bat,(st.S[bat].bat+8)%9) }   // extra innings: a runner on second (the last man up)
   };
   let D=null;   // the inning's drive
   const inn=()=>st.seg+1;
@@ -155,7 +161,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     let extra=0; if(st.late[bat+"pinch"]){ st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
       extra=bsPinchEdge(rateOf(bat,was),rateOf(bat,ph));
       if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
-    const nm=who(bat,slot);
+    const nm=who(bat,slot), pre=H.bn.slice(), preB=H.b.slice(), ev0=H.ev.length, out0=H.outs;
     const o=pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
     const b=H.b;
     // the strikeout that strands a rally: once a half-inning (round 56: four times in one inning, Muse)
@@ -172,13 +178,21 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       else if(b[2]&&H.outs<2&&rng.r()<BS.sf){ H.outs++; b[2]=0; score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) }
       else{ H.outs++; if(H.outs<3&&b[1]&&!b[2]&&rng.r()<0.3){ b[2]=1; b[1]=0 } } }
     if(H.outs>=3)L.lob+=b[0]+b[1]+b[2];
+    // round 70, for the highlights only (no draws, nothing the game reads): who was on, who pitched, the game's last out
+    const dp=H.ev.slice(ev0).some(e=>e.k==="dp"), q=[2,1,0].filter(i=>preB[i]).map(i=>pre[i]);
+    if(dp){ const j=q.lastIndexOf(pre[0]); if(preB[0]&&j>=0)q.splice(j,1) }
+    if(o==="bb"||o==="hbp"||o==="s1"||o==="s2"||o==="s3")q.push(nm);
+    const occ=[2,1,0].filter(i=>b[i]); while(q.length>occ.length)q.shift(); H.bn=[null,null,null]; occ.forEach((i,k)=>{ H.bn[i]=q[k]||null });
+    const Xf=st.S[fs], pn=Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n;
+    H.ev.slice(ev0).forEach(e=>{ if(e.k!=="ph"){ e.r=[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null]; e.p=pn } });
+    if(H.outs>out0&&st.seg>=SEGS-1)st.lastOut={k:"end",side:fs,bat:bat,nm:nm,slot:slot,how:o==="k"?"k":dp?"dp":(slot+st.seg)%2?"fly":"gb",r:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],p:pn,outs:out0,u:(slot*37+st.seg*11)%100,inn:inn()};
   };
-  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok)b[1]=1; else H.outs++; H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
+  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
   st.log=[];
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(ANSWERS[v]){ const t=st.S[other(side)].app; X.ans=v; X.prepd=true;
-      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}) }
+      st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:ANSWERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true } { const L=st.log[st.log.length-1], ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]); if(!L.split&&ANSWERS[v]&&ANSWERS[v].beats===ks[0]){ L.followed=true; L.fav=ks[0] } }   /* round 71: set up for what the report said most */ }   // round 71: a split report isn't graded, so it isn't counted right either (Muse: a 2-2-2 read counted as right)
       else if(v!==undefined&&dp.report){ const t=st.S[other(side)].app, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
     if(dp.k==="read"){ const t=st.S[other(side)].app, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;
@@ -265,8 +279,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         break }
     }
     D.sh=st.h; D.sa=st.a; D.ev=H.ev; D.hits=[st.lines.h.h,st.lines.a.h];
+    const walked=H.bat==="home"&&H.outs<3&&walkoff(), lo=st.lastOut; st.lastOut=null;
     st.drives.push(D); const out=D; D=null; H=null; st.seg++;
-    if(st.seg>=SEGS&&st.h!==st.a){ st.done=true }
+    if(st.seg>=SEGS&&st.h!==st.a){ st.done=true; if(lo&&!walked)out.last=lo }   // the out that ended it (round 70: the highlights' last moment)
     else if(st.seg>=SEGS){ st.ot=st.seg-SEGS+1 }
     if(st.seg>=30){ st.done=true }   // never, in practice
     return {drive:out,h:st.h,a:st.a};

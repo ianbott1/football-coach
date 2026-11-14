@@ -1,5 +1,5 @@
 {
- "fp": "cbd63c551667627c",
+ "fp": "d66dddce9181245d",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -435,85 +435,100 @@
    "fp": "cbd63c551667627c",
    "from": "6db4d9b511e6d008",
    "note": "round 68: game plan and highlights bar on the live screen"
+  },
+  {
+   "fp": "8b41bd192bf2694f",
+   "from": "cbd63c551667627c",
+   "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
+  },
+  {
+   "fp": "4093814bc78bb945",
+   "from": "8b41bd192bf2694f",
+   "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
+  },
+  {
+   "fp": "d66dddce9181245d",
+   "from": "4093814bc78bb945",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "3c19b6cbfe747e9e",
-    "post": "740ec43469e8d20d",
-    "champion": "North Carolina",
-    "rec": "30226131cf40e346",
-    "poll": "785e46abd2762acd",
-    "heis": "d547b6f92b0dea50",
-    "history": "f5f089a355e08575",
-    "universe": "ef2435f49fa36eef",
-    "screens": "5219c29a3128a917"
+    "games": "70426031240a159e",
+    "post": "8fcd92cb725a5e30",
+    "champion": "Ohio State",
+    "rec": "761227daf02a7f29",
+    "poll": "ef295d4f9b68c511",
+    "heis": "f6683d8751e66879",
+    "history": "3ca356b8c56b146e",
+    "universe": "e0bf1242077b15a9",
+    "screens": "cf6effed6d03fafb"
    },
    {
     "year": 2027,
-    "games": "5049f085376bd71c",
-    "post": "944968749fdc8894",
-    "champion": "Houston",
-    "rec": "b5add4d3fda02ca5",
-    "poll": "dcdc970799f291a6",
-    "heis": "239dd7be84092cd6",
-    "history": "f7c10757a6301ab4",
-    "universe": "c758569b33118192",
-    "screens": "167f1f0ed6ccd360"
+    "games": "dc5f8a14015d2a2a",
+    "post": "eff37a9d40284dec",
+    "champion": "Wisconsin",
+    "rec": "5614a06ce032a08c",
+    "poll": "8d0f9e9452825ebe",
+    "heis": "15b314288af6c478",
+    "history": "4c3b2571ecc36021",
+    "universe": "8d54d195e3ddc824",
+    "screens": "68c22c3a3c3e5554"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "08a90907a58ff2a8",
-    "post": "43cd8d847fe5fffb",
+    "games": "fb98a018c6bea9b0",
+    "post": "455cb7f79a746185",
     "champion": "Michigan State",
-    "rec": "82e56698e538c4a8",
-    "poll": "122243bb36b11c0b",
+    "rec": "d2f0996f45cb603c",
+    "poll": "d4baaf37b4c443f2",
     "heis": "ed67545cb919d745",
-    "history": "452f39c29f88f1d8",
-    "universe": "f6756285e2e5958b",
-    "screens": "e8267b376431a660"
+    "history": "b65a10470d99101e",
+    "universe": "bed8db9e397d2c0d",
+    "screens": "1595e1ac71da04ed"
    },
    {
     "year": 2027,
-    "games": "6fdc803c19a8d965",
-    "post": "b7a791cce4418f40",
-    "champion": "North Carolina",
-    "rec": "cd770b0da232219e",
-    "poll": "d41d48103a33811c",
-    "heis": "719f883500ab76bc",
-    "history": "4337a7119fd2e1c2",
-    "universe": "822d728ca3fe8df3",
-    "screens": "8db31c0fa652cc1e"
+    "games": "ba0ecf9451568fbe",
+    "post": "4715565721b8495c",
+    "champion": "Michigan",
+    "rec": "e3bc36793b034c0a",
+    "poll": "613f87b273a14fb2",
+    "heis": "0e3fb5deab052d76",
+    "history": "d5e88bef99fc4c68",
+    "universe": "c7dc3780525e08e8",
+    "screens": "447870ca01c3f6d8"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "887cea0a940a7dc4",
+    "games": "0fbd5597f46a2eed",
     "post": "02911b5eb77c39b5",
     "champion": "Baylor",
     "rec": "eac6f8125d6c235d",
-    "poll": "d1af240d97d341ec",
+    "poll": "62280c61e351e488",
     "heis": "9def810c51af58df",
-    "history": "0f127bf4d46e4c0d",
-    "universe": "f62cc56c248300c5",
-    "screens": "d9a35a7ba50d56ec"
+    "history": "024169ede8bbcdb9",
+    "universe": "9904feb3b21d1ed4",
+    "screens": "584b2f048d9e15e8"
    },
    {
     "year": 2027,
-    "games": "c10b37bbd2310e7c",
-    "post": "232e3a1e4eb8e35a",
+    "games": "7e2995bebe0c86b7",
+    "post": "380d901d9321c52d",
     "champion": "North Carolina",
-    "rec": "d75831ce7318627f",
-    "poll": "ad7f83009c6ac7e8",
+    "rec": "0354e9ffdf358c7c",
+    "poll": "ef8994afdc0ee0e9",
     "heis": "fe104a4686ebb8ee",
-    "history": "b7bae5760538a368",
-    "universe": "ee6a51737fd30707",
-    "screens": "eebadc3b8996350e"
+    "history": "9b76424d2dd76a29",
+    "universe": "91f6afb2e4ad7bc2",
+    "screens": "ec66055841ba85a9"
    }
   ],
   "schedules#60": [

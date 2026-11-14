@@ -56,7 +56,11 @@ function starsHTML(team){
   // players with something to say: form either way, a mood that isn't "settled", a last year, a milestone close
   const news=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P);
     return formOf(p,P)||moodOf(p,i,team).t!=="settled"||lastYear(p)||(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
-  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).slice(0,4);
+  // round 72: one story a contract year, not four (day one listed four stars, each "final year of his contract":
+  // Instinct). A player whose only news is his last year is kept once, the best of them
+  const only=i=>{ const p=R[i], P=POS[i%POS.length].p, nm=nextMilestone(p,P); return !!lastYear(p)&&!formOf(p,P)&&moodOf(p,i,team).t==="settled"&&!(nm&&nm.left<=Math.max(3,nm.at*0.15)) };
+  let lyOnly=0;
+  const idx=R.map((p,i)=>i).filter(i=>R[i]&&!hurt[i]&&news(i)).sort((a,b)=>R[b].r-R[a].r).filter(i=>!only(i)||lyOnly++<1).slice(0,4);
   if(!idx.length)return "";
   const tag=(t,c)=>`<span class="ptag ${c||""}">${esc(t)}</span>`;
   return `<div class="grouphead">Squad news</div>`+idx.map(i=>{
@@ -105,3 +109,63 @@ function shirtNo(team,idx){
       for(let v=1;n==null&&v<100;v++)if(!used[v])n=v;
       used[n]=1; M.no[i]=n }) }
   return M.no[idx] }
+
+/* ---- the player's page and the leaders (round 69: Ian, "when you click on a player you can see all of their
+   history and game-by-game stats", "league leaders across the league in categories") ----
+   Any player on any roster: who he is, this season, season by season (the seasons since round 69 one by one, any
+   before as one line), his career, and this season's games one by one. Tap a name to open it. */
+let playerSel=null, standTab="table", leadCat=-1;
+function openPlayer(team,name){ playerSel={team:team,name:name}; render(); try{ window.scrollTo(0,0) }catch(e){} }
+function plLink(team,name,label){ return `<span class="plink" data-player="${esc(team)}|${esc(name)}" style="cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.35);text-underline-offset:3px">${esc(label==null?name:label)}</span>` }
+function findPl(team,name){
+  const at=t=>{ const R=SEA.roster&&SEA.roster[t]; const i=R?R.findIndex(p=>p&&p.n===name):-1; return i>=0?{p:R[i],team:t,i:i}:null };
+  return at(team)||NAMES.map(at).find(Boolean)||null }
+function tAb(t){ return (LEAGUE.abbr&&LEAGUE.abbr[t])||String(t) }
+function statCols(pos){ const keys=STAT_KEYS[pos]||[], ab=typeof STAT_ABBR!=="undefined"?STAT_ABBR:{}, fm=typeof STAT_FMT!=="undefined"?STAT_FMT:{};
+  return keys.map(k=>[ab[k]||k.toUpperCase(),s=>fm[k]?fm[k](s[k]||0):String(Math.round((s[k]||0)*10)/10)]).concat(typeof STAT_EXTRA==="function"?STAT_EXTRA(pos):[]) }
+function statTable(head,rows,left){ left=left||1;
+  const th=`style="text-align:right;padding:4px 6px;color:var(--muted);font-weight:600;white-space:nowrap"`, td=`style="text-align:right;padding:4px 6px;white-space:nowrap"`, tl=`style="text-align:left;padding:4px 6px;white-space:nowrap"`;
+  return `<div style="overflow-x:auto;margin:4px 0 12px"><table style="border-collapse:collapse;font:12px/1.3 var(--mono);width:100%">
+    <tr style="border-bottom:1px solid var(--line)">${head.map((h,i)=>`<th ${i>=left?th:tl.replace("white-space","color:var(--muted);font-weight:600;white-space")}>${esc(h)}</th>`).join("")}</tr>
+    ${rows.map(r=>`<tr style="border-bottom:1px solid rgba(255,255,255,.05)${r.you?";background:rgba(244,201,93,.08)":""}">${r.c.map((c,i)=>`<td ${i>=left?td:tl}>${c}</td>`).join("")}</tr>`).join("")}</table></div>` }
+function playerView(){
+  const back=`<button class="skip" data-plback="1" style="margin-bottom:8px">&larr; Back</button>`;
+  const F=playerSel&&findPl(playerSel.team,playerSel.name);
+  if(!F)return back+`<div class="fnote">${esc(playerSel?playerSel.name:"")} isn't on a roster now.</div>`;
+  const p=F.p, pos=p.p||POS[F.i%POS.length].p, no=shirtNo(F.team,F.i), cols=statCols(pos), heads=["","G"].concat(cols.map(c=>c[0]));
+  const line=(lab,st,you)=>({you:you,c:[lab,String(st.g||0)].concat(cols.map(c=>esc(c[1](st))))});
+  let h=back+`<div class="dateline"><h2>${no!=null?"#"+no+" ":""}${esc(p.n)}</h2><span>${esc(F.team)}</span></div>
+    <div class="fnote" style="margin-bottom:10px">${esc(pos)}${p.c!=null&&typeof classTag==="function"&&classTag(p.c)?" &middot; "+esc(classTag(p.c)):""} &middot; rating ${p.r}${p.pot>p.r?", ceiling "+p.pot:""}${p.k&&p.k.yrs?` &middot; ${p.k.yrs} year${p.k.yrs===1?"":"s"} left${p.k.sal?" at $"+(Math.round(p.k.sal*10)/10)+"M":""}`:""}${F.i>=POS.length?" &middot; backup":""}</div>`;
+  // this season, and per game where a sport counts that way
+  const st=p.st2||blankStats(pos);
+  h+=`<div class="grouphead">${SEA.year}</div>`+(st.g?`<div class="fnote" style="margin:2px 0 4px">${esc(statLine(pos,st))}</div>`:`<div class="fnote">No games yet this season.</div>`);
+  // season by season
+  const rows=[], H=p.hist||[], car=p.car;
+  if(car&&car.yrs>H.length){ const e=Object.assign({},car); H.forEach(x=>Object.keys(x.s).forEach(k=>{ if(typeof e[k]==="number")e[k]-=x.s[k]||0 })); rows.push(line(`Before ${H.length?H[0].y:SEA.year}`,e)) }
+  H.forEach(x=>rows.push(line(`${x.y} ${tAb(x.t)}`,x.s)));
+  if(st.g)rows.push(line(`${SEA.year} ${tAb(F.team)}`,st,true));
+  if(rows.length){ const tot=Object.assign({},car||blankStats(pos)); if(st.g)Object.keys(st).forEach(k=>{ if(typeof st[k]==="number")tot[k]=(tot[k]||0)+st[k] }); rows.push({c:["<b>Career</b>"].concat(line("",tot).c.slice(1).map(v=>"<b>"+v+"</b>"))});
+    h+=`<div class="grouphead">Season by season</div>`+statTable(heads,rows) }
+  // this season's games, the latest first
+  const gl=[], G0=p.gl||[], w=typeof glStride==="function"?glStride():0;
+  for(let j=G0.length-w;j>=0&&w;j-=w){ const P0=POS[G0[j+5]]; gl.push([G0[j],NAMES[G0[j+1]],G0[j+2],G0[j+3],G0[j+4],P0?P0.p:pos].concat(G0.slice(j+6,j+w))) }
+  if(gl.length){ const keys=STAT_KEYS[pos]||[];
+    h+=`<div class="grouphead">Game by game, ${SEA.year}</div>`+statTable(["","Opp","Result","G"].concat(cols.map(c=>c[0])).filter((x,i)=>i!==3),gl.slice(0,60).map(r=>{
+      const o={g:1}; (STAT_KEYS[r[5]]||keys).forEach((k,j)=>o[k]=r[6+j]); const W=SEA.weeks[r[0]], res=r[3]>r[4]?"W":r[3]<r[4]?"L":"D";
+      return {c:[esc(W&&W.label?String(W.label).split(" \u00b7 ")[0].replace(/^Matchday /,"MD ").replace(/^Week /,"Wk "):String(r[0]+1)),(r[2]?"":"@ ")+esc(tAb(r[1])),`${res} ${r[3]}-${r[4]}`].concat(cols.map(c=>esc(c[1](o))))} }),3)
+    + (gl.length>60?`<div class="fnote">The latest 60 of ${gl.length}.</div>`:"") }
+  return `<div style="padding:0 12px">${h}</div>` }
+/* the league's leaders: each category's top five, or one category's top 25 */
+function leadersView(){
+  if(typeof LEADERS==="undefined")return `<div class="fnote">No leaders for this sport yet.</div>`;
+  const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(t=>CONF[t]===CONF[S.myTeam]):NAMES;   // soccer: your division
+  let G=0; teams.forEach(t=>(SEA.roster[t]||[]).forEach(p=>{ if(p&&p.st2&&p.st2.g>G)G=p.st2.g }));
+  if(!G)return `<div class="fnote">The leaders appear once the season starts.</div>`;
+  const board=(L,n)=>{ const E=[]; teams.forEach(t=>(SEA.roster[t]||[]).forEach((p,i)=>{ if(!p||!p.st2||!p.st2.g)return; const pos=p.p||POS[i%POS.length].p;
+      if(L.pos&&L.pos.indexOf(pos)<0)return; if(L.min&&!L.min(p.st2,G))return; E.push({p:p,t:t,v:L.v(p.st2)}) }));
+    E.sort((a,b)=>L.low?a.v-b.v:b.v-a.v); const f=L.f||(v=>String(Math.round(v*10)/10));
+    return E.slice(0,n).map((e,k)=>({you:e.t===S.myTeam,c:[String(k+1),plLink(e.t,e.p.n),esc(tAb(e.t)),"<b>"+esc(f(e.v))+"</b>"]})) };
+  let h=`<div class="subtabs" style="flex-wrap:wrap">${[[-1,"All"]].concat(LEADERS.map((L,i)=>[i,L.l])).map(([i,l])=>`<button class="subtab" data-lead="${i}" aria-pressed="${leadCat===i}">${esc(l)}</button>`).join("")}</div>`;
+  if(leadCat>=0&&LEADERS[leadCat]){ const L=LEADERS[leadCat]; return `<div style="padding:0 12px">`+h+`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,25),3)+`</div>` }
+  LEADERS.forEach(L=>{ h+=`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,5),3) });
+  return `<div style="padding:0 12px">${h}${LEAGUE.groupFilter?`<div class="fnote">Your division.</div>`:""}</div>` }

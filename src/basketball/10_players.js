@@ -90,3 +90,9 @@ function statProd(pos,s){
   // a rebound or a block counts nearly as much as an assist: bigs win awards too
   return s.pts*0.9+s.reb*1.05+s.ast*0.95+s.stl*1.8+s.blk*2.0;
 }
+
+/* ---- stats pages (round 69): column labels and the league's leader boards (per game, at least a third of the games) ---- */
+const STAT_ABBR={pts:"Pts",reb:"Reb",ast:"Ast",stl:"Stl",blk:"Blk",tpm:"3PM"};
+const PERG=k=>({v:s=>s.g?(s[k]||0)/s.g:0,f:v=>v.toFixed(1),min:(s,G)=>s.g>=Math.max(1,G/3)});
+const LEADERS=[Object.assign({l:"Points per game"},PERG("pts")),Object.assign({l:"Rebounds per game"},PERG("reb")),Object.assign({l:"Assists per game"},PERG("ast")),
+  Object.assign({l:"Steals per game"},PERG("stl")),Object.assign({l:"Blocks per game"},PERG("blk")),{l:"Three-pointers made",v:s=>s.tpm||0}];

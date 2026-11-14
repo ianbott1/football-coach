@@ -1,5 +1,6 @@
 /* ============ sport: hockey ============ */
 const SPORT={
+  lateFloor:{late:(D,d)=>D.length>=SEGS-1||!!d.ot, close:1},   // round 71: the last five minutes and overtime, within a goal
   margins:{close:1,rout:4,crush:5,blow:6},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
   scoreWord:"GOAL",                 // the flash when you score
   id:"hockey",

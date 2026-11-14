@@ -14,18 +14,18 @@ const HL_SPORT=(function(){
     const out=[]; let chance=null;
     const sh0=d.sh-(d.h||0), sa0=d.sa-(d.a||0); let sh=sh0, sa=sa0;
     ev.forEach(e=>{
-      if(e.k==="goal"){ out.push(mk(L,e,"goal",sh,sa)); if(e.side==="home")sh++; else sa++; return }
+      if(e.k==="goal"){ const c=mk(L,e,"goal",sh,sa); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
       if(e.k==="red"){ if(mode!=="goals")out.push(mk(L,e,"red",sh,sa)); return }   // round 66: a sending-off is a moment too
       // a big chance: one a stretch at most, in a game still within a goal, when asked for
       if(mode==="key"&&!chance&&Math.abs(sh-sa)<=2&&((e.u||0)%HL_CM===0)){ chance=mk(L,e,e.k,sh,sa); out.push(chance) }
       else if((mode==="all"||mode==="full")&&out.filter(c=>c.kind!=="goal").length<3)out.push(mk(L,e,e.k,sh,sa)) });   // round 68: every chance
-    return out.slice(0,mode==="all"||mode==="full"?5:3);
+    return hlTrim(out,mode==="all"||mode==="full"?5:3);
   }
   function mk(L,e,kind,sh,sa){
     const g=L.g, red=kind==="red", aside=red?(e.side==="home"?"away":"home"):e.side, tm=aside==="home"?g.home:g.away, opp=aside==="home"?g.away:g.home, u=e.u||((e.m||0)*37)%100;
     const r=mulberry32(((e.m||0)*7919+u*131+(e.side==="home"?17:29))>>>0);
     const shooter=kind==="goal"||kind==="miss"?scScorer(tm,u):scScorer(tm,u);
-    let text=""; try{ text=scEventText(g,e).text }catch(er){}
+    let text=""; try{ text=scEventTextIn(g,L.drives,e).text }catch(er){}
     // the move follows the commentary's words where they say how ("heads in at the near post", "from the penalty spot",
     // "blazes over"), else the event's draw
     const T=text.toLowerCase();
@@ -70,12 +70,16 @@ const HL_SPORT=(function(){
       let f=2; nums.forEach((v,k)=>{ if(used[v]!==undefined&&used[v]!==k){ while(used[f]!==undefined||nums.indexOf(f)>=0)f++; nums[k]=f; used[f]=k } else used[v]=k });
       return {nums,list} };
     const SA=sideNums(tm,true), SD=sideNums(opp,false);
-    const cl={numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
+    // each shot its own flight (round 70, Ian: "all of the shots have a curve"): a low drive, a rising strike, a chip,
+    // or one bent in from the side
+    const shot=r(), lift=how==="over"?0.05:shot<0.35?0.003:shot<0.65?0.012:shot<0.82?0.028:0.008, bend=shot>=0.82?(r()<0.5?-1:1)*(0.03+r()*0.03):0;
+    const cl={lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
     return cl;
   }
   // pitch coordinates (attack frame -> screen)
-  const P=(W,H,c,a,y)=>{ const X=c.home?a:1-a, Y=c.home?y:1-y; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
+  // round 70: the sides change ends at half-time (Ian): lr, the attacking side going left to right
+  const P=(W,H,c,a,y)=>{ const lr=c.lr!=null?c.lr:c.home, X=lr?a:1-a, Y=lr?y:1-y; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
   function pitch(x,W,H){
     x.fillStyle="#1E5E2A"; x.fillRect(0,0,W,H);
     const L=W*PAD, T=H*PAD, R=W*(1-PAD), B=H*(1-PAD), w=R-L, h=B-T;
@@ -120,8 +124,8 @@ const HL_SPORT=(function(){
         const push=has?Math.max(0,bx-0.3)*0.7:Math.max(0,bx-0.45)*0.45, depth=i<5?0.6:i<9?0.85:1;
         return [Math.min(0.92,p[0]+push*depth+(has?0.05:-0.02)),0.5+(p[1]-0.5)*(has?1:0.82)+(by-0.5)*(i<5?0.15:0.25)] }) };
     const lagged=home=>{ const S0=[0,120,240,360], o=BASE.map(()=>[0,0]); S0.forEach((dt,q)=>{ const w=4-q; shape(now-dt,home).forEach((p,i)=>{ o[i][0]+=p[0]*w; o[i][1]+=p[1]*w }) }); return o.map(p=>[p[0]/10,p[1]/10]) };
-    const toS=(home,p)=>{ const X=home?p[0]:1-p[0], Y=home?p[1]:1-p[1]; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
-    const b=at(now), [qx,qy]=toS(true,[b.x,b.y]);
+    const h2=live.drives.length*5>45, toS=(home,p)=>{ const lr=home!==h2, X=lr?p[0]:1-p[0], Y=lr?p[1]:1-p[1]; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
+    const b=at(now), [qx,qy]=toS(true,[b.x,b.y]);   // the ball in the home side's frame
     [false,true].forEach(home=>{ const k=kits[home?0:1], gk=hlKit("",home?"#E8F56B":"#C9A0FF"), P2=lagged(home);
       // the man nearest the ball, on the side that has it, is on it
       let ni=-1,nd=9; if(b.home===home)P2.forEach((p,i)=>{ if(!i)return; const [sx,sy]=toS(home,p), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
@@ -146,7 +150,7 @@ const HL_SPORT=(function(){
       bx=hlLerp(a[0],b[0],s); by=hlLerp(a[1],b[1],s); z=Math.sin(s*Math.PI)*(c.plan==="wing"&&k===n-2?0.05:c.plan==="corner"?0.06:0.012); carrier=s<0.15?c.rec[k]:s>0.85?c.rec[k+1]:-1 }
     else if(t<tb&&c.plan==="pen"){ bx=c.from[0]; by=c.from[1] }
     else if(t<ts){ const s=(t-tb)/(ts-tb), a=c.from||c.W[n-1]; const e=c.end;
-      bx=hlLerp(a[0],e[0],s); by=hlLerp(a[1],e[1],s); z=Math.sin(s*Math.PI)*(c.how==="over"?0.05:0.02) }
+      bx=hlLerp(a[0],e[0],s); by=hlLerp(a[1],e[1],s)+Math.sin(s*Math.PI)*(c.bend||0); z=Math.sin(s*Math.PI)*(c.lift!=null?c.lift:0.02) }
     else{ const s=(t-ts)/(1-ts); bx=c.end[0]; by=c.end[1];
       if(c.postHit){ bx=1-s*0.12; by=c.end[1]+(c.end[1]<0.5?-1:1)*s*0.08 }
       if(c.kind==="goal"){ bx=Math.min(1.02,c.end[0]+s*0.006) }
@@ -255,7 +259,7 @@ const HL_SPORT=(function(){
     const face=(px,py)=>Math.atan2(qy-py,qx-px);
     const dv=keeperDive(c,t);
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]);
-      if(i===0&&dv){ const ang=(c.home?1:-1)*(dv.dir>0?Math.PI/2:-Math.PI/2); hlPlayer(x,px,py,r,hlKit("",c.gk[1]),{dive:{ang:ang,k:dv.k}}); return }
+      if(i===0&&dv){ const ang=((c.lr!=null?c.lr:c.home)?1:-1)*(dv.dir>0?Math.PI/2:-Math.PI/2); hlPlayer(x,px,py,r,hlKit("",c.gk[1]),{dive:{ang:ang,k:dv.k}}); return }
       const sent=c.red&&i===2&&t>=c.pre, fade=sent&&t>c.pre+0.1?Math.max(0.25,1-(t-c.pre-0.1)*1.8):null;
       hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:c.numsD?c.numsD[i]:NUM[i],dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
       if(sent){ x.save(); x.translate(px+r*1.3,py-r*1.6); x.rotate(0.2); x.fillStyle="#E3262F"; x.fillRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=0.8; x.strokeRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.restore() } });
@@ -273,5 +277,7 @@ const HL_SPORT=(function(){
     const end=t>=ts?({goal:`GOAL! ${c.nm}`,save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
     if(end)hlBanner(x,W,H,end,c.kind==="goal"?kA:null,(t-ts)/(1-ts));
   }
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame};
+  // round 72: the header's clock while a clip plays: the clip's minute
+  const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
+  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock};
 })();

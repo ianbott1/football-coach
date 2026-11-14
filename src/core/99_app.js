@@ -11,12 +11,21 @@ let slot=1;
 const KEYFOR=n=>KEYBASE+"-slot"+n;
 let S={myTeam:null,uStart:null,seasonSeed:0,steps:0,history:[],seed:0,plans:{}};
 let plan="balanced", reveal=null, revealTimer=null;
+/* round 71: a floor under the finish (Muse, priority 3: college basketball asked nothing after half-time in ten straight
+   games, baseball's World Series Game 7 nothing after the 3rd, football no fourth-quarter call in several). In a close
+   game's late window (SPORT.lateFloor: when it starts, and what close is) the first call that comes up is yours,
+   whatever the gate would have said; it's graded as any call is, and "close either way" when it was. One a game. */
+const LATE_FLOOR_ON=true;
+function lateFloorDue(L,any){
+  try{ if(!LATE_FLOOR_ON||!L||L.h2h||L.lateShown||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
+    const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=F.close }catch(e){ return false } }
 /* ---- hot seat ----
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
-                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals"];   // round 41: the season story
+                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer"];   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -76,6 +85,9 @@ function callKey(step,year){ return (year||SEA.year)+":"+step; }
    "balanced", overwrote the step's one plan, and a reload replayed the tie another way: 3-1 came back 0-0, and the
    season went its own way from there). Saves from before keep one plan a step. */
 function planKey(step,half){ return half?step+"#1":step }
+/* round 72: the first highlights setting, named for what it shows in each sport ("Goals only" meant little in baseball:
+   Instinct) */
+function hlGoalsLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.goalsLabel)||"Goals only" }
 function planFor(step,half){ const P=S.plans||{}; return (half&&P[step+"#1"]!==undefined?P[step+"#1"]:P[step])||"balanced" }
 
 function liveSeed(step){
@@ -146,7 +158,7 @@ function liveTick(){
       // a situation call in a decided game goes to your assistant (core 94: callInReach)
       // the floor (round 50): in a one-score game the crunch-time read is the player's, never gated: "the gate should filter
       // the trivial; it must not confiscate the climax" (Muse). A read is judged on the evidence, not the replays.
-      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR;
+      const floorCall=r.ask.k==="close"&&typeof CLOSE_FLOOR!=="undefined"&&Math.abs((r.mine||0)-(r.theirs||0))<=CLOSE_FLOOR||lateFloorDue(live);
       if(!floorCall&&typeof SPREAD_KINDS!=="undefined"&&(SPREAD_KINDS[r.ask.k]||GATE_KINDS[r.ask.k])&&live.args&&!live.h2h){
         const j=live.replay.length, meH=r.side?r.side==="home":live.g.home===S.myTeam;
         const p=GATE_KINDS[r.ask.k]?callInReach(live.args,liveSeed(live.step),live.replay,meH,j):0.5;
@@ -157,9 +169,10 @@ function liveTick(){
           // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
           if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length, rule:r.ask.k==="fouls"&&typeof foulRule==="function"?foulRule():""} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
+      if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
       live.ff=false;                            // skipping stops at your next call
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
-                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now()};
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();
       return;
     }
@@ -170,7 +183,7 @@ function liveTick(){
     // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
     // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
     // shows them.
-    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA}; else feelSpell(live,pH,pA) }
+    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
@@ -193,8 +206,8 @@ function setPlanMidGame(p){
 /* the bar under the live game: your plan from here, and how much of the game to watch */
 function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
-  const cur=livePlanNow(), HLM=[["goals","Goals only"],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
-  return `<div class="liveplan" style="margin:8px 0 2px">${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
+  const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
+  return `<div class="liveplan" style="margin:8px 16px 2px">${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
     <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn" data-midplan="${k}" aria-pressed="${cur===k}">${esc(PLANS[k].l)}</button>`).join("")}</div>`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
     <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
@@ -251,8 +264,9 @@ function finishLive(){ liveEndedAt=Date.now();
         const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])) }
       else if(played.closes&&played.closes.some(x=>x.h===c.h)){ c.q=0; c.sp=0 } });
     if(I.length){ played.impact=I;
+      const C=careerCalls(true);   // round 71: one career count, kept, only ever added to
       const L=S.callLedger=S.callLedger||{}, Y=L[SEA.year]=L[SEA.year]||{n:0,worth:0};
-      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000});
+      I.forEach(c=>{Y.n++; Y.worth=Math.round((Y.worth+c.worth)*1000)/1000; if(Number.isFinite(c.worth)){ C.n++; C.w=Math.round((C.w+c.worth)*1000)/1000 } });
       Object.keys(L).forEach(y=>{ if(+y<SEA.year-1)delete L[y] }) } }
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
@@ -260,7 +274,7 @@ function finishLive(){ liveEndedAt=Date.now();
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
       // reads only: a call is priced in wins against your assistant (the ledger), not right or wrong (Instinct: "11 of 11
       // right (100%)" above a call that cost 6 games in 100). A read the screen couldn't show isn't counted.
-      R.forEach(x=>{ if(x.unclear||x.k==="call")return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }
+      R.forEach(x=>{ if(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // round 71: not a report left to the assistant
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -423,6 +437,7 @@ function promote(i){
 }
 
 function rebuild(){
+  if(S&&S.myTeam&&typeof careerCalls==="function")careerCalls(true);   // round 71: the career count is fixed as the career opens, then only added to
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
@@ -725,7 +740,8 @@ function newDynasty(team,seed,coachName,roster){
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
   distinctLeague(u);
-  u.schedV=2;                                            // a schedule drawn the same way every time (schedOrder)
+  u.schedV=3;                                            // a schedule drawn the same way every time (schedOrder); 3: round 71's spreads
+  u.engV=ENGINE_NOW;                                     // round 71: new careers on the current engine
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -806,7 +822,10 @@ function simAdvance(){ simOnce=true; try{ doAdvance() }finally{ simOnce=false } 
 /* A league with a game every calendar day (LEAGUE.skipIdle) plays through
    the days you don't play: the button always takes you to your next game. */
 function skipIdleDays(){
-  if(!LEAGUE.skipIdle||isHotSeat()||live)return;
+  // round 72: and every league's opening week: a season never opens on a week with no game of yours (the Premier League
+  // starts a week after the Football League: Arsenal's first click "did nothing": Instinct; a college team's week 0)
+  const opening=SEA&&SEA.step===0&&SEA.phase==="week";
+  if((!LEAGUE.skipIdle&&!opening)||isHotSeat()||live)return;
   let g=0;
   while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
     // the same bookkeeping as any advance: a reload replays exactly S.steps steps
@@ -1122,7 +1141,8 @@ function endSeason(rng,choices,act,seasonTeam){
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
   distinctLeague(U);
-  U.schedV=2;                                            // (schedOrder)
+  U.schedV=3;                                            // (schedOrder; 3: round 71)
+  U.engV=ENGINE_NOW;                                     // a new season on the current engine (round 71)
   delete S.schedLock;                                    // a new season draws its own, the same way every time
   // a promotion or a firing belongs to its season: kept by step, last season's were replayed into this one on every
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
@@ -1414,10 +1434,22 @@ function readsHTML(step){
     return k==="prep"?"Scouting report":k==="read"?(n===1?"First read":n===2?"Second read":"Read "+n):k==="flank"?"The flank":k==="goalie"?"Your goalie":k==="close"?"Crunch time":k==="third"?"Third-period read":k==="rest"?"Your starters":"" };
   // one line per read, starting with what you chose: merged lines ("First read and second read: ...") hid which choice
   // was graded and made the tally jump by more than the lines shown (Grokbot)
+  // round 71: a report left to the assistant ("Wait and see: leave it to your assistant") is his, said as his and not
+  // graded as yours (Instinct: "You chose 'Wait and see' ... it cost you" on a call left to him; Ian: never blame me for
+  // an assistant's decision)
   const lines=[]; R.forEach(x=>{ const pk=typeof readPickLabel==="function"?readPickLabel(x):"", lb=label(x);
+    if(x.waited){ lines.push({t:"Left to your assistant. "+String(readText(x)).replace(/^\s*You waited/,"He waited"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
+    // round 71 (Muse: "No verdict blames the player for following the shown report"): set up for what the report said most,
+    // it's the better bet over a season (measured: +2.6 to +4.5 points a game), right or wrong on the night. Said so, and
+    // not counted either way.
+    if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
+  // round 72: every graded read wrong in a win says so plainly (Instinct: "both calls graded wrong and the team still won
+  // 124-109"); what a wrong read cost isn't measured, so the line claims no more than the result
+  const gr=lines.filter(x=>!x.un), last=P[P.length-1], won=last&&last.mine>last.theirs;
+  const anyway=won&&gr.length&&gr.every(x=>!x.right)?`<div class="readnone">${gr.length===1?"That read was":"Those reads were"} wrong, and you won anyway.</div>`:"";
   return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
-    ${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
+    ${anyway}${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -1576,7 +1608,9 @@ function stakesFor(ng){
   // the quiet line: your game number where steps are days (hockey, basketball) or matchdays
   const gNo=SEA.weeks.filter(W=>W.games.some(x=>!x.cup&&(x.home===my||x.away===my))).length+1;
   if(!out.length)out.push({p:0,tag:LEAGUE.myGameLabel?LEAGUE.myGameLabel(gNo).toUpperCase():(LEAGUE.skipIdle||LEAGUE.stepLabel)?"GAME "+gNo:"WEEK "+(wk+1),
-    l:(wp=>{ const at=`${ng.home===my?"Home":"On the road"} against ${opp}.`;
+    // round 72: a neutral site says so ("AT ATLANTA · vs BAYLOR" beside "Home against Baylor"; "On the road" under
+    // "NEUTRAL SITE": Instinct)
+    l:(wp=>{ const at=ng.neutral?`At a neutral site${ng.site?" in "+ng.site:""}, against ${opp}.`:`${ng.home===my?"Home":"On the road"} against ${opp}.`;
       return wp>=0.65?`${at} You should win this one. Take care of business.`
         :wp>=0.45?`${at} A game you can win.`
         :wp>=0.3?`${at} An uphill one: a win here would count.`
@@ -1660,7 +1694,7 @@ function rosterOf(t){
   const row=(p,i)=>{ if(!p)return ""; const inj=hurt[i];
       return `<div class="prow2 ${inj?'out':''}">
         <span class="ppos">${esc(p.p)}</span>
-        <div class="pmain"><div class="pname">${esc(p.n)}</div>
+        <div class="pmain"><div class="pname">${plLink(t,p.n)}</div>
           <div class="psub">${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${
             inj?` &middot; <span class="outtag">out ${inj.w} ${stepWord(inj.w)}</span>`:""}</div></div>
         ${starBar(p.r)}<span class="prate">${p.r}</span></div>
@@ -1711,7 +1745,7 @@ function rosterView(){
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
         <div class="prow2 ${feat?'feat':''}" data-feat="${i}">
-          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${esc(s.n)}
+          <div class="pmain"><div class="pname"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,i)}</span>${plLink(my,s.n)}
             ${inj?`<span class="outtag">OUT ${outFor(inj.w)}</span>`:`<span class="startag">STARTER</span>`}
             ${feat?`<span class="feattag">FEATURED</span>`:""}</div>
             <div class="psub">${tag(s)}${college&&s.c>=3?" &middot; <span class='gradtag'>graduates</span>":
@@ -1719,7 +1753,7 @@ function rosterView(){
           ${starBar(s.r)}<span class="prate">${s.r}</span></div>
         ${s.st2&&s.st2.g?`<div class="sline2">${esc(statLine(P.p,s.st2))}</div>`:""}
         <div class="prow2 bk">
-          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${esc(b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
+          <div class="pmain"><div class="pname sm"><span style="font-family:var(--mono);color:var(--muted);margin-right:5px">#${shirtNo(my,BK(i))}</span>${plLink(my,b.n)}${hurt[BK(i)]?` <span class="outtag">OUT ${outFor(hurt[BK(i)].w)}</span>`:""}</div>
             <div class="psub">${tag(b)} &middot; ${s.r-b.r>0?(s.r-b.r)+" behind":"even"}</div></div>
           <button class="promo" data-promo="${i}">Start him</button>
           <span class="prate sm">${b.r}</span></div>
@@ -1805,8 +1839,12 @@ function teamCardHTML(my,rk,co){
         // before Selection Sunday everyone can still be picked: "Target of 21 wins missed: 19" came during the conference
         // tournament, three wins before Butler reached 22 (Muse, round 50)
         ||(LEAGUE.post&&LEAGUE.post.phases&&LEAGUE.post.phases.indexOf("selection")>=0&&LEAGUE.post.phases.indexOf(SEA.phase)>=0&&LEAGUE.post.phases.indexOf(SEA.phase)<=LEAGUE.post.phases.indexOf("selection"))));
+      // round 72: one goal all season: the board's words and its number together ("Win the division and a playoff game"
+      // in week 1 became "Target: 10 wins" by week 5, and read as two goals: Instinct). Words that already give the
+      // number ("Eight wins and a decent bowl") stand alone
+      const says=/\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen)\b/i.test(e.l||""), lead=says?"Target: ":`${esc(e.l)} Target: `;
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
-        <span class="eline">${w+l===0?esc(e.l)
+        <span class="eline">${w+l===0?(says?esc(e.l):`${esc(e.l)} Target: ${e.w} wins.`)
           :e.pos?posGoalLine(e,my)
           // the pros after game 82: the wins are in; the play-offs are judged on their own (the board weighs both)
           :!LEAGUE.postRecord&&SEA.phase!=="week"&&need>0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;
@@ -1815,8 +1853,8 @@ function teamCardHTML(my,rk,co){
               return c?`${e.w} wins reached. ${esc(c)}`:SEA.phase==="done"?`${e.w} wins reached. ${esc(e.l)}`:`${e.w} wins reached. Still to do: ${esc(e.l)}` })()   // "WIN A SERIES · Target of 47 wins already met" read as done (Grokbot)
           :need>left+postMax||!alive?(SEA.phase==="week"?`${e.w} wins is out of reach now.`:`Target of ${e.w} wins missed: ${w} this season.`)   // after the season it's a result, not a forecast (Grokbot)
           // plainly: the target, then what's left of it ("46 more wins from the 47 expected" read oddly: Grokbot, Ian)
-          :need>left?`Target: ${e.w} wins. ${need} to go: it will take a postseason run.`
-          :`Target: ${e.w} wins. ${need} to go.`}</span></div>`})()}
+          :need>left?`${lead}${e.w} wins, ${need} to go: it will take a postseason run.`
+          :`${lead}${e.w} wins, ${need} to go.`}</span></div>`})()}
     </div>`;
   return h;
 }
@@ -1904,8 +1942,17 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    <div class="pland">${esc(PLANS[plan].d)}</div>
+    <div class="pland">${esc(PLANS[plan].d)}</div>${planFitHTML(wp)}
   </div>`;
+}
+/* round 72: the gameplan you last chose carries over; when it doesn't suit tonight, a line says so (Instinct: a 34%
+   underdog on "Play it safe", whose own words say "best when you're the better team"). From the chance shown above it. */
+function planFitHTML(wp){
+  if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
+  const kept=S.planNow&&S.planNow===plan;
+  if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
+  if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
+  return "";
 }
 
 /* Things worth your attention right now. */
@@ -1999,7 +2046,7 @@ function nextUpHTML(my,rk){
     const cupNight=ng.cup&&LEAGUE.cup;
     h+=`<div class="grouphead">Next up &mdash; ${esc(cupNight?LEAGUE.cup.date(ngStep):LEAGUE.dates[ngStep]||"")}</div>
       <div class="nextcard ${riv?'riv':''}${cupNight?' cupcard':''}">
-      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?(ng.site?"AT "+esc(ng.site.toUpperCase())+" &middot; vs":"NEUTRAL SITE &middot; vs"):ng.home===my?"HOME vs":"AWAY at"}</div>
+      <div class="nlabel">${cupNight?esc(ng.title.toUpperCase())+" &middot; "+(ng.neutral?"AT "+esc((ng.site||"").toUpperCase()):ng.home===my?"HOME vs":"AWAY at"):ng.neutral?"NEUTRAL SITE"+(ng.site?" &middot; "+esc(ng.site.toUpperCase()):"")+" &middot; vs":ng.home===my?"HOME vs":"AWAY at"}</div>
       <div class="nopp">${rkTag(rk[opp])}${TL(opp)}</div>
       <div class="nrec">${recStr(opp)} &middot; ${esc(LEAGUE.conf.names[CONF[opp]])}</div>${ng.sn>1?`<div class="nrec serline">${serLine(ng,my)}</div>`:""}
       ${ng.home!==my&&!ng.neutral?`<div class="venue">Road game at ${esc(opp)} &mdash;
@@ -2384,6 +2431,9 @@ function standingsView(){
   // before its games: Vanderbilt #12 in the poll, #14 here, Grokbot)
   const nowRk=reveal==="half"?null:SEA.poll.rankMap();
   let h=`<div class="dateline"><h2>Standings</h2><span>${SEA.year}</span></div>`;
+  // round 69: the league's leaders sit beside the table
+  h+=`<div class="subtabs">${[["table","Table"],["leaders","Leaders"]].map(([k,l])=>`<button class="subtab" data-sttab="${k}" aria-pressed="${standTab===k}">${l}</button>`).join("")}</div>`;
+  if(standTab==="leaders")return h+leadersView();
   const mine=CONF[S.myTeam];
   let order=LEAGUE.conf.order.filter(c=>c===mine).concat(LEAGUE.conf.order.filter(c=>c!==mine));
   if(LEAGUE.groupFilter){ const g0=grpNow()==="CUP"?mine:grpNow(); h+=grpTabsHTML(false); if(g0!=="ALL")order=[g0] }
@@ -3136,7 +3186,34 @@ function quitPrompt(){
       <button class="skip" id="quitno">Keep playing</button></div></div>`;
 }
 
-function render(){
+/* round 72: the page leaves room for the fixed bar at the bottom by the bar's own height, measured after each draw: a
+   fixed 96px left the highlights row under a 128px bar on a laptop, in every sport (Instinct, 1265x720), and the last
+   offseason card under "Begin the season" */
+function fitBar(){ try{ if(typeof document==="undefined"||!document.querySelectorAll||!document.documentElement||!document.documentElement.style)return;
+  let h=0; document.querySelectorAll(".actionbar").forEach(b=>{ const r=b.getBoundingClientRect&&b.getBoundingClientRect(); if(r&&r.height&&getComputedStyle(b).position==="fixed")h=Math.max(h,r.height) });
+  document.documentElement.style.setProperty("--barh",Math.round(h)+"px") }catch(e){} }
+if(typeof window!=="undefined"&&window.addEventListener)window.addEventListener("resize",()=>fitBar());
+/* round 72: the score stays in sight (Instinct: "keep the score visible"; a call's options sat below the fold, so reading
+   them put the score off the top, and after answering the game went on with no score in view, on a phone and a laptop).
+   A thin strip copies the scoreboard (held score and clip clock included) and shows once the scoreboard has scrolled
+   away. A game just finished brings its score into view once (it landed with the score card cut off). */
+function miniBar(){ try{ if(typeof document==="undefined"||!document.getElementById||!document.body)return;
+  let m=document.getElementById("minibar"); const top=document.querySelector(".wtop"), on=typeof live!=="undefined"&&live&&!live.done&&S.myTeam&&top;
+  if(!on){ if(m)m.classList.remove("on"); return }
+  if(!m){ m=document.createElement("div"); m.id="minibar"; m.className="minibar"; m.setAttribute("aria-hidden","true"); document.body.appendChild(m); window.addEventListener("scroll",miniBarShow,{passive:true}) }
+  const lab=String((top.querySelector(".wlabel")||{}).innerText||"").split(/\s+\u00b7\s+/)[0].trim();
+  const sd=[...top.querySelectorAll(".wside")].map(s=>[String((s.querySelector(".wt")||{}).innerText||"").trim(),String((s.querySelector(".wn")||{}).innerText||"").trim(),s.classList.contains("lead")]);
+  m.innerHTML=sd.length===2?`<span class="mt ${sd[0][2]?"lead":""}">${esc(sd[0][0])}</span><span class="mn">${esc(sd[0][1])}&ndash;${esc(sd[1][1])}</span><span class="mt ${sd[1][2]?"lead":""}">${esc(sd[1][0])}</span>${lab?`<span class="mc">${esc(lab)}</span>`:""}`:"";
+  miniBarShow() }catch(e){} }
+function miniBarShow(){ try{ const m=document.getElementById("minibar"), top=document.querySelector(".wtop"); if(!m)return;
+  if(!top||typeof live==="undefined"||!live||live.done){ m.classList.remove("on"); return }
+  const st=document.querySelector(".stick"), sb=st?Math.max(0,st.getBoundingClientRect().bottom):0; m.style.top=sb+"px";
+  const sc=top.querySelector(".wscore")||top;   // the numbers, not the box: its momentum bar can still show below them
+  const R=sc.getBoundingClientRect(); m.classList.toggle("on",R.bottom<sb+Math.max(4,R.height*0.6)) }catch(e){} }   // most of it out of sight
+function finalIntoView(){ try{ if(typeof live==="undefined"||!live||!live.done||live._seen)return; live._seen=true;
+  const t=document.querySelector(".wtop"); if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:"start",behavior:"auto"}) }catch(e){} }
+function render(){ try{ return render0() }finally{ fitBar(); miniBar(); finalIntoView() } }
+function render0(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
     const b=el("hgo"); if(b)b.onclick=()=>{handoff=false;delete handoffNotes[S.myTeam];render()};
@@ -3166,7 +3243,7 @@ function render(){
     const Hd=live.hold&&!live.ask?live.hold:null, sv=Hd?[live.drives,live.eng.h,live.eng.a]:null;
     if(Hd){ live.drives=sv[0].slice(0,Hd.n); live.eng.h=Hd.h; live.eng.a=Hd.a }
     try{
-    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView()).replace('<div class="actionbar">',livePlanBarHTML()+'<div class="actionbar">');
+    el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',(typeof liveWPHTML==="function"?liveWPHTML(true):"")+guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView()).replace('<div class="actionbar">',livePlanBarHTML()+'<div class="actionbar">');
     }finally{ if(sv){ live.drives=sv[0]; live.eng.h=sv[1]; live.eng.a=sv[2] } }
     bindGuide();
     if(typeof hlMount==="function")hlMount();
@@ -3291,7 +3368,7 @@ function render(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (view==="team"?myTeamView():view==="scores"?scoresView():
+      (playerSel?playerView():view==="team"?myTeamView():view==="scores"?scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?standingsView():dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
@@ -3307,11 +3384,18 @@ function render(){
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
               :"Begin "+(SEA.year+1)+" season"):advLabel()}</button>
     </div>`;
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;render()});
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
+  // round 69: players' pages, the leaders
+  document.querySelectorAll("[data-player]").forEach(x=>x.onclick=e=>{ e.stopPropagation(); const k=x.dataset.player.split("|"); openPlayer(k[0],k.slice(1).join("|")) });
+  document.querySelectorAll("[data-plback]").forEach(x=>x.onclick=()=>{ playerSel=null; render() });
+  document.querySelectorAll("[data-sttab]").forEach(x=>x.onclick=()=>{ standTab=x.dataset.sttab; render() });
+  document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
     if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null; dynCoach=null}
     else if(b.dataset.grp){grpTab=b.dataset.grp}
     else if(b.dataset.m){teamTab=b.dataset.m}
+    else if(b.dataset.sttab){standTab=b.dataset.sttab}   // round 69
+    else if(b.dataset.lead!=null){leadCat=+b.dataset.lead}
     else LEAGUE.ui.subtab(b);
     render()});
   document.querySelectorAll(".tpick").forEach(b=>b.onclick=()=>{dynTeam=b.dataset.t;render()});
@@ -3740,7 +3824,7 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
     ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
-    <div class="setrow">${[["goals","Goals only"],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+    <div class="setrow">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
       aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
     <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>
@@ -3853,7 +3937,7 @@ window.addEventListener("keydown",e=>{
   if(e.key===" "||e.key==="Enter"){e.preventDefault();
     const b=el("adv2")||el("adv"); if(b&&!b.disabled)b.click();}
   const keys={"1":"team","2":"scores","3":"poll","4":"stand","5":"dyn"};
-  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;render()}
+  if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;playerSel=null;render()}
 });
 
 /* the staff room never says the same line twice in one game (Instinct: the
@@ -3879,8 +3963,14 @@ function watchOtherTabs(){
       if(S&&S.myTeam&&saveRev!==null&&e.key===REVKEY(slot)&&(+e.newValue||0)!==saveRev&&!staleTab){ staleTab=true; render() } });
     // a page brought back from the browser's cache shows its old title screen until the saves are read again:
     // blank the list first (Muse: "Winnipeg, 3 seasons" painted, then corrected to Edmonton, 5)
-    window.addEventListener("pageshow",async e=>{ if(e.persisted&&S&&S.title){ S._slots=[]; S._slotsWait=true; render(); S._slots=await allSlots(); S._slotsWait=false; render() } });
-    document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState==="visible"&&S&&S.title&&S._slots&&!S._slotsWait){ S._slots=await allSlots(); render() } });
+    // round 71: a page brought back in a career is as it was when it was left, and the career may have moved on since
+    // (another tab, another visit): load it afresh
+    window.addEventListener("pageshow",async e=>{ if(!e.persisted)return; if(S&&S.myTeam&&!S.title){ try{ location.reload() }catch(x){} return }
+      if(S&&S.title){ S._slots=[]; S._slotsWait=true; render(); S._slots=await allSlots(); S._slotsWait=false; render() } });
+    document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState!=="visible"||!S)return;
+      if(S.title&&S._slots&&!S._slotsWait){ S._slots=await allSlots(); render(); return }
+      // back to a career tab: if it was saved somewhere else meanwhile, this tab stops saving and says so
+      if(S.myTeam&&saveRev!==null&&!staleTab){ const cur=await readRev(slot); if(cur!==null&&cur!==saveRev){ staleTab=true; render() } } });
   }catch(e){}
 }
 (async function(){

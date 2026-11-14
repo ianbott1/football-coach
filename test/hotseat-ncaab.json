@@ -1,5 +1,5 @@
 {
- "fp": "a0d9cf35ff6ca4c9",
+ "fp": "8870255cb1124968",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -275,6 +275,11 @@
    "fp": "a0d9cf35ff6ca4c9",
    "from": "a0d9cf35ff6ca4c9",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "8870255cb1124968",
+   "from": "a0d9cf35ff6ca4c9",
+   "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
   }
  ],
  "out": [
@@ -288,7 +293,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "c0a6661aa6def1ed"
+     "book": "5f4e4773b039ef07"
     },
     {
      "team": "North Carolina",
@@ -297,7 +302,7 @@
       "result": "Lost in the Elite Eight",
       "grade": "A+"
      },
-     "book": "d0ea33c506d885c2"
+     "book": "9e32ff074d5415b6"
     }
    ]
   },
@@ -307,20 +312,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "24-10",
+      "rec": "28-8",
       "result": "Lost in the Second Round",
-      "grade": "B-"
+      "grade": "B+"
      },
-     "book": "2f89108a19d98941"
+     "book": "4c53f6fbc62ccd83"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "30-4",
-      "result": "Lost in the Second Round",
-      "grade": "A-"
+      "rec": "25-9",
+      "result": "Lost in the Sweet 16",
+      "grade": "B"
      },
-     "book": "64e3a6734acd5077"
+     "book": "7fe11998d9f529d6"
     }
    ]
   },
@@ -330,20 +335,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "31-7",
-      "result": "Lost the national championship",
+      "rec": "32-5",
+      "result": "Lost in the Final Four",
       "grade": "A+"
      },
-     "book": "23d4935bcc90470f"
+     "book": "1fa2915f4335b134"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "28-6",
+      "rec": "25-10",
       "result": "Lost in the Second Round",
-      "grade": "B+"
+      "grade": "B-"
      },
-     "book": "0eafdb01185f3828"
+     "book": "6a431f70d3d3572f"
     }
    ]
   }

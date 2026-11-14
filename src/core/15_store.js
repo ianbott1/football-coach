@@ -19,7 +19,11 @@ const idb=(function(){
         if(!IDB_ON||typeof indexedDB==="undefined"||!indexedDB){ res(null); return }
         const rq=indexedDB.open(IDB_NAME,1); let done=false; const fin=v=>{ if(!done){ done=true; res(v) } };
         rq.onupgradeneeded=()=>{ try{ rq.result.createObjectStore(IDB_STORE) }catch(e){} };
-        rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close() }catch(e){} P=null }; fin(db) };
+        // round 71: a connection the browser closes on its own (a page put away in the back-forward cache and brought
+        // back, storage under pressure) is forgotten, and the next call opens a new one. It was kept, so every save after
+        // it failed with InvalidStateError and every read fell back to an old localStorage copy (Muse: "This career isn't
+        // saving", and careers loading a week or a season behind until a reload)
+        rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close() }catch(e){} P=null }; db.onclose=()=>{ P=null }; fin(db) };
         rq.onerror=()=>fin(null); rq.onblocked=()=>fin(null);
         setTimeout(()=>{ if(!done){ fin(null); P=null } },8000);   // slow to answer: no database this time, and the next call asks again
       }catch(e){ res(null) } });
@@ -29,13 +33,18 @@ const idb=(function(){
       let val; if(r)r.onsuccess=()=>{ val=r.result };
       // round 56: say why a write failed (Muse's main browser refused a new career's first save; we couldn't tell why)
       const why=()=>{ try{ return (tx.error&&(tx.error.name||tx.error.message))||(r&&r.error&&r.error.name)||"refused" }catch(e){ return "refused" } };
-      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false,why:why()}); tx.onabort=()=>res({ok:false,why:why()}) }catch(e){ res({ok:false,why:e&&e.name||"error"}) } });
+      tx.oncomplete=()=>res({ok:true,val:val}); tx.onerror=()=>res({ok:false,why:why()}); tx.onabort=()=>res({ok:false,why:why()}) }catch(e){
+        const n=e&&e.name||"error"; if(n==="InvalidStateError")P=null;   // the connection had closed: open a fresh one next time
+        res({ok:false,why:n,closed:n==="InvalidStateError"}) } });
+  // one more go on a fresh connection when the old one had closed
+  const run=async(mode,fn)=>{ let db=await open(); if(!db)return null; let r=await req(db,mode,fn);
+    if(!r.ok&&(r.closed||r.why==="InvalidStateError")){ P=null; db=await open(); if(db)r=await req(db,mode,fn) } return r };
   return {
     open:open,
-    async get(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.get(k)) },
-    async set(k,v){ const db=await open(); if(!db)return {ok:false,why:"the database didn't open"}; return req(db,"readwrite",os=>os.put(v,k)) },
-    async del(k){ const db=await open(); if(!db)return {ok:false}; return req(db,"readwrite",os=>os.delete(k)) },
-    async keys(){ const db=await open(); if(!db)return {ok:false}; return req(db,"readonly",os=>os.getAllKeys?os.getAllKeys():null) },
+    async get(k){ return (await run("readonly",os=>os.get(k)))||{ok:false,nodb:true} },
+    async set(k,v){ return (await run("readwrite",os=>os.put(v,k)))||{ok:false,why:"the database didn't open"} },
+    async del(k){ return (await run("readwrite",os=>os.delete(k)))||{ok:false} },
+    async keys(){ return (await run("readonly",os=>os.getAllKeys?os.getAllKeys():null))||{ok:false} },
   };
 })();
 const store=(function(){
@@ -65,6 +74,10 @@ const store=(function(){
           if(w===1){ await idb.set(k,lv); return {key:k,value:lv} } }
         return {key:k,value:D.val};
       }
+      // round 71: the database is this browser's store and it didn't answer: say so (the slot reads "couldn't be read",
+      // the save banner shows), never hand back the localStorage copy, which stopped moving the day the career moved to
+      // the database and can be a week or a season behind (Muse: stale first loads in four games)
+      if(!D.ok&&usingIdb)throw new Error("the browser's database didn't answer");
       const v=L?L.getItem(k):null; if(v===null)return null;
       if(D.ok)await idb.set(k,v);   // copied across on first read; the localStorage copy stays
       return {key:k,value:v};

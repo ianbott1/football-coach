@@ -50,7 +50,7 @@ for (let s = 1; s <= N; s++) {
   G.NAMES.forEach(t => { m.swing += hi[t]-lo2[t]; m.injSwing += ihi[t]-ilo[t]; m.teamSeasons++; });
   m.undef += G.NAMES.filter(t => sea.rec[t][1]===0).length;   // end of regular season
   while (sea.phase !== 'done') sea.advance();
-  [].concat(...sea.weeks.map(w=>w.games), sea.bowls, sea.rounds.r1, sea.rounds.qf, sea.rounds.sf, sea.rounds.fin)
+  [].concat(...sea.weeks.map(w=>w.games), sea.bowls||[], ...(sea.rounds?[sea.rounds.r1,sea.rounds.qf,sea.rounds.sf,sea.rounds.fin]:[])).filter(Boolean)
     .forEach(g => { if(!g.neutral){ m.homeG++; if(g.winner===g.home) m.homeW++; } });
   G.LOG.slice(lo).forEach(([eH,eA,h,a]) => {
     m.games++; m.pts += h+a; m.margin += Math.abs(h-a);

@@ -80,15 +80,19 @@ function offseasonBanner(){
 
 /* The transfer portal: who you're likely to lose, the best of who is likely
    to enter, and your targets in order (they get your first look). */
+const portalOpen={};
 function portalHTML(num){
   const P=S.off.picks, all=LEAGUE.offseason.portalPreview(U), my=S.myTeam, byKey={};
   all.forEach(e=>byKey[e.key]=e);
   const mine=(P.portal||[]).filter(k=>byKey[k]);
   const yr=c=>["freshman","sophomore","junior"][c]||"";
+  // round 72: a reason every row shares is said once above the list, not on each card ("wants more minutes" on about
+  // fourteen cards: Instinct); the list shows the first five until asked for more
+  const shared="wants more minutes";
   const row=(e,on,i)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(e.n)} <span class="dpos">${esc(e.p)}</span></div>
-        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year &middot; ${esc(e.why)} &middot; <b>${portalChanceWord(portalChance(U,my,e))}</b>${e.from!==my?" &middot; "+bumpWord(e):""}</div></div>
+        <div class="fnote">${esc(e.from)} &middot; rated ${e.r} &middot; a ${yr(e.c)} this year${shared===e.why?"":" &middot; "+esc(e.why)} &middot; <b>${portalChanceWord(portalChance(U,my,e))}</b>${e.from!==my?" &middot; "+bumpWord(e):""}</div></div>
       <button class="skip small" ${on?`data-ptrm="${esc(e.key)}"`:`data-ptadd="${esc(e.key)}"`}>${on?"Remove":"Add"}</button></div>`;
   // who he'd push down, on today's roster: a transfer who starts sends your backup there away, and that can
   // be the recruit you've just signed (Muse: a recruit lost his spot to the coach's own portal signing, unwarned)
@@ -109,9 +113,13 @@ function portalHTML(num){
   // shots (Grokbot, twice), so the list showed nobody it could sign
   const rest=all.filter(e=>e.from!==my&&mine.indexOf(e.key)<0);
   const reach=rest.filter(e=>portalChance(U,my,e)>=0.4).slice(0,15), far=rest.filter(e=>reach.indexOf(e)<0).slice(0,10);
-  h+=`<div class="grouphead">In the portal, within your reach</div>`+(reach.length?reach.map(e=>row(e,false)).join("")
+  const list=(L,key)=>{ if(!L.length)return ""; const open=portalOpen[key], show=open?L:L.slice(0,5);
+    return show.map(e=>row(e,false)).join("")
+      +(L.length>5?`<button class="skip small" data-ptmore="${key}">${open?"Show the first five":"Show all "+L.length}</button>`:"") };
+  h+=`<div class="note">Most players in the portal are backups who want more minutes; a starter looking to move up says so on his card.</div>`;
+  h+=`<div class="grouphead">In the portal, within your reach</div>`+(reach.length?list(reach,"reach")
     :`<div class="note">Nobody in the portal looks likely to pick you this summer.</div>`);
-  h+=`<div class="grouphead">The best of the rest: long shots</div>`+far.map(e=>row(e,false)).join("");
+  h+=`<div class="grouphead">The best of the rest: long shots</div>`+list(far,"far");
   return h;
 }
 function offseasonScreen(){
@@ -233,6 +241,7 @@ Object.assign(LEAGUE.ui,{
   },
   bindOffseason(){
     bindRecruitBoard();
+    document.querySelectorAll("[data-ptmore]").forEach(b=>b.onclick=()=>{ portalOpen[b.dataset.ptmore]=!portalOpen[b.dataset.ptmore]; render() });
     document.querySelectorAll("[data-ptadd]").forEach(b=>b.onclick=()=>{
       const P=S.off.picks; P.portal=(P.portal||[]).concat([b.dataset.ptadd]); save(); render();});
     document.querySelectorAll("[data-ptrm]").forEach(b=>b.onclick=()=>{

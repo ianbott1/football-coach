@@ -106,8 +106,8 @@ function liveScoreboard(){
   const q=ask&&live.ask.q?live.ask.q:last?last.q:1;
   const kick=!live.drives.length&&!ask;
   return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${kick?"KICKOFF":"Q"+q+" &middot; drive "+(live.drives.length+(ask?1:0))}
-      ${g.label?" &middot; "+esc(g.label):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
+    <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":"Q"+q+" &middot; drive "+(live.drives.length+(ask?1:0))}
+      ${g.label?" &middot; "+esc(g.label):(g.neutral?" &middot; neutral site"+(g.site?", "+esc(g.site):""):(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
         <span class="wn">${A}</span></div>
@@ -252,7 +252,8 @@ function callVerdicts(args,seed,answers,meHome){
     const spread=rate[best]-Math.min(...opts.map(o=>rate[o]));
     // within 3 points the replays can't separate the options: listed, not graded, so a coin flip is never a
     // tick (Grokbot: "6 of 7 right" with coin flips counted; it was 2 points)
-    if(Math.round(spread*100)<=Math.round(VERDICT_SLACK*100)){   // on the rounded rates the card shows
+    const pct=o=>Math.round(rate[o]*100), shown=pct(best)-Math.min(...opts.map(pct));   // round 71: the gap the card shows, not the rounded raw gap (15.5 vs 11.5 showed as 15 v 12 and was graded)
+    if(shown<=Math.round(VERDICT_SLACK*100)){
       const cl={h:A.dp.h,spread:spread,pick:lab(pick),opts:opts.map(o=>[lab(o),Math.round(rate[o]*100)])};
       (out.closes=out.closes||[]).push(Object.assign({},cl)); delete out.closes[out.closes.length-1].spread;
       if(!out.close||spread>out.close.spread)out.close=cl;

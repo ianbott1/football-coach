@@ -358,6 +358,159 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 72: one clock, the score in sight, honest numbers (Instinct's and Muse's 12 November reviews, the rest).
+- One clock (Instinct: the clip said 74' while the header said 70', in all three live-highlight sports). While a clip
+  plays, the page is drawn as it stood before its stretch (round 66), header clock included; now the hold carries the
+  clip's own time (live.hold.clock from HL_SPORT.headClock, moved on per clip in hlStart, as round 70's held score is)
+  and every sport's header reads it: soccer the minute, hockey "1st · 14'", basketball the stretch, football "Q2 ·
+  drive 7", baseball "Top of the 2nd". Hockey's header is game minutes now, as its rows and clips are (it said "1ST
+  5:00", time left, beside rows stamped 13'). Basketball's rows of one stretch show its clock once. test/clocks.js
+  (suite): while a clip plays the header equals its time, all seven; with the following switched off (--control) it
+  fails all seven, every redraw.
+- The score in sight (Instinct: "keep the score visible"). A call's options sat below the fold (933px on an 844px
+  phone, 836px on a 720px laptop), so reading them put the score off the top, and after answering the game went on
+  with no score in view. A strip (#minibar) copies the scoreboard (.wtop: label, both sides, held score) and shows once
+  most of the numbers have scrolled away; a finished game scrolls its score into view once. test/score-visible.js.
+- The fixed bar: the page leaves room for it by its measured height (--barh, fitBar after every render); a fixed 96px
+  left the highlights row under a 128px bar at 1265x720 in every sport, and the offseason's last card under "Begin".
+  test/bar-cover.js (the published build fails the five laptop cases). Phone: the plan rows keep 16px off the edges.
+- The win chance on call screens (Ian: yes to Muse; one number, as it stands, never per option): liveWPHTML(true)
+  above the call box. test/callwp.js: every call in play shows it, equal to the screen before; soccer's three add to
+  100. Early 90%+ readings were measured, not capped: a side shown 90%+ before half-time on a lead of ten or fewer won
+  93.9% (college football, shown 93.7%), 91.7% (pros, 92.7%), 93.5% (college basketball, 94.1%); shown 99%, won 100%.
+  The line now adds the chance before the game while more than half is to play, which is what makes those high.
+  Hockey's one-point drifts between screens with no goal are the clock running (a level game drifts to its edge).
+- Football's scouting report (engV 3, new seasons): a defense keeps to its usual scheme 5 games in 7 (FB_FAVW3; was
+  3 in 5). Following the report was right 55.6% (college) and 54.5% (pros) over 200 games each, against a ceiling of
+  60% (the scheme's own rate); now 70.5% and 69.1%. Computer games have no read layer: calibration identical (college
+  0.696 / 15.5 / 57.8% / 53.8; pros 0.591 / 11.6 / 52.7% / 45.9, before and after).
+- Baseball's bullpen call (engV 3): replayed both ways from the same moment, leaving the starter in won more replays in
+  0 of 50 calls (median 13 points behind). A starter now tires 0.03 a batter past his 18th (was 0.06) and the bullpen
+  sits at -0.10 (was -0.02): keeping him wins 30% of calls, 48% for a starter who hasn't allowed a run, 24% for 1-2,
+  18% for 3+. Runs a side 4.38 (was 4.39), one-run games 25.1% (27.2), extra innings 7.8% (9.0), all in target.
+  bs-calibrate's engine block now plays the current engine (it played engine 1 outside a season, and showed 4.39
+  with fatigue at 0.03 when the real figure was 3.86).
+- Wording: soccer save rows under the keeper's team ("Fulham Orozco gets down" was Sunderland's keeper); a scorer's
+  goals in a match each get their own words (scFinish; 7 of 13 two-goal scorers repeated a sentence, now 0; clip and
+  row agree, scEventTextIn); a neutral site says so in the next-game label, its line and the live header; a kept plan
+  that doesn't suit tonight gets a line (planFitHTML); the board's goal reads the same all season (words and number);
+  the first highlights setting is named per sport (Big home runs, Late touchdowns, Crunch time); baseball's closer and
+  rotation are named in the offseason (bsRole); day-one squad news keeps one contract-year story; a wrong call in a
+  game won either way says "though it didn't cost you this one", and wrong reads in a win "you won anyway" (what a
+  wrong read cost isn't measured, so no more is claimed); the college portal says the common reason once and shows
+  five at a time; no full-screen flash after a clip has shown the score (with highlights off it stays).
+- Flow: a season never opens on a week with no game of yours (skipIdleDays at step 0: the Premier League starts a week
+  after the Football League; a college team's week 0); the draft's second tap waits 15 seconds and names the player.
+- Not reproduced: baseball's save card a game behind the loaded save (it matched after every game played).
+- Verification: the control build (ENGINE_NOW 2, opening skip off) matched every golden's simulation; only screens
+  differed. With the skip on, college football's simulation still matched. The new build's simulation differs in
+  football and baseball only (engV 3), and the other five differ in screens and the stored engine version.
+
+Round 71: trust (Muse's and Instinct's 12 November reviews).
+- Saves (Muse's priority 1: "This career isn't saving ... InvalidStateError", and first loads a week or a season
+  behind until a reload, in four games). Cause, reproduced in all seven: the browser can close the page's database
+  connection on its own (a page put away in the back-forward cache and brought back). The game kept the closed
+  connection: every write after it failed (the banner), and every read fell back to the localStorage copy, which
+  stopped moving the day the career moved to the database (round 46). A reload opened a new connection, which is why
+  reloading "fixed" it. Now: a connection that closes is dropped (db.onclose) and a call that meets InvalidStateError
+  opens a fresh one and tries again; when the database is known and still doesn't answer, a read fails (the slot reads
+  "couldn't be read", the banner shows) instead of returning the old copy; a page brought back from the cache in a
+  career reloads; a career tab brought back into view checks the save's revision. test/idb-close.js (in the suite):
+  served over http so the database opens, each game saves, keeps an older localStorage copy, has its connection
+  closed, then must save and load as it is. The published build fails it in all seven; this build passes.
+- One career count of calls made your own way (S.callCareer): the Film Room's figure fell across an offseason (143 to
+  129, 130 to 85) because it took the larger of the season ledger (which keeps two seasons) and the life tally (begun
+  round 41). Now fixed as the career opens (rebuild) and only added to. A count an older build already dropped can't
+  come back; from here it never falls.
+- Reads: a scouting report left to the assistant ("Wait and see") reads "Left to your assistant. He waited..." and
+  isn't counted in your tally; a report set up exactly as it said (followed) says so, right or wrong ("a few games can
+  mislead, and following the report is still the better bet"), and isn't counted either way; baseball's split report
+  (2-2-2) is ungraded like the other games' (it was counted as right).
+- Field goals (Ian: rebalance). engV 2 (u.engV, ENGINE_V: a season begun earlier replays on its own engine): a drive
+  that ends in a kick kicks from real distances (about 38 yards, gauss 38/9, 19-60) and goes in at the kick's odds;
+  a stalled drive in range (a 45-yarder or closer) kicks two times in three in college, half the time in the pros,
+  at its odds. Each level has its own curve (KICK2; the user's fourth-down kick uses it too). 4,000 computer games
+  each (balanced plans): college FG 60% -> 80%, attempts 7.0 -> 5.0 a game, points 54.6 -> 53.2; pro FG 60% -> 86%,
+  attempts 5.8 -> 4.0, points 46.0 -> 45.8. Calibration (150 seasons): college favourites 0.701 -> 0.696, margin
+  15.8 -> 15.5, home 58.0 -> 57.8%, points 54.7 -> 53.8; pro favourites 0.593 -> 0.591, margin 11.9 -> 11.6, home
+  52.9 -> 52.7%, points 46.3 -> 45.9. Turnovers unchanged (college 3.2, pro 2.8 a game; real ~2.6 and ~2.5): left.
+- Schedules (schedV 3, new seasons): pro basketball's Cup nights moved games between pairs and the hosts with them
+  (27 of 30 clubs off 41 home games, up to 45-37); a balancing pass after the group draw passes extra home games along
+  chains of league games (nbaHomeBalance), and a knockout night's stand-in game goes to the club with fewer home
+  games: all 30 at 41 at the start. Baseball's division games by game 80 ran 11 to 38 of 52; packSeries now leans a
+  club behind on its division games toward a division series (DIV_SPREAD 40, no draws): 22 to 29.
+- Who's on the field: the rink shows the goalie in net (d.gIn, the backup once he's in or when he started); baseball's
+  fielders are the day's (a hurt starter's backup). A goalie you kept in isn't pulled by your assistant at the next
+  break on his own (engV 2).
+- The floor under the finish (Muse's priority 3): in a close game's late window (SPORT.lateFloor: football's 4th
+  quarter within 8, basketball's last segment within 6, hockey's last five minutes and overtime within a goal, soccer
+  from 80' within a goal, baseball from the 7th within a run) the first call that comes up is yours, whatever the gate
+  says; graded as any call (close either way when it is). One a game; LATE_FLOOR_ON. Close finishes with no late call
+  (late-calls.js, 40 games each): college basketball (within 6) 33% -> 0%, pro 30% -> 0%, hockey 35% -> 0%, soccer
+  92% -> 0%, pro football 50% -> 10%, college football 33% -> 17%, baseball 9% (no call came up at all in that game).
+- Measured, not changed: the scouting report's most common pick, followed, was right in about half of football's
+  games (8 and 9 samples), 0.6-0.7 in college basketball, soccer and baseball, ~0.9 in pro basketball and hockey
+  (small samples; test with the followed flag before tuning).
+- Football grading (found by the suite after the kick change): "too close to grade" compared the rounded raw gap with
+  3 points, while the card shows each option's rate rounded on its own; 15.5 vs 11.5 showed as 15 v 12 and was graded
+  (often as wrong), and the reverse let some 4-point gaps go ungraded. Now the gap the card shows decides. In the
+  college goldens about a dozen calls moved to "close either way" and a few 4-point calls into the Film Room.
+- Floor asks carry live.ask.floor, so the in-reach test (regressions 77) leaves them out; double-finish counts reads as
+  the tally does (waited and followed reports excluded).
+- Releasing: r71-wip grew from r70-wip, not from main's squashed round 70, so git merge --squash conflicts. main's
+  source matched r70-wip exactly, so main took r71-wip's tree (git read-tree -u --reset r71-wip) and the site was
+  rebuilt; the pages were byte-identical to the tested builds. Branch the next round from main.
+
+Round 70: highlights (Ian's round 69 notes, across the sports).
+- Every sport: a stretch's goals all play (hlTrim keeps every goal and cuts only chances; hockey's slice(0,3) dropped
+  a later goal when saves came first), and with more clips to come the held score moves on per goal as it goes in
+  (c.after) instead of all at once at the end.
+- Soccer: shots fly by their own line (lift and bend from the clip's draw: some driven straight, some curled, some
+  over); the sides change ends at half-time (c.lr), in the full-match animation too.
+- Football: the clip plays what the run of play says (rowText: driveScript's line for that drive, the same words the
+  page shows): the scorer's name, pass or run and its length on the banner ("TOUCHDOWN! Espinoza, 16-yard pass"; QB
+  runs carried by the QB). Every interception and fumble plays in Key moments, naming the man who took it (a new FUM
+  clip: the hit, the ball loose, the defender on it). 70% of passes are contested (the corner on the receiver's
+  hip). Field goals: the kick's real length (fgDistance), some hook or curl in, low by the posts, the uprights drawn
+  bold with the window marked back up the field, and a behind-the-posts view (an H and the ball) at the end away
+  from the line, so it plainly goes through or wide.
+- Baseball: the engine now notes, for the highlights only (no draws, nothing the game reads; goldens unchanged),
+  who was on each base (H.bn: runners never pass, runs come off the front, the double play and caught stealing take
+  the man from first), who was pitching (e.p: his name, "closer" or "bullpen"), and the out that ended the game
+  (d.last: strikeout, fly, grounder or double play). The clip names the runners and fielders, the mound shows the
+  day's pitcher, panels low on either side give the batter's season line and the pitcher's, the fielder runs a hit
+  down and throws it in (a fly to the cutoff, a sacrifice fly home), and a close finish (one run, or the tying run
+  on or at the plate) shows its last out ("Top 9th, 2 out, runners on 1st and 2nd, down 2" / "CAUGHT! Ballgame").
+  Sound: your home run gets the big crowd and an organ run (sfx "hr"), any other run a smaller cheer ("run"), at the
+  moment it crosses in the clip (HL_SPORT.sound; hlRelease then leaves only the flash), and by SPORT.scoreSfx when
+  no clip plays.
+- Hockey: every shot the engine stops is kept on the period's stretch (d.sv: placed by count, no draws), so saves
+  are real ones. Key moments show about 1.4 saves a goal (20 games: 135 saves, 95 goals; save % .898). Posts are
+  not shown: the engine plays only shots on goal, so a post would be made up. Names under every player.
+
+Round 69: stats (Ian: "click on a player and see all of their history and game-by-game stats"; "league leaders").
+- Game logs: every line a player is credited with (core 80_season, both play paths and the log-credit extras) also
+  goes to logGame: one flat list of numbers per player, glStride() a game (step, opponent index, home, for,
+  against, position index, the position's stat keys padded to the sport's longest). On the season's copy of the
+  player, so it's rebuilt by the replay and never saved. A list per game cost 16 MB over a baseball season; flat,
+  about 8 MB (64,000 rows), basketball 1.4 MB; the season sims no slower.
+- Season by season: at the season's end the line is kept as pl.hist [{y, t, p, r, s}] beside the career total (saved
+  in the universe; careers from before this round show their earlier seasons as one "Before" line).
+- The player's page (core 93_people playerView): number, name, team, position, age, rating and ceiling, contract;
+  this season's line; season by season with the career total; this season's games, latest first (60 shown). Any
+  player on any roster: tap a name (plLink) on your roster, another team's roster, or the leaders.
+- Leaders: a sub-tab of Standings in every game (Table | Leaders). Each sport's categories (LEADERS in its
+  10_players: football's yards and touchdowns, sacks, tackles, picks; basketball per game with a third of the games;
+  hockey points, goals, assists, defencemen, save percentage and GAA with a third of the games, shutouts; soccer
+  goals, assists, both, clean sheets, saves, in your division; baseball AVG with 3.1 at-bats a game, HR, RBI, hits,
+  steals, ERA with an inning a game, wins, strikeouts, saves). Top five of each, or one category's top 25.
+- test/stats.js (in the suite): over two seasons in all seven games, 82,000 checks: one log row per game played,
+  the log's columns summing to the season line, the season kept in the history with its games, the leaders and
+  every sampled page drawing.
+- Goldens rewritten: the universe now holds the histories (with them stripped, every old fingerprint matched), names
+  are links and Standings has its sub-tabs. migrate.js and regressions.js read past the links.
+- In-game stats and box scores come next (round 70).
+
 Round 68: how much to watch, and changing the plan during a game (Ian: "like Football Manager").
 - Highlights have five levels, chosen on the live screen (a row above the action bar) or in the ? panel: goals only,
   key moments (round 66's), every chance (no closeness rule, more a stretch: soccer up to three chances, hockey four

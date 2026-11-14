@@ -1,5 +1,5 @@
 {
- "fp": "4e892d5f92ea9fa9",
+ "fp": "78e80f48c9dc2aee",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -295,6 +295,16 @@
    "fp": "4e892d5f92ea9fa9",
    "from": "4e892d5f92ea9fa9",
    "note": "round 60: achievements, margins and runs scaled by sport"
+  },
+  {
+   "fp": "9b3cc12590ee605c",
+   "from": "4e892d5f92ea9fa9",
+   "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
+  },
+  {
+   "fp": "78e80f48c9dc2aee",
+   "from": "9b3cc12590ee605c",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "out": [
@@ -304,20 +314,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-4",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A-"
+      "rec": "6-7",
+      "result": "Lost the Liberty Bowl",
+      "grade": "F"
      },
-     "book": "d4bfeb0500266033"
+     "book": "36a8d1f6818878d9"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Frisco Bowl",
-      "grade": "A-"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
      },
-     "book": "5f45a991083cda88"
+     "book": "fd80181bdf89f913"
     }
    ]
   },
@@ -327,20 +337,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-2",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A"
+      "rec": "8-5",
+      "result": "Won the Texas Bowl",
+      "grade": "B-"
      },
-     "book": "245c1d8a74760397"
+     "book": "e976f5edc4aa5574"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "3-9",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "C+"
      },
-     "book": "c20cb023cc583ef4"
+     "book": "9282fcbbf6e524c0"
     }
    ]
   },
@@ -351,19 +361,19 @@
      "team": "Alabama",
      "last": {
       "rec": "10-4",
-      "result": "Eliminated in the first round",
-      "grade": "B"
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A"
      },
-     "book": "68f56fefdb45f2fe"
+     "book": "60755dacb12b4f61"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "8-5",
+      "result": "Lost the Sun Bowl",
+      "grade": "A+"
      },
-     "book": "cb208fd03f10d479"
+     "book": "abf28172f7aca9ab"
     }
    ]
   }

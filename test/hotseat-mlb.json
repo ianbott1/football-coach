@@ -1,5 +1,5 @@
 {
- "fp": "38f289b746eadd9c",
+ "fp": "ebe76644be68cfa3",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -50,6 +50,16 @@
    "fp": "38f289b746eadd9c",
    "from": "79d44237614c5929",
    "note": "round 61: payroll limit, five-round draft, re-sign bars"
+  },
+  {
+   "fp": "12f991d94fa7f350",
+   "from": "38f289b746eadd9c",
+   "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
+  },
+  {
+   "fp": "ebe76644be68cfa3",
+   "from": "12f991d94fa7f350",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "out": [
@@ -59,20 +69,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "86-76",
-      "result": "Missed the postseason",
-      "grade": "C"
+      "rec": "101-61",
+      "result": "Lost in the division series",
+      "grade": "A-"
      },
-     "book": "a6ab3e02f60f4716"
+     "book": "50f6a23074e51227"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "86-76",
-      "result": "Lost in the division series",
-      "grade": "B"
+      "rec": "77-85",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "1e1a2db35055d022"
+     "book": "9b06908b7d0c07f2"
     }
    ]
   },
@@ -82,20 +92,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "81-81",
+      "rec": "70-92",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C+"
      },
-     "book": "da4dc98f01d5fd1d"
+     "book": "2204d1d7ba63ee83"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "99-63",
-      "result": "Lost in the wild-card series",
-      "grade": "B+"
+      "rec": "76-86",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "d6036f23f946a03c"
+     "book": "766125a434bafddf"
     }
    ]
   },
@@ -105,20 +115,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "88-74",
-      "result": "Lost in the championship series",
-      "grade": "A"
+      "rec": "74-88",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "a4ed751e3046601d"
+     "book": "4dd1ef5691342caa"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "91-71",
-      "result": "Lost the World Series",
-      "grade": "A"
+      "rec": "88-74",
+      "result": "Missed the postseason",
+      "grade": "B"
      },
-     "book": "4d651d1585549835"
+     "book": "d0f94eac17cba0f4"
     }
    ]
   }

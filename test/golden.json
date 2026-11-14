@@ -1,5 +1,5 @@
 {
- "fp": "3cd9b6100618e89a",
+ "fp": "1545fd13fedfcb14",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -454,183 +454,203 @@
    "fp": "3cd9b6100618e89a",
    "from": "df99718c4225e46a",
    "note": "round 68: game plan and highlights bar on the live screen"
+  },
+  {
+   "fp": "b598c620d1443110",
+   "from": "3cd9b6100618e89a",
+   "note": "round 69: player histories in the universe, names link to players, standings has a leaders sub-tab"
+  },
+  {
+   "fp": "44fb301b077a4667",
+   "from": "b598c620d1443110",
+   "note": "round 71: engV 2 (kicks at their odds), schedV 3 (NBA home games even, MLB division games spread), the late-call floor, reads left to the assistant or set up as the report said not counted. Control (engine switches off, engV not stored): only the read tallies differ."
+  },
+  {
+   "fp": "96f4d579c686cd82",
+   "from": "44fb301b077a4667",
+   "note": "r71: a call is too close to grade on the gap the card shows"
+  },
+  {
+   "fp": "1545fd13fedfcb14",
+   "from": "96f4d579c686cd82",
+   "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "0abccdbee62e0614",
-    "post": "06dab386d4563635",
-    "champion": "Ohio State",
-    "rec": "7445652a6d48e955",
-    "poll": "73009731438128bd",
-    "heis": "ae87460324b81a20",
-    "history": "143fecfaa19ac6e9",
-    "universe": "d3435d1bff2caedc",
-    "screens": "afa98fa1bbbfe78f"
+    "games": "a28dbc295d25348f",
+    "post": "2084fca8ae22b7b9",
+    "champion": "Notre Dame",
+    "rec": "ef00cbd1c6419b64",
+    "poll": "c1e667713bfe1762",
+    "heis": "6b88ad01b5953945",
+    "history": "cae1607402f2f4b0",
+    "universe": "897b8d36fbaf104b",
+    "screens": "2dcc8df067580e61"
    },
    {
     "year": 2027,
-    "games": "7e9525e49f7d0634",
-    "post": "0cfb0b1a7e1fea0c",
-    "champion": "BYU",
-    "rec": "c2cb53beef8f3e12",
-    "poll": "327718a67536b6a4",
-    "heis": "45db62fcea5789cd",
-    "history": "081bd5e70f18ab94",
-    "universe": "a24524b60cf92a67",
-    "screens": "d3ead74119bb0a99"
+    "games": "42bbe94bc73aaa63",
+    "post": "74fc5c2545ef09e7",
+    "champion": "Alabama",
+    "rec": "28cea12905371960",
+    "poll": "9e5be82b20462cce",
+    "heis": "1c0943a32507ba51",
+    "history": "256df48b7f1dbff3",
+    "universe": "cfc1256c37b86c8a",
+    "screens": "e791d46515bcf40d"
    },
    {
     "year": 2028,
-    "games": "fe86f8b7b71a62e5",
-    "post": "64bc4b1e9dd25052",
+    "games": "0964d765581fee5a",
+    "post": "de2e97ae6aeaeddd",
     "champion": "Miami",
-    "rec": "13a28a0fa7f7df18",
-    "poll": "8f81823947b7cb68",
-    "heis": "1d35237a90feef6b",
-    "history": "61a802ce858476fe",
-    "universe": "d8ded0400360256f",
-    "screens": "c3d94d3973ce58ed"
+    "rec": "0364f5a36ded1c28",
+    "poll": "c5e1a1b273c72828",
+    "heis": "116e7dfae19d159a",
+    "history": "6e99a05ee7cf54d4",
+    "universe": "95873c3b299f674a",
+    "screens": "10073df3b5e4f5e1"
    },
    {
     "year": 2029,
-    "games": "e8b8898e1b8316aa",
-    "post": "ae0f301fb98001e0",
-    "champion": "Louisville",
-    "rec": "78bb50ed9b80c40a",
-    "poll": "16c9a45d953d558d",
-    "heis": "c5e8de2f8e13afd0",
-    "history": "211a2b297d706f7b",
-    "universe": "00ec81efbcecf048",
-    "screens": "d08ae3959e3fdcfd"
+    "games": "5d74aa1942228d98",
+    "post": "a7494b1515661044",
+    "champion": "Penn State",
+    "rec": "b6444ce220a093e3",
+    "poll": "bb4f8b57ae9c302a",
+    "heis": "2858df9a946e4375",
+    "history": "989f3255f6faf9e5",
+    "universe": "191262b62a3bec01",
+    "screens": "7c7302f9ba37896c"
    }
   ],
   "Rice#2024": [
    {
     "year": 2026,
-    "games": "354f7b645a42e493",
-    "post": "3a6d2120968fa61b",
+    "games": "e0d9348fc76b9b2d",
+    "post": "d54b4243ecb316ed",
     "champion": "Ohio State",
-    "rec": "34481fb269e81e7d",
-    "poll": "f84de937f0ef85b5",
-    "heis": "3f9a419fd8e55492",
-    "history": "0c696b7960cee72e",
-    "universe": "734c33f5d7688424",
-    "screens": "91300e7cb6dad318"
+    "rec": "ab9d458cc2a9b69c",
+    "poll": "27117e51c6533e1e",
+    "heis": "f1300fe21d49dea7",
+    "history": "fbf324f5a667b5c9",
+    "universe": "17f14bef1a7595d8",
+    "screens": "6aa610d6a9f804ae"
    },
    {
     "year": 2027,
-    "games": "4c9c4b151205ff39",
-    "post": "f0be7f3e4125720b",
-    "champion": "Indiana",
-    "rec": "83d41c347963aa6d",
-    "poll": "c5ae09722c9840d9",
-    "heis": "0c1206db50ecb217",
-    "history": "8b32aa1090ede7dd",
-    "universe": "b1ed05987d0d59db",
-    "screens": "f482ad120eee277d"
+    "games": "eb218ad521adac10",
+    "post": "a76be4b195c00896",
+    "champion": "Notre Dame",
+    "rec": "d96c26d2ab1d085b",
+    "poll": "cc34652b32880883",
+    "heis": "82e51d5ab7bf7634",
+    "history": "70b0903149723b13",
+    "universe": "4dfbae83392695df",
+    "screens": "bdaad597eb6d5b1a"
    },
    {
     "year": 2028,
-    "games": "226c8410d0e60f67",
-    "post": "a3a466f44dc17551",
-    "champion": "Notre Dame",
-    "rec": "38fb166890c454e4",
-    "poll": "26148c89f0a8b82f",
-    "heis": "838403cd7916b7d7",
-    "history": "539ed12a3c4d490e",
-    "universe": "208a7c4fccdd181e",
-    "screens": "dcb111907e067652"
+    "games": "05c1a02649cb2507",
+    "post": "de41f0a5d981ccee",
+    "champion": "Washington",
+    "rec": "4b0db864c52e256b",
+    "poll": "73c0f8241ef0b029",
+    "heis": "2303ecb37c496ec3",
+    "history": "dd612cfa1abcd494",
+    "universe": "02a6f4160c8096b5",
+    "screens": "be4e3abb0ec69e20"
    },
    {
     "year": 2029,
-    "games": "5e64f4722e9c2d0d",
-    "post": "c473c10c3d57e224",
-    "champion": "Ohio State",
-    "rec": "394efa256fecce5b",
-    "poll": "9dfdb1af307e2850",
-    "heis": "b2a96303a74ac2bc",
-    "history": "66583e3874e9c684",
-    "universe": "123904be4b1f74f6",
-    "screens": "32c4d58f1f9319fd"
+    "games": "c8c294e68778223f",
+    "post": "7e9e452847560d83",
+    "champion": "Notre Dame",
+    "rec": "3014e60223b622b2",
+    "poll": "7103495e904b4526",
+    "heis": "f3aab926043f4235",
+    "history": "92603233464955e7",
+    "universe": "5a379d741d795a41",
+    "screens": "d3387528bd06d7e4"
    }
   ],
   "Oregon#777": [
    {
     "year": 2026,
-    "games": "870ee38b9796c234",
-    "post": "29303424e6f97bd4",
-    "champion": "Indiana",
-    "rec": "d1ad9504f1ba1175",
-    "poll": "8ccc7ed167df485e",
-    "heis": "67ea02385fe4cd06",
-    "history": "6c1986ab3c7fac8d",
-    "universe": "a4594e1f803b6beb",
-    "screens": "cd4c1b40b808beb6"
+    "games": "87fa57d09886b56b",
+    "post": "ca1ca5d5ad7deecb",
+    "champion": "Texas",
+    "rec": "30f69f978cfc315d",
+    "poll": "00692506b0b35d44",
+    "heis": "72d7bdb4349f4329",
+    "history": "7d1f20b46cbbd286",
+    "universe": "b9e0652a9e9114d1",
+    "screens": "1f62bbf9926e64b7"
    },
    {
     "year": 2027,
-    "games": "91029131d4e5ef28",
-    "post": "121981ff49139f0d",
+    "games": "b184354bf5371a70",
+    "post": "7d38b6b973fb372b",
     "champion": "Oregon",
-    "rec": "d759772e98dcd085",
-    "poll": "c5559bf3d8b1cacb",
-    "heis": "5e7ef7819a3b4d33",
-    "history": "46917ab72ac868c8",
-    "universe": "729c38b519b28fbf",
-    "screens": "9592bb2fcf41121e"
+    "rec": "e234ce78d929bed8",
+    "poll": "f8b31859e9e254d2",
+    "heis": "ee6777d9b11b3d7a",
+    "history": "f1068ba2cd6c5f30",
+    "universe": "2c0c11e20eb9c0a7",
+    "screens": "1125a385e1bdbfbb"
    },
    {
     "year": 2028,
-    "games": "cce2804b4c256277",
-    "post": "c637e51ef2fd79fb",
-    "champion": "Ohio State",
-    "rec": "2841db5befdeae0a",
-    "poll": "8ceae68108de7a54",
-    "heis": "9913d359b2ad05cc",
-    "history": "a786cbfbfa8788d3",
-    "universe": "0c55ef23d9a1d1d1",
-    "screens": "26609e6789f266b0"
+    "games": "8f425fcb713b941f",
+    "post": "922b7ae80ab1ff47",
+    "champion": "Oregon",
+    "rec": "76d33db352c7cb41",
+    "poll": "fbb637acc1dc3281",
+    "heis": "172d9a429ac10222",
+    "history": "a1bc9997971a2bd9",
+    "universe": "0ecec422213c28d3",
+    "screens": "f9346d52aa89835d"
    }
   ],
   "Kent State#31337": [
    {
     "year": 2026,
-    "games": "9b9f5ff34a0cd9f4",
-    "post": "df07836052d13e51",
-    "champion": "Oregon",
-    "rec": "999f32a150d138fe",
-    "poll": "8cd67f4688a6392f",
-    "heis": "306241821babe3bf",
-    "history": "fd74ecc77fe3dd97",
-    "universe": "38ba448434ff9b90",
-    "screens": "fe030d421cb6c0b3"
+    "games": "ebae55a88d4a10a6",
+    "post": "9520dbf762d0ddfe",
+    "champion": "Georgia",
+    "rec": "632c1224bde1f8a3",
+    "poll": "66c07fde00d5535f",
+    "heis": "8726c47d2acf681c",
+    "history": "0200bb2b9bc35e51",
+    "universe": "281ba4d5b731b7b0",
+    "screens": "375546f6a73896ea"
    },
    {
     "year": 2027,
-    "games": "d6db81a25b551ac4",
-    "post": "c0773eae6413c894",
+    "games": "460f40966dd2f321",
+    "post": "eb379044306ed50b",
     "champion": "LSU",
-    "rec": "dfe76adc176d8db1",
-    "poll": "a2a4fad64ccd8ba3",
-    "heis": "e843968e50a39c83",
-    "history": "786e3f4bd4989913",
-    "universe": "6d5c50ea09b53278",
-    "screens": "ddc1b6c5eb26fec2"
+    "rec": "781eabb3d073359b",
+    "poll": "ba678176c5bdb195",
+    "heis": "5c64662a2ead9d3b",
+    "history": "09b99b7e883e8ec8",
+    "universe": "91f4ea260de7dc67",
+    "screens": "bb05eb8a652a1c13"
    },
    {
     "year": 2028,
-    "games": "513c912e6cd91a88",
-    "post": "e0ac6580f8b09def",
-    "champion": "Notre Dame",
-    "rec": "8e130fe2f223d7b2",
-    "poll": "4bec52da5162954f",
-    "heis": "7c7f7a287a4fa13e",
-    "history": "46661ccd0f262fa4",
-    "universe": "68c8414be2801b87",
-    "screens": "c80db2719d133a65"
+    "games": "89a740259d2779f9",
+    "post": "d0069125492f9333",
+    "champion": "Georgia",
+    "rec": "4887e50b6957bb9a",
+    "poll": "fff4d6b363f42022",
+    "heis": "898fda2de2b02623",
+    "history": "46cbdf0f308b10b4",
+    "universe": "5fb1725021866ce7",
+    "screens": "09126a652e6ec837"
    }
   ],
   "schedules#60": [

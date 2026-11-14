@@ -43,6 +43,9 @@ function sfx(kind){
   const ac=audio(); if(!ac)return;
   try{
     if(kind==="score"){ crowd(ac,{f:1000,peak:0.24,up:0.1,down:1.6}); crowd(ac,{f:2400,q:1.2,peak:0.06,up:0.08,down:0.9}) }
+    else if(kind==="hr"){ crowd(ac,{f:1000,peak:0.28,up:0.1,down:2.4}); crowd(ac,{f:2600,q:1.2,peak:0.08,up:0.08,down:1.4});
+      [392,523,659,784,659,784].forEach((f,i)=>tone(ac,{f:f,type:"square",at:0.25+i*0.12,dur:i===5?0.5:0.11,peak:0.045})) }   // the organ
+    else if(kind==="run"){ crowd(ac,{f:950,peak:0.15,up:0.1,down:1.0}) }
     else if(kind==="against"){ crowd(ac,{f:380,type:"lowpass",peak:0.13,up:0.18,down:0.8}) }
     else if(kind==="start"||kind==="end")signal(ac);
     else if(kind==="win"){ [523,659,784,1047].forEach((f,i)=>tone(ac,{f:f,type:"triangle",at:0.35+i*0.11,dur:i===3?0.5:0.16,peak:0.1})) }
@@ -67,10 +70,12 @@ function scoreChange(L,prevH,prevA){
   const mine=mineHome?dh:da, theirs=mineHome?da:dh;
   return mine>0&&mine>=theirs?"mine":theirs>0?"theirs":null;
 }
-function feelSpell(L,prevH,prevA){
+function feelSpell(L,prevH,prevA,quiet,shown){
   const who=scoreChange(L,prevH,prevA); if(!who)return;
-  showFlash(L,who);
-  if(who==="mine"){ sfx("score"); buzz([40,60,90]) } else sfx("against");
+  if(!shown)showFlash(L,who); if(quiet)return;   // shown: a highlight showed the score already (round 72)
+  // a sport can pick its sound (round 70, baseball: a home run is a bigger moment than a run)
+  const k=typeof SPORT!=="undefined"&&typeof SPORT.scoreSfx==="function"?SPORT.scoreSfx(L,who):"score";
+  if(who==="mine"){ sfx(k); buzz([40,60,90]) } else sfx("against");
 }
 function feelFinal(L){
   const mine=L.g.home===S.myTeam?L.eng.h:L.eng.a, theirs=L.g.home===S.myTeam?L.eng.a:L.eng.h;

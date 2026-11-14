@@ -19,8 +19,10 @@ function isBigGame(g,team,seaRankMap,rivalName){
 function segClock(s){
   if(s===SEGS)return "OT";
   if(s>SEGS)return "SO";
+  // round 72: game minutes, as the rows and the clips have them (the header said "1st 5:00", time left, beside rows
+  // stamped 13', time played: Instinct)
   const per=["1st","2nd","3rd"][Math.floor(s/4)];
-  return per+" "+[15,10,5,0][s%4]+":00";
+  return s%4===3?"End of "+per:per+" \u00b7 "+((s+1)*5)+"'";
 }
 /* gameScript (a computer game's replay) lives with the screens, 75_screens.js */
 /* the rink: each end in its team's colour, the clock as six bars */

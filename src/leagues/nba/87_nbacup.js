@@ -47,8 +47,24 @@ LEAGUE.post.init=function(sea){
     C.unplaced=(C.unplaced||0)+1;   // no night found: counted, so a test can say so
   });
   sea.sched.sort((p,q)=>p.week-q.week);
+  if(SCHED_V>=3)nbaHomeBalance(sea.sched);
   C.lastGroup=C.games.reduce((m,x)=>Math.max(m,x.week),0);
 };
+/* round 71: the Cup's group nights hand games to new pairs, and the hosts went with them: 27 of 30 clubs ended away
+   from 41 at home, up to 45-37 (measured). Afterwards each club over 41 passes a home game along a chain of league
+   games (not the Cup's) to one under 41, as the schedule builder does. No draws. */
+function nbaHomeBalance(sched){
+  const home={}; NAMES.forEach(t=>home[t]=0); sched.forEach(g=>{ if(!g.neutral)home[g.home]++ });
+  const free=sched.filter(g=>!g.cupG&&!g.cup&&!g.cupK&&!g.neutral);
+  for(let pass=0;pass<300;pass++){
+    const over=NAMES.filter(t=>home[t]>41).sort()[0]; if(!over)break;
+    const prev=new Map([[over,null]]), q=[over]; let end=null;
+    while(q.length&&!end){ const t=q.shift();
+      for(const g of free){ if(g.home!==t||prev.has(g.away))continue; prev.set(g.away,g); if(home[g.away]<41){end=g.away;break} q.push(g.away) } }
+    if(!end)break;
+    for(let t=end;prev.get(t);){ const g=prev.get(t), from=g.home; home[from]--; home[g.away]++; g.home=g.away; g.away=from; t=from }
+  }
+}
 /* a group game, from the schedule entry or a played result */
 function nbaCupGroupGame(sea,g){ const C=sea&&sea.cup; if(!C||!C.games)return false;
   return C.games.some(x=>x.week===(g.week!==undefined?g.week:x.week)&&x.home===g.home&&x.away===g.away) }
@@ -78,7 +94,10 @@ function nbaCupDraw(sea,i,pairs){
   L.forEach(g=>{ const x=kt.has(g.home)?(kt.has(g.away)?null:g.away):g.home; if(x)out.push(x); sea.sched.splice(sea.sched.indexOf(g),1) });
   pairs.forEach(p=>{ const g={week:wk,home:p[0],away:p[1],cupK:i,round:i,conf:CONF[p[0]]===CONF[p[1]],neutral:!!R.neutral,title:nbaCupTitle(i)};
     if(R.neutral)g.site="Las Vegas"; sea.sched.push(g) });
-  C.rng.shuffle(out); for(let k=0;k+1<out.length;k+=2)sea.sched.push({week:wk,home:out[k],away:out[k+1],conf:CONF[out[k]]===CONF[out[k+1]]});
+  C.rng.shuffle(out);
+  // round 71 (schedV 3): the stand-in game goes to whichever club has fewer home games on its schedule
+  const hc=t=>sea.sched.filter(g=>g.home===t&&!g.neutral).length;
+  for(let k=0;k+1<out.length;k+=2){ let h=out[k], a=out[k+1]; if(SCHED_V>=3&&hc(a)<hc(h)){ const z=h; h=a; a=z } sea.sched.push({week:wk,home:h,away:a,conf:CONF[h]===CONF[a]}) }
   sea.sched.sort((p,q)=>p.week-q.week);
   C.next=i;
 }

@@ -78,3 +78,8 @@ function statProd(pos,s){
   if(pos==="GK")return (s.cs||0)*3+(s.sv||0)*0.25;
   return (s.goals||0)*3+(s.ast||0)*2+(s.cs||0)*(pos==="CB"?1.5:1);
 }
+
+/* ---- stats pages (round 69): column labels and the league's leader boards ---- */
+const STAT_ABBR={goals:"Goals",ast:"Assists",shots:"Shots",cs:"Clean sheets",sv:"Saves",ga:"Conceded"};
+const LEADERS=[{l:"Goals",v:s=>s.goals||0},{l:"Assists",v:s=>s.ast||0},{l:"Goals and assists",v:s=>(s.goals||0)+(s.ast||0)},
+  {l:"Clean sheets",pos:["GK"],v:s=>s.cs||0},{l:"Saves",pos:["GK"],v:s=>s.sv||0}];

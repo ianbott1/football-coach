@@ -57,12 +57,22 @@ function cardName(g,e,tm,u){
     if(n){ bk.names.push(n); if(e.def&&!bk.cb&&n===scPlayer(tm,"CB",u))bk.cb=n } }
   if(CARD_NAMES)CARD_NAMES.set(e,n); return n }
 /* one event as a line of commentary */
-function scEventText(g,e){
+/* round 72: a scorer's goals in one match each get their own words ("cuts inside and curls it into the far corner"
+   three times for one hat-trick: Instinct). used: per scorer, the finishes already said in this match, in order */
+function scFinish(s,u,used){ const L=FINISH[s.unit]; if(!used)return pickOf(L,u>>2);
+  const k=s.unit+"|"+s.n, S=used[k]=used[k]||new Set(); if(S.size>=L.length)S.clear();
+  const n=L.length, i0=((u>>2)%n+n)%n; for(let j=0;j<n;j++){ const i=(i0+j)%n; if(!S.has(i)){ S.add(i); return L[i] } } return L[i0] }
+/* the words for one event as the match has them so far: every earlier goal counted, so a row and its clip agree */
+function scEventTextIn(g,drives,e){ const used={}; for(const d of drives||[])for(const x of d.ev||[]){ if(x===e)return scEventText(g,x,used); if(x.k==="goal")scEventText(g,x,used) }
+  return scEventText(g,e) }
+function scEventText(g,e,used){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
-  if(e.k==="goal"){ const s=scScorer(tm,u); return {team:tm,tag:"GOAL",text:`${s.n} ${pickOf(FINISH[s.unit],u>>2)}`} }
+  if(e.k==="goal"){ const s=scScorer(tm,u); return {team:tm,tag:"GOAL",text:`${s.n} ${scFinish(s,u,used)}`} }
   if(e.k==="save"){ const s=scScorer(tm,u), gk=scPlayer(opp,"GK",u)||"the keeper";
-    return {team:tm,tag:"",text:`${surname(gk)} ${pickOf(SAVE,u>>3)} ${surname(s.n)}`} }
+    // round 72: the row is the keeper's, as its sentence is: "Fulham Orozco gets down to keep out Faulkner" put
+    // Sunderland's keeper under Fulham (Instinct); every other row names the team of the man it starts with, as hockey's saves do
+    return {team:opp,tag:"",text:`${surname(gk)} ${pickOf(SAVE,u>>3)} ${surname(s.n)}`} }
   if(e.k==="miss"){ const s=scScorer(tm,u); return {team:tm,tag:"",text:`${s.n} ${pickOf(MISS,u>>3)}`} }
   if(e.k==="yellow"){ const n=cardName(g,e,tm,u);
     return {team:tm,tag:"YELLOW",text:`${n||"a defender"} booked${e.def&&n===scPlayer(tm,"CB",u)?" (centre-back)":""}`} }
@@ -74,17 +84,17 @@ function scEventText(g,e){
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Penalties":"Extra time"):segClock(d.seg) }
 /* the replay script: one row per event, a quiet row for a quiet spell */
 function driveScript(g,drives){
-  const out=[];
+  const out=[], used={};
   drives.forEach(d=>{
     if(d.seg>=SEGS){ const hw=d.pens?d.pens==="home":d.sh>d.sa, tm=hw?g.home:g.away;
-      (d.ev||[]).forEach(e=>{const t=scEventText(g,e); out.push({seg:d.seg,clock:e.m+"'",team:t.team,outcome:t.tag,text:t.text,h:d.sh,a:d.sa})});
+      (d.ev||[]).forEach(e=>{const t=scEventText(g,e,used); out.push({seg:d.seg,clock:e.m+"'",team:t.team,outcome:t.tag,text:t.text,h:d.sh,a:d.sa})});
       out.push({seg:d.seg,clock:d.so?"PENS":"ET",team:tm,outcome:d.so?"PENALTIES":"",text:d.so?`win it on penalties`:`win it in extra time`,h:d.sh,a:d.sa});
       return }
     let sh=d.sh-d.h, sa=d.sa-d.a;
     const ev=(d.ev||[]).filter(e=>e.k!=="cue"||((e.u||0)%3===0));
     if(!ev.length){ out.push({seg:d.seg,clock:segClock(d.seg),team:"",outcome:"",text:"",h:sh,a:sa,quiet:true}); return }
     ev.forEach(e=>{ if(e.k==="goal"){ if(e.side==="home")sh++; else sa++ }
-      const t=scEventText(g,e); out.push({seg:d.seg,clock:e.m+"'",team:t.team,outcome:t.tag,text:t.text,h:sh,a:sa,cue:t.cue}) });
+      const t=scEventText(g,e,used); out.push({seg:d.seg,clock:e.m+"'",team:t.team,outcome:t.tag,text:t.text,h:sh,a:sa,cue:t.cue}) });
   });
   return out;
 }
@@ -122,7 +132,7 @@ function scoreTop(g,H,A,label,cls){
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
   const last=live.drives[live.drives.length-1];
-  const lab=`<span class="live"></span>${!live.drives.length?"KICK-OFF":esc(segLabel(last))}
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"KICK-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(g.label):g.title?" &middot; "+esc(g.title)+(g.neutral?"":(g.home===my?", at home":", away")):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives)+`</div>`;
 }
@@ -211,12 +221,12 @@ function statStrip(g,d){
 
 /* ---- the run of play ---- */
 function playsHTML(list,my,g){
-  const rows=[];
+  const rows=[], used={};
   list.forEach(d=>{
     const ev=(d.ev||[]).filter(e=>e.k!=="cue"||((e.u||0)%3===0));
     let sh=d.sh-d.h, sa=d.sa-d.a;
     ev.forEach(e=>{ if(e.k==="goal"){ if(e.side==="home")sh++; else sa++ }
-      const t=scEventText(g,e); rows.push({m:e.m,team:t.team,tag:t.tag,text:t.text,h:sh,a:sa,cue:t.cue,goal:e.k==="goal",card:e.k==="red"||e.k==="yellow"}) });
+      const t=scEventText(g,e,used); rows.push({m:e.m,team:t.team,tag:t.tag,text:t.text,h:sh,a:sa,cue:t.cue,goal:e.k==="goal",card:e.k==="red"||e.k==="yellow"}) });
   });
   return rows.slice().reverse().map(r=>`<div class="play ${r.team===my?'mine':''} ${r.goal?'goalrow':''} ${r.cue?'cue':''}">
       <span class="pq">${r.m}'</span>

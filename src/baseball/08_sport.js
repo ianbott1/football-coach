@@ -1,5 +1,6 @@
 /* ============ sport: baseball ============ */
 const SPORT={
+  lateFloor:{late:(D,d)=>(d.seg||0)>=6, close:1},   // round 71: from the 7th, within a run
   margins:{close:1,rout:7,crush:9,blow:11},
   // the Capybara's fixed lines, said a different way from game to game (round 61: the same two sentences every night)
   voiceAlt:{
@@ -23,6 +24,9 @@ const SPORT={
   /* which runs get the flash (round 56: an enormous "RUN!" on every run hid the log at the moment you wanted to read it,
      and a homer felt the same as a bases-loaded walk: Muse): a home run, or a run from the 7th on that ties the game or
      takes the lead; anything else just plays its sound */
+  /* round 70 (Ian): a home run of yours gets the big sound, any other run a smaller cheer */
+  scoreSfx(L,who){ try{ const d=(L.drives||[])[L.drives.length-1], side=(L.g.home===S.myTeam)===(who==="mine")?"home":"away";
+    return d&&(d.ev||[]).some(e=>e.k==="hr"&&e.side===side)?"hr":"run" }catch(e){ return "score" } },
   flashWord(L,who){
     try{ const D=L.drives||[], d=D[D.length-1]; if(!d)return null; const my=S.myTeam, side=who==="mine"?(L.g.home===my?"home":"away"):(L.g.home===my?"away":"home");
       L._fl=L._fl||{}; const hr=(d.ev||[]).find((e,i)=>e.k==="hr"&&e.side===side&&!L._fl[d.seg+":"+i]&&(L._fl[d.seg+":"+i]=true));
